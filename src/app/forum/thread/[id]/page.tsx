@@ -90,7 +90,7 @@ export default async function ThreadPage({
       </div>
 
       {/* 主題串 */}
-      <article className="rounded-2xl border border-border bg-bg-card p-5 sm:p-6">
+      <article className={`reveal surface p-5 sm:p-6 ${thread.is_featured ? "glow-accent" : ""}`}>
         {/* 標題 + 標記 */}
         <div className="flex items-center gap-2 flex-wrap mb-3">
           {thread.is_pinned && <Pin size={16} className="text-accent" />}

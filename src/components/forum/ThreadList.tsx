@@ -119,8 +119,8 @@ export function ThreadList({ boardSlug }: { boardSlug?: string }) {
           />
         ) : (
           <div className="space-y-2">
-            {threads.map((t) => (
-              <ThreadCard key={t.id} t={t} boardSlug={boardSlug} />
+            {threads.map((t, idx) => (
+              <ThreadCard key={t.id} t={t} boardSlug={boardSlug} index={idx} />
             ))}
 
             {hasMore && (
@@ -144,11 +144,14 @@ export function ThreadList({ boardSlug }: { boardSlug?: string }) {
   );
 }
 
-function ThreadCard({ t, boardSlug }: { t: ForumThread; boardSlug?: string }) {
+function ThreadCard({ t, boardSlug, index }: { t: ForumThread; boardSlug?: string; index?: number }) {
+  const revealClass =
+    index == null ? "" : index === 0 ? "reveal" : index <= 3 ? `reveal reveal-d${index}` : "";
+  const highlight = t.is_pinned || t.is_featured ? "glow-accent" : "";
   return (
     <Link
       href={`/forum/thread/${t.id}` as any}
-      className="block rounded-xl border border-border bg-bg-card p-4 hover:border-accent transition"
+      className={`surface hover-lift block p-4 ${highlight} ${revealClass}`}
     >
       <div className="flex items-start gap-3">
         {t.author?.avatar_url ? (

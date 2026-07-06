@@ -274,15 +274,15 @@ export function ThreadReplies({
 
       {/* 發表回覆 */}
       {isLocked ? (
-        <div className="text-sm text-fg-muted text-center py-4 bg-bg-card rounded-xl border border-border">
+        <div className="surface text-sm text-fg-muted text-center py-4">
           🔒 這個主題已鎖定、無法回覆
         </div>
       ) : !isLoggedIn ? (
-        <div className="text-sm text-fg-muted text-center py-4 bg-bg-card rounded-xl border border-border">
+        <div className="surface text-sm text-fg-muted text-center py-4">
           請先登入才能回覆
         </div>
       ) : (
-        <div className="rounded-xl border border-border bg-bg-card p-3">
+        <div className="surface p-3">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -296,7 +296,7 @@ export function ThreadReplies({
                 <FileText size={13} /> 引用我的筆記
               </button>
               {showNotePick && (
-                <div className="absolute z-30 bottom-full mb-1 left-0 w-64 max-h-56 overflow-auto rounded-lg border border-border bg-bg-card shadow-xl p-2">
+                <div className="absolute z-30 bottom-full mb-1 left-0 w-64 max-h-56 overflow-auto surface-glass shadow-xl p-2">
                   <input value={noteQ} onChange={(e) => setNoteQ(e.target.value)} placeholder="搜尋我的筆記…" className="w-full bg-bg border border-border rounded px-2 py-1 text-xs outline-none focus:border-accent mb-1" />
                   {myNotes.filter((n) => !noteQ.trim() || n.title.toLowerCase().includes(noteQ.trim().toLowerCase())).slice(0, 8).map((n) => (
                     <button key={n.id} onClick={() => insertNoteRef(n)} className="w-full text-left px-2 py-1.5 text-xs hover:bg-bg-elevated rounded truncate">📄 {n.title}</button>
@@ -351,7 +351,7 @@ function ReplyItem({
   const name = reply.author?.display_name || reply.author?.username || "用戶";
   return (
     <div
-      className={`rounded-lg bg-bg-card border p-3 transition-opacity ${reply.is_answer ? "border-accent" : "border-border"} ${reply._pending ? "opacity-60" : ""}`}
+      className={`surface p-3 transition-opacity ${reply.is_answer ? "glow-accent" : ""} ${reply._pending ? "opacity-60" : ""}`}
     >
       {reply.is_answer && (
         <div className="text-xs text-accent font-bold mb-1">✓ 已採納為解答</div>

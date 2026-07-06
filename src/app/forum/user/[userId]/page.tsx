@@ -82,7 +82,7 @@ export default async function ForumUserPage({
       </Link>
 
       {/* 用戶 Header */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="reveal flex items-center gap-4 mb-6">
         {profile.avatar_url ? (
           <Image
             src={profile.avatar_url}
@@ -126,7 +126,7 @@ export default async function ForumUserPage({
               <Link
                 key={t.id}
                 href={`/forum/thread/${t.id}`}
-                className="block rounded-lg border border-border bg-bg-card p-3 hover:border-accent transition"
+                className="surface hover-lift block p-3"
               >
                 <div className="flex items-center gap-1.5">
                   {t.is_featured && <Star size={12} className="text-yellow-400" />}
@@ -155,7 +155,7 @@ export default async function ForumUserPage({
               <Link
                 key={r.id}
                 href={`/forum/thread/${r.thread_id}`}
-                className="block rounded-lg border border-border bg-bg-card p-3 hover:border-accent transition"
+                className="surface hover-lift block p-3"
               >
                 {r.is_answer && (
                   <span className="text-[10px] text-accent font-bold">✓ 已採納為解答</span>
@@ -175,7 +175,7 @@ export default async function ForumUserPage({
 
 function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-border bg-bg-card p-3 text-center">
+    <div className="surface p-3 text-center">
       <div className="flex justify-center text-accent mb-1">{icon}</div>
       <div className="text-xl font-bold">{value}</div>
       <div className="text-xs text-fg-muted">{label}</div>

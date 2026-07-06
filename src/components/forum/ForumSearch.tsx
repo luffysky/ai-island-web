@@ -57,7 +57,7 @@ export function ForumSearch() {
                 <Link
                   key={t.id}
                   href={`/forum/thread/${t.id}`}
-                  className="block rounded-lg border border-border bg-bg-card p-3 hover:border-accent transition"
+                  className="surface hover-lift block p-3"
                 >
                   <h3 className="font-semibold text-sm">{t.title}</h3>
                   <div className="flex items-center gap-3 text-[11px] text-fg-muted mt-1">

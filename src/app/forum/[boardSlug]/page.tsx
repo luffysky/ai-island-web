@@ -49,7 +49,7 @@ export default async function BoardPage({
       </Link>
 
       {/* 版塊 Header */}
-      <div className="flex items-start justify-between flex-wrap gap-3 mb-6">
+      <div className="reveal flex items-start justify-between flex-wrap gap-3 mb-6">
         <div className="flex items-start gap-3">
           <span className="text-4xl">{board.emoji}</span>
           <div>
@@ -67,7 +67,7 @@ export default async function BoardPage({
       </div>
 
       {board.post_role === "admin" && (
-        <div className="mb-4 text-xs text-fg-muted bg-bg-card border border-border rounded-lg p-2">
+        <div className="surface mb-4 text-xs text-fg-muted p-2">
           🔒 這個版塊只有管理員能發表主題
         </div>
       )}

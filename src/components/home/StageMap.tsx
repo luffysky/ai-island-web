@@ -25,7 +25,7 @@ export function StageMap() {
   return (
     <section className="border-b border-border py-16 bg-gradient-to-b from-transparent to-bg-elevated/20">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-10">
+        <div className="text-center mb-10 reveal">
           <h2 className="text-3xl font-bold mb-2 inline-flex items-center gap-2"><Map size={28} className="text-accent" /> AI 島技術地圖</h2>
           <p className="text-fg-muted">從網頁基礎到 AI 整合、六大技術區域串起完整學習路線</p>
         </div>
@@ -44,14 +44,14 @@ export function StageMap() {
 
         {/* 6 大技術區域 */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {STAGES.map((item) => {
+          {STAGES.map((item, idx) => {
             const stage = STAGE_COLORS[item.stage];
             const StageIcon = STAGE_ICONS[item.stage] ?? Sparkles;
             return (
               <Link
                 key={item.stage}
                 href={`/chapters#stage-${item.stage}`}
-                className="group relative overflow-hidden rounded-xl border border-border bg-bg-card p-5 hover:border-accent transition-all hover:scale-[1.02]"
+                className={`group relative overflow-hidden surface hover-lift p-5 reveal ${idx < 3 ? `reveal-d${idx + 1}` : ""}`}
               >
                 <div
                   className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${item.color}`}

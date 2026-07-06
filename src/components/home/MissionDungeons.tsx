@@ -74,7 +74,7 @@ export function MissionDungeons() {
   return (
     <section className="border-b border-border py-16">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-10">
+        <div className="text-center mb-10 reveal">
           <h2 className="text-3xl font-bold mb-2 inline-flex items-center gap-2"><Swords size={28} className="text-accent" /> AI 任務副本系統</h2>
           <p className="text-fg-muted">5 大任務副本、挑戰你的 AI 實戰力</p>
         </div>
@@ -93,11 +93,11 @@ export function MissionDungeons() {
 
         {/* 副本卡片 */}
         <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {DUNGEONS.map((d) => (
+          {DUNGEONS.map((d, idx) => (
             <Link
               key={d.id}
               href={d.href as any}
-              className={`group rounded-xl border ${d.border} p-5 hover:scale-[1.02] transition-transform`}
+              className={`group rounded-xl border ${d.border} p-5 hover-lift reveal ${idx < 3 ? `reveal-d${idx + 1}` : ""}`}
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">

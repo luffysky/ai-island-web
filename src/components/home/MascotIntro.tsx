@@ -5,7 +5,7 @@ export function MascotIntro() {
   return (
     <section className="border-b border-border py-16">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-10">
+        <div className="text-center mb-10 reveal">
           <h2 className="text-3xl font-bold mb-2 inline-flex items-center gap-2"><Handshake size={28} className="text-accent" /> AI 島核心夥伴</h2>
           <p className="text-fg-muted">三種力量、一個目標、陪你走完冒險旅程</p>
         </div>
@@ -22,7 +22,7 @@ export function MascotIntro() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-4">
-          <div className="p-5 rounded-xl border border-orange-400/30 bg-orange-400/5">
+          <div className="p-5 rounded-xl border border-orange-400/30 bg-orange-400/5 reveal reveal-d1">
             <div className="flex items-center gap-2 mb-2">
               <Sword size={22} className="text-orange-400" />
               <h3 className="text-xl font-bold text-orange-400">肥仔</h3>
@@ -33,7 +33,7 @@ export function MascotIntro() {
             </p>
           </div>
 
-          <div className="p-5 rounded-xl border border-purple-400/30 bg-purple-400/5">
+          <div className="p-5 rounded-xl border border-purple-400/30 bg-purple-400/5 reveal reveal-d2">
             <div className="flex items-center gap-2 mb-2">
               <Ruler size={22} className="text-purple-400" />
               <h3 className="text-xl font-bold text-purple-400">菇寶</h3>
@@ -44,7 +44,7 @@ export function MascotIntro() {
             </p>
           </div>
 
-          <div className="p-5 rounded-xl border border-green-400/30 bg-green-400/5">
+          <div className="p-5 rounded-xl border border-green-400/30 bg-green-400/5 reveal reveal-d3">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles size={22} className="text-green-400" />
               <h3 className="text-xl font-bold text-green-400">綠寶</h3>

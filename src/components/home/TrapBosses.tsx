@@ -48,7 +48,7 @@ export function TrapBosses() {
   return (
     <section className="border-b border-border py-16 bg-gradient-to-b from-transparent via-bg-elevated/10 to-transparent">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-10">
+        <div className="text-center mb-10 reveal">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-red-500/10 border border-red-500/30 text-red-400 mb-3">
             <AlertTriangle size={14} /> 90% 的新手都會中招
           </div>
@@ -68,8 +68,8 @@ export function TrapBosses() {
         </div>
 
         <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-          {TRAP_BOSSES.map((b) => (
-            <div key={b.no} className={`rounded-xl border ${b.color} p-4`}>
+          {TRAP_BOSSES.map((b, idx) => (
+            <div key={b.no} className={`rounded-xl border ${b.color} p-4 reveal ${idx < 5 ? `reveal-d${idx + 1}` : ""}`}>
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-6 h-6 rounded-full bg-black/30 flex items-center justify-center text-xs font-bold">
                   {b.no}

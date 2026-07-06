@@ -46,20 +46,20 @@ export async function FeaturedCreators() {
 
   return (
     <section className="max-w-7xl mx-auto px-6 py-16 border-b border-border">
-      <h2 className="text-3xl font-bold mb-2 inline-flex w-full items-center justify-center gap-2">
+      <h2 className="text-3xl font-bold mb-2 inline-flex w-full items-center justify-center gap-2 reveal">
         <Sparkles size={28} className="text-accent" /> 創作者精選
       </h2>
-      <p className="text-center text-fg-muted mb-8">島民們最近的公開作品，點進去看看</p>
+      <p className="text-center text-fg-muted mb-8 reveal">島民們最近的公開作品，點進去看看</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {posts.map((p) => {
+        {posts.map((p, idx) => {
           const cover = p.images?.[0]?.url || p.video_thumbnail_url || null;
           const snippet = (p.title || p.content || "").replace(/\s+/g, " ").slice(0, 90);
           return (
             <Link
               key={p.id}
               href={`/creator-island/p/${p.id}`}
-              className="group flex flex-col rounded-2xl bg-bg-card border border-border overflow-hidden hover:border-accent/50 transition"
+              className={`group flex flex-col surface hover-lift overflow-hidden reveal ${idx < 3 ? `reveal-d${idx + 1}` : ""}`}
             >
               {cover ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -99,7 +99,7 @@ export async function FeaturedCreators() {
       <div className="text-center mt-8">
         <Link
           href="/creator-island/community"
-          className="inline-block px-6 py-3 rounded-full bg-accent text-black font-semibold hover:opacity-90 transition"
+          className="inline-block px-6 py-3 rounded-full bg-accent text-black font-semibold hover:opacity-90 transition glow-accent"
         >
           逛創作者社群
         </Link>

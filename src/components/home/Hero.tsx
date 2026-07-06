@@ -100,7 +100,7 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
               <motion.div whileHover={{ y: -3, scale: 1.01 }} transition={{ duration: 0.18 }}>
                 <Link
                   href={"/quest" as any}
-                  className="group relative overflow-hidden rounded-2xl border-2 border-emerald-400/40 p-5 bg-gradient-to-br from-emerald-500/15 via-teal-500/8 to-cyan-500/10 hover:border-emerald-400 transition-all backdrop-blur block"
+                  className="group relative overflow-hidden rounded-2xl border-2 border-emerald-400/40 p-5 bg-gradient-to-br from-emerald-500/15 via-teal-500/8 to-cyan-500/10 hover:border-emerald-400 transition-all backdrop-blur block glow-accent"
                 >
                   <span className="absolute -top-3 -right-2 text-5xl opacity-25 group-hover:opacity-50 group-hover:scale-110 transition duration-500">🎮</span>
                   <div className="relative">

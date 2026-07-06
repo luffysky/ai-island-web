@@ -65,7 +65,7 @@ export function ChapterMap({ chapters }: Props) {
                 >
                   <Link
                     href={`/chapters/${ch.id}`}
-                    className="block p-4 rounded-lg bg-bg-card border border-border hover:border-accent transition-all hover:scale-[1.03] relative overflow-hidden group"
+                    className="block p-4 rounded-lg bg-bg-card border border-border hover-lift relative overflow-hidden group"
                   >
                     {ch.status === "coming-soon" && (
                       <div className="absolute top-1 right-1 text-[10px] px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-900 dark:text-orange-200">

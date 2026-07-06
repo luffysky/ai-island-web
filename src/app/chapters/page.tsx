@@ -52,7 +52,7 @@ export default async function ChaptersPage() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(ld)} />
-      <div className="text-center mb-8">
+      <div className="text-center mb-8 reveal">
         <h1 className="text-3xl font-bold mb-2">📚 所有章節</h1>
         <p className="text-sm text-fg-muted">{chapters.length} 章 × 7 大區域、共 {lessonCount} 個 lesson</p>
       </div>
@@ -60,7 +60,7 @@ export default async function ChaptersPage() {
       {/* C 方案：新手「從這開始」CTA 卡 — 第一次來不知道從哪開始 */}
       <Link
         href="/chapters/0"
-        className="block mb-6 rounded-2xl border border-accent/40 bg-gradient-to-br from-accent/10 via-accent-2/10 to-transparent p-5 hover:border-accent transition group"
+        className="block mb-6 rounded-2xl border border-accent/40 bg-gradient-to-br from-accent/10 via-accent-2/10 to-transparent p-5 hover:border-accent transition group hover-lift glow-accent reveal reveal-d1"
       >
         <div className="flex items-start gap-4">
           <div className="text-4xl">🌱</div>

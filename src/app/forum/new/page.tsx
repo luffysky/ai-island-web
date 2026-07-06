@@ -79,7 +79,7 @@ function NewThreadForm() {
       <Link href="/forum" className="text-sm text-fg-muted hover:text-fg flex items-center gap-1 mb-4">
         <ArrowLeft size={14} /> 討論區
       </Link>
-      <h1 className="text-2xl font-bold mb-6">發表主題</h1>
+      <h1 className="reveal text-2xl font-bold mb-6">發表主題</h1>
 
       <div className="space-y-4">
         {/* 版塊選擇 */}

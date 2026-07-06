@@ -696,20 +696,27 @@ article li {
   overflow-wrap: anywhere;
 }
 
-/* Markdown content */
+/* Markdown content — 顯示體標題、舒適行高、accent 標記，閱讀節奏拉高一級 */
 .prose-custom { @apply break-words; min-width: 0; }
-.prose-custom h2 { @apply text-2xl font-bold mt-8 mb-4 text-accent; }
-.prose-custom h3 { @apply text-xl font-semibold mt-6 mb-3; }
-.prose-custom h4 { @apply text-lg font-semibold mt-4 mb-2; }
-.prose-custom p { @apply my-3 leading-relaxed; word-break: break-word; overflow-wrap: anywhere; }
-.prose-custom ul, .prose-custom ol { @apply my-3 ml-5 space-y-1; }
+.prose-custom h2 {
+  @apply text-2xl font-bold mt-9 mb-4 text-accent;
+  font-family: var(--font-display); letter-spacing: -0.02em;
+  padding-bottom: 0.4rem; border-bottom: 1px solid color-mix(in srgb, var(--color-border) 70%, transparent);
+}
+.prose-custom h3 { @apply text-xl font-semibold mt-7 mb-3; font-family: var(--font-display); letter-spacing: -0.015em; }
+.prose-custom h4 { @apply text-lg font-semibold mt-5 mb-2; font-family: var(--font-display); }
+.prose-custom p { @apply my-3.5; line-height: 1.75; word-break: break-word; overflow-wrap: anywhere; }
+.prose-custom ul, .prose-custom ol { @apply my-3.5 ml-5 space-y-1.5; }
 .prose-custom ul li { @apply list-disc; word-break: break-word; }
 .prose-custom ol li { @apply list-decimal; word-break: break-word; }
+.prose-custom li::marker { color: var(--color-accent); }
 .prose-custom code:not(pre code) {
-  @apply bg-bg-card px-1.5 py-0.5 rounded text-sm text-warning;
+  @apply px-1.5 py-0.5 rounded text-sm text-warning;
+  background: color-mix(in srgb, var(--color-warning) 12%, var(--color-bg-card));
 }
 .prose-custom pre {
   @apply bg-bg-elevated border border-border rounded-lg p-4 my-4 overflow-x-auto text-sm;
+  box-shadow: var(--elev-1);
 }
 .prose-custom table { @apply w-full border-collapse my-4; }
 .prose-custom th, .prose-custom td {
@@ -717,9 +724,11 @@ article li {
 }
 .prose-custom th { @apply bg-bg-elevated font-semibold; }
 .prose-custom strong { @apply text-accent font-semibold; }
-.prose-custom a { @apply text-accent-2 underline hover:text-accent; }
+.prose-custom a { @apply text-accent-2 underline hover:text-accent; text-underline-offset: 2px; }
+/* 中文斜體是假傾斜、很醜 → blockquote 不用 italic，改柔和 accent 底 + 右圓角 */
 .prose-custom blockquote {
-  @apply border-l-4 border-accent pl-4 my-4 italic text-fg-muted;
+  @apply border-l-4 border-accent pl-4 pr-3 py-2 my-4 rounded-r-lg text-fg-muted not-italic;
+  background: color-mix(in srgb, var(--color-accent) 6%, transparent);
 }
 
 /* Tip card */

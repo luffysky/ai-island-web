@@ -95,7 +95,7 @@ export function ForumClient({
                     >
                       <Link
                         href={`/forum/${b.slug}`}
-                        className="group rounded-2xl border border-border bg-bg-card/80 backdrop-blur p-4 hover:border-accent/50 hover:shadow-xl transition-all flex items-start gap-3 relative overflow-hidden"
+                        className="group surface-glass p-4 hover:border-accent/50 hover:shadow-xl transition-all flex items-start gap-3 relative overflow-hidden"
                       >
                         <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-accent/0 group-hover:bg-accent/10 blur-2xl transition-all duration-500" />
                         <span className="text-2xl group-hover:scale-110 transition-transform relative">{b.emoji}</span>
