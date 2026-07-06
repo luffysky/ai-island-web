@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { DndContext, useDraggable, useDroppable, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import {
-  Coins, Trees, Gift, Sprout, PenLine, Mic, Camera, Plus, Shuffle, Wrench, Play, Search,
+  Coins, Trees, PenLine, Mic, Camera, Plus, Shuffle, Wrench, Play, Search,
   Lightbulb, Magnet, Leaf, Wand2, Languages, FolderTree, Pencil, Copy, Music, Film, PenTool,
   X, Check, Bot, Egg, Recycle, GitFork, Hand, ScrollText, BrainCircuit, type LucideIcon,
 } from "lucide-react";
@@ -320,10 +320,10 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       {fragments.length < 50 && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bg-gradient-to-br from-accent-3/15 via-pink-500/10 to-violet-500/15 border border-accent-3/30 rounded-2xl p-5 flex items-center justify-between gap-3 flex-wrap">
           <div>
-            <div className="text-lg font-bold inline-flex items-center gap-1.5"><Gift size={18} /> 讓島嶼長滿靈感</div>
-            <p className="text-sm text-fg-muted mt-1">從全站碎片庫抽 <b>300 顆</b>靈感碎片到你的島（含稀有 SSR），自動分好類。也可以自己寫第一句。</p>
+            <div className="text-lg font-bold inline-flex items-center gap-1.5">🌊 海上漂來了 300 個故事</div>
+            <p className="text-sm text-fg-muted mt-1">海面漂來 <b>300 個</b>來自各地的靈感碎片（含稀有 SSR），來自生活、夢境、回憶、街景、遺憾……它們不是你的，卻可以和你的回憶相遇。也可以自己先寫第一句。</p>
           </div>
-          <button onClick={seedPool} disabled={busy === "seed"} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-gradient-to-r from-amber-400 to-pink-500 text-black text-sm font-bold disabled:opacity-50 whitespace-nowrap">{busy === "seed" ? "種島中…" : <><Sprout size={15} /> 種 300 顆</>}</button>
+          <button onClick={seedPool} disabled={busy === "seed"} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black text-sm font-bold disabled:opacity-50 whitespace-nowrap">{busy === "seed" ? "打撈中…" : <>🌊 撈起 300 個漂流瓶</>}</button>
         </motion.div>
       )}
 
@@ -360,8 +360,11 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
         {panel === "pairs" && pairs && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="bg-bg-card border border-violet-500/30 rounded-2xl p-4 overflow-hidden">
             <div className="flex items-center justify-between gap-2 flex-wrap mb-2">
-              <div className="text-sm font-bold inline-flex items-center gap-1.5"><Shuffle size={14} /> AI 意外配對 <span className="text-xs font-normal text-fg-muted">可點多對累加碎片 → 一起凝聚/編織</span></div>
-              {sel.length > 0 && <button onClick={() => setSelected(new Set())} className="text-[11px] text-fg-muted hover:text-accent inline-flex items-center gap-0.5"><X size={11} /> 清空已選（{sel.length}）</button>}
+              <div className="text-sm font-bold inline-flex items-center gap-1.5"><Shuffle size={14} /> AI 意外配對 <span className="text-xs font-normal text-fg-muted">可點多對累加碎片 → 凝聚/編織 或丟進推理台</span></div>
+              <div className="flex items-center gap-2">
+                {sel.length > 0 && <Link href={`/creator-island/reason?seed=${sel.join(",")}`} className="text-[11px] font-bold text-accent hover:underline inline-flex items-center gap-0.5"><BrainCircuit size={12} /> 丟進推理台（{sel.length}）</Link>}
+                {sel.length > 0 && <button onClick={() => setSelected(new Set())} className="text-[11px] text-fg-muted hover:text-accent inline-flex items-center gap-0.5"><X size={11} /> 清空</button>}
+              </div>
             </div>
             {pairs.length === 0 ? <div className="text-xs text-fg-muted">碎片太少、或需要更多語意向量，多寫幾個再探索。</div> : (
               <div className="grid sm:grid-cols-2 gap-2">

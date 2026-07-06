@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { Brain, ArrowLeft, Sparkles, Check, X, Loader2, ChevronDown, ChevronRight, Search, PenLine } from "lucide-react";
+import { Brain, ArrowLeft, Sparkles, Check, X, Loader2, ChevronDown, ChevronRight, Search, PenLine, Dices } from "lucide-react";
 
 type Frag = { id: string; title: string };
 type Cand = { title: string; body: string; rationale: string; confidence: number; weight: number; evidenceIds: string[]; missing: string[]; rank: number };
@@ -27,9 +27,9 @@ async function api(url: string, body: any) {
   return j;
 }
 
-export function ReasonClient({ workspaceId, fragments }: { workspaceId: string; fragments: Frag[] }) {
+export function ReasonClient({ workspaceId, fragments, initialSelected = [] }: { workspaceId: string; fragments: Frag[]; initialSelected?: string[] }) {
   const router = useRouter();
-  const [sel, setSel] = useState<Set<string>>(new Set());
+  const [sel, setSel] = useState<Set<string>>(new Set(initialSelected));
   const [mode, setMode] = useState("adjacent");
   const [intent, setIntent] = useState("");
   const [busy, setBusy] = useState(false);
@@ -55,6 +55,16 @@ export function ReasonClient({ workspaceId, fragments }: { workspaceId: string; 
 
   function toggle(id: string) {
     setSel((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  }
+
+  // 🎲 搖一搖：隨機抽 3~4 個碎片當線索（不知道寫什麼時的入口）。
+  function shuffle() {
+    if (fragments.length === 0) return;
+    const n = Math.min(fragments.length, 3 + Math.floor(Math.random() * 2));
+    const pool = [...fragments];
+    for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+    setSel(new Set(pool.slice(0, n).map((f) => f.id)));
+    setQ("");
   }
 
   // 推理完的後續動作：把某個推理方向直接編織成作品草稿，帶著選到的碎片跳到作品編輯器。
@@ -114,7 +124,12 @@ export function ReasonClient({ workspaceId, fragments }: { workspaceId: string; 
       <section className="space-y-2">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <div className="text-sm font-bold">選 1~數個碎片當線索</div>
-          <div className="text-xs text-fg-muted">共 {fragments.length} 個{selArr.length > 0 ? ` · 已選 ${selArr.length}` : ""}</div>
+          <div className="flex items-center gap-2">
+            {fragments.length > 0 && (
+              <button onClick={shuffle} title="隨機抽幾個碎片" className="text-xs inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-violet-400/40 bg-violet-500/10 text-violet-600 dark:text-violet-300 hover:bg-violet-500/20 transition"><Dices size={13} /> 搖一搖</button>
+            )}
+            <span className="text-xs text-fg-muted">共 {fragments.length} 個{selArr.length > 0 ? ` · 已選 ${selArr.length}` : ""}</span>
+          </div>
         </div>
         {fragments.length === 0 ? (
           <p className="text-sm text-fg-muted bg-bg-card border border-border rounded-xl p-3">還沒有碎片，先去<Link href="/creator-island" className="text-accent">島上</Link>捕捉幾個。</p>

@@ -8,12 +8,16 @@ import { ReasonClient } from "./ReasonClient";
 
 export const dynamic = "force-dynamic";
 
-export default async function ReasonPage() {
+export default async function ReasonPage({ searchParams }: { searchParams: Promise<{ seed?: string }> }) {
   if (!(await isCreatorIslandEnabled())) return <FeatureOffNotice title="🎨 創作者島嶼即將開放" />;
   const sb = await createSupabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) redirect("/login?next=/creator-island/reason");
   const ws = await getActiveWorkspace(user.id);
   const fragments = await listAllFragments(ws.id); // 全部碎片（分頁撈滿，避免只給前 60 個）
-  return <ReasonClient workspaceId={ws.id} fragments={fragments.map((f) => ({ id: f.id, title: f.title }))} />;
+  const ids = new Set(fragments.map((f) => f.id));
+  // 從意外配對/搖一搖帶進來的 seed（?seed=id1,id2）→ 預選（只留真的存在的）
+  const { seed } = await searchParams;
+  const preselect = (seed ?? "").split(",").map((s) => s.trim()).filter((s) => s && ids.has(s));
+  return <ReasonClient workspaceId={ws.id} fragments={fragments.map((f) => ({ id: f.id, title: f.title }))} initialSelected={preselect} />;
 }
