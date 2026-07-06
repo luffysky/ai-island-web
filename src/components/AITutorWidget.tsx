@@ -743,7 +743,7 @@ export function AITutorWidget({
               >
                 <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-400 to-cyan-400 blur-md opacity-50 animate-pulse" />
                 <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-green-400 via-emerald-400 to-cyan-400 ring-1 ring-emerald-300/50 flex items-center justify-center text-base">
-                  ✨
+                  {persona.emoji}
                 </div>
               </button>
               <div className="min-w-0">
