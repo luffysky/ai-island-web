@@ -48,6 +48,7 @@ PAYMENTS_LIVE=1
 | `/api/cron/learning-coach` | 產每週學習教練報告 | 每日 或 每週一 |
 | `/api/cron/streak-reminder` | 連勝快斷推播 | 每日 12:00 UTC（20:00 台灣） |
 | `/api/cron/forum-ai-residents` | 論壇 AI 住民自動回近期沒人回的提問串（可帶 `?limit=N`） | 每 30~60 分 |
+| `/api/cron/creator-daily-pairing` | 今日 AI 配對回訪提醒（in-app 鈴鐺 + web push）給有碎片的創作者 | 每日一次（台灣白天） |
 > 呼叫方式：`GET`，帶 `Authorization: Bearer <CRON_SECRET>` 或 `?secret=<CRON_SECRET>`（`CRON_SECRET` 已在 env）。
 
 ### 4. VAPID（Web Push）— 已有、只要同步到 Zeabur
