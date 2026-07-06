@@ -65,13 +65,17 @@ export function SideNav() {
   const [tab, setTab] = useState<Tab>("chapters");
   // hover 泡泡：顯示 lesson 完整名稱（側欄會 truncate，hover 看全名）
   const [mounted, setMounted] = useState(false);
-  const [tip, setTip] = useState<{ num: string; text: string; x: number; y: number; side: "left" | "right" } | null>(null);
+  const [tip, setTip] = useState<{ num: string; text: string; x: number; y: number; w: number; side: "above" | "below" } | null>(null);
   useEffect(() => setMounted(true), []);
-  // 依元素位置擺泡泡：右邊放不下（手機 drawer 幾乎滿版）就翻左邊，才不會被螢幕切掉。
+  // 泡泡放在該 li「上方」（放不下才放下方）、水平夾進視口 → 永不出界、也不會蓋住長按的那條 li。
+  // 蓋到 nav 其他內容沒關係（林董說可以）。
   const tipFor = (el: HTMLElement, num: string, text: string) => {
     const r = el.getBoundingClientRect();
-    const preferLeft = typeof window !== "undefined" && window.innerWidth - r.right < 280;
-    setTip({ num, text, x: preferLeft ? r.left - 12 : r.right + 12, y: r.top + r.height / 2, side: preferLeft ? "left" : "right" });
+    const vw = typeof window !== "undefined" ? window.innerWidth : 360;
+    const W = Math.min(300, vw - 16);
+    const x = Math.max(8, Math.min(r.left, vw - W - 8));
+    const above = r.top > 120;
+    setTip({ num, text, x, y: above ? r.top - 6 : r.bottom + 6, w: W, side: above ? "above" : "below" });
   };
   const showTip = (e: React.MouseEvent<HTMLElement>, num: string, text: string) => tipFor(e.currentTarget, num, text);
   const hideTip = () => setTip(null);
@@ -590,18 +594,22 @@ export function SideNav() {
       {/* Hover 泡泡：lesson 完整名稱（portal 到 body、不被側欄 overflow 裁切）*/}
       {mounted && tip && createPortal(
         <div
-          className={`sidenav-tip pointer-events-none fixed z-[60] max-w-[min(20rem,calc(100vw-1.5rem))] -translate-y-1/2 ${tip.side === "left" ? "-translate-x-full" : ""}`}
-          style={{ left: tip.x, top: tip.y }}
+          className={`sidenav-tip pointer-events-none fixed z-[60] ${tip.side === "above" ? "-translate-y-full" : ""}`}
+          style={{ left: tip.x, top: tip.y, width: tip.w }}
         >
           <div className="relative rounded-xl border border-accent/40 bg-bg-card/95 px-3 py-2 shadow-2xl backdrop-blur-sm">
-            {/* 小箭頭：泡泡在右邊→箭頭指左；在左邊→箭頭指右 */}
-            {tip.side === "right" ? (<>
-              <span className="absolute right-full top-1/2 -translate-y-1/2 border-[6px] border-transparent border-r-accent/40" />
-              <span className="absolute right-full top-1/2 -translate-y-1/2 mr-[-1px] border-[6px] border-transparent border-r-bg-card" />
-            </>) : (<>
-              <span className="absolute left-full top-1/2 -translate-y-1/2 border-[6px] border-transparent border-l-accent/40" />
-              <span className="absolute left-full top-1/2 -translate-y-1/2 ml-[-1px] border-[6px] border-transparent border-l-bg-card" />
-            </>)}
+            {/* 小箭頭：泡泡在上方→箭頭在底部指下；在下方→箭頭在頂部指上 */}
+            {tip.side === "above" ? (
+              <>
+                <span className="absolute top-full left-5 -translate-y-px border-[6px] border-transparent border-t-accent/40" />
+                <span className="absolute top-full left-5 -translate-y-[3px] border-[6px] border-transparent border-t-bg-card" />
+              </>
+            ) : (
+              <>
+                <span className="absolute bottom-full left-5 translate-y-px border-[6px] border-transparent border-b-accent/40" />
+                <span className="absolute bottom-full left-5 translate-y-[3px] border-[6px] border-transparent border-b-bg-card" />
+              </>
+            )}
             <div className="flex items-baseline gap-2">
               <span className="shrink-0 font-mono text-[10px] text-accent">{tip.num}</span>
               <span className="text-xs font-medium leading-snug text-fg">{tip.text}</span>
