@@ -125,23 +125,47 @@ function FolderBar({
 }) {
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
-  const submit = () => { if (name.trim()) onAddFolder(name); setName(""); setAdding(false); };
+  const [subAdding, setSubAdding] = useState(false);
+  const [subName, setSubName] = useState("");
+  const submit = () => { if (name.trim()) onAddFolder(name.trim()); setName(""); setAdding(false); };
+
+  // 知識樹（2 層）：資料夾用「父/子」慣例；由 folderList 建樹
+  const tree = useMemo(() => {
+    const m = new Map<string, { name: string; children: { full: string; name: string }[] }>();
+    for (const f of folderList) {
+      const idx = f.indexOf("/");
+      const parent = (idx === -1 ? f : f.slice(0, idx)).trim();
+      if (!parent) continue;
+      if (!m.has(parent)) m.set(parent, { name: parent, children: [] });
+      if (idx !== -1) { const cn = f.slice(idx + 1).trim(); if (cn) m.get(parent)!.children.push({ full: f, name: cn }); }
+    }
+    return [...m.values()].sort((a, b) => a.name.localeCompare(b.name, "zh-Hant"));
+  }, [folderList]);
+  const activeParent = fCat && fCat !== UNCAT_FILTER ? (fCat.indexOf("/") === -1 ? fCat : fCat.slice(0, fCat.indexOf("/"))) : "";
+  const countUnder = (parent: string) => {
+    let total = folderCounts[parent] ?? 0;
+    for (const k in folderCounts) if (k.startsWith(parent + "/")) total += folderCounts[k];
+    return total;
+  };
+  const submitSub = () => { if (subName.trim() && activeParent) onAddFolder(`${activeParent}/${subName.trim()}`); setSubName(""); setSubAdding(false); };
+  const openParent = tree.find((t) => t.name === activeParent) ?? null;
+
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap items-center gap-1.5 text-xs">
-        <span className="text-fg-muted inline-flex items-center gap-1"><Folder size={13} /> 資料夾：</span>
+        <span className="text-fg-muted inline-flex items-center gap-1"><Folder size={13} /> 知識樹：</span>
         <button onClick={() => setFCat("")} className={`px-2 py-0.5 rounded-full ${!fCat ? "bg-accent text-black" : "bg-bg-elevated text-fg-muted hover:text-fg"}`}>全部</button>
         <DroppableFolderChip
           dropId={folderDropId(UNCATEGORIZED)} label="📥 未分類" count={uncategorizedCount}
           active={fCat === UNCAT_FILTER} droppable={droppable}
           onClick={() => setFCat(fCat === UNCAT_FILTER ? "" : UNCAT_FILTER)}
         />
-        {folderList.map((c) => (
+        {tree.map((p) => (
           <DroppableFolderChip
-            key={c} dropId={folderDropId(c)} label={`📁 ${c}`} count={folderCounts[c] ?? 0}
-            active={fCat === c} droppable={droppable}
-            onClick={() => setFCat(c === fCat ? "" : c)}
-            onRemove={(folderCounts[c] ?? 0) === 0 ? () => onRemoveFolder(c) : undefined}
+            key={p.name} dropId={folderDropId(p.name)} label={`📁 ${p.name}${p.children.length ? ` ▾` : ""}`} count={countUnder(p.name)}
+            active={activeParent === p.name} droppable={droppable}
+            onClick={() => setFCat(fCat === p.name ? "" : p.name)}
+            onRemove={countUnder(p.name) === 0 ? () => onRemoveFolder(p.name) : undefined}
           />
         ))}
         {adding ? (
@@ -162,6 +186,31 @@ function FolderBar({
           </button>
         )}
       </div>
+      {/* 子資料夾列（選了某個父資料夾時展開，最多兩層）*/}
+      {openParent && (
+        <div className="flex flex-wrap items-center gap-1.5 text-xs pl-5">
+          <span className="text-fg-muted">↳</span>
+          {openParent.children.map((ch) => (
+            <DroppableFolderChip
+              key={ch.full} dropId={folderDropId(ch.full)} label={ch.name} count={folderCounts[ch.full] ?? 0}
+              active={fCat === ch.full} droppable={droppable}
+              onClick={() => setFCat(fCat === ch.full ? activeParent : ch.full)}
+              onRemove={(folderCounts[ch.full] ?? 0) === 0 ? () => onRemoveFolder(ch.full) : undefined}
+            />
+          ))}
+          {subAdding ? (
+            <input autoFocus value={subName}
+              onChange={(e) => setSubName(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") submitSub(); if (e.key === "Escape") { setSubName(""); setSubAdding(false); } }}
+              onBlur={submitSub} placeholder="子資料夾名稱"
+              className="px-2 py-0.5 rounded-full bg-bg border border-border text-xs w-24 outline-none focus:border-accent" />
+          ) : (
+            <button onClick={() => setSubAdding(true)} className="px-2 py-0.5 rounded-full border border-dashed border-border text-fg-muted hover:border-accent hover:text-fg inline-flex items-center gap-1">
+              <FolderPlus size={11} /> 子資料夾
+            </button>
+          )}
+        </div>
+      )}
       {allTags.length > 0 && (
         <div className="flex flex-wrap gap-1.5 items-center text-xs">
           <span className="text-fg-muted">標籤：</span>
@@ -234,7 +283,7 @@ export function NotesManager({
   const q = query.trim().toLowerCase();
   const shown = notes
     .filter((n) => {
-      const catOk = !fCat || (fCat === UNCAT_FILTER ? !n.category : n.category === fCat);
+      const catOk = !fCat || (fCat === UNCAT_FILTER ? !n.category : (n.category === fCat || (n.category?.startsWith(fCat + "/") ?? false)));
       const tagOk = !fTag || (n.tags ?? []).includes(fTag);
       const text = `${n.content.replace(/<[^>]*>/g, " ")} ${n.category ?? ""} ${(n.tags ?? []).join(" ")}`.toLowerCase();
       const qOk = !q || text.includes(q);
