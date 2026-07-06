@@ -201,7 +201,7 @@ export function QuestPlay({ level, done }: { level: QuestLevel; done: { stars: n
       <div className="grid md:grid-cols-2 gap-4">
         {/* 遊戲畫面 */}
         <div className="bg-bg-card border border-border rounded-2xl p-3 flex items-center justify-center overflow-auto">
-          <canvas ref={canvasRef} width={parsed.W * CELL} height={parsed.H * CELL} className="rounded-lg" />
+          <canvas ref={canvasRef} width={parsed.W * CELL} height={parsed.H * CELL} className="rounded-lg" style={{ maxWidth: "100%", height: "auto" }} />
         </div>
 
         {/* 程式編輯 */}
