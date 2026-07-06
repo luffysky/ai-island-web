@@ -54,6 +54,7 @@ export async function POST(req: NextRequest) {
   const isOneTime = plan === "single";
   const session = await stripe.checkout.sessions.create({
     mode: isOneTime ? "payment" : "subscription",
+    // 不寫死 payment_method_types → 自動帶入 Dashboard 啟用的付款方式（含 Stripe Link）
     customer: stripeCustomerId,
     line_items: [{ price: priceId, quantity: 1 }],
     success_url: `${site}/me?checkout=success&session_id={CHECKOUT_SESSION_ID}`,

@@ -19,6 +19,7 @@ function siteUrl(): string {
 export async function stripeCheckout(order: Order): Promise<{ kind: "redirect"; url: string }> {
   const session = await stripe().checkout.sessions.create({
     mode: "payment",
+    // 不寫死 payment_method_types → Stripe 自動帶入 Dashboard 啟用的付款方式（含 Stripe Link）。
     line_items: [{
       price_data: { currency: "twd", unit_amount: order.amount * 100, product_data: { name: order.product_name } },
       quantity: 1,
