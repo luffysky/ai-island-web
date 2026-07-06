@@ -87,7 +87,7 @@ export function TopNav() {
   }
 
   return (
-    <nav className="sticky top-0 z-40 bg-bg/90 backdrop-blur border-b border-border">
+    <nav data-tour="topnav" className="sticky top-0 z-40 bg-bg/90 backdrop-blur border-b border-border">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <button

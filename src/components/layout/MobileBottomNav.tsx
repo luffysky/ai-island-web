@@ -34,6 +34,7 @@ export function MobileBottomNav() {
 
   return (
     <nav
+      data-tour="bottomnav"
       className="md:hidden fixed left-0 right-0 bottom-0 z-30 bg-bg/95 backdrop-blur border-t border-border"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >

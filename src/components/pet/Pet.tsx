@@ -480,6 +480,7 @@ export function Pet() {
   return (
     <>
       <div
+        data-tour="pet"
         style={{
           position: "fixed",
           ...positionStyle,
