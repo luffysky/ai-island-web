@@ -278,17 +278,24 @@ export function NoteCard({
         </div>
       )}
 
-      {/* 🔗 引用的筆記（即時解析標題/摘要 → 來源改動這裡跟著變）*/}
+      {/* 🔗 區塊引用（Notion page-mention 風格 inline pill）：即時解析標題 → 來源改動跟著變、點了開來源 */}
       {refNotes && refNotes.length > 0 && (
-        <div className="mt-2 pt-2 border-t border-black/[0.06] space-y-1">
-          <div className="text-[11px]" style={{ color: MUTED }}>🔗 引用 {refNotes.length} 則</div>
-          {refNotes.map((r) => (
-            <button key={r.id} onClick={(e) => { e.stopPropagation(); onOpenRef?.(r.id); }}
-              className="block w-full text-left rounded px-1.5 py-1 hover:bg-black/[0.05] transition" title={r.snippet}>
-              <span className="text-xs font-medium truncate block" style={{ color: TEXT }}>🔗 {r.title}</span>
-              {r.snippet && <span className="text-[11px] truncate block" style={{ color: MUTED }}>{r.snippet}</span>}
-            </button>
-          ))}
+        <div className="mt-2 pt-2 border-t border-black/[0.06]">
+          <div className="text-[11px] mb-1" style={{ color: MUTED }}>引用 {refNotes.length} 則</div>
+          <div className="flex flex-wrap gap-1.5">
+            {refNotes.map((r) => (
+              <button
+                key={r.id}
+                onClick={(e) => { e.stopPropagation(); onOpenRef?.(r.id); }}
+                title={r.snippet || r.title}
+                className="inline-flex items-center gap-1 max-w-full rounded-md px-1.5 py-0.5 text-xs font-medium border border-black/10 hover:border-black/25 hover:bg-black/[0.06] transition"
+                style={{ color: TEXT, background: "rgba(0,0,0,0.035)" }}
+              >
+                <span className="opacity-60 shrink-0">📄</span>
+                <span className="truncate underline decoration-black/20 underline-offset-2">{r.title}</span>
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
