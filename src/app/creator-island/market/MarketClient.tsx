@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Store, ArrowLeft, Sparkles, Plus, ThumbsUp, Bookmark, GitFork, MessageCircle, Check, Tag } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
 
 type Listing = { id: string; workspace_id: string; asset_id: string; asset_type: string; title: string; description: string; price_z: number };
 type Asset = { id: string; type: "fragment" | "work"; title: string };
@@ -17,51 +18,52 @@ async function call(url: string, method: string, body?: any) {
 type Pick = { id: string; text: string; category: string; rarity: string };
 
 export function MarketClient({ workspaceId, listings, myAssets, poolPicks = [], ownedAssetIds = [], myWorkspaceIds = [], fruitBalance = 0 }: { workspaceId: string; listings: Listing[]; myAssets: Asset[]; poolPicks?: Pick[]; ownedAssetIds?: string[]; myWorkspaceIds?: string[]; fruitBalance?: number }) {
+  const toast = useToast();
   const [tab, setTab] = useState<"browse" | "sell">("browse");
+  const [liked, setLiked] = useState<Set<string>>(new Set());
+  const [collected, setCollected] = useState<Set<string>>(new Set());
   const [rows, setRows] = useState<Listing[]>(listings);
   const [picks, setPicks] = useState<Pick[]>(poolPicks);
   const [owned, setOwned] = useState<Set<string>>(new Set(ownedAssetIds));
   const mine = new Set(myWorkspaceIds);
 
   async function grabPick(p: Pick) {
-    setErr(null); setBusy("pick" + p.id);
+    setBusy("pick" + p.id);
     try {
       await call("/api/creator-island/fragments", "POST", { workspaceId, title: p.text, category: p.category, tags: [p.rarity], sourceType: "market_imported" });
-      setPicks((arr) => arr.filter((x) => x.id !== p.id)); setMsg("已加到你的島");
-    } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+      setPicks((arr) => arr.filter((x) => x.id !== p.id)); toast.success("已加到你的島 🌴");
+    } catch (e: any) { toast.error(e.message); } finally { setBusy(null); }
   }
-  const [err, setErr] = useState<string | null>(null);
-  const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   // sell form
   const [assetKey, setAssetKey] = useState("");
   const [price, setPrice] = useState("0");
 
   async function buy(l: Listing) {
-    setErr(null); setMsg(null); setBusy(l.id);
+    setBusy(l.id);
     try {
       const r = await call(`/api/creator-island/marketplace/listings/${l.id}/purchase`, "POST");
       setOwned((s) => new Set(s).add(l.asset_id));
-      setMsg(r.already_owned ? "你已擁有此資產" : l.price_z > 0 ? `已購買（花 ${r.spent} Z 幣，平台抽成 ${r.fee ?? 0}）` : "已免費取得");
+      toast.success(r.already_owned ? "你已擁有此資產" : l.price_z > 0 ? `已購買（花 ${r.spent} Z 幣）` : "已免費取得");
     }
-    catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+    catch (e: any) { toast.error(e.message); } finally { setBusy(null); }
   }
   async function act(kind: "like" | "collect" | "fork", l: Listing) {
-    setErr(null); setBusy(l.id + kind);
+    setBusy(l.id + kind);
     try {
-      if (kind === "like") await call("/api/creator-island/community/like", "POST", { assetId: l.asset_id });
-      else if (kind === "collect") await call("/api/creator-island/community/collect", "POST", { assetId: l.asset_id, assetType: l.asset_type });
-      else { await call("/api/creator-island/community/fork", "POST", { assetId: l.asset_id, assetType: l.asset_type, toWorkspaceId: workspaceId }); setMsg("已 fork 進你的工作空間"); }
-    } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+      if (kind === "like") { const r = await call("/api/creator-island/community/like", "POST", { assetId: l.asset_id }); setLiked((s) => { const n = new Set(s); r.on ? n.add(l.asset_id) : n.delete(l.asset_id); return n; }); toast.success(r.on ? "已按讚 👍" : "已收回讚"); }
+      else if (kind === "collect") { const r = await call("/api/creator-island/community/collect", "POST", { assetId: l.asset_id, assetType: l.asset_type }); setCollected((s) => { const n = new Set(s); r.on ? n.add(l.asset_id) : n.delete(l.asset_id); return n; }); toast.success(r.on ? "已收藏 🔖" : "已取消收藏"); }
+      else { await call("/api/creator-island/community/fork", "POST", { assetId: l.asset_id, assetType: l.asset_type, toWorkspaceId: workspaceId }); toast.success("已 fork 進你的工作空間 🍴"); }
+    } catch (e: any) { toast.error(e.message); } finally { setBusy(null); }
   }
   async function createListing() {
     const a = myAssets.find((x) => `${x.type}:${x.id}` === assetKey);
-    if (!a) { setErr("請選一個要上架的碎片/作品"); return; }
-    setBusy("sell"); setErr(null);
+    if (!a) { toast.error("請選一個要上架的碎片/作品"); return; }
+    setBusy("sell");
     try {
       const r = await call("/api/creator-island/marketplace/listings", "POST", { workspaceId, assetId: a.id, assetType: a.type, title: a.title, priceZ: Number(price) || 0 });
-      setRows((p) => [r.listing, ...p]); setMsg("已上架"); setTab("browse");
-    } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+      setRows((p) => [r.listing, ...p]); toast.success("已上架 ✓"); setTab("browse");
+    } catch (e: any) { toast.error(e.message); } finally { setBusy(null); }
   }
 
   return (
@@ -77,8 +79,6 @@ export function MarketClient({ workspaceId, listings, myAssets, poolPicks = [], 
         <button onClick={() => setTab("browse")} className={`px-3 py-1.5 rounded-full ${tab === "browse" ? "bg-accent text-white" : "bg-bg-elevated"}`}>瀏覽</button>
         <button onClick={() => setTab("sell")} className={`px-3 py-1.5 rounded-full ${tab === "sell" ? "bg-accent text-white" : "bg-bg-elevated"}`}>上架</button>
       </div>
-      {err && <div className="bg-red-500/10 border border-red-500/30 text-red-300 rounded-xl px-4 py-2 text-sm">⚠️ {err}</div>}
-      {msg && <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-xl px-4 py-2 text-sm">✅ {msg}</div>}
 
       {tab === "sell" && (
         <div className="bg-bg-card border border-border rounded-2xl p-4 space-y-2">
@@ -130,10 +130,10 @@ export function MarketClient({ workspaceId, listings, myAssets, poolPicks = [], 
                 ) : (
                   <button onClick={() => buy(l)} disabled={busy === l.id} className="px-3 py-1 rounded-full bg-accent text-white disabled:opacity-40">{busy === l.id ? "…" : l.price_z > 0 ? `購買 ${l.price_z} Z` : "免費取得"}</button>
                 )}
-                <button onClick={() => act("like", l)} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5"><ThumbsUp size={14} /> 讚</button>
-                <button onClick={() => act("collect", l)} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5"><Bookmark size={14} /> 收藏</button>
-                <button onClick={() => act("fork", l)} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5"><GitFork size={14} /> Fork</button>
-                <button onClick={async () => { const body = prompt("留言："); if (!body) return; setBusy(l.id + "c"); setErr(null); try { await call("/api/creator-island/community/comments", "POST", { assetId: l.asset_id, assetType: l.asset_type, body }); setMsg("已留言"); } catch (e: any) { setErr(e.message); } finally { setBusy(null); } }} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5"><MessageCircle size={14} /> 留言</button>
+                <button onClick={() => act("like", l)} disabled={busy === l.id + "like"} className={`px-2 py-1 rounded-full inline-flex items-center gap-1.5 disabled:opacity-50 ${liked.has(l.asset_id) ? "bg-accent/20 text-accent" : "bg-bg-elevated hover:text-accent"}`}><ThumbsUp size={14} className={liked.has(l.asset_id) ? "fill-current" : ""} /> 讚</button>
+                <button onClick={() => act("collect", l)} disabled={busy === l.id + "collect"} className={`px-2 py-1 rounded-full inline-flex items-center gap-1.5 disabled:opacity-50 ${collected.has(l.asset_id) ? "bg-amber-500/20 text-amber-600 dark:text-amber-300" : "bg-bg-elevated hover:text-accent"}`}><Bookmark size={14} className={collected.has(l.asset_id) ? "fill-current" : ""} /> 收藏</button>
+                <button onClick={() => act("fork", l)} disabled={busy === l.id + "fork"} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5 disabled:opacity-50"><GitFork size={14} /> Fork</button>
+                <button onClick={async () => { const body = prompt("留言："); if (!body) return; setBusy(l.id + "c"); try { await call("/api/creator-island/community/comments", "POST", { assetId: l.asset_id, assetType: l.asset_type, body }); toast.success("已留言 💬"); } catch (e: any) { toast.error(e.message); } finally { setBusy(null); } }} disabled={busy === l.id + "c"} className="px-2 py-1 rounded-full bg-bg-elevated hover:text-accent inline-flex items-center gap-1.5 disabled:opacity-50"><MessageCircle size={14} /> 留言</button>
               </div>
             </div>
             );
