@@ -9,6 +9,7 @@ import { Save, Globe, Lock, ArrowLeft, Loader2, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/components/ui/Toast";
 import { slugify } from "@/lib/blog-types";
+import { OFFICIAL_IDENTITIES, type BlogIdentity } from "@/lib/blog-identities";
 
 interface ArticleFormData {
   id?: string;
@@ -24,9 +25,10 @@ interface ArticleFormData {
   seo_desc: string;
   series_id: string;
   series_order: string;
+  author_identity?: BlogIdentity;
 }
 
-export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormData> }) {
+export function ArticleEditorForm({ initial, allowedIdentities = ["self"] }: { initial?: Partial<ArticleFormData>; allowedIdentities?: BlogIdentity[] }) {
   const router = useRouter();
   const toast = useToast();
   const isEdit = !!initial?.id;
@@ -44,6 +46,7 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
     seo_desc: initial?.seo_desc ?? "",
     series_id: (initial as any)?.series_id ?? "",
     series_order: (initial as any)?.series_order != null ? String((initial as any).series_order) : "",
+    author_identity: ((initial as any)?.author_identity as BlogIdentity) ?? "self",
   });
   const [tagInput, setTagInput] = useState("");
   const [saving, setSaving] = useState(false);
@@ -158,7 +161,21 @@ export function ArticleEditorForm({ initial }: { initial?: Partial<ArticleFormDa
         <Link href="/me/blog" className="text-sm text-fg-muted hover:text-fg flex items-center gap-1">
           <ArrowLeft size={14} /> 回部落格
         </Link>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          {allowedIdentities.length > 1 && (
+            <label className="text-xs text-fg-muted inline-flex items-center gap-1.5" title="以什麼身份發佈這篇">
+              發文身份
+              <select
+                value={data.author_identity ?? "self"}
+                onChange={(e) => setData((d) => ({ ...d, author_identity: e.target.value as BlogIdentity }))}
+                className="bg-bg-card border border-border rounded-lg px-2 py-1.5 text-sm"
+              >
+                {allowedIdentities.map((id) => (
+                  <option key={id} value={id}>{id === "self" ? "個人（我自己）" : `${OFFICIAL_IDENTITIES[id].emoji} ${OFFICIAL_IDENTITIES[id].label}`}</option>
+                ))}
+              </select>
+            </label>
+          )}
           <button
             onClick={() => save(false)}
             disabled={saving}

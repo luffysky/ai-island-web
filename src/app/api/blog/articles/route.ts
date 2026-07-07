@@ -4,6 +4,7 @@ import { createSupabaseServer } from "@/lib/supabase";
 import { slugify } from "@/lib/blog-types";
 import { sanitizeRichHtmlStrict } from "@/lib/rich-html-server";
 import { parseBody } from "@/lib/validate";
+import { allowedBlogIdentities } from "@/lib/blog-identities";
 
 const ArticleSchema = z.object({
   title: z.string().trim().min(1).max(200),
@@ -18,6 +19,7 @@ const ArticleSchema = z.object({
   seo_desc: z.string().max(500).nullable().optional(),
   series_id: z.string().uuid().nullable().optional(),
   series_order: z.number().int().nullable().optional(),
+  author_identity: z.enum(["self", "official", "admin", "support"]).optional().default("self"),
 });
 
 // GET /api/blog/articles — 取自己的文章列表
@@ -46,6 +48,10 @@ export async function POST(req: NextRequest) {
   if (!parsed.ok) return parsed.response;
   const body = parsed.data;
   const title = body.title.trim();
+
+  // 發文身份：驗 role 是否允許（never trust client）→ 不允許就退回 self
+  const { data: prof } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  const identity = allowedBlogIdentities((prof as any)?.role).includes(body.author_identity ?? "self") ? (body.author_identity ?? "self") : "self";
 
   // slug：用給的或從標題產生、撞名加數字
   const baseSlug = body.slug ? slugify(body.slug) : slugify(title);
@@ -78,6 +84,7 @@ export async function POST(req: NextRequest) {
       seo_desc: body.seo_desc ?? null,
       series_id: body.series_id ?? null,
       series_order: body.series_order ?? null,
+      author_identity: identity,
     })
     .select("*")
     .single();

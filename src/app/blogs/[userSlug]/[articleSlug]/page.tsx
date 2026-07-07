@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createSupabaseAdmin } from "@/lib/supabase";
 import { resolveBlog } from "@/lib/blog-resolve";
+import { resolveBlogAuthor } from "@/lib/blog-identities";
 import { Eye, Calendar, ArrowLeft, Clock } from "lucide-react";
 import { BlogViewTracker } from "@/components/blog/BlogViewTracker";
 import { ReactionBar } from "@/components/blog/ReactionBar";
@@ -72,7 +73,9 @@ export default async function ArticlePage({
   if (!res) notFound();
 
   const { blog, article } = res;
-  const name = blog.profile?.display_name || blog.profile?.username || "用戶";
+  const rawName = blog.profile?.display_name || blog.profile?.username || "用戶";
+  const idAuthor = resolveBlogAuthor((article as any).author_identity, { name: rawName, avatar: blog.profile?.avatar_url });
+  const name = idAuthor.name;
   const articleUrl = `${SITE_URL}/blogs/${userSlug}/${articleSlug}`;
 
   // 閱讀時間（從內文 HTML 去標籤估）
@@ -203,12 +206,15 @@ export default async function ArticlePage({
         )}
         <div className="flex items-center gap-x-4 gap-y-2 text-sm text-fg-muted flex-wrap border-y border-border py-3">
           <span className="flex items-center gap-1.5 font-medium text-fg">
-            {blog.profile?.avatar_url ? (
+            {idAuthor.official ? (
+              <span className="w-6 h-6 rounded-full bg-accent/15 flex items-center justify-center text-[13px]">{idAuthor.emoji}</span>
+            ) : blog.profile?.avatar_url ? (
               <Image src={blog.profile.avatar_url} alt="" width={24} height={24} unoptimized className="w-6 h-6 rounded-full object-cover" />
             ) : (
               <span className="w-6 h-6 rounded-full bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center text-[11px] font-bold text-black">{name[0]}</span>
             )}
             {name}
+            {idAuthor.official && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent font-bold">{idAuthor.badge}</span>}
           </span>
           <span className="flex items-center gap-1"><Calendar size={13} />{new Date(article.published_at).toLocaleDateString("zh-TW")}</span>
           <span className="flex items-center gap-1"><Clock size={13} /> {formatReadingTime(readMinutes)}</span>
@@ -268,13 +274,15 @@ export default async function ArticlePage({
 
       {/* 作者卡 */}
       <div className="mt-8 p-5 rounded-2xl bg-gradient-to-br from-bg-card to-bg-elevated border border-border flex items-start gap-4">
-        {blog.profile?.avatar_url ? (
+        {idAuthor.official ? (
+          <div className="w-14 h-14 rounded-full bg-accent/15 flex items-center justify-center text-2xl ring-2 ring-accent/30">{idAuthor.emoji}</div>
+        ) : blog.profile?.avatar_url ? (
           <Image src={blog.profile.avatar_url} alt="" width={56} height={56} unoptimized className="w-14 h-14 rounded-full object-cover ring-2 ring-accent/30" />
         ) : (
           <div className="w-14 h-14 rounded-full bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center font-bold text-xl text-black">{name[0]}</div>
         )}
         <div className="min-w-0 flex-1">
-          <div className="font-bold text-lg">{name}</div>
+          <div className="font-bold text-lg inline-flex items-center gap-2">{name}{idAuthor.official && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent font-bold">{idAuthor.badge}</span>}</div>
           {blog.settings.blog_desc && <p className="text-sm text-fg-muted mt-0.5 line-clamp-2">{blog.settings.blog_desc}</p>}
           <Link href={`/blogs/${userSlug}`} className="inline-block text-sm text-accent font-medium mt-1.5 hover:underline">看更多文章 →</Link>
         </div>

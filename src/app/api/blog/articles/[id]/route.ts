@@ -4,6 +4,7 @@ import { createSupabaseServer } from "@/lib/supabase";
 import { slugify } from "@/lib/blog-types";
 import { sanitizeRichHtmlStrict } from "@/lib/rich-html-server";
 import { parseBody } from "@/lib/validate";
+import { allowedBlogIdentities } from "@/lib/blog-identities";
 
 const PatchSchema = z.object({
   title: z.string().trim().min(1).max(200).optional(),
@@ -19,6 +20,7 @@ const PatchSchema = z.object({
   seo_desc: z.string().max(500).nullable().optional(),
   series_id: z.string().uuid().nullable().optional(),
   series_order: z.number().int().nullable().optional(),
+  author_identity: z.enum(["self", "official", "admin", "support"]).optional(),
 });
 
 // GET /api/blog/articles/[id] — 取單篇（編輯用、本人）
@@ -62,6 +64,12 @@ export async function PATCH(
                     "tags", "category", "is_public", "seo_title", "seo_desc",
                     "series_id", "series_order"]) {
     if (f in body) patch[f] = f === "content" ? sanitizeRichHtmlStrict(body[f]) : body[f];
+  }
+
+  // 發文身份：驗 role 允許才吃（不允許就忽略、不動原值）
+  if ("author_identity" in body) {
+    const { data: prof } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+    if (allowedBlogIdentities((prof as any)?.role).includes(body.author_identity)) patch.author_identity = body.author_identity;
   }
 
   // 若改 slug、檢查撞名
