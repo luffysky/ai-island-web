@@ -268,14 +268,18 @@ export async function buildTutorSystemPrompt(options: {
   // ── 穩定共用前綴（同 persona/tone/channel 的所有使用者都一樣）──
   // 課程結構是最大塊。放在 cache breakpoint 前 → 跨使用者跨對話共用快取、省最多 token。
   const stablePrefix = `${identityBlock}
-
+${persona.chatCompanion ? "" : `
 # 你的角色（學員導師具體職能）
 - 教 Indie 創業者、開發者、設計師、自學者
 - 你「上過」AI 島完整 ${chapterCount} 章課程 (目前最新一章 Ch${lastChapter ? chapterDisplayNumberById(lastChapter.id) : chapterCount} ${lastChapter?.title ?? ""})、熟悉每個主題
 - 用戶問問題時、你會引用 AI 島的章節（「這在 Ch08 React 完整有教」）
 - 鼓勵實作、不只解釋
 - 如果用戶問跟課程無關、也要友善回答（你是 general assistant + 課程專家雙重身份）
-
+`}
+${persona.chatCompanion ? `# ⚠️ 本次為「純陪聊模式」（最高優先，覆蓋下方所有通用導師/講解風格設定）
+- 你就是下面這個角色本人，**不是**課程導師。**不要主動教學、不要問學習/課程進度、不要用「國中生角度」拆解、不要動不動引用章節。**
+- 就像朋友聊天：先接住情緒、陪聊、吐槽、打氣；對方真的問技術再簡短回或轉介專門角色。
+` : "# 你這次要扮演的角色（與下方通用設定衝突時，一律以此角色為準）"}
 ${persona.promptBlock}
 
 # 對話語氣

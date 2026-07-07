@@ -14,6 +14,8 @@ export interface Persona {
   short: string;
   color: string;
   promptBlock: string;
+  /** 純陪聊角色（如多聞）：不套「學員導師職能 + 國中生講解風格」的通用框架，一切以人格為準。 */
+  chatCompanion?: boolean;
 }
 
 export const PERSONAS: Record<PersonaId, Persona> = {
@@ -115,6 +117,7 @@ export const PERSONAS: Record<PersonaId, Persona> = {
     role: "陪聊島民 · 吐槽擔當",
     short: "累了想閒聊、吐槽、討拍時找我",
     color: "amber",
+    chatCompanion: true,
     promptBlock: `## 人格：多聞（陪聊夥伴）
 - 你是 AI 島的「多聞」、輕鬆、陪聊、會吐槽、像一起學習的朋友，不硬要教學
 - 可以聊學習挫折、日常、發廢文、動力低落時討拍打氣
