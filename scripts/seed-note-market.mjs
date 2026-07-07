@@ -274,6 +274,56 @@ const PACKS = [
           "⚠️ 畫面沒更新先想是不是快取——DevTools 開著可勾 Disable cache，或用無痕測。",
         ),
       },
+      {
+        title: "盒模型：為什麼加了 padding 版面就爆",
+        content: P(
+          "剛學 CSS 我最常「加個 padding 結果整個跑版」，後來懂盒模型就好了。",
+          "一個元素的實際寬度 = 內容 + padding + border。預設情況你設 <code>width:200px</code> 再加 <code>padding:20px</code>，它其實佔 240px，於是就撐爆了。",
+          "解法一行：<code>*{ box-sizing:border-box; }</code>——改成「padding/border 算進 width 裡面」，設 200 就是 200，直覺多了。",
+          "margin（外距）是「和別人的距離」、padding（內距）是「內容和自己邊框的距離」，別搞混。",
+          "⚠️ 兩個上下相鄰元素的 margin 會「合併」（取大的那個、不是相加），這叫 margin collapse，版面對不齊時想到它。",
+        ),
+      },
+      {
+        title: "position 到底怎麼運作（relative / absolute / fixed / sticky）",
+        content: P(
+          "定位是切版第二個大魔王。白話講四種：",
+          "<code>relative</code>：以「自己原本的位置」微調，位子還佔著。常拿來當 absolute 的定位基準。",
+          "<code>absolute</code>：飛出正常流、以「最近一個有 position 的祖先」為原點。父層記得設 <code>position:relative</code>，不然它會亂飄到整頁。",
+          "<code>fixed</code>：釘在「螢幕」上、捲動不跟走（做回到頂端按鈕、固定 header）。",
+          "<code>sticky</code>：平常正常、捲到臨界點就黏住（<code>position:sticky; top:0</code>）。",
+          "⚠️ absolute 找不到定位基準就會以整個頁面算，跑到你意想不到的地方——先檢查父層有沒有 relative。",
+        ),
+      },
+      {
+        title: "事件處理與冒泡：一個監聽器管一整串",
+        content: P(
+          "點按鈕要做事：<code>btn.addEventListener('click', fn)</code>。事件物件 <code>e</code> 裡有一堆資訊，<code>e.target</code> 是被點的元素。",
+          "冒泡（bubbling）：你點子元素，事件會一路往父層傳。善用這點做「事件委派」——在父層裝一個監聽器，就能管裡面所有子元素（尤其動態新增的），不用每個都裝。",
+          "擋掉預設行為（表單送出、連結跳頁）用 <code>e.preventDefault()</code>；不想再往上冒泡用 <code>e.stopPropagation()</code>。",
+          "⚠️ 迴圈裡綁事件、又直接用迴圈變數，常拿到最後一個值。用事件委派或 <code>let</code> 區塊作用域解決。",
+        ),
+      },
+      {
+        title: "localStorage：把資料存在瀏覽器",
+        content: P(
+          "想「重整後還記得」使用者的設定/草稿，最簡單用 localStorage（存在這台瀏覽器、關掉也還在）。",
+          "存 <code>localStorage.setItem('key', 值)</code>、讀 <code>localStorage.getItem('key')</code>、刪 <code>removeItem</code>。",
+          "只能存字串！物件要 <code>JSON.stringify</code> 存、<code>JSON.parse</code> 讀。",
+          "sessionStorage 用法一樣，但「關掉分頁就清掉」，適合暫存。",
+          "⚠️ 別存密碼/token 這類機密（同網站的 JS 都讀得到）；也別存太大，有容量上限（約 5MB）。",
+        ),
+      },
+      {
+        title: "無障礙 a11y：順手做、對所有人好",
+        content: P(
+          "無障礙不是額外功夫，是「本來就該做對」。幾個低成本高回報的：",
+          "圖片給 <code>alt</code>、按鈕用真正的 <code>&lt;button&gt;</code>（不要用 div 假裝，鍵盤和讀螢幕器才認得）。",
+          "表單欄位配 <code>&lt;label&gt;</code>；只有圖示的按鈕加 <code>aria-label</code> 說明它是幹嘛的。",
+          "顏色對比要夠（淺灰字配白底看不清）；別只靠顏色傳達資訊（紅=錯，也給文字/圖示）。",
+          "⚠️ 能用鍵盤 Tab 走完整個流程嗎？試一次，很多互動元件會卡在這關。",
+        ),
+      },
     ],
   },
   {
