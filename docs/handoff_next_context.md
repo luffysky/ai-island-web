@@ -31,7 +31,7 @@
 
 ## ✍️ ②：內容待辦（使用者原則：**全部手寫、有真人味、不要腳本亂生**）
 
-1. **官方免費筆記：每一套（包）都要衝到「120 篇以上」**（task #164，進行中）。目前 **Python 56 / 前端 54 / 後端 54 / 基本功 54 = 218 篇**；**4 個撰寫 agent 正各手寫 +66 篇**（寫到 `scratchpad/notes_{python,frontend,backend,basics}.json`），回來後合進 `seed-note-market.mjs` 的 PACKS → 重灌 DB → commit，目標每包 120+。這是**硬性數量**，4 包 = 480+ 篇。
+1. ~~**官方免費筆記：每一套（包）都要衝到「120 篇以上」**~~ ✅ **task #164 已完成**：Python 125 / 前端 120 / 後端 120 / 基本功 120 = **485 則**（全手寫、真人踩雷味、HTML 安全掃描過、color 輪播），已重灌 DB + commit（`4385fdb4`+`0b1393e2`）。做法留參考：4 個撰寫 agent 各手寫 66 篇→`scratchpad/notes_*.json`→`scratchpad/insert_notes.mjs` 轉成 `P(...)` 物件插進 `seed-note-market.mjs` 對應 pack→`node scripts/seed-note-market.mjs` 重灌→查 DB 每包≥120。**要再加量沿用此流程。**
    - ⚠️⚠️ **每一篇都要「親手認真寫」**——**不准用 AI 生成器 / 樣板批量產 / 湊數**。林董明講：「不要用腳本寫、要認真寫」。這裡的「腳本」指的是「別做一支 AI generator 亂生」，**不是**指不能用 seed 檔。
    - `scripts/seed-note-market.mjs` **只是把手寫內容塞進 DB 的載具**（hardcoded PACKS 陣列、`node scripts/seed-note-market.mjs` 重灌、idempotent）。你要做的是**在那個陣列裡一篇一篇手寫**，不是寫個程式去生。
    - 每篇品質門檻：**第一人稱、有踩雷經驗、口語但有料**（「我一開始也卡在…」「⚠️ 新手雷」），一個真正搞懂的人在整理自己的筆記——不是速查表、不是教科書、不是罐頭。每則配一個便利貼色（`color` 欄輪播）。
