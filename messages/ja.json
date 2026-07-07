@@ -555,7 +555,10 @@
     "changeImage": "画像を変更",
     "resetPosition": "位置をリセット",
     "bgOpacityHint": "背景の濃さは上の「透明度」で調整",
-    "openFullPage": "全画面で開く"
+    "openFullPage": "全画面で開く",
+    "addedToMyNotes": "あなたのノートに追加しました（{n} 件）",
+    "viewMyNotes": "マイノートを見る",
+    "alreadyOwnedSynced": "所有済み、ノートに同期しました"
   },
   "quest": {
     "heroTitle": "コードダンジョン島",

@@ -107,6 +107,8 @@ const MIGRATIONS = [
   "ci_works_showcase_migration.sql",
   // 2026-07 — 筆記市集抽成改 平台 10% / 作者 90%（原本 0 抽成）
   "notes_market_commission_migration.sql",
+  // 2026-07 — 買筆記後把整包複製進買家「我的筆記」（保留章節/便利貼色、冪等補發）
+  "notes_purchase_copy_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）

@@ -555,7 +555,10 @@
     "changeImage": "Change image",
     "resetPosition": "Reset position",
     "bgOpacityHint": "Adjust background intensity with \"Opacity\" above",
-    "openFullPage": "Open full page"
+    "openFullPage": "Open full page",
+    "addedToMyNotes": "Added to your notes ({n})",
+    "viewMyNotes": "View my notes",
+    "alreadyOwnedSynced": "Already owned — synced to your notes"
   },
   "quest": {
     "heroTitle": "Code Dungeon Island",

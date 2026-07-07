@@ -555,7 +555,10 @@
     "changeImage": "換圖",
     "resetPosition": "重設位置",
     "bgOpacityHint": "背景濃淡用上面「透明度」調",
-    "openFullPage": "整頁開啟"
+    "openFullPage": "整頁開啟",
+    "addedToMyNotes": "已加入你的筆記（{n} 篇）",
+    "viewMyNotes": "看我的筆記",
+    "alreadyOwnedSynced": "已擁有，已補齊到你的筆記"
   },
   "quest": {
     "heroTitle": "程式副本島",
