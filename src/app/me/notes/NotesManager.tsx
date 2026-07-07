@@ -60,7 +60,7 @@ export type ManagedNote = {
  * 重點：dnd listeners 只掛在「右上角把手」上、不掛整張卡 → 內文可自由選取，
  * 選字不會跟拖曳打架（之前整卡可拖，一選字就變拖動）。
  */
-function SortableNoteCard({ id, children }: { id: string; children: React.ReactNode }) {
+function SortableNoteCard({ id, expanded, children }: { id: string; expanded?: boolean; children: React.ReactNode }) {
   const t = useTranslations("notes");
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style: CSSProperties = {
@@ -68,9 +68,10 @@ function SortableNoteCard({ id, children }: { id: string; children: React.ReactN
     transition,
     opacity: isDragging ? 0.6 : 1,
     zIndex: isDragging ? 30 : undefined,
+    order: expanded ? -1 : undefined,   // 展開時視覺挪到最前（不動排序資料）
   };
   return (
-    <div ref={setNodeRef} style={style} className="relative">
+    <div ref={setNodeRef} style={style} className={`relative ${expanded ? "sm:col-span-2" : ""}`}>
       <button
         type="button"
         {...attributes}
@@ -303,6 +304,9 @@ export function NotesManager({
   );
   const [query, setQuery] = useState("");
   const q = query.trim().toLowerCase();
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const toggleExpandNote = (id: string) => setExpandedId((cur) => (cur === id ? null : id));
+
   const shown = notes
     .filter((n) => {
       const catOk = !fCat || (fCat === UNCAT_FILTER ? !n.category : (n.category === fCat || (n.category?.startsWith(fCat + "/") ?? false)));
@@ -594,7 +598,7 @@ export function NotesManager({
               {shown.map((n) => {
                 const meta = chapterMap[n.lesson_id ?? ""] ?? chapterMap[`ch${n.chapter_id}`] ?? null;
                 return (
-                  <SortableNoteCard key={n.id} id={n.id}>
+                  <SortableNoteCard key={n.id} id={n.id} expanded={n.id === expandedId}>
                     <NoteCard
                       note={n}
                       meId={meId}
@@ -608,6 +612,8 @@ export function NotesManager({
                       onPublishBlog={() => publishBlog(n)}
                       refNotes={resolveRefs(n)}
                       onOpenRef={openRef}
+                      expanded={n.id === expandedId}
+                      onToggleExpand={() => toggleExpandNote(n.id)}
                     />
                   </SortableNoteCard>
                 );
@@ -630,22 +636,26 @@ export function NotesManager({
           <div className="grid sm:grid-cols-2 gap-3">
             {shown.map((n) => {
               const meta = chapterMap[n.lesson_id ?? ""] ?? chapterMap[`ch${n.chapter_id}`] ?? null;
+              const isExp = n.id === expandedId;
               return (
-                <NoteCard
-                  key={n.id}
-                  note={n}
-                  meId={meId}
-                  chapterTitle={meta?.chapterTitle ?? ""}
-                  lessonTitle={meta?.lessonTitle ?? (n.lesson_id ?? t("freeNote"))}
-                  onEdit={() => setEditing(n)}
-                  onDelete={() => del(n)}
-                  onPin={() => togglePin(n)}
-                  srsDue={reviews[n.id]?.due_at ?? null}
-                  onToggleReview={() => (reviews[n.id] ? removeReview(n.id) : addReview(n.id))}
-                  onPublishBlog={() => publishBlog(n)}
-                  refNotes={resolveRefs(n)}
-                  onOpenRef={openRef}
-                />
+                <div key={n.id} className={isExp ? "sm:col-span-2" : ""} style={isExp ? { order: -1 } : undefined}>
+                  <NoteCard
+                    note={n}
+                    meId={meId}
+                    chapterTitle={meta?.chapterTitle ?? ""}
+                    lessonTitle={meta?.lessonTitle ?? (n.lesson_id ?? t("freeNote"))}
+                    onEdit={() => setEditing(n)}
+                    onDelete={() => del(n)}
+                    onPin={() => togglePin(n)}
+                    srsDue={reviews[n.id]?.due_at ?? null}
+                    onToggleReview={() => (reviews[n.id] ? removeReview(n.id) : addReview(n.id))}
+                    onPublishBlog={() => publishBlog(n)}
+                    refNotes={resolveRefs(n)}
+                    onOpenRef={openRef}
+                    expanded={isExp}
+                    onToggleExpand={() => toggleExpandNote(n.id)}
+                  />
+                </div>
               );
             })}
           </div>

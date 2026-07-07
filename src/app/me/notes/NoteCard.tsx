@@ -36,6 +36,8 @@ export function NoteCard({
   onPublishBlog,
   refNotes,
   onOpenRef,
+  expanded: expandedProp,
+  onToggleExpand,
 }: {
   note: {
     id: string;
@@ -68,11 +70,16 @@ export function NoteCard({
   onPublishBlog?: () => void;
   refNotes?: { id: string; title: string; snippet: string }[];
   onOpenRef?: (id: string) => void;
+  /** 受控展開（由 NotesManager 控制，展開時挪到最前 + 放大放寬）；沒給就用內部狀態 */
+  expanded?: boolean;
+  onToggleExpand?: () => void;
 }) {
   const t = useTranslations("notes");
   const owned = note._owned ?? (note.user_id === meId);
   const isViewer = !owned && note._role === "viewer";
-  const [expanded, setExpanded] = useState(false);
+  const [expandedLocal, setExpandedLocal] = useState(false);
+  const expanded = expandedProp ?? expandedLocal;
+  const toggleExpandState = () => { if (onToggleExpand) onToggleExpand(); else setExpandedLocal((v) => !v); };
   const [actionsOpen, setActionsOpen] = useState(false); // footer 動作環形選單
   const [hoveredItem, setHoveredItem] = useState<string | null>(null); // hover 哪個項目（顯示氣泡 + 不收）
   const [canHover, setCanHover] = useState(false);        // 桌機=hover 展開、手機=點擊
@@ -131,7 +138,7 @@ export function NoteCard({
   // 點卡片展開／收合；但若使用者正在選取文字（要複製）就別誤觸收合
   const toggleExpand = () => {
     if ((window.getSelection?.()?.toString() ?? "").length > 0) return;
-    setExpanded((v) => !v);
+    toggleExpandState();
   };
 
   // 複製：整則用右上角按鈕；想複製「某段」就直接選取文字（內容可自由選取）
@@ -224,7 +231,14 @@ export function NoteCard({
       <div className="flex items-start justify-between mb-2 gap-2">
         <div className="min-w-0 flex-1">
           <div className="text-xs mb-1" style={{ color: MUTED }}>{header}</div>
-          <div className="font-bold truncate">{note.title?.trim() || lessonTitle}</div>
+          {/* 點標題進單篇全頁（寬闊閱讀、分段照編輯時樣子）→ 解決筆記牆寬度限制/分段跑位 */}
+          <Link
+            href={`/me/notes/${note.id}`}
+            className="font-bold truncate block hover:underline decoration-dotted underline-offset-2"
+            title={t("openFullPage")}
+          >
+            {note.title?.trim() || lessonTitle}
+          </Link>
         </div>
         <div className="flex items-center gap-1 shrink-0">
           {note._shared && (
@@ -251,12 +265,12 @@ export function NoteCard({
         >
           {/<[a-z][\s\S]*>/i.test(note.content) ? (
             <div
-              className="note-rich prose-custom text-sm max-w-none"
+              className={`note-rich prose-custom max-w-none ${expanded ? "text-[15px] leading-relaxed" : "text-sm"}`}
               style={{ color: TEXT }}
               dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(note.content) }}
             />
           ) : (
-            <p className="text-sm whitespace-pre-wrap" style={{ color: TEXT }}>
+            <p className={`whitespace-pre-wrap ${expanded ? "text-[15px] leading-relaxed" : "text-sm"}`} style={{ color: TEXT }}>
               {note.content}
             </p>
           )}
@@ -317,7 +331,7 @@ export function NoteCard({
           if (onEdit) items.push({ key: "edit", icon: isViewer ? <Eye size={14} /> : <Pencil size={14} />, title: isViewer ? t("view") : t("edit"), onClick: onEdit, color: "#444" });
           if (onDelete) items.push({ key: "del", icon: owned ? <Trash2 size={14} /> : <LogOut size={14} />, title: owned ? t("delete") : t("leaveShare"), onClick: onDelete, color: "#dc2626" });
           items.push({ key: "openpage", icon: <Maximize2 size={14} />, title: t("openFullPage"), href: `/me/notes/${note.id}`, bg: "#1a1a1a", color: "#fff" });
-          items.push({ key: "expand", icon: expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />, title: expanded ? t("collapse") : t("expand"), onClick: () => setExpanded(!expanded), color: "#444" });
+          items.push({ key: "expand", icon: expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />, title: expanded ? t("collapse") : t("expand"), onClick: toggleExpandState, color: "#444" });
           if (jumpHref) items.push({ key: "jump", icon: <ArrowRight size={14} />, title: t("jumpToLesson"), href: jumpHref, bg: "#1a1a1a", color: "#fff" });
 
           const N = items.length;
