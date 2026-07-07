@@ -97,6 +97,8 @@ const MIGRATIONS = [
   "notes_market_migration.sql",
   // 2026-07 — Code Quest AI 生成關卡（後台生成 → 存 DB → 遊戲載入）
   "quest_ai_levels_migration.sql",
+  // 2026-07 — 創作者提現（果實→真錢，人工撥款對帳；之後可接 Connect/分潤）
+  "creator_payout_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
