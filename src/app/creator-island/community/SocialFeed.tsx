@@ -7,6 +7,20 @@ import { Image as ImageIcon, Film, Music, Heart, MessageCircle, FileText, Link2,
 import { uploadMedia } from "@/lib/creator-upload";
 import { useConfirm, usePrompt } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/Toast";
+import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
+import { GifPicker } from "@/components/ui/GifPicker";
+import { EmojiText } from "@/components/ui/EmojiText";
+
+const _IMG = /^https?:\/\/[^\s]+\.(gif|png|jpe?g|webp)(\?[^\s]*)?$/i;
+const _GIPHY = /^https?:\/\/(media\d?\.giphy\.com|i\.giphy\.com)\/[^\s]+/i;
+/** 貼文內文：GIF/圖片網址→<img>、其他網址→連結、純文字→動態 emoji。 */
+function renderBody(text: string) {
+  return text.split(/(https?:\/\/[^\s]+)/g).map((p, i) => {
+    if (_IMG.test(p) || _GIPHY.test(p)) return <img key={i} src={p} alt="gif" loading="lazy" className="block max-w-[240px] max-h-[240px] rounded-lg my-1" />;
+    if (/^https?:\/\//.test(p)) return <a key={i} href={p} target="_blank" rel="noreferrer" className="text-accent underline break-all">{p}</a>;
+    return <EmojiText key={i} text={p} size={18} />;
+  });
+}
 
 type Author = { id?: string; username?: string; display_name?: string; avatar_url?: string };
 type Post = {
@@ -88,6 +102,8 @@ export function SocialFeed({ initialPosts, meId }: { initialPosts: Post[]; meId:
           <label className="cursor-pointer hover:text-accent" title={t("communityAttachImage")}><ImageIcon size={18} /><input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) attach("image", f); e.currentTarget.value = ""; }} /></label>
           <label className="cursor-pointer hover:text-accent" title={t("communityAttachVideo")}><Film size={18} /><input type="file" accept="video/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) attach("video", f); e.currentTarget.value = ""; }} /></label>
           <label className="cursor-pointer hover:text-accent" title={t("communityAttachAudio")}><Music size={18} /><input type="file" accept="audio/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) attach("audio", f); e.currentTarget.value = ""; }} /></label>
+          <AnimatedEmojiPicker onSelect={(e) => setText((v) => v + e)} />
+          <GifPicker onSelect={(url) => setText((v) => (v ? v + " " : "") + url + " ")} />
           {busy === "upload" && <span className="text-xs text-fg-muted">{t("communityUploading")}</span>}
           <button onClick={post} disabled={busy !== null} className="ml-auto px-4 py-1.5 rounded-full bg-accent text-white text-sm font-bold disabled:opacity-40">{busy === "post" ? t("communityPosting") : t("communityPost")}</button>
         </div>
@@ -146,7 +162,7 @@ function PostCard({ p, meId, onDelete }: { p: Post; meId: string; onDelete: () =
         <span className="ml-auto text-[10px] text-fg-muted">{new Date(p.created_at).toLocaleString("zh-TW")}</span>
         {p.user_id === meId && <button onClick={del} className="text-fg-muted hover:text-red-400 text-xs">{t("communityDeleteShort")}</button>}
       </div>
-      {p.content && <div className="text-sm whitespace-pre-wrap">{p.content}</div>}
+      {p.content && <div className="text-sm whitespace-pre-wrap">{renderBody(p.content)}</div>}
       {p.images?.length > 0 && <div className={`grid gap-1 ${p.images.length > 1 ? "grid-cols-2" : ""}`}>{p.images.map((im, i) => <img key={i} src={im.url} className="rounded-lg w-full object-cover max-h-80" />)}</div>}
       {p.video_url && <video src={p.video_url} controls className="w-full rounded-lg max-h-96" />}
       {p.audio_url && <audio src={p.audio_url} controls className="w-full" />}
