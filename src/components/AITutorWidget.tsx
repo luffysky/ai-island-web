@@ -115,6 +115,7 @@ import rehypeRaw from "rehype-raw";
 import { linkifyChapterRefs } from "@/lib/linkify-chapters";
 import { CodeBlock } from "@/components/chapter/CodeBlock";
 import { CopyButton, TypingIndicator, ChatToolbar, formatChatTime, MicButton, SpeakButton } from "@/components/chat";
+import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
 
 const TONE_OPTIONS = [
   { value: "friendly", label: "😊 親切" },
@@ -1281,6 +1282,11 @@ export function AITutorWidget({
                 onError={(m) => setError(m)}
                 disabled={authState !== "in" || sending}
                 className="p-2 border border-border rounded-lg hover:border-accent hover:bg-accent/5"
+              />
+              <AnimatedEmojiPicker
+                onSelect={(e) => setInput((prev) => prev + e)}
+                buttonClassName="p-2 border border-border rounded-lg hover:border-accent hover:bg-accent/5 transition"
+                align="right"
               />
               <textarea
                 value={input}

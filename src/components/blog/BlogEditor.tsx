@@ -45,7 +45,8 @@ import { SlashCommand } from "./tiptap/slash-command";
 import { MentionExt } from "./tiptap/mention-suggestion";
 import { ExternalImageUpload } from "./tiptap/external-image";
 import { AIBubbleMenu } from "./tiptap/ai-bubble-menu";
-import { EmojiButton } from "./tiptap/emoji-picker";
+import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
+import { GifPicker } from "@/components/ui/GifPicker";
 import { computeStats, estimateReadingMinutes, type EditorStats } from "./tiptap/toc";
 
 const lowlight = createLowlight(common);
@@ -431,7 +432,8 @@ function Toolbar({ editor }: { editor: Editor }) {
       <Sep />
       <FontSizeSelect editor={editor} />
       <ColorButton editor={editor} />
-      <EmojiButton editor={editor} />
+      <AnimatedEmojiPicker onSelect={(e) => editor.chain().focus().insertContent(e).run()} buttonClassName="w-8 h-8" />
+      <GifPicker onSelect={(url) => editor.chain().focus().insertContent(`<img src="${url}" alt="gif" />`).run()} />
       <Sep />
       <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={btn(editor.isActive("bulletList"))} title="項目符號"><ListIcon size={16} /></button>
       <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={btn(editor.isActive("orderedList"))} title="編號清單"><ListOrdered size={16} /></button>
