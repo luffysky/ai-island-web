@@ -2,6 +2,8 @@
 import { ecpayCheckout } from "./gateways/ecpay";
 import { newebpayCheckout } from "./gateways/newebpay";
 import { stripeCheckout } from "./gateways/stripe";
+import { lemonSqueezyCheckout } from "./gateways/lemonsqueezy";
+import { paddleCheckout } from "./gateways/paddle";
 import type { Order } from "./orders";
 
 export type CheckoutResult =
@@ -13,6 +15,8 @@ export async function startCheckout(order: Order): Promise<CheckoutResult> {
   if (provider === "ecpay") return ecpayCheckout(order);
   if (provider === "newebpay") return newebpayCheckout(order);
   if (provider === "stripe") return await stripeCheckout(order);
+  if (provider === "lemonsqueezy") return await lemonSqueezyCheckout(order);
+  if (provider === "paddle") return await paddleCheckout(order);
   throw new Error("unknown_provider");
 }
 

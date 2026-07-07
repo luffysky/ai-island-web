@@ -3,8 +3,17 @@
  * 匯率 1:10（NT$1 = 10 Z幣），儲值越多送越多。金額都以「新台幣元」計。
  */
 
-export type PaymentProvider = "ecpay" | "newebpay" | "stripe";
+export type PaymentProvider = "ecpay" | "newebpay" | "stripe" | "lemonsqueezy" | "paddle";
 export type PaymentMethod = "credit" | "atm" | "cvs" | "linepay" | "applepay";
+
+// 海外客戶用 Merchant-of-Record（Lemon Squeezy / Paddle）以 USD 收款；TWD→USD 匯率（env 可調，預設 32）。
+export function morUsdRate(): number {
+  const r = Number(process.env.MOR_USD_RATE);
+  return Number.isFinite(r) && r > 0 ? r : 32;
+}
+export function twdToUsdCents(twd: number): number {
+  return Math.max(50, Math.round((twd / morUsdRate()) * 100)); // 至少 US$0.50
+}
 
 export type ZcoinPackage = {
   id: string;
@@ -60,11 +69,13 @@ export function providerEnabled(p: PaymentProvider): boolean {
   if (p === "ecpay") return !!(process.env.ECPAY_MERCHANT_ID && process.env.ECPAY_HASH_KEY && process.env.ECPAY_HASH_IV);
   if (p === "newebpay") return !!(process.env.NEWEBPAY_MERCHANT_ID && process.env.NEWEBPAY_HASH_KEY && process.env.NEWEBPAY_HASH_IV);
   if (p === "stripe") return !!process.env.STRIPE_SECRET_KEY;
+  if (p === "lemonsqueezy") return !!(process.env.LEMONSQUEEZY_API_KEY && process.env.LEMONSQUEEZY_STORE_ID && process.env.LEMONSQUEEZY_VARIANT_ID);
+  if (p === "paddle") return !!process.env.PADDLE_API_KEY;
   return false;
 }
 
 export function enabledProviders(): PaymentProvider[] {
-  return (["ecpay", "newebpay", "stripe"] as PaymentProvider[]).filter(providerEnabled);
+  return (["ecpay", "newebpay", "stripe", "lemonsqueezy", "paddle"] as PaymentProvider[]).filter(providerEnabled);
 }
 
 /** 各金流商支援的付款方式（給前端付款方式選擇器）。 */
@@ -72,12 +83,16 @@ export const PROVIDER_METHODS: Record<PaymentProvider, PaymentMethod[]> = {
   ecpay: ["credit", "atm", "cvs"],
   newebpay: ["credit", "atm", "cvs"],
   stripe: ["credit"],
+  lemonsqueezy: ["credit"],
+  paddle: ["credit"],
 };
 
 export const PROVIDER_LABEL: Record<PaymentProvider, string> = {
   ecpay: "綠界 ECPay",
   newebpay: "藍新 NewebPay",
   stripe: "Stripe（海外卡）",
+  lemonsqueezy: "Lemon Squeezy（海外・USD）",
+  paddle: "Paddle（海外・USD）",
 };
 
 export const METHOD_LABEL: Record<PaymentMethod, string> = {
@@ -93,6 +108,8 @@ export const PROVIDER_FEE_NOTE: Record<PaymentProvider, string> = {
   ecpay: "信用卡約 2.75%；ATM/超商每筆固定小額",
   newebpay: "信用卡約 2.75%；ATM/超商每筆固定小額",
   stripe: "本地卡 2.9%＋NT$10；國際卡再＋1.5%",
+  lemonsqueezy: "MoR 代收全球卡＋代繳稅，約 5%＋US$0.50/筆",
+  paddle: "MoR 代收全球卡＋代繳稅，約 5%＋US$0.50/筆",
 };
 
 export const CURRENCY = "TWD";

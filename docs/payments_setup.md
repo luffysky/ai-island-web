@@ -2,8 +2,9 @@
 
 多金流商、使用者自選付款方式。課程免費；金流只用於 **Z幣儲值** 與 **Pro 訂閱**。
 
-- 一次性付款（Z幣儲值 / 單章）：綠界 ECPay、藍新 NewebPay、Stripe 都支援。
-- Pro 訂閱（每月/每年自動續扣）：目前走 **Stripe 訂閱**（`/pricing` → `/api/me/checkout`）。
+- 一次性付款（Z幣儲值 / 單章）：**台灣** → 綠界 ECPay、藍新 NewebPay；**海外** → Lemon Squeezy、Paddle（MoR，收 USD）。（Stripe 台灣開不了帳號、實務上用不到，見 §Stripe。）
+- Pro 訂閱：目前 Stripe 訂閱路徑仍在（`/api/me/checkout`），但台灣多半用不到；建議台灣走「綠界定期定額(待接)」、海外走 MoR 買斷或其訂閱(待接)。
+- 海外金流以 **USD** 收款（`MOR_USD_RATE` 換算 TWD）。
 
 ---
 
@@ -15,6 +16,8 @@
   - 藍新　`POST /api/payments/webhook/newebpay`（另有前景返回 `GET /api/payments/return/newebpay`）
   - Stripe 一次性　`POST /api/payments/webhook/stripe`
   - Stripe 訂閱　`POST /api/stripe/webhook`
+  - Lemon Squeezy（海外）`POST /api/payments/webhook/lemonsqueezy`
+  - Paddle（海外）`POST /api/payments/webhook/paddle`
 - 入帳冪等：Z幣用 `coin_transactions.meta.order_no` 去重；Pro 延展 `subscriptions.expires_at`。
 - 帳本：Z幣 `coin_transactions`、訂單 `orders`、訂閱 `subscriptions`。
 
@@ -40,9 +43,22 @@ STRIPE_PRICE_ID_MONTHLY=    # price_...（Pro 月訂閱，訂閱才需要）
 STRIPE_PRICE_ID_YEARLY=     # price_...（Pro 年訂閱）
 STRIPE_PRICE_ID_SINGLE=     # price_...（單章，選用）
 
+# ── Lemon Squeezy（海外・Merchant of Record・USD）──
+LEMONSQUEEZY_API_KEY=        # Settings → API 建
+LEMONSQUEEZY_STORE_ID=       # 你的 store 數字 id
+LEMONSQUEEZY_VARIANT_ID=     # 一個「可自訂價(pay-what-you-want)」的 variant id（當萬用商品）
+LEMONSQUEEZY_WEBHOOK_SECRET= # 建 webhook 時自己設的 signing secret
+
+# ── Paddle（海外・Merchant of Record・USD）──
+PADDLE_API_KEY=             # Developer tools → Authentication
+PADDLE_PRODUCT_ID=          # 一個 catalog product id（價格用 API 動態帶，不用建 price）
+PADDLE_WEBHOOK_SECRET=      # Notifications → 該 destination 的 secret
+PADDLE_SANDBOX=1            # 測試站用 1；正式拿掉或設 0
+
 # ── 共用 ──
 NEXT_PUBLIC_SITE_URL=https://ai-island-web.snowrealm.pet   # webhook/return 用；結尾不要斜線
 PAYMENTS_LIVE=1            # 綠界/藍新：設 1=打正式；不設或非 1=打測試機(stage)
+MOR_USD_RATE=32           # 海外(LS/Paddle)收 USD：TWD→USD 換算匯率(1 USD = N TWD)，預設 32
 ```
 > **安全預設**：某金流商三個金鑰只要缺一，`/store` 就不顯示它。全部沒設 → 顯示「金流設定中」。所以可以一家一家慢慢開。
 
@@ -107,6 +123,23 @@ PAYMENTS_LIVE=1            # 綠界/藍新：設 1=打正式；不設或非 1=�
   - 幣別為 **TWD**：Link 卡片模式支援度廣，但以 Dashboard 那個 Link 開關能否打開為準（能開＝你帳號可用）。
 - **locale / 幣別**：程式已設 `locale: zh-TW`、`currency: twd`，後台無需改。
 - **啟用帳戶（Activate）**：沒 activate 只能收 test 款；上線要完成 KYC + 綁銀行帳戶。
+
+### Lemon Squeezy（海外・MoR，Stripe 台灣開不了時用這個收全球卡）
+Lemon Squeezy 當「銷售方」代收全球卡 + 代繳各國稅，再撥款給你。**支援台灣賣家。**
+1. 到 <https://lemonsqueezy.com> 註冊、建立 **Store**（填收款/撥款資料）→ store 的數字 id → `LEMONSQUEEZY_STORE_ID`。
+2. 建一個**萬用商品**：New Product → 價格類型選 **"Pay what you want"（自訂價）** → 進去看那個 **Variant 的 id** → `LEMONSQUEEZY_VARIANT_ID`（程式用 `custom_price` 動態帶入每筆金額）。
+3. **Settings → API → Create API key** → `LEMONSQUEEZY_API_KEY`。
+4. **Settings → Webhooks → Add**：URL = `https://<你的網域>/api/payments/webhook/lemonsqueezy`，勾事件 `order_created`（要賣訂閱再加 `subscription_payment_success`），自己設一組 signing secret → `LEMONSQUEEZY_WEBHOOK_SECRET`。
+5. 金額以 **USD** 收（`MOR_USD_RATE` 換算）；不用像 Stripe 那樣煩惱台灣開不了。
+
+### Paddle（海外・MoR）
+1. 到 <https://paddle.com> 註冊、完成 **verification**（MoR 會審核你賣什麼）。
+2. **Catalog → Products → New**：建一個商品（價格程式用 API 動態帶，不用建 price）→ product id → `PADDLE_PRODUCT_ID`。
+3. **Developer tools → Authentication → API key** → `PADDLE_API_KEY`（測試站在 sandbox dashboard 拿、並設 `PADDLE_SANDBOX=1`）。
+4. ⚠️ **Checkout settings → Default payment link**：一定要設一個（可先填你的網域）——否則建立 transaction 回不了 `checkout.url`、跳轉會失敗。
+5. **Developer tools → Notifications → New destination**：URL = `https://<你的網域>/api/payments/webhook/paddle`，勾 `transaction.completed`，拿該 destination 的 secret → `PADDLE_WEBHOOK_SECRET`。
+
+> **共同注意**：LS/Paddle 都收 **USD**，`MOR_USD_RATE` 決定 TWD→USD 換算（預設 32）。webhook 驗簽後直接依 `order_no` 發貨、**不比對金額**（因為收的是 USD、跟站內 TWD 訂單額不同），安全靠簽章 + order_no 綁定。目前 MoR 走**一次性**（Z幣儲值 / Pro 買斷 N 個月）；MoR 的自動續訂訂閱之後要再接 subscription 事件。
 
 ---
 
