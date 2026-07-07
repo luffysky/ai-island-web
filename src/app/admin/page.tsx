@@ -576,8 +576,7 @@ export default async function AdminOverviewPage() {
       <div className="bg-bg-card border border-border rounded-xl p-5">
         <h2 className="font-bold mb-3 flex items-center gap-2"><Zap className="w-4 h-4" /> 快速操作</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-2 text-sm">
-          <QuickAction href="/admin/forum-seed" label={<><Sprout className="w-4 h-4" /> 討論區種子</>} />
-          <QuickAction href="/admin/blog-seed" label={<><Newspaper className="w-4 h-4" /> 部落格種子</>} />
+          <QuickAction href="/admin/seed-studio" label={<><Sprout className="w-4 h-4" /> 種子工作室</>} />
           <QuickAction href="/admin/quest-levels" label={<><Gamepad2 className="w-4 h-4" /> AI 關卡</>} />
           <QuickAction href="/admin/payouts" label={<><Banknote className="w-4 h-4" /> 提現對帳</>} />
           <QuickAction href="/admin/payments" label={<><CreditCard className="w-4 h-4" /> 金流狀態</>} />

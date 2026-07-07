@@ -51,7 +51,7 @@ export function CssPlay({ level, done }: { level: CssLevel; done: { stars: numbe
           title="CSS 預覽"
           sandbox="allow-same-origin"
           srcDoc={srcDoc}
-          className="w-[308px] h-[208px] bg-transparent"
+          className="w-full max-w-[308px] h-[208px] bg-transparent"
         />
       </div>
 
