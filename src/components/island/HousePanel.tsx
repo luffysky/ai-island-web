@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { X, Home, Hammer, Bed, Loader2 } from "lucide-react";
 import {
   type ResourceKind,
@@ -27,6 +28,7 @@ import { useToast } from "@/components/ui/Toast";
  */
 import { useOverlayRegister } from "@/lib/overlay-stack";
 export function HousePanel() {
+  const t = useTranslations("island");
   const [open, setOpen] = useState(false);
   useOverlayRegister(open);
   const [house, setHouse] = useState(() => readHouseState());
@@ -63,23 +65,23 @@ export function HousePanel() {
   const build = () => {
     const cost = getHouseBuildCost();
     if (!canAfford(cost)) {
-      toast.warning("資源不夠、繼續採集");
+      toast.warning(t("notEnoughResourcesGather"));
       return;
     }
     payCost(cost);
     buildHouse();
-    toast.success("小屋落成！");
+    toast.success(t("houseBuilt"));
   };
 
   const place = (k: FurnitureKind) => {
     const meta = FURNITURE_META[k];
     if (!canAfford(meta.cost)) {
-      toast.warning("資源不夠");
+      toast.warning(t("notEnoughResources"));
       return;
     }
     payCost(meta.cost);
     addFurniture(k);
-    toast.success(`${meta.emoji} ${meta.label} 已放好`);
+    toast.success(t("furniturePlaced", { item: `${meta.emoji} ${meta.label}` }));
   };
 
   const today = new Date(Date.now() + 8 * 3600_000).toISOString().slice(0, 10);
@@ -89,7 +91,7 @@ export function HousePanel() {
   const sleep = async () => {
     if (busy || sleptToday) return;
     if (!hasBed) {
-      toast.warning("先蓋一張床吧");
+      toast.warning(t("needBedFirst"));
       return;
     }
     setBusy(true);
@@ -99,15 +101,15 @@ export function HousePanel() {
       const j = await res.json();
       if (res.ok) {
         markSlept(today);
-        toast.success("睡了一覺、補 +1 ❤️");
+        toast.success(t("sleptRestored"));
       } else if (j.error === "already_slept") {
         markSlept(today);
-        toast.info("今天已經睡過了");
+        toast.info(t("alreadySlept"));
       } else {
-        toast.error(j.error ?? "睡覺失敗");
+        toast.error(j.error ?? t("sleepFailed"));
       }
     } catch {
-      toast.error("網路錯誤");
+      toast.error(t("networkError"));
     } finally {
       setBusy(false);
     }
@@ -118,8 +120,8 @@ export function HousePanel() {
       <div className="bg-bg-card border border-border rounded-2xl shadow-2xl max-w-md w-[92%] max-h-[85vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
         <header className="px-5 py-3 border-b border-border flex items-center justify-between">
           <div>
-            <h2 className="font-bold flex items-center gap-2"><Home size={16} /> 我的家</h2>
-            <p className="text-[10px] text-fg-muted">收集資源 → 蓋小屋 → 擺家具 → 睡覺補血</p>
+            <h2 className="font-bold flex items-center gap-2"><Home size={16} /> {t("myHome")}</h2>
+            <p className="text-[10px] text-fg-muted">{t("homeSubtitle")}</p>
           </div>
           <button onClick={() => setOpen(false)} className="p-1 rounded hover:bg-bg-elevated"><X size={18} /></button>
         </header>
@@ -138,17 +140,17 @@ export function HousePanel() {
           {!house.builtAt ? (
             <div className="text-center">
               <div className="text-5xl mb-3">🏗️</div>
-              <h3 className="font-bold mb-1">還沒有小屋</h3>
-              <p className="text-xs text-fg-muted mb-4">花 {getHouseBuildCost().wood} 🪵 + {getHouseBuildCost().crystal} 💎 蓋一棟</p>
+              <h3 className="font-bold mb-1">{t("noHouse")}</h3>
+              <p className="text-xs text-fg-muted mb-4">{t("buildCostLine", { wood: getHouseBuildCost().wood ?? 0, crystal: getHouseBuildCost().crystal ?? 0 })}</p>
               <button
                 onClick={build}
                 disabled={!canAfford(getHouseBuildCost())}
                 className="px-5 py-2 rounded-full bg-accent text-black font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1"
               >
-                <Hammer size={14} /> 蓋小屋
+                <Hammer size={14} /> {t("buildHouse")}
               </button>
               {!canAfford(getHouseBuildCost()) && (
-                <p className="text-[10px] text-fg-muted mt-2">資源不夠、繼續採集</p>
+                <p className="text-[10px] text-fg-muted mt-2">{t("notEnoughResourcesGather")}</p>
               )}
             </div>
           ) : (
@@ -156,7 +158,7 @@ export function HousePanel() {
               {/* 內部 2D 平面圖 */}
               <div className="rounded-lg bg-gradient-to-br from-amber-100/10 to-amber-200/5 border border-amber-700/30 p-4 mb-3 min-h-[140px] flex flex-wrap gap-2 items-start content-start">
                 {(house.furniture ?? []).length === 0 ? (
-                  <div className="w-full text-center text-fg-muted text-xs py-8">空蕩蕩的房間、買點家具吧</div>
+                  <div className="w-full text-center text-fg-muted text-xs py-8">{t("emptyRoom")}</div>
                 ) : (
                   (house.furniture ?? []).map((k, i) => (
                     <div key={i} className="text-3xl" title={FURNITURE_META[k].label}>{FURNITURE_META[k].emoji}</div>
@@ -171,11 +173,11 @@ export function HousePanel() {
                 className="w-full py-2.5 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2 mb-3"
               >
                 {busy ? <Loader2 size={14} className="animate-spin" /> : <Bed size={14} />}
-                {sleptToday ? "今天已睡過" : !hasBed ? "先蓋一張床" : "睡覺（+1 ❤️）"}
+                {sleptToday ? t("sleptTodayBtn") : !hasBed ? t("needBed") : t("sleepBtn")}
               </button>
 
               {/* 家具商店 */}
-              <h3 className="text-xs font-bold mb-2 text-fg-muted">添購家具</h3>
+              <h3 className="text-xs font-bold mb-2 text-fg-muted">{t("buyFurniture")}</h3>
               <div className="grid grid-cols-2 gap-2">
                 {(Object.keys(FURNITURE_META) as FurnitureKind[]).map((k) => {
                   const meta = FURNITURE_META[k];

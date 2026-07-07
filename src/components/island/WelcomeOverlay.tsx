@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Play, ChevronRight, MousePointerClick, Footprints, Hand, MapIcon } from "lucide-react";
 
 const STORAGE_KEY = "ai_island_welcome_v1";
@@ -11,6 +12,7 @@ const STORAGE_KEY = "ai_island_welcome_v1";
  * - 後續：直接跳過
  */
 export function WelcomeOverlay() {
+  const t = useTranslations("island");
   const [phase, setPhase] = useState<"hidden" | "title" | "tutorial">("hidden");
   const [step, setStep] = useState(0);
 
@@ -39,11 +41,11 @@ export function WelcomeOverlay() {
             AI Island
           </div>
           <div className="text-base md:text-2xl text-white/80 font-bold tracking-[0.4em] mb-12 drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
-            學習・探索・創造・連結
+            {t("tagline")}
           </div>
           <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/15 backdrop-blur border border-white/30 text-white text-sm md:text-base font-bold animate-pulse">
             <MousePointerClick size={18} />
-            點畫面開始
+            {t("tapToStart")}
           </div>
         </div>
         <style>{`@keyframes welcome-rise { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }`}</style>
@@ -55,23 +57,23 @@ export function WelcomeOverlay() {
   const steps = [
     {
       icon: <MousePointerClick size={32} />,
-      title: "第一人稱視角",
-      desc: "點畫面 lock 滑鼠、左右拖曳轉視角、按 ESC 解鎖滑鼠",
+      title: t("step1Title"),
+      desc: t("step1Desc"),
     },
     {
       icon: <Footprints size={32} />,
-      title: "WASD 走動",
-      desc: "W 前 / S 後 / A 左 / D 右、Shift 加速。手機用左下虛擬搖桿",
+      title: t("step2Title"),
+      desc: t("step2Desc"),
     },
     {
       icon: <Hand size={32} />,
-      title: "E 互動",
-      desc: "走近 NPC / 採集物 / 寶箱 / 牌子 按 E。沙岸按 F 釣魚",
+      title: t("step3Title"),
+      desc: t("step3Desc"),
     },
     {
       icon: <MapIcon size={32} />,
-      title: "B 背包 · M 地圖",
-      desc: "B 開背包看資源 + 成就、M 開全螢幕地圖",
+      title: t("step4Title"),
+      desc: t("step4Desc"),
     },
   ];
   const cur = steps[step];
@@ -85,9 +87,9 @@ export function WelcomeOverlay() {
         <h3 className="text-xl font-bold mb-2">{cur.title}</h3>
         <p className="text-sm text-fg-muted leading-relaxed mb-6">{cur.desc}</p>
         <div className="flex justify-between items-center gap-3">
-          <button onClick={finish} className="text-xs text-fg-muted hover:text-fg">略過</button>
+          <button onClick={finish} className="text-xs text-fg-muted hover:text-fg">{t("skip")}</button>
           <button onClick={() => (isLast ? finish() : setStep(step + 1))} className="px-5 py-2 rounded-full bg-accent text-black font-bold text-sm inline-flex items-center gap-1">
-            {isLast ? <><Play size={14} /> 開始探索</> : <>下一步 <ChevronRight size={14} /></>}
+            {isLast ? <><Play size={14} /> {t("startExplore")}</> : <>{t("next")} <ChevronRight size={14} /></>}
           </button>
         </div>
       </div>

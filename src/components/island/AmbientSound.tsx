@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Volume2, VolumeX } from "lucide-react";
 import { isSoundOn, setSoundOn, subscribeCollect, subscribeOpen, subscribeNpc, RESOURCE_META, type ResourceKind } from "./island-bus";
 
@@ -13,6 +14,7 @@ import { isSoundOn, setSoundOn, subscribeCollect, subscribeOpen, subscribeNpc, R
  * - 右上小喇叭 chip 切換靜音、寫 localStorage 記憶
  */
 export function AmbientSound() {
+  const t = useTranslations("island");
   const ctxRef = useRef<AudioContext | null>(null);
   const ambientGainRef = useRef<GainNode | null>(null);
   const sfxGainRef = useRef<GainNode | null>(null);
@@ -104,12 +106,12 @@ export function AmbientSound() {
   return (
     <button
       onClick={toggle}
-      title={on ? "靜音" : "開聲音"}
+      title={on ? t("muteLabel") : t("soundOnTitle")}
       className="absolute top-14 right-16 z-30 pointer-events-auto w-9 h-9 rounded-full bg-black/60 backdrop-blur text-white flex items-center justify-center hover:bg-black/80"
     >
       {on ? <Volume2 size={14} /> : <VolumeX size={14} className="text-fg-muted" />}
       {!initialized && on && (
-        <span className="absolute -bottom-5 right-0 text-[9px] text-yellow-300 whitespace-nowrap">點任意處啟動</span>
+        <span className="absolute -bottom-5 right-0 text-[9px] text-yellow-300 whitespace-nowrap">{t("tapToActivate")}</span>
       )}
     </button>
   );

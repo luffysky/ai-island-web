@@ -1,19 +1,23 @@
 import { createSupabaseServer } from "@/lib/supabase";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 import { Crown, Flame, Trophy, Sparkles, Award } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "全島排行榜 — 即時更新 | AI 島",
-  description: "看誰連勝最久、誰 XP 最高、誰 z-coin 最多。即時更新、努力者上榜。",
-  alternates: { canonical: "/leaderboard" },
-  openGraph: {
-    title: "全島排行榜 | AI 島",
-    description: "即時更新、看誰學最多、誰連勝最久。",
-    type: "website",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("leaderboard");
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+    alternates: { canonical: "/leaderboard" },
+    openGraph: {
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+      type: "website",
+    },
+  };
+}
 
 type LbUser = {
   id: string;
@@ -28,22 +32,26 @@ type LbUser = {
 };
 
 type Board = "xp" | "streak" | "lessons";
-const BOARDS: { id: Board; label: string; emoji: string; hint: string }[] = [
-  { id: "xp", label: "XP", emoji: "🏆", hint: "累積經驗值最高" },
-  { id: "streak", label: "連勝", emoji: "🔥", hint: "連續學習天數最長" },
-  { id: "lessons", label: "完課", emoji: "📚", hint: "完成最多小節" },
+type Tr = Awaited<ReturnType<typeof getTranslations>>;
+const BOARDS: { id: Board; emoji: string }[] = [
+  { id: "xp", emoji: "🏆" },
+  { id: "streak", emoji: "🔥" },
+  { id: "lessons", emoji: "📚" },
 ];
 
 /** 依榜別取該使用者的主要數值 + 顯示。 */
-function metricOf(u: LbUser, board: Board): { value: number; text: string } {
-  if (board === "streak") return { value: u.streak_days ?? 0, text: `${u.streak_days ?? 0} 天連勝` };
-  if (board === "lessons") return { value: u.lessons_done ?? 0, text: `${u.lessons_done ?? 0} 課完成` };
-  return { value: u.xp ?? 0, text: `${(u.xp ?? 0).toLocaleString()} XP` };
+function metricOf(u: LbUser, board: Board, t: Tr): { value: number; text: string } {
+  if (board === "streak") return { value: u.streak_days ?? 0, text: t("streakValue", { n: u.streak_days ?? 0 }) };
+  if (board === "lessons") return { value: u.lessons_done ?? 0, text: t("lessonsValue", { n: u.lessons_done ?? 0 }) };
+  return { value: u.xp ?? 0, text: t("xpValue", { n: (u.xp ?? 0).toLocaleString() }) };
 }
 
 export default async function LeaderboardPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
   const { tab } = await searchParams;
   const board: Board = tab === "streak" ? "streak" : tab === "lessons" ? "lessons" : "xp";
+  const t = await getTranslations("leaderboard");
+  const boardLabel = (id: Board) => t(id === "streak" ? "boardStreakLabel" : id === "lessons" ? "boardLessonsLabel" : "boardXpLabel");
+  const boardHint = (id: Board) => t(id === "streak" ? "boardStreakHint" : id === "lessons" ? "boardLessonsHint" : "boardXpHint");
   const supabase = await createSupabaseServer();
 
   let list: LbUser[] = [];
@@ -85,18 +93,18 @@ export default async function LeaderboardPage({ searchParams }: { searchParams: 
             <Trophy size={40} className="text-white drop-shadow-lg" />
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold mb-2 bg-gradient-to-r from-yellow-400 via-amber-300 to-orange-400 bg-clip-text text-transparent">
-            全島排行榜
+            {t("title")}
           </h1>
-          <p className="text-sm text-fg-muted">即時更新 · {BOARDS.find((b) => b.id === board)?.hint}</p>
+          <p className="text-sm text-fg-muted">{t("liveUpdate")} · {boardHint(board)}</p>
           <div className="mt-3 inline-flex items-center gap-2 text-xs text-fg-muted">
-            <span className="inline-flex items-center gap-1"><Award size={11} className="text-yellow-400" /> {list.length} 位玩家</span>
+            <span className="inline-flex items-center gap-1"><Award size={11} className="text-yellow-400" /> {t("playersCount", { n: list.length })}</span>
           </div>
           {/* 榜別切換 */}
           <div className="mt-5 flex items-center justify-center gap-2 flex-wrap">
             {BOARDS.map((b) => (
               <Link key={b.id} href={b.id === "xp" ? "/leaderboard" : `/leaderboard?tab=${b.id}`} scroll={false}
                 className={`px-4 py-1.5 rounded-full text-sm font-bold border transition ${board === b.id ? "bg-gradient-to-r from-yellow-400 to-amber-500 text-black border-transparent shadow-lg shadow-yellow-500/20" : "bg-bg-card/60 border-border text-fg-muted hover:border-yellow-400/50 hover:text-fg"}`}>
-                {b.emoji} {b.label}
+                {b.emoji} {boardLabel(b.id)}
               </Link>
             ))}
           </div>
@@ -107,9 +115,9 @@ export default async function LeaderboardPage({ searchParams }: { searchParams: 
         {list.length === 0 ? (
           <div className="bg-bg-card border border-border rounded-2xl p-12 text-center">
             <div className="text-6xl mb-3">🏝️</div>
-            <p className="text-fg-muted">還沒有人上榜、你可以成為第一個！</p>
+            <p className="text-fg-muted">{t("emptyTitle")}</p>
             <Link href="/chapters" className="inline-block mt-4 px-5 py-2 rounded-full bg-accent text-black font-bold text-sm">
-              開始學習
+              {t("startLearning")}
             </Link>
           </div>
         ) : (
@@ -118,11 +126,11 @@ export default async function LeaderboardPage({ searchParams }: { searchParams: 
             {top3.length > 0 && (
               <section className="flex items-end justify-center gap-2 md:gap-4 flex-wrap pb-6">
                 {/* 第 2 名 */}
-                {top3[1] && <PodiumCard user={top3[1]} rank={2} board={board} />}
+                {top3[1] && <PodiumCard user={top3[1]} rank={2} board={board} t={t} />}
                 {/* 第 1 名 */}
-                {top3[0] && <PodiumCard user={top3[0]} rank={1} board={board} />}
+                {top3[0] && <PodiumCard user={top3[0]} rank={1} board={board} t={t} />}
                 {/* 第 3 名 */}
-                {top3[2] && <PodiumCard user={top3[2]} rank={3} board={board} />}
+                {top3[2] && <PodiumCard user={top3[2]} rank={3} board={board} t={t} />}
               </section>
             )}
 
@@ -146,7 +154,7 @@ export default async function LeaderboardPage({ searchParams }: { searchParams: 
                       <div className="flex-1 min-w-0">
                         <div className="font-semibold text-sm truncate flex items-center gap-1">
                           {u.display_name || u.username}
-                          {isMe && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent text-black font-bold">你</span>}
+                          {isMe && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent text-black font-bold">{t("you")}</span>}
                         </div>
                         <div className="text-[10px] text-fg-muted truncate">@{u.username}</div>
                       </div>
@@ -157,9 +165,9 @@ export default async function LeaderboardPage({ searchParams }: { searchParams: 
                       <div className="text-right min-w-[58px]">
                         <div className="text-sm font-bold text-fg inline-flex items-center gap-1 justify-end">
                           {board === "streak" && <Flame size={12} className="text-orange-400" />}
-                          {metricOf(u, board).value.toLocaleString()}
+                          {metricOf(u, board, t).value.toLocaleString()}
                         </div>
-                        <div className="text-[10px] text-fg-muted">{BOARDS.find((b) => b.id === board)?.label}</div>
+                        <div className="text-[10px] text-fg-muted">{boardLabel(board)}</div>
                       </div>
                     </div>
                   );
@@ -171,11 +179,11 @@ export default async function LeaderboardPage({ searchParams }: { searchParams: 
 
         {/* Legend */}
         <div className="bg-bg-card/50 border border-border rounded-xl p-4 text-xs text-fg-muted">
-          <div className="font-bold text-fg mb-1.5">📖 排名規則</div>
+          <div className="font-bold text-fg mb-1.5">📖 {t("legendTitle")}</div>
           <ul className="space-y-0.5 list-disc list-inside">
-            <li>🏆 <b className="text-fg">XP</b>：累積經驗值 · 🔥 <b className="text-fg">連勝</b>：連續學習天數 · 📚 <b className="text-fg">完課</b>：完成的小節數</li>
-            <li>連續中斷會在隔天 03:00 重設</li>
-            <li>三個榜都即時更新</li>
+            <li>🏆 <b className="text-fg">{boardLabel("xp")}</b>：{t("legendXpDesc")} · 🔥 <b className="text-fg">{boardLabel("streak")}</b>：{t("legendStreakDesc")} · 📚 <b className="text-fg">{boardLabel("lessons")}</b>：{t("legendLessonsDesc")}</li>
+            <li>{t("legendReset")}</li>
+            <li>{t("legendLive")}</li>
           </ul>
         </div>
       </main>
@@ -187,11 +195,11 @@ export default async function LeaderboardPage({ searchParams }: { searchParams: 
             <div className="font-mono font-bold text-accent">#{myRank.rank}</div>
             <Avatar user={myRank.user} size={32} />
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-bold truncate">{BOARDS.find((b) => b.id === board)?.emoji} 你在「{BOARDS.find((b) => b.id === board)?.label}」榜第 {myRank.rank}</div>
-              <div className="text-[10px] text-fg-muted">{metricOf(myRank.user, board).text} · Lv {myRank.user.level}</div>
+              <div className="text-xs font-bold truncate">{BOARDS.find((b) => b.id === board)?.emoji} {t("youRankOnBoard", { board: boardLabel(board), rank: myRank.rank })}</div>
+              <div className="text-[10px] text-fg-muted">{metricOf(myRank.user, board, t).text} · Lv {myRank.user.level}</div>
             </div>
             <Link href="/chapters" className="text-xs px-3 py-1.5 rounded-full bg-accent text-black font-bold">
-              繼續學
+              {t("continueLearning")}
             </Link>
           </div>
         </div>
@@ -200,7 +208,7 @@ export default async function LeaderboardPage({ searchParams }: { searchParams: 
   );
 }
 
-function PodiumCard({ user, rank, board }: { user: LbUser; rank: 1 | 2 | 3; board: Board }) {
+function PodiumCard({ user, rank, board, t }: { user: LbUser; rank: 1 | 2 | 3; board: Board; t: Tr }) {
   const config = {
     1: {
       height: "min-h-[11rem] md:min-h-[13rem]",
@@ -259,7 +267,7 @@ function PodiumCard({ user, rank, board }: { user: LbUser; rank: 1 | 2 | 3; boar
         {/* 底座卡 */}
         <div className={`mt-2 px-3 py-2 rounded-xl border ring-1 ${config.ring} ${config.bg} text-center min-w-[110px] shadow-xl ${config.shadow}`}>
           <div className={`text-sm font-extrabold bg-gradient-to-r ${config.gradient} bg-clip-text text-transparent`}>
-            {metricOf(user, board).text}
+            {metricOf(user, board, t).text}
           </div>
           <div className="text-[10px] text-fg-muted font-mono mt-0.5">Lv {user.level}{board !== "xp" ? ` · ${(user.xp ?? 0).toLocaleString()} XP` : ""}</div>
           {board !== "streak" && (

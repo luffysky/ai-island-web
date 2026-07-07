@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { X, Sparkles, Loader2 } from "lucide-react";
 import { subscribeNpc, readFortuneToday, saveFortuneResult, type Fortune } from "./island-bus";
 import { useToast } from "@/components/ui/Toast";
@@ -15,6 +16,7 @@ const TIER_COLOR: Record<Fortune["tier"], string> = {
 
 import { useOverlayRegister } from "@/lib/overlay-stack";
 export function SeerPanel() {
+  const t = useTranslations("island");
   const [open, setOpen] = useState(false);
   useOverlayRegister(open);
   const [today, setToday] = useState(readFortuneToday());
@@ -54,12 +56,12 @@ export function SeerPanel() {
         saveFortuneResult(f);
         setToday({ date: today.date, result: f });
       } else if (j.error === "already_claimed") {
-        toast.info("今天已經翻過牌了、明早再來");
+        toast.info(t("fortuneAlready"));
       } else {
-        toast.error(j.error ?? "占卜失敗、稍後再試");
+        toast.error(j.error ?? t("fortuneFailed"));
       }
     } catch {
-      toast.error("網路錯誤、稍後再試");
+      toast.error(t("networkErrorRetry"));
     } finally {
       setBusy(false);
     }
@@ -72,8 +74,8 @@ export function SeerPanel() {
       <div className="bg-bg-card border border-border rounded-2xl shadow-2xl max-w-sm w-[92%] flex flex-col" onClick={(e) => e.stopPropagation()}>
         <header className="px-5 py-3 border-b border-border flex items-center justify-between">
           <div>
-            <h2 className="font-bold flex items-center gap-2">🔮 占卜師</h2>
-            <p className="text-[10px] text-fg-muted">「島民、看看你今日的星象」· {today.date}</p>
+            <h2 className="font-bold flex items-center gap-2">🔮 {t("npcSeerName")}</h2>
+            <p className="text-[10px] text-fg-muted">{t("seerIntro")} · {today.date}</p>
           </div>
           <button onClick={() => setOpen(false)} className="p-1 rounded hover:bg-bg-elevated"><X size={18} /></button>
         </header>
@@ -85,7 +87,7 @@ export function SeerPanel() {
               <div className="text-2xl font-black mb-1 tracking-widest">{r.tier}</div>
               <p className="text-xs leading-relaxed opacity-90">{r.message}</p>
               <div className="mt-3 text-[10px] bg-black/20 rounded-full px-3 py-1 inline-block">
-                獎勵 +{r.reward} {r.rewardKind === "coin" ? "🪙" : r.rewardKind === "crystal" ? "💎" : "❤️"}
+                {t("reward")} +{r.reward} {r.rewardKind === "coin" ? "🪙" : r.rewardKind === "crystal" ? "💎" : "❤️"}
               </div>
             </div>
           ) : (
@@ -99,8 +101,8 @@ export function SeerPanel() {
               ) : (
                 <>
                   <Sparkles size={30} className="text-accent" />
-                  <span className="text-sm font-bold">翻今日運勢牌</span>
-                  <span className="text-[10px] text-fg-muted">一天一次、明早再來</span>
+                  <span className="text-sm font-bold">{t("drawFortune")}</span>
+                  <span className="text-[10px] text-fg-muted">{t("onceDaily")}</span>
                 </>
               )}
             </button>
@@ -108,7 +110,7 @@ export function SeerPanel() {
         </div>
 
         <footer className="px-5 py-2 border-t border-border text-[10px] text-fg-muted text-center">
-          {r ? "明天再翻一次" : "點上面那張牌"}
+          {r ? t("fortuneComeTomorrow") : t("tapCard")}
         </footer>
       </div>
     </div>

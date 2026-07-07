@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { X, Volume2, Sparkles, Eraser, Image as ImgIcon } from "lucide-react";
 import { isSoundOn, setSoundOn, resetInventory } from "./island-bus";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
@@ -28,6 +29,7 @@ export function subscribeSettingsToggle(fn: () => void) { settingsSubs.add(fn); 
 
 import { useOverlayRegister } from "@/lib/overlay-stack";
 export function SettingsPanel() {
+  const t = useTranslations("island");
   const [open, setOpen] = useState(false);
   useOverlayRegister(open);
   const [sound, setSound] = useState(true);
@@ -65,10 +67,10 @@ export function SettingsPanel() {
   };
   const clearAll = async () => {
     const ok = await confirm({
-      title: "清掉所有島嶼進度？",
-      description: "包含背包 / 任務 / 成就 / 寶箱 / 親密度。z 幣已入帳的不會退回。",
+      title: t("confirmClearTitle"),
+      description: t("confirmClearDesc"),
       destructive: true,
-      confirmLabel: "清除",
+      confirmLabel: t("clearBtn"),
     });
     if (!ok) return;
     resetInventory();
@@ -81,38 +83,38 @@ export function SettingsPanel() {
     <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-sm pointer-events-auto" onClick={() => setOpen(false)}>
       <div className="bg-bg-card border border-border rounded-2xl shadow-2xl max-w-md w-[92%] flex flex-col" onClick={(e) => e.stopPropagation()}>
         <header className="px-5 py-3 border-b border-border flex items-center justify-between">
-          <h2 className="font-bold">⚙️ 設定</h2>
+          <h2 className="font-bold">⚙️ {t("settingsTitle")}</h2>
           <button onClick={() => setOpen(false)} className="p-1 rounded hover:bg-bg-elevated"><X size={18} /></button>
         </header>
         <div className="p-4 space-y-3">
-          <Row icon={<Volume2 size={16} />} label="背景音 / 音效">
+          <Row icon={<Volume2 size={16} />} label={t("soundLabel")}>
             <button onClick={toggleSound} className={`text-xs px-3 py-1.5 rounded-full ${sound ? "bg-emerald-500/20 text-emerald-900 dark:text-emerald-100" : "bg-bg-elevated text-fg-muted"}`}>
-              {sound ? "開" : "靜音"}
+              {sound ? t("onLabel") : t("muteLabel")}
             </button>
           </Row>
-          <Row icon={<Sparkles size={16} />} label="後製特效（Bloom / Vignette）">
+          <Row icon={<Sparkles size={16} />} label={t("fxLabel")}>
             <button onClick={toggleFx} className={`text-xs px-3 py-1.5 rounded-full ${fx ? "bg-emerald-500/20 text-emerald-900 dark:text-emerald-100" : "bg-bg-elevated text-fg-muted"}`}>
-              {fx ? "開" : "關"}（reload 生效）
+              {fx ? t("onLabel") : t("offLabel")}{t("reloadSuffix")}
             </button>
           </Row>
-          <Row icon={<ImgIcon size={16} />} label="畫質">
+          <Row icon={<ImgIcon size={16} />} label={t("qualityLabel")}>
             <div className="flex gap-1">
               {(["low", "med", "high"] as const).map((q) => (
                 <button key={q} onClick={() => setQ(q)} className={`text-xs px-3 py-1.5 rounded-full ${quality === q ? "bg-accent text-black font-bold" : "bg-bg-elevated text-fg-muted"}`}>
-                  {q === "low" ? "省電" : q === "med" ? "標準" : "高清"}
+                  {q === "low" ? t("qualityLow") : q === "med" ? t("qualityMed") : t("qualityHigh")}
                 </button>
               ))}
             </div>
           </Row>
           <hr className="border-border" />
-          <Row icon={<Eraser size={16} />} label="清掉所有島嶼進度">
+          <Row icon={<Eraser size={16} />} label={t("clearProgressLabel")}>
             <button onClick={clearAll} className="text-xs px-3 py-1.5 rounded-full bg-red-500/15 text-red-900 dark:text-red-200 hover:bg-red-500/25">
-              清除
+              {t("clearBtn")}
             </button>
           </Row>
         </div>
         <footer className="px-5 py-2 border-t border-border text-[10px] text-fg-muted text-center">
-          按 ESC 關閉。z 幣資料存伺服器、本面板不會動到。
+          {t("settingsFooter")}
         </footer>
       </div>
     </div>

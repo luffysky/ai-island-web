@@ -1,5 +1,6 @@
 import { CAREER_PATHS } from "@/lib/types";
 import { getChapterMetas } from "@/lib/content";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
@@ -7,6 +8,8 @@ export default async function CareerPage({ params }: { params: Promise<{ id: str
   const { id } = await params;
   const path = CAREER_PATHS[id as keyof typeof CAREER_PATHS];
   if (!path) notFound();
+
+  const t = await getTranslations("career");
 
   const all = await getChapterMetas();
   const chapters = path.chapters.map(cid => all.find(c => c.id === cid)).filter(Boolean) as any[];
@@ -20,7 +23,7 @@ export default async function CareerPage({ params }: { params: Promise<{ id: str
         <p className="text-fg-muted max-w-xl mx-auto">{path.description}</p>
       </div>
 
-      <h2 className="text-xl font-bold mb-4">推薦學習順序（{chapters.length} 章）</h2>
+      <h2 className="text-xl font-bold mb-4">{t("recommendedOrder", { n: chapters.length })}</h2>
       <div className="space-y-2">
         {chapters.map((ch, i) => (
           <Link key={ch.id} href={`/chapters/${ch.id}`} className="flex items-center gap-4 p-4 rounded-lg bg-bg-card border border-border hover:border-accent">
@@ -29,7 +32,7 @@ export default async function CareerPage({ params }: { params: Promise<{ id: str
               <div className="font-semibold">{ch.title}</div>
               <div className="text-sm text-fg-muted">{ch.subtitle}</div>
             </div>
-            <div className="text-xs text-fg-muted">{ch.lessonCount} lessons</div>
+            <div className="text-xs text-fg-muted">{t("lessonsCount", { n: ch.lessonCount })}</div>
           </Link>
         ))}
       </div>

@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "next-intl";
 import { xpForNextLevel, CAREER_PATHS } from "@/lib/types";
 import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import { Flame, Coins, Heart, Trophy, Calendar, Award, TrendingUp } from "lucide-react";
@@ -7,6 +8,7 @@ import { DailyCheckin } from "@/components/gamification/DailyCheckin";
 import { LearningCoachCard } from "@/components/dashboard/LearningCoachCard";
 
 export function DashboardView({ profile, progress, achievements, quests }: any) {
+  const t = useTranslations("dashboard");
   const xpInfo = xpForNextLevel(profile.xp ?? 0);
   const totalLessons = progress.length;
   const uniqueChapters = new Set(progress.map((p: any) => p.chapter_id)).size;
@@ -22,7 +24,7 @@ export function DashboardView({ profile, progress, achievements, quests }: any) 
       <div className="bg-gradient-to-br from-bg-card to-bg-elevated border border-border rounded-2xl p-6 mb-6">
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div>
-            <div className="text-sm text-fg-muted">歡迎回來</div>
+            <div className="text-sm text-fg-muted">{t("welcomeBack")}</div>
             <h1 className="text-3xl font-bold mb-1">
               {profile.display_name || profile.username}
             </h1>
@@ -37,7 +39,7 @@ export function DashboardView({ profile, progress, achievements, quests }: any) 
         {/* XP bar */}
         <div className="mt-6">
           <div className="flex justify-between text-xs text-fg-muted mb-1">
-            <span>距離 Lv {profile.level + 1}</span>
+            <span>{t("untilLevel", { level: profile.level + 1 })}</span>
             <span>{xpInfo.current} / {xpInfo.needed} XP</span>
           </div>
           <div className="h-3 bg-black/30 rounded-full overflow-hidden">
@@ -48,10 +50,10 @@ export function DashboardView({ profile, progress, achievements, quests }: any) 
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <StatCard icon={<Flame className="text-orange-400" />} label="連勝" value={profile.streak_days} unit="天" />
+        <StatCard icon={<Flame className="text-orange-400" />} label={t("statStreak")} value={profile.streak_days} unit={t("unitDays")} />
         <StatCard icon={<Coins className="text-yellow-400" />} label="Z-coin" value={profile.z_coin} />
-        <StatCard icon={<Heart className="text-red-400" />} label="生命" value={`${profile.hearts}/5`} />
-        <StatCard icon={<Trophy className="text-purple-400" />} label="成就" value={achievements.length} />
+        <StatCard icon={<Heart className="text-red-400" />} label={t("statHearts")} value={`${profile.hearts}/5`} />
+        <StatCard icon={<Trophy className="text-purple-400" />} label={t("statAchievements")} value={achievements.length} />
       </div>
 
       {/* 每日簽到 */}
@@ -62,14 +64,14 @@ export function DashboardView({ profile, progress, achievements, quests }: any) 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Daily quests */}
         <div className="bg-bg-card border border-border rounded-xl p-5">
-          <h2 className="font-bold mb-3 flex items-center gap-2"><Calendar size={16} /> 今日任務</h2>
+          <h2 className="font-bold mb-3 flex items-center gap-2"><Calendar size={16} /> {t("todayQuests")}</h2>
           {quests.length === 0 ? (
-            <p className="text-sm text-fg-muted">今天還沒任務、完成 1 個 lesson 觸發每日任務</p>
+            <p className="text-sm text-fg-muted">{t("noQuests")}</p>
           ) : (
             <div className="space-y-2">
               {quests.map((q: any) => (
                 <div key={q.id} className="flex items-center justify-between text-sm">
-                  <span>{q.quest_type === "lesson" ? "完成 lesson" : q.quest_type === "quiz" ? "答對 quiz" : q.quest_type}</span>
+                  <span>{q.quest_type === "lesson" ? t("questLesson") : q.quest_type === "quiz" ? t("questQuiz") : q.quest_type}</span>
                   <span className={q.completed ? "text-accent" : "text-fg-muted"}>{q.progress}/{q.target}</span>
                 </div>
               ))}
@@ -79,20 +81,20 @@ export function DashboardView({ profile, progress, achievements, quests }: any) 
 
         {/* Stats */}
         <div className="bg-bg-card border border-border rounded-xl p-5">
-          <h2 className="font-bold mb-3 flex items-center gap-2"><TrendingUp size={16} /> 學習統計</h2>
+          <h2 className="font-bold mb-3 flex items-center gap-2"><TrendingUp size={16} /> {t("learningStats")}</h2>
           <div className="space-y-2 text-sm">
-            <Row label="完成 lesson" value={totalLessons} />
-            <Row label="進入章節" value={`${uniqueChapters} / 60`} />
-            <Row label="總 XP" value={profile.xp} />
-            <Row label="加入時間" value={new Date(profile.created_at).toLocaleDateString("zh-TW")} />
+            <Row label={t("statLessonsDone")} value={totalLessons} />
+            <Row label={t("statChapters")} value={`${uniqueChapters} / 60`} />
+            <Row label={t("statTotalXp")} value={profile.xp} />
+            <Row label={t("statJoined")} value={new Date(profile.created_at).toLocaleDateString("zh-TW")} />
           </div>
         </div>
 
         {/* Achievements */}
         <div className="bg-bg-card border border-border rounded-xl p-5">
-          <h2 className="font-bold mb-3 flex items-center gap-2"><Award size={16} /> 最新成就</h2>
+          <h2 className="font-bold mb-3 flex items-center gap-2"><Award size={16} /> {t("latestAchievements")}</h2>
           {achievements.length === 0 ? (
-            <p className="text-sm text-fg-muted">完成第一個 lesson 解鎖第一個成就</p>
+            <p className="text-sm text-fg-muted">{t("noAchievements")}</p>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {achievements.slice(0, 8).map((ua: any) => (
@@ -103,7 +105,7 @@ export function DashboardView({ profile, progress, achievements, quests }: any) 
             </div>
           )}
           {achievements.length > 0 && (
-            <Link href="/me/history" className="block mt-3 text-xs text-accent hover:underline">查看全部 →</Link>
+            <Link href="/me/history" className="block mt-3 text-xs text-accent hover:underline">{t("viewAll")}</Link>
           )}
         </div>
       </div>
@@ -113,16 +115,16 @@ export function DashboardView({ profile, progress, achievements, quests }: any) 
 
       {/* Continue learning */}
       <div className="mt-6 bg-bg-card border border-border rounded-xl p-5">
-        <h2 className="font-bold mb-3">📚 繼續學習</h2>
+        <h2 className="font-bold mb-3">📚 {t("continueLearning")}</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {Object.entries(byChapter).slice(0, 6).map(([cid, count]) => (
             <Link key={cid} href={`/chapters/${cid}`} className="p-3 rounded-lg bg-bg-elevated border border-border hover:border-accent">
               <div className="text-xs text-fg-muted">Ch {chapterDisplayNumberById(Number(cid))}</div>
-              <div className="text-sm font-semibold mt-1">{count} lessons 已完成</div>
+              <div className="text-sm font-semibold mt-1">{t("lessonsCompleted", { count })}</div>
             </Link>
           ))}
         </div>
-        <Link href="/chapters" className="block mt-4 text-center text-sm text-accent hover:underline">瀏覽所有章節 →</Link>
+        <Link href="/chapters" className="block mt-4 text-center text-sm text-accent hover:underline">{t("browseAllChapters")}</Link>
       </div>
     </div>
   );

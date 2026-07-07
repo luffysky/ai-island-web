@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { touchInteract, touchLook } from "./island-bus";
 
 /**
@@ -10,6 +11,7 @@ import { touchInteract, touchLook } from "./island-bus";
  * - 右下 E 互動鈕
  */
 export function TouchControls() {
+  const t = useTranslations("island");
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -28,12 +30,12 @@ export function TouchControls() {
         onClick={touchInteract}
         className="fixed right-6 bottom-10 w-16 h-16 rounded-full bg-yellow-400/95 text-black font-bold text-lg shadow-lg active:scale-90 active:bg-yellow-500"
         style={{ touchAction: "none", zIndex: 70 }}
-        aria-label="互動"
+        aria-label={t("interact")}
       >
         E
       </button>
       <div className="fixed bottom-3 left-3 z-30 text-[10px] text-white/70 bg-black/40 px-2 py-1 rounded pointer-events-none max-w-[calc(100vw-100px)]">
-        👆 點地面走過去 · 右側拖視角 · E 互動
+        {t("touchHint")}
       </div>
       <LookPad />
     </>

@@ -1,24 +1,29 @@
 import { CareerPathSection } from "@/components/home/CareerPathSection";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { Target } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "6 大職業路線 — 前端 / 全端 / AI / 資料 / 接案 / 創業 | AI 島",
-  description: "選一條最短路徑學程式：前端工匠 / 全端戰士 / AI 馴獸師 / 資料煉金 / 接案傭兵 / 島民創業家、客製學習地圖。",
-  alternates: { canonical: "/career" },
-  openGraph: {
-    title: "6 大職業路線 | AI 島",
-    description: "選一條最符合你目標的職業路線、客製學習地圖。",
-    type: "website",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("career");
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+    alternates: { canonical: "/career" },
+    openGraph: {
+      title: t("ogTitle"),
+      description: t("ogDescription"),
+      type: "website",
+    },
+  };
+}
 
-export default function CareerIndexPage() {
+export default async function CareerIndexPage() {
+  const t = await getTranslations("career");
   return (
     <div>
       <div className="max-w-6xl mx-auto px-6 py-12 text-center">
-        <h1 className="text-3xl font-bold mb-2 inline-flex w-full items-center justify-center gap-2"><Target size={28} className="text-accent" /> 6 大職業路線</h1>
-        <p className="text-fg-muted">選一條最符合你目標的路、最短時間最快上場</p>
+        <h1 className="text-3xl font-bold mb-2 inline-flex w-full items-center justify-center gap-2"><Target size={28} className="text-accent" /> {t("pageTitle")}</h1>
+        <p className="text-fg-muted">{t("pageSubtitle")}</p>
       </div>
       <CareerPathSection />
     </div>

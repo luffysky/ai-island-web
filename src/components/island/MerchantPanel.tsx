@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { X, Check } from "lucide-react";
 import {
   SHOP_ITEMS,
@@ -14,6 +15,7 @@ import {
 
 import { useOverlayRegister } from "@/lib/overlay-stack";
 export function MerchantPanel() {
+  const t = useTranslations("island");
   const [open, setOpen] = useState(false);
   useOverlayRegister(open);
   const [inv, setInv] = useState<Record<ResourceKind, number>>({ wood: 0, crystal: 0, shell: 0 });
@@ -64,8 +66,8 @@ export function MerchantPanel() {
       <div className="bg-bg-card border border-border rounded-2xl shadow-2xl max-w-md w-[92%] flex flex-col" onClick={(e) => e.stopPropagation()}>
         <header className="px-5 py-3 border-b border-border flex items-center justify-between">
           <div>
-            <h2 className="font-bold flex items-center gap-2">🧙 神秘商人</h2>
-            <p className="text-[10px] text-fg-muted">「想要這些好東西嗎？拿你的資源來換吧」</p>
+            <h2 className="font-bold flex items-center gap-2">🧙 {t("npcMerchantName")}</h2>
+            <p className="text-[10px] text-fg-muted">{t("merchantIntro")}</p>
           </div>
           <button onClick={() => setOpen(false)} className="p-1 rounded hover:bg-bg-elevated"><X size={18} /></button>
         </header>
@@ -78,7 +80,7 @@ export function MerchantPanel() {
               <span className="font-bold">{inv[k] ?? 0}</span>
             </span>
           ))}
-          <span className="text-fg-muted ml-auto">背包庫存</span>
+          <span className="text-fg-muted ml-auto">{t("bagInventory")}</span>
         </div>
 
         <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -109,7 +111,7 @@ export function MerchantPanel() {
         </div>
 
         <footer className="px-5 py-2 border-t border-border text-[10px] text-fg-muted text-center">
-          buff 30 秒 / 60 秒 / 10 分鐘不等、可在 HUD 上方看剩餘時間
+          {t("merchantFooter")}
         </footer>
       </div>
     </div>

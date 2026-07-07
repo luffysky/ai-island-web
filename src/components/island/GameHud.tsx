@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import {
   Map as MapIcon,
@@ -28,6 +29,7 @@ type Profile = {
 };
 
 export function GameHud({ profile }: { profile: Profile | null }) {
+  const t = useTranslations("island");
   const [showHello, setShowHello] = useState(true);
   const toast = useToast();
   useEffect(() => {
@@ -49,7 +51,7 @@ export function GameHud({ profile }: { profile: Profile | null }) {
             AI Island
           </h1>
           <p className="text-xs sm:text-base md:text-xl text-white/85 font-bold tracking-[0.2em] md:tracking-[0.3em] mt-2 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
-            學習・探索・創造・連結
+            {t("tagline")}
           </p>
         </div>
       )}
@@ -66,7 +68,7 @@ export function GameHud({ profile }: { profile: Profile | null }) {
           )}
           <div className="flex-1 min-w-0">
             <div className="text-white text-sm font-bold truncate">
-              {profile?.display_name || profile?.username || "島民"}
+              {profile?.display_name || profile?.username || t("resident")}
             </div>
             <div className="flex items-center gap-1.5 mt-0.5">
               <span className="text-[10px] text-yellow-300 font-bold">Lv {lv}</span>
@@ -85,12 +87,12 @@ export function GameHud({ profile }: { profile: Profile | null }) {
 
       {/* 底部 HUD chip nav — 桌機 / 筆電全功能（中央） */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 pointer-events-auto hidden md:flex items-center gap-1 bg-black/55 backdrop-blur rounded-full px-2 py-1.5">
-        <HudChip icon={<MapIcon size={16} />} label="地圖" onClick={scrollMinimap} />
-        <HudChip icon={<Backpack size={16} />} label="背包" onClick={emitBagToggle} hotkey="B" />
-        <HudChip icon={<ClipboardList size={16} />} label="任務" onClick={() => toast.info("走到漁夫長老身邊按 E 開任務")} />
-        <HudChip icon={<Trophy size={16} />} label="成就" onClick={emitBagToggle} />
-        <HudChip icon={<Users size={16} />} label="排行" onClick={() => toast.info("走到 🏆 牌子按 E")} />
-        <HudChip icon={<Settings size={16} />} label="設定" onClick={emitSettingsToggle} />
+        <HudChip icon={<MapIcon size={16} />} label={t("mapLabel")} onClick={scrollMinimap} />
+        <HudChip icon={<Backpack size={16} />} label={t("bag")} onClick={emitBagToggle} hotkey="B" />
+        <HudChip icon={<ClipboardList size={16} />} label={t("quests")} onClick={() => toast.info(t("hintQuests"))} />
+        <HudChip icon={<Trophy size={16} />} label={t("achievements")} onClick={emitBagToggle} />
+        <HudChip icon={<Users size={16} />} label={t("ranking")} onClick={() => toast.info(t("hintRanking"))} />
+        <HudChip icon={<Settings size={16} />} label={t("settings")} onClick={emitSettingsToggle} />
       </div>
 
       {/* 手機版精簡 chip nav — 放底部 E 鈕左側 */}

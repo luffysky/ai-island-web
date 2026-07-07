@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Coins, Package } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import {
@@ -19,6 +20,7 @@ import {
  * - 一鍵兌換 z 幣（call /api/island/redeem）
  */
 export function InventoryBag() {
+  const t = useTranslations("island");
   const [inv, setInv] = useState<Record<ResourceKind, number>>({ wood: 0, crystal: 0, shell: 0 });
   const [floats, setFloats] = useState<Array<{ id: number; text: string }>>([]);
   const [busy, setBusy] = useState(false);
@@ -58,13 +60,13 @@ export function InventoryBag() {
       if (res.ok) {
         setInv(resetInventory());
         const id = Math.random();
-        setFloats((f) => [...f, { id, text: `+${j.coins ?? totalReward} 🪙 已入帳` }]);
+        setFloats((f) => [...f, { id, text: t("coinsCreditedFloat", { n: j.coins ?? totalReward }) }]);
         setTimeout(() => setFloats((f) => f.filter((x) => x.id !== id)), 2400);
       } else {
-        toast.error(j.error ?? "兌換失敗");
+        toast.error(j.error ?? t("redeemFailed"));
       }
     } catch {
-      toast.error("網路錯誤、稍後再試");
+      toast.error(t("networkErrorRetry"));
     } finally {
       setBusy(false);
     }
@@ -84,7 +86,7 @@ export function InventoryBag() {
           onClick={redeem}
           disabled={totalReward === 0 || busy}
           className="ml-2 px-2 py-0.5 rounded-full bg-yellow-400 text-black text-[10px] font-bold disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1"
-          title="把全部資源換成 z 幣"
+          title={t("redeemTitle")}
         >
           <Coins size={10} /> +{totalReward}
         </button>

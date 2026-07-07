@@ -1,4 +1,5 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -64,11 +65,12 @@ export default async function PortfolioPage({ params }: { params: Promise<{ user
 
   const { profile, portfolio, playgrounds } = data;
   const name = profile.display_name || profile.username;
+  const t = await getTranslations("profile");
 
   return (
     <article className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
       <Link href="/" className="text-sm text-fg-muted hover:text-accent flex items-center gap-1 mb-6">
-        <ArrowLeft size={14} /> 回首頁
+        <ArrowLeft size={14} /> {t("backHome")}
       </Link>
 
       {portfolio.cover_image && (
@@ -106,16 +108,16 @@ export default async function PortfolioPage({ params }: { params: Promise<{ user
           {profile.bio && <p className="text-xs text-fg-muted mt-1 line-clamp-2">{profile.bio}</p>}
         </div>
         <Link href={`/blogs/${username}` as any} className="text-xs text-accent hover:underline shrink-0">
-          看部落格 →
+          {t("viewBlog")}
         </Link>
       </div>
 
       {/* Playgrounds */}
       <section>
-        <h2 className="text-xl font-bold mb-4">💻 程式碼作品（{playgrounds.length}）</h2>
+        <h2 className="text-xl font-bold mb-4">💻 {t("codeWorks", { n: playgrounds.length })}</h2>
         {playgrounds.length === 0 ? (
           <div className="rounded-xl bg-bg-card border border-border p-12 text-center text-fg-muted">
-            此作品集還沒加入任何 playground
+            {t("emptyPlaygrounds")}
           </div>
         ) : (
           <div className="space-y-3">
@@ -137,7 +139,7 @@ export default async function PortfolioPage({ params }: { params: Promise<{ user
       </section>
 
       <p className="text-[10px] text-fg-muted text-center mt-8">
-        🏝️ 想做自己的作品集？<Link href="/" className="text-accent">來 AI 島學程式</Link>
+        🏝️ {t("ctaWant")}<Link href="/" className="text-accent">{t("ctaLink")}</Link>
       </p>
     </article>
   );

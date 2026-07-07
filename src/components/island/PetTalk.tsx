@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { X, Heart } from "lucide-react";
 import { subscribePetTalk, readBond, bumpBond } from "./island-bus";
 
@@ -18,6 +19,7 @@ const LINES = [
 ];
 
 export function PetTalk({ petName }: { petName: string | null }) {
+  const t = useTranslations("island");
   const [open, setOpen] = useState(false);
   const [line, setLine] = useState("");
   const [bond, setBond] = useState(0);
@@ -59,7 +61,7 @@ export function PetTalk({ petName }: { petName: string | null }) {
         <p className="text-sm leading-relaxed mb-2">{line}</p>
         <div className="flex items-center gap-1 text-[10px]">
           <Heart size={11} className="fill-white" />
-          <span>親密度 {bond}/100</span>
+          <span>{t("bond")} {bond}/100</span>
           <div className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden ml-1">
             <div className="h-full bg-white transition-all" style={{ width: `${bond}%` }} />
           </div>

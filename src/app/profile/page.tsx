@@ -1,4 +1,5 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { Trophy, Flame, Coins, Heart, Award, BookOpen } from "lucide-react";
 import Link from "next/link";
@@ -8,6 +9,7 @@ import Image from "next/image";
 export const dynamic = "force-dynamic";
 
 export default async function ProfilePage() {
+  const t = await getTranslations("profile");
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -22,8 +24,8 @@ export default async function ProfilePage() {
   if (!profile) {
     return (
       <div className="max-w-3xl mx-auto px-6 py-12 text-center">
-        <p>Profile 不存在、請重新登入或聯絡管理員</p>
-        <Link href="/login" className="text-accent underline mt-4 block">回登入</Link>
+        <p>{t("notFoundProfile")}</p>
+        <Link href="/login" className="text-accent underline mt-4 block">{t("backToLogin")}</Link>
       </div>
     );
   }
@@ -70,20 +72,20 @@ export default async function ProfilePage() {
       {/* 數據 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         <StatCard icon={<Trophy className="text-accent" />} label="XP" value={profile.xp ?? 0} />
-        <StatCard icon={<Flame className="text-orange-400" />} label="連勝" value={`${profile.streak_days ?? 0} 天`} />
+        <StatCard icon={<Flame className="text-orange-400" />} label={t("statStreak")} value={t("streakDays", { n: profile.streak_days ?? 0 })} />
         <StatCard icon={<Coins className="text-yellow-400" />} label="Z-coin" value={profile.z_coin ?? 0} />
-        <StatCard icon={<Heart className="text-red-400" />} label="生命" value={profile.hearts ?? 5} />
+        <StatCard icon={<Heart className="text-red-400" />} label={t("statHearts")} value={profile.hearts ?? 5} />
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-6">
-        <StatCard icon={<BookOpen className="text-blue-400" />} label="完成 lessons" value={lessonCount ?? 0} />
-        <StatCard icon={<Award className="text-purple-400" />} label="滿分 quiz" value={quizCount ?? 0} />
+        <StatCard icon={<BookOpen className="text-blue-400" />} label={t("statLessons")} value={lessonCount ?? 0} />
+        <StatCard icon={<Award className="text-purple-400" />} label={t("statQuiz")} value={quizCount ?? 0} />
       </div>
 
       {/* 成就 */}
       <div className="bg-bg-card rounded-xl p-6 mb-6">
         <h2 className="font-bold mb-3 flex items-center gap-2">
-          <Award size={18} /> 成就（{achievements?.length ?? 0}）
+          <Award size={18} /> {t("achievements", { n: achievements?.length ?? 0 })}
         </h2>
         {achievements && achievements.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -96,17 +98,17 @@ export default async function ProfilePage() {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-fg-muted">還沒解鎖任何成就、開始學習吧！</p>
+          <p className="text-sm text-fg-muted">{t("noAchievements")}</p>
         )}
       </div>
 
       {/* CTA */}
       <div className="flex gap-3">
         <Link href="/settings" className="flex-1 text-center px-4 py-2 bg-bg-card rounded-lg hover:bg-border transition">
-          編輯資料
+          {t("editProfile")}
         </Link>
         <Link href="/dashboard" className="flex-1 text-center px-4 py-2 bg-accent text-black rounded-lg font-semibold hover:bg-accent-2 transition">
-          學習園地 →
+          {t("dashboard")}
         </Link>
       </div>
     </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { X, Gift, Check } from "lucide-react";
 import {
   type VillagerId,
@@ -13,6 +14,7 @@ import { useToast } from "@/components/ui/Toast";
 import { useOverlayRegister } from "@/lib/overlay-stack";
 
 export function VillagerTalk() {
+  const t = useTranslations("island");
   const [open, setOpen] = useState<VillagerId | null>(null);
   useOverlayRegister(open !== null);
   const [line, setLine] = useState("");
@@ -53,11 +55,11 @@ export function VillagerTalk() {
       if (res.ok || j.error === "already_claimed") {
         markGreetedToday(v.id);
         setClaimed(true);
-        if (res.ok) toast.success(`+${v.dailyReward} z 幣已入帳`);
+        if (res.ok) toast.success(t("coinsCredited", { n: v.dailyReward }));
       } else {
-        toast.error(j.error ?? "領取失敗");
+        toast.error(j.error ?? t("claimFailed"));
       }
-    } catch { toast.error("網路錯誤"); }
+    } catch { toast.error(t("networkError")); }
     finally { setBusy(false); }
   };
 
@@ -78,7 +80,7 @@ export function VillagerTalk() {
             disabled={claimed || busy}
             className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 text-black font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center justify-center gap-1.5"
           >
-            {claimed ? <><Check size={14} /> 今日已領</> : <><Gift size={14} /> 領今日 +{v.dailyReward} 🪙</>}
+            {claimed ? <><Check size={14} /> {t("claimedToday")}</> : <><Gift size={14} /> {t("claimTodayReward", { n: v.dailyReward })}</>}
           </button>
         </div>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { X, Anchor, Loader2 } from "lucide-react";
 import { subscribeFishing, rollFish, addFish, FISH_META, type FishKind } from "./island-bus";
 import { useToast } from "@/components/ui/Toast";
@@ -15,6 +16,7 @@ type Phase = "idle" | "waiting" | "bite" | "result";
  * - result：顯示捕獲的魚 + z 幣獎勵（call server）
  */
 export function FishingMinigame() {
+  const t = useTranslations("island");
   const [open, setOpen] = useState(false);
   useOverlayRegister(open);
   const [phase, setPhase] = useState<Phase>("idle");
@@ -46,7 +48,7 @@ export function FishingMinigame() {
       biteTimerRef.current = setTimeout(() => {
         setPhase("result");
         setFish(null);
-        toast.info("魚跑了 🐠");
+        toast.info(t("fishEscaped"));
       }, 1200);
     }, wait);
   };
@@ -69,7 +71,7 @@ export function FishingMinigame() {
       });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
-        if (j.error === "rate_limited") toast.warning("釣太快了、慢一點");
+        if (j.error === "rate_limited") toast.warning(t("fishTooFast"));
       }
     } catch {}
   };
@@ -104,24 +106,24 @@ export function FishingMinigame() {
     <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-sm pointer-events-auto" onClick={close}>
       <div className="bg-bg-card border border-border rounded-2xl shadow-2xl max-w-sm w-[92%] flex flex-col" onClick={(e) => e.stopPropagation()}>
         <header className="px-5 py-3 border-b border-border flex items-center justify-between">
-          <h2 className="font-bold flex items-center gap-2"><Anchor size={16} /> 海邊釣魚</h2>
+          <h2 className="font-bold flex items-center gap-2"><Anchor size={16} /> {t("fishingTitle")}</h2>
           <button onClick={close} className="p-1 rounded hover:bg-bg-elevated"><X size={18} /></button>
         </header>
         <div className="p-6 flex flex-col items-center text-center min-h-[200px] justify-center">
           {phase === "waiting" && (
             <>
               <div className="text-5xl mb-3 animate-pulse">🎣</div>
-              <p className="text-sm text-fg-muted">水面平靜、靜待魚兒上鉤...</p>
+              <p className="text-sm text-fg-muted">{t("fishingWaiting")}</p>
               <Loader2 size={20} className="mt-3 animate-spin text-accent" />
             </>
           )}
           {phase === "bite" && fish && (
             <>
               <div className="text-6xl mb-3 animate-bounce">{FISH_META[fish].emoji}</div>
-              <div className="text-xl font-black text-yellow-300 animate-pulse">上鉤了！</div>
-              <p className="text-xs text-fg-muted mt-2">立刻按 <kbd className="px-1.5 py-0.5 bg-bg-elevated rounded font-mono">F</kbd> 拉桿</p>
+              <div className="text-xl font-black text-yellow-300 animate-pulse">{t("fishBite")}</div>
+              <p className="text-xs text-fg-muted mt-2">{t("reelPrefix")} <kbd className="px-1.5 py-0.5 bg-bg-elevated rounded font-mono">F</kbd> {t("reelSuffix")}</p>
               <button onClick={tryCatch} className="mt-3 px-5 py-2 rounded-full bg-yellow-400 text-black font-bold animate-pulse">
-                拉桿！
+                {t("reelButton")}
               </button>
             </>
           )}
@@ -130,7 +132,7 @@ export function FishingMinigame() {
               {fish || coins > 0 ? (
                 <>
                   <div className="text-5xl mb-2">{fish ? FISH_META[fish].emoji : "🎉"}</div>
-                  <div className="text-lg font-bold">捕到 {fish ? FISH_META[fish].label : "魚"}！</div>
+                  <div className="text-lg font-bold">{t("caught", { name: fish ? FISH_META[fish].label : t("genericFish") })}</div>
                   {coins > 0 && (
                     <div className="mt-1 text-xs text-yellow-300">+{coins} 🪙</div>
                   )}
@@ -138,22 +140,22 @@ export function FishingMinigame() {
               ) : (
                 <>
                   <div className="text-5xl mb-2">🐠</div>
-                  <div className="text-sm">魚跑了、再來一次？</div>
+                  <div className="text-sm">{t("fishAwayRetry")}</div>
                 </>
               )}
               <div className="flex gap-2 mt-4">
                 <button onClick={start} className="px-4 py-1.5 rounded-full bg-accent text-black font-bold text-sm">
-                  再釣一次
+                  {t("fishAgain")}
                 </button>
                 <button onClick={close} className="px-4 py-1.5 rounded-full border border-border text-sm">
-                  離開
+                  {t("leave")}
                 </button>
               </div>
             </>
           )}
         </div>
         <footer className="px-5 py-2 border-t border-border text-[10px] text-fg-muted text-center">
-          機率：鯽 45% / 鯉 30% / 鮪 15% / 金 8% / 龍 2%
+          {t("fishOdds")}
         </footer>
       </div>
     </div>

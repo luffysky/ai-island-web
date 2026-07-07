@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   playerWorldPos,
   CHESTS,
@@ -31,6 +32,7 @@ const NPCS: Array<{ x: number; z: number; color: string; label: string }> = [
 ];
 
 export function Minimap() {
+  const t = useTranslations("island");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number | null>(null);
   const [opened, setOpened] = useState<Set<number>>(new Set());
@@ -158,11 +160,11 @@ export function Minimap() {
         onClick={() => setBig(true)}
         className="absolute top-3 left-3 z-30 pointer-events-auto mt-12 md:mt-0 hover:scale-105 transition"
         data-island-minimap
-        title="點開全螢幕地圖"
+        title={t("openFullMap")}
       >
         <div className="relative bg-black/40 backdrop-blur p-1.5 rounded-xl shadow-lg cursor-pointer">
           <canvas ref={canvasRef} width={mapSize} height={mapSize} className="rounded-lg" />
-          <div className="absolute -bottom-4 right-0 text-[8px] md:text-[9px] text-white/70 select-none hidden sm:block">點開大地圖</div>
+          <div className="absolute -bottom-4 right-0 text-[8px] md:text-[9px] text-white/70 select-none hidden sm:block">{t("openBigMap")}</div>
         </div>
       </button>
       {big && <BigMap onClose={() => setBig(false)} opened={opened} />}
@@ -171,6 +173,7 @@ export function Minimap() {
 }
 
 function BigMap({ onClose, opened }: { onClose: () => void; opened: Set<number> }) {
+  const t = useTranslations("island");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number | null>(null);
   const size = typeof window !== "undefined" ? Math.min(window.innerWidth - 40, window.innerHeight - 80, 600) : 480;
@@ -226,8 +229,8 @@ function BigMap({ onClose, opened }: { onClose: () => void; opened: Set<number> 
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm pointer-events-auto" onClick={onClose}>
       <div className="relative" onClick={(e) => e.stopPropagation()}>
         <canvas ref={canvasRef} width={size} height={size} className="rounded-2xl shadow-2xl" />
-        <button onClick={onClose} className="absolute -top-10 right-0 text-white/80 hover:text-white text-sm px-3 py-1 rounded-full bg-black/50">關閉（M / ESC）</button>
-        <div className="absolute -bottom-8 left-0 right-0 text-center text-[10px] text-white/70">⬤ 你 · ⬤ 節點 · ⬤ NPC · ⬤ 寶箱</div>
+        <button onClick={onClose} className="absolute -top-10 right-0 text-white/80 hover:text-white text-sm px-3 py-1 rounded-full bg-black/50">{t("closeMapHint")}</button>
+        <div className="absolute -bottom-8 left-0 right-0 text-center text-[10px] text-white/70">{t("mapLegend")}</div>
       </div>
     </div>
   );

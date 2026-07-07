@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { X, Trophy, Check, Coins, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useOverlayRegister } from "@/lib/overlay-stack";
@@ -19,6 +20,7 @@ import {
  * - 完成可 claim → 打 /api/island/claim-quest 領 z 幣
  */
 export function QuestPanel() {
+  const t = useTranslations("island");
   const [open, setOpen] = useState(false);
   useOverlayRegister(open);
   const [state, setState] = useState(() => readQuestState());
@@ -59,12 +61,12 @@ export function QuestPanel() {
       const j = await res.json();
       if (res.ok || j.error === "already_claimed") {
         setState(markClaimed(id));
-        if (res.ok) toast.success(`+${q.reward} z 幣已入帳`);
+        if (res.ok) toast.success(t("coinsCredited", { n: q.reward }));
       } else {
-        toast.error(j.error ?? "領取失敗");
+        toast.error(j.error ?? t("claimFailed"));
       }
     } catch {
-      toast.error("網路錯誤、稍後再試");
+      toast.error(t("networkErrorRetry"));
     } finally {
       setBusy(null);
     }
@@ -84,10 +86,10 @@ export function QuestPanel() {
       >
         <header className="px-5 py-3 border-b border-border flex items-center justify-between">
           <div>
-            <h2 className="font-bold flex items-center gap-2">👴 漁夫長老</h2>
-            <p className="text-[10px] text-fg-muted">「島民、來看看今日的任務」· {state.date}</p>
+            <h2 className="font-bold flex items-center gap-2">👴 {t("npcElderName")}</h2>
+            <p className="text-[10px] text-fg-muted">{t("elderQuestIntro")} · {state.date}</p>
           </div>
-          <button onClick={() => setOpen(false)} className="p-1 rounded hover:bg-bg-elevated" aria-label="關閉">
+          <button onClick={() => setOpen(false)} className="p-1 rounded hover:bg-bg-elevated" aria-label={t("close")}>
             <X size={18} />
           </button>
         </header>
@@ -112,7 +114,7 @@ export function QuestPanel() {
                   <div className={`h-full transition-all ${claimed ? "bg-emerald-400" : done ? "bg-yellow-400" : "bg-accent"}`} style={{ width: `${pct}%` }} />
                 </div>
                 {claimed ? (
-                  <div className="text-[10px] text-emerald-400 flex items-center gap-1"><Check size={11} /> 已領取</div>
+                  <div className="text-[10px] text-emerald-400 flex items-center gap-1"><Check size={11} /> {t("claimedFull")}</div>
                 ) : done ? (
                   <button
                     onClick={() => claim(q.id)}
@@ -120,10 +122,10 @@ export function QuestPanel() {
                     className="w-full text-xs py-1.5 rounded-lg bg-yellow-400 text-black font-bold disabled:opacity-50 flex items-center justify-center gap-1"
                   >
                     {busy === q.id ? <Loader2 size={12} className="animate-spin" /> : <Trophy size={12} />}
-                    領取 {q.reward} 🪙
+                    {t("claimReward", { n: q.reward })}
                   </button>
                 ) : (
-                  <div className="text-[10px] text-fg-muted">還差 {q.target - prog}</div>
+                  <div className="text-[10px] text-fg-muted">{t("remaining", { n: q.target - prog })}</div>
                 )}
               </div>
             );
@@ -131,7 +133,7 @@ export function QuestPanel() {
         </div>
 
         <footer className="px-5 py-3 border-t border-border text-[10px] text-fg-muted text-center">
-          {allClaimed ? "今日任務全領完、明早再來" : allDone ? "所有任務完成、上面領獎" : "完成任務回來找我"}
+          {allClaimed ? t("questsAllClaimed") : allDone ? t("questsAllDone") : t("questsIncomplete")}
         </footer>
       </div>
     </div>

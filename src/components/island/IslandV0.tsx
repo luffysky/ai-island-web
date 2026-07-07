@@ -2,6 +2,7 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Sky, PointerLockControls, KeyboardControls, useKeyboardControls, Text, Html, useGLTF } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette, ToneMapping } from "@react-three/postprocessing";
 import { ToneMappingMode } from "postprocessing";
@@ -389,6 +390,7 @@ function Island() {
 
 // 中央水晶高塔（任務大廳）
 function CentralTower() {
+  const tr = useTranslations("island");
   return (
     <group position={[0, 1.2, 0]}>
       {/* 塔基 */}
@@ -414,7 +416,7 @@ function CentralTower() {
       <pointLight position={[0, 7, 0]} color="#8be9fd" intensity={2.5} distance={18} />
       {/* 塔頂浮空文字 */}
       <Text position={[0, 9, 0]} fontSize={0.5} color="#fff" outlineWidth={0.04} outlineColor="#000">
-        🏛️ 任務大廳
+        🏛️ {tr("questHall")}
       </Text>
     </group>
   );
@@ -446,6 +448,7 @@ function TapToMoveGround() {
 const HOUSE_POS: [number, number] = [-6, 18];
 
 function PlayerHouse() {
+  const tr = useTranslations("island");
   const [house, setHouse] = useState(() => readHouseState());
   useEffect(() => subscribeHouse(setHouse), []);
   if (!house.builtAt) {
@@ -461,10 +464,10 @@ function PlayerHouse() {
           <meshStandardMaterial color="#c89a5a" />
         </mesh>
         <Text position={[0, 1.3, 0.06]} fontSize={0.22} color="#222" anchorX="center" anchorY="middle">
-          🏠 我的家
+          🏠 {tr("myHome")}
         </Text>
         <Text position={[0, 0.95, 0.06]} fontSize={0.13} color="#7a5599" anchorX="center" anchorY="middle">
-          按 E 蓋
+          {tr("pressEBuild")}
         </Text>
       </group>
     );
@@ -495,10 +498,10 @@ function PlayerHouse() {
         <meshStandardMaterial color="#8be9fd" emissive="#8be9fd" emissiveIntensity={0.5} />
       </mesh>
       <Text position={[0, 3.2, 0]} fontSize={0.25} color="#fff" outlineWidth={0.02} outlineColor="#000">
-        🏠 我的家
+        🏠 {tr("myHome")}
       </Text>
       <Text position={[0, 2.9, 0]} fontSize={0.16} color="#ffd700" outlineWidth={0.01} outlineColor="#000">
-        按 E 進入
+        {tr("pressEEnter")}
       </Text>
     </group>
   );
@@ -506,6 +509,7 @@ function PlayerHouse() {
 
 // 北方漂浮天空之巔
 function SkyIsland() {
+  const tr = useTranslations("island");
   return (
     <group position={[0, 14, -32]}>
       {/* 漂浮島基 */}
@@ -529,10 +533,10 @@ function SkyIsland() {
       </mesh>
       <pointLight position={[0, 5.5, 0]} color="#bd93f9" intensity={1.5} distance={12} />
       <Text position={[0, 8, 0]} fontSize={0.6} color="#fff" outlineWidth={0.04} outlineColor="#000">
-        ⛰️ 天穹之巔
+        ⛰️ {tr("skyPeak")}
       </Text>
       <Text position={[0, 7.2, 0]} fontSize={0.25} color="#bd93f9" outlineWidth={0.02} outlineColor="#000">
-        AI 大師挑戰
+        {tr("aiMasterChallenge")}
       </Text>
     </group>
   );
@@ -540,15 +544,16 @@ function SkyIsland() {
 
 // 區域編號標記（朝向參考圖的 1-10 概念）
 function ZoneMarkers() {
+  const tr = useTranslations("island");
   const zones = [
-    { num: 1, label: "📚 章節 · 學習區",   pos: [12, 6, -8] as [number, number, number],   color: "#50fa7b" },
-    { num: 2, label: "🎮 副本 · 任務區",   pos: [-12, 6, 2] as [number, number, number],   color: "#ff79c6" },
-    { num: 3, label: "🏆 排行 · 競技區",   pos: [0, 6, -16] as [number, number, number],   color: "#ffd700" },
-    { num: 4, label: "🗣️ 討論 · 社交區",   pos: [18, 6, 14] as [number, number, number],   color: "#8be9fd" },
-    { num: 5, label: "✍️ 部落格 · 創作區", pos: [-20, 6, -12] as [number, number, number], color: "#bd93f9" },
-    { num: 6, label: "🧙 商人 · 道具",     pos: [-14, 5, 18] as [number, number, number],  color: "#ffb86c" },
-    { num: 7, label: "👴 任務 · 漁夫",     pos: [16, 5, 18] as [number, number, number],   color: "#fbbf24" },
-    { num: 8, label: "🔮 占卜 · 運勢",     pos: [0, 5, 8] as [number, number, number],     color: "#ec4899" },
+    { num: 1, label: `📚 ${tr("zoneLearn")}`,   pos: [12, 6, -8] as [number, number, number],   color: "#50fa7b" },
+    { num: 2, label: `🎮 ${tr("zoneQuest")}`,   pos: [-12, 6, 2] as [number, number, number],   color: "#ff79c6" },
+    { num: 3, label: `🏆 ${tr("zoneArena")}`,   pos: [0, 6, -16] as [number, number, number],   color: "#ffd700" },
+    { num: 4, label: `🗣️ ${tr("zoneSocial")}`,   pos: [18, 6, 14] as [number, number, number],   color: "#8be9fd" },
+    { num: 5, label: `✍️ ${tr("zoneCreate")}`, pos: [-20, 6, -12] as [number, number, number], color: "#bd93f9" },
+    { num: 6, label: `🧙 ${tr("zoneMerchant")}`,     pos: [-14, 5, 18] as [number, number, number],  color: "#ffb86c" },
+    { num: 7, label: `👴 ${tr("zoneFisher")}`,     pos: [16, 5, 18] as [number, number, number],   color: "#fbbf24" },
+    { num: 8, label: `🔮 ${tr("zoneFortune")}`,     pos: [0, 5, 8] as [number, number, number],     color: "#ec4899" },
   ];
   return (
     <group>
@@ -806,6 +811,7 @@ function ResourceMesh({ spawn, available }: { spawn: ResourceSpawn; available: b
 }
 
 function Signpost({ node }: { node: Node }) {
+  const tr = useTranslations("island");
   const active = useActiveNode() === node.id;
   return (
     <group position={node.position}>
@@ -823,7 +829,7 @@ function Signpost({ node }: { node: Node }) {
       {active && (
         <Html position={[0, 2.6, 0]} center distanceFactor={10}>
           <div className="bg-black/80 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap select-none">
-            按 <kbd className="px-1 bg-white/20 rounded">E</kbd> 進入
+            {tr("pressPrefix")} <kbd className="px-1 bg-white/20 rounded">E</kbd> {tr("enterSuffix")}
           </div>
         </Html>
       )}
@@ -1129,6 +1135,7 @@ function Villagers() {
   );
 }
 function Villager({ v }: { v: VillagerSpec }) {
+  const tr = useTranslations("island");
   return (
     <group position={[v.pos[0], 0.05, v.pos[1]]}>
       <Glb src={v.glb} scale={0.8} />
@@ -1136,25 +1143,27 @@ function Villager({ v }: { v: VillagerSpec }) {
         {v.emoji} {v.name}
       </Text>
       <Text position={[0, 1.18, 0]} fontSize={0.11} color="#a8e6cf" outlineWidth={0.01} outlineColor="#000">
-        按 E 對話
+        {tr("pressETalk")}
       </Text>
     </group>
   );
 }
 
 function NpcMerchant() {
+  const tr = useTranslations("island");
   const [x, z] = NPC_POS.merchant;
   return (
     <group position={[x, 0, z]}>
       <Glb src={M.charMerchant} scale={1.1} />
-      <Text position={[0, 2.4, 0]} fontSize={0.2} color="#fff" outlineWidth={0.02} outlineColor="#000">🧙 神秘商人</Text>
-      <Text position={[0, 2.15, 0]} fontSize={0.14} color="#8be9fd" outlineWidth={0.01} outlineColor="#000">賣道具、按 E</Text>
+      <Text position={[0, 2.4, 0]} fontSize={0.2} color="#fff" outlineWidth={0.02} outlineColor="#000">🧙 {tr("npcMerchantName")}</Text>
+      <Text position={[0, 2.15, 0]} fontSize={0.14} color="#8be9fd" outlineWidth={0.01} outlineColor="#000">{tr("merchantHint")}</Text>
       <Text position={[0, 2.8, 0]} fontSize={0.4} color="#8be9fd" outlineWidth={0.02} outlineColor="#000">$</Text>
     </group>
   );
 }
 
 function NpcSeer() {
+  const tr = useTranslations("island");
   const [x, z] = NPC_POS.seer;
   return (
     <group position={[x, 0, z]}>
@@ -1165,25 +1174,27 @@ function NpcSeer() {
         <meshStandardMaterial color="#bd93f9" transparent opacity={0.7} emissive="#bd93f9" emissiveIntensity={0.8} />
       </mesh>
       <pointLight position={[0.55, 0.7, 0]} color="#bd93f9" intensity={1} distance={3} />
-      <Text position={[0, 2.4, 0]} fontSize={0.2} color="#fff" outlineWidth={0.02} outlineColor="#000">🔮 占卜師</Text>
-      <Text position={[0, 2.15, 0]} fontSize={0.14} color="#ff79c6" outlineWidth={0.01} outlineColor="#000">每日運勢、按 E</Text>
+      <Text position={[0, 2.4, 0]} fontSize={0.2} color="#fff" outlineWidth={0.02} outlineColor="#000">🔮 {tr("npcSeerName")}</Text>
+      <Text position={[0, 2.15, 0]} fontSize={0.14} color="#ff79c6" outlineWidth={0.01} outlineColor="#000">{tr("seerHint")}</Text>
       <Text position={[0, 2.8, 0]} fontSize={0.4} color="#ff79c6" outlineWidth={0.02} outlineColor="#000">?</Text>
     </group>
   );
 }
 
 function NpcElder() {
+  const tr = useTranslations("island");
   return (
     <group position={[ELDER_POS[0], 0, ELDER_POS[1]]}>
       <Glb src={M.charElder} scale={1.1} />
-      <Text position={[0, 2.4, 0]} fontSize={0.2} color="#fff" outlineWidth={0.02} outlineColor="#000">👴 漁夫長老</Text>
-      <Text position={[0, 2.15, 0]} fontSize={0.14} color="#ffd700" outlineWidth={0.01} outlineColor="#000">今日有任務、按 E</Text>
+      <Text position={[0, 2.4, 0]} fontSize={0.2} color="#fff" outlineWidth={0.02} outlineColor="#000">👴 {tr("npcElderName")}</Text>
+      <Text position={[0, 2.15, 0]} fontSize={0.14} color="#ffd700" outlineWidth={0.01} outlineColor="#000">{tr("elderHint")}</Text>
       <Text position={[0, 2.8, 0]} fontSize={0.4} color="#ffd700" outlineWidth={0.02} outlineColor="#000">!</Text>
     </group>
   );
 }
 
 function Hud() {
+  const tr = useTranslations("island");
   const [showHint, setShowHint] = useState(true);
   useEffect(() => {
     let alive = true;
@@ -1193,14 +1204,14 @@ function Hud() {
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-4 hidden md:flex justify-center">
       <div className="pointer-events-auto rounded-xl bg-black/60 backdrop-blur text-white text-xs px-3 py-2 flex gap-3 items-center">
-        <span>WASD 走動</span>
+        <span>{tr("hudMove")}</span>
         <span className="opacity-50">·</span>
-        <span>Shift 加速</span>
+        <span>{tr("hudRun")}</span>
         <span className="opacity-50">·</span>
-        <span>E 進入</span>
+        <span>{tr("hudEnter")}</span>
         <span className="opacity-50">·</span>
-        <span>滑鼠拖曳轉視角</span>
-        {showHint && <span className="ml-2 text-yellow-300">← 走到牌子下、按 E 進章節</span>}
+        <span>{tr("hudLook")}</span>
+        {showHint && <span className="ml-2 text-yellow-300">{tr("hudHint")}</span>}
       </div>
     </div>
   );

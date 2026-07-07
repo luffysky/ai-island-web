@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Sparkles, RefreshCw, Lightbulb, AlertTriangle, ArrowRight } from "lucide-react";
 
 type CoachReport = {
@@ -12,6 +13,7 @@ type CoachReport = {
 const ENDPOINT = "/api/cron/learning-coach";
 
 export function LearningCoachCard() {
+  const t = useTranslations("dashboard");
   const [report, setReport] = useState<CoachReport | null>(null);
   const [weekStart, setWeekStart] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,15 +47,15 @@ export function LearningCoachCard() {
     try {
       const res = await fetch(ENDPOINT, { method: "POST", credentials: "include" });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data?.ok) throw new Error(data?.message || "產生失敗");
+      if (!res.ok || !data?.ok) throw new Error(data?.message || t("genFailed"));
       if (data.report) {
         setReport(data.report);
         setWeekStart(data.weekStart ?? null);
       } else {
-        setErr(data.message || "這週還沒有學習紀錄");
+        setErr(data.message || t("noRecordThisWeek"));
       }
     } catch (e: any) {
-      setErr(e?.message || "產生失敗、請稍後再試");
+      setErr(e?.message || t("genFailedRetry"));
     } finally {
       setBusy(false);
     }
@@ -64,8 +66,8 @@ export function LearningCoachCard() {
       <div className="flex items-center justify-between gap-2 mb-3 flex-wrap">
         <h2 className="font-bold flex items-center gap-2">
           <Sparkles size={16} className="text-accent" />
-          AI 學習教練
-          {weekStart && <span className="text-[10px] text-fg-muted font-normal">本週 {weekStart}</span>}
+          {t("aiCoach")}
+          {weekStart && <span className="text-[10px] text-fg-muted font-normal">{t("thisWeekDate", { date: weekStart })}</span>}
         </h2>
         <button
           onClick={regenerate}
@@ -73,12 +75,12 @@ export function LearningCoachCard() {
           className="text-xs px-3 py-1.5 rounded-lg border border-border hover:border-accent disabled:opacity-50 flex items-center gap-1.5"
         >
           <RefreshCw size={12} className={busy ? "animate-spin" : ""} />
-          {busy ? "產生中…" : report ? "重新產生" : "產生報告"}
+          {busy ? t("generating") : report ? t("regenerate") : t("generateReport")}
         </button>
       </div>
 
       {loading ? (
-        <p className="text-sm text-fg-muted">載入中…</p>
+        <p className="text-sm text-fg-muted">{t("loading")}</p>
       ) : report ? (
         <div className="space-y-3 text-sm">
           <p className="leading-relaxed">{report.thisWeek}</p>
@@ -93,7 +95,7 @@ export function LearningCoachCard() {
           {report.nextSteps?.length > 0 && (
             <div>
               <div className="text-xs font-bold text-fg-muted flex items-center gap-1.5 mb-2">
-                <Lightbulb size={13} className="text-accent" /> 下一步建議
+                <Lightbulb size={13} className="text-accent" /> {t("nextStepSuggestions")}
               </div>
               <ul className="space-y-1.5">
                 {report.nextSteps.map((s, i) => (
@@ -108,7 +110,7 @@ export function LearningCoachCard() {
         </div>
       ) : (
         <p className="text-sm text-fg-muted">
-          {err || "還沒有本週報告。點「產生報告」，讓 AI 教練根據你近 7 天的學習狀況給你回饋與建議。"}
+          {err || t("coachEmpty")}
         </p>
       )}
 

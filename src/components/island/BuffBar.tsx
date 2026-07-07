@@ -1,19 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Zap, Coins, Sprout } from "lucide-react";
 import { type BuffKind, subscribeBuffs, getActiveBuffs } from "./island-bus";
 
-const META: Record<BuffKind, { icon: any; label: string; color: string }> = {
-  speed:         { icon: Zap,    label: "加速",     color: "text-yellow-300" },
-  double_coin:   { icon: Coins,  label: "雙倍幸運", color: "text-amber-300" },
-  fast_respawn:  { icon: Sprout, label: "豐收",     color: "text-emerald-300" },
+const META: Record<BuffKind, { icon: any; labelKey: string; color: string }> = {
+  speed:         { icon: Zap,    labelKey: "buffSpeed",       color: "text-yellow-300" },
+  double_coin:   { icon: Coins,  labelKey: "buffDoubleCoin",  color: "text-amber-300" },
+  fast_respawn:  { icon: Sprout, labelKey: "buffFastRespawn", color: "text-emerald-300" },
 };
 
 /**
  * Active buff bar — 右上、顯示剩餘秒數。
  */
 export function BuffBar() {
+  const t = useTranslations("island");
   const [buffs, setBuffs] = useState(getActiveBuffs());
   const [, setTick] = useState(0);
 
@@ -40,7 +42,7 @@ export function BuffBar() {
         return (
           <div key={b.kind} className="bg-black/60 backdrop-blur text-white text-[10px] rounded-full px-2 py-1 flex items-center gap-1">
             <Icon size={11} className={M.color} />
-            <span>{M.label}</span>
+            <span>{t(M.labelKey)}</span>
             <span className="opacity-70 font-mono">{remain}s</span>
           </div>
         );

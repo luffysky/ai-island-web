@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import { X } from "lucide-react";
 import { subscribeOpen, type IslandNodeId } from "@/components/island/island-bus";
@@ -44,12 +45,12 @@ type Thread = { id: string; title: string; created_at: string };
 type Blog = { title: string; slug: string; published_at: string; username: string };
 type Course = { slug: string; title: string; emoji: string | null; difficulty: string };
 
-const NODE_TITLE: Record<IslandNodeId, string> = {
-  chapters: "📚 章節大殿堂",
-  courses: "🎮 副本入口",
-  leaderboard: "🏆 排行榜",
-  forum: "🗣️ 討論區公告板",
-  blogs: "✍️ 部落格牆",
+const NODE_EMOJI: Record<IslandNodeId, string> = {
+  chapters: "📚",
+  courses: "🎮",
+  leaderboard: "🏆",
+  forum: "🗣️",
+  blogs: "✍️",
 };
 
 type ProfileLite = { username?: string | null; display_name?: string | null; avatar_url?: string | null; level?: number | null; xp?: number | null; z_coin?: number | null };
@@ -75,7 +76,15 @@ export default function IslandClient({
   blogs: Blog[];
   courses: Course[];
 }) {
+  const t = useTranslations("island");
   const [openId, setOpenId] = useState<IslandNodeId | null>(null);
+  const nodeTitle: Record<IslandNodeId, string> = {
+    chapters: `${NODE_EMOJI.chapters} ${t("nodeChapters")}`,
+    courses: `${NODE_EMOJI.courses} ${t("nodeCourses")}`,
+    leaderboard: `${NODE_EMOJI.leaderboard} ${t("nodeLeaderboard")}`,
+    forum: `${NODE_EMOJI.forum} ${t("nodeForum")}`,
+    blogs: `${NODE_EMOJI.blogs} ${t("nodeBlogs")}`,
+  };
 
   useEffect(() => {
     return subscribeOpen((id) => setOpenId(id));
@@ -114,10 +123,10 @@ export default function IslandClient({
 
       <div className="absolute top-3 left-3 pointer-events-auto z-10 flex items-center gap-2">
         <Link href="/" className="text-xs text-white/70 hover:text-white px-3 py-1.5 rounded-full bg-black/40 backdrop-blur">
-          ← 離開
+          ← {t("leave")}
         </Link>
         <span className="text-xs text-white/60 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur">
-          🏘️ 已建 {completedChapterIds.length} 棟 · ⭐ Lv {level}
+          🏘️ {t("builtCount", { n: completedChapterIds.length })} · ⭐ Lv {level}
           {petName && <> · 🐾 {petName}</>}
         </span>
       </div>
@@ -132,8 +141,8 @@ export default function IslandClient({
             onClick={(e) => e.stopPropagation()}
           >
             <header className="px-5 py-3 border-b border-border flex items-center justify-between">
-              <h2 className="font-bold">{NODE_TITLE[openId]}</h2>
-              <button onClick={() => setOpenId(null)} className="p-1 rounded hover:bg-bg-elevated" aria-label="關閉">
+              <h2 className="font-bold">{nodeTitle[openId]}</h2>
+              <button onClick={() => setOpenId(null)} className="p-1 rounded hover:bg-bg-elevated" aria-label={t("close")}>
                 <X size={18} />
               </button>
             </header>
@@ -145,7 +154,7 @@ export default function IslandClient({
               {openId === "blogs" && <BlogsList blogs={blogs} />}
             </div>
             <footer className="px-5 py-2 border-t border-border text-[10px] text-fg-muted text-center">
-              點空白處或按 ESC 關閉、回島上繼續探索
+              {t("modalFooter")}
             </footer>
           </div>
         </div>
@@ -179,7 +188,8 @@ function ChaptersGrid({ chapters }: { chapters: ChapterRow[] }) {
 }
 
 function CoursesList({ courses }: { courses: Course[] }) {
-  if (courses.length === 0) return <Empty text="目前還沒有副本" />;
+  const t = useTranslations("island");
+  if (courses.length === 0) return <Empty text={t("noCourses")} />;
   return (
     <ul className="space-y-1.5">
       {courses.map((c) => (
@@ -196,7 +206,8 @@ function CoursesList({ courses }: { courses: Course[] }) {
 }
 
 function Leaderboard({ users }: { users: TopUser[] }) {
-  if (users.length === 0) return <Empty text="排行榜載入中" />;
+  const t = useTranslations("island");
+  if (users.length === 0) return <Empty text={t("leaderboardLoading")} />;
   return (
     <ol className="space-y-1">
       {users.map((u, i) => (
@@ -219,7 +230,8 @@ function Leaderboard({ users }: { users: TopUser[] }) {
 }
 
 function ThreadsList({ threads }: { threads: Thread[] }) {
-  if (threads.length === 0) return <Empty text="還沒有人發文" />;
+  const t = useTranslations("island");
+  if (threads.length === 0) return <Empty text={t("noThreads")} />;
   return (
     <ul className="space-y-1">
       {threads.map((t) => (
@@ -235,7 +247,8 @@ function ThreadsList({ threads }: { threads: Thread[] }) {
 }
 
 function BlogsList({ blogs }: { blogs: Blog[] }) {
-  if (blogs.length === 0) return <Empty text="還沒有公開文章" />;
+  const t = useTranslations("island");
+  if (blogs.length === 0) return <Empty text={t("noBlogs")} />;
   return (
     <ul className="space-y-1">
       {blogs.map((b) => (
