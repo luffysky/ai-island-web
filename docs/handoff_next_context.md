@@ -30,16 +30,20 @@
 - 修法：把講解風格改成「精神非模板、依角色」、加「角色語氣優先」宣告 + 🚫硬禁第一句用罐頭安撫腔；`ai-personas.ts` 每個角色加【開場】【禁】【結構】【這樣開場】few-shot。實測 4 角色開場/結構明顯不同 ✓。
 - ⚠️ `/api/me/mentor` 是**配對系統**、不是 AI 對話；AI 對話走 AITutorWidget → `buildTutorSystemPrompt`。**改完建議在瀏覽器各切一個人設再確認一次語氣。**
 
-### ~~E：動態 emoji（第一版）~~ ✅ 已完成（`a9c6c654`）— 後續見下
-- 已做：`src/lib/reactions.ts`（反應包 + Noto 動態 WebP 網址）、`AnimatedEmoji` 元件（`<img>` 動態 WebP、退回純 emoji）、論壇 `ThreadReactionBar` 反應動起來、`reactions` i18n。
-- **後續（E 第二、三版）**：
-  1. **學習反應 UI**：用 `LEARN_REACTIONS`（懂了/卡住/太神…）在 lesson 頁 / 筆記 / 課程完成做反應條 + 慶祝動畫；持久化要新 DB 表（lesson_reactions）。
-  2. **自架素材**：把用到的 `{code}/512.webp` 下載進 `public/noto/`、把 `reactions.ts` 的 `NOTO_BASE` 改成 `"/noto"`（現在走 gstatic CDN、能動但非自架）。
-  3. **GIPHY 搜尋**（第三版，別急）：`/gif bug` 這種；beta key 免費限 100/hr，做 moderation。Tenor 已關 API 別碰。
+### E：動態 emoji / GIF（進行中，已有一大塊）
+- ✅ **動態 emoji 基礎**（`a9c6c654`）：`reactions.ts`（反應包 + Noto WebP 網址 + `emojiToNotoCode` 自動推導）、`AnimatedEmoji`（自動推導 code、載不出 fallback 靜態）、論壇 `ThreadReactionBar` 反應動起來、`reactions` i18n。
+- ✅ **emoji/GIF 選擇器系統**（`cf8a6a4f`，參考 insight-engine 改動態版）：`AnimatedEmojiPicker`（9 分類+搜尋、每格動態 Noto）、`EmojiText`（顯示端把文字 emoji 渲染成動態）、`GifPicker`（GIPHY、靠 `NEXT_PUBLIC_GIPHY_API_KEY`、沒設優雅提示）。
+- ✅ **已掛的輸入框**：論壇回覆（`ThreadReplies`，emoji+GIF，回覆內容 emoji 會動、GIF 網址→`<img>`）、創作者島訊息（`MessagesClient`，emoji + 訊息 EmojiText）。`f5ee5895`
+- **還要掛的輸入框**（林董：「有需要輸入的地方都可以發」）：論壇發新文(`/forum/new` 用 BlogEditor)、社群發文(`SocialFeed`)、筆記編輯、AI 對話輸入(AITutorWidget)、留言…。做法：`<AnimatedEmojiPicker onSelect={e=>setX(v=>v+e)} />` + `<GifPicker onSelect={url=>...}/>`；顯示端 `<EmojiText text={...}/>`。
+- **E 後續**：
+  1. **GIPHY key**：要真的能搜 GIF → 到 developers.giphy.com 申請免費 key、加 `NEXT_PUBLIC_GIPHY_API_KEY` 進 .env.local（林董加，我不碰金鑰）。
+  2. **學習反應 UI**：用 `LEARN_REACTIONS`（懂了/卡住/太神…）在 lesson/筆記/課程完成做反應條 + 慶祝動畫；持久化要新 DB 表。
+  3. **自架 Noto 素材**：把用到的 `{code}/512.webp` 下載進 `public/noto/`、`reactions.ts` 的 `NOTO_BASE` 改 `"/noto"`（現走 gstatic CDN、能動但非自架）。
 
 ### #166 剩餘：翻譯 render wiring 擴更多頁 + 翻更多內容
 - render wiring 已接：blog 文章頁、章節詳情、論壇主題頁、**/chapters 列表、側欄 nav**。**還沒接**：/forum 版面 thread 列表、/blogs 文章列表（需比照做 forum/blog 的批次 localizer）。
 - 背景翻譯**只跑了章節**。要讓論壇/部落格/lesson 也有譯文：`node scripts/translate-content-cli.mjs forum`、`… blog`、`… lesson 600`（lesson 1258 筆很多、分批多跑幾次、耗 AI 額度）。**這會花使用者 AI key 額度**，量大的先問過。
+- ⚠️ **林董翻譯規則**：背景翻譯**只在中文內容有改動時**才更新其他語言、沒動的不碰（`translate-content-cli.mjs` 已這樣：比對 `source_hash`，一樣就 skip）。**一般 UI 字串（messages/*.json）我直接改、不用 API**；只有 DB 內容翻譯才跑腳本。
 
 ---
 
