@@ -98,8 +98,11 @@ describe("payments/config — providerEnabled reflects env", () => {
 
 describe("payments/config — shapes", () => {
   it("PROVIDER_METHODS has a method list for every provider and stripe is credit-only", () => {
-    expect(Object.keys(PROVIDER_METHODS).sort()).toEqual(["ecpay", "newebpay", "stripe"]);
+    expect(Object.keys(PROVIDER_METHODS).sort()).toEqual(["ecpay", "lemonsqueezy", "newebpay", "paddle", "stripe"]);
     expect(PROVIDER_METHODS.stripe).toEqual(["credit"]);
+    // MoR（海外）只收信用卡
+    expect(PROVIDER_METHODS.lemonsqueezy).toEqual(["credit"]);
+    expect(PROVIDER_METHODS.paddle).toEqual(["credit"]);
     for (const methods of Object.values(PROVIDER_METHODS)) {
       expect(methods.length).toBeGreaterThan(0);
       expect(methods).toContain("credit");
