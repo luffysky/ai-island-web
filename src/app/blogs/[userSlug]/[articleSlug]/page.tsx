@@ -5,6 +5,8 @@ import type { Metadata } from "next";
 import { createSupabaseAdmin } from "@/lib/supabase";
 import { resolveBlog } from "@/lib/blog-resolve";
 import { resolveBlogAuthor } from "@/lib/blog-identities";
+import { getLocale } from "next-intl/server";
+import { getCachedTranslations } from "@/lib/content-i18n";
 import { Eye, Calendar, ArrowLeft, Clock } from "lucide-react";
 import { BlogViewTracker } from "@/components/blog/BlogViewTracker";
 import { ReactionBar } from "@/components/blog/ReactionBar";
@@ -76,6 +78,15 @@ export default async function ArticlePage({
   const rawName = blog.profile?.display_name || blog.profile?.username || "用戶";
   const idAuthor = resolveBlogAuthor((article as any).author_identity, { name: rawName, avatar: blog.profile?.avatar_url });
   const name = idAuthor.name;
+
+  // i18n：英文語系且已有快取翻譯 → 用英文；否則 fallback 中文（不即時翻、由後台批次預翻）
+  const locale = await getLocale();
+  const tr = locale === "en"
+    ? await getCachedTranslations("blog", article.id, "en", { title: article.title, summary: article.summary ?? "", content: article.content })
+    : {};
+  const dispTitle = tr.title ?? article.title;
+  const dispSummary = tr.summary ?? article.summary;
+  const dispContent = tr.content ?? article.content;
   const articleUrl = `${SITE_URL}/blogs/${userSlug}/${articleSlug}`;
 
   // 閱讀時間（從內文 HTML 去標籤估）
@@ -200,9 +211,9 @@ export default async function ArticlePage({
             {article.category}
           </span>
         )}
-        <h1 className="text-3xl sm:text-5xl font-extrabold leading-[1.15] tracking-tight mt-3 mb-4">{article.title}</h1>
-        {article.summary && (
-          <p className="text-lg sm:text-xl text-fg-muted leading-relaxed mb-5">{article.summary}</p>
+        <h1 className="text-3xl sm:text-5xl font-extrabold leading-[1.15] tracking-tight mt-3 mb-4">{dispTitle}</h1>
+        {dispSummary && (
+          <p className="text-lg sm:text-xl text-fg-muted leading-relaxed mb-5">{dispSummary}</p>
         )}
         <div className="flex items-center gap-x-4 gap-y-2 text-sm text-fg-muted flex-wrap border-y border-border py-3">
           <span className="flex items-center gap-1.5 font-medium text-fg">
@@ -225,7 +236,7 @@ export default async function ArticlePage({
       {/* 內文 */}
       <div
         className="prose-custom prose-lg max-w-none"
-        dangerouslySetInnerHTML={{ __html: sanitizeRichHtmlStrict(article.content) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeRichHtmlStrict(dispContent) }}
       />
 
       {/* emoji 反應 + 分享 */}

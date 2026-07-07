@@ -101,6 +101,8 @@ const MIGRATIONS = [
   "creator_payout_migration.sql",
   // 2026-07 — 部落格發文身份（owner/admin/客服 可用官方身份發文）
   "blog_author_identity_migration.sql",
+  // 2026-07 — 內容 i18n 翻譯快取（翻一次、來源變才重翻）
+  "content_translations_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
