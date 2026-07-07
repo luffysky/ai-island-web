@@ -17,6 +17,17 @@ export function notoWebp(code: string): string {
   return `${NOTO_BASE}/${code}/512.webp`;
 }
 
+/**
+ * 從 emoji 字元自動算出 Noto 路徑 code（各 codepoint 的 16 進位、用 "_" 接）。
+ * 例：😂→"1f602"、❤️→"2764_fe0f"、👍→"1f44d"、🙌→"1f64c"。
+ * Noto 沒有動畫的 emoji → AnimatedEmoji 會 onError fallback 回純 emoji，所以直接算即可。
+ */
+export function emojiToNotoCode(emoji: string): string {
+  return Array.from(emoji)
+    .map((ch) => (ch.codePointAt(0) ?? 0).toString(16))
+    .join("_");
+}
+
 export interface Reaction {
   key: string;
   /** i18n key（reactions namespace）；UI 顯示的標籤 */

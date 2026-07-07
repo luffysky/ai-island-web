@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { notoWebp } from "@/lib/reactions";
+import { notoWebp, emojiToNotoCode } from "@/lib/reactions";
 
 /**
  * 動態 emoji（Google Noto Animated Emoji 的動態 WebP）。
@@ -25,8 +25,10 @@ export function AnimatedEmoji({
   title?: string;
 }) {
   const [errored, setErrored] = useState(false);
+  // code 沒給就從 emoji 自動推導 Noto 路徑（Noto 沒動畫的會 onError fallback）
+  const resolved = code ?? emojiToNotoCode(emoji);
 
-  if (!code || errored || !play) {
+  if (!resolved || errored || !play) {
     return (
       <span
         className={`inline-flex items-center justify-center leading-none ${className}`}
@@ -43,7 +45,7 @@ export function AnimatedEmoji({
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={notoWebp(code)}
+      src={notoWebp(resolved)}
       alt={title ?? emoji}
       title={title}
       width={size}

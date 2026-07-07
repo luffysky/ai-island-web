@@ -10,6 +10,9 @@ import { LikeButton } from "@/components/blog/LikeButton";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { ReportButton } from "@/components/ui/ReportButton";
+import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
+import { GifPicker } from "@/components/ui/GifPicker";
+import { EmojiText } from "@/components/ui/EmojiText";
 
 export function ThreadReplies({
   threadId,
@@ -293,7 +296,9 @@ export function ThreadReplies({
             className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
           />
           <div className="flex items-center justify-between mt-2 gap-2">
-            <div className="relative">
+            <div className="relative flex items-center gap-1.5">
+              <AnimatedEmojiPicker onSelect={(e) => setInput((v) => v + e)} />
+              <GifPicker onSelect={(url) => setInput((v) => (v ? v + " " : "") + url + " ")} />
               <button onClick={openNotePick} className="text-xs text-fg-muted hover:text-accent inline-flex items-center gap-1">
                 <FileText size={13} /> {t("quoteMyNote")}
               </button>
@@ -323,11 +328,18 @@ export function ThreadReplies({
 }
 
 // 純文字回覆內的網址 → 可點連結（讓引用的筆記/部落格連結能點）
+const IMG_URL_RE = /^https?:\/\/[^\s]+\.(gif|png|jpe?g|webp)(\?[^\s]*)?$/i;
+const GIPHY_URL_RE = /^https?:\/\/(media\d?\.giphy\.com|i\.giphy\.com)\/[^\s]+/i;
 function renderContent(text: string) {
-  return text.split(/(https?:\/\/[^\s]+)/g).map((p, i) =>
-    /^https?:\/\//.test(p)
-      ? <a key={i} href={p} target="_blank" rel="noreferrer" className="text-accent underline break-all">{p}</a>
-      : <span key={i}>{p}</span>);
+  return text.split(/(https?:\/\/[^\s]+)/g).map((p, i) => {
+    if (IMG_URL_RE.test(p) || GIPHY_URL_RE.test(p)) {
+      // GIF / 圖片網址 → 直接顯示（GIPHY 選的 GIF 就是走這）
+      // eslint-disable-next-line @next/next/no-img-element
+      return <img key={i} src={p} alt="gif" loading="lazy" className="block max-w-[220px] max-h-[220px] rounded-lg my-1" />;
+    }
+    if (/^https?:\/\//.test(p)) return <a key={i} href={p} target="_blank" rel="noreferrer" className="text-accent underline break-all">{p}</a>;
+    return <EmojiText key={i} text={p} size={18} />;
+  });
 }
 
 function ReplyItem({
