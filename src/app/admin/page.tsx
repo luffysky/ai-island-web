@@ -10,7 +10,7 @@ import { CountUp } from "@/components/ui/CountUp";
 import { PulseDot } from "@/components/ui/PulseDot";
 import { AdminGreeting } from "@/components/admin/AdminGreeting";
 import { RingGauge } from "@/components/ui/RingGauge";
-import { Crown, AlertTriangle, CheckCircle, Megaphone, Zap, Users, DollarSign, MessageSquare, Bot, Search, Trophy, Sparkles, Activity, BellRing, Sprout, Gamepad2, Banknote, CreditCard } from "lucide-react";
+import { Crown, AlertTriangle, CheckCircle, Megaphone, Zap, Users, DollarSign, MessageSquare, Bot, Search, Trophy, Sparkles, Activity, BellRing, Sprout, Gamepad2, Banknote, CreditCard, Newspaper } from "lucide-react";
 import { runOpsAlertChecks } from "@/lib/ops-alerts";
 
 export default async function AdminOverviewPage() {
@@ -577,6 +577,7 @@ export default async function AdminOverviewPage() {
         <h2 className="font-bold mb-3 flex items-center gap-2"><Zap className="w-4 h-4" /> 快速操作</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-2 text-sm">
           <QuickAction href="/admin/forum-seed" label={<><Sprout className="w-4 h-4" /> 討論區種子</>} />
+          <QuickAction href="/admin/blog-seed" label={<><Newspaper className="w-4 h-4" /> 部落格種子</>} />
           <QuickAction href="/admin/quest-levels" label={<><Gamepad2 className="w-4 h-4" /> AI 關卡</>} />
           <QuickAction href="/admin/payouts" label={<><Banknote className="w-4 h-4" /> 提現對帳</>} />
           <QuickAction href="/admin/payments" label={<><CreditCard className="w-4 h-4" /> 金流狀態</>} />
