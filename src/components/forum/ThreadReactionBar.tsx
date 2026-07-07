@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useToast } from "@/components/ui/Toast";
+import { AnimatedEmoji } from "@/components/ui/AnimatedEmoji";
+import { codeForEmoji } from "@/lib/reactions";
 
 const EMOJIS = ["👍", "❤️", "🔥", "🎉", "🤔", "👀"];
 
@@ -58,13 +60,15 @@ export function ThreadReactionBar({ threadId }: { threadId: string }) {
           <button
             key={emoji}
             onClick={() => toggle(emoji)}
-            className={`px-2.5 py-1 rounded-full border text-sm transition flex items-center gap-1 ${
+            className={`group px-2.5 py-1 rounded-full border text-sm transition flex items-center gap-1 ${
               active
                 ? "border-accent bg-accent/15"
                 : "border-border bg-bg hover:border-accent"
             }`}
           >
-            <span>{emoji}</span>
+            {/* 動態 emoji：選過或 hover 時才播（省資源），平常靜態；載不出退回純 emoji */}
+            <AnimatedEmoji emoji={emoji} code={codeForEmoji(emoji)} size={20} play={active} className="group-hover:hidden" />
+            <AnimatedEmoji emoji={emoji} code={codeForEmoji(emoji)} size={20} play className="hidden group-hover:inline-block" />
             {count > 0 && <span className="text-xs font-bold">{count}</span>}
           </button>
         );

@@ -2460,5 +2460,15 @@
     "profileReel": "短影音",
     "profileVisitCommunity": "來 AI 島社群",
     "profileCreatorIsland": "創作者島嶼"
+  },
+  "reactions": {
+    "reactGotIt": "懂了",
+    "reactStuck": "卡住",
+    "reactAmazing": "太神",
+    "reactHaha": "哈哈",
+    "reactFighting": "加油",
+    "reactLike": "讚",
+    "reactLove": "愛",
+    "reactCelebrate": "慶祝"
   }
 }

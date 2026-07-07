@@ -2460,5 +2460,15 @@
     "profileReel": "ショート動画",
     "profileVisitCommunity": "AI 島コミュニティへ",
     "profileCreatorIsland": "クリエイター島"
+  },
+  "reactions": {
+    "reactGotIt": "わかった",
+    "reactStuck": "詰まった",
+    "reactAmazing": "すごい",
+    "reactHaha": "ははは",
+    "reactFighting": "がんばる",
+    "reactLike": "いいね",
+    "reactLove": "大好き",
+    "reactCelebrate": "お祝い"
   }
 }

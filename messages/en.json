@@ -2460,5 +2460,15 @@
     "profileReel": "Reel",
     "profileVisitCommunity": "AI Island community",
     "profileCreatorIsland": "Creator Island"
+  },
+  "reactions": {
+    "reactGotIt": "Got it",
+    "reactStuck": "Stuck",
+    "reactAmazing": "Mind-blown",
+    "reactHaha": "Haha",
+    "reactFighting": "Keep going",
+    "reactLike": "Like",
+    "reactLove": "Love",
+    "reactCelebrate": "Celebrate"
   }
 }

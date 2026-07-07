@@ -2460,5 +2460,15 @@
     "profileReel": "숏폼",
     "profileVisitCommunity": "AI 아일랜드 커뮤니티로",
     "profileCreatorIsland": "크리에이터 아일랜드"
+  },
+  "reactions": {
+    "reactGotIt": "이해했어요",
+    "reactStuck": "막혔어요",
+    "reactAmazing": "대박",
+    "reactHaha": "하하",
+    "reactFighting": "화이팅",
+    "reactLike": "좋아요",
+    "reactLove": "사랑해요",
+    "reactCelebrate": "축하"
   }
 }
