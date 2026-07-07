@@ -230,7 +230,13 @@ export function NoteCard({
       <div className="relative z-10 p-4 pt-6">
       <div className="flex items-start justify-between mb-2 gap-2">
         <div className="min-w-0 flex-1">
-          <div className="text-xs mb-1" style={{ color: MUTED }}>{header}</div>
+          {jumpHref ? (
+            <Link href={jumpHref as any} className="text-xs mb-1 inline-flex items-center gap-0.5 hover:underline decoration-dotted underline-offset-2 transition-opacity hover:opacity-80" style={{ color: MUTED }} title={t("jumpToLesson")}>
+              {header} <ArrowRight size={11} className="shrink-0" />
+            </Link>
+          ) : (
+            <div className="text-xs mb-1" style={{ color: MUTED }}>{header}</div>
+          )}
           {/* 點標題進單篇全頁（寬闊閱讀、分段照編輯時樣子）→ 解決筆記牆寬度限制/分段跑位 */}
           <Link
             href={`/me/notes/${note.id}`}
