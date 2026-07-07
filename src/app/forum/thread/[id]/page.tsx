@@ -2,7 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
+import { getCachedTranslations } from "@/lib/content-i18n";
 import { createSupabaseAdmin } from "@/lib/supabase";
 import { ThreadReplies } from "@/components/forum/ThreadReplies";
 import { ThreadViewTracker } from "@/components/forum/ThreadViewTracker";
@@ -77,6 +78,14 @@ export default async function ThreadPage({
   const { thread, replies } = res;
   const name = thread.author?.display_name || thread.author?.username || t("defaultUser");
 
+  // i18n：非中文用已快取的譯文覆蓋主題標題/內文（無則 fallback 中文）
+  const locale = await getLocale();
+  const tr = locale !== "zh"
+    ? await getCachedTranslations("forum", thread.id, locale, { title: thread.title, content: thread.content ?? "" })
+    : {};
+  const dispTitle = tr.title ?? thread.title;
+  const dispContent = tr.content ?? thread.content;
+
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 min-w-0 overflow-hidden">
       <ThreadViewTracker threadId={id} />
@@ -99,7 +108,7 @@ export default async function ThreadPage({
           {thread.is_pinned && <Pin size={16} className="text-accent" />}
           {thread.is_featured && <Star size={16} className="text-yellow-400" />}
           {thread.is_locked && <Lock size={16} className="text-fg-muted" />}
-          <h1 className="text-2xl font-bold">{thread.title}</h1>
+          <h1 className="text-2xl font-bold">{dispTitle}</h1>
         </div>
 
         {/* 作者 meta */}
@@ -131,8 +140,8 @@ export default async function ThreadPage({
         </div>
 
         {/* 內文 */}
-        {thread.content ? (
-          <div className="prose-custom max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeRichHtmlStrict(thread.content) }} />
+        {dispContent ? (
+          <div className="prose-custom max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeRichHtmlStrict(dispContent) }} />
         ) : (
           <p className="text-fg-muted italic">{t("noContent")}</p>
         )}
@@ -153,7 +162,7 @@ export default async function ThreadPage({
       </article>
 
       {/* 回覆區 */}
-      <ThreadReplies threadId={id} threadTitle={thread.title} initialReplies={replies} isLocked={thread.is_locked} threadOwnerId={thread.user_id} />
+      <ThreadReplies threadId={id} threadTitle={dispTitle} initialReplies={replies} isLocked={thread.is_locked} threadOwnerId={thread.user_id} />
     </div>
   );
 }
