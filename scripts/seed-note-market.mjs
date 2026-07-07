@@ -960,6 +960,138 @@ const PACKS = [
           "⚠️ 到處亂包 useMemo/useCallback 反而增加負擔、程式更難讀——先寫簡單版、真的慢再優化。過早優化是萬惡之源。",
         ),
       },
+      {
+        title: "TypeScript 是什麼、型別註記入門",
+        content: P(
+          "TypeScript（TS）＝「加了型別的 JavaScript」，最後還是編譯成 JS 跑。好處是「錯誤在你打字時就被抓到」，不用等執行才爆。",
+          "基本註記：<code>let age: number = 18;</code>、<code>function greet(name: string): string {...}</code>——參數、回傳都能標型別。",
+          "常用型別：<code>string / number / boolean / string[]（陣列）/ {name: string}（物件）</code>。",
+          "編輯器會即時提示、你傳錯型別當場紅線，重構時超有安全感。",
+          "⚠️ 別到處用 <code>any</code>（等於關掉型別檢查、失去 TS 的意義）；不確定型別時想辦法標對，或用 <code>unknown</code> 逼自己先檢查。",
+        ),
+      },
+      {
+        title: "interface 與 type：TS 描述物件的形狀",
+        content: P(
+          "要描述「一個物件長什麼樣」，兩種寫法：",
+          "<code>interface User { name: string; age: number; }</code> 或 <code>type User = { name: string; age: number; }</code>——日常兩者幾乎可互換。",
+          "習慣：物件/類別的形狀用 <code>interface</code>（可被 extends、可被 merge）；聯合型別、別名、複雜組合用 <code>type</code>（如 <code>type Status = \"on\" | \"off\"</code>）。",
+          "可選欄位加 <code>?</code>：<code>age?: number</code>（可有可無）。",
+          "⚠️ 別糾結選哪個——團隊一致就好。先把常用的資料形狀定義出來，函式簽名接上，型別就會幫你擋掉一堆低級錯。",
+        ),
+      },
+      {
+        title: "泛型 generics：可重用又保留型別",
+        content: P(
+          "看到 <code>Array&lt;string&gt;</code>、<code>useState&lt;number&gt;()</code> 那個角括號就是泛型。它讓函式/型別「先不指定型別、用的時候才代入」。",
+          "例：<code>function first&lt;T&gt;(arr: T[]): T { return arr[0]; }</code>——傳字串陣列回字串、傳數字陣列回數字，型別自動跟著走、不用寫很多份。",
+          "用途：容器（清單、Map）、API 回傳包裝、可重用工具函式。",
+          "⚠️ 泛型是「進階但很值得」——一開始會用內建的（Array、Promise、useState 帶型別）就好，自己寫泛型等有「同一段邏輯要吃很多種型別」時再學。",
+        ),
+      },
+      {
+        title: "TS 常用招：union / optional / as",
+        content: P(
+          "幾個天天會用到的 TS 小技巧。",
+          "<b>聯合型別 |</b>：<code>type Id = string | number</code>（可以是其中一種）；<code>status: \"pending\" | \"done\"</code> 限定幾個字面值。",
+          "<b>可選與預設</b>：參數 <code>name?: string</code>、可空 <code>string | null</code>；用前先用 <code>?.</code> 或 if 收窄。",
+          "<b>型別斷言 as</b>：你比 TS 更清楚型別時 <code>el as HTMLInputElement</code>——但別亂用來壓過警告。",
+          "⚠️ 用聯合型別要「收窄」（<code>if (typeof x === 'string')</code>）才能安全用；<code>as any</code> 是逃避、不是解法。",
+        ),
+      },
+      {
+        title: "Tailwind 心法：utility-first",
+        content: P(
+          "Tailwind 把「一堆小 class」直接寫在 HTML 上（<code>class=\"flex items-center gap-2 p-4\"</code>），一開始覺得醜，用了回不去。",
+          "好處：不用想 class 命名、不用切到 CSS 檔、樣式就在眼前、刪 HTML 樣式跟著走不留孤兒 CSS。",
+          "重複的組合抽成元件（不是抽 CSS class）——React 元件就是你的「樣式重用單位」。",
+          "響應式與狀態用前綴：<code>md:flex</code>（中螢幕以上）、<code>hover:bg-black</code>、<code>dark:text-white</code>。",
+          "⚠️ class 長到眼花時，代表該把那塊抽成元件了；別跟 Tailwind 對抗到處寫 inline style。",
+        ),
+      },
+      {
+        title: "clamp() 與流體排版：少寫 media query",
+        content: P(
+          "想讓字級/間距「隨螢幕平順縮放」，不用切一堆斷點，用 <code>clamp()</code>。",
+          "<code>font-size: clamp(1rem, 4vw, 2rem);</code>——最小 1rem、理想跟著螢幕寬（4vw）、最大 2rem，中間自動流體變化。",
+          "配合 <code>min()</code> / <code>max()</code> 控制容器寬：<code>width: min(90%, 1200px)</code>（最多 1200、但小螢幕留 10% 邊）。",
+          "⚠️ clamp 好用但別完全取代斷點——版面「佈局要換」時（單欄變雙欄）還是用 media query 或容器查詢。",
+        ),
+      },
+      {
+        title: "深色模式怎麼實作",
+        content: P(
+          "深色模式其實不難，核心是「一組會切換的顏色變數」。",
+          "方式一（跟系統）：<code>@media (prefers-color-scheme: dark)</code> 底下換 CSS 變數的值。",
+          "方式二（可手動切）：在 <code>&lt;html&gt;</code> 加一個 <code>class=\"dark\"</code> 或 <code>data-theme=\"dark\"</code>，底下換色；用 JS 切換那個 class、存 localStorage 記住選擇。",
+          "顏色集中成變數（前面教過），深色只是「換一組值」，元件不用改。",
+          "⚠️ 別只改背景不改文字/邊框對比（會有看不清的地方）；圖片/陰影在深色下也常要微調。兩種模式都實測一遍。",
+        ),
+      },
+      {
+        title: "SVG 與圖示：向量、可縮放、能改色",
+        content: P(
+          "圖示別用圖片檔（放大糊、改色難），用 <b>SVG</b>——向量、無限縮放不糊、能用 CSS 改顏色。",
+          "用法：直接 inline <code>&lt;svg&gt;</code>（能用 <code>fill: currentColor</code> 跟著文字顏色變）、或用圖示庫（lucide、heroicons）。",
+          "多個圖示考慮 sprite 或元件化，別每個都貼一大坨 path。",
+          "⚠️ 使用者上傳的 SVG 要小心——SVG 可以藏 <code>&lt;script&gt;</code>（XSS 風險），別直接當可信內容渲染；自己用的圖示才 inline。",
+        ),
+      },
+      {
+        title: "Intersection Observer：進畫面才做事",
+        content: P(
+          "「捲到某元素出現在畫面時才觸發」（圖片延遲載入、無限捲動、動畫進場），用 Intersection Observer 比監聽 scroll 事件高效得多。",
+          "概念：建一個 observer 盯著某元素，它「進入/離開視窗」時回呼你。<code>new IntersectionObserver(cb).observe(el)</code>。",
+          "比一直算 scroll 位置省效能（瀏覽器幫你算、非同步不卡）。",
+          "⚠️ 用完記得 <code>disconnect()</code>（React 在 useEffect 的 cleanup 做）；別對「幾百個元素」各建一個 observer，用一個 observer 觀察多個。",
+        ),
+      },
+      {
+        title: "無限捲動 / 分頁載入",
+        content: P(
+          "資料很多時，別一次載完，做「捲到底自動載下一頁」。",
+          "作法：在列表底部放一個「哨兵」元素，用 Intersection Observer 偵測它進畫面 → 載下一頁（配後端 cursor 分頁）。",
+          "要處理 loading（轉圈）、沒有更多了（停止觸發）、失敗重試三種狀態。",
+          "⚠️ 無限捲動對「找回某筆、SEO、頁尾」不友善——內容型網站有時「載更多按鈕」或傳統分頁更好。看情境選。",
+        ),
+      },
+      {
+        title: "拖放 drag & drop 基礎",
+        content: P(
+          "排序卡片、拖檔案上傳這種互動，用拖放。",
+          "原生 HTML5：元素設 <code>draggable</code>、監聽 <code>dragstart / dragover（要 preventDefault 才能放）/ drop</code>。上傳檔案監聽容器的 drop 拿 <code>e.dataTransfer.files</code>。",
+          "複雜排序（清單重排、跨區拖曳）用現成庫（dnd-kit 等）省很多事、也顧到無障礙。",
+          "⚠️ 別忘了「鍵盤也能操作」（純拖曳對某些使用者不友善）；行動裝置的觸控拖曳要另外處理或用庫。",
+        ),
+      },
+      {
+        title: "code splitting 與 lazy import",
+        content: P(
+          "整個網站的 JS 打包成一大包、首頁就全載＝慢。把「用到才載」的東西切出去。",
+          "React：<code>const Heavy = lazy(() =&gt; import('./Heavy'))</code> 配 <code>&lt;Suspense fallback={...}&gt;</code>——那個元件的 JS 等真的要顯示才下載。",
+          "路由層級切分最有感：每個頁面各自一包，首頁不用載到「設定頁」的程式碼。",
+          "⚠️ 別過度切（切太碎反而很多小請求）；切「大又不常用」的東西（圖表庫、編輯器、彈窗）最划算。",
+        ),
+      },
+      {
+        title: "bundle 太大怎麼辦",
+        content: P(
+          "頁面載很慢、JS 檔很肥，幾個方向查。",
+          "<b>量它</b>：用 bundle analyzer 看「誰最肥」——常是某個大套件（moment、整包 lodash、圖表庫）。",
+          "<b>對症</b>：只 import 用到的部分（<code>import debounce from 'lodash/debounce'</code> 而不是整包）、換更輕的替代品、把大東西 lazy import。",
+          "圖片、字體也算資產大小，一起顧。",
+          "⚠️ 加套件前想一下「值不值得這個大小」——為一個小功能裝一包幾百 KB 常常不划算，自己幾行寫掉更好。",
+        ),
+      },
+      {
+        title: "PWA 與 Service Worker 是什麼",
+        content: P(
+          "PWA（漸進式網頁應用）＝「讓網站像 App」：能加到主畫面、離線也能開、能推播。",
+          "核心是 <b>Service Worker</b>：一個在背景跑的腳本，攔截網路請求、做快取，所以能離線、能加速重複造訪。",
+          "還需要一個 <code>manifest.json</code>（App 名稱、圖示、啟動畫面）讓它能「安裝」。",
+          "⚠️ Service Worker 的快取很容易「改了沒更新」——要有版本控制與更新策略，不然使用者一直看到舊版。它是強大但要小心的工具。",
+        ),
+      },
     ],
   },
   {
