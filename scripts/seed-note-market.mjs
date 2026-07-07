@@ -1195,6 +1195,600 @@ const PACKS = [
     desc: "切版切到懷疑人生後整理的筆記。先搞懂「瀏覽器在幹嘛」，再學排版跟互動就不用一直亂試。免費。",
     notes: [
       {
+        title: "Promise 到底在幹嘛：一張「號碼牌」的比喻",
+        content: P(
+          "我一開始被 Promise 搞得很亂，後來一個比喻就通了：Promise 就是餐廳給你的<b>號碼牌</b>——不是餐點本身，是「餐好了會通知你」的憑證。",
+          "拿到結果接 <code>.then(結果 =&gt; ...)</code>，出錯接 <code>.catch(err =&gt; ...)</code>。then 可以一直串，前一個 return 的東西會變成下一個 then 的輸入。",
+          "一個 Promise 只會有一種結局：成功（resolve）或失敗（reject），而且只發生一次、不會反悔。",
+          "⚠️ 我踩過：忘了 <code>return</code> 鏈裡的 Promise，下一個 then 就提早跑、拿到 undefined。then 裡面又發一個非同步，記得把它 return 出來接著串。",
+        ),
+      },
+      {
+        title: "async/await 的錯誤要用 try/catch 接",
+        content: P(
+          "改用 async/await 後我一度以為錯誤自己會消失，結果請求一失敗整個畫面就掛掉、Console 一句 <code>Uncaught (in promise)</code>。",
+          "await 的東西失敗會「用丟例外的方式」爆出來，所以要用 <code>try { ... } catch (err) { ... }</code> 包住，就像 Promise 的 <code>.catch</code>。",
+          "常見寫法：try 裡 await fetch + 解析，catch 裡顯示錯誤訊息、finally 裡把 loading 關掉。",
+          "⚠️ 別忘了 <code>if (!res.ok) throw new Error(...)</code>——fetch 對 404/500 <b>不會</b>自己 reject，你不主動 throw，錯誤的回應會被當成功繼續往下用。",
+        ),
+      },
+      {
+        title: "fetch 的三個常忘設定：headers / body / credentials",
+        content: P(
+          "fetch 的第二個參數是「這次請求的設定」，我最常忘的就是這三個。",
+          "送 JSON 要<b>兩件事一起</b>：<code>headers: {\"Content-Type\": \"application/json\"}</code> 加 <code>body: JSON.stringify(data)</code>。少了 header，後端可能不知道怎麼解析 body。",
+          "要帶 cookie（登入狀態）跨網域時加 <code>credentials: \"include\"</code>；同網域用預設的 <code>same-origin</code> 就會帶。",
+          "⚠️ 我踩過：body 直接丟物件沒 stringify，後端收到空的。fetch 的 body 只吃字串（或 FormData 等），物件一定要先 <code>JSON.stringify</code>。",
+        ),
+      },
+      {
+        title: "AbortController：把「不要了」的請求取消掉",
+        content: P(
+          "搜尋框快速打字，前一個請求還沒回、新的又送出，結果<b>舊的比新的晚回來</b>、畫面顯示錯的資料。這叫 race condition。",
+          "解法：<code>const c = new AbortController()</code>，fetch 時傳 <code>signal: c.signal</code>，要取消就 <code>c.abort()</code>。被取消的 fetch 會丟 <code>AbortError</code>。",
+          "React 裡最順的位置是 useEffect 的 cleanup：effect 重跑或元件卸載前，abort 掉上一個請求。",
+          "⚠️ abort 會讓 fetch reject 成 AbortError，記得在 catch 裡「認出它、別當成真的錯誤」顯示給使用者（<code>if (err.name === \"AbortError\") return</code>）。",
+        ),
+      },
+      {
+        title: "上傳檔案別自己拼：用 FormData",
+        content: P(
+          "第一次做檔案上傳我試著把檔案塞進 JSON，怎麼弄都不對——檔案（二進位）本來就不該 JSON.stringify。",
+          "用 <code>FormData</code>：<code>const fd = new FormData(); fd.append(\"file\", fileInput.files[0]);</code>，然後 <code>fetch(url, {method:\"POST\", body: fd})</code>。",
+          "整個表單也能一鍵打包：<code>new FormData(formElement)</code> 會自動收集有 name 的欄位。",
+          "⚠️ 用 FormData 時<b>不要自己設 Content-Type</b>！瀏覽器要自動加上帶 boundary 的 multipart header，你手動設反而會壞掉、後端解不出檔案。",
+        ),
+      },
+      {
+        title: "網址上的 ?a=1&b=2 別手動拼字串",
+        content: P(
+          "組查詢字串我以前用 <code>+</code> 硬接，遇到中文、空格、&符號就爆——因為沒編碼。",
+          "用 <code>URLSearchParams</code>：<code>const p = new URLSearchParams({q: \"你好\", page: 2}); fetch(\"/search?\" + p)</code>，它會自動幫你 encode。",
+          "讀當前網址的參數也好用：<code>new URLSearchParams(location.search).get(\"page\")</code>。",
+          "⚠️ 值有中文、斜線、空白時，手拼字串一定出事。交給 URLSearchParams 或 <code>encodeURIComponent</code>，別自己 escape。",
+        ),
+      },
+      {
+        title: "SPA 換頁不重整：History API 在做什麼",
+        content: P(
+          "以前不懂 React Router「換網址但頁面沒閃」是怎麼辦到的，其實底層就是瀏覽器的 History API。",
+          "<code>history.pushState(state, \"\", \"/about\")</code> 會「改網址列 + 加一筆歷史紀錄」但<b>不發送請求</b>；你自己用 JS 換掉畫面內容。上一頁／下一頁靠監聽 <code>popstate</code>。",
+          "所以前端路由 = 攔截連結點擊 → pushState 改網址 → 依網址渲染對應元件。框架幫你把這串包好了。",
+          "⚠️ 純前端路由重新整理某個深層網址（如 /about）會 404——因為伺服器沒那個實體檔案。要設「所有路徑都回傳 index.html」讓前端接手，不然使用者一重整就壞。",
+        ),
+      },
+      {
+        title: "解構賦值：把東西「拆包」出來",
+        content: P(
+          "解構就是「一次把物件／陣列裡的東西拆出來命名」，寫法乾淨很多，React 裡到處都是。",
+          "物件按 key 拆：<code>const {name, age} = user;</code>；陣列按位置拆：<code>const [first, second] = arr;</code>（useState 回傳的就是陣列解構）。",
+          "可以改名 <code>const {name: userName} = user</code>、給預設 <code>const {age = 18} = user</code>，函式參數也能直接解構。",
+          "⚠️ 解構 undefined／null 會直接爆 <code>Cannot destructure property...</code>。物件可能沒值時給預設 <code>const {a} = obj ?? {}</code>，別假設它一定存在。",
+        ),
+      },
+      {
+        title: "三個點 ... ：展開與收集是相反的兩件事",
+        content: P(
+          "同樣是 <code>...</code>，看在哪用意思相反，搞懂位置就不亂。",
+          "<b>展開（spread）</b>是「攤開」：<code>[...arr, newItem]</code> 複製陣列再加、<code>{...obj, age: 20}</code> 複製物件再覆蓋某欄——React 更新 state 全靠這招產生新物件。",
+          "<b>收集（rest）</b>是「打包剩下的」：<code>function sum(...nums)</code> 把多個參數收成陣列、<code>const {id, ...others} = obj</code> 把剩下的欄位收成一包。",
+          "⚠️ spread 是<b>淺複製</b>——只複製第一層。裡面的巢狀物件還是共用同一個參考，改它會連動到原本的。深層要更新得逐層展開。",
+        ),
+      },
+      {
+        title: "?. 可選鏈：安全地摸資料，別再被 undefined 炸",
+        content: P(
+          "串 API 回來的資料常常某層是空的，<code>user.address.city</code> 只要 address 不在就整個爆 <code>Cannot read properties of undefined</code>。",
+          "可選鏈 <code>?.</code> 就是「如果前面是 null／undefined，就整條停下來回傳 undefined、不爆」：<code>user?.address?.city</code>。",
+          "也能用在函式／陣列：<code>obj.fn?.()</code>（有才呼叫）、<code>arr?.[0]</code>。",
+          "⚠️ 別整條到處亂加 <code>?.</code> 當萬靈丹——該有值卻沒有，你反而把「本該報錯的 bug」藏起來、之後更難查。只在「這裡真的可能沒有」時用。",
+        ),
+      },
+      {
+        title: "?? 和 || 差在哪：0 跟空字串的坑",
+        content: P(
+          "設預設值我以前一律用 <code>||</code>，結果數量 0、空字串這種「合法的假值」被當成沒填、硬被換成預設。",
+          "<code>||</code> 是「左邊<b>假值</b>（0、空字串、false、null、undefined）就用右邊」；<code>??</code> 是「左邊<b>只有 null／undefined</b>才用右邊」。",
+          "所以「可以是 0 的數字、可以是空字串」要用 <code>count ?? 10</code>，別用 <code>count || 10</code>（0 會被吃掉變 10）。",
+          "⚠️ 分清楚：「沒填」用 <code>??</code>、「假值就換」才用 <code>||</code>。很多莫名其妙的預設值 bug 都是這兩個混用造成的。",
+        ),
+      },
+      {
+        title: "陣列三兄弟：find / some / every",
+        content: P(
+          "map／filter 大家都會，這三個「回傳單一結果」的也超常用、能少寫一堆迴圈。",
+          "<code>find</code>：找出<b>第一個</b>符合的元素（找不到回 undefined）；<code>some</code>：有<b>任何一個</b>符合就回 true（像 OR）；<code>every</code>：<b>全部</b>符合才回 true（像 AND）。",
+          "例：<code>users.find(u =&gt; u.id === 3)</code>、<code>cart.some(i =&gt; i.stock === 0)</code>、<code>form.every(f =&gt; f.valid)</code>。",
+          "⚠️ 想要「找位置」用 <code>findIndex</code>（find 回的是元素、不是索引）；只想知道「有沒有某個值」用 <code>includes</code> 更直接，別用 find 硬湊。",
+        ),
+      },
+      {
+        title: "flatMap：map 完順便攤平一層",
+        content: P(
+          "有時候 map 每個元素會回傳一個小陣列，結果得到「陣列裡包陣列」，還要再 flat 一次很囉唆。",
+          "<code>flatMap</code> 就是「map + 攤平一層」合一：<code>tags.flatMap(t =&gt; t.split(\",\"))</code> 直接得到一維陣列。",
+          "小技巧：在 flatMap 裡回傳 <code>[]</code> 等於「跳過這個」、回傳 <code>[a, b]</code> 等於「一個變兩個」——可以同時做 filter + map。",
+          "⚠️ flatMap 只攤<b>一層</b>。更深的巢狀要用 <code>arr.flat(Infinity)</code>。想攤兩層以上別指望 flatMap。",
+        ),
+      },
+      {
+        title: "Set 和 Map：去重複與「用物件當 key」",
+        content: P(
+          "普通物件當字典有兩個痛點：key 只能是字串、也不好知道「有幾個」。Set／Map 解決這些。",
+          "<b>Set</b> 是「不重複的集合」，去重複一行：<code>[...new Set(arr)]</code>；查有沒有 <code>set.has(x)</code> 很快。",
+          "<b>Map</b> 是「有順序、key 可以是任何型別」的字典：<code>map.set(obj, 值)</code>、<code>map.get(obj)</code>、<code>map.size</code> 直接拿數量、可以直接 for...of 迭代。",
+          "⚠️ Set／Map 不是 JSON 能直接存的——要存 localStorage 或送 API 得先轉成陣列（<code>[...map]</code>），JSON.stringify 一個 Map 會得到空的 <code>{}</code>。",
+        ),
+      },
+      {
+        title: "JS 的 Date 有夠雷：月份從 0 開始",
+        content: P(
+          "JS 原生 Date 是公認難用，講幾個我實際被咬過的。",
+          "月份<b>從 0 算</b>：<code>new Date(2026, 0, 1)</code> 是一月不是二月，getMonth() 回 0~11、要顯示自己 +1。",
+          "解析字串很坑：<code>new Date(\"2026-07-08\")</code> 被當成 UTC 午夜，時區偏移下可能顯示成前一天。盡量用明確格式或工具庫（date-fns、Day.js）。",
+          "⚠️ Date 是<b>可變物件</b>，<code>setDate</code> 會改到原本那個。做日期計算前先複製 <code>new Date(d)</code>，不然會不小心改到別人也在用的日期。",
+        ),
+      },
+      {
+        title: "數字、日期、金額格式化：用內建的 Intl 就好",
+        content: P(
+          "顯示「1,234,567」「NT$1,200」「2026年7月8日」我以前自己寫函式處理逗號，其實瀏覽器內建 Intl 全包了、還自動配合語系。",
+          "數字／貨幣：<code>new Intl.NumberFormat(\"zh-TW\", {style:\"currency\", currency:\"TWD\"}).format(1200)</code>。日期：<code>new Intl.DateTimeFormat(\"zh-TW\").format(date)</code>。",
+          "還有 <code>Intl.RelativeTimeFormat</code> 做「3 天前」、<code>Intl.ListFormat</code> 做「A、B 和 C」，不用裝套件。",
+          "⚠️ 每次 render 都 <code>new Intl.NumberFormat</code> 建一個其實有成本，清單很大時把 formatter 拉到迴圈外建一次、重複用 <code>.format()</code>。",
+        ),
+      },
+      {
+        title: "JSON.stringify 的隱藏參數：排版與過濾",
+        content: P(
+          "大家都用 <code>JSON.stringify(obj)</code>，但它其實有第二、三個參數，debug 和存檔很好用。",
+          "第三個是縮排：<code>JSON.stringify(obj, null, 2)</code> 印出來有排版、給人看超清楚。",
+          "第二個 replacer 可以過濾／改值：給陣列 <code>[\"id\", \"name\"]</code> 只留這幾個 key；給函式可以逐一改寫每個值（例如把敏感欄位遮掉）。",
+          "⚠️ stringify 會<b>默默丟掉</b> undefined、函式、和 Symbol，還會把 Date 轉成字串、Map／Set 變空物件、遇到循環參考直接爆。存複雜結構前先確認它們挺得過這關。",
+        ),
+      },
+      {
+        title: "自訂事件 CustomEvent：讓元件之間喊話",
+        content: P(
+          "不用框架、又想讓「這裡發生事、那裡收到」，可以自己造事件，不用把兩塊硬綁在一起。",
+          "發：<code>el.dispatchEvent(new CustomEvent(\"cart:add\", {detail: {id: 3}}))</code>；收：<code>el.addEventListener(\"cart:add\", e =&gt; console.log(e.detail))</code>，資料放在 <code>detail</code> 裡。",
+          "想讓事件冒泡到 document 讓誰都能聽，加 <code>{bubbles: true}</code>。這是很輕量的模組解耦方式。",
+          "⚠️ 在 React 專案裡別濫用這招取代 props／狀態——它會繞過 React 的資料流、很難追。CustomEvent 適合「跨框架」或「純 JS 元件」溝通，React 內部溝通還是走 state／context。",
+        ),
+      },
+      {
+        title: "動畫別用 setInterval：用 requestAnimationFrame",
+        content: P(
+          "我以前用 <code>setInterval</code> 每 16ms 動一次，結果動畫卡卡、切到背景分頁還在空轉燒電。",
+          "<code>requestAnimationFrame(fn)</code> 是「下一次瀏覽器要重繪前叫我」——會跟螢幕更新頻率同步（通常 60fps），動起來最順。",
+          "用法是遞迴：函式裡做完一格、再 <code>requestAnimationFrame</code> 排下一格，要停就別再排（或用 <code>cancelAnimationFrame</code>）。",
+          "⚠️ 分頁切到背景時 rAF 會<b>自動暫停</b>（省電、對），所以別拿它當精準計時器。純動畫用 rAF，需要「不管在不在前景都要跑」的計時邏輯用別的。",
+        ),
+      },
+      {
+        title: "捲動卡頓？試試 passive 事件監聽",
+        content: P(
+          "手機上頁面捲動有點頓，有時候不是你的錯，是瀏覽器在「等你的 touch／wheel 監聽器決定要不要 preventDefault」才敢捲。",
+          "如果你的監聽器<b>根本不會</b> preventDefault，就明講：<code>el.addEventListener(\"touchmove\", fn, {passive: true})</code>，瀏覽器就能立刻捲、不用等你。",
+          "scroll、wheel、touchstart／touchmove 這類「高頻又常只是讀取」的事件最該加。",
+          "⚠️ 設了 passive 就<b>不能</b>在裡面 <code>preventDefault</code>（會被忽略還跳警告）。真的需要擋預設行為（例如自訂手勢）的監聽器，就別設 passive。",
+        ),
+      },
+      {
+        title: "Web Worker：把重活丟到背景，別卡住畫面",
+        content: P(
+          "JS 是單執行緒，一段很重的計算（大量資料處理、影像運算）跑起來，整個畫面會凍住、點什麼都沒反應。",
+          "Web Worker 是「另一條背景執行緒」：<code>const w = new Worker(\"calc.js\")</code>，主線和它用 <code>postMessage</code> ／ <code>onmessage</code> 傳訊息溝通，重活在它那邊算、UI 照樣順。",
+          "適合：解析大檔、加解密、影像／音訊處理這種純計算的工作。",
+          "⚠️ Worker <b>碰不到 DOM</b>、也不共享變數，只能靠傳訊息來回，而且傳大資料有複製成本。小工作用它反而更慢——值不值得先想清楚。",
+        ),
+      },
+      {
+        title: "存很多、還要結構化：IndexedDB（不是 localStorage）",
+        content: P(
+          "localStorage 只能存字串、約 5MB、而且是同步的（存大東西會卡）。要在瀏覽器存「大量、結構化」的資料就得用 IndexedDB。",
+          "它是瀏覽器內建的「小型資料庫」：能存物件、建索引、非同步查詢，容量大得多（幾百 MB 起跳）。離線 App、快取大量資料靠它。",
+          "原生 API 很囉唆（一堆 request／事件），實務上大多用包裝庫（如 <code>idb</code>）讓它像 async／await 一樣好寫。",
+          "⚠️ IndexedDB 全是非同步、還有「版本升級」的概念（改結構要開新版本 + onupgradeneeded 遷移）。別把它當 localStorage 隨手用，簡單偏好設定用 localStorage 就好。",
+        ),
+      },
+      {
+        title: "元素變大小要反應：ResizeObserver 別監聽 window.resize",
+        content: P(
+          "我以前想「某個容器變寬時重算東西」，就聽 <code>window.resize</code>——但容器不是只有視窗縮放才變（旁邊展開側欄、內容變多都會變），漏一堆情況。",
+          "<code>ResizeObserver</code> 直接盯「這個元素」的尺寸：<code>new ResizeObserver(entries =&gt; {...}).observe(el)</code>，它自己變大變小就回呼你，跟視窗無關。",
+          "做「依容器寬度切換佈局」「canvas 跟著容器尺寸重畫」很好用。",
+          "⚠️ 在回呼裡改被觀察元素的尺寸，可能觸發「ResizeObserver loop」警告（無限循環）。別在回呼裡改到自己的大小；用完 <code>disconnect()</code>（React 放 cleanup）。",
+        ),
+      },
+      {
+        title: "MutationObserver：DOM 被別人改了通知我",
+        content: P(
+          "有時候頁面內容是「別的腳本或使用者」動態改的（第三方 widget、contenteditable、注入的元素），你想在它變動時做事。",
+          "<code>MutationObserver</code> 就是盯 DOM 變化的哨兵：<code>new MutationObserver(cb).observe(el, {childList:true, subtree:true, attributes:true})</code>，子節點增減、屬性改變都會通知你。",
+          "常見用途：偵測第三方塞進來的元素、監控某節點被移除、同步外部編輯器內容。",
+          "⚠️ 觀察範圍開太大（整個 document + subtree + 所有屬性）回呼會爆量、拖效能。只觀察你真正需要的節點與變化類型，用完 <code>disconnect()</code>。",
+        ),
+      },
+      {
+        title: "一鍵複製：Clipboard API 比 execCommand 好",
+        content: P(
+          "做「複製連結」按鈕，網路上很多老教學用 <code>document.execCommand(\"copy\")</code>——那個已經淘汰了，現在有更乾淨的做法。",
+          "<code>await navigator.clipboard.writeText(\"要複製的字\")</code> 一行搞定，回傳 Promise、可以接著顯示「已複製！」。",
+          "讀剪貼簿用 <code>readText()</code>，但會跳權限詢問（合理，別人不該隨便讀你剪貼簿）。",
+          "⚠️ Clipboard API <b>只在 HTTPS（或 localhost）</b>下能用，而且通常要「使用者點擊觸發」才行。本機 http 或非點擊情境會失敗——記得包 try／catch 給退路。",
+        ),
+      },
+      {
+        title: "contenteditable：讓一塊 div 能打字，但別高興太早",
+        content: P(
+          "想做「就地編輯」或簡易富文本，給元素加 <code>contenteditable=\"true\"</code> 它就能被輸入，看起來超方便。",
+          "取內容用 <code>el.innerText</code> 或 <code>innerHTML</code>，聽 <code>input</code> 事件知道使用者改了什麼。",
+          "但它天生會產生「髒 HTML」——貼上時會帶一堆來源網站的樣式標籤、不同瀏覽器換行還用不同標籤（div／p／br）。",
+          "⚠️ 直接把 contenteditable 的 innerHTML 存起來再渲染 = <b>XSS 大門</b>（使用者能貼 script／事件屬性）。一定要過濾／清消毒（sanitize），做正經編輯器建議用成熟的庫，別自己硬幹。",
+        ),
+      },
+      {
+        title: "選對 input type，手機自動跳對的鍵盤",
+        content: P(
+          "同一個輸入框，在手機上跳出的鍵盤好不好用，差別就在 <code>type</code> 和 <code>inputmode</code> 設對沒。",
+          "電話用 <code>type=\"tel\"</code>（跳數字鍵盤）、email 用 <code>type=\"email\"</code>（鍵盤有 @）、網址 <code>type=\"url\"</code>。純數字驗證碼可以用 <code>inputmode=\"numeric\"</code>。",
+          "再配 <code>autocomplete</code>（如 <code>autocomplete=\"one-time-code\"</code>、<code>\"email\"</code>）讓瀏覽器幫使用者自動填、少打字。",
+          "⚠️ 別為了「只想要數字鍵盤」就用 <code>type=\"number\"</code> 裝電話／驗證碼——它會允許 e、+、-、上下箭頭改值、還會吃掉開頭的 0。要數字外觀的字串用 <code>inputmode=\"numeric\"</code> 才對。",
+        ),
+      },
+      {
+        title: "@layer：終於能管好「誰蓋過誰」",
+        content: P(
+          "CSS 最痛的就是覆蓋大戰——第三方樣式、自己的樣式、utility 互相蓋，最後只好狂加 <code>!important</code>。Cascade Layers 就是來治這個的。",
+          "<code>@layer reset, base, components, utilities;</code> 先宣告順序，之後不管誰寫得多具體，<b>後面的 layer 整層贏過前面的 layer</b>——優先級由你排的層級決定，不再看選擇器誰更長。",
+          "把第三方庫放進低層、自己的覆蓋放高層，就能穩穩蓋過它、不用比 specificity。",
+          "⚠️ 「沒放進任何 layer」的樣式優先級<b>高於所有 layer</b>。混用時容易搞混誰贏——要嘛全上 layer、要嘛清楚知道哪些沒進 layer，別半套。",
+        ),
+      },
+      {
+        title: "Container Queries：元件看「自己容器」多寬，不是看螢幕",
+        content: P(
+          "media query 是看「整個螢幕」多寬，但同一張卡片可能出現在寬側欄也可能在窄欄——我想要的是「卡片依<b>自己所在容器</b>的寬度變佈局」。",
+          "容器查詢就是這個：父層設 <code>container-type: inline-size</code>，子層用 <code>@container (min-width: 400px) { ... }</code>——容器夠寬才套，跟螢幕無關。",
+          "這讓元件<b>真正可重用</b>：同一個卡片元件丟到哪個寬度的欄位都能自己適應。",
+          "⚠️ 你要查詢的元素必須放在一個「被宣告為 container 的祖先」裡，而且不能查詢容器<b>自己</b>（要查外面包一層）。忘了設 container-type，@container 整段靜悄悄不生效。",
+        ),
+      },
+      {
+        title: ":has()：CSS 終於有「父選擇器」了",
+        content: P(
+          "CSS 幾十年來只能「由外往內」選，選不到「有某個子元素的父層」，這需求以前只能靠 JS。<code>:has()</code> 破了這個限制。",
+          "<code>.card:has(img)</code>＝「內含 img 的 card」；<code>label:has(input:checked)</code>＝「裡面 input 被勾的 label」；<code>form:has(:invalid)</code>＝「有欄位沒通過驗證的表單」。",
+          "還能配相鄰選擇器做連動：<code>h2:has(+ p)</code>、依「後面有沒有某元素」調樣式，純 CSS 就能做很多以前要 JS 的互動。",
+          "⚠️ :has() 很強所以容易寫出「牽一髮動全身」的規則，複雜條件下也可能影響效能。範圍圈小一點、別寫成整頁掃描的巨型選擇器。",
+        ),
+      },
+      {
+        title: "CSS 原生巢狀：不用 Sass 也能寫巢狀了",
+        content: P(
+          "以前要寫巢狀 CSS 得裝 Sass，現在瀏覽器<b>原生支援</b>了，少一層建置工具。",
+          "直接把子規則寫進父層：<code>.card { padding: 1rem; .title { font-weight: bold; } &amp;:hover { ... } }</code>，<code>&amp;</code> 代表父選擇器自己。",
+          "好處是相關樣式集中、少重複打 <code>.card</code> 前綴、結構跟 HTML 對得起來。",
+          "⚠️ 別巢太深（超過兩三層），跟 Sass 一樣會產生又長又難覆蓋的選擇器、specificity 爆表。巢狀是為了整理、不是無限往裡塞。",
+        ),
+      },
+      {
+        title: ":is() 和 :where()：把落落長的選擇器縮短",
+        content: P(
+          "要對好幾個選擇器套同一組樣式，以前得寫 <code>header a, main a, footer a { ... }</code> 一長串。<code>:is()</code> 讓你合併成 <code>:is(header, main, footer) a</code>。",
+          "<code>:where()</code> 長得一樣，差別在<b>優先級</b>：<code>:where()</code> 的 specificity 永遠算 0，超好被覆蓋——最適合寫「基底樣式／reset」，讓別人輕鬆蓋過。",
+          "<code>:is()</code> 則會取括號裡「最高的那個」的 specificity。",
+          "⚠️ 關鍵差異就是 specificity：想寫「容易被覆蓋的預設」用 <code>:where()</code>；<code>:is()</code> 裡放了 id 會把整條優先級拉很高，別不小心把基底樣式寫死。",
+        ),
+      },
+      {
+        title: "logical properties：別再寫 left/right（多語系會謝你）",
+        content: P(
+          "我一直用 <code>margin-left</code>、<code>padding-right</code>、<code>text-align: left</code>，直到要支援阿拉伯文（由右往左讀）才發現整個版面鏡像後全錯。",
+          "邏輯屬性用「閱讀方向」而非「實體方位」：<code>margin-inline-start</code>（行首側）、<code>padding-inline</code>（左右一起）、<code>inset-block-start</code>（上）。RTL 語系會自動翻轉。",
+          "就算只做中文，<code>padding-inline: 1rem</code>（左右）、<code>margin-block: 1rem</code>（上下）也比分開寫兩行清爽。",
+          "⚠️ inline = 文字流動方向（水平書寫時是左右）、block = 堆疊方向（上下），一開始容易記反。記住「inline 跟著字走」就不會弄錯。",
+        ),
+      },
+      {
+        title: "毛玻璃效果：backdrop-filter 一行搞定",
+        content: P(
+          "那種「半透明 + 背後模糊」的毛玻璃導覽列／彈窗，以前要疊圖層很麻煩，現在一個屬性就有。",
+          "<code>backdrop-filter: blur(10px)</code> 模糊「元素<b>背後</b>的東西」（注意不是自己）；通常配半透明背景 <code>background: rgba(255,255,255,.6)</code> 才看得出效果。",
+          "還能疊 <code>saturate()</code>、<code>brightness()</code> 調味，做出 iOS 那種質感。",
+          "⚠️ backdrop-filter 蠻吃效能（尤其大面積、行動裝置），別整頁亂用。部分舊瀏覽器要 <code>-webkit-</code> 前綴、也可能不支援——用 <code>@supports</code> 檢查、給個純色退路。",
+        ),
+      },
+      {
+        title: "mix-blend-mode：讓文字跟著背景自動反白",
+        content: P(
+          "有個常見需求：白字放在亂七八糟的圖上，圖亮的地方就看不清。混合模式能讓顏色「跟背景互動」而不是單純疊上去。",
+          "<code>mix-blend-mode: difference</code> 讓元素和背後做「差值」混色——白字壓在任何背景上都會自動變成對比色，永遠看得清。",
+          "還有 <code>multiply</code>（正片疊底、做陰影／染色）、<code>screen</code>（濾色、做光暈）等，跟修圖軟體的圖層模式同一套概念。",
+          "⚠️ 混合模式是「跟<b>後面</b>的東西混」，所以很吃堆疊順序和背景。它也會建立新的堆疊脈絡、可能影響 z-index。想「只在容器內混、不吃到更後面」用 <code>isolation: isolate</code> 隔開。",
+        ),
+      },
+      {
+        title: "transform-origin：旋轉/縮放的「軸心」在哪",
+        content: P(
+          "做旋轉動畫，元素老是繞著「怪怪的點」轉——因為 transform 預設是繞<b>正中心</b>，但我想要的是繞某個角。",
+          "<code>transform-origin</code> 就是設那個軸心：<code>transform-origin: top left</code> 繞左上角轉、<code>0 100%</code> 繞左下角。時鐘指針、開合選單、翻頁效果都靠它。",
+          "縮放同理：<code>scale</code> 時原點決定「從哪裡長出來」，選單從按鈕角落展開就設對應的角。",
+          "⚠️ origin 是相對元素自己的框。動畫看起來「飄一下」通常就是 origin 沒設對——先確認你算的是哪個角、有沒有被 padding／邊界影響。",
+        ),
+      },
+      {
+        title: "prefers-reduced-motion：有人看動畫會頭暈",
+        content: P(
+          "動效很潮，但真的有人對大幅動態會不適甚至暈眩。系統有個「減少動態」的設定，我們該尊重它。",
+          "<code>@media (prefers-reduced-motion: reduce) { *{ animation: none !important; transition: none !important; } }</code>——偵測到使用者開了這設定，就把非必要動畫關掉或縮小。",
+          "不用全砍，把「大幅位移／縮放／視差」換成單純的淡入即可，資訊照樣傳達。",
+          "⚠️ 這是無障礙該做的、不是可有可無。做酷炫進場／視差前，順手加這段防護；預設全速動畫對某些人是真的不友善。",
+        ),
+      },
+      {
+        title: ":focus-visible：留著鍵盤焦點框，滑鼠點才不顯醜框",
+        content: P(
+          "很多人嫌點按鈕後那圈藍框醜，就 <code>outline: none</code> 全砍掉——結果鍵盤使用者<b>完全看不出焦點在哪</b>，無障礙直接崩。",
+          "<code>:focus-visible</code> 解決兩難：瀏覽器判斷「這次是用鍵盤操作」才顯示焦點框，滑鼠點擊時不顯。你只要 <code>:focus-visible { outline: 2px solid ... }</code>。",
+          "所以做法是：<code>:focus { outline: none } :focus-visible { 自訂焦點樣式 }</code>，兩全其美。",
+          "⚠️ 千萬別只 <code>outline:none</code> 卻不補任何替代焦點樣式——這是最常見的無障礙錯誤之一。要嘛保留、要嘛用 :focus-visible 換個好看的，不能讓焦點「消失」。",
+        ),
+      },
+      {
+        title: "accent-color：一行改掉 checkbox / radio 的顏色",
+        content: P(
+          "以前想讓勾選框、單選鈕、進度條符合品牌色，得整個 <code>appearance: none</code> 再自己刻，超麻煩。",
+          "現在一行 <code>accent-color: #22c55e</code> 就能把原生 checkbox、radio、range 滑桿、progress 的主色換掉，還保留原本的無障礙和互動行為。",
+          "放 <code>:root</code> 或表單容器上，整組表單控件一起換色。",
+          "⚠️ 它只換「主色調」，不能改大小、邊框、勾勾形狀那種細節。要完全客製外觀還是得 appearance:none 重刻——但那要自己補回焦點／勾選狀態的可見性。多數情況 accent-color 就夠了、別過度客製。",
+        ),
+      },
+      {
+        title: "color-scheme：讓瀏覽器原生元件也跟著深色",
+        content: P(
+          "做深色模式時我發現：背景我改深了，但捲軸、下拉選單、日期選擇器、input 內建外觀還是<b>白的</b>，很突兀。",
+          "<code>color-scheme: light dark</code>（或指定 <code>dark</code>）告訴瀏覽器「這頁支援深色」，它就會把原生 UI（捲軸、表單控件、autofill）也套上對應的深色樣式。",
+          "放在 <code>:root</code>，或跟著你的主題切換一起改。",
+          "⚠️ 這是很多人做深色模式漏掉的一塊——只改自己的 CSS、忘了瀏覽器原生元件。捲軸／input 在深色下還白白的，八成就是少了 color-scheme。",
+        ),
+      },
+      {
+        title: "@supports：新 CSS 先問「你支援嗎」再用",
+        content: P(
+          "想用新屬性又怕舊瀏覽器壞掉？<code>@supports</code> 讓 CSS 自己做特性偵測，支援才套、不支援走退路。",
+          "<code>@supports (backdrop-filter: blur(1px)) { ... }</code>＝支援才給毛玻璃；<code>@supports not (...) { 退路樣式 }</code> 反過來給不支援的。",
+          "概念跟 JS 的 <code>if (feature)</code> 一樣，只是用在 CSS，讓你安心漸進增強。",
+          "⚠️ @supports 檢查的是「瀏覽器認不認得這語法」，不是「效果好不好看」，也偵測不到有 bug 的部分實作。它是保險、不是萬能——關鍵功能還是要實測。",
+        ),
+      },
+      {
+        title: "手機 100vh 會被網址列切到：改用 dvh / svh",
+        content: P(
+          "做「滿版一屏」用 <code>height: 100vh</code>，在手機上底部老是被瀏覽器網址列蓋掉一截——因為 vh 算的是「網址列縮起來時」的高度。",
+          "新單位解決這個：<code>svh</code>（small，網址列展開時的可視高，最保守）、<code>lvh</code>（large，網址列縮起時）、<code>dvh</code>（dynamic，跟著網址列伸縮即時變）。",
+          "想「永遠填滿當下可視區、不被切」多用 <code>100dvh</code>；不希望捲動時高度一直跳動則用 <code>svh</code>。",
+          "⚠️ <code>dvh</code> 會隨網址列出現／隱藏而變高變矮，若在上面放動畫或固定佈局，可能看到「跳一下」。看情境在 dvh 的即時性和 svh 的穩定性之間選。",
+        ),
+      },
+      {
+        title: "瀏海 / 圓角螢幕：safe-area-inset 別讓內容被吃掉",
+        content: P(
+          "全螢幕網頁在 iPhone 上，底部按鈕會被那條「home indicator」壓到、瀏海旁邊內容也可能被切。",
+          "先在 head 開啟：<code>viewport</code> 加 <code>viewport-fit=cover</code>；再用環境變數留白：<code>padding-bottom: env(safe-area-inset-bottom)</code>，左右同理。",
+          "常見組合 <code>padding: env(safe-area-inset-top) env(safe-area-inset-right) ...</code>，讓內容避開瀏海、圓角、下巴。",
+          "⚠️ 沒加 <code>viewport-fit=cover</code> 的話 <code>env(safe-area-inset-*)</code> 全部是 0、根本沒作用。固定在螢幕邊緣的元素（底部工具列、浮動按鈕）最容易忘、實機一看就穿幫。",
+        ),
+      },
+      {
+        title: "自動排卡片牆：Grid 的 minmax + auto-fill/auto-fit",
+        content: P(
+          "「卡片自動排、螢幕寬就多幾欄、窄就少幾欄」不用寫任何 media query，Grid 一行就能做到。",
+          "<code>grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))</code>：每欄最小 200px、能長就長，容器放得下幾欄就排幾欄、自動換行。",
+          "<code>minmax(min, max)</code> 是「最小到最大之間彈性」，<code>1fr</code> 讓多餘空間平分。",
+          "⚠️ <code>auto-fill</code> 和 <code>auto-fit</code> 差在「空欄」：東西不夠填滿時，auto-fill 會<b>留著空欄位</b>（元素維持原寬），auto-fit 會把空欄<b>收掉</b>（現有元素撐滿整排）。想置中排列通常用 auto-fit。",
+        ),
+      },
+      {
+        title: "頁面越來越卡？用 contain 圈出「不用管外面」的區塊",
+        content: P(
+          "頁面元素一多，任何一點小改動瀏覽器可能得重算一大片版面。<code>contain</code> 是告訴瀏覽器「這塊裡面的變化，不會影響到外面」，讓它能少算很多。",
+          "<code>contain: layout paint</code>＝這區的排版和繪製自成一格、跟外界隔離；<code>content-visibility: auto</code> 更狠，畫面外的區塊<b>先不渲染</b>，長列表／長文章滾動超有感。",
+          "適合：獨立卡片、留言區塊、螢幕外的長內容。",
+          "⚠️ <code>content-visibility: auto</code> 因為沒渲染，會讓瀏覽器「不知道那塊多高」、捲軸長度會跳動。配 <code>contain-intrinsic-size</code> 給個預估高度，捲動才不會亂彈。",
+        ),
+      },
+      {
+        title: "按鈕在手機上超難點？觸控目標要夠大",
+        content: P(
+          "在電腦上好按的小按鈕／小連結，換到手機常常「點半天點不到、還點到旁邊」——因為手指比游標粗多了。",
+          "建議可點區域至少 <b>44×44 px</b>（Apple 建議值），彼此間也留點間距別擠在一起。視覺上想小沒關係，用 padding 或偽元素把「可點範圍」撐大。",
+          "文字連結太小可點，把 padding 加進 <code>&lt;a&gt;</code>（inline 元素記得改 inline-block 或加足夠 padding）。",
+          "⚠️ 相鄰的可點元素靠太近，手指誤觸率超高。刪除、送出這種「點錯有後果」的按鈕，尺寸和間距更要給足，別跟其他按鈕擠一塊。",
+        ),
+      },
+      {
+        title: ":hover 在手機上會「黏住」——別把重要功能藏在 hover",
+        content: P(
+          "我把「刪除鈕」設成滑過卡片才顯示（hover），電腦很潮，到手機上使用者<b>根本點不出來</b>——觸控裝置沒有「滑過」這個狀態。",
+          "更煩的是：手機點一下常會觸發 hover 樣式然後「卡住」，要點別處才消失。所以 hover 只能當「加分」、不能是唯一入口。",
+          "想精準區分裝置能力用 <code>@media (hover: hover)</code>——只有「真的能 hover 的裝置」才套那段樣式。",
+          "⚠️ 任何「只在 hover 時才出現」的操作（選單、按鈕、tooltip），一定要給觸控裝置另一條路（常駐顯示或點擊展開）。不然手機使用者等於用不到那功能。",
+        ),
+      },
+      {
+        title: "Pointer Events：滑鼠、觸控、觸控筆一套搞定",
+        content: P(
+          "以前要同時支援滑鼠和觸控，得寫兩套：mousedown／mousemove 一組、touchstart／touchmove 一組，還要防兩者重複觸發，很痛。",
+          "Pointer Events 把它們統一了：<code>pointerdown / pointermove / pointerup</code> 一套處理所有指標裝置，事件裡的 <code>pointerType</code> 還能分辨是 mouse／touch／pen。",
+          "做拖曳、畫布、自訂手勢時，用 pointer 事件最省事，還能拿到壓力、傾斜（觸控筆）等資訊。",
+          "⚠️ 拖曳時記得 <code>el.setPointerCapture(e.pointerId)</code>，把後續事件「鎖」在這元素上，手指／游標移出元素也不會中斷。另外用了 pointer 就別再混綁 mouse／touch，會重複觸發。",
+        ),
+      },
+      {
+        title: "彈窗打開後，Tab 別跑到後面去：focus trap",
+        content: P(
+          "自己刻的 modal 開著時，鍵盤按 Tab 焦點居然跑到<b>後面被遮住</b>的頁面上去了——使用者看不到焦點在哪、完全亂掉。",
+          "對話框要做「焦點陷阱」：打開時把焦點移進去、Tab 走到最後一個元素再按就繞回第一個（Shift+Tab 反向），焦點<b>鎖在彈窗內</b>。關閉時把焦點還給「當初開啟它的按鈕」。",
+          "最省事的做法是用原生 <code>&lt;dialog&gt;</code> 元素 + <code>showModal()</code>，瀏覽器自動幫你做焦點鎖定和 Esc 關閉。",
+          "⚠️ 別忘了 <b>Esc 關閉</b>和「焦點鎖定」兩件事一起做，還有背景頁面要設 <code>inert</code> 讓讀螢幕器也別跑出去。只做視覺遮罩、鍵盤和讀屏使用者會卡死在裡面。",
+        ),
+      },
+      {
+        title: "用 div 假裝按鈕？至少補 role 和 tabindex",
+        content: P(
+          "能用原生 <code>&lt;button&gt;</code> 就別用 div——但真的得用 div／span 當互動元件時，要自己補回瀏覽器免費送的東西。",
+          "三件事：加 <code>role=\"button\"</code>（告訴讀螢幕器它是按鈕）、加 <code>tabindex=\"0\"</code>（讓它能被 Tab 選到）、還要自己聽鍵盤（Enter／空白鍵也要能觸發，不能只聽 click）。",
+          "<code>tabindex=\"0\"</code>＝照文件順序可聚焦、<code>-1</code>＝程式可聚焦但 Tab 跳過（給 modal 容器用）。<b>別用正數</b> tabindex，會打亂整個焦點順序。",
+          "⚠️ 這就是為什麼「能用原生元素就用原生」——一個 div 假按鈕要補 role、tabindex、鍵盤事件、focus 樣式一堆，還常補不齊。<code>&lt;button&gt;</code> 全部免費內建。",
+        ),
+      },
+      {
+        title: "同一張圖給手機和 4K：srcset 讓瀏覽器自己挑",
+        content: P(
+          "手機根本不需要載 2000px 寬的大圖，浪費流量又慢。但我又不想寫 JS 判斷裝置換圖——其實 <code>&lt;img&gt;</code> 自己就能做。",
+          "<code>srcset</code> 列出多種尺寸、<code>sizes</code> 告訴瀏覽器「這圖在版面上大概佔多寬」，瀏覽器<b>自己</b>依螢幕解析度和寬度挑最合適的那張下載。",
+          "例：<code>&lt;img srcset=\"s.jpg 480w, m.jpg 800w, l.jpg 1600w\" sizes=\"(max-width:600px) 100vw, 50vw\"&gt;</code>。",
+          "⚠️ 只給 srcset 不給 <code>sizes</code>，瀏覽器會假設圖是滿版（100vw）、常常挑太大張。sizes 要照實際版面寬度寫，才真的省到流量。",
+        ),
+      },
+      {
+        title: "自訂字型載入時「閃一下」：FOUT vs FOIT",
+        content: P(
+          "用了 Google Fonts 或自家字型，載入那瞬間文字會「先看不見、或先用系統字再跳成目標字」，這兩種現象有名字。",
+          "<b>FOIT</b>（Flash of Invisible Text）＝字還沒下載完，文字<b>整段空白</b>看不到；<b>FOUT</b>（Flash of Unstyled Text）＝先用備援字顯示、載好再換。多數情況 FOUT 體驗較好（至少讀得到字）。",
+          "用 <code>@font-face</code> 的 <code>font-display: swap</code> 就是選 FOUT（先顯示再換），<code>optional</code> 更保守（慢就乾脆不換）。",
+          "⚠️ 換字瞬間若字寬差很多，版面會「跳一下」（CLS）。挑「度量接近」的備援字、或用 <code>size-adjust</code> 對齊，能讓那一跳幾乎看不出來。",
+        ),
+      },
+      {
+        title: "reflow 和 repaint：為什麼有些改動特別卡",
+        content: P(
+          "同樣是改樣式，有的順、有的整頁卡，差別在你動到的東西讓瀏覽器要重算多少。",
+          "<b>reflow（重排）</b>最貴：改到「尺寸／位置」（width、top、加刪元素）會讓瀏覽器重算整片版面。<b>repaint（重繪）</b>次之：只改顏色、背景這種不影響佈局的。最便宜的是只動 <code>transform</code> 和 <code>opacity</code>（合成層、不重排）。",
+          "所以動畫盡量用 transform 位移／縮放，別用改 <code>top／left／width</code> 的方式動。",
+          "⚠️ 迴圈裡「改一下樣式、馬上讀 <code>offsetHeight／getBoundingClientRect</code>」會逼瀏覽器每次都同步重排（layout thrashing）、超卡。批次處理：先全部讀、再全部寫，別讀寫交錯。",
+        ),
+      },
+      {
+        title: "手機版做了 RWD 卻沒作用？先看 viewport meta",
+        content: P(
+          "新手最常見的悲劇：CSS media query 都寫對了，手機上卻像看縮小的電腦版——因為少了那一行 meta。",
+          "head 裡一定要有 <code>&lt;meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"&gt;</code>，意思是「用裝置的實際寬度當版面寬度、初始不縮放」，media query 才會照手機寬度作用。",
+          "沒有它，手機會假設頁面有 980px 寬再整個縮小塞進螢幕，你的 RWD 全白做。",
+          "⚠️ 別為了防手勢縮放而加 <code>maximum-scale=1, user-scalable=no</code>——那會擋掉使用者放大看內容的能力，是無障礙的雷。讓使用者能縮放。",
+        ),
+      },
+      {
+        title: "useRef：存值不觸發重畫，還能抓 DOM",
+        content: P(
+          "useRef 有兩個看似無關、其實同源的用途，一起理解最快。",
+          "<b>抓 DOM</b>：<code>const inputRef = useRef(null)</code>，掛到 <code>&lt;input ref={inputRef}&gt;</code>，之後 <code>inputRef.current.focus()</code> 直接操作那個真實元素。",
+          "<b>存「不需重畫」的值</b>：改 <code>ref.current</code> <b>不會</b>觸發重新渲染（跟 state 相反），適合放計時器 id、前一次的值、不影響畫面的旗標。",
+          "⚠️ 別把「該顯示在畫面上的東西」放 ref——改了畫面不會更新。判準：<b>會影響畫面就用 state、只是幕後記個東西才用 ref</b>。",
+        ),
+      },
+      {
+        title: "useReducer：狀態變複雜時比 useState 好管",
+        content: P(
+          "一個表單／元件有五六個互相關聯的 state，useState 一堆、更新邏輯散得到處都是。useReducer 把它們收攏。",
+          "概念：所有狀態放一包，改狀態要 <code>dispatch({type: \"...\"})</code>，由一個 <code>reducer(state, action)</code> 函式集中決定「收到這動作、狀態怎麼變」。像 Redux 的縮小版、但 React 內建。",
+          "好處：更新邏輯集中在一處、好測試、複雜連動（下一步依賴前一步）清楚很多。",
+          "⚠️ 別一開始什麼都上 useReducer——簡單的獨立狀態用 useState 更直覺。等到「多個狀態糾纏、更新邏輯變亂」再重構過去，別提早給自己加樣板。",
+        ),
+      },
+      {
+        title: "useEffect vs useLayoutEffect：畫面閃一下的救星",
+        content: P(
+          "九成情況用 <code>useEffect</code> 就好。但有種 bug：你在 effect 裡量元素尺寸再調位置，使用者會<b>看到「先錯位、再跳對」</b>閃一下。",
+          "差別在時機：<code>useEffect</code> 在瀏覽器<b>畫完之後</b>才跑（不擋畫面）；<code>useLayoutEffect</code> 在<b>畫出來之前</b>同步跑——所以你的量測+修正會在使用者看到前完成，不閃。",
+          "用途：讀取 DOM 尺寸／位置後立刻要改版面（tooltip 定位、量高度）才用它。",
+          "⚠️ useLayoutEffect 是<b>同步、會擋渲染</b>，放重活會卡畫面，而且它在 SSR（伺服器端）會警告。沒有「閃一下」問題就乖乖用 useEffect，別預設用它。",
+        ),
+      },
+      {
+        title: "Portal：把彈窗「傳送」到 body 底下",
+        content: P(
+          "modal／下拉選單被父層的 <code>overflow:hidden</code> 切掉、或被某個 z-index 脈絡壓住——明明程式在這裡，但 DOM 上它不該待在這裡。",
+          "React 的 <code>createPortal(children, document.body)</code> 能讓元件「邏輯上還是子元件（拿得到 props、context、事件照冒泡上來），但實際 DOM 掛到 body 底下」，脫離會限制它的父層。",
+          "所以彈窗、tooltip、通知這種「要浮在最上層」的東西，用 Portal 掛到 body 最乾淨。",
+          "⚠️ Portal 的事件<b>還是照 React 樹冒泡</b>（不是照 DOM 位置），所以點 portal 內部可能觸發你「以為在外面」的 onClick——做「點外面關閉」時要小心別把自己也判成外面。",
+        ),
+      },
+      {
+        title: "forwardRef：讓自訂元件也能被 ref 抓到",
+        content: P(
+          "我想對自己包的 <code>&lt;MyInput&gt;</code> 用 ref 去 focus，結果 ref 是 null——因為 ref <b>不像一般 prop</b>，不會自動傳進元件裡。",
+          "用 <code>forwardRef</code> 接住並轉交：<code>const MyInput = forwardRef((props, ref) =&gt; &lt;input ref={ref} {...props} /&gt;)</code>，這樣外面的 ref 就接到真正的 input 上了。",
+          "常用在做可重用的表單元件、要讓父層能聚焦／捲動／量測子元件時。（註：React 19 起函式元件可直接收 ref 當 prop，不一定要 forwardRef。）",
+          "⚠️ 想「開放特定方法」而不是整個 DOM，配 <code>useImperativeHandle</code> 只暴露你要的（如 <code>{ focus, clear }</code>），別讓外面亂摸內部 DOM、破壞封裝。",
+        ),
+      },
+      {
+        title: "Error Boundary：一個元件爆掉，別讓整站白畫面",
+        content: P(
+          "React 有個嚇人的預設：<b>渲染時只要一個元件丟錯，整棵樹會卸載、整頁變白</b>。使用者只看到空白，體驗超差。",
+          "Error Boundary 是「錯誤的防火牆」：把它包在某區塊外面，那區塊內的渲染錯誤會被它<b>接住</b>、顯示你準備的退路 UI（「這塊出了點問題」），其他部分照常運作。",
+          "目前得用 class 元件實作（<code>componentDidCatch</code> ／ <code>getDerivedStateFromError</code>），或用現成的 <code>react-error-boundary</code> 套件。",
+          "⚠️ Error Boundary <b>抓不到</b>事件處理函式裡的錯、非同步（setTimeout／fetch）的錯、和 SSR 的錯——那些還是要自己 try／catch。它只接「渲染期間」的錯。",
+        ),
+      },
+      {
+        title: "Suspense：把「載入中」畫面抽出來統一管",
+        content: P(
+          "以前每個會抓資料／延遲載入的元件，我都自己寫一份 <code>if (loading) return &lt;Spinner/&gt;</code>，到處重複。",
+          "<code>&lt;Suspense fallback={&lt;Spinner/&gt;}&gt;</code> 是個「邊界」：只要裡面有元件還在「等」（lazy 載入的元件、或支援 Suspense 的資料源），就<b>自動</b>顯示 fallback，好了再換成真內容。",
+          "配 <code>lazy(() =&gt; import(...))</code> 做程式碼分割、或搭配框架的資料抓取，載入狀態集中在邊界處理、元件本身乾淨。",
+          "⚠️ Suspense 會顯示「最近一層」的 fallback。邊界包太外面，一個小東西在載會讓一大片變 spinner；包太細又到處是轉圈。依「使用者能接受哪塊一起等」來切邊界。",
+        ),
+      },
+      {
+        title: "能算出來的別另存 state：衍生值就當場算",
+        content: P(
+          "新手常見錯誤：有了 <code>items</code> 這個 state，又另外開一個 <code>total</code> state 存總價、每次改 items 都要記得同步更新 total——遲早忘記、兩邊對不上。",
+          "原則：<b>能從現有 state 算出來的東西，不要另存一份</b>。渲染時當場算就好：<code>const total = items.reduce(...)</code>，永遠正確、少一個要維護的狀態。",
+          "只有「算起來真的很貴、又量測出有效能問題」時，才用 <code>useMemo</code> 把結果快取起來。",
+          "⚠️ 同一份資料存兩處＝遲早不同步（single source of truth 被打破）。看到「A 改了要記得改 B」的程式碼，八成 B 該刪掉、改成從 A 算。",
+        ),
+      },
+      {
+        title: "state 放太上面反而卡：能放近一點就放近一點",
+        content: P(
+          "「lift state up」被教得很兇，結果我反射性把所有 state 全塞最上層元件——一個小 input 打字，<b>整棵樹跟著重畫</b>，越大越卡。",
+          "反向原則叫 colocation：<b>狀態放在「真正用到它的地方」，越近越好</b>。只有這個表單自己用的狀態，就放這個表單裡，別提到 App 頂層。",
+          "只有「多個元件真的要共用」時才往上提到它們的共同父層，提到剛好夠用的高度就停。",
+          "⚠️ state 位置越高、重畫範圍越大、也越難維護。先問「還有誰需要這個狀態？」——沒有別人需要，就留在原地，別為了「統一管理」硬往上搬。",
+        ),
+      },
+      {
+        title: "事件委派：一個監聽器管一整串（含動態新增的）",
+        content: P(
+          "一個清單有 100 個項目，我以前每個都 <code>addEventListener</code>——不只囉唆，之後「動態新增」的項目還沒綁到、點了沒反應。",
+          "利用冒泡：只在<b>父容器</b>裝一個監聽器，點到哪個子項，事件會冒泡上來，用 <code>e.target.closest(\".item\")</code> 判斷是誰被點。這叫事件委派。",
+          "好處：監聽器數量從 N 個變 1 個（省記憶體）、而且<b>未來新增的子項自動也能用</b>，不用重綁。",
+          "⚠️ 用 <code>e.target.closest(選擇器)</code> 別直接用 <code>e.target</code>——使用者可能點到子項裡面的圖示／文字，target 是那個小東西、不是整個項目。closest 幫你往上找到對的那層。",
+        ),
+      },
+      {
+        title: "算 specificity：用 (a,b,c) 三個數字比大小",
+        content: P(
+          "「為什麼這條規則沒生效」十次有八次是被更高優先級蓋掉。與其猜，不如學會<b>算分</b>。",
+          "把選擇器拆成三欄 <b>(id, class, 標籤)</b>：id 算一個 a、class／屬性／偽類算一個 b、標籤／偽元素算一個 c。<code>#nav .item a</code> = (1,1,1)、<code>.item a</code> = (0,1,1)。<b>先比 a、再比 b、最後比 c</b>，前面大的直接贏。",
+          "同分時「後寫的贏」；行內 <code>style</code> 比任何選擇器都高；<code>!important</code> 再蓋過一切（最後手段）。",
+          "⚠️ 別靠疊 class 或加 id 硬拉高分數來覆蓋——會越滾越難維護。DevTools 的 Styles 面板會把「被劃掉的規則」顯示出來，直接看誰蓋掉誰，比心算快。",
+        ),
+      },
+      {
+        title: "sticky 沒黏住？照這張清單一個個排除",
+        content: P(
+          "<code>position: sticky</code> 是我最常「寫對了卻不動」的東西。它不報錯、就是默默不黏，所以要有排查順序。",
+          "① <b>沒設 top/bottom</b>：sticky 一定要給臨界值（<code>top: 0</code>），不然它不知道黏在哪。② <b>祖先有 overflow</b>：任何父層 <code>overflow: hidden／auto／scroll</code> 都會讓它改黏在那個容器裡、看起來像沒黏。",
+          "③ <b>父容器高度不夠</b>：sticky 只能在「父容器範圍內」黏，父層跟它一樣高就沒有可黏的空間。④ 父層是 <code>flex／grid</code> 時子項高度行為不同，也可能影響。",
+          "⚠️ 最陰的是那個 <b>overflow</b>——常常是很上面某個祖先為了別的目的設了 <code>overflow:hidden</code>，你在下面怎麼調都沒用。從 sticky 元素往上一層層檢查每個祖先的 overflow，兇手通常在那。",
+        ),
+      },
+      {
         title: "先有這張地圖：HTML / CSS / JS 各幹嘛",
         content: P(
           "學前端前先記住這個，後面全部都好懂：HTML 是「內容與結構」（有什麼）、CSS 是「長相」（好不好看）、JS 是「行為」（會不會動）。",
