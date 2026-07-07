@@ -26,7 +26,16 @@ export function FloatingNoteButton({
   const [open, setOpen] = useState(false);
   const [drag, setDrag] = useState({ x: 0, y: 0 });
   const dragStart = useRef<{ x: number; y: number; startX: number; startY: number } | null>(null);
+  // 觸發鈕本身可自由拖曳、位置記到 localStorage（預設右下、不擋教材）
+  const [btnPos, setBtnPos] = useState({ x: 0, y: 0 });
   const supabase = createSupabaseBrowser();
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("lessonNoteBtnPos");
+      if (saved) setBtnPos(JSON.parse(saved));
+    } catch { /* ignore */ }
+  }, []);
 
   // 追當前 viewport 中央最接近的 lesson
   useEffect(() => {
@@ -99,14 +108,40 @@ export function FloatingNoteButton({
     setOpen(true);
   };
 
+  // 觸發鈕：拖曳 = 移動並記住位置；沒移動（點一下）= 開筆記
+  const onBtnPointerDown = (e: React.PointerEvent) => {
+    const sx = e.clientX, sy = e.clientY;
+    const base = { ...btnPos };
+    let moved = false;
+    let cur = base;
+    const move = (ev: PointerEvent) => {
+      const dx = ev.clientX - sx, dy = ev.clientY - sy;
+      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) moved = true;
+      cur = { x: base.x + dx, y: base.y + dy };
+      setBtnPos(cur);
+    };
+    const up = () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      if (moved) {
+        try { localStorage.setItem("lessonNoteBtnPos", JSON.stringify(cur)); } catch { /* ignore */ }
+      } else {
+        handleOpen();
+      }
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+  };
+
   return (
     <>
       {/* Floating 觸發按鈕：固定右下、跟著捲動顯示當前 lesson */}
       {!open && (
         <button
-          onClick={handleOpen}
-          className="fixed bottom-24 left-4 z-40 flex items-center gap-2 px-3 py-2 bg-accent text-black rounded-full shadow-lg hover:scale-105 active:scale-95 transition"
-          title={`對 LESSON ${activeLesson.number ?? activeLesson.id} 做筆記`}
+          onPointerDown={onBtnPointerDown}
+          style={{ transform: `translate(${btnPos.x}px, ${btnPos.y}px)` }}
+          className="fixed bottom-24 right-4 z-40 flex items-center gap-2 px-3 py-2 bg-accent text-black rounded-full shadow-lg hover:scale-105 active:scale-95 transition touch-none cursor-grab active:cursor-grabbing"
+          title={`對 LESSON ${activeLesson.number ?? activeLesson.id} 做筆記（可拖曳移動）`}
           aria-label="新增筆記"
         >
           <StickyNote size={16} />
@@ -119,7 +154,7 @@ export function FloatingNoteButton({
       {/* Modal 視窗：可拖曳、不擋住整個畫面 */}
       {open && (
         <div
-          className="fixed bottom-24 left-4 z-50 w-80 max-w-[calc(100vw-2rem)] bg-bg-card border border-border rounded-xl shadow-2xl overflow-hidden"
+          className="fixed bottom-24 right-4 z-50 w-80 max-w-[calc(100vw-2rem)] bg-bg-card border border-border rounded-xl shadow-2xl overflow-hidden"
           style={{ transform: `translate(${drag.x}px, ${drag.y}px)` }}
         >
           <div className="p-3">

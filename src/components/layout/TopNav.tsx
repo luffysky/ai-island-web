@@ -103,13 +103,13 @@ export function TopNav() {
           >
             {mobileMenu ? <X size={18} /> : <Menu size={18} />}
           </button>
-          <Link href="/" className="flex items-center gap-2 font-bold text-lg" onClick={() => setMobileMenu(false)}>
-            <Palmtree size={20} className="text-accent" />
-            <span className="bg-gradient-to-r from-accent to-accent-2 bg-clip-text text-transparent">AI 島</span>
+          <Link href="/" className="flex items-center gap-2 font-bold text-lg shrink-0" onClick={() => setMobileMenu(false)}>
+            <Palmtree size={20} className="text-accent shrink-0" />
+            <span className="bg-gradient-to-r from-accent to-accent-2 bg-clip-text text-transparent whitespace-nowrap">AI 島</span>
           </Link>
         </div>
 
-        <div className="flex items-center gap-4 text-sm">
+        <div className="flex items-center gap-2 sm:gap-4 text-sm">
           {/* 桌機：導覽收合成右上角一顆鈕、點開右側抽屜（手機用下方 mobileMenu）*/}
           <button
             onClick={() => setNavDrawer(true)}
