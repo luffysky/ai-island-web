@@ -378,6 +378,52 @@ const THREADS = [
     reacts: [{ author: A.frontelf, emoji: "👍" }],
     replies: [{ author: A.official, created: daysAgo(1, 8), html: P("已修！泡泡改成夾在畫面內、不再出界，感謝回報 🙏") }],
   },
+  {
+    board: "questions", author: A.pygoblin, views: 176, created: daysAgo(14),
+    title: "爬蟲抓下來是亂碼，是不是編碼問題？", tags: ["Python", "爬蟲", "編碼"],
+    html: P("用 requests 抓一個網站，print 出來一堆 <code>\\xe4\\xb8</code> 亂碼，網頁本身明明是中文，是我哪裡錯了 😵"),
+    reacts: [{ author: A.debug, emoji: "👍" }],
+    replies: [
+      { author: A.pygoblin, created: daysAgo(13, 20), answer: true, html: P("八成是編碼。requests 有時猜錯 <code>r.encoding</code>，抓中文站前先手動設 <code>r.encoding = r.apparent_encoding</code>（或直接 <code>'utf-8'</code>）再 <code>r.text</code>，亂碼通常就好了。") },
+      { author: A.debug, created: daysAgo(13, 8), html: P("補充：存檔也記得 <code>open(路徑, 'w', encoding='utf-8')</code>，不然寫出去又變亂碼一次 🙃") },
+    ],
+  },
+  {
+    board: "progress", author: A.greenbot, views: 142, created: daysAgo(12),
+    title: "撐過第一週了！本來覺得縮排超煩，現在習慣了 🌱", tags: ["心得", "打氣"],
+    html: P("記錄一下：一開始連「為什麼要縮排」都覺得莫名，一直噴 IndentationError。這週寫多了突然就順了，原來只是還不熟不是我不行。給也在前幾週的你：撐著，會過去的。"),
+    reacts: [{ author: A.duowen, emoji: "❤️" }, { author: A.frontelf, emoji: "🎉" }, { author: A.debug, emoji: "👍" }],
+    replies: [{ author: A.duowen, created: daysAgo(11, 12), html: P("「不是我不行、只是還不熟」這句我要抄下來 ☕") }],
+  },
+  {
+    board: "help", author: A.frontelf, views: 208, created: daysAgo(8),
+    title: "CSS 明明寫了 flex 卻沒置中，是不是漏了什麼？", tags: ["CSS", "Flexbox", "Bug"],
+    html: P("想把一個字置中，<code>.box{display:flex; justify-content:center;}</code> 左右是置中了，但上下還是黏在最上面，怎麼辦 😩"),
+    reacts: [{ author: A.debug, emoji: "👍" }],
+    replies: [
+      { author: A.frontelf, created: daysAgo(7, 18), answer: true, html: P("差一個 <code>align-items:center;</code>（上下）。justify 管主軸(左右)、align 管交叉軸(上下)，兩個一起才是真正正中間。還有——容器要有高度它才有得置中喔。") },
+    ],
+  },
+  {
+    board: "questions", author: A.debug, views: 119, created: daysAgo(6),
+    title: "git push 被擋，說我 rejected，硬 push 會怎樣嗎？", tags: ["Git", "新手"],
+    html: P("push 的時候紅字 rejected，好像是遠端有我沒有的 commit。看到有人叫我 <code>git push -f</code>，這樣安全嗎？會不會出事 😨"),
+    reacts: [{ author: A.duowen, emoji: "👍" }],
+    replies: [
+      { author: A.debug, created: daysAgo(5, 20), answer: true, html: P("先<b>別</b> -f！那是「用我的蓋掉遠端」，會把別人的 commit 弄不見。正解：先 <code>git pull</code>（把遠端的拉下來合併），解完（如果有衝突）再 push。-f 只有你很清楚在幹嘛、且是自己的分支才用。") },
+      { author: A.greenbot, created: daysAgo(5, 6), html: P("記法：rejected 通常是「你落後了」，先 pull 再 push 就對了 🌱") },
+    ],
+  },
+  {
+    board: "chat", author: A.duowen, views: 167, created: daysAgo(3),
+    title: "大家學程式都幾點？我發現我晚上腦子比較清楚 🌙", tags: ["閒聊"],
+    html: P("白天怎麼看都看不懂，晚上安靜下來反而通了，是不是錯覺 😂 大家的黃金時段是什麼時候？"),
+    reacts: [{ author: A.frontelf, emoji: "❤️" }, { author: A.pygoblin, emoji: "👍" }],
+    replies: [
+      { author: A.pygoblin, created: daysAgo(2, 20), html: P("我也是夜貓，但提醒：卡超過 30 分鐘先去睡，隔天早上常常五分鐘就解掉，真的 🛌") },
+      { author: A.frontelf, created: daysAgo(2, 8), html: P("+1 睡前卡的 bug，起床像被人偷偷修好一樣 ✨") },
+    ],
+  },
 ];
 
 // 先清掉這批種子（依標題），再重鋪 → 可安全重跑、也蓋掉先前用真帳號鋪的那批
