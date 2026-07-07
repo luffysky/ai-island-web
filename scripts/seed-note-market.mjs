@@ -890,6 +890,150 @@ const PACKS = [
           "⚠️ 「先能動、之後再顧安全」是最常見的坑——有些洞補起來很貴。基本的一開始就順手做。",
         ),
       },
+      {
+        title: "命令列進階：管道 | 與幾個組合技",
+        content: P(
+          "會了基本 cd/ls 之後，這幾招讓命令列真的變生產力。",
+          "<b>管道 <code>|</code></b>：把前一個指令的輸出，餵給下一個。<code>cat log.txt | grep ERROR</code> = 印出檔案、只留含 ERROR 的行。",
+          "<code>grep 關鍵字 檔案</code> 找內容、<code>找 | wc -l</code> 數幾行、<code>| head</code> 只看前幾筆。",
+          "<code>&gt;</code> 把輸出存到檔（覆蓋）、<code>&gt;&gt;</code> 附加。上一個指令的結尾用 <code>&amp;&amp;</code> 串「成功才做下一個」。",
+          "⚠️ <code>&gt;</code> 會覆蓋掉原檔！別手滑把重要檔案洗掉；不確定先用 <code>&gt;&gt;</code> 或先複製一份。",
+        ),
+      },
+      {
+        title: "Git 分支與合併衝突：不用怕",
+        content: P(
+          "分支（branch）＝「開一條平行線做新功能，不影響主線」。做壞了砍掉就好。",
+          "流程：<code>git switch -c feature-x</code> 開分支做事 → 好了合回主線 <code>git switch main</code> + <code>git merge feature-x</code>。",
+          "<b>合併衝突</b>不可怕：兩邊改到同一行，Git 會標出 <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> 你的 / <code>=======</code> / <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> 對方的，你決定留哪個、刪掉標記、再 commit。",
+          "⚠️ 別怕衝突而不敢合——越晚合、分支差越多、衝突越大。小步、常合最省事。",
+        ),
+      },
+      {
+        title: "Git 救援三招：reset / revert / stash",
+        content: P(
+          "手滑了別慌，Git 幾乎都救得回來。",
+          "<b>還沒 push、想反悔上一個 commit</b>：<code>git reset --soft HEAD~1</code>（保留改動、只退掉 commit）。",
+          "<b>已 push、要安全撤銷</b>：<code>git revert &lt;commit&gt;</code>——生一個「反向 commit」，歷史留著、不會弄亂別人。",
+          "<b>做到一半要切去修別的</b>：<code>git stash</code> 先把改動收起來，處理完 <code>git stash pop</code> 拿回來。",
+          "⚠️ <code>git reset --hard</code> 會<b>丟掉</b>未 commit 的改動、救不回；動它前先確認你不要那些改動。",
+        ),
+      },
+      {
+        title: ".gitignore 該放什麼",
+        content: P(
+          "有些東西<b>絕對不該</b>進版控，用 .gitignore 擋掉。",
+          "必擋：<code>.env</code>／各種金鑰檔（機密）、<code>node_modules/</code>（一大坨、裝一下就有）、build 產物（<code>dist/</code>、<code>.next/</code>）、系統雜檔（<code>.DS_Store</code>）、log。",
+          "找現成的：GitHub 有各語言的 gitignore 範本，直接抄一份改。",
+          "⚠️ 已經 commit 上去才加 gitignore <b>不會</b>把它移除——要 <code>git rm --cached 檔案</code> 才會從版控拿掉（本機保留）。機密若已進 git，當它外洩、換掉。",
+        ),
+      },
+      {
+        title: "Pull Request 與 code review 文化",
+        content: P(
+          "團隊協作不是各改各的直接推 main，而是走 <b>PR（Pull Request）</b>。",
+          "流程：開分支做 → 推上去開 PR → 同事 review 給意見 → 改到 OK → 合併。",
+          "PR 描述寫清楚「改了什麼、為什麼、怎麼測」，reviewer 才好看。PR 小一點、好 review。",
+          "被 review 別玻璃心——那是在幫你抓漏、也是在對齊團隊寫法。review 別人時對事不對人、問問題而不是命令。",
+          "⚠️ 別開巨大 PR（改 50 個檔）——沒人 review 得動，只會被草率 approve。",
+        ),
+      },
+      {
+        title: "語意化版本 semver：1.2.3 是什麼意思",
+        content: P(
+          "套件版本 <code>主版本.次版本.修訂</code>（<code>MAJOR.MINOR.PATCH</code>），數字怎麼跳有意義。",
+          "<b>PATCH</b>（1.2.<b>3</b>→4）：修 bug、不破壞相容。<b>MINOR</b>（1.<b>2</b>→3）：加新功能、仍相容。<b>MAJOR</b>（<b>1</b>→2）：<b>破壞性</b>改動、升級可能要改你的 code。",
+          "<code>package.json</code> 的 <code>^1.2.3</code> = 允許升到 2.0 前的最新；<code>~1.2.3</code> = 只升 patch。",
+          "⚠️ 大版本升級前先看 changelog / migration guide——MAJOR 跳號常常會弄壞你的東西。",
+        ),
+      },
+      {
+        title: "Markdown 語法：寫 README/筆記/PR 都用它",
+        content: P(
+          "Markdown 是「用純文字寫出排版」的輕量語法，GitHub、筆記軟體、這個平台都吃它。",
+          "標題 <code>#</code>／<code>##</code>；<b>粗體</b> <code>**字**</code>、<i>斜體</i> <code>*字*</code>；清單 <code>- 項目</code> 或 <code>1. 項目</code>。",
+          "行內程式 用反引號包起來；一段程式用三個反引號框住（還能標語言上色）；連結 <code>[文字](網址)</code>；圖片前面加 <code>!</code>。",
+          "⚠️ 換行要「空一行」才會分段（單純按 enter 有時不會換）；表格、清單前後留空行比較保險。",
+        ),
+      },
+      {
+        title: "正則表達式入門：先看懂幾個符號",
+        content: P(
+          "正則（regex）是「用一個 pattern 去比對/抓文字」的迷你語言，看起來像亂碼但很強。",
+          "常用：<code>\\d</code> 數字、<code>\\w</code> 字母數字底線、<code>.</code> 任意字、<code>+</code> 一個以上、<code>*</code> 零個以上、<code>?</code> 零或一個。",
+          "位置：<code>^</code> 開頭、<code>$</code> 結尾。例：<code>^\\d{4}-\\d{2}-\\d{2}$</code> 比對 YYYY-MM-DD 日期。",
+          "不用硬背——需要時用 regex101.com 邊試邊看它解釋每一段，或直接請 AI 幫你寫、你看懂再用。",
+          "⚠️ 別拿正則去解析 HTML/JSON（用專門的 parser）；複雜正則也很難維護，能用字串方法解決就別上正則。",
+        ),
+      },
+      {
+        title: "JSON 與 YAML：設定檔與資料交換格式",
+        content: P(
+          "兩個你天天會碰到的資料格式，先認得長相。",
+          "<b>JSON</b>：前後端傳資料、很多設定檔用它。<code>{\"name\":\"小明\",\"tags\":[\"a\",\"b\"]}</code>——大括號物件、中括號陣列、鍵要雙引號、最後一項後面<b>不能有逗號</b>。",
+          "<b>YAML</b>：靠縮排、更好讀，CI 設定、docker-compose 常用。冒號配值、<code>-</code> 開頭是清單項。",
+          "⚠️ JSON 最常見錯：多一個逗號、少一個引號 → 整個 parse 失敗。YAML 最常見錯：縮排用到 Tab（YAML 只吃空白）。存檔前用工具驗一下。",
+        ),
+      },
+      {
+        title: "HTTP 與網址：URL 每一段在幹嘛",
+        content: P(
+          "看得懂一個網址的結構，debug 網路問題會快很多。",
+          "<code>https://api.site.com/users/123?page=2#top</code>：<code>https</code> 協定（有加密）、<code>api.site.com</code> 主機、<code>/users/123</code> 路徑（資源）、<code>?page=2</code> query 參數、<code>#top</code> 錨點（只在瀏覽器、不送伺服器）。",
+          "請求還帶 <b>headers</b>（像 <code>Authorization</code> 帶身分、<code>Content-Type</code> 說明格式）與 <b>body</b>（POST 送的資料）。",
+          "⚠️ 敏感資料別放在網址的 query（會被記進 log、瀏覽器歷史）；放 header 或 body。",
+        ),
+      },
+      {
+        title: "什麼是 API（講給完全新手）",
+        content: P(
+          "API 這個詞很嚇人，其實概念很日常。",
+          "把它想成餐廳的<b>服務生</b>：你（前端）不會自己衝進廚房（資料庫），而是跟服務生點餐（呼叫 API），廚房做好、服務生端出來（回傳資料）。",
+          "API 就是「一組講好的窗口與規則」：打這個網址、帶這些參數，就會回這種資料。前後端、不同系統靠它溝通。",
+          "你會「用別人的 API」（金流、地圖、天氣），也會「做自己的 API」給前端用。",
+          "⚠️ 用第三方 API 注意：要不要 key、有沒有次數限制、回傳格式長怎樣——先讀它的文件。",
+        ),
+      },
+      {
+        title: "三層架構：前端 / 後端 / 資料庫怎麼分工",
+        content: P(
+          "一個網站背後大致三層，理解分工就不會亂。",
+          "<b>前端</b>（瀏覽器）：畫面與互動，跑在使用者的裝置上。<b>後端</b>（伺服器）：邏輯、驗證、權限，決定「能做什麼」。<b>資料庫</b>：存資料。",
+          "一次流程：前端發請求 → 後端處理（查資料庫）→ 回結果 → 前端顯示。",
+          "為什麼要分：安全（機密與規則在後端、使用者碰不到）、維護（各司其職）、可擴充（各層可獨立長大）。",
+          "⚠️ 新手最常錯：把「該後端把關的事」（算錢、驗權限）寫在前端——使用者改得動前端，等於門戶大開。",
+        ),
+      },
+      {
+        title: "部署與網域：程式怎麼變成一個網址",
+        content: P(
+          "本機跑得動，怎麼變成別人也能開的網站？",
+          "<b>部署</b>：把程式放到一台 24 小時開機的伺服器/平台（Zeabur、Vercel、雲主機）跑起來。",
+          "<b>網域（domain）</b>：花錢租一個名字（<code>mysite.com</code>），透過 <b>DNS</b>（網路的電話簿）把它指到你伺服器的位址。",
+          "<b>HTTPS</b>：裝憑證讓網址變 <code>https</code>（加密、瀏覽器才不會標不安全）——現在多數平台自動幫你弄。",
+          "⚠️ 「本機好好的、上線就掛」多半是環境變數沒設、或路徑/埠不對——先看部署平台的 log。",
+        ),
+      },
+      {
+        title: "為什麼網站會慢：先找對地方",
+        content: P(
+          "「網站好慢」很籠統，先分清楚慢在哪一段再對症下藥。",
+          "常見兇手：圖片太大/太多、一次載入太多 JS、API 太慢（常是 N+1 或沒索引的 DB 查詢）、沒有快取每次都重算、瀑布式一個等一個。",
+          "怎麼找：DevTools 的 <b>Network</b> 看哪個請求最久/最肥、<b>Performance/Lighthouse</b> 給你整體評分與建議。",
+          "先量再改——別憑感覺亂優化。80% 的慢常常來自 20% 的地方（那張大圖、那支慢查詢）。",
+          "⚠️ 「過早優化」也是坑：先把最明顯的大石頭搬掉（壓圖、加索引），再談細節。",
+        ),
+      },
+      {
+        title: "怎麼有效學程式：專案導向 + 別停在看",
+        content: P(
+          "最後一則講方法，因為方法對，走得比誰都遠。",
+          "<b>動手做</b>：看懂 ≠ 會做。看完一個觀念，馬上自己打一次、改一點看會怎樣。只看不練，很快就忘。",
+          "<b>做專案</b>：與其刷一堆零散教學，不如做一個你真的想要的小東西（待辦、記帳、爬蟲），過程中缺什麼學什麼，記得最牢。",
+          "<b>卡住是正常的</b>：每個工程師都天天在 Google、問 AI。學會查、學會拆問題，比背語法重要。",
+          "⚠️ 別掉進「教學地獄」——一直買課一直看卻不動手。看 20 分鐘、做 40 分鐘，比例抓對。",
+        ),
+      },
     ],
   },
 ];
