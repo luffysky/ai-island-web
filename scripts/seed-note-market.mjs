@@ -429,6 +429,144 @@ const PACKS = [
           "⚠️ <b>別拿 assert 做正式的輸入驗證/權限檢查</b>——Python 用 <code>-O</code> 最佳化執行時 assert 會被整個拿掉。那種該用 if + raise。assert 是給開發者的自我檢查，不是給使用者的把關。",
         ),
       },
+      {
+        title: "整數除法與運算子：// % ** divmod",
+        content: P(
+          "數學運算有幾個新手容易混的符號。",
+          "<code>/</code> 一律回小數（<code>6/2</code> = 3.0）；<code>//</code> 是「整除」丟掉小數（<code>7//2</code> = 3）；<code>%</code> 取餘數（<code>7%2</code> = 1）；<code>**</code> 次方（<code>2**10</code> = 1024）。",
+          "判斷奇偶最常用 <code>%</code>：<code>n % 2 == 0</code> 是偶數。一次拿商跟餘數用 <code>divmod(7,2)</code> → <code>(3, 1)</code>。",
+          "⚠️ 負數整除會「往下取整」（<code>-7//2</code> = -4 不是 -3）；浮點數 <code>0.1+0.2 != 0.3</code>（電腦二進位的老問題），比小數別用 <code>==</code>、用差值夠小或 <code>math.isclose</code>。",
+        ),
+      },
+      {
+        title: "型別轉換的陷阱",
+        content: P(
+          "在數字與字串之間轉換很常見，但幾個坑要知道。",
+          "<code>int(\"3\")</code> OK，但 <code>int(\"3.5\")</code> 會<b>爆</b>（ValueError）——要先 <code>int(float(\"3.5\"))</code>。<code>str(123)</code> 轉字串、<code>float(\"1.5\")</code> 轉小數。",
+          "<code>bool</code> 的雷：<code>bool(\"False\")</code> 是 <b>True</b>（非空字串都 True）！從環境變數/表單讀「True/False」要自己判斷字串內容，別直接 bool()。",
+          "⚠️ 使用者輸入轉數字一定包 try/except（他可能亂打）；<code>int(\"08\")</code> 在新版 OK 但別依賴前導零。",
+        ),
+      },
+      {
+        title: "字串、bytes 與 encode / decode",
+        content: P(
+          "處理檔案、網路資料遲早遇到 <code>bytes</code>（位元組）跟 <code>str</code>（文字）的差別。",
+          "<b>str</b> 是給人看的文字；<b>bytes</b> 是實際傳輸/儲存的位元組（前面有個 <code>b</code>，像 <code>b'hello'</code>）。",
+          "互轉：<code>\"你好\".encode(\"utf-8\")</code> 文字→bytes；<code>資料.decode(\"utf-8\")</code> bytes→文字。",
+          "requests 的 <code>r.text</code> 是 str、<code>r.content</code> 是 bytes（下載圖片/檔案要用 content）。",
+          "⚠️ 「TypeError: a bytes-like object is required」或亂碼，多半是 str/bytes 搞混了——確認你手上是哪一種、該不該 encode/decode。",
+        ),
+      },
+      {
+        title: "遞迴 recursion：函式自己呼叫自己",
+        content: P(
+          "遞迴＝「把大問題拆成同型的小問題」，函式在自己裡面呼叫自己。",
+          "兩個要素：<b>基底條件</b>（小到可以直接回答、停止遞迴）+ <b>遞迴步驟</b>（縮小問題再呼叫自己）。",
+          "例：階乘 <code>def f(n): return 1 if n&lt;=1 else n*f(n-1)</code>。走樹狀/巢狀資料（資料夾、留言串）特別自然。",
+          "⚠️ 忘了基底條件 = 無限遞迴 → <code>RecursionError</code>。Python 遞迴深度有限（預設約 1000），很深的用迴圈或改寫。很多遞迴其實用迴圈更快更省。",
+        ),
+      },
+      {
+        title: "閉包 closure：函式記住外層的變數",
+        content: P(
+          "閉包＝「一個函式，記住了它出生時外層的變數」，即使外層已經結束。",
+          "例：<code>def multiplier(n): def mul(x): return x*n; return mul</code>——<code>double = multiplier(2)</code>，之後 <code>double(5)</code> = 10，那個 <code>n=2</code> 被 <code>double</code> 記住了。",
+          "用途：做「工廠函式」（產生客製的函式）、裝飾器的底層原理、回呼帶狀態。",
+          "⚠️ 迴圈裡建閉包又用迴圈變數，常常全部記到「最後一個值」——需要當下的值就用預設參數 <code>def f(x, n=n)</code> 綁進去。",
+        ),
+      },
+      {
+        title: "dataclass：資料類別免寫一堆樣板",
+        content: P(
+          "要一個「只是裝資料」的類別，用 <code>@dataclass</code> 省掉手寫 <code>__init__</code>。",
+          "<code>from dataclasses import dataclass; @dataclass\nclass Point: x: int; y: int</code>——自動幫你生 <code>__init__</code>、好看的 <code>__repr__</code>、還能比較相等。",
+          "<code>p = Point(1, 2); print(p)</code> → <code>Point(x=1, y=2)</code>，不用自己寫。可給預設值、設 <code>frozen=True</code> 變不可變。",
+          "⚠️ 可變預設（list/dict）要用 <code>field(default_factory=list)</code>、不能直接 <code>=[]</code>（跟函式預設參數同一個雷）。純資料用 dataclass、有複雜行為才寫一般 class。",
+        ),
+      },
+      {
+        title: "Enum：別再用魔法字串當狀態",
+        content: P(
+          "訂單狀態到處寫 <code>\"pending\"</code>、<code>\"paid\"</code> 字串，打錯字也不會報錯——用 Enum 收斂。",
+          "<code>from enum import Enum; class Status(Enum): PENDING=\"pending\"; PAID=\"paid\"</code>。",
+          "用 <code>Status.PAID</code>，打錯名字會當場報錯（不像字串打錯默默錯）；集中一個地方管所有合法值。",
+          "⚠️ 別散落一堆「魔法字串/魔法數字」在程式各處——用 Enum 或常數集中，改一次、到處對，也讓編輯器能自動完成。",
+        ),
+      },
+      {
+        title: "namedtuple：輕量、有名字的資料",
+        content: P(
+          "想要「像 tuple 一樣輕、但欄位有名字」，用 namedtuple。",
+          "<code>from collections import namedtuple; Point = namedtuple(\"Point\", \"x y\")</code>；<code>p = Point(1, 2)</code>，可以 <code>p.x</code> 也可以 <code>p[0]</code>。",
+          "比 dict 省記憶體、不可變（當 key、當回傳多值很好用），比 dataclass 更輕。",
+          "⚠️ 需要「可變 + 方法」用 dataclass 或 class；只是「一組固定欄位的小資料、還要能解包」namedtuple 最順。",
+        ),
+      },
+      {
+        title: "CSV 讀寫：處理表格資料",
+        content: P(
+          "跟 Excel/試算表交換資料最常見的格式，用內建 <code>csv</code> 模組（或 pandas）。",
+          "讀：<code>import csv; with open(\"a.csv\", encoding=\"utf-8\") as f: for row in csv.DictReader(f): print(row[\"name\"])</code>——<code>DictReader</code> 讓你用欄位名取值。",
+          "寫：<code>csv.DictWriter(f, fieldnames=[...])</code>，先 <code>writeheader()</code> 再 <code>writerow(dict)</code>。",
+          "⚠️ 中文一定 <code>encoding=\"utf-8\"</code>；給 Excel 開會亂碼可改 <code>utf-8-sig</code>。欄位裡有逗號/換行別自己拼字串——用 csv 模組它會正確處理引號跳脫。",
+        ),
+      },
+      {
+        title: "logging 取代 print：正式一點的輸出",
+        content: P(
+          "隨手 <code>print</code> debug 沒問題，但正式程式用 <code>logging</code> 更好。",
+          "<code>import logging; logging.basicConfig(level=logging.INFO); logging.info(\"開始處理 %s\", name)</code>。",
+          "好處：分級別（debug/info/warning/error）可一鍵調要看多細；能同時輸出到檔案；帶時間戳；正式環境關掉 debug 不用刪 print。",
+          "⚠️ 到處 print 上線後很難管、也可能不小心印出機密。函式庫/服務端用 logging；一次性小腳本 print 就好。",
+        ),
+      },
+      {
+        title: "pytest 入門：怎麼寫第一個測試",
+        content: P(
+          "Python 測試最常用 pytest，上手超簡單。",
+          "寫一個 <code>test_xxx.py</code>，裡面 <code>def test_add(): assert add(1,2) == 3</code>——函式名以 <code>test_</code> 開頭、用 <code>assert</code> 斷言。",
+          "終端跑 <code>pytest</code>，它自動找所有 test_ 檔跑、綠燈全過、紅燈告訴你哪個 assert 失敗、期望 vs 實際。",
+          "測邊界：空的、0、負數、超大、壞輸入——bug 常躲在邊界。",
+          "⚠️ 先對「最容易錯、最重要」的函式寫幾個測試就好，別一開始追求 100% 覆蓋。有測試，你改 code 才敢大膽。",
+        ),
+      },
+      {
+        title: "breakpoint()：停下來逐行看",
+        content: P(
+          "比 print 更強的除錯：在想檢查的那行放 <code>breakpoint()</code>，程式跑到那會停、進入互動除錯器（pdb）。",
+          "停住後可以：打變數名看值、<code>n</code> 下一行、<code>s</code> 進入函式、<code>c</code> 繼續跑、<code>q</code> 離開。",
+          "比一直加 print 再刪快多了——現場所有變數隨你查。",
+          "⚠️ <code>breakpoint()</code> 是 Python 3.7+ 內建（等同 <code>import pdb; pdb.set_trace()</code>）；別忘了拿掉、也別 commit 進版控（會讓別人的程式卡住）。",
+        ),
+      },
+      {
+        title: "GIL 與並行：多執行緒還是多程序",
+        content: P(
+          "想「同時做很多事」加速，先搞懂 Python 的一個特性。",
+          "<b>GIL</b>（全域直譯器鎖）讓 Python「同一時間只有一條執行緒在跑 Python code」——所以多執行緒對「純計算」<b>沒</b>加速。",
+          "分兩種情況：等 I/O（下載、讀檔、等 API）用<b>多執行緒 / async</b>——等待時可以切去做別的，有效；純吃 CPU 的計算用<b>多程序</b>（multiprocessing）——真的用到多核。",
+          "⚠️ 並行很容易寫出難抓的 bug（競爭條件）。新手先用「asyncio 處理大量 I/O」或「multiprocessing 跑重計算」這兩個明確場景，別盲目上多執行緒。",
+        ),
+      },
+      {
+        title: "pythonic 迴圈：直接迭代、別用 index",
+        content: P(
+          "從別的語言來的人常寫 <code>for i in range(len(items)): items[i]</code>——Python 有更漂亮的方式。",
+          "直接跑元素：<code>for item in items:</code>。要編號配 <code>enumerate</code>；兩串一起配 <code>zip</code>；反向 <code>reversed</code>；排序後 <code>sorted</code>。",
+          "判斷「在不在」用 <code>if x in items</code>（別自己寫迴圈找）；要「找第一個/有沒有/全部」用 <code>next/any/all</code>。",
+          "⚠️ 「用 index 存取」在 Python 通常是壞味道——多半有更直接的寫法。寫得像 Python，讀的人（含你）都輕鬆。",
+        ),
+      },
+      {
+        title: "os / sys：跟系統與參數打交道",
+        content: P(
+          "寫工具腳本常要碰環境、路徑、命令列參數。",
+          "<code>import os; os.environ.get(\"API_KEY\")</code> 讀環境變數；<code>os.getcwd()</code> 目前目錄；路徑操作優先用 <code>pathlib</code>（前面教過）。",
+          "<code>import sys; sys.argv</code> 拿命令列參數（<code>python x.py a b</code> → argv 是 ['x.py','a','b']）；<code>sys.exit(1)</code> 用非 0 離開表示失敗。",
+          "要跑外部指令用 <code>subprocess.run([...])</code>。",
+          "⚠️ <code>subprocess</code> 別用 <code>shell=True</code> 拼使用者輸入（指令注入風險）；讀環境變數當機密來源、別寫死金鑰。",
+        ),
+      },
     ],
   },
   {
