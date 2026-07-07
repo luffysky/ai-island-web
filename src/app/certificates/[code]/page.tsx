@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Award } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ShareButton } from "@/components/share/ShareButton";
 import { CertActions } from "./CertActions";
@@ -53,14 +54,15 @@ export async function generateMetadata({ params }: { params: Promise<{ code: str
 export default async function CertificatePage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
   const cert = await getCert(code);
+  const t = await getTranslations("certificates");
 
   if (!cert) {
     return (
       <main className="max-w-lg mx-auto px-4 py-24 text-center space-y-4">
         <div className="text-5xl">🔎</div>
-        <h1 className="text-xl font-bold">查無此證書</h1>
-        <p className="text-sm text-fg-muted">驗證碼可能不正確，或該證書已被撤銷。</p>
-        <Link href="/chapters" className="inline-block px-5 py-2.5 rounded-full bg-accent text-black font-semibold">來 AI 島開始學習</Link>
+        <h1 className="text-xl font-bold">{t("notFoundTitle")}</h1>
+        <p className="text-sm text-fg-muted">{t("notFoundDesc")}</p>
+        <Link href="/chapters" className="inline-block px-5 py-2.5 rounded-full bg-accent text-black font-semibold">{t("startLearning")}</Link>
       </main>
     );
   }
@@ -73,16 +75,16 @@ export default async function CertificatePage({ params }: { params: Promise<{ co
         <div className="relative">
           <Award size={56} className="text-yellow-400 mx-auto mb-3" />
           <div className="text-xs tracking-[0.3em] text-yellow-500/80 font-semibold">CERTIFICATE OF COMPLETION</div>
-          <div className="mt-4 text-sm text-fg-muted">此證書頒發給</div>
+          <div className="mt-4 text-sm text-fg-muted">{t("issuedTo")}</div>
           <div className="mt-1 text-2xl font-bold">{cert.learner}</div>
           <h1 className="mt-4 text-3xl font-black text-yellow-400 leading-tight">{cert.title}</h1>
           {cert.issued_at && (
             <div className="mt-4 text-xs text-fg-muted">
-              發出於 {new Date(cert.issued_at).toLocaleDateString("zh-TW")}
+              {t("issuedOn", { date: new Date(cert.issued_at).toLocaleDateString("zh-TW") })}
             </div>
           )}
           {cert.verification_code && (
-            <div className="mt-1 text-xs font-mono text-fg-muted">驗證碼：{cert.verification_code}</div>
+            <div className="mt-1 text-xs font-mono text-fg-muted">{t("verificationCode", { code: cert.verification_code })}</div>
           )}
         </div>
       </div>
@@ -90,16 +92,16 @@ export default async function CertificatePage({ params }: { params: Promise<{ co
       <div className="cert-no-print flex flex-wrap items-center justify-center gap-3">
         <ShareButton
           url={`${SITE_URL}/certificates/${code}`}
-          title={`${cert.learner} 的完課證書：${cert.title}`}
-          text={`我在 AI 島完成了「${cert.title}」🎓`}
-          label="炫耀這張證書"
+          title={t("shareTitle", { name: cert.learner, title: cert.title })}
+          text={t("shareText", { title: cert.title })}
+          label={t("shareLabel")}
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-semibold hover:opacity-90 transition"
         />
         <CertActions
           ogImageUrl={`${SITE_URL}/api/og/cert?title=${encodeURIComponent(cert.title)}&name=${encodeURIComponent(cert.learner)}&code=${encodeURIComponent(cert.verification_code || "")}`}
           fileBase={`AI島完課證書-${cert.title}`}
         />
-        <Link href="/chapters" className="px-5 py-2.5 rounded-full border border-border hover:bg-bg-elevated transition">來 AI 島學習</Link>
+        <Link href="/chapters" className="px-5 py-2.5 rounded-full border border-border hover:bg-bg-elevated transition">{t("goLearn")}</Link>
       </div>
     </main>
   );

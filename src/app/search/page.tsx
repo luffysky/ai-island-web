@@ -10,6 +10,7 @@ import {
   MessageSquareText,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 export const dynamic = "force-dynamic";
@@ -59,6 +60,7 @@ export default async function SearchPage({
 }: {
   searchParams: Promise<{ q?: string; type?: string }>;
 }) {
+  const t = await getTranslations("search");
   const sp = await searchParams;
   const q = (sp.q ?? "").trim();
   const results = await doSearch(q);
@@ -78,10 +80,10 @@ export default async function SearchPage({
     <div className="max-w-3xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-2 flex items-center gap-2">
         <Sparkles size={20} className="text-accent" aria-hidden="true" />
-        語意搜尋
+        {t("heading")}
       </h1>
       <p className="text-sm text-fg-muted mb-6">
-        用自然語言問問題、AI 幫你找跨章節 / 副本 / 部落格 / 論壇的最相關內容。
+        {t("intro")}
       </p>
 
       <form action="/search" method="GET" className="mb-6" role="search">
@@ -90,8 +92,8 @@ export default async function SearchPage({
             type="search"
             name="q"
             defaultValue={q}
-            aria-label="搜尋內容"
-            placeholder="例如：怎麼從 0 開始學 React Hook、AI Agent 是什麼、台灣 SEO 要怎麼做..."
+            aria-label={t("inputAriaLabel")}
+            placeholder={t("placeholder")}
             className="flex-1 bg-bg-card border border-border rounded-lg px-4 py-2.5 text-sm outline-none focus:border-accent"
             autoFocus
           />
@@ -100,7 +102,7 @@ export default async function SearchPage({
             className="px-5 py-2.5 bg-accent text-black font-bold rounded-lg inline-flex items-center gap-1"
           >
             <SearchIcon size={14} aria-hidden="true" />
-            搜尋
+            {t("searchButton")}
           </button>
         </div>
       </form>
@@ -110,8 +112,8 @@ export default async function SearchPage({
       ) : results.length === 0 ? (
         <EmptyState
           icon={SearchIcon}
-          title={`沒找到「${q}」相關內容`}
-          desc="試試不同關鍵字、或用更具體 / 更簡短的問題。（若剛部署、內容索引可能還在建立中。）"
+          title={t("noResultsTitle", { q })}
+          desc={t("noResultsDesc")}
         />
       ) : (
         <div className="space-y-8">
@@ -140,7 +142,7 @@ export default async function SearchPage({
                           </span>
                           <span className="text-fg-muted">·</span>
                           <span className="text-fg-muted font-mono text-[10px]">
-                            相似度 {(r.similarity * 100).toFixed(0)}%
+                            {t("similarity", { pct: (r.similarity * 100).toFixed(0) })}
                           </span>
                         </div>
                         <h3 className="font-bold group-hover:text-accent transition">{r.title}</h3>
@@ -160,17 +162,18 @@ export default async function SearchPage({
   );
 }
 
-function SuggestionBlock() {
+async function SuggestionBlock() {
+  const t = await getTranslations("search");
   const examples = [
-    "怎麼從 0 開始學 React Hooks？",
-    "Next.js 跟 Nuxt 哪個適合台灣 SEO？",
-    "AI Agent 是什麼、怎麼自己寫一個",
-    "TypeScript generics 有什麼用",
-    "想接案、要先學什麼",
+    t("example1"),
+    t("example2"),
+    t("example3"),
+    t("example4"),
+    t("example5"),
   ];
   return (
     <div className="space-y-3">
-      <p className="text-sm text-fg-muted">試試這些問題：</p>
+      <p className="text-sm text-fg-muted">{t("suggestPrompt")}</p>
       <div className="grid gap-2">
         {examples.map((ex) => (
           <Link
@@ -184,9 +187,9 @@ function SuggestionBlock() {
         ))}
       </div>
       <p className="text-[11px] text-fg-muted mt-6 leading-relaxed">
-        <b>語意搜尋</b> 比一般關鍵字強：可以問問題（「怎麼...」「為什麼...」）、可以用同義詞、可以跨章節找答案。
+        {t.rich("suggestFooterMain", { b: (chunks) => <b>{chunks}</b> })}
         <br />
-        實作：OpenAI text-embedding-3-small + pgvector cosine similarity、跨類型 ranking。
+        {t("suggestFooterImpl")}
       </p>
     </div>
   );

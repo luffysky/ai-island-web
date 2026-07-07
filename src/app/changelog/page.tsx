@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { formatTWDate } from "@/lib/format-date";
 import ReactMarkdown from "react-markdown";
@@ -20,6 +21,7 @@ const TAG_COLOR: Record<string, string> = {
 };
 
 export default async function ChangelogPage() {
+  const t = await getTranslations("changelog");
   const admin = createSupabaseAdmin();
   const { data: entries } = await admin
     .from("changelog_entries")
@@ -31,14 +33,14 @@ export default async function ChangelogPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">📜 更新日誌</h1>
-        <p className="text-sm text-fg-muted">AI 島平台的功能更新、修正、改善紀錄</p>
+        <h1 className="text-3xl font-bold mb-2">📜 {t("title")}</h1>
+        <p className="text-sm text-fg-muted">{t("subtitle")}</p>
       </header>
 
       {(entries ?? []).length === 0 ? (
         <div className="text-center py-16 text-fg-muted">
           <p className="text-4xl mb-3">📭</p>
-          <p>還沒有發布任何更新日誌</p>
+          <p>{t("empty")}</p>
         </div>
       ) : (
         <ol className="relative border-l-2 border-border space-y-8 pl-6">

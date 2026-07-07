@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { ImageDown, FileDown, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 /** 證書下載：圖片(PNG，用 OG 卡)＋ PDF(瀏覽器列印/另存 PDF，只印證書卡)。 */
 export function CertActions({ ogImageUrl, fileBase }: { ogImageUrl: string; fileBase: string }) {
+  const t = useTranslations("certificates");
   const [busy, setBusy] = useState(false);
 
   async function downloadImage() {
@@ -40,11 +42,11 @@ export function CertActions({ ogImageUrl, fileBase }: { ogImageUrl: string; file
       `}</style>
       <button onClick={downloadImage} disabled={busy}
         className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border hover:bg-bg-elevated transition disabled:opacity-50">
-        {busy ? <Loader2 size={16} className="animate-spin" /> : <ImageDown size={16} />} 下載圖片
+        {busy ? <Loader2 size={16} className="animate-spin" /> : <ImageDown size={16} />} {t("downloadImage")}
       </button>
       <button onClick={downloadPdf}
         className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border hover:bg-bg-elevated transition">
-        <FileDown size={16} /> 下載 PDF
+        <FileDown size={16} /> {t("downloadPdf")}
       </button>
     </>
   );
