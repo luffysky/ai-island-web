@@ -5,14 +5,37 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { addRelation } from "@/lib/creator-engine/lineage";
 
-const COLS = "id, workspace_id, created_by, work_type, status, title, body, meta, source_type, language, culture, published_blog_id, created_at, updated_at";
+const COLS = "id, workspace_id, created_by, work_type, status, title, body, meta, source_type, language, culture, published_blog_id, is_showcased, showcased_at, created_at, updated_at";
 
 export type Work = {
   id: string; workspace_id: string; created_by: string | null;
   work_type: string; status: string; title: string; body: string;
   meta: Record<string, unknown>; source_type: string;
-  published_blog_id: string | null; created_at: string; updated_at: string;
+  published_blog_id: string | null; is_showcased?: boolean; showcased_at?: string | null;
+  created_at: string; updated_at: string;
 };
+
+/** 發佈/取消 公開展示（is_showcased）。 */
+export async function setWorkShowcase(workId: string, on: boolean): Promise<void> {
+  const admin = createSupabaseAdmin();
+  await admin.from("ci_works").update({ is_showcased: on, showcased_at: on ? new Date().toISOString() : null, updated_at: new Date().toISOString() }).eq("id", workId);
+}
+
+/** 公開展示頁：列出所有 is_showcased 的作品（附創作者名）。 */
+export async function listShowcasedWorks(limit = 40): Promise<Array<Work & { author_name: string | null; author_avatar: string | null }>> {
+  const admin = createSupabaseAdmin();
+  const { data } = await admin.from("ci_works").select(COLS).eq("is_showcased", true).order("showcased_at", { ascending: false }).limit(Math.min(100, limit));
+  const works = (data as Work[]) ?? [];
+  const ids = [...new Set(works.map((w) => w.created_by).filter(Boolean))] as string[];
+  const { data: profs } = ids.length
+    ? await admin.from("profiles").select("id, username, display_name, avatar_url").in("id", ids)
+    : { data: [] as any[] };
+  const pm = new Map((profs ?? []).map((p: any) => [p.id, p]));
+  return works.map((w) => {
+    const p = w.created_by ? pm.get(w.created_by) : null;
+    return { ...w, author_name: p?.display_name || p?.username || null, author_avatar: p?.avatar_url || null };
+  });
+}
 
 export async function listWorks(workspaceId: string, opts: { cursor?: string | null; limit?: number } = {}): Promise<{ items: Work[]; nextCursor: string | null }> {
   const admin = createSupabaseAdmin();

@@ -103,6 +103,8 @@ const MIGRATIONS = [
   "blog_author_identity_migration.sql",
   // 2026-07 — 內容 i18n 翻譯快取（翻一次、來源變才重翻）
   "content_translations_migration.sql",
+  // 2026-07 — 創作者作品公開展示（is_showcased）
+  "ci_works_showcase_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）

@@ -25,6 +25,7 @@ export default async function CommunityPage() {
         <div className="flex items-center gap-3 text-sm">
           <Link href="/creator-island/messages" className="text-fg-muted hover:text-accent inline-flex items-center gap-1.5"><Mail size={14} /> 訊息</Link>
           <Link href="/creator-island/friends" className="text-fg-muted hover:text-accent inline-flex items-center gap-1.5"><Users size={14} /> 好友</Link>
+          <Link href="/creator-island/showcase" className="text-fg-muted hover:text-accent inline-flex items-center gap-1.5"><Globe size={14} /> 公開展示</Link>
           <Link href="/creator-island" className="text-accent hover:underline inline-flex items-center gap-1.5"><ArrowLeft size={14} /> 回島</Link>
         </div>
       </header>

@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowLeft, Copy, Music, Film, Link2, Sparkles, ExternalLink } from "lucide-react";
+import { ArrowLeft, Copy, Music, Film, Link2, Sparkles, ExternalLink, Globe } from "lucide-react";
 import { BlogEditor } from "@/components/blog/BlogEditor";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 
-type Work = { id: string; title: string; body: string; work_type: string; status: string; meta: any; published_blog_id: string | null };
+type Work = { id: string; title: string; body: string; work_type: string; status: string; meta: any; published_blog_id: string | null; is_showcased?: boolean };
 
 async function api(url: string, body?: any) {
   const res = await fetch(url, { method: "POST", headers: body ? { "Content-Type": "application/json" } : undefined, body: body ? JSON.stringify(body) : undefined });
@@ -29,8 +29,18 @@ export function WorkEditor({ work, canEdit, usedFragments = [], derivedCount = 0
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [seoLink, setSeoLink] = useState<string | null>(null);
+  const [showcased, setShowcased] = useState(!!work.is_showcased);
   const confirm = useConfirm();
   const meta = work.meta || {};
+
+  async function toggleShowcase() {
+    setBusy("showcase"); setErr(null); setMsg(null);
+    try {
+      const r = await api(`/api/creator-island/works/${work.id}/showcase`, { on: !showcased });
+      setShowcased(r.on);
+      setMsg(r.on ? "已發佈到公開展示頁 🎨" : "已從公開展示移除");
+    } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+  }
 
   function copy(t: string, label: string) {
     navigator.clipboard?.writeText(t).then(() => { setMsg(`已複製${label}`); setTimeout(() => setMsg(null), 1500); }, () => setErr("複製失敗"));
@@ -68,6 +78,7 @@ export function WorkEditor({ work, canEdit, usedFragments = [], derivedCount = 0
         <div className="flex gap-2 text-sm">
           {canEdit && <button onClick={save} disabled={busy !== null} className="px-3 py-1.5 rounded-full bg-accent text-white disabled:opacity-40">{busy === "save" ? "…" : "儲存"}</button>}
           {canEdit && work.work_type === "article" && <button onClick={publish} disabled={busy !== null} className="px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 disabled:opacity-40">發布成文章</button>}
+          {canEdit && <button onClick={toggleShowcase} disabled={busy !== null} className={`px-3 py-1.5 rounded-full inline-flex items-center gap-1.5 disabled:opacity-40 ${showcased ? "bg-accent/20 text-accent" : "bg-bg-elevated hover:text-accent"}`}><Globe size={14} /> {busy === "showcase" ? "…" : showcased ? "展示中" : "發佈到展示頁"}</button>}
           {canEdit && <button onClick={toSeo} disabled={busy !== null} className="px-3 py-1.5 rounded-full bg-violet-500/20 text-violet-300 disabled:opacity-40 inline-flex items-center gap-1.5"><Sparkles size={14} /> {busy === "seo" ? "AI 生成中…" : "轉成 SEO 文章"}</button>}
           {canEdit && status !== "archived" && <button onClick={archive} disabled={busy !== null} className="px-3 py-1.5 rounded-full bg-bg-elevated disabled:opacity-40">封存→回收</button>}
         </div>
