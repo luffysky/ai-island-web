@@ -1,58 +1,62 @@
 # 交接給下一個 Context（更新於 2026-07-08）
 
-> 這份是「接力棒」。上一棒把能安全 commit 的都推上線了、`tsc` + `next build` 綠。
-> **① i18n 4 區合併：✅ 已完成（commit 82793021）。** 現在重點：**② 內容加量（手寫）③ 維運/擁有者待辦**。
+> 接力棒。能安全 commit 的都推上線了、`tsc` + `next build` 綠、tree 乾淨。
+> **完成的用 ~~刪除線~~ 保留可見（不刪）。** 現在重點：**D（AI 個性差異化，進行中）→ E（動態 emoji）→ #166 剩餘**。
 
 ---
 
-## ✅ ①（已完成）：i18n 重跑 4 區已合併並 commit（task #162）
+## ✅ 這一棒已完成（保留紀錄，勿刪）
 
-**狀況**：creator-island / me / mentor / learn 四區 UI 字串抽取 + 合併 + build 已全部收尾。
-- messages 新增 4 namespace：`creator`(560) / `me`(202) / `learn`(225) / `mentor`(145) = **1697 keys × 4 語**。
-- 綠寶吉祥物英日韓統一 **Emerald / エメラルド / 에메랄드**。
-- 市集副標「抽成 0%」已移除（task #168 ✅、改「果實可提現」，理由：提現有手續費、吹 0% 會誤導）。
-- tsc 0 錯、`next build` 綠、已 commit（`82793021` i18n、`0a6737a1` 市集文案）。
+- ~~**#162 i18n 重跑 4 區合併**~~ ✅ creator(560)/me(202)/learn(225)/mentor(145) = 1697 keys×4語；綠寶=Emerald/エメラルド/에메랄드。`82793021`
+- ~~**#168 市集「抽成 0%」文案**~~ ✅ 改「果實可提現」（提現有手續費、吹 0% 會誤導）。`0a6737a1`
+- ~~**#164 官方筆記 4 包各衝破 120**~~ ✅ Python125/前端120/後端120/基本功120 = **485 則**（全手寫、真人踩雷味、HTML 安全、color 輪播）。`4385fdb4`+`0b1393e2`
+- ~~**#167 討論區/創作者作品加量**~~ ✅ 論壇 41→**59** 主題(100回覆/113讚)、創作者作品 7→**15** 件、部落格已 96 篇。`5bf82e23`+`0d2dc77f`
+- ~~**買到的市集筆記→自動加入「我的筆記」(feature A)**~~ ✅ `buy_note_product` RPC 複製整包給買家(保留章節/便利貼色、冪等補發、擋重購)；BuyButton 顯示「已加入你的筆記(N篇)」+連 /me/notes。`0f59bc0f`
+- ~~**筆記 485 篇逐篇標「相關章節」chapter_id (feature C)**~~ ✅ 4 AI 代理對應+主線驗證(100%覆蓋/章id有效/抽查無亂標)、連結全有效。`4908b915`
+- ~~**筆記「Ch XX·章名」做成可點連結→跳該章**~~ ✅ `4b9daffc`
+- ~~**便利貼樣式 (feature B)**~~ ✅ 本來就有（`NoteCard` 的 `resolveSticky` 膠帶/旋轉/釘/自訂背景圖）；`chapter_id` 有值就顯示「Ch XX·章名」header。
+- ~~**#166 一部分：背景翻譯真的跑起來 + 章節列表在地化**~~ ✅ 章節 metas 譯文 en/ja/ko 各~133（`content_translations` 已有料）；/chapters + 側欄 nav 非中文顯示章節譯文（`localizeChapterMetas`）。`787da6bb`+`4ab0275b`
 
-**抽字串已驗證的流程**（之後還要抽新區時沿用）：每批 3–4 個 subagent、各認一個 namespace、**用 Write 把扁平 `{key:{zh,en,ja,ko}}` 直接寫進 scratchpad JSON 檔**（別靠 task-notification 轉錄）、主線用 `scratchpad/merge_i18n.mjs` 掛進 4 個 message 檔。規則：只包「靜態 UI chrome」不包 DB 內容 / module-scope const / metadata；本地已有 `t` 變數就把 hook 命名 `tr`；`text-black` on accent / className / emoji / URL 不動。
-
-**i18n 地基（已穩定、別重做）**：`src/i18n/request.ts`（cookie locale + 地區預設語言 TW/HK/CN/MO→zh、JP→ja、KR→ko、其他→en）、`LanguageSwitcher`（已美化成自訂下拉）、`content-i18n.ts`（Data Cache 讀取、翻一次快取）。
-
-**i18n 地基（已穩定、別重做）**：`src/i18n/request.ts`（cookie locale + **地區預設語言**：TW/HK/CN/MO→zh、JP→ja、KR→ko、其他→en）、`src/i18n/locales.ts`、`LanguageSwitcher`、`content-i18n.ts`（**Data Cache** 讀取、翻一次快取）。
-
-**已抽完並 commit 的區**：chrome、home、store、chapters、quest、forum、notes、island、dashboard、profile、leaderboard、career、nav.works、notes.openFullPage。
-
-**還沒抽的區（admin 後台不做）**：`blogs`(列表頁)、`courses`、`certificates`(頂層)、`changelog`、`search`、`settings`、`onboarding`、`teacher`、`auth`(剩餘)。
-
-**動態/JSON 內容翻譯**：
-- DB 內容走 `content-i18n.ts` 的 Data Cache（已接：blog 文章頁、章節 `localizeChapter`、論壇主題頁）。**要真的有譯文 → 跑背景翻譯**：手動觸發 GitHub workflow **Translate Content**（`.github/workflows/translate-content.yml` → 打 `/api/cron/translate-content`；用**使用者自己的 AI key**、不燒 Claude session；跑到回 `total=0` = 翻完）。
-- 純前端 data 檔的中文（`src/components/island/island-bus.ts`、`src/lib/types.ts` 的 `CAREER_PATHS`、`quest/*-levels.ts`）→ agent 都刻意留著當 content，要翻另開一批。
+**可重跑的工具（都在 scratchpad 或 scripts）**：
+- `scripts/translate-content-cli.mjs`：**獨立背景翻譯器**（系統 AI key、翻一次不重翻、比對 source_hash）。`node scripts/translate-content-cli.mjs chapter|forum|blog|lesson [limit]`。章節已翻完；forum/blog/lesson 還沒跑（見下 #166）。
+- scratchpad：`insert_notes.mjs`(筆記轉P()插入)、`forum_insert.mjs`(論壇thread插入)、`inject_chapter_ids.mjs`(章節注入)、`merge_i18n.mjs`(i18n合併)。
 
 ---
 
-## ✍️ ②：內容待辦（使用者原則：**全部手寫、有真人味、不要腳本亂生**）
+## 🔨 待辦（照這順序）
 
-1. ~~**官方免費筆記：每一套（包）都要衝到「120 篇以上」**~~ ✅ **task #164 已完成**：Python 125 / 前端 120 / 後端 120 / 基本功 120 = **485 則**（全手寫、真人踩雷味、HTML 安全掃描過、color 輪播），已重灌 DB + commit（`4385fdb4`+`0b1393e2`）。做法留參考：4 個撰寫 agent 各手寫 66 篇→`scratchpad/notes_*.json`→`scratchpad/insert_notes.mjs` 轉成 `P(...)` 物件插進 `seed-note-market.mjs` 對應 pack→`node scripts/seed-note-market.mjs` 重灌→查 DB 每包≥120。**要再加量沿用此流程。**
-   - ⚠️⚠️ **每一篇都要「親手認真寫」**——**不准用 AI 生成器 / 樣板批量產 / 湊數**。林董明講：「不要用腳本寫、要認真寫」。這裡的「腳本」指的是「別做一支 AI generator 亂生」，**不是**指不能用 seed 檔。
-   - `scripts/seed-note-market.mjs` **只是把手寫內容塞進 DB 的載具**（hardcoded PACKS 陣列、`node scripts/seed-note-market.mjs` 重灌、idempotent）。你要做的是**在那個陣列裡一篇一篇手寫**，不是寫個程式去生。
-   - 每篇品質門檻：**第一人稱、有踩雷經驗、口語但有料**（「我一開始也卡在…」「⚠️ 新手雷」），一個真正搞懂的人在整理自己的筆記——不是速查表、不是教科書、不是罐頭。每則配一個便利貼色（`color` 欄輪播）。
-   - 做法：**一批親手寫 8–15 篇好的 → 重灌 → commit → 再一批**，一路寫到每包 120+。急不得、但別停。涵蓋面要廣（語法/資料結構/例外/檔案/模組/OOP/測試/工具/常見錯…），別重複。
-2. **部落格更生人樣 / 加創作者部落格**：`scripts/seed-blog.mjs`（AI 住民）、`scripts/seed-creator-blog.mjs`（4 位正經創作者各 1 篇，可再擴）。
-3. **討論區**：`scripts/seed-forum.mjs`（41 串，含新 5 則學員口吻），要更多照樣加。
-4. **創作者作品**：`scripts/seed-creator-works.mjs`（7 件、4 位創作者、碎片編織、`is_showcased`）。加更多時 ⚠️ `ci_works.status` 用預設別亂填、`ci_fragments.source_type` 用合法值(如 `human_original`)、碎片冪等靠 tag `作品種子`。
+### D（進行中）：AI 夥伴「個性差異化」— 林董痛點：不同 AI 回話感覺一樣
+- **現況**：11 位人設定義在 `src/lib/ai-personas.ts`（`PERSONAS[id].promptBlock` 有各自語氣/口頭禪）；`src/lib/ai-tutor-prompt.ts` 的 `buildTutorSystemPrompt()` **有**把 `persona.promptBlock` 疊進 system prompt（line ~283），chatCompanion(多聞)還有「純陪聊模式」。所以人設**有**餵進去。
+- **問題**：差異不夠明顯——通用導師 prompt 太長把人設稀釋了。**要做**：把每個 promptBlock 寫得更「有辨識度」（口頭禪/句式/回答結構各自不同）、並在 system prompt 裡把人設區塊「往前挪、加權重字眼」讓它壓過通用腔；可考慮 few-shot（每人設 1-2 句示範回話）。改完用 AITutorWidget 各切一個人設實測回話。
+- ⚠️ `/api/me/mentor` 是**配對系統**(mentor/mentee/peer)、不是 AI 對話，別改錯。AI 對話走 AITutorWidget → `buildTutorSystemPrompt`。
 
----
+### E：動態 emoji / GIPHY（林董已研究）
+- 方向（林董定）：**先自架 Google Noto Animated Emoji 做反應表情**（懂了/卡住/太神/救命…），**GIPHY 之後再接**（beta key 免費限 100/hr，別當核心、別被卡脖子）。Tenor 已關 API 別碰。
+- 建議架構：`animated-emoji`(自架Noto/Lottie) → `reaction-pack`(AI島專屬) → `giphy-search`(外部) → `moderation`。第一版只做前兩個。
+- 落點：留言/筆記反應、課程完成動畫、AI 導師情緒。
 
-## 🛠️ ③：維運 / 擁有者要做的（CLI 做不了）
-
-- **瀏覽器實測**：`/quest` 各遊戲+獎勵、11 位 AI 夥伴人設、切語言(中/英/日/韓)、金流測試模式、`/works` 作品牆、`/me/notes/[id]` 單篇筆記頁、筆記懸浮鈕拖曳。
-- **金流上線**：live env、綠界定期定額(訂閱)、MoR(Paddle/Lemon Squeezy) subscription webhook。見 `docs/payments_setup.md`、`/admin/payments`。
-- **創作者分潤 B/C**：Stripe Connect(海外) / 綠界藍新分潤(台灣)，需先申請服務、沿用 `ci_payouts.method`。
-- **跑背景翻譯**：見 ① 動態內容翻譯。
+### #166 剩餘：翻譯 render wiring 擴更多頁 + 翻更多內容
+- render wiring 已接：blog 文章頁、章節詳情、論壇主題頁、**/chapters 列表、側欄 nav**。**還沒接**：/forum 版面 thread 列表、/blogs 文章列表（需比照做 forum/blog 的批次 localizer）。
+- 背景翻譯**只跑了章節**。要讓論壇/部落格/lesson 也有譯文：`node scripts/translate-content-cli.mjs forum`、`… blog`、`… lesson 600`（lesson 1258 筆很多、分批多跑幾次、耗 AI 額度）。**這會花使用者 AI key 額度**，量大的先問過。
 
 ---
 
-## 🔒 安全紅線（延續上一棒、務必遵守）
-- **`.env.local`（真金鑰、已 gitignore）永遠不要 commit。**
+## ✍️ 內容加量原則（延續）：**全部手寫、真人味、不要腳本亂生**
+- 「不要用腳本寫」＝別做 AI generator 亂生；**seed 檔只是把手寫內容塞 DB 的載具**。筆記/論壇/作品加量都照「手寫→seed→重灌→commit」。
+- `seed-note-market.mjs`(筆記,PACKS陣列,含chapter_id/color)、`seed-forum.mjs`(論壇,AI住民誠實標🤖)、`seed-creator-works.mjs`(作品,⚠️`ci_works.status`用預設、`ci_fragments.source_type`用`human_original`、碎片冪等靠tag`作品種子`)、`seed-creator-blog.mjs`。
+
+---
+
+## 🛠️ 維運 / 擁有者要做的（CLI 做不了）
+- **瀏覽器實測**：`/quest` 遊戲+獎勵、11 AI 夥伴人設(D改完重測)、切語言(中英日韓)、金流測試、`/works` 作品牆、`/me/notes/[id]` 單篇頁、買市集筆記→看有沒有進「我的筆記」+點章節能跳。
+- **金流上線**：綠界定期定額、MoR subscription webhook（`docs/payments_setup.md`、`/admin/payments`）。
+- **創作者分潤**：Stripe Connect / 綠界藍新分潤（沿用 `ci_payouts.method`）。
+- **背景翻譯 forum/blog/lesson**：見 #166（跑 `translate-content-cli.mjs`，耗 AI 額度）。
+
+---
+
+## 🔒 安全紅線（務必遵守）
+- **`.env.local`（真金鑰）永遠不要 commit。**
 - **`docs/logerr.md`、`docs/note.md` 保持 untracked、不要 commit。**
 - service_role key / DB 密碼**等整個專案完成後**再輪替、別中途動。
 - 不繞過被拒絕的憑證探測。
@@ -60,7 +64,7 @@
 ---
 
 ## 🧭 專案關鍵雷（CLAUDE.md 也有）
-- **章節從 DB 讀不是 JSON**：改 `src/data/chapters/*.json` 後**一定** `node scripts/import_chapters_to_db.mjs chXX`（含 `sort_index`）。線上章節怪 → 先看 DB。
+- **章節從 DB 讀不是 JSON**：改 `src/data/chapters/*.json` 後**一定** `node scripts/import_chapters_to_db.mjs chXX`（含 `sort_index`）。線上章節怪→先看 DB。
 - **Supabase 1000 筆截斷**：撈整表用分頁 `.range()`、別 `.select('*')`。
 - **部署走 GHCR 預建 image**（zbpack 偶爾誤建成只跑 Caddy）；push main → docker.yml build+推 image+`restartService`。
 - 編章節 JSON 用 **Python**（`json.dump(ensure_ascii=False, indent=2)+"\n"`）保格式一致。
@@ -69,4 +73,4 @@
 ---
 
 ## 📌 一句話交辦
-**先把 i18n 4 區合併收尾（①，建議直接重跑那 4 區 agent），再繼續筆記加量到 120（②）。tree 現在乾淨、tsc 綠、放心接。**
+**D（AI 個性差異化，強化 persona promptBlock + 加權）先做 → E（動態 emoji，先自架 Noto 反應表情）→ #166 剩餘（forum/blog 列表在地化 + 跑 forum/blog 背景翻譯）。tree 乾淨、tsc 綠，放心接。**
