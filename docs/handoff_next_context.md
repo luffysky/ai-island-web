@@ -40,10 +40,12 @@
   2. **學習反應 UI**：用 `LEARN_REACTIONS`（懂了/卡住/太神…）在 lesson/筆記/課程完成做反應條 + 慶祝動畫；持久化要新 DB 表。
   3. **自架 Noto 素材**：把用到的 `{code}/512.webp` 下載進 `public/noto/`、`reactions.ts` 的 `NOTO_BASE` 改 `"/noto"`（現走 gstatic CDN、能動但非自架）。
 
-### #166 剩餘：翻譯 render wiring 擴更多頁 + 翻更多內容
-- render wiring 已接：blog 文章頁、章節詳情、論壇主題頁、**/chapters 列表、側欄 nav**。**還沒接**：/forum 版面 thread 列表、/blogs 文章列表（需比照做 forum/blog 的批次 localizer）。
-- 背景翻譯**只跑了章節**。要讓論壇/部落格/lesson 也有譯文：`node scripts/translate-content-cli.mjs forum`、`… blog`、`… lesson 600`（lesson 1258 筆很多、分批多跑幾次、耗 AI 額度）。**這會花使用者 AI key 額度**，量大的先問過。
-- ⚠️ **林董翻譯規則**：背景翻譯**只在中文內容有改動時**才更新其他語言、沒動的不碰（`translate-content-cli.mjs` 已這樣：比對 `source_hash`，一樣就 skip）。**一般 UI 字串（messages/*.json）我直接改、不用 API**；只有 DB 內容翻譯才跑腳本。
+### #166 剩餘（排下次做，見下）
+- render wiring 已接：blog 文章頁、章節詳情、論壇主題頁、**/chapters 列表、側欄 nav、/blogs/[userSlug] 文章列表**（`localizeList` 通用 helper 已備）。
+- **⬜ 排下次 TODO**：
+  1. **/forum thread 列表在地化**：論壇列表是 client 端抓（`ForumClient`/API）→ 要像 `/api/nav` 那樣在 API route 端套 `localizeList("forum", threads, locale, ["title"])`。
+  2. **背景翻譯 forum / blog / lesson**：`node scripts/translate-content-cli.mjs forum`（~354，便宜）、`… blog`、`… lesson 600`（lesson 1258 筆很多、分批、耗 AI 額度）。**花 AI key、量大的先問林董**。章節已翻完(480)。
+- ⚠️ **林董翻譯規則**：背景翻譯**只在中文內容有改動時**才更新其他語言、沒動的不碰（`translate-content-cli.mjs` 已這樣：比對 `source_hash` 一樣就 skip）。**一般 UI 字串（messages/*.json）直接改、不用 API**；只有 DB 內容翻譯才跑腳本。
 
 ---
 

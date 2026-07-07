@@ -147,3 +147,41 @@
 
 ## 交接
 - 完整待辦見 **`docs/handoff_next_context.md`**（i18n 4 區合併 → 筆記加量到 120 → 維運/擁有者）。tree 乾淨、tsc 綠。
+
+---
+
+# 續・2026-07-08（接力這棒）
+
+## i18n / 內容翻譯
+- **#162 i18n 4 區合併完成**：creator(560)/me(202)/learn(225)/mentor(145) = 1697 keys×4語；綠寶英日韓統一 Emerald。
+- **#166 內容翻譯（部分）**：`localizeChapterMetas` + `localizeList` 通用 helper；接了 **/chapters 列表、側欄 nav、/blogs/[userSlug] 文章列表**。寫了獨立翻譯器 `scripts/translate-content-cli.mjs`（系統 AI key、比對 `source_hash` 只翻改動的）→ **章節 metas 已翻 en/ja/ko（480 筆）**。
+- **#168 市集文案**：`marketSubtitle`「抽成 0%」→「果實可提現」（提現有手續費、吹 0% 誤導）。
+
+## 官方筆記（#164 達標）
+- **4 包各衝破 120**：Python 125 / 前端 120 / 後端 120 / 基本功 120 = **485 則**（全手寫真人踩雷味、HTML 安全掃描、便利貼色輪播）。
+- **每篇標「相關章節」chapter_id**（AI 逐篇對應 + 主線驗證：100%覆蓋/章id有效/連結全有效/抽查無亂標）；seed insert 加 `chapter_id` 欄。
+- 筆記卡「Ch XX·章名」做成**可點連結** → 跳該章。
+
+## 筆記市集（買到→我的筆記）
+- `buy_note_product` RPC 新 migration：**購買後整包複製進買家「我的筆記」**（保留 chapter_id/lesson_id/title/color/category、`is_public=false`、tag `from:<product>` 冪等補發、擋重購）。BuyButton 顯示「已加入你的筆記(N篇)」+連 /me/notes。
+
+## 內容加量（#167）
+- 討論區 41→**59 主題**（100 回覆/113 讚，補冷門版）、創作者作品 7→**15 件**（每人+2 手寫、依各自聲音）。
+
+## AI 夥伴個性差異化（D）
+- 根因：system prompt「國中生講解腔」強制所有人設同一種開場、淹掉 persona。
+- 修：`ai-tutor-prompt.ts` 改「精神非模板」+ 硬禁罐頭開場；`ai-personas.ts` 每角色加【開場】【禁】【結構】【這樣開場】few-shot。實測 4 角色開場結構明顯不同。
+
+## 動態 emoji / GIF（E，參考 insight-engine 改動態版）
+- `AnimatedEmoji`（Noto 動態 WebP、自動推導 code、fallback 靜態）、`AnimatedEmojiPicker`（9 分類+搜尋）、`EmojiText`（顯示端渲染動態）、`GifPicker`（GIPHY，靠 `NEXT_PUBLIC_GIPHY_API_KEY`）、`reactions.ts` 反應包。
+- **已掛所有主要輸入框**：論壇回覆/發文、部落格、創作引擎(EngineWorkspace)、社群發文+留言、私訊、AI 聊天(AITutorWidget)、島上 AI(IslandChat)。論壇反應條也動起來。
+- ⚠️ picker 加 `max-w-[calc(100vw-1.5rem)]` 防手機破版。
+
+## 維運
+- PWA service worker `v16-2026-07-07` → `v17-2026-07-08`（新版上線、cache 失效讓使用者拿新版）。
+- 全面驗證：DB 表/欄位/RPC 邏輯、API routes、migration 註冊、無敏感檔 stage、picker RWD 都過。tsc + next build 綠。
+
+## ⬜ 還沒做（排下次，詳見 handoff_next_context.md）
+1. **#166 剩餘**：/forum thread 列表在地化（client API 端套 `localizeList`）；背景翻譯 forum(~354便宜) / blog / lesson(1258筆量大耗額度，先問林董)。
+2. **E 後續**：學習反應 UI（懂了/卡住/太神…用 `LEARN_REACTIONS`）+ 課程完成動畫；自架 Noto 素材（webp 放 `public/noto/`、`NOTO_BASE` 改 `/noto`）。
+3. **D 收尾**：瀏覽器各切一個 AI 人設實測語氣。

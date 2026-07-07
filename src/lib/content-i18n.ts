@@ -159,6 +159,41 @@ export async function localizeChapterMetas<T extends { id: any; title?: string; 
   } catch { return metas; }
 }
 
+/**
+ * 通用「列表」批次在地化（論壇 thread 列表、blog 文章列表用）。
+ * 一次撈這批 id 在該語言的譯文、覆蓋指定欄位；走 Data Cache、tag 綁各 item。
+ * @param fields 要覆蓋的欄位（如 ["title"] 或 ["title","summary"]）。
+ */
+export async function localizeList<T extends Record<string, any>>(
+  sourceType: ContentSourceType, items: T[], locale: string, fields: string[], idKey: keyof T = "id" as keyof T,
+): Promise<T[]> {
+  if (locale === "zh" || !Array.isArray(items) || items.length === 0) return items;
+  try {
+    const ids = items.map((it) => String(it[idKey]));
+    const rows = await unstable_cache(
+      async () => {
+        const admin = createSupabaseAdmin();
+        const { data } = await admin.from("content_translations")
+          .select("source_id, field, translated, source_hash")
+          .eq("locale", locale).eq("source_type", sourceType).in("source_id", ids);
+        return (data as any[]) ?? [];
+      },
+      [`list-${sourceType}`, locale, ids.join(",")],
+      { revalidate: 3600, tags: items.map((it) => ctTag(sourceType, it[idKey])) },
+    )();
+    return items.map((it) => {
+      const out: any = { ...it };
+      for (const f of fields) {
+        const zh = it[f];
+        if (zh == null || !String(zh).trim()) continue;
+        const r = rows.find((x) => String(x.source_id) === String(it[idKey]) && x.field === f);
+        if (r && r.source_hash === contentHash(String(zh))) out[f] = r.translated;
+      }
+      return out as T;
+    });
+  } catch { return items; }
+}
+
 // ── AI 翻譯（保留 HTML/markdown/程式碼，只翻人看的文字）──
 let _aiCache: { provider: string; model: string; apiKey: string } | null = null;
 async function getAi(): Promise<{ provider: string; model: string; apiKey: string } | null> {

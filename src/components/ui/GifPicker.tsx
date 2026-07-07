@@ -52,7 +52,7 @@ export function GifPicker({ onSelect, align = "left" }: { onSelect: (gifUrl: str
         GIF
       </button>
       {open && (
-        <div className={`absolute z-[70] bottom-full mb-2 ${align === "right" ? "right-0" : "left-0"} w-[300px] rounded-2xl border border-border bg-bg-card shadow-2xl overflow-hidden animate-[fadeIn_.12s_ease-out]`}>
+        <div className={`absolute z-[70] bottom-full mb-2 ${align === "right" ? "right-0" : "left-0"} w-[300px] max-w-[calc(100vw-1.5rem)] rounded-2xl border border-border bg-bg-card shadow-2xl overflow-hidden animate-[fadeIn_.12s_ease-out]`}>
           {!GIPHY_KEY ? (
             <div className="p-4 text-center text-xs text-fg-muted space-y-1">
               <Film size={20} className="mx-auto text-fg-muted" />

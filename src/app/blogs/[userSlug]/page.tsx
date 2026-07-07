@@ -5,7 +5,8 @@ import type { Metadata } from "next";
 import { createSupabaseAdmin } from "@/lib/supabase";
 import { resolveBlog } from "@/lib/blog-resolve";
 import { Eye, Calendar, Rss, BookOpen, ChevronDown } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
+import { localizeList } from "@/lib/content-i18n";
 import { SubscribeForm } from "@/components/blog/SubscribeForm";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
@@ -53,6 +54,10 @@ export default async function BlogHomePage({
     admin.from("blog_series").select("id, title").eq("user_id", blog.settings.user_id),
   ]);
 
+  // 文章標題/摘要接內容翻譯（非中文才覆蓋、有譯文才動、無則中文）
+  const locale = await getLocale();
+  const localizedArticles = await localizeList("blog", (articles ?? []) as any[], locale, ["title", "summary"]);
+
   const name = blog.profile?.display_name || blog.profile?.username || "用戶";
   const title = blog.settings.blog_title || t("userBlogTitle", { name });
 
@@ -60,7 +65,7 @@ export default async function BlogHomePage({
   const seriesTitle = new Map<string, string>((seriesRows ?? []).map((s: any) => [s.id, s.title]));
   const bySeries = new Map<string, any[]>();
   const loose: any[] = [];
-  for (const a of (articles ?? [])) {
+  for (const a of localizedArticles) {
     if (a.series_id && seriesTitle.has(a.series_id)) {
       if (!bySeries.has(a.series_id)) bySeries.set(a.series_id, []);
       bySeries.get(a.series_id)!.push(a);
@@ -141,7 +146,7 @@ export default async function BlogHomePage({
       </div>
 
       {/* 文章列表：系列用展開/收合分組、其餘平鋪 */}
-      {!articles || articles.length === 0 ? (
+      {localizedArticles.length === 0 ? (
         <div className="text-center py-16 text-fg-muted">
           {t("blogEmpty")}
         </div>

@@ -64,7 +64,7 @@ export function AnimatedEmojiPicker({
       </button>
 
       {open && (
-        <div className={`absolute z-[70] bottom-full mb-2 ${align === "right" ? "right-0" : "left-0"} w-[300px] rounded-2xl border border-border bg-bg-card shadow-2xl overflow-hidden animate-[fadeIn_.12s_ease-out]`}>
+        <div className={`absolute z-[70] bottom-full mb-2 ${align === "right" ? "right-0" : "left-0"} w-[300px] max-w-[calc(100vw-1.5rem)] rounded-2xl border border-border bg-bg-card shadow-2xl overflow-hidden animate-[fadeIn_.12s_ease-out]`}>
           <div className="p-2 border-b border-border">
             <div className="relative">
               <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted" />
