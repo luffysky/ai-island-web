@@ -1,4 +1,8 @@
 import withBundleAnalyzer from '@next/bundle-analyzer';
+import createNextIntlPlugin from 'next-intl/plugin';
+
+// i18n（cookie 選語言、無 [locale] 路由）→ 讀 src/i18n/request.ts
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 // 跑 `ANALYZE=true npm run build` 才開分析（平常 build 零影響）；用來抓 /pricing 等肥包來源
 const bundleAnalyzer = withBundleAnalyzer({ enabled: process.env.ANALYZE === 'true' });
@@ -46,4 +50,4 @@ const nextConfig = {
   },
 };
 
-export default bundleAnalyzer(nextConfig);
+export default withNextIntl(bundleAnalyzer(nextConfig));

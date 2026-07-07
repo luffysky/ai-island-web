@@ -1,0 +1,46 @@
+{
+  "nav": {
+    "chapters": "章節",
+    "courses": "副本",
+    "quest": "遊戲",
+    "notes": "筆記",
+    "forum": "討論區",
+    "blog": "部落格",
+    "leaderboard": "排行榜",
+    "career": "職業路線",
+    "creatorIsland": "創作者島嶼",
+    "explore": "探索",
+    "exploreIsland": "探索 AI 島",
+    "openMenu": "開啟導覽選單",
+    "closeMenu": "關閉導覽選單"
+  },
+  "auth": {
+    "login": "登入",
+    "signup": "註冊",
+    "logout": "登出",
+    "loggingOut": "登出中..."
+  },
+  "userMenu": {
+    "dashboard": "我的學習後台",
+    "progress": "學習進度",
+    "store": "商店 · 儲值 / Pro",
+    "profile": "個人資料",
+    "settings": "設定",
+    "aiMemory": "AI 記憶 · 提示詞",
+    "aiKeys": "我的 AI Keys（BYOK）",
+    "adminOwner": "平台後台 (林董)",
+    "admin": "後台管理"
+  },
+  "footer": {
+    "madeBy": "© 2026 AI 島 · 由 SnowRealm 製作 · 招財 🐹 守護",
+    "privacy": "隱私權政策",
+    "terms": "使用條款",
+    "cookies": "Cookie 政策",
+    "skipToMain": "跳到主內容"
+  },
+  "common": {
+    "language": "語言",
+    "chinese": "繁體中文",
+    "english": "English"
+  }
+}

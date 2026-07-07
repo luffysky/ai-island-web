@@ -1,0 +1,46 @@
+{
+  "nav": {
+    "chapters": "Chapters",
+    "courses": "Dungeons",
+    "quest": "Games",
+    "notes": "Notes",
+    "forum": "Forum",
+    "blog": "Blog",
+    "leaderboard": "Leaderboard",
+    "career": "Career Paths",
+    "creatorIsland": "Creator Island",
+    "explore": "Explore",
+    "exploreIsland": "Explore AI Island",
+    "openMenu": "Open navigation menu",
+    "closeMenu": "Close navigation menu"
+  },
+  "auth": {
+    "login": "Log in",
+    "signup": "Sign up",
+    "logout": "Log out",
+    "loggingOut": "Logging out..."
+  },
+  "userMenu": {
+    "dashboard": "My Learning Dashboard",
+    "progress": "Learning Progress",
+    "store": "Store · Top-up / Pro",
+    "profile": "Profile",
+    "settings": "Settings",
+    "aiMemory": "AI Memory · Prompts",
+    "aiKeys": "My AI Keys (BYOK)",
+    "adminOwner": "Platform Admin",
+    "admin": "Admin"
+  },
+  "footer": {
+    "madeBy": "© 2026 AI Island · Made by SnowRealm · Guarded by 🐹",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "cookies": "Cookie Policy",
+    "skipToMain": "Skip to main content"
+  },
+  "common": {
+    "language": "Language",
+    "chinese": "繁體中文",
+    "english": "English"
+  }
+}

@@ -10,23 +10,26 @@ import { CountUp } from "@/components/ui/CountUp";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { NotificationsDropdown } from "@/components/layout/NotificationsDropdown";
 import { usePopover, PopoverPanel } from "@/components/ui/Popover";
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
+import { useTranslations } from "next-intl";
 import { devLog } from "@/lib/dev-log";
 
 const NAV_LINKS = [
-  { href: "/chapters", label: "章節", icon: BookOpen },
-  { href: "/courses", label: "副本", icon: Swords },
-  { href: "/quest", label: "遊戲", icon: Gamepad2 },
-  { href: "/me/notes", label: "筆記", icon: NotebookPen },
-  { href: "/forum", label: "討論區", icon: MessagesSquare },
-  { href: "/blogs", label: "部落格", icon: Newspaper },
-  { href: "/leaderboard", label: "排行榜", icon: Trophy },
-  { href: "/career", label: "職業路線", icon: Route },
-  { href: "/creator-island", label: "創作者島嶼", icon: Palette },
+  { href: "/chapters", key: "chapters", icon: BookOpen },
+  { href: "/courses", key: "courses", icon: Swords },
+  { href: "/quest", key: "quest", icon: Gamepad2 },
+  { href: "/me/notes", key: "notes", icon: NotebookPen },
+  { href: "/forum", key: "forum", icon: MessagesSquare },
+  { href: "/blogs", key: "blog", icon: Newspaper },
+  { href: "/leaderboard", key: "leaderboard", icon: Trophy },
+  { href: "/career", key: "career", icon: Route },
+  { href: "/creator-island", key: "creatorIsland", icon: Palette },
 ];
 
 export function TopNav() {
   // 用全站 AuthContext、不再各自 race
   const { user, profile } = useAuth();
+  const t = useTranslations();
   const userMenu = usePopover({ placement: "bottom-end", maxWidth: 280 });
   const { open, setOpen } = userMenu;
   const [mobileMenu, setMobileMenu] = useState(false);
@@ -96,7 +99,7 @@ export function TopNav() {
           <button
             onClick={() => setMobileMenu((value) => !value)}
             className="md:hidden p-2 -ml-2 rounded-lg hover:bg-bg-card"
-            aria-label={mobileMenu ? "關閉導覽選單" : "開啟導覽選單"}
+            aria-label={mobileMenu ? t("nav.closeMenu") : t("nav.openMenu")}
           >
             {mobileMenu ? <X size={18} /> : <Menu size={18} />}
           </button>
@@ -110,13 +113,15 @@ export function TopNav() {
           {/* 桌機：導覽收合成右上角一顆鈕、點開右側抽屜（手機用下方 mobileMenu）*/}
           <button
             onClick={() => setNavDrawer(true)}
-            aria-label="開啟導覽選單"
-            title="探索"
+            aria-label={t("nav.openMenu")}
+            title={t("nav.explore")}
             className="hidden md:inline-flex items-center gap-1.5 py-1.5 pl-2.5 pr-3 rounded-full bg-bg-card/90 border border-border hover:border-accent/50 hover:bg-bg-elevated transition"
           >
             <Compass size={16} className="text-accent" />
-            <span className="text-xs font-semibold">探索</span>
+            <span className="text-xs font-semibold">{t("nav.explore")}</span>
           </button>
+
+          <LanguageSwitcher />
 
           {user ? (
             <>
@@ -204,7 +209,7 @@ export function TopNav() {
                       onClick={() => setOpen(false)}
                     >
                       <Trophy size={16} className="text-accent" />
-                      <span>我的學習後台</span>
+                      <span>{t("userMenu.dashboard")}</span>
                     </Link>
 
                     <Link
@@ -212,7 +217,7 @@ export function TopNav() {
                       className="flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition text-sm text-fg-muted"
                       onClick={() => setOpen(false)}
                     >
-                      <span className="ml-7 inline-flex items-center gap-1.5"><BarChart3 size={16} /> 學習進度</span>
+                      <span className="ml-7 inline-flex items-center gap-1.5"><BarChart3 size={16} /> {t("userMenu.progress")}</span>
                     </Link>
 
                     <Link
@@ -221,7 +226,7 @@ export function TopNav() {
                       onClick={() => setOpen(false)}
                     >
                       <Coins size={16} className="text-yellow-500" />
-                      <span>商店 · 儲值 / Pro</span>
+                      <span>{t("userMenu.store")}</span>
                     </Link>
 
                     <Link
@@ -230,7 +235,7 @@ export function TopNav() {
                       onClick={() => setOpen(false)}
                     >
                       <UserIcon size={16} />
-                      <span>個人資料</span>
+                      <span>{t("userMenu.profile")}</span>
                     </Link>
 
                     <Link
@@ -239,7 +244,7 @@ export function TopNav() {
                       onClick={() => setOpen(false)}
                     >
                       <Settings size={16} />
-                      <span>設定</span>
+                      <span>{t("userMenu.settings")}</span>
                     </Link>
 
                     <Link
@@ -248,7 +253,7 @@ export function TopNav() {
                       onClick={() => setOpen(false)}
                     >
                       <Brain size={16} />
-                      <span>AI 記憶 · 提示詞</span>
+                      <span>{t("userMenu.aiMemory")}</span>
                     </Link>
 
                     <Link
@@ -257,7 +262,7 @@ export function TopNav() {
                       onClick={() => setOpen(false)}
                     >
                       <Key size={16} />
-                      <span>我的 AI Keys（BYOK）</span>
+                      <span>{t("userMenu.aiKeys")}</span>
                     </Link>
 
                     {(displayProfile.role === "admin" || displayProfile.role === "owner") && (
@@ -267,7 +272,7 @@ export function TopNav() {
                         onClick={() => setOpen(false)}
                       >
                         <Settings size={16} />
-                        <span className="inline-flex items-center gap-1.5">{displayProfile.role === "owner" ? <><Crown size={14} /> 平台後台 (林董)</> : "後台管理"}</span>
+                        <span className="inline-flex items-center gap-1.5">{displayProfile.role === "owner" ? <><Crown size={14} /> {t("userMenu.adminOwner")}</> : t("userMenu.admin")}</span>
                       </Link>
                     )}
 
@@ -278,7 +283,7 @@ export function TopNav() {
                         className="w-full flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition text-red-400"
                       >
                         <LogOut size={16} />
-                        <span>{loggingOut ? "登出中..." : "登出"}</span>
+                        <span>{loggingOut ? t("auth.loggingOut") : t("auth.logout")}</span>
                       </button>
                     </div>
                 </PopoverPanel>
@@ -286,8 +291,8 @@ export function TopNav() {
             </>
           ) : (
             <>
-              <Link href="/login" className="text-fg-muted hover:text-accent">登入</Link>
-              <Link href="/signup" className="px-4 py-1.5 bg-accent text-black rounded-lg font-semibold hover:bg-accent-2">註冊</Link>
+              <Link href="/login" className="text-fg-muted hover:text-accent">{t("auth.login")}</Link>
+              <Link href="/signup" className="px-4 py-1.5 bg-accent text-black rounded-lg font-semibold hover:bg-accent-2">{t("auth.signup")}</Link>
             </>
           )}
         </div>
@@ -296,7 +301,7 @@ export function TopNav() {
       {mobileMenu && (
         <div className="md:hidden border-t border-border bg-bg px-3 py-3">
           <div className="px-2 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-fg-muted">
-            探索
+            {t("nav.explore")}
           </div>
           <div className="flex flex-col gap-0.5 text-sm">
             {NAV_LINKS.map((item) => {
@@ -311,7 +316,7 @@ export function TopNav() {
                   <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-bg-card text-accent shrink-0">
                     <Icon size={16} />
                   </span>
-                  <span className="font-medium">{item.label}</span>
+                  <span className="font-medium">{t(`nav.${item.key}`)}</span>
                 </Link>
               );
             })}
@@ -326,7 +331,7 @@ export function TopNav() {
           <aside className="fixed top-0 right-0 h-screen w-72 z-50 bg-bg-card border-l border-border flex flex-col shadow-2xl animate-[slideInRight_.25s_ease-out]">
             <div className="flex shrink-0 items-center justify-between p-3 border-b border-border">
               <div className="font-bold flex items-center gap-2">
-                <Compass size={18} className="text-accent" /> <span>探索 AI 島</span>
+                <Compass size={18} className="text-accent" /> <span>{t("nav.exploreIsland")}</span>
               </div>
               <button onClick={() => setNavDrawer(false)} aria-label="關閉" className="p-1 rounded hover:bg-bg-elevated">
                 <X size={18} />
@@ -345,7 +350,7 @@ export function TopNav() {
                     <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-bg-elevated text-accent shrink-0">
                       <Icon size={16} />
                     </span>
-                    <span className="font-medium">{item.label}</span>
+                    <span className="font-medium">{t(`nav.${item.key}`)}</span>
                   </Link>
                 );
               })}

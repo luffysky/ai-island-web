@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Inter, Outfit, JetBrains_Mono } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import "./globals.css";
 
 // 字體系統：Inter=內文、Outfit=標題(圓潤幾何顯示體)、JetBrains Mono=程式碼。
@@ -95,10 +97,13 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const gaId = process.env.NEXT_PUBLIC_GA_ID;
+  const locale = await getLocale();
+  const messages = await getMessages();
+  const t = await getTranslations();
   return (
-    <html lang="zh-Hant-TW" className={`${inter.variable} ${outfit.variable} ${jbMono.variable}`}>
+    <html lang={locale === "en" ? "en" : "zh-Hant-TW"} className={`${inter.variable} ${outfit.variable} ${jbMono.variable}`}>
       <head>
         {/* JSON-LD 全站結構化資料：Organization + WebSite */}
         <script
@@ -121,6 +126,7 @@ gtag('config', '${gaId}');`}
         )}
       </head>
       <body className="min-h-screen flex flex-col">
+        <NextIntlClientProvider locale={locale} messages={messages}>
         <AuthProvider>
           <ToastProvider>
             <ConfirmProvider>
@@ -129,7 +135,7 @@ gtag('config', '${gaId}');`}
                 href="#main-content"
                 className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-3 focus:py-2 focus:rounded-lg focus:bg-accent focus:text-black focus:font-bold focus:text-sm"
               >
-                跳到主內容
+                {t("footer.skipToMain")}
               </a>
               <Marquee />
               <TopNav />
@@ -141,11 +147,11 @@ gtag('config', '${gaId}');`}
               <footer className="border-t border-border py-8 mt-16">
                 <div className="max-w-6xl mx-auto px-6">
                   <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-fg-muted">
-                    <div>© 2026 AI 島 · 由 SnowRealm 製作 · 招財 🐹 守護</div>
+                    <div>{t("footer.madeBy")}</div>
                     <nav className="flex gap-4">
-                      <Link href="/privacy" className="hover:text-fg transition">隱私權政策</Link>
-                      <Link href="/terms" className="hover:text-fg transition">使用條款</Link>
-                      <Link href="/cookies" className="hover:text-fg transition">Cookie 政策</Link>
+                      <Link href="/privacy" className="hover:text-fg transition">{t("footer.privacy")}</Link>
+                      <Link href="/terms" className="hover:text-fg transition">{t("footer.terms")}</Link>
+                      <Link href="/cookies" className="hover:text-fg transition">{t("footer.cookies")}</Link>
                     </nav>
                   </div>
                 </div>
@@ -166,6 +172,7 @@ gtag('config', '${gaId}');`}
             </ConfirmProvider>
           </ToastProvider>
         </AuthProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );
