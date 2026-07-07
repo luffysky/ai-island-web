@@ -289,6 +289,146 @@ const PACKS = [
           "⚠️ 新手最常忘 self：在方法裡直接寫 <code>name</code> 會找不到、要寫 <code>self.name</code>。還沒需要「多個同型別物件各自帶狀態」時，其實用函式 + dict 就夠，別為了用而用。",
         ),
       },
+      {
+        title: "Counter 與 defaultdict：計數與分組的神器",
+        content: P(
+          "「數每個東西出現幾次」「把東西依類別分組」是超常見需求，用對工具一行搞定。",
+          "<b>Counter</b>：<code>from collections import Counter; c = Counter(words)</code>——直接得到每個字的次數。<code>c.most_common(3)</code> 拿前三多的。",
+          "<b>defaultdict</b>：分組不用先檢查 key 存不存在。<code>from collections import defaultdict; groups = defaultdict(list)</code>，然後 <code>groups[city].append(name)</code> 直接加，key 不存在會自動生一個空 list。",
+          "⚠️ 用一般 dict 做這些要先 <code>if k not in d: d[k]=…</code> 很囉唆；看到「計數」想 Counter、「分組」想 defaultdict。",
+        ),
+      },
+      {
+        title: "set 運算：交集 / 聯集 / 差集實戰",
+        content: P(
+          "set 不只是去重，它的集合運算解決一堆「比對兩群東西」的問題。",
+          "<b>交集 &</b>：兩邊都有的。<code>已買 & 想要</code> = 買過又還想要的。",
+          "<b>聯集 |</b>：任一邊有的（合起來去重）。<code>A 標籤 | B 標籤</code>。",
+          "<b>差集 -</b>：我有你沒有的。<code>新名單 - 舊名單</code> = 這次新加入的人。",
+          "⚠️ 「找出兩個清單的差異/共同」別用雙層迴圈慢慢比——轉成 set 用 &、-，又快又清楚。",
+        ),
+      },
+      {
+        title: "三元運算子：一行寫完 if-else",
+        content: P(
+          "簡單的「這樣就 A、否則 B」，不用寫四行 if-else。",
+          "語法：<code>值A if 條件 else 值B</code>。例：<code>status = \"成人\" if age &gt;= 18 else \"未成年\"</code>。",
+          "常拿來給預設值、或在 f-string / 推導式裡做小分支：<code>[\"even\" if x%2==0 else \"odd\" for x in nums]</code>。",
+          "⚠️ 別把三層三元疊在一行（<code>a if x else b if y else c</code> 讀到瞎）——複雜就乖乖寫 if-elif-else。",
+        ),
+      },
+      {
+        title: "*args 與 **kwargs：接任意數量的參數",
+        content: P(
+          "想讓函式「幾個參數都能收」，用這兩個。",
+          "<code>*args</code>：把多的位置參數收成一個 tuple。<code>def total(*nums): return sum(nums)</code> → <code>total(1,2,3)</code>。",
+          "<code>**kwargs</code>：把多的具名參數收成一個 dict。<code>def make(**opts): print(opts)</code> → <code>make(color=\"red\", size=3)</code>。",
+          "反過來也能「攤開」傳進去：<code>func(*my_list)</code>、<code>func(**my_dict)</code>。",
+          "⚠️ 名字不是規定、是慣例（<code>*args</code>/<code>**kwargs</code>），重點是那個 <code>*</code> 和 <code>**</code>。順序：一般參數 → *args → 具名 → **kwargs。",
+        ),
+      },
+      {
+        title: "解包 unpacking：一次拆好幾個變數",
+        content: P(
+          "Python 讓你「一次把一串拆進多個變數」，很優雅。",
+          "基本：<code>a, b = (1, 2)</code>；交換不用暫存變數：<code>a, b = b, a</code>。",
+          "星號收剩下的：<code>first, *rest = [1,2,3,4]</code> → first=1、rest=[2,3,4]；<code>*init, last = ...</code> 也行。",
+          "字典解包合併：<code>merged = {**a, **b}</code>（b 蓋掉 a 的重複 key）。",
+          "⚠️ 左右數量要對得上（除非用 *）——<code>a, b = [1,2,3]</code> 會報錯 too many values。",
+        ),
+      },
+      {
+        title: "f-string 格式規格：對齊、小數、千分位",
+        content: P(
+          "f-string 大括號裡加 <code>:</code> 後面可以下「格式規格」，報表輸出超好用。",
+          "小數位：<code>f\"{price:.2f}\"</code> → 兩位小數。千分位：<code>f\"{n:,}\"</code> → 1,234,567。百分比：<code>f\"{rate:.1%}\"</code>。",
+          "對齊/補寬：<code>f\"{name:&lt;10}\"</code> 靠左補到 10 寬、<code>:&gt;10</code> 靠右、<code>:^10</code> 置中；補零 <code>f\"{n:03d}\"</code> → 007。",
+          "⚠️ 這些只是「顯示格式」、不改原本的值；要真的四捨五入計算用 <code>round()</code>。",
+        ),
+      },
+      {
+        title: "pathlib：處理檔案路徑別再拼字串",
+        content: P(
+          "用 <code>+</code> 拼路徑（<code>dir + \"/\" + name</code>）跨系統會出事（Windows 是反斜線）。用 pathlib。",
+          "<code>from pathlib import Path; p = Path(\"data\") / \"a.csv\"</code>——用 <code>/</code> 接路徑，自動處理分隔符。",
+          "好用方法：<code>p.exists()</code> 在不在、<code>p.suffix</code> 副檔名、<code>p.stem</code> 檔名（不含副檔）、<code>p.read_text()</code> 直接讀、<code>Path(\"out\").mkdir(exist_ok=True)</code> 建資料夾。",
+          "⚠️ 路徑用 pathlib、別手拼字串；跨作業系統跑不掉這關。",
+        ),
+      },
+      {
+        title: "datetime：日期時間與那個時區的坑",
+        content: P(
+          "處理時間遲早會遇到，先會這些。",
+          "現在：<code>from datetime import datetime; now = datetime.now()</code>。格式化成字串 <code>now.strftime(\"%Y-%m-%d %H:%M\")</code>；反過來 parse 用 <code>strptime</code>。",
+          "算時間差用 <code>timedelta</code>：<code>now + timedelta(days=7)</code> = 一週後。",
+          "⚠️ <b>時區大坑</b>：存資料庫用 UTC、顯示時再轉當地，才不會差 8 小時。跨時區務必用「帶時區資訊（aware）」的時間，別用 naive 的裸時間亂比。",
+        ),
+      },
+      {
+        title: "json 模組：讀寫設定檔與 API 資料",
+        content: P(
+          "程式跟外界交換資料，JSON 是通用語言，Python 內建 json 模組處理。",
+          "字串↔物件：<code>json.loads(字串)</code> 變 dict/list；<code>json.dumps(物件)</code> 變字串。",
+          "檔案：<code>json.load(f)</code> 從檔讀、<code>json.dump(物件, f)</code> 寫檔。存中文加 <code>ensure_ascii=False</code>、要好讀加 <code>indent=2</code>。",
+          "⚠️ JSON 只有基本型別——Python 的 datetime、set 不能直接丟進去 dump（要先轉字串/list）。key 一律變字串。",
+        ),
+      },
+      {
+        title: "random：抽樣、洗牌、亂數",
+        content: P(
+          "抽獎、洗牌、隨機測試資料常用。",
+          "<code>random.randint(1, 6)</code> 骰子（含兩端）、<code>random.random()</code> 0~1 小數、<code>random.choice(清單)</code> 隨機挑一個。",
+          "<code>random.sample(清單, 3)</code> 不重複抽 3 個、<code>random.shuffle(清單)</code> 就地洗牌。",
+          "⚠️ 這是「偽亂數」——不能拿來做安全用途（產密碼/token）。要安全的隨機用 <code>secrets</code> 模組。要每次結果一樣（測試）用 <code>random.seed(值)</code> 固定。",
+        ),
+      },
+      {
+        title: "sorted 進階：多鍵排序與反向",
+        content: P(
+          "排序不只是由小到大，key 用熟能解很多題。",
+          "反向：<code>sorted(nums, reverse=True)</code>。依欄位：<code>sorted(users, key=lambda u: u[\"age\"])</code>。",
+          "<b>多鍵</b>（先依 A、A 同再依 B）：key 回一個 tuple <code>key=lambda u: (u[\"city\"], u[\"age\"])</code>。",
+          "想「A 升冪、B 降冪」：對數字 B 取負 <code>(u[\"city\"], -u[\"age\"])</code>。",
+          "⚠️ <code>sorted()</code> 回新的、不動原本；<code>list.sort()</code> 是就地改。想留原順序用 sorted。",
+        ),
+      },
+      {
+        title: "裝飾器 decorator：@ 到底在幹嘛",
+        content: P(
+          "看到函式上面一行 <code>@something</code> 很多人黑人問號。它其實是「幫函式包一層額外行為」。",
+          "白話：decorator 是「吃一個函式、回一個加強版函式」的函式。<code>@timer</code> 放在某函式上，就等於「先用 timer 把它包起來」——例如自動計時、自動記 log、自動檢查登入。",
+          "常見場景：Web 框架的 <code>@app.route(\"/\")</code>、快取 <code>@cache</code>、權限 <code>@login_required</code>。",
+          "⚠️ 初學會用（貼上框架給的 decorator）就夠了；自己寫 decorator 是進階，等你真的需要「很多函式共用同一段前後處理」再學。",
+        ),
+      },
+      {
+        title: "變數作用域與 global：函式內外的雷",
+        content: P(
+          "函式「看得到外面的變數，但預設不能改它」，這個規則不懂會踩雷。",
+          "讀取 OK：函式裡可以讀外層/全域變數。但你在函式裡 <code>x = 5</code> 是「新建一個只屬於函式的 x」，不會動到外面的。",
+          "真的要改外層全域：<code>global x</code> 宣告（但少用、容易讓程式難追）。改外層函式的變數用 <code>nonlocal</code>。",
+          "⚠️ 更好的做法是「用參數傳進來、用 return 傳出去」，而不是靠 global 偷改——這樣函式才單純、好測。看到一堆 global 通常是設計該調整的訊號。",
+        ),
+      },
+      {
+        title: "any / all / next：一行做判斷與找第一個",
+        content: P(
+          "這三個配生成器，能把好幾行迴圈濃縮成一行、又好讀。",
+          "<b>any</b>：只要有一個符合就 True。<code>any(u.is_admin for u in users)</code> = 有沒有管理員。",
+          "<b>all</b>：全部符合才 True。<code>all(x &gt; 0 for x in nums)</code> = 是不是全正數。",
+          "<b>next</b>：找第一個符合的。<code>next((u for u in users if u.is_admin), None)</code> = 第一個管理員、沒有回 None。",
+          "⚠️ any/all 是「短路」的——找到答案就停、不會跑完整串，效能好。next 記得給第二個參數當「找不到的預設」，不然找不到會噴 StopIteration。",
+        ),
+      },
+      {
+        title: "assert：開發時的防呆檢查",
+        content: P(
+          "<code>assert 條件, \"訊息\"</code>：「我斷定這裡條件一定成立」，不成立就當場報 AssertionError。",
+          "用途：在開發/測試時「早點抓到不該發生的狀態」。<code>assert len(a) == len(b), \"兩串長度要一樣\"</code>。",
+          "它讓 bug 在「出錯的當下」爆，而不是拖到很後面才拿到怪結果、難追。",
+          "⚠️ <b>別拿 assert 做正式的輸入驗證/權限檢查</b>——Python 用 <code>-O</code> 最佳化執行時 assert 會被整個拿掉。那種該用 if + raise。assert 是給開發者的自我檢查，不是給使用者的把關。",
+        ),
+      },
     ],
   },
   {
