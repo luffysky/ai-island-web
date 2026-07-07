@@ -168,6 +168,48 @@ export async function aiTranslate(zhText: string, targetLangLabel = "English"): 
   } catch { return null; }
 }
 
+/** 各來源要翻的表 / id 欄 / 欄位（與 content_translations 的 field 對齊）。 */
+export const TRANSLATE_FIELDS: Record<ContentSourceType, { table: string; id: string; fields: string[]; where?: string }> = {
+  blog: { table: "user_blog_articles", id: "id", fields: ["title", "summary", "content"], where: "is_public" },
+  lesson: { table: "lessons", id: "id", fields: ["title", "content"] },
+  chapter: { table: "chapters", id: "id", fields: ["title", "subtitle"] },
+  forum: { table: "forum_threads", id: "id", fields: ["title", "content"] },
+};
+
+/** 中文以外的目標語系（預設批次翻這些）。 */
+export const TARGET_LOCALES = ["en", "ja", "ko"] as const;
+
+/**
+ * 批次翻某 scope 某語系：只翻「還沒翻 or 中文變過(hash 不同)」的欄位，翻一次不重翻、可重跑。
+ * limit = 本次最多實際翻幾個欄位（控 AI 花費）。給 admin route + cron 共用。
+ */
+export async function runTranslateBatch(
+  scope: ContentSourceType, locale: string, limit: number,
+): Promise<{ translated: number; skipped: number }> {
+  const cfg = TRANSLATE_FIELDS[scope];
+  const admin = createSupabaseAdmin();
+  let q = admin.from(cfg.table).select([cfg.id, ...cfg.fields].join(", ")).order("updated_at", { ascending: false }).limit(300);
+  if (cfg.where) q = (q as any).eq(cfg.where, true);
+  const { data: rows, error } = await q;
+  if (error) return { translated: 0, skipped: 0 };
+
+  let translated = 0, skipped = 0, budgetLeft = limit;
+  for (const row of ((rows as any[]) ?? [])) {
+    if (budgetLeft <= 0) break;
+    const id = (row as any)[cfg.id];
+    for (const field of cfg.fields) {
+      if (budgetLeft <= 0) break;
+      const zh = String((row as any)[field] ?? "");
+      if (!zh.trim()) continue;
+      const cached = await getCachedTranslation(scope, id, field, locale, zh);
+      if (cached) { skipped++; continue; }
+      const out = await translateAndCache(scope, id, field, locale, zh);
+      if (out) { translated++; budgetLeft--; } else skipped++;
+    }
+  }
+  return { translated, skipped };
+}
+
 /** 翻譯 + 寫進快取（給 batch/cron 用）。回翻好的字串或 null。 */
 export async function translateAndCache(
   sourceType: ContentSourceType, sourceId: string | number, field: string, locale: string, zhText: string,

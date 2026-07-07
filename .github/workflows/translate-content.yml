@@ -1,0 +1,48 @@
+name: Translate Content
+
+# 背景把 DB 內容（章/lesson/blog/forum）翻成 en/ja/ko、寫進 content_translations 快取。
+# 只翻缺的或中文改過的、翻一次不重翻。**只手動觸發**（控 AI 花費）：Actions → Translate Content → Run workflow。
+# total>0 代表本次有翻、可再 Run 一次續翻，直到 total=0（全部翻完）。
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: '每 (scope,語言) 本次上限（控花費，預設 12）'
+        required: false
+        default: '12'
+      scope:
+        description: 'blog / lesson / chapter / forum（留空＝全部）'
+        required: false
+        default: ''
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Call /api/cron/translate-content
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          LIMIT: ${{ github.event.inputs.limit }}
+          SCOPE: ${{ github.event.inputs.scope }}
+        run: |
+          if [ -z "$SITE_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "::error::SITE_URL or CRON_SECRET secret missing"
+            exit 1
+          fi
+          url="$SITE_URL/api/cron/translate-content?limit=${LIMIT:-12}"
+          if [ -n "$SCOPE" ]; then url="$url&scope=$SCOPE"; fi
+          echo "GET $url"
+          response=$(curl -sS -w "\n%{http_code}" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$url")
+          body=$(echo "$response" | head -n -1)
+          code=$(echo "$response" | tail -n 1)
+          echo "HTTP $code"
+          echo "$body"
+          if [ "$code" -ne 200 ]; then
+            echo "::error::endpoint returned $code"
+            exit 1
+          fi
