@@ -32,10 +32,11 @@
 
 ## ✍️ ②：內容待辦（使用者原則：**全部手寫、有真人味、不要腳本亂生**）
 
-1. **官方免費筆記衝「每包 120+」**（目前共 51：Python 16 / 前端 13 / 後端 12 / 基本功 10）。
-   - 檔案 `scripts/seed-note-market.mjs`（hardcoded PACKS；改完 `node scripts/seed-note-market.mjs` 重灌、idempotent）。
-   - 風格：**第一人稱、有踩雷經驗、口語但有料**（「我一開始也卡在…」「⚠️ 新手雷」），不是速查、不是教科書。每則輪播便利貼配色（`color` 欄）。
-   - 節奏：加幾則 → 重灌 → commit，持續往 120 疊。
+1. **官方免費筆記：每一套（包）都要衝到「120 篇以上」**（目前遠遠不夠：Python 16 / 前端 13 / 後端 12 / 基本功 10，共 51）。這是**硬性數量**，4 包 = 480+ 篇。
+   - ⚠️⚠️ **每一篇都要「親手認真寫」**——**不准用 AI 生成器 / 樣板批量產 / 湊數**。林董明講：「不要用腳本寫、要認真寫」。這裡的「腳本」指的是「別做一支 AI generator 亂生」，**不是**指不能用 seed 檔。
+   - `scripts/seed-note-market.mjs` **只是把手寫內容塞進 DB 的載具**（hardcoded PACKS 陣列、`node scripts/seed-note-market.mjs` 重灌、idempotent）。你要做的是**在那個陣列裡一篇一篇手寫**，不是寫個程式去生。
+   - 每篇品質門檻：**第一人稱、有踩雷經驗、口語但有料**（「我一開始也卡在…」「⚠️ 新手雷」），一個真正搞懂的人在整理自己的筆記——不是速查表、不是教科書、不是罐頭。每則配一個便利貼色（`color` 欄輪播）。
+   - 做法：**一批親手寫 8–15 篇好的 → 重灌 → commit → 再一批**，一路寫到每包 120+。急不得、但別停。涵蓋面要廣（語法/資料結構/例外/檔案/模組/OOP/測試/工具/常見錯…），別重複。
 2. **部落格更生人樣 / 加創作者部落格**：`scripts/seed-blog.mjs`（AI 住民）、`scripts/seed-creator-blog.mjs`（4 位正經創作者各 1 篇，可再擴）。
 3. **討論區**：`scripts/seed-forum.mjs`（41 串，含新 5 則學員口吻），要更多照樣加。
 4. **創作者作品**：`scripts/seed-creator-works.mjs`（7 件、4 位創作者、碎片編織、`is_showcased`）。加更多時 ⚠️ `ci_works.status` 用預設別亂填、`ci_fragments.source_type` 用合法值(如 `human_original`)、碎片冪等靠 tag `作品種子`。

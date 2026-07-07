@@ -190,6 +190,105 @@ const PACKS = [
           "⚠️ 這個「進來自動開、離開自動收」的東西叫 context manager，資料庫連線、鎖也常這樣用，看到 <code>with</code> 就知道它會幫你收尾。",
         ),
       },
+      {
+        title: "切片 slicing：[start:stop:step] 三個數字的魔法",
+        content: P(
+          "切片是 Python 超好用的東西，一開始看到 <code>[1:4]</code> 我完全不懂，搞懂之後回不去了。",
+          "規則：<code>seq[start:stop]</code> 取「從 start 到 stop <b>前一個</b>」（含頭不含尾，跟 range 一樣）。<code>\"Python\"[1:4]</code> = <code>\"yth\"</code>。",
+          "省略有預設：<code>[:3]</code> 從頭到第 3 個、<code>[2:]</code> 從第 2 個到底、<code>[:]</code> 整份複製一份。",
+          "第三個是步長：<code>[::2]</code> 每隔一個取、<code>[::-1]</code> <b>反轉</b>（字串、list 都能這樣倒過來）。",
+          "⚠️ 負數是「從右邊數」：<code>[-1]</code> 最後一個、<code>[-3:]</code> 最後三個。切片超出範圍不會報錯（回空的），但 <code>[index]</code> 超出會 IndexError。",
+        ),
+      },
+      {
+        title: "is 跟 == 不一樣：可變 vs 不可變的雷",
+        content: P(
+          "<code>==</code> 比「值一不一樣」、<code>is</code> 比「是不是同一個東西（記憶體同一份）」。九成情況你要的是 <code>==</code>。",
+          "唯一常用 <code>is</code> 的地方：跟 <code>None</code> 比——<code>if x is None:</code>（慣例、也比較安全）。",
+          "為什麼要懂：list / dict 是<b>可變</b>的，<code>b = a</code> 只是幫同一份 list 取第二個名字，改 b 會連 a 一起變（因為是同一個）。要真的複製用 <code>a.copy()</code> 或 <code>list(a)</code>。",
+          "數字、字串、tuple 是<b>不可變</b>的，改它其實是「生一個新的」，不會有上面的雷。",
+          "⚠️ 「我明明只改了 b、a 怎麼也變了」= 十之八九就是共用了同一個可變物件。",
+        ),
+      },
+      {
+        title: "字串常用方法：處理文字先會這幾個",
+        content: P(
+          "文字處理是天天在做的事，這幾個記起來省很多力。",
+          "去頭尾空白 <code>s.strip()</code>（表單輸入必用）、大小寫 <code>s.lower()</code> / <code>s.upper()</code>。",
+          "切割與拼接：<code>\"a,b,c\".split(\",\")</code> → list；反過來 <code>\",\".join(清單)</code> → 字串。",
+          "找與換：<code>s.replace(\"舊\",\"新\")</code>、判斷開頭結尾 <code>s.startswith(...)</code> / <code>s.endswith(\".jpg\")</code>、包不包含用 <code>\"key\" in s</code>。",
+          "⚠️ 字串是不可變的，<code>s.replace()</code> 是<b>回一個新字串</b>、不會改到原本的 s——記得 <code>s = s.replace(...)</code> 接回去。",
+        ),
+      },
+      {
+        title: "None 與真假值：什麼算「空」、什麼算 False",
+        content: P(
+          "<code>None</code> 代表「沒有值 / 空」，跟 0 或空字串不一樣。函式沒寫 return 時預設就回 None。",
+          "Python 的「真假值」很直覺：空的都當 False——<code>0</code>、<code>\"\"</code>、<code>[]</code>、<code>{}</code>、<code>None</code> 都是 falsy；有東西就是 truthy。",
+          "所以判斷「list 是不是空的」直接 <code>if not items:</code> 就好，不用 <code>if len(items) == 0:</code>。",
+          "取預設值的常用招：<code>name = user_input or \"訪客\"</code>（前面是空的就用後面）。",
+          "⚠️ 但要分清「是 None」還是「是 0 / 空字串」時，別用 truthy 判斷、要用 <code>is None</code>——不然 <code>0</code> 會被誤當成「沒填」。",
+        ),
+      },
+      {
+        title: "import 與模組：程式怎麼拆成多個檔",
+        content: P(
+          "程式一大就要拆檔。一個 <code>.py</code> 就是一個「模組」，用 import 互相取用。",
+          "整包拿：<code>import math</code> → 用 <code>math.sqrt(9)</code>。只拿需要的：<code>from math import sqrt</code> → 直接 <code>sqrt(9)</code>。",
+          "取別名：<code>import pandas as pd</code>（大家慣例）。自己的檔也一樣：<code>from utils import my_func</code>。",
+          "第三方套件先 <code>pip install</code> 再 import；標準庫（math/json/os…）內建、不用裝。",
+          "⚠️ 兩個雷：① 檔名別跟套件同名（<code>json.py</code> 會 import 到自己）；② 兩個檔互相 import（circular import）會出錯，通常代表該把共用的東西抽到第三個檔。",
+        ),
+      },
+      {
+        title: "生成器 yield：一次給一個、不佔記憶體",
+        content: P(
+          "一般函式用 <code>return</code> 一次把結果全給你；<b>生成器</b>用 <code>yield</code> 一次給一個、要下一個才算下一個。",
+          "差在哪：處理一百萬筆資料，用 list 會把一百萬個一次塞進記憶體；用生成器一次只算一個、跑完就丟，記憶體超省。",
+          "怎麼寫：函式裡把 <code>return</code> 換成 <code>yield</code>，它就變生成器。用 <code>for x in 生成器:</code> 一個一個拿。",
+          "小寫法：<code>(x*2 for x in nums)</code>（圓括號）就是生成器版的推導式，跟 <code>[...]</code>（list）差一個括號、但不立刻算。",
+          "⚠️ 生成器只能跑一次，跑完就空了；需要重複用就存成 list。",
+        ),
+      },
+      {
+        title: "lambda 與 sorted(key=...)：一次性的小函式",
+        content: P(
+          "<code>lambda</code> 是「臨時的小函式」，懶得用 def 命名時用。<code>lambda x: x*2</code> 等於一個回傳 x*2 的函式。",
+          "最常見用途是排序的 <code>key</code>：<code>sorted(users, key=lambda u: u[\"age\"])</code>——依 age 排。",
+          "找極值也能：<code>max(users, key=lambda u: u[\"score\"])</code> 找分數最高的那個人。",
+          "反向排序加 <code>reverse=True</code>；多層排序 key 回一個 tuple：<code>key=lambda u: (u[\"city\"], u[\"age\"])</code>。",
+          "⚠️ lambda 只適合「一行講得完」的邏輯；要好幾行、或會重複用，就乖乖 def 一個有名字的函式，好讀好測。",
+        ),
+      },
+      {
+        title: "深拷貝 vs 淺拷貝：巢狀資料的坑",
+        content: P(
+          "承接前面「可變物件共用」的雷，遇到巢狀（list 裡有 list、dict 裡有 dict）會更微妙。",
+          "<code>a.copy()</code> 是<b>淺</b>拷貝：外層複製了，但裡面的子 list 還是「共用同一份」——改子 list 兩邊還是一起變。",
+          "要整份獨立：<code>import copy; b = copy.deepcopy(a)</code>——連裡面每一層都複製一份，改 b 完全不影響 a。",
+          "⚠️ 沒有巢狀時淺拷貝就夠、也比較快；有巢狀又想完全隔離才用 deepcopy。搞不清楚「改一個另一個也變」時，先想是不是拷貝層數不夠。",
+        ),
+      },
+      {
+        title: "自訂例外與 raise：主動丟錯，讓問題早點爆",
+        content: P(
+          "有時「早點報錯」比「硬跑下去拿到怪結果」好。用 <code>raise</code> 主動丟例外。",
+          "例：<code>if age < 0: raise ValueError(\"年齡不能是負的\")</code>——參數不合理就當場擋下、附清楚訊息。",
+          "選對類型：參數值不對用 <code>ValueError</code>、型別不對用 <code>TypeError</code>、找不到用 <code>KeyError</code>/<code>FileNotFoundError</code>。",
+          "自訂一種：<code>class PaymentError(Exception): pass</code>，之後 <code>raise PaymentError(\"...\")</code>、呼叫端能專門 <code>except PaymentError</code> 接。",
+          "⚠️ 例外訊息寫清楚「哪裡、為什麼、期望什麼」，未來 debug 的人（很可能是你）會感謝你。",
+        ),
+      },
+      {
+        title: "class 入門：self 到底是什麼",
+        content: P(
+          "class 是「把資料 + 操作那些資料的函式，打包在一起」的東西。像做一個模板，之後可以生很多個。",
+          "<code>class Dog:</code> 裡的 <code>__init__(self, name)</code> 是「生一隻的時候要做什麼」，<code>self.name = name</code> 把名字記在這隻身上。",
+          "<b>self 就是「這一個實例自己」</b>——<code>d = Dog(\"小白\")</code> 生一隻，之後 <code>d.name</code> 拿到 \"小白\"。方法第一個參數固定寫 self，Python 呼叫時會自動把「這隻」傳進去。",
+          "方法（class 裡的函式）第一個參數都要 self；要用到自己的資料就 <code>self.xxx</code>。",
+          "⚠️ 新手最常忘 self：在方法裡直接寫 <code>name</code> 會找不到、要寫 <code>self.name</code>。還沒需要「多個同型別物件各自帶狀態」時，其實用函式 + dict 就夠，別為了用而用。",
+        ),
+      },
     ],
   },
   {
