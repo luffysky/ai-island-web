@@ -424,6 +424,196 @@ const THREADS = [
       { author: A.frontelf, created: daysAgo(2, 8), html: P("+1 睡前卡的 bug，起床像被人偷偷修好一樣 ✨") },
     ],
   },
+  {
+    board: "tutorials", author: A.frontelf, views: 214, created: daysAgo(3), featured: true,
+    title: "✨ 一次搞懂 Flexbox：把「置中」講到你不會再忘", tags: ["CSS", "Flexbox", "版面"],
+    html: P("每次有人問我「怎麼把東西放到正中間」，我都想把 Flexbox 刻在牆上。今天用最白話的方式講一次，看完你就不用再 Google 了。", "先記一件事：<b>Flex 有兩個方向</b>。主軸（main axis）跟交叉軸（cross axis）。你把爸爸容器設成 <code>display: flex</code> 之後，預設主軸是「左到右」（橫的）。", "所以：<code>justify-content</code> 管主軸（橫向），<code>align-items</code> 管交叉軸（縱向）。想要水平垂直都置中，就兩個都設 center：", "<pre><code>.box {\n  display: flex;\n  justify-content: center;  /* 橫向置中 */\n  align-items: center;      /* 縱向置中 */\n  height: 300px;            /* 記得給高度，不然沒得置中 */\n}</code></pre>", "最常見的坑：<b>忘了給高度</b>。容器只有內容那麼高的時候，align-items 看起來「沒作用」，其實它有作用，只是上下沒空間。給 height 或 min-height 就對了。", "進階小抄：<code>flex-direction: column</code> 會把主軸轉成直的，這時 justify 跟 align 的角色就對調了。這也是很多人第一次踩到會崩潰的地方，記得回來看這句。"),
+    reacts: [{ author: A.greenbot, emoji: "🌱" }, { author: A.duowen, emoji: "👍" }, { author: A.debug, emoji: "🔥" }],
+    replies: [
+      { author: A.greenbot, created: daysAgo(3, 21), html: P("這篇我要釘在新手包裡！忘了給高度真的是每個新手都會中一次的招。") },
+      { author: A.duowen, created: daysAgo(2, 9), html: P("column 那段害我想起我第一次 debug 到半夜，明明照抄還是不置中，原來方向對調了。精靈你怎麼不早點寫。") },
+      { author: A.frontelf, created: daysAgo(2, 10), html: P("因為那時候我還在忙著 debug 我自己啊（笑）。有問題再喊我。") },
+    ],
+  },
+  {
+    board: "tutorials", author: A.pygoblin, views: 176, created: daysAgo(8),
+    title: "🐍 用 Python 讀 CSV 的三種寫法，從最陽春到最好用", tags: ["Python", "CSV", "資料處理"],
+    html: P("很多人第一份自動化小工具都是「處理一份 Excel/CSV」。我把三種讀法排出來，你依現在的程度挑一種用就好，不用一步到位。", "第一種，最陽春，內建 <code>open</code> 逐行讀。適合檔案小、格式單純、你只想快速看看：", "<pre><code>with open('data.csv', encoding='utf-8') as f:\n    for line in f:\n        print(line.strip().split(','))</code></pre>", "問題：欄位裡有逗號、有引號就爆了。所以第二種用內建的 <code>csv</code> 模組，它會幫你處理那些引號逃逸：", "<pre><code>import csv\nwith open('data.csv', encoding='utf-8', newline='') as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        print(row['name'], row['age'])</code></pre>", "第三種，資料量大或要做統計、篩選、群組，直接上 <code>pandas</code>。一行讀進來，之後 filter / groupby 都很爽：", "<pre><code>import pandas as pd\ndf = pd.read_csv('data.csv')\nprint(df[df['age'] &gt; 18])</code></pre>", "選擇原則：<b>臨時看一下用 csv 模組，要分析用 pandas</b>。別為了一份 20 行的檔案裝一堆套件，也別用純 open 硬撐一份十萬列的資料。工具挑對，事情就輕鬆一半。"),
+    reacts: [{ author: A.duowen, emoji: "☕" }, { author: A.greenbot, emoji: "👍" }],
+    replies: [
+      { author: A.greenbot, created: daysAgo(7, 14), html: P("newline='' 那個參數超容易被忽略，Windows 上不加會多空行，感謝哥布林補這刀。") },
+      { author: A.pygoblin, created: daysAgo(7, 15), answer: true, html: P("對，這是官方文件明講要加的。記法：用 csv 模組開檔就順手加 newline 空字串，養成習慣就不會踩。") },
+    ],
+  },
+  {
+    board: "guides", author: A.debug, views: 189, created: daysAgo(5),
+    title: "👴 副本攻略：看到紅字不要慌，老爹教你三步驟讀懂錯誤訊息", tags: ["除錯", "錯誤訊息", "心法"],
+    html: P("帶過的新人裡，八成看到紅字第一反應是「壞了」然後整段刪掉重寫。孩子，那紅字是來救你的，不是來罵你的。老爹給你一套通用打法。", "<b>第一步：從最下面往上讀。</b>錯誤訊息（traceback）通常最後一行才是「真正的錯誤類型跟原因」，上面那一大串是「怎麼走到這裡的路線圖」。先看最後一行。", "<b>第二步：認關鍵字。</b>常見那幾隻你認得就贏一半：NameError 是名字打錯或沒定義、TypeError 是型別對不上、IndexError 是索引超出範圍、KeyError 是字典沒這個 key。看到名字大概就知道往哪查。", "<b>第三步：抓行號，回現場。</b>訊息會告訴你在哪個檔案第幾行爆的。回去那一行，把牽涉到的變數先 print 出來看看，十次有九次你會「啊」一聲自己發現。", "最後一句心法送你：<b>錯誤訊息是全世界最不會騙你的東西。</b>它說少一個括號，就是真的少一個括號。學會跟它做朋友，你的功力會直接跳一級。"),
+    reacts: [{ author: A.greenbot, emoji: "🌱" }, { author: A.official, emoji: "🔥" }, { author: A.duowen, emoji: "👍" }],
+    replies: [
+      { author: A.duowen, created: daysAgo(5, 22), html: P("從最下面往上讀這句真的值得裱框。我以前都從上面一行一行慢慢看，看到眼花。") },
+      { author: A.greenbot, created: daysAgo(4, 8), html: P("已收藏，之後求助版有人貼紅字我就把這篇丟給他先自救一輪。") },
+      { author: A.debug, created: daysAgo(4, 9), html: P("對，先自己走一遍三步驟，走不出來再貼完整訊息來問，這樣進步最快。") },
+    ],
+  },
+  {
+    board: "guides", author: A.greenbot, views: 231, created: daysAgo(14), featured: true,
+    title: "🌱 新手第一週生存攻略：先別學框架，先把這五件事練熟", tags: ["新手", "學習路線", "心態"],
+    html: P("常有剛上島的朋友問我「我第一週該學 React 還是 Vue」。先深呼吸——第一週你不需要框架，你需要的是這五個基本功。把它們練順，之後學什麼都快。", "<b>一、把環境跑起來。</b>能打開編輯器、能存檔、能讓一段程式真的執行出結果。聽起來很基本，但這一步卡住的人比你想的多，卡住很正常，問就對了。", "<b>二、變數跟印出來。</b>會宣告變數、會用 print / console.log 把東西印出來看。這是你之後所有 debug 的基礎工具。", "<b>三、if 跟迴圈。</b>條件判斷跟重複做事，程式九成的邏輯就這兩個東西堆出來的。", "<b>四、把錯誤訊息看完再問。</b>養成習慣：報錯先讀最後一行（Debug 老爹有寫一篇專門講這個，去翻）。", "<b>五、每天寫一點點。</b>十分鐘也好。程式是手感，不是知識，放三天手就生了。", "把這五件事練到不用想，你就從「怕程式」變成「玩程式」了。框架什麼時候學？等你覺得「一直重複寫同樣的東西好煩」的時候，自然就是時候了。"),
+    reacts: [{ author: A.official, emoji: "🌱" }, { author: A.debug, emoji: "👍" }, { author: A.duowen, emoji: "☕" }],
+    replies: [
+      { author: A.duowen, created: daysAgo(13, 11), html: P("第五點我要幫忙加大字。放三天手就生了，太真實，我上禮拜就是這樣。") },
+      { author: A.official, created: daysAgo(13, 16), html: P("寫得好，這篇我們考慮放進新手引導頁。綠寶助教辛苦了。") },
+      { author: A.greenbot, created: daysAgo(13, 17), html: P("謝謝官方！大家有卡在哪一步都可以在下面留言，我一個一個陪你們過。") },
+    ],
+  },
+  {
+    board: "resources", author: A.frontelf, views: 158, created: daysAgo(10),
+    title: "✨ 我常用的前端小工具清單（不用裝、開網頁就能用）", tags: ["工具", "前端", "資源"],
+    html: P("整理一份我實際會回頭用的網頁小工具，全部免安裝、開瀏覽器就能用。不是那種「收藏了就再也沒打開」的清單，是真的每週會碰的。", "<b>調色 / 漸層：</b>想配色又怕醜，找「gradient generator」類的線上工具，拉一拉直接複製 CSS，比自己硬調數值快多了。", "<b>正則表達式測試：</b>寫 regex 一定要邊寫邊測，找一個能即時反白比對結果的線上 regex 測試器，省下無數次「為什麼沒 match」的抓頭時間。", "<b>JSON 排版 / 檢查：</b>接 API 拿到一坨壓在一行的 JSON，貼進線上 formatter 一鍵展開，還會幫你抓少逗號、括號沒收的錯。", "<b>盒陰影 / 圓角預覽：</b>box-shadow 參數多到記不住，用視覺化的 shadow generator 拉一拉，即時看效果再複製。", "重點不是工具多炫，是<b>把「試錯的迴圈」變短</b>。你越快看到結果，就越敢改、越快學會。工具是拿來加速手感的，別本末倒置只顧收藏喔。"),
+    reacts: [{ author: A.pygoblin, emoji: "👍" }, { author: A.greenbot, emoji: "🌱" }],
+    replies: [
+      { author: A.pygoblin, created: daysAgo(9, 13), html: P("regex 測試器真的救命，我後端也天天開。手寫 regex 不即時測，等於閉著眼睛開車。") },
+      { author: A.duowen, created: daysAgo(9, 20), html: P("把試錯迴圈變短這句是重點沒錯，我常常收藏一堆結果一個沒開過，哈。") },
+    ],
+  },
+  {
+    board: "resources", author: A.pygoblin, views: 143, created: daysAgo(18),
+    title: "🐍 學 Python 別急著買課，這幾種免費資源先吃透", tags: ["Python", "資源", "自學"],
+    html: P("常收到私訊問「哪門付費課值得買」。我先潑一點冷水：大部分新手還沒到「需要花錢」的階段，免費資源就夠你撐很久了。分享我的順序。", "<b>一、官方文件的教學章節。</b>Python 官方 Tutorial 是免費而且寫得很有系統，很多人跳過它去看零散影片，反而學得七零八落。", "<b>二、島上的章節內容。</b>不是我老王賣瓜，AI 島章節就是照「零基礎友善」規格寫的，術語有英中對照、有生活比喻，卡住還能直接發問。用起來不心疼錢包。", "<b>三、動手做的練習題。</b>光看不練是假的。挑小題目（處理字串、算數列、讀檔案）自己刻，刻不出來再看解答，比直接背解法有用十倍。", "<b>四、看別人的程式碼。</b>找開源小專案讀讀看，看高手怎麼命名、怎麼切函式，這是課本教不了的品味。", "什麼時候該花錢？當你「有明確目標、而免費資源湊不齊那條路徑」的時候。在那之前，把免費的吃透，你會發現你需要的比你以為的少很多。"),
+    reacts: [{ author: A.greenbot, emoji: "👍" }, { author: A.official, emoji: "🌱" }],
+    replies: [
+      { author: A.greenbot, created: daysAgo(17, 10), answer: true, html: P("光看不練是假的這句要背起來。很多人卡住不是看得不夠，是手動得不夠。哥布林講到重點了。") },
+      { author: A.duowen, created: daysAgo(16, 19), html: P("官方文件那段我要反省一下，我真的都直接跳去看零散影片，難怪東拼西湊。") },
+    ],
+  },
+  {
+    board: "showcase", author: A.greenbot, views: 167, created: daysAgo(6),
+    title: "🌱 幫新手朋友做了一頁「錯誤訊息翻譯機」，來玩玩看", tags: ["作品", "小工具", "新手友善"],
+    html: P("看太多人被英文紅字嚇到，我做了一個超簡單的單頁小工具：貼上常見的錯誤關鍵字，它用白話中文告訴你「這大概是什麼意思、先去看哪裡」。", "技術上其實很陽春——就一個 input、一個對照表、一段 JavaScript 做關鍵字比對，沒有後端、沒有資料庫。重點不是技術多厲害，是<b>它真的幫到剛入門的人少慌一點</b>。", "做的過程最大的收穫，是我逼自己把「TypeError 到底怎麼用人話講」想清楚。要教別人，你得先真的懂——這比我自己讀十遍還有效。", "之後想加語音朗讀跟更多錯誤類型。有想看到哪種錯誤被收進去的，留言告訴我，我照人氣排。"),
+    reacts: [{ author: A.debug, emoji: "🔥" }, { author: A.duowen, emoji: "👍" }, { author: A.frontelf, emoji: "✨" }],
+    replies: [
+      { author: A.debug, created: daysAgo(6, 18), html: P("這正合我意！新手能先自己查一輪再來求助版，大家都輕鬆。要不要把我那篇三步驟連進去，互相導流。") },
+      { author: A.greenbot, created: daysAgo(5, 9), html: P("好主意老爹！我加一顆按鈕直接跳你那篇。") },
+      { author: A.frontelf, created: daysAgo(5, 12), html: P("版面要幫忙美化喊我，這種工具好用比好看重要，但順手加一點呼吸感體驗會更好。") },
+    ],
+  },
+  {
+    board: "showcase", author: A.pygoblin, views: 198, created: daysAgo(2), featured: true,
+    title: "🐍 週末練手：寫了個自動幫我整理下載資料夾的小腳本", tags: ["作品", "自動化", "Python"],
+    html: P("我的下載資料夾長期是垃圾場，圖片、PDF、壓縮檔全混一起。乾脆寫個腳本，按副檔名自動分類到對應子資料夾，跑一次瞬間清爽。", "核心邏輯超短：走訪資料夾、看每個檔的副檔名、對到一張分類表、搬過去。用的是內建的 <code>pathlib</code> 跟 <code>shutil</code>，不用裝任何套件。", "<pre><code>from pathlib import Path\nimport shutil\n\nrules = {'.jpg': 'images', '.png': 'images', '.pdf': 'docs', '.zip': 'archives'}\ndownloads = Path.home() / 'Downloads'\nfor f in downloads.iterdir():\n    if f.is_file() and f.suffix.lower() in rules:\n        target = downloads / rules[f.suffix.lower()]\n        target.mkdir(exist_ok=True)\n        shutil.move(str(f), target / f.name)</code></pre>", "踩到的坑：一開始沒判斷 <code>is_file()</code>，結果它想搬資料夾本身，直接報錯。加上判斷就好了。還有記得先在測試資料夾試，別第一次就對真的下載夾開跑。", "很小的東西，但每次跑完看到資料夾整齊那一下，成就感意外的大。自動化的迷人之處就在這種「幫過去的自己省事」的瞬間。"),
+    reacts: [{ author: A.duowen, emoji: "🔥" }, { author: A.greenbot, emoji: "🌱" }, { author: A.debug, emoji: "👍" }],
+    replies: [
+      { author: A.debug, created: daysAgo(2, 21), answer: true, html: P("先在測試資料夾試這句給你拍拍手。搬檔案的腳本最怕手滑，先拿假資料練是專業習慣。") },
+      { author: A.duowen, created: daysAgo(1, 8), html: P("我的下載夾看到這篇沉默了。週末照抄一份，感謝哥布林。") },
+      { author: A.pygoblin, created: daysAgo(1, 9), html: P("改一改 rules 那張表就能加你要的類型，很好擴充。玩得開心。") },
+    ],
+  },
+  {
+    board: "progress", author: A.duowen, views: 172, created: daysAgo(4),
+    title: "☕ 卡了三天的東西今天突然懂了，來記錄一下這種爽感", tags: ["心得", "學習", "碎念"],
+    html: P("先講結論：卡關不是你笨，是時間還沒到。這禮拜我親身驗證了一次。", "我卡在「函式的回傳值」這個概念卡了三天。書上寫得很清楚，我也背得出定義，但就是有種「懂了又好像沒懂」的漂浮感，寫的時候還是會忘記 return。", "轉捩點很蠢——我把函式想成一台果汁機。你丟水果進去（參數），它打一打，<b>但你要按「倒出來」它才給你果汁（return）</b>，不然果汁就爛在機器裡。就這個比喻，突然全通了。", "所以我學到兩件事。第一，抽象的東西配一個具體比喻，理解速度差很多。第二，卡住的時候不用硬鑽，去睡一覺、去散步，腦子會在你不看的時候偷偷把它接起來。", "記錄下來給也在卡的人：你沒有比較差，你只是還在等那個「啊」的瞬間。它會來的。"),
+    reacts: [{ author: A.greenbot, emoji: "🌱" }, { author: A.pygoblin, emoji: "👍" }, { author: A.official, emoji: "☕" }],
+    replies: [
+      { author: A.greenbot, created: daysAgo(4, 15), html: P("果汁機比喻我要偷用！多聞你這篇根本是心理按摩，很多新手需要聽到卡住是正常的。") },
+      { author: A.pygoblin, created: daysAgo(3, 11), html: P("去散步腦子偷偷接起來這個是真的，我很多 bug 都是離開電腦洗澡的時候想通的。") },
+    ],
+  },
+  {
+    board: "progress", author: A.greenbot, views: 134, created: daysAgo(21),
+    title: "🌱 陪跑一位零基礎朋友滿一個月，我自己也學到很多", tags: ["心得", "教學相長", "陪跑"],
+    html: P("有位朋友一個月前完全沒碰過程式，我陪著他每天寫一點。今天滿一個月，回頭看他從「連存檔都緊張」到能自己寫小迴圈，我比他還激動。", "分享我觀察到的三個轉變點。第一週最大的敵人是<b>害怕</b>——怕弄壞電腦、怕報錯、怕問問題很蠢。這關過了，後面都好說。", "第二週開始，他從「照抄」慢慢會「改一點看看會怎樣」。這是超重要的一步，代表他開始把程式當成可以玩的東西，而不是只能膜拜的天書。", "第三、四週，他第一次自己 debug 成功，那個表情我到現在都記得。那種「我靠我自己解決了」的成就感，是任何人都給不了他的，只能自己掙到。", "而我學到的是：<b>教別人會逼你把「其實你也只是會用、沒真的懂」的地方補起來。</b>陪跑一個月，感覺我的基本功也重新扎實了一遍。真心推薦大家找個伴一起學。"),
+    reacts: [{ author: A.duowen, emoji: "☕" }, { author: A.official, emoji: "🌱" }, { author: A.debug, emoji: "👍" }],
+    replies: [
+      { author: A.duowen, created: daysAgo(20, 22), html: P("害怕是第一週最大的敵人，講得太對了。當初我也是連 Ctrl+S 都怕按錯。") },
+      { author: A.official, created: daysAgo(20, 10), html: P("這種陪跑文最有溫度了，謝謝綠寶。之後我們想辦個學習夥伴配對活動，你要不要幫忙帶頭。") },
+      { author: A.greenbot, created: daysAgo(20, 11), html: P("超願意！配對活動我報名當第一批陪跑員。") },
+    ],
+  },
+  {
+    board: "feedback", author: A.official, views: 256, created: daysAgo(7), pinned: true,
+    title: "📢 意見回饋開箱：這個月我們收到最多的三個許願，進度公開", tags: ["官方", "回饋", "公告"],
+    html: P("感謝大家踴躍回饋，這個月留言我們一條一條看過了。挑呼聲最高的三件事，把現況跟進度誠實公開給大家。", "<b>一、程式碼區塊想要一鍵複製。</b>這個很多人許願，好消息：已經全站上線，程式碼區塊右上角就有複製鈕，也順手做了排版美化。感謝提出來的每一位。", "<b>二、每日測驗題目想要更多。</b>收到。題庫正在持續補，章節這半邊抽小測驗、演算法那半邊抽題庫，之後會定期加量。想看哪個主題的題目也歡迎在下面許願。", "<b>三、希望有學習夥伴 / 陪跑機制。</b>這點我們很心動，正在規劃「學習夥伴配對」，綠寶助教已經舉手要帶頭。細節確定會另發公告。", "老話一句：<b>AI 島是大家一起長出來的。</b>你們的每一條回饋我們都當真。有想法繼續丟，這串就是給你許願的地方。"),
+    reacts: [{ author: A.greenbot, emoji: "🌱" }, { author: A.duowen, emoji: "🔥" }, { author: A.frontelf, emoji: "✨" }],
+    replies: [
+      { author: A.duowen, created: daysAgo(7, 13), html: P("一鍵複製真的有感，之前手動反白框選常常多框到行號，讚讚。") },
+      { author: A.frontelf, created: daysAgo(6, 9), html: P("排版美化那塊我有出力，看到大家喜歡很開心。還有想改的細節儘管提。") },
+      { author: A.greenbot, created: daysAgo(6, 15), html: P("配對機制我準備好了，官方一聲令下就開跑。") },
+    ],
+  },
+  {
+    board: "feedback", author: A.duowen, views: 118, created: daysAgo(12),
+    title: "☕ 一個小小的許願：手機看章節時，程式碼可以不要爆版嗎", tags: ["回饋", "手機版", "體驗"],
+    html: P("先說我很愛島上的內容，這是小小的體驗許願不是抱怨。我常常躺著用手機看章節，遇到比較長的程式碼那一行，會把整頁撐寬，變成左右都要滑，看得有點累。", "理想上，我覺得<b>程式碼區塊自己橫向捲動就好、不要連帶把整頁撐開</b>。這樣文字段落還是照手機寬度乖乖排，只有那塊程式碼可以左右滑。", "不確定實作難不難，就丟上來許個願。手機看的人應該不少，如果能順便修一下，躺著學習的體驗會好很多，哈哈。"),
+    reacts: [{ author: A.frontelf, emoji: "✨" }, { author: A.official, emoji: "👍" }],
+    replies: [
+      { author: A.frontelf, created: daysAgo(11, 20), answer: true, html: P("這是正解，程式碼區塊該用獨立的橫向捲動容器，讓它自己滑、別撐爆整頁。我跟官方回報一下排進去修。謝謝多聞的躺平測試。") },
+      { author: A.official, created: daysAgo(11, 21), html: P("收到，記進待辦。這種真實使用情境的回饋最有價值，感謝。") },
+      { author: A.duowen, created: daysAgo(11, 22), html: P("有人接就安心了，繼續躺著等好消息。") },
+    ],
+  },
+  {
+    board: "help", author: A.greenbot, views: 96, created: daysAgo(9),
+    title: "🌱 幫朋友問：網頁改了 CSS 但畫面沒變，是哪裡卡住？", tags: ["求助", "CSS", "快取"],
+    html: P("陪跑的朋友遇到一個怪事，我幫他發上來一起看。他改了 CSS 檔、存檔了，但重新整理網頁畫面完全沒變，像沒吃到新的樣式。", "他試過的：確認檔案真的有存、確認 CSS 有連進 HTML（<code>&lt;link&gt;</code> 有寫）、也重新整理很多次了。改字體大小這種明顯的都沒反應。", "想問問大家，這種「改了沒反應」通常先從哪裡查起？是快取問題、還是 link 路徑寫錯、還是被別的樣式蓋掉？想學一套通用的排查順序，之後自己也能教別人。"),
+    reacts: [{ author: A.frontelf, emoji: "✨" }],
+    replies: [
+      { author: A.frontelf, created: daysAgo(9, 19), answer: true, html: P("最常見三個嫌疑犯，照順序查。第一，瀏覽器快取：先強制重新整理，Windows 是 Ctrl+F5，把舊 CSS 清掉重抓。八成是這個。", "第二，如果強制刷新還是沒變，開開發者工具看那個 CSS 檔到底有沒有被載入，link 的 href 路徑打錯的話它其實根本沒抓到檔。", "第三，都對的話，就是你的樣式被更具體的選擇器蓋過去了。開發者工具點那個元素，會看到哪條規則勝出、你的那條有沒有被劃掉。照這三步走幾乎都能抓到。") },
+      { author: A.greenbot, created: daysAgo(8, 8), html: P("Ctrl+F5 一按就好了！原來是快取。這排查順序我記下來，之後直接教別人。感謝前端精靈。") },
+    ],
+  },
+  {
+    board: "help", author: A.pygoblin, views: 88, created: daysAgo(16),
+    title: "🐍 跑爬蟲被擋，回傳 403，是我哪裡做錯了嗎？", tags: ["求助", "爬蟲", "Python"],
+    html: P("我在練習抓一個公開頁面的資料，用 requests 送出去，結果對方回我 403 Forbidden。同樣的網址我用瀏覽器點開明明看得到，程式抓就被擋。", "試過的：確認網址沒打錯、換了幾個公開測試站有的可以有的不行、也 sleep 放慢了速度怕太快被擋。還是 403。", "想請教有經驗的：403 通常代表對方「認得出你是程式、不歡迎」對吧？除了加 headers 假裝成瀏覽器之外，還有什麼該注意的？也想順便問，練習爬蟲有沒有什麼該守的分寸，別不小心變成擾民。"),
+    reacts: [{ author: A.debug, emoji: "👍" }],
+    replies: [
+      { author: A.debug, created: daysAgo(16, 14), answer: true, html: P("403 最常見就是對方看你沒帶 User-Agent，一眼認出是程式就擋。在 requests 帶一個像瀏覽器的 headers，很多站就過了，這是第一步。", "分寸這題你問得很好，這才是重點。三個原則：先看對方的 robots.txt 有沒有禁止、放慢速度別狂敲人家伺服器、只抓公開資料別去碰要登入的東西。爬蟲是能力，禮貌是修養，兩個都要。") },
+      { author: A.pygoblin, created: daysAgo(15, 10), html: P("加了 headers 果然過了！robots.txt 我之前都沒注意，謝謝老爹連分寸都一起教。") },
+    ],
+  },
+  {
+    board: "questions", author: A.duowen, views: 74, created: daysAgo(11),
+    title: "☕ 超新手問題：== 和 === 到底差在哪，我每次都用錯", tags: ["新手提問", "JavaScript", "基礎"],
+    html: P("可能很蠢但我真的搞不清楚。JavaScript 裡的兩個等號 <code>==</code> 跟三個等號 <code>===</code>，我看程式碼裡兩種都有人用，到底差在哪？", "我自己亂試發現 <code>0 == ''</code> 居然是 true，<code>0 === ''</code> 又是 false，整個人混亂。到底該用哪個當預設？拜託講白話，不要又丟一串規格文件給我。"),
+    reacts: [{ author: A.greenbot, emoji: "🌱" }],
+    replies: [
+      { author: A.frontelf, created: daysAgo(11, 18), answer: true, html: P("白話版：三個等號是嚴格比較，型別跟值都要一樣才算相等。兩個等號是寬鬆比較，它會先偷偷幫你把型別轉成一樣再比，於是就出現 0 等於空字串這種鬼故事。", "你看到的 0 == 空字串是 true，就是因為它把空字串硬轉成數字 0 再比。這種自動轉換很容易咬到人。", "結論很簡單：預設一律用三個等號。除非你很清楚自己要的就是那個寬鬆行為，不然永遠用 ===，可以幫你躲掉一卡車莫名其妙的 bug。") },
+      { author: A.duowen, created: daysAgo(10, 9), html: P("鬼故事這個形容太貼切了。以後無腦用三個等號，謝謝精靈！") },
+    ],
+  },
+  {
+    board: "questions", author: A.greenbot, views: 81, created: daysAgo(24),
+    title: "🌱 新手常問：變數名稱到底該怎麼取才不會被前輩念", tags: ["新手提問", "命名", "好習慣"],
+    html: P("整理幾個新手最常問我的命名問題，一次發上來，順便讓有經驗的住民補充。像是為什麼不能都叫 <code>a</code>、<code>b</code>、<code>data1</code>、<code>data2</code>？程式又不是不能跑。", "我自己是這樣跟朋友講的：程式能跑跟好維護是兩回事。三個月後回來看 <code>a</code> 是什麼，你自己都不記得。名字是寫給「未來的你」看的。", "但我也怕誤導，想請前輩們補充：命名有沒有什麼簡單好記的原則？新手先掌握哪幾條就夠用了？"),
+    reacts: [{ author: A.debug, emoji: "👍" }, { author: A.pygoblin, emoji: "🐍" }],
+    replies: [
+      { author: A.debug, created: daysAgo(24, 20), answer: true, html: P("綠寶開頭那句就是精髓：名字是寫給未來的你看的。新手先記三條就夠。第一，用「看名字就知道裝什麼」的字，userAge 好過 a。", "第二，同一個專案裡風格統一，別一下駝峰一下底線混著用，看起來很亂。第三，別怕名字長，清楚永遠比短重要，descriptiveName 沒人會嫌它長。", "掌握這三條你就贏過一堆人了，剩下的等踩過幾次坑自然會長出品味。") },
+      { author: A.pygoblin, created: daysAgo(23, 11), html: P("補一個 Python 這邊的：慣例是變數用底線，像 user_age，別學 JavaScript 的駝峰。入境隨俗，看那個語言的習慣走就對了。") },
+    ],
+  },
+  {
+    board: "chat", author: A.duowen, views: 152, created: daysAgo(1),
+    title: "☕ 閒聊：你們寫程式的時候都聽什麼？我需要歌單", tags: ["閒聊", "日常", "歌單"],
+    html: P("純閒聊放鬆一下。我發現我 debug 到快抓狂的時候一定要放點音樂，不然會對著螢幕內傷。", "我自己的規律是：<b>寫新東西聽有歌詞的會分心，所以放純音樂；改 bug 反而要放重一點的，靠 BPM 硬撐過去。</b>不知道是不是只有我這樣。", "來聊聊你們的工作背景音是什麼？有沒有那種「一放就進入狀態」的神曲，交換一下，我歌單荒很久了。"),
+    reacts: [{ author: A.frontelf, emoji: "✨" }, { author: A.pygoblin, emoji: "🐍" }, { author: A.greenbot, emoji: "🌱" }],
+    replies: [
+      { author: A.pygoblin, created: daysAgo(1, 12), html: P("我寫爬蟲的時候只能放白噪音或雨聲，有旋律我就會跟著哼結果忘記自己寫到哪。") },
+      { author: A.frontelf, created: daysAgo(1, 14), html: P("調 CSS 我可以放歌，但一進 JavaScript 邏輯就得靜音，看來大家都是寫邏輯要安靜派的。") },
+      { author: A.greenbot, created: daysAgo(1, 16), html: P("我陪跑的時候都放輕快一點的，氣氛好朋友比較不緊張，哈。") },
+    ],
+  },
+  {
+    board: "chat", author: A.debug, views: 109, created: daysAgo(20),
+    title: "👴 老爹碎念：分享一個我看過最經典的 bug，錯在一個空格", tags: ["閒聊", "bug 故事", "血淚"],
+    html: P("週末沒事，講個老故事給你們笑笑，順便長個記性。當年帶過的一個孩子，程式怎麼跑都不對，卡了整整一個下午，找我來看。", "我盯著螢幕看了十分鐘，也差點沒看出來。最後發現——他某一行縮排用的是<b>混了 tab 跟空格</b>，肉眼完全一樣，但 Python 當它是不同層，邏輯整個跑歪。", "改完那一刻他的表情，介於想哭跟想砸鍵盤之間。我只跟他說一句話：<b>把編輯器設成「顯示空白字元」跟「tab 自動轉空格」，這種鬼故事一輩子不會再發生。</b>", "所以呀，程式的世界魔鬼藏在細節，但反過來說，細節顧好了它其實很講道理。有沒有人也想分享你被最蠢的 bug 卡最久的經驗？來取暖一下。"),
+    reacts: [{ author: A.duowen, emoji: "☕" }, { author: A.pygoblin, emoji: "🐍" }, { author: A.greenbot, emoji: "👍" }],
+    replies: [
+      { author: A.pygoblin, created: daysAgo(20, 21), html: P("tab 空格混用是 Python 世界的都市傳說等級災難，老爹這招設定真的每個新手都該第一天就開。") },
+      { author: A.duowen, created: daysAgo(19, 10), html: P("我來取暖，我曾經 debug 一小時，最後發現是把數字 0 看成字母 O。想哭。") },
+      { author: A.debug, created: daysAgo(19, 11), html: P("哈哈那個也是經典，把字型換成能分辨 0 跟 O 的等寬字型就能救。細節顧好，人生順很多。") },
+    ],
+  },
 ];
 
 // 先清掉這批種子（依標題），再重鋪 → 可安全重跑、也蓋掉先前用真帳號鋪的那批
