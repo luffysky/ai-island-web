@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
-import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, Palmtree, Crown, BarChart3, Key, BookOpen, Swords, MessagesSquare, Newspaper, Route, Palette, Brain, Compass, Gamepad2, NotebookPen } from "lucide-react";
+import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, Palmtree, Crown, BarChart3, Key, BookOpen, Swords, MessagesSquare, Newspaper, Route, Palette, Brain, Compass, Gamepad2, NotebookPen, Images } from "lucide-react";
 import { TodoDropdownButton } from "@/components/todo/TodoDropdown";
 import { CountUp } from "@/components/ui/CountUp";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -21,6 +21,7 @@ const NAV_LINKS = [
   { href: "/me/notes", key: "notes", icon: NotebookPen },
   { href: "/forum", key: "forum", icon: MessagesSquare },
   { href: "/blogs", key: "blog", icon: Newspaper },
+  { href: "/works", key: "works", icon: Images },
   { href: "/leaderboard", key: "leaderboard", icon: Trophy },
   { href: "/career", key: "career", icon: Route },
   { href: "/creator-island", key: "creatorIsland", icon: Palette },

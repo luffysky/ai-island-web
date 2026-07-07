@@ -12,7 +12,8 @@
     "explore": "Explore",
     "exploreIsland": "Explore AI Island",
     "openMenu": "Open navigation menu",
-    "closeMenu": "Close navigation menu"
+    "closeMenu": "Close navigation menu",
+    "works": "Works"
   },
   "auth": {
     "login": "Log in",

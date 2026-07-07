@@ -12,7 +12,8 @@
     "explore": "探索",
     "exploreIsland": "探索 AI 島",
     "openMenu": "開啟導覽選單",
-    "closeMenu": "關閉導覽選單"
+    "closeMenu": "關閉導覽選單",
+    "works": "作品牆"
   },
   "auth": {
     "login": "登入",

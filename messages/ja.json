@@ -12,7 +12,8 @@
     "explore": "探索",
     "exploreIsland": "AI島を探索",
     "openMenu": "ナビゲーションを開く",
-    "closeMenu": "ナビゲーションを閉じる"
+    "closeMenu": "ナビゲーションを閉じる",
+    "works": "作品"
   },
   "auth": {
     "login": "ログイン",

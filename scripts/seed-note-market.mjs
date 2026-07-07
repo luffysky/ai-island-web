@@ -348,13 +348,17 @@ const titles = PACKS.map((p) => p.title);
 await c.query("delete from public.note_products where seller_id=$1 and title = any($2)", [SELLER, titles]);
 await c.query("delete from public.notes where user_id=$1 and category=$2", [SELLER, CAT]);
 
+// 便利貼配色輪播：讓官方筆記在筆記牆上像真人手作的一疊彩色便利貼（用到筆記的背景/配色系統）
+const STICKY = ["yellow", "green", "blue", "pink", "purple", "orange"];
+
 let products = 0, notesCount = 0;
 for (const pack of PACKS) {
   const noteIds = [];
   for (const n of pack.notes) {
+    const color = STICKY[notesCount % STICKY.length];
     const { rows } = await c.query(
-      "insert into public.notes (user_id, title, content, category, tags, is_public) values ($1,$2,$3,$4,$5,true) returning id",
-      [SELLER, n.title, n.content, CAT, ["官方", "開發筆記"]]
+      "insert into public.notes (user_id, title, content, category, tags, is_public, color) values ($1,$2,$3,$4,$5,true,$6) returning id",
+      [SELLER, n.title, n.content, CAT, ["官方", "開發筆記"], color]
     );
     noteIds.push(rows[0].id); notesCount++;
   }
