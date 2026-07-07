@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, useRef, type CSSProperties } from "react";
 import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 import {
   DndContext, closestCenter, PointerSensor, useSensor, useSensors, useDroppable, type DragEndEvent,
 } from "@dnd-kit/core";
@@ -60,6 +61,7 @@ export type ManagedNote = {
  * 選字不會跟拖曳打架（之前整卡可拖，一選字就變拖動）。
  */
 function SortableNoteCard({ id, children }: { id: string; children: React.ReactNode }) {
+  const t = useTranslations("notes");
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style: CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -76,8 +78,8 @@ function SortableNoteCard({ id, children }: { id: string; children: React.ReactN
         onClick={(e) => e.stopPropagation()}
         className="absolute top-1 right-1 z-20 p-1 rounded text-black/35 hover:text-black/70 hover:bg-black/10 cursor-grab active:cursor-grabbing transition"
         style={{ touchAction: "none" }}
-        title="拖我調整順序"
-        aria-label="拖移排序"
+        title={t("dragToReorderHint")}
+        aria-label={t("dragToReorder")}
       >
         <GripVertical size={15} />
       </button>
@@ -121,11 +123,12 @@ function FolderTreeRow({ dropId, active, droppable, indent, icon, label, count, 
   dropId?: string; active: boolean; droppable?: boolean; indent?: boolean; icon: React.ReactNode; label: string;
   count?: number; onClick: () => void; onRemove?: () => void; chevron?: "open" | "closed" | "none"; onToggle?: () => void;
 }) {
+  const t = useTranslations("notes");
   const { setNodeRef, isOver } = useDroppable({ id: dropId ?? "__none__", disabled: !droppable || !dropId });
   return (
     <div ref={dropId ? setNodeRef : undefined} onClick={onClick}
       className={`group flex items-center gap-1 rounded-md pr-1.5 py-1 cursor-pointer transition select-none text-sm ${indent ? "pl-6" : "pl-1.5"} ${isOver ? "ring-1 ring-accent bg-accent/20" : ""} ${active ? "bg-accent/15 text-accent font-medium" : "text-fg-muted hover:bg-bg-elevated hover:text-fg"}`}
-      title={droppable ? "點選篩選；把便利貼拖進來分類" : "點選篩選"}>
+      title={droppable ? t("filterAndDrop") : t("filterOnly")}>
       {chevron && chevron !== "none" ? (
         <button type="button" onClick={(e) => { e.stopPropagation(); onToggle?.(); }} className="shrink-0 text-fg-muted hover:text-fg -ml-0.5">
           {chevron === "open" ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
@@ -148,6 +151,7 @@ function FolderBar({
   onAddFolder: (name: string) => void; onRemoveFolder: (name: string) => void;
   allTags: string[]; fTag: string; setFTag: (v: string) => void; droppable?: boolean;
 }) {
+  const t = useTranslations("notes");
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
   const [subFor, setSubFor] = useState<string | null>(null);
@@ -180,9 +184,9 @@ function FolderBar({
 
   return (
     <div className="space-y-0.5">
-      <div className="text-[11px] font-bold text-fg-muted px-1.5 mb-1 inline-flex items-center gap-1.5"><Folder size={13} /> 知識樹</div>
-      <FolderTreeRow dropId={undefined} active={!fCat} droppable={false} icon={<FileText size={14} />} label="全部筆記" count={total} onClick={() => setFCat("")} />
-      <FolderTreeRow dropId={folderDropId(UNCATEGORIZED)} active={fCat === UNCAT_FILTER} droppable={droppable} icon={<span className="text-xs">📥</span>} label="未分類" count={uncategorizedCount} onClick={() => setFCat(fCat === UNCAT_FILTER ? "" : UNCAT_FILTER)} />
+      <div className="text-[11px] font-bold text-fg-muted px-1.5 mb-1 inline-flex items-center gap-1.5"><Folder size={13} /> {t("knowledgeTree")}</div>
+      <FolderTreeRow dropId={undefined} active={!fCat} droppable={false} icon={<FileText size={14} />} label={t("allNotes")} count={total} onClick={() => setFCat("")} />
+      <FolderTreeRow dropId={folderDropId(UNCATEGORIZED)} active={fCat === UNCAT_FILTER} droppable={droppable} icon={<span className="text-xs">📥</span>} label={t("uncategorized")} count={uncategorizedCount} onClick={() => setFCat(fCat === UNCAT_FILTER ? "" : UNCAT_FILTER)} />
 
       {tree.map((p) => (
         <div key={p.name}>
@@ -205,10 +209,10 @@ function FolderBar({
               {subFor === p.name ? (
                 <input autoFocus value={subName} onChange={(e) => setSubName(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") submitSub(p.name); if (e.key === "Escape") { setSubName(""); setSubFor(null); } }}
-                  onBlur={() => submitSub(p.name)} placeholder="子資料夾名稱"
+                  onBlur={() => submitSub(p.name)} placeholder={t("subfolderName")}
                   className="ml-6 my-0.5 px-2 py-1 rounded-md bg-bg border border-border text-xs w-[calc(100%-1.5rem)] outline-none focus:border-accent" />
               ) : (
-                <button type="button" onClick={() => { setSubFor(p.name); setSubName(""); }} className="pl-6 py-0.5 text-xs text-fg-muted/70 hover:text-accent inline-flex items-center gap-1"><FolderPlus size={11} /> 子資料夾</button>
+                <button type="button" onClick={() => { setSubFor(p.name); setSubName(""); }} className="pl-6 py-0.5 text-xs text-fg-muted/70 hover:text-accent inline-flex items-center gap-1"><FolderPlus size={11} /> {t("subfolder")}</button>
               )}
             </>
           )}
@@ -218,15 +222,15 @@ function FolderBar({
       {adding ? (
         <input autoFocus value={name} onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") submit(); if (e.key === "Escape") { setName(""); setAdding(false); } }}
-          onBlur={submit} placeholder="資料夾名稱"
+          onBlur={submit} placeholder={t("folderName")}
           className="my-0.5 px-2 py-1 rounded-md bg-bg border border-border text-xs w-full outline-none focus:border-accent" />
       ) : (
-        <button type="button" onClick={() => setAdding(true)} className="w-full text-left px-1.5 py-1 rounded-md text-xs text-fg-muted hover:bg-bg-elevated hover:text-fg inline-flex items-center gap-1.5"><FolderPlus size={13} /> 新增資料夾</button>
+        <button type="button" onClick={() => setAdding(true)} className="w-full text-left px-1.5 py-1 rounded-md text-xs text-fg-muted hover:bg-bg-elevated hover:text-fg inline-flex items-center gap-1.5"><FolderPlus size={13} /> {t("addFolder")}</button>
       )}
 
       {allTags.length > 0 && (
         <div className="pt-2 mt-1 border-t border-border/60">
-          <div className="text-[11px] font-bold text-fg-muted px-1.5 mb-1">標籤</div>
+          <div className="text-[11px] font-bold text-fg-muted px-1.5 mb-1">{t("tags")}</div>
           <div className="flex flex-wrap gap-1 px-1">
             {allTags.map((t) => (
               <button key={t} onClick={() => setFTag(t === fTag ? "" : t)} className={`px-2 py-0.5 rounded-full text-xs ${fTag === t ? "bg-accent text-black" : "bg-bg-elevated text-fg-muted hover:text-fg"}`}>#{t}</button>
@@ -251,6 +255,7 @@ export function NotesManager({
   meId: string;
   initialReviews?: ReviewRow[];
 }) {
+  const t = useTranslations("notes");
   const supabase = createSupabaseBrowser();
   const toast = useToast();
   const confirm = useConfirm();
@@ -266,7 +271,7 @@ export function NotesManager({
     const row: ReviewRow = { note_id: noteId, due_at: due, interval_days: 1, ease: 2.5, reviews: 0 };
     setReviews((r) => ({ ...r, [noteId]: row }));
     await supabase.from("note_reviews").upsert({ ...row, user_id: meId }, { onConflict: "note_id,user_id" });
-    toast.success("已加入間隔複習");
+    toast.success(t("addedToReview"));
   };
   const removeReview = async (noteId: string) => {
     setReviews((r) => { const c = { ...r }; delete c[noteId]; return c; });
@@ -317,15 +322,15 @@ export function NotesManager({
 
   // 一鍵公開成部落格：同一份內容 → 生成一篇公開文章（不用複製貼上）
   const publishBlog = async (n: ManagedNote) => {
-    toast.info?.("發佈中…");
+    toast.info?.(t("publishing"));
     try {
       const res = await fetch(`/api/me/notes/${n.id}/publish-blog`, { method: "POST" });
       const j = await res.json().catch(() => ({}));
-      if (!res.ok) { toast.error(j.message || "發佈失敗"); return; }
+      if (!res.ok) { toast.error(j.message || t("publishFailed")); return; }
       setNotes((p) => p.map((x) => (x.id === n.id ? { ...x, is_public: true } : x)));
-      toast.success("已公開成部落格文章 🎉");
+      toast.success(t("publishedToBlog"));
       if (j.url) window.open(j.url, "_blank");
-    } catch { toast.error("發佈失敗、請再試一次"); }
+    } catch { toast.error(t("publishFailedRetry")); }
   };
 
   // 資料夾（= 分類）：localStorage 名單 ∪ 現有筆記 category
@@ -359,18 +364,18 @@ export function NotesManager({
   // L2 引用：即時把 note_refs 解析成 {title, snippet}（讀當前 notes → 來源改動全站同步）
   const noteById = useMemo(() => { const m = new Map<string, ManagedNote>(); for (const n of notes) m.set(n.id, n); return m; }, [notes]);
   const resolveRefs = (n: ManagedNote) => (n.note_refs ?? [])
-    .map((id) => { const r = noteById.get(id); return r ? { id, title: r.title?.trim() || "（無標題筆記）", snippet: r.content.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim().slice(0, 50) } : null; })
+    .map((id) => { const r = noteById.get(id); return r ? { id, title: r.title?.trim() || t("untitledNote"), snippet: r.content.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim().slice(0, 50) } : null; })
     .filter(Boolean) as { id: string; title: string; snippet: string }[];
   const openRef = (id: string) => { const r = noteById.get(id); if (r) setEditing(r); };
 
   const del = async (n: ManagedNote) => {
     const owned = n._owned ?? (n.user_id === meId);
     if (owned) {
-      if (!(await confirm({ title: "刪除這則筆記？", destructive: true, confirmLabel: "刪除" }))) return;
+      if (!(await confirm({ title: t("confirmDeleteNote"), destructive: true, confirmLabel: t("delete") }))) return;
       setNotes((p) => p.filter((x) => x.id !== n.id));
       await supabase.from("notes").delete().eq("id", n.id);
     } else {
-      if (!(await confirm({ title: "退出這則共用筆記？（不會刪掉原筆記）", destructive: true, confirmLabel: "退出" }))) return;
+      if (!(await confirm({ title: t("confirmLeaveShare"), destructive: true, confirmLabel: t("leave") }))) return;
       setNotes((p) => p.filter((x) => x.id !== n.id));
       await fetch(`/api/me/notes/${n.id}/share`, {
         method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}),
@@ -380,23 +385,23 @@ export function NotesManager({
 
   // 用邀請碼 / 連結加入共用筆記
   const joinByCode = async () => {
-    const raw = await prompt({ title: "貼上邀請碼或邀請連結" });
+    const raw = await prompt({ title: t("pasteInviteCode") });
     if (!raw) return;
     let code = raw.trim();
     const idx = code.indexOf("/join/");
     if (idx >= 0) code = code.slice(idx + 6);
     code = code.replace(/[/?#].*$/, "").toUpperCase();
-    if (!code) { toast.error("看不出邀請碼"); return; }
+    if (!code) { toast.error(t("cantReadCode")); return; }
     try {
       const res = await fetch("/api/notes/join", {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code }),
       });
       const j = await res.json();
-      if (!res.ok) { toast.error(j.message || "加入失敗"); return; }
-      toast.success(j.alreadyOwner ? "這是你自己的筆記" : "已加入共用筆記");
+      if (!res.ok) { toast.error(j.message || t("joinFailed")); return; }
+      toast.success(j.alreadyOwner ? t("yourOwnNote") : t("joinedShare"));
       window.location.reload();
     } catch {
-      toast.error("加入失敗、請再試一次");
+      toast.error(t("joinFailedRetry"));
     }
   };
 
@@ -467,7 +472,7 @@ export function NotesManager({
         onClick={() => setEditing("new")}
         className="inline-flex items-center gap-1.5 px-4 py-2 bg-accent text-black font-semibold rounded-lg hover:scale-105 transition"
       >
-        <Plus size={16} /> 新增筆記
+        <Plus size={16} /> {t("newNote")}
       </button>
 
       {/* 手機：收合旋鈕（點一下旋轉、展開其餘功能；省得工具列在小螢幕擠成一團）*/}
@@ -475,7 +480,7 @@ export function NotesManager({
         type="button"
         onClick={() => setToolsOpen((o) => !o)}
         aria-expanded={toolsOpen}
-        aria-label={toolsOpen ? "收合工具列" : "展開工具列"}
+        aria-label={toolsOpen ? t("collapseToolbar") : t("expandToolbar")}
         className="sm:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg border border-border bg-bg-card hover:border-accent transition"
       >
         <SlidersHorizontal
@@ -490,9 +495,9 @@ export function NotesManager({
         <button
           onClick={joinByCode}
           className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-bg-card text-sm hover:border-accent transition"
-          title="用邀請碼或連結加入別人的共同筆記"
+          title={t("joinShareHint")}
         >
-          🤝 加入共用
+          🤝 {t("joinShare")}
         </button>
         <NotesBackgroundPicker cfg={bg} onChange={updateBg} />
         {notes.length > 0 && (
@@ -500,7 +505,7 @@ export function NotesManager({
             onClick={() => setFloating(true)}
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-bg-card text-sm hover:border-accent transition"
           >
-            <Sparkles size={15} /> 漂浮預覽
+            <Sparkles size={15} /> {t("floatingPreview")}
           </button>
         )}
         {notes.length > 0 && (
@@ -509,11 +514,11 @@ export function NotesManager({
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="搜尋筆記內容 / 分類 / 標籤"
+              placeholder={t("searchNotesPlaceholder")}
               className="w-full sm:w-60 pl-8 pr-7 py-2 rounded-lg border border-border bg-bg-card text-sm outline-none focus:border-accent"
             />
             {query && (
-              <button onClick={() => setQuery("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg" aria-label="清除搜尋">
+              <button onClick={() => setQuery("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg" aria-label={t("clearSearch")}>
                 <X size={13} />
               </button>
             )}
@@ -524,25 +529,25 @@ export function NotesManager({
 
       {dueNotes.length > 0 && (
         <div className="rounded-xl border border-accent/40 bg-accent/[0.06] p-3 space-y-2">
-          <div className="flex items-center gap-1.5 text-sm font-semibold"><Repeat2 size={15} /> 📚 今日複習（{dueNotes.length}）</div>
+          <div className="flex items-center gap-1.5 text-sm font-semibold"><Repeat2 size={15} /> 📚 {t("todayReview", { n: dueNotes.length })}</div>
           {dueNotes.map((n) => {
             const meta = chapterMap[n.lesson_id ?? ""] ?? chapterMap[`ch${n.chapter_id}`] ?? null;
             const preview = n.content.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 80);
             return (
               <div key={n.id} className="rounded-lg bg-bg-card border border-border p-2.5 flex items-start gap-2">
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium truncate">{n.title?.trim() || meta?.lessonTitle || "自由筆記"}</div>
-                  <div className="text-xs text-fg-muted line-clamp-2">{preview || "（空白）"}</div>
+                  <div className="text-sm font-medium truncate">{n.title?.trim() || meta?.lessonTitle || t("freeNote")}</div>
+                  <div className="text-xs text-fg-muted line-clamp-2">{preview || t("blank")}</div>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
-                  <button type="button" onClick={() => rateReview(n.id, "forgot")} className="text-xs px-2 py-1 rounded bg-red-500/10 text-red-500 hover:bg-red-500/20 transition">忘了</button>
-                  <button type="button" onClick={() => rateReview(n.id, "hard")} className="text-xs px-2 py-1 rounded bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 transition">模糊</button>
-                  <button type="button" onClick={() => rateReview(n.id, "good")} className="text-xs px-2 py-1 rounded bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 transition">記得</button>
+                  <button type="button" onClick={() => rateReview(n.id, "forgot")} className="text-xs px-2 py-1 rounded bg-red-500/10 text-red-500 hover:bg-red-500/20 transition">{t("forgot")}</button>
+                  <button type="button" onClick={() => rateReview(n.id, "hard")} className="text-xs px-2 py-1 rounded bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 transition">{t("vague")}</button>
+                  <button type="button" onClick={() => rateReview(n.id, "good")} className="text-xs px-2 py-1 rounded bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 transition">{t("remember")}</button>
                 </div>
               </div>
             );
           })}
-          <div className="text-[11px] text-fg-muted">評分後自動排下次：忘了→1 天、模糊→稍長、記得→間隔加大</div>
+          <div className="text-[11px] text-fg-muted">{t("srsHint")}</div>
         </div>
       )}
 
@@ -552,7 +557,7 @@ export function NotesManager({
           meId={meId}
           categories={folderList}
           tags={allTags}
-          allNotes={notes.map((n) => ({ id: n.id, title: n.title?.trim() || "（無標題筆記）" }))}
+          allNotes={notes.map((n) => ({ id: n.id, title: n.title?.trim() || t("untitledNote") }))}
           onCreateFolder={addFolder}
           onClose={() => setEditing(null)}
           onSaved={onSaved}
@@ -581,7 +586,7 @@ export function NotesManager({
             <div className="flex-1 min-w-0">
               {shown.length > 1 && (
                 <div className="flex items-center gap-1.5 text-xs text-fg-muted mb-2">
-                  <GripVertical size={13} /> 拖卡片排序；拖到左側資料夾＝分類
+                  <GripVertical size={13} /> {t("reorderHint")}
                 </div>
               )}
               <SortableContext items={shown.map((n) => n.id)} strategy={rectSortingStrategy}>
@@ -594,7 +599,7 @@ export function NotesManager({
                       note={n}
                       meId={meId}
                       chapterTitle={meta?.chapterTitle ?? ""}
-                      lessonTitle={meta?.lessonTitle ?? (n.lesson_id ?? "自由筆記")}
+                      lessonTitle={meta?.lessonTitle ?? (n.lesson_id ?? t("freeNote"))}
                       onEdit={() => setEditing(n)}
                       onDelete={() => del(n)}
                       onPin={() => togglePin(n)}
@@ -631,7 +636,7 @@ export function NotesManager({
                   note={n}
                   meId={meId}
                   chapterTitle={meta?.chapterTitle ?? ""}
-                  lessonTitle={meta?.lessonTitle ?? (n.lesson_id ?? "自由筆記")}
+                  lessonTitle={meta?.lessonTitle ?? (n.lesson_id ?? t("freeNote"))}
                   onEdit={() => setEditing(n)}
                   onDelete={() => del(n)}
                   onPin={() => togglePin(n)}
@@ -648,7 +653,7 @@ export function NotesManager({
         </div>
       )}
       {shown.length === 0 && (
-        <div className="text-sm text-fg-muted py-8 text-center">沒有符合的筆記。點「新增筆記」開始記吧。</div>
+        <div className="text-sm text-fg-muted py-8 text-center">{t("noMatchStart")}</div>
       )}
       </div>
     </div>
@@ -674,6 +679,7 @@ function NoteEditor({
   onClose: () => void;
   onSaved: (n: ManagedNote) => void;
 }) {
+  const t = useTranslations("notes");
   const supabase = createSupabaseBrowser();
   const prompt = usePrompt();
   const owned = note ? (note._owned ?? note.user_id === meId) : true;
@@ -712,16 +718,16 @@ function NoteEditor({
   const [refPick, setRefPick] = useState(""); // 引用筆記搜尋字
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
-  const refTitle = (id: string) => allNotes.find((x) => x.id === id)?.title || "（無標題筆記）";
+  const refTitle = (id: string) => allNotes.find((x) => x.id === id)?.title || t("untitledNote");
   const refCandidates = allNotes.filter((x) => x.id !== noteId && !noteRefs.includes(x.id) && (!refPick.trim() || (x.title ?? "").toLowerCase().includes(refPick.trim().toLowerCase()))).slice(0, 6);
 
   // insert / update，回傳存好的 row（會 upsert 進列表、但不關閉）
   const persist = async (): Promise<ManagedNote | null> => {
-    if (!content.replace(/<[^>]*>/g, "").trim()) { setErr("內容不能空白"); return null; }
+    if (!content.replace(/<[^>]*>/g, "").trim()) { setErr(t("contentEmpty")); return null; }
     setErr("");
     const tagsArr = tagsInput.split(/[,，\s]+/).map((t) => t.trim()).filter(Boolean).slice(0, 12);
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setErr("請先登入"); return null; }
+    if (!user) { setErr(t("pleaseLogin")); return null; }
     const payload: any = {
       title: title.trim() || null,
       content,
@@ -747,7 +753,7 @@ function NoteEditor({
       onSaved(data as ManagedNote);
       return data as ManagedNote;
     } catch (e: any) {
-      setErr(e?.message ?? "儲存失敗");
+      setErr(e?.message ?? t("saveFailed"));
       return null;
     }
   };
@@ -823,13 +829,13 @@ function NoteEditor({
 
   // 共編 presence：誰也在這則共用筆記
   const { profile } = useAuth();
-  const presenceMe = { id: meId, name: profile?.display_name || profile?.username || "我", avatar: profile?.avatar_url ?? null };
+  const presenceMe = { id: meId, name: profile?.display_name || profile?.username || t("meLabel"), avatar: profile?.avatar_url ?? null };
   const presenceOthers = useNotePresence(noteId, !!noteId && (!!note?._shared || !owned), presenceMe, canEdit && dirty);
 
   return (
     <div className="rounded-2xl border border-accent/40 bg-bg-card p-4 space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <span className="font-semibold shrink-0">{!note ? "新增筆記" : canEdit ? "編輯筆記" : "查看筆記（唯讀）"}</span>
+        <span className="font-semibold shrink-0">{!note ? t("newNote") : canEdit ? t("editNote") : t("viewNoteReadonly")}</span>
         <div className="flex items-center gap-2 ml-auto">
           {presenceOthers.length > 0 && (
             <div className="flex items-center gap-1.5">
@@ -837,7 +843,7 @@ function NoteEditor({
                 {presenceOthers.slice(0, 4).map((p) => (
                   <span
                     key={p.user_id}
-                    title={`${p.name}${p.editing ? "（編輯中）" : "（檢視中）"}`}
+                    title={`${p.name}${p.editing ? t("editingSuffix") : t("viewingSuffix")}`}
                     className={`w-6 h-6 rounded-full border-2 ${p.editing ? "border-emerald-500" : "border-bg-card"} bg-bg-elevated overflow-hidden inline-flex items-center justify-center text-[10px] font-bold`}
                   >
                     {p.avatar ? <img src={p.avatar} alt="" className="w-full h-full object-cover" /> : (p.name[0] ?? "?")}
@@ -845,31 +851,31 @@ function NoteEditor({
                 ))}
               </div>
               <span className="text-[11px] text-fg-muted hidden sm:inline">
-                {presenceOthers.some((p) => p.editing) ? "有人正在編輯" : `${presenceOthers.length} 人也在線上`}
+                {presenceOthers.some((p) => p.editing) ? t("someoneEditing") : t("peopleOnline", { n: presenceOthers.length })}
               </span>
             </div>
           )}
-          <button onClick={onClose} className="text-fg-muted hover:text-fg shrink-0" aria-label="關閉"><X size={16} /></button>
+          <button onClick={onClose} className="text-fg-muted hover:text-fg shrink-0" aria-label={t("close")}><X size={16} /></button>
         </div>
       </div>
       {restored && (
         <div className="flex items-center justify-between text-xs bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-1.5">
-          <span className="text-amber-700 dark:text-amber-400">↩️ 已還原上次未存的草稿</span>
-          <button type="button" onClick={discardDraft} className="text-fg-muted hover:text-fg underline">清除草稿</button>
+          <span className="text-amber-700 dark:text-amber-400">↩️ {t("draftRestored")}</span>
+          <button type="button" onClick={discardDraft} className="text-fg-muted hover:text-fg underline">{t("discardDraft")}</button>
         </div>
       )}
       <input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         disabled={!canEdit}
-        placeholder="標題（可留空）"
+        placeholder={t("titlePlaceholder")}
         className="w-full bg-bg border border-border rounded-lg px-3 py-2 text-base font-semibold outline-none focus:border-accent disabled:opacity-70"
       />
       <div className="max-h-[50vh] overflow-auto rounded-lg border border-border">
-        <BlogEditor content={content} onChange={setContent} editable={canEdit} placeholder="寫下你的筆記…（可貼上 / 拖曳圖片）" />
+        <BlogEditor content={content} onChange={setContent} editable={canEdit} placeholder={t("notePlaceholder")} />
       </div>
       {!canEdit && (
-        <div className="text-xs text-fg-muted bg-bg-elevated rounded-lg px-3 py-2">🔒 你是這則共用筆記的「唯讀」協作者、看得到內容但不能編輯。</div>
+        <div className="text-xs text-fg-muted bg-bg-elevated rounded-lg px-3 py-2">🔒 {t("readonlyCollabHint")}</div>
       )}
       {canEdit && (
       <>
@@ -880,30 +886,30 @@ function NoteEditor({
             value={category}
             onChange={(e) => { setCategory(e.target.value); setCatOpen(true); }}
             onFocus={() => setCatOpen(true)}
-            placeholder="分類（選現有或打新的）"
+            placeholder={t("categoryPlaceholder")}
             className="w-full bg-bg border border-border rounded-lg px-3 py-1.5 text-sm outline-none focus:border-accent"
           />
           {catOpen && (
             <div className="absolute z-30 mt-1 left-0 right-0 max-h-52 overflow-auto rounded-lg border border-border bg-bg-card shadow-xl py-1">
               {category && (
-                <button type="button" onClick={() => { setCategory(""); setCatOpen(false); }} className="w-full text-left px-3 py-1.5 text-sm text-fg-muted hover:bg-bg-elevated">— 不分類 —</button>
+                <button type="button" onClick={() => { setCategory(""); setCatOpen(false); }} className="w-full text-left px-3 py-1.5 text-sm text-fg-muted hover:bg-bg-elevated">{t("noCategory")}</button>
               )}
               {catMatches.map((c) => (
                 <button key={c} type="button" onClick={() => { setCategory(c); setCatOpen(false); }} className="w-full text-left px-3 py-1.5 text-sm hover:bg-bg-elevated">📁 {c}</button>
               ))}
               {catMatches.length === 0 && !catTyped && categories.length === 0 && (
-                <div className="px-3 py-1.5 text-xs text-fg-muted">還沒有分類、直接打字或按下面建立</div>
+                <div className="px-3 py-1.5 text-xs text-fg-muted">{t("noCategoryYet")}</div>
               )}
               <button
                 type="button"
                 onClick={async () => {
-                  const name = catTyped || (await prompt({ title: "新分類名稱" }))?.trim() || "";
+                  const name = catTyped || (await prompt({ title: t("newCategoryName") }))?.trim() || "";
                   if (name) { onCreateFolder(name); setCategory(name); }
                   setCatOpen(false);
                 }}
                 className="w-full text-left px-3 py-1.5 text-sm text-accent hover:bg-bg-elevated border-t border-border inline-flex items-center gap-1.5"
               >
-                <FolderPlus size={13} /> {catTyped && !categories.includes(catTyped) ? `建立分類「${catTyped}」` : "建立新分類…"}
+                <FolderPlus size={13} /> {catTyped && !categories.includes(catTyped) ? t("createCategoryNamed", { name: catTyped }) : t("createNewCategory")}
               </button>
             </div>
           )}
@@ -915,12 +921,12 @@ function NoteEditor({
             value={tagsInput}
             onChange={(e) => setTagsInput(e.target.value)}
             onFocus={() => setTagOpen(true)}
-            placeholder="標籤、逗號分隔（如：hook, useEffect）"
+            placeholder={t("tagsPlaceholder")}
             className="w-full bg-bg border border-border rounded-lg px-3 py-1.5 text-sm outline-none focus:border-accent"
           />
           {tagOpen && tagSuggest.length > 0 && (
             <div className="absolute z-30 mt-1 left-0 right-0 max-h-52 overflow-auto rounded-lg border border-border bg-bg-card shadow-xl p-2">
-              <div className="text-[11px] text-fg-muted mb-1">點一下加入現有標籤</div>
+              <div className="text-[11px] text-fg-muted mb-1">{t("tapToAddTag")}</div>
               <div className="flex flex-wrap gap-1">
                 {tagSuggest.map((t) => (
                   <button key={t} type="button" onClick={() => addTag(t)} className="px-2 py-0.5 rounded-full text-xs bg-bg-elevated text-fg-muted hover:text-fg hover:bg-accent/20 transition">#{t}</button>
@@ -932,7 +938,7 @@ function NoteEditor({
       </div>
       {/* 🔗 引用筆記（L2 區塊引用）：只存 id → 來源改動全站同步 */}
       <div className="space-y-1.5">
-        <div className="text-xs text-fg-muted inline-flex items-center gap-1">🔗 引用筆記{noteRefs.length > 0 ? `（${noteRefs.length}）` : ""} <span className="opacity-60">· 來源改標題/內容會即時同步</span></div>
+        <div className="text-xs text-fg-muted inline-flex items-center gap-1">🔗 {t("refNotesLabel")}{noteRefs.length > 0 ? t("refCountParen", { n: noteRefs.length }) : ""} <span className="opacity-60">· {t("refSyncHint")}</span></div>
         {noteRefs.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {noteRefs.map((id) => (
@@ -945,11 +951,11 @@ function NoteEditor({
         )}
         {canEdit && (
           <div className="relative max-w-sm">
-            <input value={refPick} onChange={(e) => setRefPick(e.target.value)} placeholder="搜尋並引用其他筆記…" className="w-full bg-bg border border-border rounded-lg px-3 py-1.5 text-sm outline-none focus:border-accent" />
+            <input value={refPick} onChange={(e) => setRefPick(e.target.value)} placeholder={t("searchToRef")} className="w-full bg-bg border border-border rounded-lg px-3 py-1.5 text-sm outline-none focus:border-accent" />
             {refPick.trim() && refCandidates.length > 0 && (
               <div className="absolute z-30 mt-1 left-0 right-0 max-h-52 overflow-auto rounded-lg border border-border bg-bg-card shadow-xl p-1">
                 {refCandidates.map((x) => (
-                  <button key={x.id} type="button" onClick={() => { setNoteRefs([...noteRefs, x.id]); setRefPick(""); }} className="w-full text-left px-3 py-1.5 text-sm hover:bg-bg-elevated rounded truncate">🔗 {x.title || "（無標題筆記）"}</button>
+                  <button key={x.id} type="button" onClick={() => { setNoteRefs([...noteRefs, x.id]); setRefPick(""); }} className="w-full text-left px-3 py-1.5 text-sm hover:bg-bg-elevated rounded truncate">🔗 {x.title || t("untitledNote")}</button>
                 ))}
               </div>
             )}
@@ -959,14 +965,14 @@ function NoteEditor({
       {/* 便利貼外觀：顏色 + 透明度 */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <div className="flex items-center gap-1.5">
-          <span className="text-xs text-fg-muted">便利貼顏色</span>
+          <span className="text-xs text-fg-muted">{t("stickyColor")}</span>
           <button
             type="button"
             onClick={() => setColor("")}
             className={`px-2 py-0.5 text-[11px] rounded-full border transition ${color === "" ? "border-accent bg-accent/15 text-fg" : "border-border text-fg-muted hover:border-accent"}`}
-            title="依分類自動配色"
+            title={t("autoColorHint")}
           >
-            自動
+            {t("auto")}
           </button>
           {STICKY_COLORS.map((c) => (
             <button
@@ -976,12 +982,12 @@ function NoteEditor({
               className={`w-6 h-6 rounded-full border transition hover:scale-110 ${color === c.key ? "ring-2 ring-accent border-fg" : "border-black/15"}`}
               style={{ background: c.bg }}
               title={c.label}
-              aria-label={`便利貼顏色 ${c.label}`}
+              aria-label={t("stickyColorNamed", { label: c.label })}
             />
           ))}
         </div>
         <label className="flex items-center gap-2 text-xs text-fg-muted">
-          透明度
+          {t("opacity")}
           <input
             type="range"
             min={0.3}
@@ -1002,17 +1008,17 @@ function NoteEditor({
       <div className="flex items-center justify-between">
         <label className="flex items-center gap-2 text-sm text-fg-muted">
           <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />
-          公開（其他人看得到）
+          {t("publicCheckbox")}
         </label>
         <div className="flex items-center gap-2">
           {err && <span className="text-xs text-red-400">{err}</span>}
           {canEdit && !err && (
             <span className="text-[11px] text-fg-muted">
-              {dirty ? "編輯中…" : autosaveAt ? `✓ ${noteId ? "已自動儲存" : "草稿已暫存"} ${new Date(autosaveAt).toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}` : ""}
+              {dirty ? t("editing") : autosaveAt ? `✓ ${noteId ? t("autoSaved") : t("draftSaved")} ${new Date(autosaveAt).toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}` : ""}
             </span>
           )}
           <button onClick={save} disabled={saving} className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-accent text-black font-semibold rounded-lg hover:scale-105 transition disabled:opacity-50">
-            {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />} 儲存
+            {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />} {t("save")}
           </button>
         </div>
       </div>
@@ -1026,6 +1032,7 @@ type Collab = { user_id: string; role: string; username: string | null; display_
 
 /** 共用設定（只有擁有者看得到）：產生邀請連結 + 多人協作者清單 + 權限(編輯/唯讀) + 解除 */
 function NoteSharePanel({ noteId, ensureSaved }: { noteId: string | null; ensureSaved: () => Promise<string | null> }) {
+  const t = useTranslations("notes");
   const toast = useToast();
   const [loading, setLoading] = useState(!!noteId);
   const [code, setCode] = useState<string | null>(null);
@@ -1056,24 +1063,24 @@ function NoteSharePanel({ noteId, ensureSaved }: { noteId: string | null; ensure
     setBusy(true);
     try {
       const id = noteId ?? (await ensureSaved()); // 新筆記先存一次拿到 id
-      if (!id) { toast.error("請先輸入內容、才能產生邀請"); return; }
+      if (!id) { toast.error(t("enterContentFirst")); return; }
       const res = await fetch(`/api/me/notes/${id}/share`, {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ role }),
       });
       const j = await res.json().catch(() => ({}));
-      if (!res.ok) { toast.error(j.message || j.error || `產生失敗（${res.status}）`); return; }
+      if (!res.ok) { toast.error(j.message || j.error || t("generateFailed", { status: res.status })); return; }
       setCode(j.code); setUrl(j.url);
-      if (!silent) toast.success("已產生邀請連結");
+      if (!silent) toast.success(t("inviteLinkGenerated"));
     } finally { setBusy(false); }
   };
   // 切換邀請權限：若已有連結 → 換新連結套用新權限（舊連結失效）
   const changeInviteRole = (role: "editor" | "viewer") => {
     setInviteRole(role);
-    if (url) { generate(role, true); toast.success(role === "viewer" ? "已改為唯讀邀請、連結已更新" : "已改為可編輯邀請、連結已更新"); }
+    if (url) { generate(role, true); toast.success(role === "viewer" ? t("changedToReadonly") : t("changedToEditor")); }
   };
   const copy = async () => {
     if (!url) return;
-    try { await navigator.clipboard.writeText(url); toast.success("已複製邀請連結"); } catch { toast.error("複製失敗"); }
+    try { await navigator.clipboard.writeText(url); toast.success(t("inviteLinkCopied")); } catch { toast.error(t("copyFailed")); }
   };
   const setRole = async (uid: string, role: string) => {
     setCollabs((cs) => cs.map((c) => (c.user_id === uid ? { ...c, role } : c)));
@@ -1086,49 +1093,49 @@ function NoteSharePanel({ noteId, ensureSaved }: { noteId: string | null; ensure
 
   return (
     <div className="rounded-lg border border-border p-3 space-y-2">
-      <div className="text-xs font-medium text-fg-muted inline-flex items-center gap-1"><Link2 size={13} /> 共用設定（邀請別人一起編輯）</div>
+      <div className="text-xs font-medium text-fg-muted inline-flex items-center gap-1"><Link2 size={13} /> {t("shareSettings")}</div>
 
       {/* 先決定加入者權限、再產生連結 */}
       <div className="flex items-center gap-2 text-xs">
-        <span className="text-fg-muted shrink-0">對方加入後：</span>
+        <span className="text-fg-muted shrink-0">{t("afterJoin")}</span>
         <div className="inline-flex rounded border border-border overflow-hidden">
-          <button type="button" onClick={() => changeInviteRole("editor")} className={`px-2.5 py-0.5 transition ${inviteRole === "editor" ? "bg-accent text-black" : "text-fg-muted hover:text-fg"}`}>可編輯</button>
-          <button type="button" onClick={() => changeInviteRole("viewer")} className={`px-2.5 py-0.5 transition ${inviteRole === "viewer" ? "bg-accent text-black" : "text-fg-muted hover:text-fg"}`}>唯讀</button>
+          <button type="button" onClick={() => changeInviteRole("editor")} className={`px-2.5 py-0.5 transition ${inviteRole === "editor" ? "bg-accent text-black" : "text-fg-muted hover:text-fg"}`}>{t("canEdit")}</button>
+          <button type="button" onClick={() => changeInviteRole("viewer")} className={`px-2.5 py-0.5 transition ${inviteRole === "viewer" ? "bg-accent text-black" : "text-fg-muted hover:text-fg"}`}>{t("readonly")}</button>
         </div>
       </div>
 
       {url ? (
         <div className="flex items-center gap-2">
           <input readOnly value={url} onFocus={(e) => e.currentTarget.select()} className="flex-1 bg-bg border border-border rounded px-2 py-1 text-xs" />
-          <button type="button" onClick={copy} className="text-xs px-2 py-1 rounded border border-border hover:border-accent transition inline-flex items-center gap-1"><Copy size={12} /> 複製</button>
+          <button type="button" onClick={copy} className="text-xs px-2 py-1 rounded border border-border hover:border-accent transition inline-flex items-center gap-1"><Copy size={12} /> {t("copy")}</button>
         </div>
       ) : (
         <button type="button" onClick={() => generate(inviteRole)} disabled={busy} className="text-xs px-3 py-1.5 rounded-lg bg-accent text-black font-semibold inline-flex items-center gap-1.5 disabled:opacity-50">
-          {busy ? <Loader2 size={12} className="animate-spin" /> : <Link2 size={12} />} 產生{inviteRole === "viewer" ? "唯讀" : "可編輯"}邀請連結
+          {busy ? <Loader2 size={12} className="animate-spin" /> : <Link2 size={12} />} {t("generateInviteLink", { role: inviteRole === "viewer" ? t("readonly") : t("canEdit") })}
         </button>
       )}
       {code && (
         <div className="text-[11px] text-fg-muted">
-          邀請碼：<code className="px-1 rounded bg-bg-elevated">{code}</code>（此連結加入後為「{inviteRole === "viewer" ? "唯讀" : "可編輯"}」）— 貼到聊天室會有預覽卡片，對方也可在「加入共用」輸入這組碼
+          {t("inviteCodeLabel")}<code className="px-1 rounded bg-bg-elevated">{code}</code>{t("inviteCodeSuffix", { role: inviteRole === "viewer" ? t("readonly") : t("canEdit") })}
         </div>
       )}
 
       {collabs.length > 0 ? (
         <div className="space-y-1 pt-1">
-          <div className="text-[11px] text-fg-muted">與這些人共用（{collabs.length}）</div>
+          <div className="text-[11px] text-fg-muted">{t("sharedWith", { n: collabs.length })}</div>
           {collabs.map((c) => (
             <div key={c.user_id} className="flex items-center gap-2 text-xs">
               <span className="flex-1 truncate">{c.display_name || c.username || c.user_id.slice(0, 8)}</span>
               <div className="inline-flex rounded border border-border overflow-hidden shrink-0">
-                <button type="button" onClick={() => setRole(c.user_id, "editor")} className={`px-2 py-0.5 transition ${c.role !== "viewer" ? "bg-accent text-black" : "text-fg-muted hover:text-fg"}`}>可編輯</button>
-                <button type="button" onClick={() => setRole(c.user_id, "viewer")} className={`px-2 py-0.5 transition ${c.role === "viewer" ? "bg-accent text-black" : "text-fg-muted hover:text-fg"}`}>唯讀</button>
+                <button type="button" onClick={() => setRole(c.user_id, "editor")} className={`px-2 py-0.5 transition ${c.role !== "viewer" ? "bg-accent text-black" : "text-fg-muted hover:text-fg"}`}>{t("canEdit")}</button>
+                <button type="button" onClick={() => setRole(c.user_id, "viewer")} className={`px-2 py-0.5 transition ${c.role === "viewer" ? "bg-accent text-black" : "text-fg-muted hover:text-fg"}`}>{t("readonly")}</button>
               </div>
-              <button type="button" onClick={() => remove(c.user_id)} className="text-fg-muted hover:text-red-400 shrink-0" title="解除共用"><X size={13} /></button>
+              <button type="button" onClick={() => remove(c.user_id)} className="text-fg-muted hover:text-red-400 shrink-0" title={t("removeShare")}><X size={13} /></button>
             </div>
           ))}
         </div>
       ) : (
-        !loading && <div className="text-[11px] text-fg-muted">還沒有人加入。</div>
+        !loading && <div className="text-[11px] text-fg-muted">{t("noOneJoined")}</div>
       )}
     </div>
   );
@@ -1136,6 +1143,7 @@ function NoteSharePanel({ noteId, ensureSaved }: { noteId: string | null; ensure
 
 /** 便利貼單獨背景圖：上傳 + 縮放/位移裁切/旋轉 + 即時預覽 */
 function NoteBackgroundEditor({ value, onChange }: { value: NoteBg | null; onChange: (b: NoteBg | null) => void }) {
+  const t = useTranslations("notes");
   const toast = useToast();
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -1143,8 +1151,8 @@ function NoteBackgroundEditor({ value, onChange }: { value: NoteBg | null; onCha
   const update = (patch: Partial<NoteBg>) => onChange({ ...bg, ...patch });
 
   const upload = async (file: File) => {
-    if (!file.type.startsWith("image/")) { toast.error("只支援圖片"); return; }
-    if (file.size > 8 * 1024 * 1024) { toast.error("檔案不可超過 8 MB"); return; }
+    if (!file.type.startsWith("image/")) { toast.error(t("imagesOnly")); return; }
+    if (file.size > 8 * 1024 * 1024) { toast.error(t("fileTooLarge")); return; }
     setUploading(true);
     try {
       const fd = new FormData();
@@ -1152,11 +1160,11 @@ function NoteBackgroundEditor({ value, onChange }: { value: NoteBg | null; onCha
       fd.append("folder", "notes");
       const res = await fetch("/api/upload", { credentials: "include", method: "POST", body: fd });
       const j = await res.json();
-      if (!res.ok) throw new Error(j.message || j.error || "上傳失敗");
+      if (!res.ok) throw new Error(j.message || j.error || t("uploadFailed"));
       onChange({ ...DEFAULT_NOTE_BG, ...(value ?? {}), image: j.url });
-      toast.success("背景已上傳");
+      toast.success(t("bgUploaded"));
     } catch (e: any) {
-      toast.error(e?.message || "上傳失敗");
+      toast.error(e?.message || t("uploadFailed"));
     } finally {
       setUploading(false);
     }
@@ -1179,11 +1187,11 @@ function NoteBackgroundEditor({ value, onChange }: { value: NoteBg | null; onCha
     <div className="rounded-lg border border-border p-3 space-y-2">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-fg-muted inline-flex items-center gap-1">
-          <ImageIcon size={13} /> 便利貼背景圖（可選）
+          <ImageIcon size={13} /> {t("stickyBg")}
         </span>
         {value?.image && (
           <button type="button" onClick={() => onChange(null)} className="text-xs text-fg-muted hover:text-red-400 inline-flex items-center gap-1">
-            <X size={12} /> 移除
+            <X size={12} /> {t("remove")}
           </button>
         )}
       </div>
@@ -1196,25 +1204,25 @@ function NoteBackgroundEditor({ value, onChange }: { value: NoteBg | null; onCha
           className="w-full py-3 rounded-lg border border-dashed border-border text-xs text-fg-muted hover:border-accent hover:text-fg transition inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
         >
           {uploading ? <Loader2 size={14} className="animate-spin" /> : <ImageIcon size={14} />}
-          上傳圖片當背景
+          {t("uploadAsBg")}
         </button>
       ) : (
         <>
           <div className="relative h-28 rounded-md overflow-hidden border border-border bg-bg">
             <img src={value.image} alt="" className="absolute left-1/2 top-1/2 w-[140%] h-[140%] max-w-none object-cover" style={noteBgImgStyle(bg)} draggable={false} />
           </div>
-          <Slider label="大小" min={1} max={3} step={0.05} val={bg.scale} on={(v) => update({ scale: v })} fmt={(v) => `${v.toFixed(2)}x`} />
-          <Slider label="左右" min={0} max={100} step={1} val={bg.x} on={(v) => update({ x: v })} fmt={(v) => `${Math.round(v)}%`} />
-          <Slider label="上下" min={0} max={100} step={1} val={bg.y} on={(v) => update({ y: v })} fmt={(v) => `${Math.round(v)}%`} />
-          <Slider label="旋轉" min={-180} max={180} step={1} val={bg.rotate} on={(v) => update({ rotate: v })} fmt={(v) => `${Math.round(v)}°`} />
+          <Slider label={t("sizeLabel")} min={1} max={3} step={0.05} val={bg.scale} on={(v) => update({ scale: v })} fmt={(v) => `${v.toFixed(2)}x`} />
+          <Slider label={t("horizontalLabel")} min={0} max={100} step={1} val={bg.x} on={(v) => update({ x: v })} fmt={(v) => `${Math.round(v)}%`} />
+          <Slider label={t("verticalLabel")} min={0} max={100} step={1} val={bg.y} on={(v) => update({ y: v })} fmt={(v) => `${Math.round(v)}%`} />
+          <Slider label={t("rotateLabel")} min={-180} max={180} step={1} val={bg.rotate} on={(v) => update({ rotate: v })} fmt={(v) => `${Math.round(v)}°`} />
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading} className="text-xs px-2 py-1 rounded border border-border text-fg-muted hover:border-accent hover:text-fg transition inline-flex items-center gap-1 disabled:opacity-50">
-              {uploading ? <Loader2 size={12} className="animate-spin" /> : <ImageIcon size={12} />} 換圖
+              {uploading ? <Loader2 size={12} className="animate-spin" /> : <ImageIcon size={12} />} {t("changeImage")}
             </button>
             <button type="button" onClick={() => onChange({ ...DEFAULT_NOTE_BG, image: value.image })} className="text-xs px-2 py-1 rounded border border-border text-fg-muted hover:border-accent hover:text-fg transition inline-flex items-center gap-1">
-              <RotateCw size={12} /> 重設位置
+              <RotateCw size={12} /> {t("resetPosition")}
             </button>
-            <span className="text-[11px] text-fg-muted ml-auto">背景濃淡用上面「透明度」調</span>
+            <span className="text-[11px] text-fg-muted ml-auto">{t("bgOpacityHint")}</span>
           </div>
         </>
       )}

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { JoinClient } from "./JoinClient";
@@ -40,6 +41,7 @@ export async function generateMetadata({ params }: { params: Promise<{ code: str
 export default async function JoinNotePage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
   const info = await lookup(code);
+  const t = await getTranslations("notes");
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -49,13 +51,13 @@ export default async function JoinNotePage({ params }: { params: Promise<{ code:
         <div className="text-4xl">🤝</div>
         {!info ? (
           <>
-            <h1 className="text-xl font-bold">邀請已失效</h1>
-            <p className="text-sm text-fg-muted">這組邀請碼無效、已過期或已被取消。</p>
-            <Link href="/me/notes" className="inline-block px-4 py-2 rounded-lg bg-accent text-black font-semibold">回我的筆記</Link>
+            <h1 className="text-xl font-bold">{t("inviteInvalid")}</h1>
+            <p className="text-sm text-fg-muted">{t("inviteInvalidDesc")}</p>
+            <Link href="/me/notes" className="inline-block px-4 py-2 rounded-lg bg-accent text-black font-semibold">{t("backToMyNotes")}</Link>
           </>
         ) : (
           <>
-            <h1 className="text-xl font-bold">{info.ownerName} 邀請你共編筆記</h1>
+            <h1 className="text-xl font-bold">{t("inviteToCollab", { name: info.ownerName })}</h1>
             <p className="text-sm text-fg-muted">《{info.title}》</p>
             {user ? (
               <JoinClient code={code.toUpperCase()} />
@@ -64,7 +66,7 @@ export default async function JoinNotePage({ params }: { params: Promise<{ code:
                 href={`/login?next=${encodeURIComponent(`/notes/join/${code}`)}`}
                 className="inline-block px-4 py-2 rounded-lg bg-accent text-black font-semibold"
               >
-                先登入再加入
+                {t("loginThenJoin")}
               </Link>
             )}
           </>

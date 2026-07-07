@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import type { ManagedNote } from "./NotesManager";
 import { resolveSticky, clampOpacity, hexToRgba } from "@/lib/note-sticky";
@@ -26,6 +27,7 @@ export function FloatingNotesOverlay({
   onSelect: (n: ManagedNote) => void;
   onClose: () => void;
 }) {
+  const t = useTranslations("notes");
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -47,14 +49,14 @@ export function FloatingNotesOverlay({
       <style>{`@keyframes noteFloat{0%,100%{transform:translateY(0) rotate(var(--r))}50%{transform:translateY(-16px) rotate(calc(var(--r) * -1))}}`}</style>
 
       <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-3 bg-black/30 backdrop-blur">
-        <div className="text-white font-bold text-sm sm:text-base">🎈 漂浮筆記 · 點一張看內容（{notes.length} 則）</div>
-        <button onClick={onClose} className="text-white/80 hover:text-white transition" aria-label="關閉">
+        <div className="text-white font-bold text-sm sm:text-base">🎈 {t("floatingHeader", { n: notes.length })}</div>
+        <button onClick={onClose} className="text-white/80 hover:text-white transition" aria-label={t("close")}>
           <X size={24} />
         </button>
       </div>
 
       {notes.length === 0 ? (
-        <div className="text-white/70 text-center py-24">還沒有筆記。先去新增一則吧。</div>
+        <div className="text-white/70 text-center py-24">{t("noNotesYet")}</div>
       ) : (
         <div className="flex flex-wrap justify-center gap-5 p-6 pb-28">
           {notes.map((n) => {
@@ -67,8 +69,8 @@ export function FloatingNotesOverlay({
             const meta = chapterMap[n.lesson_id ?? ""] ?? chapterMap[`ch${n.chapter_id}`] ?? null;
             const head = n.chapter_id
               ? `Ch${n.chapter_id}${meta?.chapterTitle ? " · " + meta.chapterTitle : ""}`
-              : "📝 自由筆記";
-            const body = plain(n.content) || "（空白）";
+              : "📝 " + t("freeNote");
+            const body = plain(n.content) || t("blank");
             return (
               <button
                 key={n.id}

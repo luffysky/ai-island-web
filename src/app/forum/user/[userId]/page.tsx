@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createSupabaseAdmin } from "@/lib/supabase";
 import { MessageSquare, FileText, Award, Eye, Star, ArrowLeft } from "lucide-react";
 import type { ForumReply } from "@/lib/forum-types";
@@ -55,10 +56,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { userId } = await params;
   const data = await getUserActivity(userId);
-  if (!data) return { title: "找不到用戶 | AI 島" };
+  const t = await getTranslations("forum");
+  if (!data) return { title: t("metaUserNotFound") };
   const name = data.profile.display_name || data.profile.username;
   return {
-    title: `${name} 的討論區活動 | AI 島`,
+    title: t("metaUserActivity", { name }),
     alternates: { canonical: `${SITE_URL}/forum/user/${userId}` },
   };
 }
@@ -72,13 +74,14 @@ export default async function ForumUserPage({
   const data = await getUserActivity(userId);
   if (!data) notFound();
 
+  const t = await getTranslations("forum");
   const { profile, threads, replies, stats } = data;
-  const name = profile.display_name || profile.username || "用戶";
+  const name = profile.display_name || profile.username || t("defaultUser");
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
       <Link href="/forum" className="text-sm text-fg-muted hover:text-fg flex items-center gap-1 mb-4">
-        <ArrowLeft size={14} /> 討論區
+        <ArrowLeft size={14} /> {t("title")}
       </Link>
 
       {/* 用戶 Header */}
@@ -110,16 +113,16 @@ export default async function ForumUserPage({
 
       {/* 統計 */}
       <div className="grid grid-cols-3 gap-3 mb-8">
-        <Stat icon={<FileText size={16} />} label="發表主題" value={stats.threads} />
-        <Stat icon={<MessageSquare size={16} />} label="回覆" value={stats.replies} />
-        <Stat icon={<Award size={16} />} label="被採納解答" value={stats.answers} />
+        <Stat icon={<FileText size={16} />} label={t("statThreads")} value={stats.threads} />
+        <Stat icon={<MessageSquare size={16} />} label={t("statReplies")} value={stats.replies} />
+        <Stat icon={<Award size={16} />} label={t("statAnswers")} value={stats.answers} />
       </div>
 
       {/* 發表的主題 */}
       <section className="mb-8">
-        <h2 className="font-bold mb-3">發表的主題</h2>
+        <h2 className="font-bold mb-3">{t("postedThreads")}</h2>
         {threads.length === 0 ? (
-          <p className="text-sm text-fg-muted">還沒有發表主題</p>
+          <p className="text-sm text-fg-muted">{t("noThreadsYet")}</p>
         ) : (
           <div className="space-y-2">
             {threads.map((t: any) => (
@@ -146,9 +149,9 @@ export default async function ForumUserPage({
 
       {/* 回覆過的 */}
       <section>
-        <h2 className="font-bold mb-3">最近的回覆</h2>
+        <h2 className="font-bold mb-3">{t("recentReplies")}</h2>
         {replies.length === 0 ? (
-          <p className="text-sm text-fg-muted">還沒有回覆</p>
+          <p className="text-sm text-fg-muted">{t("noRepliesYet")}</p>
         ) : (
           <div className="space-y-2">
             {replies.map((r: any) => (
@@ -158,11 +161,11 @@ export default async function ForumUserPage({
                 className="surface hover-lift block p-3"
               >
                 {r.is_answer && (
-                  <span className="text-[10px] text-accent font-bold">✓ 已採納為解答</span>
+                  <span className="text-[10px] text-accent font-bold">{t("acceptedAnswer")}</span>
                 )}
                 <p className="text-sm line-clamp-2">{r.content}</p>
                 <p className="text-[11px] text-fg-muted mt-1">
-                  回覆於「{r.thread?.title ?? "（已刪除）"}」· {new Date(r.created_at).toLocaleDateString("zh-TW")}
+                  {t("repliedIn", { title: r.thread?.title ?? t("deletedThread") })} · {new Date(r.created_at).toLocaleDateString("zh-TW")}
                 </p>
               </Link>
             ))}

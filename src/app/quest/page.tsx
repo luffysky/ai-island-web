@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { QUEST_LEVELS } from "@/lib/quest/levels";
 import { PAINT_LEVELS } from "@/lib/quest/paint-levels";
@@ -21,6 +22,7 @@ export const metadata: Metadata = {
 type Lv = { id: string; title: string; concept: string; xp: number; z: number };
 
 export default async function QuestPage() {
+  const t = await getTranslations("quest");
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   const doneMap: Record<string, number> = {};
@@ -32,13 +34,13 @@ export default async function QuestPage() {
   const dbNumber = await listDbNumberLevels();
 
   const SECTIONS: { key: string; emoji: string; label: string; desc: string; base: string; levels: Lv[]; grad: string; ring: string }[] = [
-    { key: "maze", emoji: "🤖", label: "迷宮機器人", desc: "move / for / if / while", base: "/quest", levels: QUEST_LEVELS, grad: "from-emerald-500/20 to-teal-500/10", ring: "border-emerald-400/40" },
-    { key: "paint", emoji: "🎨", label: "畫圖機器人", desc: "paint() 上色拼圖案", base: "/quest/paint", levels: PAINT_LEVELS, grad: "from-fuchsia-500/20 to-pink-500/10", ring: "border-fuchsia-400/40" },
-    { key: "turtle", emoji: "🐢", label: "Turtle 幾何", desc: "forward / right 畫形狀", base: "/quest/turtle", levels: TURTLE_LEVELS, grad: "from-lime-500/20 to-green-500/10", ring: "border-lime-400/40" },
-    { key: "number", emoji: "🔢", label: "數字關卡", desc: "變數 + 運算解謎", base: "/quest/number", levels: [...NUMBER_LEVELS, ...dbNumber], grad: "from-sky-500/20 to-blue-500/10", ring: "border-sky-400/40" },
-    { key: "debug", emoji: "🐛", label: "抓蟲關", desc: "改對壞掉的 code", base: "/quest/debug", levels: DEBUG_LEVELS, grad: "from-amber-500/20 to-orange-500/10", ring: "border-amber-400/40" },
-    { key: "sort", emoji: "📊", label: "排序視覺化", desc: "寫排序 · 看長條歸位", base: "/quest/sort", levels: SORT_LEVELS, grad: "from-cyan-500/20 to-blue-500/10", ring: "border-cyan-400/40" },
-    { key: "css", emoji: "🎯", label: "前端 CSS 關", desc: "寫 CSS 把方塊擺到定位", base: "/quest/css", levels: CSS_LEVELS, grad: "from-violet-500/20 to-purple-500/10", ring: "border-violet-400/40" },
+    { key: "maze", emoji: "🤖", label: t("secMaze"), desc: t("descMaze"), base: "/quest", levels: QUEST_LEVELS, grad: "from-emerald-500/20 to-teal-500/10", ring: "border-emerald-400/40" },
+    { key: "paint", emoji: "🎨", label: t("secPaint"), desc: t("descPaint"), base: "/quest/paint", levels: PAINT_LEVELS, grad: "from-fuchsia-500/20 to-pink-500/10", ring: "border-fuchsia-400/40" },
+    { key: "turtle", emoji: "🐢", label: t("secTurtle"), desc: t("descTurtle"), base: "/quest/turtle", levels: TURTLE_LEVELS, grad: "from-lime-500/20 to-green-500/10", ring: "border-lime-400/40" },
+    { key: "number", emoji: "🔢", label: t("secNumber"), desc: t("descNumber"), base: "/quest/number", levels: [...NUMBER_LEVELS, ...dbNumber], grad: "from-sky-500/20 to-blue-500/10", ring: "border-sky-400/40" },
+    { key: "debug", emoji: "🐛", label: t("secDebug"), desc: t("descDebug"), base: "/quest/debug", levels: DEBUG_LEVELS, grad: "from-amber-500/20 to-orange-500/10", ring: "border-amber-400/40" },
+    { key: "sort", emoji: "📊", label: t("secSort"), desc: t("descSort"), base: "/quest/sort", levels: SORT_LEVELS, grad: "from-cyan-500/20 to-blue-500/10", ring: "border-cyan-400/40" },
+    { key: "css", emoji: "🎯", label: t("secCss"), desc: t("descCss"), base: "/quest/css", levels: CSS_LEVELS, grad: "from-violet-500/20 to-purple-500/10", ring: "border-violet-400/40" },
   ];
   const totalLevels = SECTIONS.reduce((s, sec) => s + sec.levels.length, 0);
   const totalDone = SECTIONS.reduce((s, sec) => s + sec.levels.filter((l) => doneMap[l.id]).length, 0);
@@ -56,11 +58,11 @@ export default async function QuestPage() {
         {/* Hero */}
         <div className="text-center mb-7">
           <div className="text-5xl mb-2 animate-bounce-slow inline-block">🎮</div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-300 via-teal-200 to-cyan-300 bg-clip-text text-transparent drop-shadow">程式副本島</h1>
-          <p className="text-sm text-slate-300/80 mt-1">寫 Python 邊玩邊學 · 通關拿 XP 與 Z 幣</p>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-300 via-teal-200 to-cyan-300 bg-clip-text text-transparent drop-shadow">{t("heroTitle")}</h1>
+          <p className="text-sm text-slate-300/80 mt-1">{t("heroSubtitle")}</p>
           {/* 進度條 */}
           <div className="mt-4 max-w-sm mx-auto">
-            <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1"><span>通關進度</span><span>{totalDone}/{totalLevels} · ⭐{totalStars}</span></div>
+            <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1"><span>{t("progress")}</span><span>{totalDone}/{totalLevels} · ⭐{totalStars}</span></div>
             <div className="h-2.5 rounded-full bg-white/10 overflow-hidden ring-1 ring-white/10"><div className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 transition-all" style={{ width: `${pct}%` }} /></div>
           </div>
         </div>
@@ -100,7 +102,7 @@ export default async function QuestPage() {
           ))}
         </div>
 
-        <p className="text-center text-[11px] text-slate-500 mt-6">🌴 學習島（學）→ 程式副本島（練）→ 創作者島（創）</p>
+        <p className="text-center text-[11px] text-slate-500 mt-6">{t("islandFlow")}</p>
       </div>
 
       <style>{`@keyframes bounce-slow{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}.animate-bounce-slow{animation:bounce-slow 2.4s ease-in-out infinite}`}</style>

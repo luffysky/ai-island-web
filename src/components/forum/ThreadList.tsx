@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { MessageSquare, Eye, Pin, Star, Lock, Loader2 } from "lucide-react";
 import type { ForumThread } from "@/lib/forum-types";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -13,6 +14,7 @@ const VIRTUALIZE_THRESHOLD = 40; // 超過 40 才虛擬化（少於不必要的 
 const PAGE_SIZE = 20;
 
 export function ThreadList({ boardSlug }: { boardSlug?: string }) {
+  const t = useTranslations("forum");
   const [threads, setThreads] = useState<ForumThread[]>([]);
   const [sort, setSort] = useState<"recent" | "new" | "hot" | "trending">("recent");
   const [loading, setLoading] = useState(true);
@@ -83,10 +85,10 @@ export function ThreadList({ boardSlug }: { boardSlug?: string }) {
       {/* 排序 */}
       <div className="flex gap-1 mb-3 flex-wrap">
         {[
-          { key: "trending" as const, label: "🔥 熱門演算法" },
-          { key: "recent" as const, label: "最新回覆" },
-          { key: "new" as const, label: "最新發表" },
-          { key: "hot" as const, label: "最多回覆" },
+          { key: "trending" as const, label: t("sortTrending") },
+          { key: "recent" as const, label: t("sortRecent") },
+          { key: "new" as const, label: t("sortNew") },
+          { key: "hot" as const, label: t("sortHot") },
         ].map((s) => (
           <button
             key={s.key}
@@ -107,7 +109,7 @@ export function ThreadList({ boardSlug }: { boardSlug?: string }) {
           {[1, 2, 3].map((i) => <div key={i} className="h-16 rounded-lg bg-bg-card animate-pulse" />)}
         </div>
       ) : threads.length === 0 ? (
-        <EmptyState icon={MessageSquare} title="還沒有討論" desc="想到什麼就問一句、開啟對話吧" action={{ label: "發第一篇", href: `/forum/new${boardSlug ? `?board=${boardSlug}` : ""}` }} />
+        <EmptyState icon={MessageSquare} title={t("emptyTitle")} desc={t("emptyDesc")} action={{ label: t("emptyAction"), href: `/forum/new${boardSlug ? `?board=${boardSlug}` : ""}` }} />
       ) : (
         threads.length >= VIRTUALIZE_THRESHOLD ? (
           <VirtualThreads
@@ -127,15 +129,15 @@ export function ThreadList({ boardSlug }: { boardSlug?: string }) {
               <div ref={sentinelRef} className="py-4 flex items-center justify-center text-xs text-fg-muted">
                 {loadingMore ? (
                   <span className="flex items-center gap-1">
-                    <Loader2 size={12} className="animate-spin" /> 載入更多...
+                    <Loader2 size={12} className="animate-spin" /> {t("loadingMore")}
                   </span>
                 ) : (
-                  <span>↓ 滾動載入更多</span>
+                  <span>{t("scrollMore")}</span>
                 )}
               </div>
             )}
             {!hasMore && threads.length >= PAGE_SIZE && (
-              <div className="py-4 text-center text-xs text-fg-muted">已經到底了 🏝️</div>
+              <div className="py-4 text-center text-xs text-fg-muted">{t("reachedEnd")}</div>
             )}
           </div>
         )
@@ -213,6 +215,7 @@ function VirtualThreads({ threads, boardSlug, hasMore, loadingMore, sentinelRef 
   loadingMore: boolean;
   sentinelRef: React.RefObject<HTMLDivElement | null>;
 }) {
+  const t = useTranslations("forum");
   const parentRef = useRef<HTMLDivElement>(null);
   const virtualizer = useVirtualizer({
     count: threads.length + (hasMore ? 1 : 0),
@@ -226,10 +229,10 @@ function VirtualThreads({ threads, boardSlug, hasMore, loadingMore, sentinelRef 
       <div style={{ height: virtualizer.getTotalSize(), position: "relative", width: "100%" }}>
         {virtualizer.getVirtualItems().map((vi) => {
           const isLast = vi.index >= threads.length;
-          const t = threads[vi.index];
+          const th = threads[vi.index];
           return (
             <div
-              key={isLast ? "sentinel" : t.id}
+              key={isLast ? "sentinel" : th.id}
               data-index={vi.index}
               ref={virtualizer.measureElement}
               style={{ position: "absolute", top: 0, left: 0, width: "100%", transform: `translateY(${vi.start}px)`, padding: 4 }}
@@ -238,14 +241,14 @@ function VirtualThreads({ threads, boardSlug, hasMore, loadingMore, sentinelRef 
                 <div ref={sentinelRef} className="py-4 flex items-center justify-center text-xs text-fg-muted">
                   {loadingMore ? (
                     <span className="flex items-center gap-1">
-                      <Loader2 size={12} className="animate-spin" /> 載入更多...
+                      <Loader2 size={12} className="animate-spin" /> {t("loadingMore")}
                     </span>
                   ) : (
-                    <span>↓ 滾動載入更多</span>
+                    <span>{t("scrollMore")}</span>
                   )}
                 </div>
               ) : (
-                <ThreadCard t={t} boardSlug={boardSlug} />
+                <ThreadCard t={th} boardSlug={boardSlug} />
               )}
             </div>
           );

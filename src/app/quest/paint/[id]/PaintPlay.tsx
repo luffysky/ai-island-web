@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { usePyodide } from "@/hooks/usePyodide";
 import type { PaintLevel } from "@/lib/quest/paint-levels";
 import { ROBOT, spriteCanvas } from "@/lib/quest/sprites";
@@ -61,6 +62,7 @@ print("__WIN__"+json.dumps({"win": _painted==set(tuple(t) for t in _target), "pa
 const CELL = 48;
 
 export function PaintPlay({ level, done }: { level: PaintLevel; done: { stars: number } | null }) {
+  const t = useTranslations("quest");
   const parsed = useMemo(() => parseGrid(level.grid), [level.grid]);
   const { status, run } = usePyodide(true);
   const [code, setCode] = useState(level.starter);
@@ -140,15 +142,15 @@ export function PaintPlay({ level, done }: { level: PaintLevel; done: { stars: n
         if (i < trail.length) animRef.current = window.setTimeout(step, 220); else finish(win);
       };
       step();
-    } catch (e: any) { setMsg({ type: "err", text: e?.message ?? "執行失敗" }); setRunning(false); }
+    } catch (e: any) { setMsg({ type: "err", text: e?.message ?? t("runFailed") }); setRunning(false); }
   }
 
   async function finish(win: { win: boolean; painted: number; target: number }) {
     setRunning(false);
-    if (!win.win) { sfx("fail"); setMsg({ type: "err", text: `圖案還不對（塗了 ${win.painted} 格 / 目標 ${win.target} 格）——多的或少的都不行喔` }); return; }
+    if (!win.win) { sfx("fail"); setMsg({ type: "err", text: t("paintWrong", { painted: win.painted, target: win.target }) }); return; }
     sfx("win");
     const s = starsFor(codeLines(code), level.parLines); setStars(s);
-    setMsg({ type: "ok", text: `完成圖案！⭐ ${s} 星（${codeLines(code)} 行）` });
+    setMsg({ type: "ok", text: t("winPaint", { stars: s, lines: codeLines(code) }) });
     const aw = await submitCompletion(level.id, s); if (aw) setReward(aw);
   }
 
@@ -159,20 +161,20 @@ export function PaintPlay({ level, done }: { level: PaintLevel; done: { stars: n
       <div className="grid md:grid-cols-2 gap-4">
         <div className={`${QS.panel} p-3 flex items-center justify-center overflow-hidden min-h-[180px]`}>
           <div ref={mountRef} className="w-full flex items-center justify-center" />
-          {pixiErr && <div className="text-xs text-slate-400">遊戲畫面載入失敗，重整看看。</div>}
+          {pixiErr && <div className="text-xs text-slate-400">{t("sceneLoadFail")}</div>}
         </div>
         <div className="space-y-2">
           <textarea value={code} onChange={(e) => setCode(e.target.value)} spellCheck={false} rows={9} className={QS.editor} />
           <div className="flex items-center gap-2 flex-wrap">
             <button onClick={runCode} disabled={running || status !== "ready"} className={QS.runBtn}>
-              {status !== "ready" ? <><Loader2 size={16} className="animate-spin" /> 載入 Python…</> : running ? <><Loader2 size={16} className="animate-spin" /> 執行中</> : <><Play size={16} /> 執行</>}
+              {status !== "ready" ? <><Loader2 size={16} className="animate-spin" /> {t("loadingPython")}</> : running ? <><Loader2 size={16} className="animate-spin" /> {t("running")}</> : <><Play size={16} /> {t("run")}</>}
             </button>
-            <button onClick={resetLevel} className={QS.ghostBtn}><RotateCcw size={14} /> 重來</button>
-            <button onClick={() => setShowHint((v) => !v)} className={`${QS.ghostBtn} !text-amber-400`}><Lightbulb size={14} /> 提示</button>
+            <button onClick={resetLevel} className={QS.ghostBtn}><RotateCcw size={14} /> {t("reset")}</button>
+            <button onClick={() => setShowHint((v) => !v)} className={`${QS.ghostBtn} !text-amber-400`}><Lightbulb size={14} /> {t("hint")}</button>
           </div>
-          {showHint && <div className={QS.hint}><b className="inline-flex items-center gap-1"><Sparkles size={12} /> 綠寶提示</b>{"\n"}{level.hint}{"\n\n"}可用指令：move() / turn_left() / turn_right() / paint()</div>}
+          {showHint && <div className={QS.hint}><b className="inline-flex items-center gap-1"><Sparkles size={12} /> {t("greenGemHint")}</b>{"\n"}{level.hint}{"\n\n"}{t("cmdsPaint")}</div>}
           {msg && <div className={`text-sm rounded-xl px-3 py-2 whitespace-pre-wrap ${msg.type === "ok" ? "bg-emerald-500/15 border border-emerald-400/40 text-emerald-200" : "bg-red-500/15 border border-red-400/40 text-red-200"}`}>{msg.text}</div>}
-          {reward && <div className="text-sm bg-gradient-to-r from-amber-400/20 to-yellow-400/10 border border-amber-400/40 rounded-xl px-3 py-2 font-bold text-amber-100">🎁 首次通關獎勵：+{reward.xp} XP · +{reward.z} Z 幣</div>}
+          {reward && <div className="text-sm bg-gradient-to-r from-amber-400/20 to-yellow-400/10 border border-amber-400/40 rounded-xl px-3 py-2 font-bold text-amber-100">{t("reward", { xp: reward.xp, z: reward.z })}</div>}
         </div>
       </div>
     </QuestShell>

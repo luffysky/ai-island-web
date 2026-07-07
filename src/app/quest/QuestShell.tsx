@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { ArrowLeft } from "lucide-react";
 
 /** 遊玩畫面共用的「街機外框」：暗色格線背景 + 標題列 + 觀念/章節。各遊戲把內容塞 children。 */
 export function QuestShell({ title, concept, chapterHref, stars, intro, children }: {
   title: string; concept: string; chapterHref?: string; stars: number; intro: string; children: ReactNode;
 }) {
+  const t = useTranslations("quest");
   return (
     <div className="relative min-h-screen overflow-hidden text-slate-100">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-[#0a1226] via-[#0b1020] to-black" />
@@ -16,8 +18,8 @@ export function QuestShell({ title, concept, chapterHref, stars, intro, children
 
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 py-6">
         <div className="flex items-center justify-between gap-2 mb-3">
-          <Link href="/quest" className="text-sm text-slate-300 hover:text-white inline-flex items-center gap-1"><ArrowLeft size={14} /> 副本地圖</Link>
-          <div className="text-xs text-slate-400">觀念：<b className="text-emerald-300">{concept}</b>{chapterHref && <> · <Link href={chapterHref} className="hover:text-white underline">複習章節</Link></>}</div>
+          <Link href="/quest" className="text-sm text-slate-300 hover:text-white inline-flex items-center gap-1"><ArrowLeft size={14} /> {t("dungeonMap")}</Link>
+          <div className="text-xs text-slate-400">{t("conceptLabel")}<b className="text-emerald-300">{concept}</b>{chapterHref && <> · <Link href={chapterHref} className="hover:text-white underline">{t("reviewChapter")}</Link></>}</div>
         </div>
         <h1 className="text-xl font-extrabold">{title} {stars > 0 && <span className="text-amber-400">{"★".repeat(stars)}{"☆".repeat(3 - stars)}</span>}</h1>
         <p className="text-sm text-slate-300/80 mt-1 mb-3">{intro}</p>

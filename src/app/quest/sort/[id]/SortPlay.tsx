@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { usePyodide } from "@/hooks/usePyodide";
 import type { SortLevel } from "@/lib/quest/sort-levels";
 import { TRACE_GUARD, codeLines, starsFor, submitCompletion, shortErr, sfx } from "@/lib/quest/engine";
@@ -10,6 +11,7 @@ import { Play, RotateCcw, Lightbulb, Loader2, Sparkles } from "lucide-react";
 const eq = (a: number[], b: number[]) => a.length === b.length && a.every((x, i) => x === b[i]);
 
 export function SortPlay({ level, done }: { level: SortLevel; done: { stars: number } | null }) {
+  const t = useTranslations("quest");
   const { status, run } = usePyodide(true);
   const [code, setCode] = useState(level.starter);
   const [running, setRunning] = useState(false);
@@ -57,20 +59,20 @@ export function SortPlay({ level, done }: { level: SortLevel; done: { stars: num
         }
       }
       if (states.length === 0) {
-        setMsg({ type: "err", text: "沒偵測到任何 show(nums)。排序過程中記得呼叫 show(nums) 秀出狀態 🤔" });
+        setMsg({ type: "err", text: t("noShowCalls") });
         sfx("fail"); setRunning(false); return;
       }
       animate(states);
       const last = states[states.length - 1];
       if (eq(last, expected)) {
         const s = starsFor(codeLines(code), level.parLines); setStars(s); sfx("win");
-        setMsg({ type: "ok", text: `排好了！⭐ ${s} 星（${codeLines(code)} 行 · ${states.length} 步）` });
+        setMsg({ type: "ok", text: t("winSort", { stars: s, lines: codeLines(code), steps: states.length }) });
         const aw = await submitCompletion(level.id, s); if (aw) setReward(aw);
       } else {
-        setMsg({ type: "err", text: `最後的排序結果不對。目標：[${expected.join(", ")}]` });
+        setMsg({ type: "err", text: t("sortWrong", { target: expected.join(", ") }) });
         sfx("fail");
       }
-    } catch (e: any) { setMsg({ type: "err", text: e?.message ?? "執行失敗" }); }
+    } catch (e: any) { setMsg({ type: "err", text: e?.message ?? t("runFailed") }); }
     finally { setRunning(false); }
   }
 
@@ -91,22 +93,22 @@ export function SortPlay({ level, done }: { level: SortLevel; done: { stars: num
           ))}
         </div>
         <div className="text-center text-[11px] text-slate-400 mt-2">
-          目標（{level.order === "asc" ? "由小到大" : "由大到小"}）：<span className="text-emerald-300 tabular-nums">[{expected.join(", ")}]</span>
-          {frames.length > 1 && <span className="ml-2">· 第 {Math.min(frameIdx, frames.length - 1)}/{frames.length - 1} 步</span>}
+          {t("sortTargetLabel", { order: level.order === "asc" ? t("orderAsc") : t("orderDesc") })}<span className="text-emerald-300 tabular-nums">[{expected.join(", ")}]</span>
+          {frames.length > 1 && <span className="ml-2">{t("stepCounter", { cur: Math.min(frameIdx, frames.length - 1), total: frames.length - 1 })}</span>}
         </div>
       </div>
 
       <textarea value={code} onChange={(e) => setCode(e.target.value)} spellCheck={false} rows={9} className={QS.editor} />
       <div className="flex items-center gap-2 flex-wrap mt-2">
         <button onClick={runCode} disabled={running || status !== "ready"} className={QS.runBtn}>
-          {status !== "ready" ? <><Loader2 size={16} className="animate-spin" /> 載入 Python…</> : running ? <><Loader2 size={16} className="animate-spin" /> 執行中</> : <><Play size={16} /> 執行</>}
+          {status !== "ready" ? <><Loader2 size={16} className="animate-spin" /> {t("loadingPython")}</> : running ? <><Loader2 size={16} className="animate-spin" /> {t("running")}</> : <><Play size={16} /> {t("run")}</>}
         </button>
-        <button onClick={() => { stopAnim(); setCode(level.starter); setMsg(null); setFrames([level.input]); setFrameIdx(0); }} className={QS.ghostBtn}><RotateCcw size={14} /> 重來</button>
-        <button onClick={() => setShowHint((v) => !v)} className={`${QS.ghostBtn} !text-amber-400`}><Lightbulb size={14} /> 提示</button>
+        <button onClick={() => { stopAnim(); setCode(level.starter); setMsg(null); setFrames([level.input]); setFrameIdx(0); }} className={QS.ghostBtn}><RotateCcw size={14} /> {t("reset")}</button>
+        <button onClick={() => setShowHint((v) => !v)} className={`${QS.ghostBtn} !text-amber-400`}><Lightbulb size={14} /> {t("hint")}</button>
       </div>
-      {showHint && <div className={`${QS.hint} mt-2`}><b className="inline-flex items-center gap-1"><Sparkles size={12} /> 綠寶提示</b>{"\n"}{level.hint}</div>}
+      {showHint && <div className={`${QS.hint} mt-2`}><b className="inline-flex items-center gap-1"><Sparkles size={12} /> {t("greenGemHint")}</b>{"\n"}{level.hint}</div>}
       {msg && <div className={`text-sm rounded-xl px-3 py-2 mt-2 ${msg.type === "ok" ? "bg-emerald-500/15 border border-emerald-400/40 text-emerald-200" : "bg-red-500/15 border border-red-400/40 text-red-200"}`}>{msg.text}</div>}
-      {reward && <div className="text-sm bg-gradient-to-r from-amber-400/20 to-yellow-400/10 border border-amber-400/40 rounded-xl px-3 py-2 mt-2 font-bold text-amber-100">🎁 首次通關獎勵：+{reward.xp} XP · +{reward.z} Z 幣</div>}
+      {reward && <div className="text-sm bg-gradient-to-r from-amber-400/20 to-yellow-400/10 border border-amber-400/40 rounded-xl px-3 py-2 mt-2 font-bold text-amber-100">{t("reward", { xp: reward.xp, z: reward.z })}</div>}
     </QuestShell>
   );
 }

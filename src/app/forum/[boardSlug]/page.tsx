@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createSupabaseAdmin } from "@/lib/supabase";
 import { ThreadList } from "@/components/forum/ThreadList";
 import { ArrowLeft, Plus } from "lucide-react";
@@ -25,9 +26,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { boardSlug } = await params;
   const board = await getBoard(boardSlug);
-  if (!board) return { title: "找不到版塊 | AI 島" };
+  const t = await getTranslations("forum");
+  if (!board) return { title: t("metaBoardNotFound") };
   return {
-    title: `${board.name} | AI 島討論區`,
+    title: t("metaBoard", { name: board.name }),
     description: board.description ?? "",
     alternates: { canonical: `${SITE_URL}/forum/${boardSlug}` },
   };
@@ -42,10 +44,12 @@ export default async function BoardPage({
   const board = await getBoard(boardSlug);
   if (!board) notFound();
 
+  const t = await getTranslations("forum");
+
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
       <Link href="/forum" className="text-sm text-fg-muted hover:text-fg flex items-center gap-1 mb-4">
-        <ArrowLeft size={14} /> 討論區
+        <ArrowLeft size={14} /> {t("title")}
       </Link>
 
       {/* 版塊 Header */}
@@ -62,13 +66,13 @@ export default async function BoardPage({
           href={`/forum/new?board=${board.slug}`}
           className="px-4 py-2 rounded-lg bg-accent text-black font-semibold text-sm hover:scale-105 transition flex items-center gap-1"
         >
-          <Plus size={16} /> 發表主題
+          <Plus size={16} /> {t("newThread")}
         </Link>
       </div>
 
       {board.post_role === "admin" && (
         <div className="surface mb-4 text-xs text-fg-muted p-2">
-          🔒 這個版塊只有管理員能發表主題
+          {t("boardAdminOnly")}
         </div>
       )}
 

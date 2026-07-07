@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { usePyodide } from "@/hooks/usePyodide";
 import type { TurtleLevel } from "@/lib/quest/turtle-levels";
 import { TRACE_GUARD, TRACE_OFF, codeLines, starsFor, submitCompletion, shortErr, sfx, parseTag } from "@/lib/quest/engine";
@@ -46,6 +47,7 @@ function edgeSet(segs: Seg[]): Set<string> { return new Set(segs.filter((s) => s
 function setEq(a: Set<string>, b: Set<string>) { return a.size === b.size && [...a].every((k) => b.has(k)); }
 
 export function TurtlePlay({ level, done }: { level: TurtleLevel; done: { stars: number } | null }) {
+  const t = useTranslations("quest");
   const { status, run } = usePyodide(true);
   const [code, setCode] = useState(level.starter);
   const [running, setRunning] = useState(false);
@@ -99,7 +101,7 @@ export function TurtlePlay({ level, done }: { level: TurtleLevel; done: { stars:
 
   async function runCode() {
     if (running) return;
-    if (!targetEdgesRef.current) { setMsg({ type: "err", text: "目標還在載入，稍等一下再執行 🐢" }); return; }
+    if (!targetEdgesRef.current) { setMsg({ type: "err", text: t("targetLoading") }); return; }
     setMsg(null); setReward(null); setRunning(true); stopAnim();
     inkRef.current?.clear();
     try {
@@ -115,16 +117,16 @@ export function TurtlePlay({ level, done }: { level: TurtleLevel; done: { stars:
         if (i < segs.length) animRef.current = window.setTimeout(step, 260); else finish(segs);
       };
       if (segs.length) step(); else finish(segs);
-    } catch (e: any) { setMsg({ type: "err", text: e?.message ?? "執行失敗" }); setRunning(false); }
+    } catch (e: any) { setMsg({ type: "err", text: e?.message ?? t("runFailed") }); setRunning(false); }
   }
 
   async function finish(segs: Seg[]) {
     setRunning(false);
     const win = setEq(edgeSet(segs), targetEdgesRef.current!);
-    if (!win) { sfx("fail"); setMsg({ type: "err", text: "形狀還不對——對照淡淡的目標輪廓再調整看看 🐢" }); return; }
+    if (!win) { sfx("fail"); setMsg({ type: "err", text: t("shapeWrong") }); return; }
     sfx("win");
     const s = starsFor(codeLines(code), level.parLines); setStars(s);
-    setMsg({ type: "ok", text: `畫對了！⭐ ${s} 星（${codeLines(code)} 行）` });
+    setMsg({ type: "ok", text: t("winTurtle", { stars: s, lines: codeLines(code) }) });
     const aw = await submitCompletion(level.id, s); if (aw) setReward(aw);
   }
 
@@ -135,20 +137,20 @@ export function TurtlePlay({ level, done }: { level: TurtleLevel; done: { stars:
       <div className="grid md:grid-cols-2 gap-4">
         <div className={`${QS.panel} p-3 flex items-center justify-center overflow-hidden min-h-[180px]`}>
           <div ref={mountRef} className="w-full flex items-center justify-center" />
-          {pixiErr && <div className="text-xs text-slate-400">遊戲畫面載入失敗，重整看看。</div>}
+          {pixiErr && <div className="text-xs text-slate-400">{t("sceneLoadFail")}</div>}
         </div>
         <div className="space-y-2">
           <textarea value={code} onChange={(e) => setCode(e.target.value)} spellCheck={false} rows={9} className={QS.editor} />
           <div className="flex items-center gap-2 flex-wrap">
             <button onClick={runCode} disabled={running || status !== "ready"} className={QS.runBtn}>
-              {status !== "ready" ? <><Loader2 size={16} className="animate-spin" /> 載入 Python…</> : running ? <><Loader2 size={16} className="animate-spin" /> 畫圖中</> : <><Play size={16} /> 執行</>}
+              {status !== "ready" ? <><Loader2 size={16} className="animate-spin" /> {t("loadingPython")}</> : running ? <><Loader2 size={16} className="animate-spin" /> {t("drawing")}</> : <><Play size={16} /> {t("run")}</>}
             </button>
-            <button onClick={resetLevel} className={QS.ghostBtn}><RotateCcw size={14} /> 清空</button>
-            <button onClick={() => setShowHint((v) => !v)} className={`${QS.ghostBtn} !text-amber-400`}><Lightbulb size={14} /> 提示</button>
+            <button onClick={resetLevel} className={QS.ghostBtn}><RotateCcw size={14} /> {t("clear")}</button>
+            <button onClick={() => setShowHint((v) => !v)} className={`${QS.ghostBtn} !text-amber-400`}><Lightbulb size={14} /> {t("hint")}</button>
           </div>
-          {showHint && <div className={QS.hint}><b className="inline-flex items-center gap-1"><Sparkles size={12} /> 綠寶提示</b>{"\n"}{level.hint}{"\n\n"}可用指令：forward(n) / right(度) / left(度) / pen_up() / pen_down()</div>}
+          {showHint && <div className={QS.hint}><b className="inline-flex items-center gap-1"><Sparkles size={12} /> {t("greenGemHint")}</b>{"\n"}{level.hint}{"\n\n"}{t("cmdsTurtle")}</div>}
           {msg && <div className={`text-sm rounded-xl px-3 py-2 whitespace-pre-wrap ${msg.type === "ok" ? "bg-emerald-500/15 border border-emerald-400/40 text-emerald-200" : "bg-red-500/15 border border-red-400/40 text-red-200"}`}>{msg.text}</div>}
-          {reward && <div className="text-sm bg-gradient-to-r from-amber-400/20 to-yellow-400/10 border border-amber-400/40 rounded-xl px-3 py-2 font-bold text-amber-100">🎁 首次通關獎勵：+{reward.xp} XP · +{reward.z} Z 幣</div>}
+          {reward && <div className="text-sm bg-gradient-to-r from-amber-400/20 to-yellow-400/10 border border-amber-400/40 rounded-xl px-3 py-2 font-bold text-amber-100">{t("reward", { xp: reward.xp, z: reward.z })}</div>}
         </div>
       </div>
     </QuestShell>

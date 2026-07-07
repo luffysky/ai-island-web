@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createSupabaseAdmin } from "@/lib/supabase";
 import { ThreadReplies } from "@/components/forum/ThreadReplies";
 import { ThreadViewTracker } from "@/components/forum/ThreadViewTracker";
@@ -54,9 +55,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const res = await getThread(id);
-  if (!res) return { title: "找不到主題 | AI 島" };
+  const t = await getTranslations("forum");
+  if (!res) return { title: t("metaThreadNotFound") };
   return {
-    title: `${res.thread.title} | AI 島討論區`,
+    title: t("metaThread", { title: res.thread.title }),
     description: res.thread.title,
     alternates: { canonical: `${SITE_URL}/forum/thread/${id}` },
   };
@@ -71,8 +73,9 @@ export default async function ThreadPage({
   const res = await getThread(id);
   if (!res) notFound();
 
+  const t = await getTranslations("forum");
   const { thread, replies } = res;
-  const name = thread.author?.display_name || thread.author?.username || "用戶";
+  const name = thread.author?.display_name || thread.author?.username || t("defaultUser");
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 min-w-0 overflow-hidden">
@@ -80,7 +83,7 @@ export default async function ThreadPage({
 
       {/* 麵包屑 */}
       <div className="text-sm text-fg-muted mb-4 flex items-center gap-1">
-        <Link href="/forum" className="hover:text-fg">討論區</Link>
+        <Link href="/forum" className="hover:text-fg">{t("title")}</Link>
         <span>/</span>
         {thread.board && (
           <Link href={`/forum/${thread.board.slug}`} className="hover:text-fg">
@@ -131,7 +134,7 @@ export default async function ThreadPage({
         {thread.content ? (
           <div className="prose-custom max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeRichHtmlStrict(thread.content) }} />
         ) : (
-          <p className="text-fg-muted italic">（沒有內文）</p>
+          <p className="text-fg-muted italic">{t("noContent")}</p>
         )}
 
         {/* 標籤 */}

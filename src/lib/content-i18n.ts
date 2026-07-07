@@ -4,6 +4,7 @@
  * 只在 server 端用（走 service-role + 系統 AI key）。
  */
 import crypto from "crypto";
+import { unstable_cache, revalidateTag } from "next/cache";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { callAI } from "@/lib/ai-providers";
 import { decryptKey } from "@/lib/ai-crypto";
@@ -15,40 +16,112 @@ export function contentHash(text: string): string {
   return crypto.createHash("sha256").update(text).digest("hex").slice(0, 32);
 }
 
+function ctTag(sourceType: ContentSourceType, sourceId: string | number): string {
+  return `ct:${sourceType}:${sourceId}`;
+}
+
+type TransRow = { field: string; translated: string; source_hash: string };
+
+/**
+ * 讀某內容某語言的「全部欄位」翻譯列，包 Next Data Cache（≈ 靜態 JSON + CDN 快取）：
+ * 同一 (type,id,locale) 一小時內只查一次 DB、跨所有請求共用；重新翻譯後 revalidateTag 立即失效。
+ * → 每次瀏覽幾乎不打 DB；中文改了 hash 不符會在呼叫端 fallback 中文。
+ */
+async function fetchTranslationRows(
+  sourceType: ContentSourceType, sourceId: string | number, locale: string,
+): Promise<TransRow[]> {
+  return unstable_cache(
+    async () => {
+      const admin = createSupabaseAdmin();
+      const { data } = await admin.from("content_translations")
+        .select("field, translated, source_hash")
+        .eq("source_type", sourceType).eq("source_id", String(sourceId)).eq("locale", locale);
+      return ((data as any[]) ?? []).map((r) => ({ field: r.field, translated: r.translated, source_hash: r.source_hash }));
+    },
+    ["content-translations", sourceType, String(sourceId), locale],
+    { revalidate: 3600, tags: [ctTag(sourceType, sourceId)] },
+  )();
+}
+
 /** 取快取翻譯：只有 hash 與現在的中文一致才回；否則 null（呼叫端 fallback 中文）。 */
 export async function getCachedTranslation(
   sourceType: ContentSourceType, sourceId: string | number, field: string, locale: string, zhText: string,
 ): Promise<string | null> {
   if (locale === "zh" || !zhText || !zhText.trim()) return null;
   try {
-    const admin = createSupabaseAdmin();
-    const { data } = await admin.from("content_translations")
-      .select("translated, source_hash")
-      .eq("source_type", sourceType).eq("source_id", String(sourceId)).eq("field", field).eq("locale", locale)
-      .maybeSingle();
-    if (data && (data as any).source_hash === contentHash(zhText)) return (data as any).translated;
-    return null;
-  } catch { return null; }
+    const rows = await fetchTranslationRows(sourceType, sourceId, locale);
+    const row = rows.find((r) => r.field === field);
+    if (row && row.source_hash === contentHash(zhText)) return row.translated;
+  } catch { /* fallback 中文 */ }
+  return null;
 }
 
-/** 批次取多個欄位的快取翻譯（一次查、少 round trip）。回 { field: translated }（只含 hash 命中的）。 */
+/** 批次取多個欄位的快取翻譯（走 Data Cache，一次撈整筆內容）。回 { field: translated }（只含 hash 命中的）。 */
 export async function getCachedTranslations(
   sourceType: ContentSourceType, sourceId: string | number, locale: string, fields: Record<string, string>,
 ): Promise<Record<string, string>> {
   const out: Record<string, string> = {};
   if (locale === "zh") return out;
   try {
-    const admin = createSupabaseAdmin();
-    const { data } = await admin.from("content_translations")
-      .select("field, translated, source_hash")
-      .eq("source_type", sourceType).eq("source_id", String(sourceId)).eq("locale", locale)
-      .in("field", Object.keys(fields));
-    for (const row of (data as any[]) ?? []) {
+    const rows = await fetchTranslationRows(sourceType, sourceId, locale);
+    for (const row of rows) {
       const zh = fields[row.field];
       if (zh && row.source_hash === contentHash(zh)) out[row.field] = row.translated;
     }
   } catch { /* fallback 中文 */ }
   return out;
+}
+
+/**
+ * 一次撈整章（章 meta + 底下所有 lesson）的翻譯列，包 Data Cache：
+ * 每 (章, 語言) 一小時只查一次 DB、跨請求共用。hash 比對交給呼叫端。
+ */
+async function fetchChapterBundle(
+  chapterId: string | number, lessonIds: (string | number)[], locale: string,
+): Promise<any[]> {
+  const ids = [String(chapterId), ...lessonIds.map(String)];
+  return unstable_cache(
+    async () => {
+      const admin = createSupabaseAdmin();
+      const { data } = await admin.from("content_translations")
+        .select("source_type, source_id, field, translated, source_hash")
+        .eq("locale", locale)
+        .in("source_id", ids);
+      return (data as any[]) ?? [];
+    },
+    ["chapter-bundle", String(chapterId), locale, String(lessonIds.length)],
+    { revalidate: 3600, tags: [ctTag("chapter", chapterId)] },
+  )();
+}
+
+/**
+ * 把整章（含 lessons）覆蓋成目標語言的譯文；非中文才動作、hash 不符 fallback 中文。
+ * 只翻已存進 content_translations 的欄位（章 title/subtitle、lesson title/content），其餘保留原文。
+ * 不改任何元件——直接回傳翻好的 chapter 物件給 ChapterView 用。
+ */
+export async function localizeChapter<T extends { id: any; title?: string; subtitle?: string; lessons?: any[] }>(
+  chapter: T, locale: string,
+): Promise<T> {
+  if (locale === "zh" || !chapter) return chapter;
+  try {
+    const lessons = Array.isArray(chapter.lessons) ? chapter.lessons : [];
+    const rows = await fetchChapterBundle(chapter.id, lessons.map((l: any) => l.id), locale);
+    const pick = (type: string, id: any, field: string, zh: any): string | undefined => {
+      if (zh == null || !String(zh).trim()) return undefined;
+      const r = rows.find((x) => x.source_type === type && String(x.source_id) === String(id) && x.field === field);
+      return r && r.source_hash === contentHash(String(zh)) ? r.translated : undefined;
+    };
+    return {
+      ...chapter,
+      title: pick("chapter", chapter.id, "title", chapter.title) ?? chapter.title,
+      subtitle: pick("chapter", chapter.id, "subtitle", (chapter as any).subtitle) ?? (chapter as any).subtitle,
+      lessons: lessons.map((l: any) => ({
+        ...l,
+        title: pick("lesson", l.id, "title", l.title) ?? l.title,
+        content: pick("lesson", l.id, "content", l.content) ?? l.content,
+      })),
+    };
+  } catch { return chapter; }
 }
 
 // ── AI 翻譯（保留 HTML/markdown/程式碼，只翻人看的文字）──
@@ -109,6 +182,8 @@ export async function translateAndCache(
       source_type: sourceType, source_id: String(sourceId), field, locale,
       source_hash: contentHash(zhText), translated, updated_at: new Date().toISOString(),
     }, { onConflict: "source_type,source_id,field,locale" });
+    // 翻好後讓該內容的 Data Cache 立即失效 → 下次瀏覽讀到新譯文（需在 request scope，否則吞掉）
+    try { revalidateTag(ctTag(sourceType, sourceId)); } catch { /* 非 request scope（cron）→ 等 revalidate 過期 */ }
   } catch { /* 寫失敗也回翻譯結果 */ }
   return translated;
 }

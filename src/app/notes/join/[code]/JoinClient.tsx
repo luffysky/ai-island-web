@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Loader2, Check } from "lucide-react";
 
 export function JoinClient({ code }: { code: string }) {
+  const t = useTranslations("notes");
   const router = useRouter();
   const [state, setState] = useState<"idle" | "joining" | "done" | "error">("idle");
   const [msg, setMsg] = useState("");
@@ -18,19 +20,19 @@ export function JoinClient({ code }: { code: string }) {
         body: JSON.stringify({ code }),
       });
       const j = await res.json();
-      if (!res.ok) throw new Error(j.message || "加入失敗");
+      if (!res.ok) throw new Error(j.message || t("joinFailed"));
       setState("done");
       setTimeout(() => router.push("/me/notes"), 900);
     } catch (e: any) {
       setState("error");
-      setMsg(e?.message || "加入失敗");
+      setMsg(e?.message || t("joinFailed"));
     }
   };
 
   if (state === "done") {
     return (
       <div className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-green-500/15 text-green-500 font-semibold">
-        <Check size={16} /> 已加入、前往我的筆記…
+        <Check size={16} /> {t("joinedRedirect")}
       </div>
     );
   }
@@ -42,7 +44,7 @@ export function JoinClient({ code }: { code: string }) {
         disabled={state === "joining"}
         className="inline-flex items-center justify-center gap-1.5 px-5 py-2 rounded-lg bg-accent text-black font-semibold hover:scale-105 transition disabled:opacity-50"
       >
-        {state === "joining" ? <Loader2 size={16} className="animate-spin" /> : <>🤝</>} 加入共同筆記
+        {state === "joining" ? <Loader2 size={16} className="animate-spin" /> : <>🤝</>} {t("joinCollabNote")}
       </button>
       {state === "error" && <p className="text-xs text-red-400">{msg}</p>}
     </div>

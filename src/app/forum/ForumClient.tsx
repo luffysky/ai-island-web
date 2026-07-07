@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { MessageSquare, Plus, Users, Hash } from "lucide-react";
 import { ForumSearch } from "@/components/forum/ForumSearch";
 import { Sparkles as SparklesParticles } from "@/components/ui/Sparkles";
@@ -17,6 +18,7 @@ export function ForumClient({
   countByBoard: Record<string, number>;
   totalThreads: number;
 }) {
+  const t = useTranslations("forum");
   return (
     <div className="relative min-h-screen overflow-hidden">
       <SparklesParticles count={10} colors={["#06b6d4", "#a855f7", "#10b981"]} />
@@ -38,12 +40,12 @@ export function ForumClient({
               <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-500 shadow-lg shadow-cyan-500/30">
                 <MessageSquare size={20} className="text-white" />
               </span>
-              <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">討論區</span>
+              <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">{t("title")}</span>
             </h1>
             <p className="text-fg-muted mt-1 text-sm flex items-center gap-3 flex-wrap">
-              <span>提問、分享、交流——AI 島的學習社群</span>
+              <span>{t("subtitle")}</span>
               <span className="inline-flex items-center gap-1 text-xs">
-                <Hash size={11} className="text-fg-muted" /> {totalThreads} 則討論
+                <Hash size={11} className="text-fg-muted" /> {t("discussionCount", { n: totalThreads })}
               </span>
             </p>
           </div>
@@ -52,7 +54,7 @@ export function ForumClient({
               href="/forum/new"
               className="px-4 py-2 rounded-full bg-gradient-to-r from-accent to-accent-2 text-black font-bold text-sm inline-flex items-center gap-1 shadow-lg shadow-accent/20"
             >
-              <Plus size={16} /> 發表主題
+              <Plus size={16} /> {t("newThread")}
             </Link>
           </motion.div>
         </motion.div>
@@ -105,9 +107,9 @@ export function ForumClient({
                           <div className="text-[11px] text-fg-muted mt-1 inline-flex items-center gap-2">
                             <span className="inline-flex items-center gap-0.5">
                               <Users size={9} />
-                              {countByBoard[b.id] ?? 0} 則討論
+                              {t("discussionCount", { n: countByBoard[b.id] ?? 0 })}
                             </span>
-                            {b.post_role === "admin" && <span className="text-yellow-500">🔒 限管理員發文</span>}
+                            {b.post_role === "admin" && <span className="text-yellow-500">{t("adminOnlyBadge")}</span>}
                           </div>
                         </div>
                       </Link>

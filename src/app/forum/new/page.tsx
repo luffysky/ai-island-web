@@ -3,10 +3,12 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { BlogEditor } from "@/components/blog/BlogEditor";
 import { ArrowLeft, Loader2, Send } from "lucide-react";
 
 function NewThreadForm() {
+  const t = useTranslations("forum");
   const router = useRouter();
   const searchParams = useSearchParams();
   const presetBoard = searchParams.get("board");
@@ -68,7 +70,7 @@ function NewThreadForm() {
     const json = await res.json();
     setSaving(false);
     if (!res.ok) {
-      setErr(json.message || json.error || "發表失敗");
+      setErr(json.message || json.error || t("postFailed"));
       return;
     }
     router.push(`/forum/thread/${json.thread_id}`);
@@ -77,20 +79,20 @@ function NewThreadForm() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
       <Link href="/forum" className="text-sm text-fg-muted hover:text-fg flex items-center gap-1 mb-4">
-        <ArrowLeft size={14} /> 討論區
+        <ArrowLeft size={14} /> {t("title")}
       </Link>
-      <h1 className="reveal text-2xl font-bold mb-6">發表主題</h1>
+      <h1 className="reveal text-2xl font-bold mb-6">{t("newThread")}</h1>
 
       <div className="space-y-4">
         {/* 版塊選擇 */}
         <div>
-          <label className="text-sm font-medium mb-1.5 block">發表到</label>
+          <label className="text-sm font-medium mb-1.5 block">{t("postTo")}</label>
           <select
             value={boardSlug}
             onChange={(e) => setBoardSlug(e.target.value)}
             className="w-full bg-bg-card border border-border rounded-lg p-2.5 text-sm outline-none focus:border-accent"
           >
-            <option value="">選擇版塊...</option>
+            <option value="">{t("selectBoard")}</option>
             {boards
               .filter((b) => b.post_role === "member")
               .map((b) => (
@@ -105,7 +107,7 @@ function NewThreadForm() {
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="主題標題"
+          placeholder={t("titlePlaceholder")}
           className="w-full bg-bg-card border border-border rounded-lg p-2.5 text-lg font-bold outline-none focus:border-accent"
         />
 
@@ -113,14 +115,14 @@ function NewThreadForm() {
         {similar.length > 0 && !dismissedSimilar && (
           <div className="rounded-xl border border-amber-400/30 bg-amber-400/[0.07] p-3">
             <div className="flex items-center justify-between mb-1.5">
-              <div className="text-xs font-bold text-amber-700 dark:text-amber-300">💡 有幾個相似的討論，先看看是不是已經有答案？</div>
-              <button onClick={() => setDismissedSimilar(true)} className="text-[11px] text-fg-muted hover:text-fg">還是要發新的 →</button>
+              <div className="text-xs font-bold text-amber-700 dark:text-amber-300">{t("similarHint")}</div>
+              <button onClick={() => setDismissedSimilar(true)} className="text-[11px] text-fg-muted hover:text-fg">{t("postNewAnyway")}</button>
             </div>
             <div className="space-y-1">
               {similar.map((s) => (
                 <Link key={s.id} href={`/forum/thread/${s.id}`} target="_blank" className="block text-sm hover:text-accent truncate">
                   <span className="text-fg-muted text-xs mr-1">{s.board?.emoji}</span>{s.title}
-                  <span className="text-[11px] text-fg-muted ml-1.5">· {s.reply_count} 回覆</span>
+                  <span className="text-[11px] text-fg-muted ml-1.5">· {t("replyCount", { n: s.reply_count })}</span>
                 </Link>
               ))}
             </div>
@@ -128,11 +130,11 @@ function NewThreadForm() {
         )}
 
         {/* 內文編輯器 */}
-        <BlogEditor content={content} onChange={setContent} placeholder="說說你想討論什麼..." />
+        <BlogEditor content={content} onChange={setContent} placeholder={t("contentPlaceholder")} />
 
         {/* 標籤 */}
         <div>
-          <label className="text-sm font-medium mb-1.5 block">標籤（最多 5 個）</label>
+          <label className="text-sm font-medium mb-1.5 block">{t("tagsLabel")}</label>
           <div className="flex flex-wrap gap-1.5 mb-2">
             {tags.map((t) => (
               <span key={t} className="text-xs px-2 py-1 rounded-full bg-bg-elevated flex items-center gap-1">
@@ -146,7 +148,7 @@ function NewThreadForm() {
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTag(); } }}
-              placeholder="輸入標籤後按 Enter"
+              placeholder={t("tagInputPlaceholder")}
               className="w-full bg-bg-card border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
             />
           )}
@@ -161,7 +163,7 @@ function NewThreadForm() {
             className="px-6 py-2.5 rounded-lg bg-accent text-black font-bold text-sm hover:scale-105 transition flex items-center gap-1 disabled:opacity-40"
           >
             {saving ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-            發表
+            {t("submitPost")}
           </button>
         </div>
       </div>
@@ -170,8 +172,9 @@ function NewThreadForm() {
 }
 
 export default function NewThreadPage() {
+  const t = useTranslations("forum");
   return (
-    <Suspense fallback={<div className="py-20 text-center text-fg-muted">載入中...</div>}>
+    <Suspense fallback={<div className="py-20 text-center text-fg-muted">{t("loading")}</div>}>
       <NewThreadForm />
     </Suspense>
   );

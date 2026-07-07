@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { chapters } from "@/data/chapters";
 import { NotesExportButton } from "./NotesExportButton";
@@ -7,6 +8,7 @@ import { NotesManager, type ManagedNote } from "./NotesManager";
 export const dynamic = "force-dynamic";
 
 export default async function NotesPage() {
+  const t = await getTranslations("notes");
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
@@ -62,11 +64,11 @@ export default async function NotesPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
-          <h1 className="text-2xl font-bold">📝 我的筆記</h1>
-          <p className="text-sm text-fg-muted">共 {list.length} 則筆記</p>
+          <h1 className="text-2xl font-bold">📝 {t("myNotes")}</h1>
+          <p className="text-sm text-fg-muted">{t("noteTotal", { n: list.length })}</p>
         </div>
         <div className="flex items-center gap-2">
-          <Link href="/notes/market" className="text-sm px-3 py-1.5 rounded-full border border-border hover:border-accent inline-flex items-center gap-1.5">🏪 筆記市集</Link>
+          <Link href="/notes/market" className="text-sm px-3 py-1.5 rounded-full border border-border hover:border-accent inline-flex items-center gap-1.5">🏪 {t("market")}</Link>
           {list.length > 0 && <NotesExportButton />}
         </div>
       </div>

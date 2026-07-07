@@ -1,10 +1,12 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Palette, Upload, Loader2, Check } from "lucide-react";
 import { NOTES_BG_PRESETS, type NotesBgConfig } from "@/lib/notes-background";
 
 const GROUPS = ["純色", "漸層", "圖樣"] as const;
+const GROUP_KEY: Record<(typeof GROUPS)[number], string> = { "純色": "bgSolid", "漸層": "bgGradient", "圖樣": "bgPattern" };
 
 export function NotesBackgroundPicker({
   cfg,
@@ -13,6 +15,7 @@ export function NotesBackgroundPicker({
   cfg: NotesBgConfig;
   onChange: (c: NotesBgConfig) => void;
 }) {
+  const t = useTranslations("notes");
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -39,7 +42,7 @@ export function NotesBackgroundPicker({
         onClick={() => setOpen((o) => !o)}
         className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-bg-card text-sm hover:border-accent transition"
       >
-        <Palette size={15} /> 背景
+        <Palette size={15} /> {t("background")}
       </button>
 
       {open && (
@@ -48,7 +51,7 @@ export function NotesBackgroundPicker({
           <div className="absolute right-0 z-30 mt-2 w-[300px] max-w-[calc(100vw-1.5rem)] max-h-[72vh] overflow-auto space-y-3 rounded-2xl border border-border bg-bg-card p-3 shadow-xl">
             {GROUPS.map((g) => (
               <div key={g}>
-                <div className="text-xs text-fg-muted mb-1.5">{g}</div>
+                <div className="text-xs text-fg-muted mb-1.5">{t(GROUP_KEY[g])}</div>
                 <div className="flex flex-wrap gap-1.5">
                   {NOTES_BG_PRESETS.filter((p) => p.group === g).map((p) => {
                     const sel = cfg.preset === p.id;
@@ -71,14 +74,14 @@ export function NotesBackgroundPicker({
 
             {/* 自訂圖片 */}
             <div>
-              <div className="text-xs text-fg-muted mb-1.5">自訂圖片</div>
+              <div className="text-xs text-fg-muted mb-1.5">{t("customImage")}</div>
               <button
                 onClick={() => fileRef.current?.click()}
                 disabled={uploading}
                 className={`w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-sm hover:border-accent disabled:opacity-50 ${cfg.preset === "image" ? "border-accent" : "border-border"}`}
               >
                 {uploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
-                {cfg.preset === "image" ? "換一張背景圖" : "上傳背景圖"}
+                {cfg.preset === "image" ? t("changeBgImage") : t("uploadBgImage")}
               </button>
               <input
                 ref={fileRef}
@@ -96,17 +99,17 @@ export function NotesBackgroundPicker({
             {/* 液態玻璃 */}
             <div className="border-t border-border pt-3">
               <label className="flex items-center justify-between text-sm cursor-pointer">
-                <span className="flex items-center gap-1.5">🫧 液態玻璃</span>
+                <span className="flex items-center gap-1.5">🫧 {t("liquidGlass")}</span>
                 <input
                   type="checkbox"
                   checked={cfg.glass}
                   onChange={(e) => onChange({ ...cfg, glass: e.target.checked })}
                 />
               </label>
-              <p className="text-[11px] text-fg-muted mt-1">在背景上加一層霧面玻璃，讓圖片不搶戲、字更清楚。</p>
+              <p className="text-[11px] text-fg-muted mt-1">{t("liquidGlassHint")}</p>
               {cfg.glass && (
                 <div className="mt-2">
-                  <div className="text-xs text-fg-muted mb-1">霧面強度 {Math.round(cfg.glassOpacity * 100)}%</div>
+                  <div className="text-xs text-fg-muted mb-1">{t("glassIntensity", { n: Math.round(cfg.glassOpacity * 100) })}</div>
                   <input
                     type="range"
                     min={0}

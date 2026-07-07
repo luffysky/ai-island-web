@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { Send, Trash2, CornerDownRight, Loader2, Check, BookmarkPlus, FileText } from "lucide-react";
 import type { ForumReply } from "@/lib/forum-types";
@@ -23,6 +24,7 @@ export function ThreadReplies({
   isLocked: boolean;
   threadOwnerId: string;
 }) {
+  const t = useTranslations("forum");
   const toast = useToast();
   const confirm = useConfirm();
   const [replies, setReplies] = useState<ForumReply[]>(initialReplies);
@@ -54,7 +56,7 @@ export function ThreadReplies({
     const trimmed = content.trim();
     const tempId = `temp_${Date.now()}`;
     const author = {
-      display_name: "你",
+      display_name: t("you"),
       username: "you",
       avatar_url: null,
       level: 1,
@@ -96,7 +98,7 @@ export function ThreadReplies({
         body: JSON.stringify({ content: trimmed, parent_id: parentId }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.message || json.error || "送出失敗");
+      if (!res.ok) throw new Error(json.message || json.error || t("sendFailed"));
 
       // 把暫時項換成 server 回的真實項
       const real = json.reply ?? json;
@@ -112,7 +114,7 @@ export function ThreadReplies({
         replies: r.replies?.filter((x) => x.id !== tempId).map(drop),
       });
       setReplies((list) => list.filter((r) => r.id !== tempId).map(drop));
-      toast.error("回覆失敗：" + (e?.message || "請稍後再試"));
+      toast.error(t("replyFailed", { msg: e?.message || t("pleaseRetry") }));
     } finally {
       setSending(false);
     }
@@ -121,9 +123,9 @@ export function ThreadReplies({
   // optimistic：點刪立刻消失、5 秒 undo toast、過 5 秒才真刪
   const remove = async (replyId: string) => {
     const ok = await confirm({
-      title: "刪除這則回覆？",
-      description: "5 秒內可在右下方提示中撤銷。",
-      confirmLabel: "刪除",
+      title: t("deleteReplyConfirm"),
+      description: t("deleteReplyDesc"),
+      confirmLabel: t("delete"),
       destructive: true,
     });
     if (!ok) return;
@@ -139,10 +141,10 @@ export function ThreadReplies({
     });
 
     let undone = false;
-    toast.warning("已刪除一則回覆", {
+    toast.warning(t("replyDeleted"), {
       duration: 5000,
       action: {
-        label: "撤銷",
+        label: t("undo"),
         onClick: () => {
           undone = true;
           setReplies(snapshot);
@@ -163,22 +165,22 @@ export function ThreadReplies({
       } catch {
         // server 刪失敗、恢復狀態 + 提示
         setReplies(snapshot);
-        toast.error("刪除失敗、已恢復");
+        toast.error(t("deleteFailed"));
       }
     }, 5000);
   };
 
   // 解答沉澱：把一則回覆存進「我的知識庫」（附回討論串的連結）
   const saveAsNote = async (reply: ForumReply) => {
-    if (!isLoggedIn) { toast.error("請先登入"); return; }
+    if (!isLoggedIn) { toast.error(t("pleaseLogin")); return; }
     const supabase = createSupabaseBrowser();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { toast.error("請先登入"); return; }
+    if (!user) { toast.error(t("pleaseLogin")); return; }
     const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    const html = `<p>${esc(reply.content).replace(/\n/g, "<br>")}</p><p>—— 出自討論區：<a href="/forum/thread/${threadId}">${esc(threadTitle || "討論串")}</a></p>`;
-    const { error } = await supabase.from("notes").insert({ user_id: user.id, content: html, title: (threadTitle || "論壇解答").slice(0, 80), category: "論壇沉澱", tags: ["論壇"] });
-    if (error) { toast.error("存筆記失敗"); return; }
-    toast.success("已存進你的知識庫 📚", { action: { label: "去看", onClick: () => { window.location.href = "/me/notes"; } } });
+    const html = `<p>${esc(reply.content).replace(/\n/g, "<br>")}</p><p>${t("noteSourcePrefix")}<a href="/forum/thread/${threadId}">${esc(threadTitle || t("defaultThreadTitle"))}</a></p>`;
+    const { error } = await supabase.from("notes").insert({ user_id: user.id, content: html, title: (threadTitle || t("defaultNoteTitle")).slice(0, 80), category: t("noteCategory"), tags: [t("noteTag")] });
+    if (error) { toast.error(t("saveNoteFailed")); return; }
+    toast.success(t("savedToKb"), { action: { label: t("view"), onClick: () => { window.location.href = "/me/notes"; } } });
   };
 
   // 討論↔筆記互引：載入我的筆記供插入引用
@@ -189,11 +191,11 @@ export function ThreadReplies({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const { data } = await supabase.from("notes").select("id, title").eq("user_id", user.id).order("updated_at", { ascending: false }).limit(50);
-      setMyNotes((data ?? []).map((n: any) => ({ id: n.id, title: n.title?.trim() || "（無標題筆記）" })));
+      setMyNotes((data ?? []).map((n: any) => ({ id: n.id, title: n.title?.trim() || t("untitledNote") })));
     }
   };
   const insertNoteRef = (n: { id: string; title: string }) => {
-    setInput((prev) => `${prev}${prev && !prev.endsWith("\n") ? "\n" : ""}📄 引用我的筆記：${n.title}`.trim());
+    setInput((prev) => `${prev}${prev && !prev.endsWith("\n") ? "\n" : ""}${t("quoteNotePrefix", { title: n.title })}`.trim());
     setShowNotePick(false); setNoteQ("");
   };
 
@@ -216,22 +218,22 @@ export function ThreadReplies({
       );
       if (!res.ok) {
         const j = await res.json();
-        throw new Error(j.message || j.error || "操作失敗");
+        throw new Error(j.message || j.error || t("actionFailed"));
       }
-      toast.success(isAnswer ? "已採納為解答" : "已取消採納");
+      toast.success(isAnswer ? t("markedAnswer") : t("unmarkedAnswer"));
     } catch (e: any) {
       // 退回
       setReplies((list) =>
         list.map((r) => (r.id === replyId ? { ...r, is_answer: !isAnswer } : r)),
       );
-      toast.error(e?.message || "操作失敗");
+      toast.error(e?.message || t("actionFailed"));
     }
   };
 
   return (
     <section className="mt-8">
       <h2 className="text-lg font-bold mb-4">
-        {totalCount > 0 ? `${totalCount} 則回覆` : "回覆"}
+        {totalCount > 0 ? t("replyCountHeading", { n: totalCount }) : t("replies")}
       </h2>
 
       {/* 回覆列表 */}
@@ -247,7 +249,7 @@ export function ThreadReplies({
                     value={replyInput}
                     onChange={(e) => setReplyInput(e.target.value)}
                     onKeyDown={(e) => { if (e.key === "Enter") submit(replyInput, r.id); }}
-                    placeholder="回覆..."
+                    placeholder={t("replyPlaceholder")}
                     className="flex-1 bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
                   />
                   <button
@@ -255,7 +257,7 @@ export function ThreadReplies({
                     disabled={!replyInput.trim() || sending}
                     className="px-3 py-1.5 rounded-lg bg-accent text-black text-sm font-semibold disabled:opacity-40 active:scale-95 transition-transform"
                   >
-                    送出
+                    {t("send")}
                   </button>
                 </div>
               )}
@@ -275,33 +277,33 @@ export function ThreadReplies({
       {/* 發表回覆 */}
       {isLocked ? (
         <div className="surface text-sm text-fg-muted text-center py-4">
-          🔒 這個主題已鎖定、無法回覆
+          {t("threadLocked")}
         </div>
       ) : !isLoggedIn ? (
         <div className="surface text-sm text-fg-muted text-center py-4">
-          請先登入才能回覆
+          {t("loginToReply")}
         </div>
       ) : (
         <div className="surface p-3">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="寫下你的回覆..."
+            placeholder={t("writeReply")}
             rows={3}
             className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
           />
           <div className="flex items-center justify-between mt-2 gap-2">
             <div className="relative">
               <button onClick={openNotePick} className="text-xs text-fg-muted hover:text-accent inline-flex items-center gap-1">
-                <FileText size={13} /> 引用我的筆記
+                <FileText size={13} /> {t("quoteMyNote")}
               </button>
               {showNotePick && (
                 <div className="absolute z-30 bottom-full mb-1 left-0 w-64 max-h-56 overflow-auto surface-glass shadow-xl p-2">
-                  <input value={noteQ} onChange={(e) => setNoteQ(e.target.value)} placeholder="搜尋我的筆記…" className="w-full bg-bg border border-border rounded px-2 py-1 text-xs outline-none focus:border-accent mb-1" />
+                  <input value={noteQ} onChange={(e) => setNoteQ(e.target.value)} placeholder={t("searchMyNotes")} className="w-full bg-bg border border-border rounded px-2 py-1 text-xs outline-none focus:border-accent mb-1" />
                   {myNotes.filter((n) => !noteQ.trim() || n.title.toLowerCase().includes(noteQ.trim().toLowerCase())).slice(0, 8).map((n) => (
                     <button key={n.id} onClick={() => insertNoteRef(n)} className="w-full text-left px-2 py-1.5 text-xs hover:bg-bg-elevated rounded truncate">📄 {n.title}</button>
                   ))}
-                  {myNotes.length === 0 && <div className="text-xs text-fg-muted px-2 py-2">還沒有筆記。</div>}
+                  {myNotes.length === 0 && <div className="text-xs text-fg-muted px-2 py-2">{t("noNotes")}</div>}
                 </div>
               )}
             </div>
@@ -311,7 +313,7 @@ export function ThreadReplies({
               className="px-4 py-1.5 rounded-lg bg-accent text-black text-sm font-semibold disabled:opacity-40 flex items-center gap-1 active:scale-95 transition-transform"
             >
               {sending ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
-              回覆
+              {t("replyButton")}
             </button>
           </div>
         </div>
@@ -347,14 +349,15 @@ function ReplyItem({
   onMarkAnswer?: (replyId: string, isAnswer: boolean) => void;
   onSaveNote?: () => void;
 }) {
+  const t = useTranslations("forum");
   const isOwn = currentUserId && reply.user_id === currentUserId;
-  const name = reply.author?.display_name || reply.author?.username || "用戶";
+  const name = reply.author?.display_name || reply.author?.username || t("defaultUser");
   return (
     <div
       className={`surface p-3 transition-opacity ${reply.is_answer ? "glow-accent" : ""} ${reply._pending ? "opacity-60" : ""}`}
     >
       {reply.is_answer && (
-        <div className="text-xs text-accent font-bold mb-1">✓ 已採納為解答</div>
+        <div className="text-xs text-accent font-bold mb-1">{t("acceptedAnswer")}</div>
       )}
       <div className="flex items-start gap-2">
         {reply.author?.avatar_url ? (
@@ -381,20 +384,20 @@ function ReplyItem({
               {new Date(reply.created_at).toLocaleString("zh-TW", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}
             </span>
             {reply._pending && (
-              <span className="text-[10px] text-fg-muted italic">傳送中...</span>
+              <span className="text-[10px] text-fg-muted italic">{t("sending")}</span>
             )}
           </div>
           <p className="text-sm mt-1 whitespace-pre-wrap break-words">{renderContent(reply.content)}</p>
           <div className="flex items-center gap-3 mt-1.5 flex-wrap">
             <LikeButton kind="forum" targetId={reply.id} />
             {onSaveNote && !reply._pending && (
-              <button onClick={onSaveNote} title="存進我的知識庫" className="text-xs text-fg-muted hover:text-accent flex items-center gap-0.5">
-                <BookmarkPlus size={11} /> 存成筆記
+              <button onClick={onSaveNote} title={t("saveNoteTitle")} className="text-xs text-fg-muted hover:text-accent flex items-center gap-0.5">
+                <BookmarkPlus size={11} /> {t("saveNote")}
               </button>
             )}
             {!isReply && onReply && (
               <button onClick={onReply} className="text-xs text-fg-muted hover:text-accent flex items-center gap-0.5">
-                <CornerDownRight size={11} /> 回覆
+                <CornerDownRight size={11} /> {t("replyButton")}
               </button>
             )}
             {!isReply && canMarkAnswer && onMarkAnswer && (
@@ -406,12 +409,12 @@ function ReplyItem({
                     : "text-fg-muted hover:text-accent"
                 }`}
               >
-                <Check size={11} /> {reply.is_answer ? "取消採納" : "採納為解答"}
+                <Check size={11} /> {reply.is_answer ? t("unmarkAnswer") : t("markAnswer")}
               </button>
             )}
             {isOwn && !reply._pending && (
               <button onClick={() => onDelete(reply.id)} className="text-xs text-fg-muted hover:text-red-400 flex items-center gap-0.5">
-                <Trash2 size={11} /> 刪除
+                <Trash2 size={11} /> {t("delete")}
               </button>
             )}
             {!isOwn && !reply._pending && (

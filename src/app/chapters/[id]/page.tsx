@@ -13,7 +13,8 @@ import {
 } from "@/lib/seo-jsonld";
 import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
+import { localizeChapter } from "@/lib/content-i18n";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
@@ -82,8 +83,12 @@ export async function generateMetadata({
 
 export default async function ChapterPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const chapter = await getChapter(Number(id));
-  if (!chapter) notFound();
+  const rawChapter = await getChapter(Number(id));
+  if (!rawChapter) notFound();
+
+  // i18n：非中文語系 → 用已快取的譯文覆蓋章/lesson（無則 fallback 中文）；中文原樣。
+  const locale = await getLocale();
+  const chapter = await localizeChapter(rawChapter, locale);
 
   // #89 未發布章節 gating：需商店「章節搶先」才可提前看（目前全部已發布、此為排程章節預留、零影響）
   if (chapter.status && chapter.status !== "published") {

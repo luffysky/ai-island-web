@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Download, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 
 export function NotesExportButton() {
+  const t = useTranslations("notes");
   const toast = useToast();
   const [busy, setBusy] = useState(false);
 
@@ -22,9 +24,9 @@ export function NotesExportButton() {
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
-      toast.success("已匯出筆記");
+      toast.success(t("exported"));
     } catch {
-      toast.error("匯出失敗");
+      toast.error(t("exportFailed"));
     } finally {
       setBusy(false);
     }
@@ -37,7 +39,7 @@ export function NotesExportButton() {
       className="px-3 py-1.5 rounded-lg border border-border hover:border-accent text-sm flex items-center gap-1 disabled:opacity-50"
     >
       {busy ? <Loader2 size={13} className="animate-spin" /> : <Download size={13} />}
-      匯出 Markdown
+      {t("exportMarkdown")}
     </button>
   );
 }

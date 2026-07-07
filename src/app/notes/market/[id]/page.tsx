@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { sanitizeRichHtml } from "@/lib/rich-html";
@@ -10,6 +11,7 @@ export const dynamic = "force-dynamic";
 
 export default async function NoteProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const t = await getTranslations("notes");
   const admin = createSupabaseAdmin();
   const { data: { user } } = await (await createSupabaseServer()).auth.getUser();
 
@@ -26,27 +28,27 @@ export default async function NoteProductPage({ params }: { params: Promise<{ id
   }
   const { data: notes } = await admin.from("notes").select("id, title, content").in("id", p.note_ids ?? []);
   const noteRows = (notes as any[]) ?? [];
-  const sellerName = (seller as any)?.display_name || (seller as any)?.username || "創作者";
+  const sellerName = (seller as any)?.display_name || (seller as any)?.username || t("creator");
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
-      <Link href="/notes/market" className="text-sm text-fg-muted hover:text-fg inline-flex items-center gap-1 mb-4"><ArrowLeft size={14} /> 筆記市集</Link>
+      <Link href="/notes/market" className="text-sm text-fg-muted hover:text-fg inline-flex items-center gap-1 mb-4"><ArrowLeft size={14} /> {t("market")}</Link>
 
       <div className="bg-bg-card border border-border rounded-2xl p-5 sm:p-6">
         <h1 className="text-2xl font-bold">{p.title}</h1>
         <div className="flex items-center gap-3 text-xs text-fg-muted mt-2 flex-wrap">
           <Link href={`/notes/author/${(seller as any)?.username ?? p.seller_id}`} className="hover:text-accent">@{sellerName}</Link>
-          <span className="inline-flex items-center gap-0.5"><FileText size={12} /> {(p.note_ids ?? []).length} 篇</span>
-          <span className="inline-flex items-center gap-0.5"><ShoppingBag size={12} /> 售出 {p.sales}</span>
+          <span className="inline-flex items-center gap-0.5"><FileText size={12} /> {t("noteCount", { n: (p.note_ids ?? []).length })}</span>
+          <span className="inline-flex items-center gap-0.5"><ShoppingBag size={12} /> {t("soldCount", { n: p.sales })}</span>
         </div>
         {p.description && <p className="text-sm text-fg-muted mt-3 whitespace-pre-wrap">{p.description}</p>}
 
         <div className="mt-5 flex items-center justify-between gap-3 flex-wrap">
-          <div className="text-2xl font-bold text-accent">{p.price_z === 0 ? "免費" : `${p.price_z} Z 幣`}</div>
+          <div className="text-2xl font-bold text-accent">{p.price_z === 0 ? t("free") : t("priceCoins", { n: p.price_z })}</div>
           {isSeller ? (
-            <span className="text-sm text-fg-muted">這是你上架的商品</span>
+            <span className="text-sm text-fg-muted">{t("yourListing")}</span>
           ) : owned ? (
-            <span className="text-sm font-bold text-emerald-500">✓ 已擁有</span>
+            <span className="text-sm font-bold text-emerald-500">✓ {t("purchased")}</span>
           ) : (
             <BuyButton productId={p.id} priceZ={p.price_z} loggedIn={!!user} />
           )}
@@ -57,15 +59,15 @@ export default async function NoteProductPage({ params }: { params: Promise<{ id
       <div className="mt-6 space-y-4">
         {noteRows.map((n) => (
           <div key={n.id} className="bg-bg-card border border-border rounded-2xl p-5">
-            <div className="font-bold mb-2">{n.title?.trim() || "（無標題筆記）"}</div>
+            <div className="font-bold mb-2">{n.title?.trim() || t("untitledNote")}</div>
             {owned ? (
               <div className="prose-custom max-w-none text-sm" dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(n.content) }} />
             ) : (
-              <div className="text-sm text-fg-muted inline-flex items-center gap-1.5"><Lock size={13} /> 購買後解鎖全文</div>
+              <div className="text-sm text-fg-muted inline-flex items-center gap-1.5"><Lock size={13} /> {t("unlockAfterPurchase")}</div>
             )}
           </div>
         ))}
-        {noteRows.length === 0 && <div className="text-sm text-fg-muted text-center py-8">這個商品還沒有內容。</div>}
+        {noteRows.length === 0 && <div className="text-sm text-fg-muted text-center py-8">{t("productNoContent")}</div>}
       </div>
     </div>
   );

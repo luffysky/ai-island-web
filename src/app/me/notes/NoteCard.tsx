@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { ChevronDown, ChevronUp, ArrowRight, Pencil, Trash2, Copy, Check, LogOut, Eye, Pin, Repeat2, SlidersHorizontal, Globe } from "lucide-react";
 import { formatTW } from "@/lib/format-date";
@@ -68,6 +69,7 @@ export function NoteCard({
   refNotes?: { id: string; title: string; snippet: string }[];
   onOpenRef?: (id: string) => void;
 }) {
+  const t = useTranslations("notes");
   const owned = note._owned ?? (note.user_id === meId);
   const isViewer = !owned && note._role === "viewer";
   const [expanded, setExpanded] = useState(false);
@@ -109,7 +111,7 @@ export function NoteCard({
 
   const header = note.chapter_id
     ? `Ch ${String(note.chapter_id).padStart(2, "0")} · ${chapterTitle}`
-    : "自由筆記";
+    : t("freeNote");
 
   const jumpHref =
     note.chapter_id && note.lesson_id
@@ -187,7 +189,7 @@ export function NoteCard({
       {/* 複製成功懸浮氣泡（portal 到 body，避開卡片 rotate / overflow） */}
       {mounted && bubble && createPortal(
         <div key={bubble.id} className="note-copied-bubble" style={{ left: bubble.x, top: bubble.y - 14 }}>
-          ✓ 已複製
+          ✓ {t("copied")}
         </div>,
         document.body,
       )}
@@ -198,7 +200,7 @@ export function NoteCard({
         style={{ background: sk.tape, opacity: 0.6 * opacity, boxShadow: "0 1px 2px rgba(0,0,0,0.12)" }}
       />
       {note.pinned && (
-        <div className="absolute -top-2 -left-2 z-20 w-6 h-6 rounded-full flex items-center justify-center shadow" style={{ background: "#fbbf24", color: "#7c2d12" }} title="已置頂">
+        <div className="absolute -top-2 -left-2 z-20 w-6 h-6 rounded-full flex items-center justify-center shadow" style={{ background: "#fbbf24", color: "#7c2d12" }} title={t("pinned")}>
           <Pin size={12} className="fill-current" />
         </div>
       )}
@@ -227,12 +229,12 @@ export function NoteCard({
         <div className="flex items-center gap-1 shrink-0">
           {note._shared && (
             <span className="text-xs px-2 py-0.5 rounded" style={{ background: owned ? "rgba(37,99,235,0.16)" : "rgba(168,85,247,0.18)", color: "#222" }}>
-              🤝 {owned ? "共用中" : isViewer ? "共用·唯讀" : "共用"}
+              🤝 {owned ? t("sharing") : isViewer ? t("sharedReadonly") : t("shared")}
             </span>
           )}
           {note.is_public && (
             <span className="text-xs px-2 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.1)", color: "#333" }}>
-              公開
+              {t("public")}
             </span>
           )}
         </div>
@@ -245,7 +247,7 @@ export function NoteCard({
           onMouseUp={copySelection}
           className="cursor-copy select-text rounded-md -mx-1 px-1 hover:bg-black/[0.04] transition overflow-hidden"
           style={{ WebkitUserSelect: "text", userSelect: "text", maxHeight: expanded ? undefined : "7.8em" }}
-          title="點一下複製整則；或選取一段只複製那段"
+          title={t("copyHint")}
         >
           {/<[a-z][\s\S]*>/i.test(note.content) ? (
             <div
@@ -281,7 +283,7 @@ export function NoteCard({
       {/* 🔗 區塊引用（Notion page-mention 風格 inline pill）：即時解析標題 → 來源改動跟著變、點了開來源 */}
       {refNotes && refNotes.length > 0 && (
         <div className="mt-2 pt-2 border-t border-black/[0.06]">
-          <div className="text-[11px] mb-1" style={{ color: MUTED }}>引用 {refNotes.length} 則</div>
+          <div className="text-[11px] mb-1" style={{ color: MUTED }}>{t("refCount", { n: refNotes.length })}</div>
           <div className="flex flex-wrap gap-1.5">
             {refNotes.map((r) => (
               <button
@@ -308,14 +310,14 @@ export function NoteCard({
           // 環形（扇形）動作選單：中間旋鈕、展開時項目沿弧線環繞飛出（手機 / 桌機 / PWA 通用）
           type RItem = { key: string; icon: React.ReactNode; title: string; onClick?: (e: React.MouseEvent) => void; href?: string; bg?: string; color?: string };
           const items: RItem[] = [];
-          if (onToggleReview) items.push({ key: "review", icon: <Repeat2 size={14} className={srsDue ? "fill-current" : ""} />, title: srsDue ? `複習・${dueLabel(srsDue)}` : "加入間隔複習", onClick: onToggleReview, color: srsDue ? "#7c3aed" : "#444" });
-          if (onPin) items.push({ key: "pin", icon: <Pin size={14} className={note.pinned ? "fill-current" : ""} />, title: note.pinned ? "取消置頂" : "置頂", onClick: onPin, color: note.pinned ? "#b45309" : "#444" });
-          items.push({ key: "copy", icon: copied ? <Check size={14} /> : <Copy size={14} />, title: "複製整則", onClick: copyAll, color: copied ? "#15803d" : "#444" });
-          if (owned && onPublishBlog) items.push({ key: "blog", icon: <Globe size={14} />, title: note.is_public ? "再發佈成部落格" : "公開成部落格", onClick: () => onPublishBlog(), color: "#0ea5e9" });
-          if (onEdit) items.push({ key: "edit", icon: isViewer ? <Eye size={14} /> : <Pencil size={14} />, title: isViewer ? "查看" : "編輯", onClick: onEdit, color: "#444" });
-          if (onDelete) items.push({ key: "del", icon: owned ? <Trash2 size={14} /> : <LogOut size={14} />, title: owned ? "刪除" : "退出共用", onClick: onDelete, color: "#dc2626" });
-          items.push({ key: "expand", icon: expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />, title: expanded ? "收合" : "展開", onClick: () => setExpanded(!expanded), color: "#444" });
-          if (jumpHref) items.push({ key: "jump", icon: <ArrowRight size={14} />, title: "跳到該課", href: jumpHref, bg: "#1a1a1a", color: "#fff" });
+          if (onToggleReview) items.push({ key: "review", icon: <Repeat2 size={14} className={srsDue ? "fill-current" : ""} />, title: srsDue ? t("reviewDue", { label: dueLabel(srsDue) }) : t("addToReview"), onClick: onToggleReview, color: srsDue ? "#7c3aed" : "#444" });
+          if (onPin) items.push({ key: "pin", icon: <Pin size={14} className={note.pinned ? "fill-current" : ""} />, title: note.pinned ? t("unpin") : t("pin"), onClick: onPin, color: note.pinned ? "#b45309" : "#444" });
+          items.push({ key: "copy", icon: copied ? <Check size={14} /> : <Copy size={14} />, title: t("copyWhole"), onClick: copyAll, color: copied ? "#15803d" : "#444" });
+          if (owned && onPublishBlog) items.push({ key: "blog", icon: <Globe size={14} />, title: note.is_public ? t("republishBlog") : t("publishBlog"), onClick: () => onPublishBlog(), color: "#0ea5e9" });
+          if (onEdit) items.push({ key: "edit", icon: isViewer ? <Eye size={14} /> : <Pencil size={14} />, title: isViewer ? t("view") : t("edit"), onClick: onEdit, color: "#444" });
+          if (onDelete) items.push({ key: "del", icon: owned ? <Trash2 size={14} /> : <LogOut size={14} />, title: owned ? t("delete") : t("leaveShare"), onClick: onDelete, color: "#dc2626" });
+          items.push({ key: "expand", icon: expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />, title: expanded ? t("collapse") : t("expand"), onClick: () => setExpanded(!expanded), color: "#444" });
+          if (jumpHref) items.push({ key: "jump", icon: <ArrowRight size={14} />, title: t("jumpToLesson"), href: jumpHref, bg: "#1a1a1a", color: "#fff" });
 
           const N = items.length;
           const R = RADIAL_R;
@@ -394,7 +396,7 @@ export function NoteCard({
               </div>
               {/* 旋鈕的液態玻璃氣泡（收合 / 更多動作）— 放在旋鈕外層、不受 135° 旋轉影響 */}
               {hoveredItem === "__dial__" && (
-                <span className={tipCls} style={{ ...tipStyle, zIndex: 30 }}>{actionsOpen ? "收合" : "更多動作"}</span>
+                <span className={tipCls} style={{ ...tipStyle, zIndex: 30 }}>{actionsOpen ? t("collapse") : t("moreActions")}</span>
               )}
               {/* 中間旋鈕：展開旋轉 135°、變深色 */}
               <button
@@ -408,7 +410,7 @@ export function NoteCard({
                   color: actionsOpen ? "#fff" : "#444",
                   transform: `translate(-50%, -50%) rotate(${actionsOpen ? 135 : 0}deg)`,
                 }}
-                aria-label="更多動作"
+                aria-label={t("moreActions")}
                 aria-expanded={actionsOpen}
               >
                 <SlidersHorizontal size={15} />

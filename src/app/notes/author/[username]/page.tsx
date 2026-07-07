@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { FileText, ShoppingBag, BookOpen, Store } from "lucide-react";
 
@@ -7,6 +8,7 @@ export const dynamic = "force-dynamic";
 
 export default async function NoteAuthorPage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
+  const t = await getTranslations("notes");
   const admin = createSupabaseAdmin();
 
   // username 或 user id
@@ -35,16 +37,16 @@ export default async function NoteAuthorPage({ params }: { params: Promise<{ use
           <h1 className="text-2xl font-bold truncate">{name}</h1>
           {p.bio && <p className="text-sm text-fg-muted mt-0.5 line-clamp-2">{p.bio}</p>}
           <div className="flex items-center gap-3 text-xs text-fg-muted mt-1.5">
-            <span className="inline-flex items-center gap-0.5"><Store size={12} /> {rows.length} 商品</span>
-            <span className="inline-flex items-center gap-0.5"><FileText size={12} /> {publicNotes ?? 0} 公開筆記</span>
-            <Link href={`/blogs/${blogSlug}`} className="inline-flex items-center gap-0.5 hover:text-accent"><BookOpen size={12} /> 部落格</Link>
+            <span className="inline-flex items-center gap-0.5"><Store size={12} /> {t("productCount", { n: rows.length })}</span>
+            <span className="inline-flex items-center gap-0.5"><FileText size={12} /> {t("publicNoteCount", { n: publicNotes ?? 0 })}</span>
+            <Link href={`/blogs/${blogSlug}`} className="inline-flex items-center gap-0.5 hover:text-accent"><BookOpen size={12} /> {t("blog")}</Link>
           </div>
         </div>
       </div>
 
-      <h2 className="text-sm font-bold text-fg-muted mb-3">📦 上架的筆記商品</h2>
+      <h2 className="text-sm font-bold text-fg-muted mb-3">📦 {t("listedProducts")}</h2>
       {rows.length === 0 ? (
-        <div className="bg-bg-card border border-border rounded-2xl p-8 text-center text-sm text-fg-muted">還沒有上架商品。</div>
+        <div className="bg-bg-card border border-border rounded-2xl p-8 text-center text-sm text-fg-muted">{t("noProductsYet")}</div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {rows.map((pr) => (
@@ -53,7 +55,7 @@ export default async function NoteAuthorPage({ params }: { params: Promise<{ use
               {pr.description && <p className="text-xs text-fg-muted mt-1 line-clamp-2">{pr.description}</p>}
               <div className="mt-auto pt-3 flex items-center justify-between text-xs">
                 <span className="text-fg-muted inline-flex items-center gap-2"><span className="inline-flex items-center gap-0.5"><FileText size={11} /> {(pr.note_ids ?? []).length}</span><span className="inline-flex items-center gap-0.5"><ShoppingBag size={11} /> {pr.sales}</span></span>
-                <span className="font-bold text-accent">{pr.price_z === 0 ? "免費" : `${pr.price_z} Z`}</span>
+                <span className="font-bold text-accent">{pr.price_z === 0 ? t("free") : `${pr.price_z} Z`}</span>
               </div>
             </Link>
           ))}

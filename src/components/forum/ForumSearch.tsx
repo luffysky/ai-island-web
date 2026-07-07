@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Search, MessageSquare, Eye, Loader2 } from "lucide-react";
 
 export function ForumSearch() {
+  const t = useTranslations("forum");
   const [q, setQ] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -29,7 +31,7 @@ export function ForumSearch() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") run(); }}
-            placeholder="搜尋討論主題..."
+            placeholder={t("searchPlaceholder")}
             className="w-full bg-bg-card border border-border rounded-lg pl-9 pr-3 py-2 text-sm outline-none focus:border-accent"
           />
         </div>
@@ -39,7 +41,7 @@ export function ForumSearch() {
           className="px-4 py-2 rounded-lg bg-bg-card border border-border text-sm disabled:opacity-40 flex items-center gap-1 hover:border-accent"
         >
           {loading ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
-          搜尋
+          {t("searchButton")}
         </button>
       </div>
 
@@ -48,11 +50,11 @@ export function ForumSearch() {
         <div className="mt-3">
           {results.length === 0 ? (
             <p className="text-sm text-fg-muted text-center py-4">
-              找不到「{q}」相關的討論
+              {t("noSearchResults", { q })}
             </p>
           ) : (
             <div className="space-y-2">
-              <p className="text-xs text-fg-muted">找到 {results.length} 筆</p>
+              <p className="text-xs text-fg-muted">{t("searchResultCount", { n: results.length })}</p>
               {results.map((t) => (
                 <Link
                   key={t.id}
