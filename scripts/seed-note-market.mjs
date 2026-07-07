@@ -680,6 +680,148 @@ const PACKS = [
           "⚠️ 檢查破版：DevTools 開手機寬度，看 body 有沒有水平捲軸——有就是有東西超出，順著找那個元素。",
         ),
       },
+      {
+        title: "useState 進階：函式更新與批次",
+        content: P(
+          "用久 useState 會遇到「連續更新拿到舊值」的坑，懂這兩點就過關。",
+          "<b>用函式更新</b>：更新要「根據前一個值」時，用 <code>setCount(c =&gt; c + 1)</code> 而不是 <code>setCount(count + 1)</code>——後者可能拿到還沒更新的舊 count。",
+          "<b>批次更新</b>：React 會把同一個事件裡的多次 setState 合併、一次重畫（省效能）。所以同一函式裡連 <code>setCount(count+1)</code> 三次只會 +1；要 +3 就用函式更新版。",
+          "⚠️ state 別直接改（<code>arr.push(x)</code>）——要給「新的」：<code>setArr([...arr, x])</code>，React 靠「換了新物件」才知道要重畫。",
+        ),
+      },
+      {
+        title: "useEffect 進階：依賴、cleanup、什麼時候跑",
+        content: P(
+          "useEffect 是最多人踩雷的 hook，抓住三件事就穩。",
+          "<b>依賴陣列</b>決定何時重跑：<code>[]</code> 只跑一次（掛載時）、<code>[x]</code> x 變了才跑、不給陣列每次都跑。放進去的值要「effect 裡有用到的」。",
+          "<b>cleanup</b>：return 一個函式做收尾（清計時器、取消訂閱、abort 請求）——下次重跑前、或元件卸載時會呼叫。",
+          "⚠️ 兩大雷：① 依賴放不齊 → 拿到舊值（stale）；② effect 裡改了自己依賴的 state 又沒條件 → 無限迴圈。先想清楚「這效果什麼時候該重跑」。",
+        ),
+      },
+      {
+        title: "自訂 hook：把重複邏輯抽出來",
+        content: P(
+          "好幾個元件都在做「抓資料 + loading + error」？抽成自訂 hook 共用。",
+          "規則就兩條：函式名以 <code>use</code> 開頭、裡面可以用其他 hook。例：<code>function useUser(id){ const [user,setUser]=useState(); useEffect(...); return user; }</code>。",
+          "元件裡 <code>const user = useUser(id)</code> 一行搞定，重複邏輯集中在一處、好維護好測。",
+          "⚠️ hook 只能在「元件或其他 hook 的最上層」呼叫——不能放在 if/迴圈裡（順序要固定，React 靠順序記狀態）。",
+        ),
+      },
+      {
+        title: "元件組合：props 與 children",
+        content: P(
+          "React 的精神是「把 UI 拆成小積木、再拼起來」。",
+          "<b>props</b>：父傳給子的資料/設定，子唯讀（不能改 props）。像函式參數。",
+          "<b>children</b>：包在元件標籤中間的東西，用 <code>props.children</code> 拿到——做 Card、Modal、Layout 這種「殼」超好用：<code>&lt;Card&gt;裡面任何內容&lt;/Card&gt;</code>。",
+          "重複的 UI 抽成元件、用 props 客製差異，別複製貼上一堆相似的 JSX。",
+          "⚠️ props 往下傳太多層（prop drilling）很煩時，才考慮 Context——別一開始就上。",
+        ),
+      },
+      {
+        title: "清單渲染與 key：為什麼一定要 key",
+        content: P(
+          "用 <code>map</code> 畫一串元素時，每個要有獨一無二的 <code>key</code>，這不是可有可無。",
+          "React 靠 key 認出「誰是誰」，才能在資料變動時只更新變的、不整串重畫。",
+          "key 要用「穩定且唯一」的值——通常是資料的 <code>id</code>。",
+          "⚠️ <b>別用陣列 index 當 key</b>（除非清單永不增刪排序）——插入/刪除時 index 會錯位，導致 input 值錯亂、動畫跳掉這類詭異 bug。",
+        ),
+      },
+      {
+        title: "受控 vs 非受控 input：兩種表單寫法",
+        content: P(
+          "React 的 input 有兩派，先搞懂差別再選。",
+          "<b>受控</b>：值綁 state（<code>value={x} onChange={...}</code>），畫面永遠等於資料——好即時驗證、好連動，是主流。",
+          "<b>非受控</b>：值交給 DOM 自己管，要用時用 <code>ref</code> 去讀（<code>ref.current.value</code>）——程式碼少、適合簡單表單或整合非 React 的東西。",
+          "⚠️ 同一個 input 別一下給 <code>value</code> 一下不給——React 會警告「受控/非受控切換」。要嘛全程受控（給空字串當初始）、要嘛全程非受控。",
+        ),
+      },
+      {
+        title: "Context：跨層傳值，但別濫用",
+        content: P(
+          "登入狀態、主題、語言這種「很多層、很多元件都要用」的東西，用 props 一層層傳很痛苦，Context 解決這個。",
+          "三步：<code>createContext</code> 建、外層 <code>&lt;XProvider&gt;</code> 包起來提供值、內層 <code>useContext(X)</code> 直接拿。",
+          "適合：全域、少變動的東西（auth、theme、i18n）。",
+          "⚠️ Context 的值一變，「所有用到它的元件」都會重畫——別把「常變動的大物件」全塞一個 Context，會拖效能。頻繁變動的狀態用別的方案。",
+        ),
+      },
+      {
+        title: "Flexbox 常見版型速成",
+        content: P(
+          "把最常用的幾種 flex 版型記成「口訣」，切版超快。",
+          "水平置中一個東西：父層 <code>display:flex; justify-content:center;</code>。垂直也置中再加 <code>align-items:center;</code>。",
+          "兩端對齊（logo 左、選單右）：<code>justify-content:space-between;</code>。",
+          "一排放不下自動換行：<code>flex-wrap:wrap;</code> + 子項 <code>flex:1 1 200px</code>（最小 200、能長能縮）。",
+          "⚠️ 子項被內容頂破不縮，加 <code>min-width:0</code>；等分不平均，檢查是不是有子項設了固定寬。",
+        ),
+      },
+      {
+        title: "CSS Grid 進階：用 template-areas 排版",
+        content: P(
+          "整頁佈局（header/側欄/內容/footer）用 Grid 的「命名區域」最直覺。",
+          "父層畫地圖：<code>grid-template-areas: \"header header\" \"nav main\" \"footer footer\";</code> 再定義欄寬列高。",
+          "子項認位置：<code>.header{ grid-area: header; }</code>——像在填字，一眼看懂版面。",
+          "RWD 超好改：在 media query 裡「重畫一張 areas 地圖」，整個版面就換佈局，不用動 HTML。",
+          "⚠️ areas 裡每一列的欄數要一致（用 <code>.</code> 佔位空格）；名字對不上會整個失效。",
+        ),
+      },
+      {
+        title: "sticky header 與捲動行為",
+        content: P(
+          "「捲動時頂部導覽黏住」用 sticky 最簡單，但有幾個常見卡點。",
+          "作法：<code>position:sticky; top:0; z-index:10;</code>——平常正常排，捲到頂就黏住。",
+          "要生效：sticky 元素的「捲動祖先」不能有 <code>overflow:hidden/auto</code>（會把它關在裡面黏不住）；也要有 <code>top</code> 值。",
+          "錨點被 header 蓋住：用 <code>scroll-margin-top</code> 給目標留出 header 高度。",
+          "⚠️ 「我 sticky 沒黏住」十之八九是某個父層有 overflow 或高度不夠——順著父層檢查。",
+        ),
+      },
+      {
+        title: "響應式圖片：object-fit 與 aspect-ratio",
+        content: P(
+          "圖片在不同尺寸容器裡「不變形、不破版」的幾招。",
+          "<code>object-fit:cover</code>：填滿容器、超出裁掉（不變形），做封面圖、頭像最常用；<code>contain</code> 是完整顯示、留白。",
+          "<code>aspect-ratio:16/9</code>：固定長寬比，容器寬度變、高度自動跟著算——避免圖載入前後版面跳動。",
+          "圖片基本永遠加 <code>max-width:100%; height:auto;</code> 別溢出。",
+          "⚠️ 用 <code>object-fit</code> 前圖片要有明確的寬高或 aspect-ratio，不然它不知道要 fit 進多大的框。",
+        ),
+      },
+      {
+        title: "CSS 偽類：:hover :focus :nth-child :not",
+        content: P(
+          "偽類讓你「依狀態/位置」套樣式，不用加一堆 class。",
+          "狀態：<code>:hover</code> 滑過、<code>:focus</code> 被聚焦（鍵盤/點擊）、<code>:disabled</code>、<code>:checked</code>。",
+          "位置：<code>:first-child</code>、<code>:last-child</code>、<code>:nth-child(2n)</code> 偶數列（斑馬紋超好用）。",
+          "排除：<code>:not(.active)</code> 除了 active 的都套。",
+          "⚠️ 無障礙：互動元素一定也要有 <code>:focus</code> 樣式（很多人只做 hover），鍵盤使用者才看得到「現在選到哪」。別 <code>outline:none</code> 卻不補替代焦點樣式。",
+        ),
+      },
+      {
+        title: "localStorage vs cookie vs sessionStorage",
+        content: P(
+          "三種瀏覽器存資料的方式，用途不一樣。",
+          "<b>localStorage</b>：存瀏覽器、關掉還在、只給前端 JS 用。適合：主題、草稿、非機密偏好。約 5MB。",
+          "<b>sessionStorage</b>：一樣但「關掉分頁就清」。適合：一次性暫存。",
+          "<b>cookie</b>：會「自動跟著每個請求送到伺服器」。適合：登入 token（設 <code>HttpOnly</code> 讓 JS 讀不到、更安全）。但每次請求都帶、別塞大東西。",
+          "⚠️ 登入憑證別放 localStorage（JS 讀得到＝XSS 能偷）——放 HttpOnly cookie。localStorage 只放不敏感的東西。",
+        ),
+      },
+      {
+        title: "載入 / 錯誤 / 空：三種狀態都要畫",
+        content: P(
+          "抓資料的畫面，新手常只做「成功」那一種，其他三種一發生就白畫面或壞掉。",
+          "至少處理：<b>loading</b>（骨架/轉圈）、<b>error</b>（友善訊息 + 重試按鈕）、<b>empty</b>（「還沒有資料」的空狀態）、成功。",
+          "順序：先判 loading → 再判 error → 再判 empty → 最後才畫資料。",
+          "⚠️ 別假設「一定有資料」——<code>data.map</code> 在 data 還是 undefined（載入中）時會直接爆。先給預設 <code>data ?? []</code> 或先擋 loading。",
+        ),
+      },
+      {
+        title: "memo / useMemo / useCallback：別過早優化",
+        content: P(
+          "這三個是「避免不必要的重算/重畫」的效能工具，但先講重點：<b>大部分時候你不需要它們</b>。",
+          "<code>useMemo</code> 記住「算很久的結果」、<code>useCallback</code> 記住「函式本體」、<code>React.memo</code> 讓元件「props 沒變就不重畫」。",
+          "什麼時候才用：真的量出來卡（很大的清單、很重的計算、傳給 memo 子元件的函式）再加，對症下藥。",
+          "⚠️ 到處亂包 useMemo/useCallback 反而增加負擔、程式更難讀——先寫簡單版、真的慢再優化。過早優化是萬惡之源。",
+        ),
+      },
     ],
   },
   {
