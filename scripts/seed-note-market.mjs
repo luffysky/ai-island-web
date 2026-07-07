@@ -152,6 +152,44 @@ const PACKS = [
           "⚠️ 別把自己的檔名取得跟標準庫一樣（<code>json.py</code>、<code>random.py</code>），會 import 到自己、噴莫名的錯。",
         ),
       },
+      {
+        title: "try / except：程式別一出錯就整個掛掉",
+        content: P(
+          "有些錯誤你「預期它可能發生」（檔案不存在、網路斷線、使用者亂輸入），這種不該讓整個程式當掉，要接住它。",
+          "<code>try:</code> 裡放「可能出錯的動作」，<code>except 錯誤類型 as e:</code> 放「出錯時怎麼辦」。例如 <code>try: n = int(s) except ValueError: n = 0</code>——轉數字失敗就當 0。",
+          "接特定類型，別用一個 <code>except:</code> 把所有錯都吞掉——那樣連你自己寫錯的 bug 都被藏起來，超難查。",
+          "有「不管成功失敗都要做」的收尾（關檔、關連線）放 <code>finally:</code>。",
+          "⚠️ 我踩過：把一大段都包在 try 裡，結果哪一行出錯都分不出來。try 盡量只包「真的會出錯的那一兩行」。",
+        ),
+      },
+      {
+        title: "match-case：加強版的 if（Python 3.10+）",
+        content: P(
+          "很多人第一次看到 match-case 會愣住：「不是有 if 了嗎？」差別在——它會「照資料的形狀比對，還順手把裡面的東西拆出來」。",
+          "普通 if 只能比「值相不相等」；match-case 可以問「這筆資料長得像哪一種？像的話把它的欄位抓出來用」。",
+          "以座標 <code>(x, y)</code> 為例：<code>case (0, 0)</code> 是原點；<code>case (x, 0)</code> 在 X 軸、<b>同時</b>把 x 綁出來用；<code>case (0, y)</code> 在 Y 軸；<code>case (x, y)</code> 一般點；<code>case _</code> 是「以上都不是」（<code>_</code> 是萬用）。",
+          "用 if 寫會是 <code>if p==(0,0): ... elif p[1]==0: x=p[0] ...</code> 又臭又長；match-case 把「判斷形狀 + 取出內容」合成一件事，讀起來像在描述資料。",
+          "⚠️ 什麼時候用：處理「有結構的資料」（座標、JSON、指令、狀態）最舒服；只是比幾個值，用 if 就好、不用硬上。",
+        ),
+      },
+      {
+        title: "型別提示 type hints：讓編輯器幫你抓錯",
+        content: P(
+          "Python 不強制型別，但你可以「標註」給人和工具看：<code>def add(a: int, b: int) -> int:</code>——參數是 int、回傳也是 int。",
+          "好處：編輯器會即時提示、你傳錯型別當場看到紅線，不用等執行才爆。變數也能標 <code>name: str = \"小明\"</code>。",
+          "常見寫法：<code>list[int]</code>、<code>dict[str, int]</code>、可有可無用 <code>str | None</code>。",
+          "⚠️ 它只是「提示」，不會真的擋你亂傳（Python 執行時不檢查）。要真的檢查得配 mypy 這類工具，但光是有提示，開發就順很多。",
+        ),
+      },
+      {
+        title: "開檔案用 with：記得關，別讓它一直開著",
+        content: P(
+          "讀寫檔案最容易忘的就是「關檔」。忘了關可能資料沒寫進去、或占著檔案不放。",
+          "用 <code>with</code> 就不用自己關：<code>with open('a.txt', 'r', encoding='utf-8') as f: data = f.read()</code>——離開這個區塊，Python 自動幫你關。",
+          "模式：<code>'r'</code> 讀、<code>'w'</code> 覆蓋寫、<code>'a'</code> 附加。中文檔一定加 <code>encoding='utf-8'</code>，不然容易亂碼。",
+          "⚠️ 這個「進來自動開、離開自動收」的東西叫 context manager，資料庫連線、鎖也常這樣用，看到 <code>with</code> 就知道它會幫你收尾。",
+        ),
+      },
     ],
   },
   {
