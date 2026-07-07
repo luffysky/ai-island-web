@@ -34,7 +34,8 @@ NEWEBPAY_HASH_IV=           # HashIV（16 碼）
 
 # ── Stripe（一次性 + 訂閱 + Link）──
 STRIPE_SECRET_KEY=          # sk_test_... / sk_live_...
-STRIPE_WEBHOOK_SECRET=      # whsec_...（Stripe → Webhooks 拿）
+STRIPE_WEBHOOK_SECRET=      # whsec_...：訂閱 endpoint /api/stripe/webhook 的 signing secret
+STRIPE_STORE_WEBHOOK_SECRET= # whsec_...：一次性 endpoint /api/payments/webhook/stripe 的 signing secret（沒設會 fallback 用上面那個）
 STRIPE_PRICE_ID_MONTHLY=    # price_...（Pro 月訂閱，訂閱才需要）
 STRIPE_PRICE_ID_YEARLY=     # price_...（Pro 年訂閱）
 STRIPE_PRICE_ID_SINGLE=     # price_...（單章，選用）
@@ -101,9 +102,7 @@ PAYMENTS_LIVE=1            # 綠界/藍新：設 1=打正式；不設或非 1=�
 - **Webhook endpoints**（Developers → Webhooks → Add endpoint），依你要賣什麼各加：
   - 一次性儲值：`https://<你的網域>/api/payments/webhook/stripe`，勾事件 `checkout.session.completed`
   - Pro 訂閱：`https://<你的網域>/api/stripe/webhook`，勾事件 `checkout.session.completed`、`customer.subscription.updated`、`customer.subscription.deleted`、`invoice.paid`
-  - ⚠️ **注意**：Stripe 每個 endpoint 各有自己的 signing secret，但程式目前**兩條路徑共用** `STRIPE_WEBHOOK_SECRET`。建議二選一：
-    1. **只用一種**（例：訂閱走 Stripe、一次性儲值走綠界/藍新）→ 只註冊那一個 endpoint、填它的 secret；或
-    2. 若兩個都要，需改 code 讓兩條路徑各讀一個 secret 環境變數。
+  - ✅ **兩個 endpoint 各有自己的 signing secret，程式已支援分開**：訂閱 endpoint 的 secret 填 `STRIPE_WEBHOOK_SECRET`、一次性 endpoint 的填 `STRIPE_STORE_WEBHOOK_SECRET`。只用一個時，`STRIPE_STORE_WEBHOOK_SECRET` 留空會自動 fallback 用 `STRIPE_WEBHOOK_SECRET`。
 - **啟用 Link（`https://stripe.com/payments/link` / `link.com`）**：**Settings → Payment methods → 打開 Link**。程式沒有寫死 `payment_method_types`，所以 Dashboard 開了 Link，Checkout 頁就會自動出現，**不用改任何 code**。
   - 幣別為 **TWD**：Link 卡片模式支援度廣，但以 Dashboard 那個 Link 開關能否打開為準（能開＝你帳號可用）。
 - **locale / 幣別**：程式已設 `locale: zh-TW`、`currency: twd`，後台無需改。

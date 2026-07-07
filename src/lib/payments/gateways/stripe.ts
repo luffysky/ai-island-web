@@ -32,9 +32,13 @@ export async function stripeCheckout(order: Order): Promise<{ kind: "redirect"; 
   return { kind: "redirect", url: session.url || `${siteUrl()}/store?err=stripe` };
 }
 
-/** 用 webhook 簽章驗證。回付款結果。constructEvent 失敗會 throw。 */
+/** 用 webhook 簽章驗證。回付款結果。constructEvent 失敗會 throw。
+ * 商店(一次性儲值/單章)的 Stripe webhook 用**獨立** secret `STRIPE_STORE_WEBHOOK_SECRET`；
+ * 沒設就 fallback 到 `STRIPE_WEBHOOK_SECRET`（單一 endpoint 舊設定仍可運作）。
+ * 訂閱的 webhook（/api/stripe/webhook）另外讀 STRIPE_WEBHOOK_SECRET，兩者互不影響。 */
 export function stripeVerify(rawBody: string, signature: string): { ok: boolean; orderNo: string; gatewayRef: string; amount?: number } {
-  const event = stripe().webhooks.constructEvent(rawBody, signature, process.env.STRIPE_WEBHOOK_SECRET || "");
+  const secret = process.env.STRIPE_STORE_WEBHOOK_SECRET || process.env.STRIPE_WEBHOOK_SECRET || "";
+  const event = stripe().webhooks.constructEvent(rawBody, signature, secret);
   if (event.type === "checkout.session.completed") {
     const s = event.data.object as Stripe.Checkout.Session;
     return {
