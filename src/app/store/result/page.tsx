@@ -1,11 +1,17 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { CheckCircle2, Clock, XCircle, Coins } from "lucide-react";
 import { getOrderByNo } from "@/lib/payments/orders";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "付款結果 | AI 島" };
+
+export async function generateMetadata() {
+  const t = await getTranslations("store");
+  return { title: t("resultMetaTitle") };
+}
 
 export default async function ResultPage({ searchParams }: { searchParams: Promise<{ no?: string }> }) {
+  const t = await getTranslations("store");
   const { no } = await searchParams;
   const order = no ? await getOrderByNo(no) : null;
   const status = order?.status ?? "unknown";
@@ -17,26 +23,26 @@ export default async function ResultPage({ searchParams }: { searchParams: Promi
       {paid ? (
         <>
           <CheckCircle2 size={56} className="mx-auto text-emerald-500" />
-          <h1 className="text-2xl font-bold">付款成功</h1>
-          <p className="text-fg-muted">{order?.product_name} 已入帳。</p>
+          <h1 className="text-2xl font-bold">{t("payOk")}</h1>
+          <p className="text-fg-muted">{t("payOkDesc", { name: order?.product_name ?? "" })}</p>
         </>
       ) : pending ? (
         <>
           <Clock size={56} className="mx-auto text-amber-500" />
-          <h1 className="text-2xl font-bold">處理中</h1>
-          <p className="text-fg-muted">若已完成付款，Z幣/Pro 會在數秒內入帳。可稍後重新整理。</p>
+          <h1 className="text-2xl font-bold">{t("payPending")}</h1>
+          <p className="text-fg-muted">{t("payPendingDesc")}</p>
         </>
       ) : (
         <>
           <XCircle size={56} className="mx-auto text-red-500" />
-          <h1 className="text-2xl font-bold">找不到訂單</h1>
-          <p className="text-fg-muted">若你已付款但未入帳，請聯絡我們並提供訂單編號。</p>
+          <h1 className="text-2xl font-bold">{t("orderNotFound")}</h1>
+          <p className="text-fg-muted">{t("orderNotFoundDesc")}</p>
         </>
       )}
-      {order && <div className="text-xs text-fg-muted">訂單編號：{order.order_no}</div>}
+      {order && <div className="text-xs text-fg-muted">{t("orderNo", { no: order.order_no })}</div>}
       <div className="flex items-center justify-center gap-2 pt-2">
-        <Link href="/store" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-bg-card border border-border text-sm hover:text-accent"><Coins size={15} /> 回商店</Link>
-        <Link href="/creator-island" className="px-4 py-2 rounded-full bg-accent text-white text-sm">回島</Link>
+        <Link href="/store" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-bg-card border border-border text-sm hover:text-accent"><Coins size={15} /> {t("backToStore")}</Link>
+        <Link href="/creator-island" className="px-4 py-2 rounded-full bg-accent text-white text-sm">{t("backToIsland")}</Link>
       </div>
     </div>
   );

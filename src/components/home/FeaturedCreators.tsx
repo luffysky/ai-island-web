@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { Sparkles, Heart, MessageCircle } from "lucide-react";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
@@ -37,9 +38,10 @@ async function getFeatured(): Promise<FeaturedPost[]> {
   }
 }
 
-const authorName = (a: FeaturedPost["author"]) => a?.display_name || a?.username || "創作者";
+const authorName = (a: FeaturedPost["author"], fallback: string) => a?.display_name || a?.username || fallback;
 
 export async function FeaturedCreators() {
+  const t = await getTranslations("home");
   const posts = await getFeatured();
   // 真沒作品就整區不顯示（graceful empty state — 首頁不放空殼）
   if (posts.length === 0) return null;
@@ -47,9 +49,9 @@ export async function FeaturedCreators() {
   return (
     <section className="max-w-7xl mx-auto px-6 py-16 border-b border-border">
       <h2 className="text-3xl font-bold mb-2 inline-flex w-full items-center justify-center gap-2 reveal">
-        <Sparkles size={28} className="text-accent" /> 創作者精選
+        <Sparkles size={28} className="text-accent" /> {t("featuredHeading")}
       </h2>
-      <p className="text-center text-fg-muted mb-8 reveal">島民們最近的公開作品，點進去看看</p>
+      <p className="text-center text-fg-muted mb-8 reveal">{t("featuredSubtitle")}</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {posts.map((p, idx) => {
@@ -66,7 +68,7 @@ export async function FeaturedCreators() {
                 <img src={cover} alt="" className="w-full aspect-[16/10] object-cover" />
               ) : (
                 <div className="w-full aspect-[16/10] bg-gradient-to-br from-accent/10 to-accent-2/10 grid place-items-center text-fg-muted text-sm px-5 text-center line-clamp-4">
-                  {snippet || "來 AI 島看更多創作"}
+                  {snippet || t("featuredEmptyCover")}
                 </div>
               )}
               <div className="flex flex-col gap-2 p-4 flex-1">
@@ -79,10 +81,10 @@ export async function FeaturedCreators() {
                     <img src={p.author.avatar_url} alt="" className="w-6 h-6 rounded-full object-cover" />
                   ) : (
                     <div className="w-6 h-6 rounded-full bg-accent/20 grid place-items-center text-[11px]">
-                      {authorName(p.author)[0]}
+                      {authorName(p.author, t("creatorFallback"))[0]}
                     </div>
                   )}
-                  <span className="text-xs text-fg-muted truncate flex-1">{authorName(p.author)}</span>
+                  <span className="text-xs text-fg-muted truncate flex-1">{authorName(p.author, t("creatorFallback"))}</span>
                   <span className="text-[11px] text-fg-muted inline-flex items-center gap-1">
                     <Heart size={12} /> {p.likes_count}
                   </span>
@@ -101,7 +103,7 @@ export async function FeaturedCreators() {
           href="/creator-island/community"
           className="inline-block px-6 py-3 rounded-full bg-accent text-black font-semibold hover:opacity-90 transition glow-accent"
         >
-          逛創作者社群
+          {t("featuredCommunityCta")}
         </Link>
       </div>
     </section>

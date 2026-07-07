@@ -13,6 +13,7 @@ import {
 } from "@/lib/seo-jsonld";
 import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
@@ -90,12 +91,13 @@ export default async function ChapterPage({ params }: { params: Promise<{ id: st
     const { data: { user } } = await sb.auth.getUser();
     const allowed = user ? await hasEarlyAccess(user.id) : false;
     if (!allowed) {
+      const t = await getTranslations("chapters");
       return (
         <main className="max-w-lg mx-auto px-4 py-24 text-center space-y-4">
           <div className="text-5xl">🔒</div>
-          <h1 className="text-xl font-bold">這章還沒正式發布</h1>
-          <p className="text-sm text-fg-muted">用商店的「章節搶先」就能提前看整章。</p>
-          <a href="/store?tab=redeem" className="inline-block px-5 py-2.5 rounded-full bg-accent text-white font-semibold">去解鎖</a>
+          <h1 className="text-xl font-bold">{t("notPublishedTitle")}</h1>
+          <p className="text-sm text-fg-muted">{t("notPublishedDesc")}</p>
+          <a href="/store?tab=redeem" className="inline-block px-5 py-2.5 rounded-full bg-accent text-white font-semibold">{t("unlock")}</a>
         </main>
       );
     }

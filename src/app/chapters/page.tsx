@@ -6,6 +6,7 @@ import { itemListSchema, breadcrumbSchema, jsonLdScript } from "@/lib/seo-jsonld
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
@@ -32,6 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ChaptersPage() {
+  const t = await getTranslations("chapters");
   const chapters = await getChapterMetas();
   const lessonCount = chapters.reduce((s, c) => s + c.lessonCount, 0);
 
@@ -53,8 +55,8 @@ export default async function ChaptersPage() {
     <div className="max-w-7xl mx-auto px-6 py-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdScript(ld)} />
       <div className="text-center mb-8 reveal">
-        <h1 className="text-3xl font-bold mb-2">📚 所有章節</h1>
-        <p className="text-sm text-fg-muted">{chapters.length} 章 × 7 大區域、共 {lessonCount} 個 lesson</p>
+        <h1 className="text-3xl font-bold mb-2">📚 {t("allChapters")}</h1>
+        <p className="text-sm text-fg-muted">{t("chaptersSummary", { count: chapters.length, lessons: lessonCount })}</p>
       </div>
 
       {/* C 方案：新手「從這開始」CTA 卡 — 第一次來不知道從哪開始 */}
@@ -67,14 +69,14 @@ export default async function ChaptersPage() {
           <div className="flex-1 min-w-0">
             <div className="text-[10px] text-fg-muted inline-flex items-center gap-1 mb-1">
               <Sparkles size={10} className="text-accent" />
-              新手友善
+              {t("beginnerFriendly")}
             </div>
-            <h2 className="text-lg font-bold mb-1">不知道從哪開始？先看 Ch00「環境準備」</h2>
+            <h2 className="text-lg font-bold mb-1">{t("startHereTitle")}</h2>
             <p className="text-xs text-fg-muted leading-relaxed">
-              連終端機是什麼都不知道、怎麼裝 Python？這章給你最基本的「會用終端機 + 會推 GitHub」、所有後面課的基礎。
+              {t("startHereDesc")}
             </p>
             <div className="text-xs text-accent mt-2 inline-flex items-center gap-1 font-bold group-hover:gap-2 transition-all">
-              開始第一課 <ArrowRight size={12} />
+              {t("startFirstLesson")} <ArrowRight size={12} />
             </div>
           </div>
         </div>

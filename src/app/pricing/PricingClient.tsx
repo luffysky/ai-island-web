@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { Check, Gift, Sparkles, BookOpen, Bot, TerminalSquare, Trophy, RefreshCw, ArrowRight } from "lucide-react";
 import { BackgroundBeams } from "@/components/ui/BackgroundBeams";
 import { Sparkles as SparklesParticles } from "@/components/ui/Sparkles";
@@ -10,23 +11,25 @@ import { SITE_STATS } from "@/lib/site-stats";
 const CH = SITE_STATS.chapterCount;
 const LESSONS = SITE_STATS.lessonCount;
 
-const INCLUDED: { icon: typeof BookOpen; title: string; desc: string }[] = [
-  { icon: BookOpen, title: `全 ${CH} 章 · ${LESSONS}+ lesson`, desc: "從零基礎到全端 + AI，完整教材全部開放。" },
-  { icon: Bot, title: "無限 AI 對話導師", desc: "綠寶 / 肥仔 / 菇寶 讀過整本 AI 島，卡關直接問。" },
-  { icon: TerminalSquare, title: "程式碼 Playground", desc: "Python / JS / 多語言即時執行，邊看邊動手。" },
-  { icon: Trophy, title: "每日任務 · 連勝 · 排行榜", desc: "簽到、做任務、升等、跟全島一起衝。" },
-  { icon: RefreshCw, title: "每月持續更新", desc: "新章節、新內容持續補上，一樣不收費。" },
-];
-
-const FAQ: { q: string; a: string }[] = [
-  { q: "要付費嗎？", a: "完全免費。全部章節、lesson、AI 導師、Playground，一毛都不用付，也沒有隱藏訂閱或單章購買。" },
-  { q: "需要註冊嗎？", a: "大部分內容可以直接看。註冊後才能存學習進度、做筆記、跟 AI 導師對話、上排行榜——註冊一樣免費。" },
-  { q: "AI 對話有次數限制嗎？", a: "日常學習不設每日上限。系統仍保有整體用量保護以避免濫用，正常使用不會碰到。" },
-  { q: "內容會持續更新嗎？", a: "會。章節與 lesson 每月持續補充、修訂；已經上線的內容不會之後又改成收費。" },
-  { q: "為什麼免費？", a: "站長希望更多人能無門檻學程式與 AI。你學得開心、願意分享給朋友，就是最好的回饋。" },
-];
-
 export function PricingClient() {
+  const t = useTranslations("store");
+
+  const INCLUDED: { icon: typeof BookOpen; title: string; desc: string }[] = [
+    { icon: BookOpen, title: t("incAllTitle", { ch: CH, lessons: LESSONS }), desc: t("incAllDesc") },
+    { icon: Bot, title: t("incTutorTitle"), desc: t("incTutorDesc") },
+    { icon: TerminalSquare, title: t("incPlaygroundTitle"), desc: t("incPlaygroundDesc") },
+    { icon: Trophy, title: t("incQuestTitle"), desc: t("incQuestDesc") },
+    { icon: RefreshCw, title: t("incUpdateTitle"), desc: t("incUpdateDesc") },
+  ];
+
+  const FAQ: { q: string; a: string }[] = [
+    { q: t("faqPayQ"), a: t("faqPayA") },
+    { q: t("faqSignupQ"), a: t("faqSignupA") },
+    { q: t("faqLimitQ"), a: t("faqLimitA") },
+    { q: t("faqUpdateQ"), a: t("faqUpdateA") },
+    { q: t("faqWhyQ"), a: t("faqWhyA") },
+  ];
+
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* 背景 */}
@@ -55,17 +58,17 @@ export function PricingClient() {
           </motion.div>
 
           <div className="inline-flex items-center gap-1.5 px-3 py-1 mb-4 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-semibold">
-            <Sparkles size={12} /> 不販售 · 不訂閱 · 沒有付費牆
+            <Sparkles size={12} /> {t("heroBadge")}
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-3 tracking-tight">
-            全部課程
+            {t("heroTitle")}
             <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent ml-2">
-              100% 免費
+              {t("heroTitleAccent")}
             </span>
           </h1>
           <p className="text-base sm:text-lg text-fg-muted max-w-2xl mx-auto leading-relaxed">
-            全 {CH} 章、{LESSONS}+ lesson、AI 導師、Playground——全部開放，直接學。
+            {t("heroSubtitle", { ch: CH, lessons: LESSONS })}
           </p>
 
           {/* CTA */}
@@ -74,13 +77,13 @@ export function PricingClient() {
               href="/chapters"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 text-black shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:scale-[1.02] transition"
             >
-              開始學習 <ArrowRight size={16} />
+              {t("ctaStart")} <ArrowRight size={16} />
             </Link>
             <Link
               href="/signup"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold border-2 border-border bg-bg/50 hover:border-accent/50 hover:bg-accent/5 transition"
             >
-              免費註冊
+              {t("ctaSignup")}
             </Link>
           </div>
         </motion.header>
@@ -94,7 +97,7 @@ export function PricingClient() {
         >
           <h2 className="text-lg font-bold mb-5 flex items-center gap-2">
             <Check size={18} className="text-emerald-500 dark:text-emerald-400" />
-            免費包含全部這些
+            {t("includesTitle")}
           </h2>
           <ul className="grid sm:grid-cols-2 gap-4">
             {INCLUDED.map((item, i) => {
@@ -129,7 +132,7 @@ export function PricingClient() {
           className="mt-16 rounded-2xl bg-bg-card/80 backdrop-blur border border-border p-6"
         >
           <h3 className="font-bold mb-4 flex items-center gap-2 text-lg">
-            <span>❓</span> 常見問題
+            <span>❓</span> {t("faqTitle")}
           </h3>
           <div className="space-y-1 text-sm">
             {FAQ.map((item) => (
@@ -145,9 +148,9 @@ export function PricingClient() {
         </motion.div>
 
         <p className="text-[11px] text-fg-muted text-center mt-8 max-w-md mx-auto leading-relaxed">
-          有問題或想回饋？到{" "}
+          {t("footerBefore")}{" "}
           <Link href="/me/support" className="text-accent hover:underline">/me/support</Link>{" "}
-          留言，站長會看。
+          {t("footerAfter")}
         </p>
       </div>
     </div>

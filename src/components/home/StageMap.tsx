@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 import { STAGE_COLORS } from "@/lib/utils";
 import { BookOpen, Sparkles, Map, Landmark, Castle, Settings, Globe, Briefcase, Bot, type LucideIcon } from "lucide-react";
 
@@ -13,28 +14,29 @@ const STAGE_ICONS: Record<number, LucideIcon> = {
 };
 
 const STAGES = [
-  { stage: 1, subtitle: "前端入門與網頁基礎", desc: "HTML、CSS、UI/UX、JavaScript 基礎，先把網頁與互動的底子打穩。", color: "from-green-400 to-cyan-400", chapters: "Ch01-08" },
-  { stage: 2, subtitle: "互動介面與現代前端", desc: "TypeScript、React、Next.js、狀態管理與前端路由，開始打造可維護的產品介面。", color: "from-cyan-400 to-purple-400", chapters: "Ch09-15" },
-  { stage: 3, subtitle: "資料、API 與後端核心", desc: "資料庫、認證、API、安全與部署，把前端作品接上真正的服務能力。", color: "from-purple-400 to-pink-400", chapters: "Ch16-25" },
-  { stage: 4, subtitle: "多語言與跨平台能力", desc: "Python、資料分析、爬蟲、Go、Java、PHP 等工具，擴大解題範圍。", color: "from-pink-400 to-orange-400", chapters: "Ch26-38" },
-  { stage: 5, subtitle: "產品、商業與系統思維", desc: "金流、營運、專案管理、團隊協作與商業化，把技術變成可運作的產品。", color: "from-orange-400 to-yellow-400", chapters: "Ch39-50" },
-  { stage: 6, subtitle: "AI 應用與高階整合", desc: "AI 工具、Agent、自動化、個人品牌與一人公司，整合前面能力做出更大成果。", color: "from-yellow-400 to-green-400", chapters: "Ch51-60" },
+  { stage: 1, color: "from-green-400 to-cyan-400", chapters: "Ch01-08" },
+  { stage: 2, color: "from-cyan-400 to-purple-400", chapters: "Ch09-15" },
+  { stage: 3, color: "from-purple-400 to-pink-400", chapters: "Ch16-25" },
+  { stage: 4, color: "from-pink-400 to-orange-400", chapters: "Ch26-38" },
+  { stage: 5, color: "from-orange-400 to-yellow-400", chapters: "Ch39-50" },
+  { stage: 6, color: "from-yellow-400 to-green-400", chapters: "Ch51-60" },
 ];
 
-export function StageMap() {
+export async function StageMap() {
+  const t = await getTranslations("home");
   return (
     <section className="border-b border-border py-16 bg-gradient-to-b from-transparent to-bg-elevated/20">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-10 reveal">
-          <h2 className="text-3xl font-bold mb-2 inline-flex items-center gap-2"><Map size={28} className="text-accent" /> AI 島技術地圖</h2>
-          <p className="text-fg-muted">從網頁基礎到 AI 整合、六大技術區域串起完整學習路線</p>
+          <h2 className="text-3xl font-bold mb-2 inline-flex items-center gap-2"><Map size={28} className="text-accent" /> {t("stageMapHeading")}</h2>
+          <p className="text-fg-muted">{t("stageMapSubtitle")}</p>
         </div>
 
         {/* 地圖總覽圖 */}
         <div className="mb-12">
           <Image
             src="/mascot/adventure-map.png"
-            alt="AI 島技術地圖：6 大技術區域"
+            alt={t("stageMapAlt")}
             width={1200}
             height={700}
             sizes="(max-width: 768px) 100vw, 896px"
@@ -65,9 +67,9 @@ export function StageMap() {
                     <h3 className="text-lg font-bold">{stage.name}</h3>
                   </div>
                 </div>
-                <div className="text-sm font-medium mb-2">{item.subtitle}</div>
+                <div className="text-sm font-medium mb-2">{t(`stage${item.stage}Subtitle`)}</div>
                 <p className="text-xs text-fg-muted leading-relaxed mb-3">
-                  {item.desc}
+                  {t(`stage${item.stage}Desc`)}
                 </p>
                 <div className="text-xs font-mono text-accent inline-flex items-center gap-1">
                   <BookOpen size={14} /> {item.chapters}
@@ -78,7 +80,7 @@ export function StageMap() {
         </div>
 
         <div className="mt-8 text-sm text-fg-muted inline-flex w-full items-center justify-center gap-1.5">
-          <Sparkles size={14} /> 基礎 × 前端 × 後端 × 多語言 × 商業 × AI <Sparkles size={14} />
+          <Sparkles size={14} /> {t("stageMapFooter")} <Sparkles size={14} />
         </div>
       </div>
     </section>

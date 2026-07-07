@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { BackgroundBeams } from "@/components/ui/BackgroundBeams";
 import { Sparkles } from "@/components/ui/Sparkles";
@@ -17,6 +18,7 @@ type HeroProps = {
 };
 
 export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = true, creatorIslandEnabled = false }: HeroProps) {
+  const t = useTranslations("home");
   const modeCount = 1 + (islandEnabled ? 1 : 0) + (creatorIslandEnabled ? 1 : 0);
   const modeGrid = modeCount >= 3 ? "sm:grid-cols-2 lg:grid-cols-3" : modeCount === 2 ? "sm:grid-cols-2" : "";
   return (
@@ -48,35 +50,34 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs bg-bg-card/80 backdrop-blur border border-accent/30 mb-6 shadow-lg shadow-accent/5"
             >
               <SparkleIcon size={11} className="text-accent animate-pulse" />
-              <span>2026 全新改版 · 跟 肥仔・菇寶・綠寶 一起冒險</span>
+              <span>{t("heroBadge")}</span>
             </motion.div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-5 leading-tight tracking-tight">
-              用最簡單的方式
+              {t("heroTitlePart1")}
               <br />
-              學會
+              {t("heroTitleLearn")}
               <span className="relative inline-block">
                 <span className="bg-gradient-to-r from-accent via-accent-2 to-accent-3 bg-clip-text text-transparent animate-gradient-x">
-                  最難
+                  {t("heroTitleHardest")}
                 </span>
                 <span className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-accent/50 via-accent-2/50 to-accent-3/50 blur-sm" />
               </span>
-              的
+              {t("heroTitleDe")}
               <span className="bg-gradient-to-r from-accent-2 to-accent-3 bg-clip-text text-transparent">
-                技術
+                {t("heroTitleTech")}
               </span>
             </h1>
 
             <p className="text-lg text-fg-muted mb-3 leading-relaxed">
-              <NumberTicker value={totalChapters} className="text-fg font-bold" /> 章 ×{" "}
-              <NumberTicker value={totalLessons} suffix="+" className="text-fg font-bold" /> lesson · HTML 到 AI Agent 全端養成
+              <NumberTicker value={totalChapters} className="text-fg font-bold" /> {t("heroTickerMid")}{" "}
+              <NumberTicker value={totalLessons} suffix="+" className="text-fg font-bold" /> {t("heroTickerEnd")}
               <br />
-              像玩 RPG 一樣升級、打 boss、組隊、成為 AI 高玩
+              {t("heroSubline")}
             </p>
             <p className="text-sm text-fg-muted mb-7 leading-relaxed">
-              <strong className="text-fg">繁體中文程式自學平台</strong>：
-              學 HTML / CSS / JavaScript / TypeScript / React / Vue / Next.js / Node.js / Python / AI Agent / Prompt Engineering、
-              <strong className="text-fg">從零基礎到能接案 / 找全端工作</strong>。
+              <strong className="text-fg">{t("heroPlatformLabel")}</strong>{t("heroPlatformDesc")}
+              <strong className="text-fg">{t("heroPlatformGoal")}</strong>{t("heroPlatformEnd")}
             </p>
 
             {/* 模式入口（經典 / 島嶼 / 創作者島嶼） */}
@@ -89,10 +90,10 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
                   >
                     <Palette className="absolute -top-4 -right-4 text-accent-3 opacity-30 group-hover:opacity-60 group-hover:scale-110 transition duration-500" size={56} strokeWidth={1.5} />
                     <div className="relative">
-                      <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2"><Palette size={22} className="text-accent-3" /> 創作者島嶼</div>
-                      <div className="font-bold text-lg mb-1">把碎片變成作品</div>
-                      <p className="text-xs text-fg-muted leading-relaxed">收集靈感碎片 → AI 凝聚/演化/編織 → 完成創作。</p>
-                      <span className="text-[10px] text-accent-3 mt-2 inline-block group-hover:translate-x-1 transition">一句話也能開始 →</span>
+                      <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2"><Palette size={22} className="text-accent-3" /> {t("modeCreatorTag")}</div>
+                      <div className="font-bold text-lg mb-1">{t("modeCreatorTitle")}</div>
+                      <p className="text-xs text-fg-muted leading-relaxed">{t("modeCreatorDesc")}</p>
+                      <span className="text-[10px] text-accent-3 mt-2 inline-block group-hover:translate-x-1 transition">{t("modeCreatorCta")}</span>
                     </div>
                   </Link>
                 </motion.div>
@@ -104,10 +105,10 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
                 >
                   <span className="absolute -top-3 -right-2 text-5xl opacity-25 group-hover:opacity-50 group-hover:scale-110 transition duration-500">🎮</span>
                   <div className="relative">
-                    <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2">🎮 程式副本島</div>
-                    <div className="font-bold text-lg mb-1">玩遊戲學寫程式</div>
-                    <p className="text-xs text-fg-muted leading-relaxed">寫 Python 控制機器人過關 → 邊玩邊學迴圈、判斷、函式。</p>
-                    <span className="text-[10px] text-emerald-500 mt-2 inline-block group-hover:translate-x-1 transition">開始闖關 →</span>
+                    <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2">🎮 {t("modeQuestTag")}</div>
+                    <div className="font-bold text-lg mb-1">{t("modeQuestTitle")}</div>
+                    <p className="text-xs text-fg-muted leading-relaxed">{t("modeQuestDesc")}</p>
+                    <span className="text-[10px] text-emerald-500 mt-2 inline-block group-hover:translate-x-1 transition">{t("modeQuestCta")}</span>
                   </div>
                 </Link>
               </motion.div>
@@ -120,10 +121,10 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
                     <Palmtree className="absolute -top-4 -right-4 text-accent opacity-30 group-hover:opacity-60 group-hover:scale-110 transition duration-500" size={56} strokeWidth={1.5} />
                     <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent-2/0 group-hover:from-accent/10 group-hover:to-accent-2/5 transition duration-500" />
                     <div className="relative">
-                      <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2"><Palmtree size={22} className="text-accent" /> 島嶼模式</div>
-                      <div className="font-bold text-lg mb-1">進入 AI 島</div>
-                      <p className="text-xs text-fg-muted leading-relaxed">3D 沉浸式探索、有 AI 夥伴陪你闖關。</p>
-                      <span className="text-[10px] text-accent mt-2 inline-block group-hover:translate-x-1 transition">v0 / coming soon →</span>
+                      <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2"><Palmtree size={22} className="text-accent" /> {t("modeIslandTag")}</div>
+                      <div className="font-bold text-lg mb-1">{t("modeIslandTitle")}</div>
+                      <p className="text-xs text-fg-muted leading-relaxed">{t("modeIslandDesc")}</p>
+                      <span className="text-[10px] text-accent mt-2 inline-block group-hover:translate-x-1 transition">{t("modeIslandCta")}</span>
                     </div>
                   </Link>
                 </motion.div>
@@ -135,10 +136,10 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
                 >
                   <ClipboardList className="absolute -top-4 -right-4 text-accent opacity-30 group-hover:opacity-60 group-hover:scale-110 transition duration-500" size={56} strokeWidth={1.5} />
                   <div className="relative">
-                    <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2"><ClipboardList size={22} className="text-accent" /> 經典模式</div>
-                    <div className="font-bold text-lg mb-1">快速開始學習</div>
-                    <p className="text-xs text-fg-muted leading-relaxed">清單式、直接看章節、高效率。</p>
-                    <span className="text-[10px] text-accent mt-2 inline-block group-hover:translate-x-1 transition">推薦給想快速學的人 →</span>
+                    <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2"><ClipboardList size={22} className="text-accent" /> {t("modeClassicTag")}</div>
+                    <div className="font-bold text-lg mb-1">{t("modeClassicTitle")}</div>
+                    <p className="text-xs text-fg-muted leading-relaxed">{t("modeClassicDesc")}</p>
+                    <span className="text-[10px] text-accent mt-2 inline-block group-hover:translate-x-1 transition">{t("modeClassicCta")}</span>
                   </div>
                 </Link>
               </motion.div>
@@ -152,9 +153,9 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
               className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10 text-center md:text-left"
             >
               {[
-                { label: "章節 + 附錄", value: totalChapters, color: "text-accent" },
-                { label: "完整 lesson", value: totalLessons, color: "text-accent-2", suffix: "+" },
-                { label: "技術區域", value: stageCount, color: "text-accent-3" },
+                { label: t("statChapters"), value: totalChapters, color: "text-accent" },
+                { label: t("statLessons"), value: totalLessons, color: "text-accent-2", suffix: "+" },
+                { label: t("statStages"), value: stageCount, color: "text-accent-3" },
               ].map((s) => (
                 <div key={s.label}>
                   <NumberTicker
@@ -179,7 +180,7 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
             <div className="absolute -inset-4 bg-gradient-to-br from-accent/20 via-accent-2/10 to-accent-3/20 rounded-3xl blur-2xl animate-pulse" style={{ animationDuration: "4s" }} />
             <Image
               src="/mascot/cover-hero.png"
-              alt="AI 島 — 繁體中文程式自學平台、HTML / React / Next.js / AI Agent 全端養成、跟肥仔菇寶綠寶 AI 導師冒險"
+              alt={t("heroImageAlt")}
               width={1200}
               height={800}
               priority
@@ -194,13 +195,13 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
               className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex gap-2"
             >
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-bg-card/95 backdrop-blur border border-orange-400/40 text-orange-400 shadow-lg shadow-orange-500/10">
-                <Sword size={12} /> 肥仔
+                <Sword size={12} /> {t("mascotFatzai")}
               </span>
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-bg-card/95 backdrop-blur border border-purple-400/40 text-purple-400 shadow-lg shadow-purple-500/10">
-                <Ruler size={12} /> 菇寶
+                <Ruler size={12} /> {t("mascotGubao")}
               </span>
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-bg-card/95 backdrop-blur border border-green-400/40 text-green-400 shadow-lg shadow-green-500/10">
-                <SparkleIcon size={12} /> 綠寶
+                <SparkleIcon size={12} /> {t("mascotLvbao")}
               </span>
             </motion.div>
           </motion.div>

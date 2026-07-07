@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { STAGE_COLORS, DIFFICULTY_LABELS } from "@/lib/utils";
 import { chapterDisplayNumberById } from "@/lib/chapter-display";
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export function ChapterMap({ chapters }: Props) {
+  const t = useTranslations("home");
   // 學員每章 progress（登入時 fetch、未登入 = {}）
   const [progress, setProgress] = useState<Record<number, number>>({});
   useEffect(() => {
@@ -52,7 +54,7 @@ export function ChapterMap({ chapters }: Props) {
                 Stage {stage} · {cfg.name}
               </h3>
               <div className="flex-1 h-px" style={{ background: `linear-gradient(90deg, ${cfg.from}, transparent)` }} />
-              <span className="text-xs text-fg-muted">{list.length} 章</span>
+              <span className="text-xs text-fg-muted">{t("chaptersCount", { n: list.length })}</span>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               {list.map((ch, idx) => (
@@ -69,7 +71,7 @@ export function ChapterMap({ chapters }: Props) {
                   >
                     {ch.status === "coming-soon" && (
                       <div className="absolute top-1 right-1 text-[10px] px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-900 dark:text-orange-200">
-                        敬請期待
+                        {t("comingSoon")}
                       </div>
                     )}
                     <div className="text-xs text-fg-muted mb-1">Ch {chapterDisplayNumberById(ch.id)}</div>
@@ -91,7 +93,7 @@ export function ChapterMap({ chapters }: Props) {
                               <div
                                 className={`h-full rounded-full transition-all ${pct === 100 ? "bg-gradient-to-r from-green-400 to-emerald-500" : "bg-gradient-to-r from-accent to-accent-2"}`}
                                 style={{ width: `${pct}%` }}
-                                aria-label={`進度 ${pct}%`}
+                                aria-label={t("progressAria", { pct })}
                               />
                             </div>
                           )}
@@ -106,7 +108,7 @@ export function ChapterMap({ chapters }: Props) {
                     ) : (
                       <div className="mt-2 text-xs flex items-center gap-1 text-fg-muted">
                         <BookOpen size={14} />
-                        <span className="truncate">速查附錄</span>
+                        <span className="truncate">{t("quickRefAppendix")}</span>
                       </div>
                     )}
                   </Link>

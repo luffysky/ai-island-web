@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { getZcoinBalance } from "@/lib/zcoin";
 import { isPro } from "@/lib/payments/orders";
@@ -12,7 +13,10 @@ import { StoreClient } from "./StoreClient";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "商店 · Z幣儲值 / 兌換 / Pro | AI 島", description: "儲值 Z幣、花 Z 幣兌換 AI 額度與裝飾、升級 Pro。" };
+export async function generateMetadata() {
+  const t = await getTranslations("store");
+  return { title: t("metaTitle"), description: t("metaDesc") };
+}
 
 export default async function StorePage() {
   const sb = await createSupabaseServer();

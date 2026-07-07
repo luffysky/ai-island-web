@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { getChapterMetas } from "@/lib/content";
 import { getSiteStats } from "@/lib/stats";
 import { getSeoForPath } from "@/lib/seo-render";
@@ -24,6 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
+  const t = await getTranslations("home");
   const chapters = await getChapterMetas();
   const stats = getSiteStats();
   const islandEnabled = await isIslandEnabled();
@@ -47,8 +49,8 @@ export default async function HomePage() {
       <MascotIntro />
       <StageMap />
       <section className="max-w-7xl mx-auto px-6 py-16 border-b border-border">
-        <h2 className="text-3xl font-bold mb-2 inline-flex w-full items-center justify-center gap-2"><Map size={28} className="text-accent" /> 完整章節地圖</h2>
-        <p className="text-center text-fg-muted mb-8">{totalChapters} 章 × {totalLessons}+ lesson — 點亮整片島嶼</p>
+        <h2 className="text-3xl font-bold mb-2 inline-flex w-full items-center justify-center gap-2"><Map size={28} className="text-accent" /> {t("chapterMapHeading")}</h2>
+        <p className="text-center text-fg-muted mb-8">{t("chapterMapSubtitle", { chapters: totalChapters, lessons: totalLessons })}</p>
         <ChapterMap chapters={chapters} />
       </section>
       <MissionDungeons />
