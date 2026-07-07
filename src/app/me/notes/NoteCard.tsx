@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { ChevronDown, ChevronUp, ArrowRight, Pencil, Trash2, Copy, Check, LogOut, Eye, Pin, Repeat2, SlidersHorizontal, Globe } from "lucide-react";
+import { ChevronDown, ChevronUp, ArrowRight, Pencil, Trash2, Copy, Check, LogOut, Eye, Pin, Repeat2, SlidersHorizontal, Globe, Maximize2 } from "lucide-react";
 import { formatTW } from "@/lib/format-date";
 import { sanitizeRichHtml } from "@/lib/rich-html";
 import { resolveSticky, stickyRotate, clampOpacity, hexToRgba, noteBgImgStyle, type NoteBg } from "@/lib/note-sticky";
@@ -316,6 +316,7 @@ export function NoteCard({
           if (owned && onPublishBlog) items.push({ key: "blog", icon: <Globe size={14} />, title: note.is_public ? t("republishBlog") : t("publishBlog"), onClick: () => onPublishBlog(), color: "#0ea5e9" });
           if (onEdit) items.push({ key: "edit", icon: isViewer ? <Eye size={14} /> : <Pencil size={14} />, title: isViewer ? t("view") : t("edit"), onClick: onEdit, color: "#444" });
           if (onDelete) items.push({ key: "del", icon: owned ? <Trash2 size={14} /> : <LogOut size={14} />, title: owned ? t("delete") : t("leaveShare"), onClick: onDelete, color: "#dc2626" });
+          items.push({ key: "openpage", icon: <Maximize2 size={14} />, title: t("openFullPage"), href: `/me/notes/${note.id}`, bg: "#1a1a1a", color: "#fff" });
           items.push({ key: "expand", icon: expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />, title: expanded ? t("collapse") : t("expand"), onClick: () => setExpanded(!expanded), color: "#444" });
           if (jumpHref) items.push({ key: "jump", icon: <ArrowRight size={14} />, title: t("jumpToLesson"), href: jumpHref, bg: "#1a1a1a", color: "#fff" });
 

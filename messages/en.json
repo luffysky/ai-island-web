@@ -554,7 +554,8 @@
     "rotateLabel": "Rotate",
     "changeImage": "Change image",
     "resetPosition": "Reset position",
-    "bgOpacityHint": "Adjust background intensity with \"Opacity\" above"
+    "bgOpacityHint": "Adjust background intensity with \"Opacity\" above",
+    "openFullPage": "Open full page"
   },
   "quest": {
     "heroTitle": "Code Dungeon Island",

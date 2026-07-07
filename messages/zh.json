@@ -554,7 +554,8 @@
     "rotateLabel": "旋轉",
     "changeImage": "換圖",
     "resetPosition": "重設位置",
-    "bgOpacityHint": "背景濃淡用上面「透明度」調"
+    "bgOpacityHint": "背景濃淡用上面「透明度」調",
+    "openFullPage": "整頁開啟"
   },
   "quest": {
     "heroTitle": "程式副本島",

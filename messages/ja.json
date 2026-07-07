@@ -554,7 +554,8 @@
     "rotateLabel": "回転",
     "changeImage": "画像を変更",
     "resetPosition": "位置をリセット",
-    "bgOpacityHint": "背景の濃さは上の「透明度」で調整"
+    "bgOpacityHint": "背景の濃さは上の「透明度」で調整",
+    "openFullPage": "全画面で開く"
   },
   "quest": {
     "heroTitle": "コードダンジョン島",

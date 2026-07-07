@@ -554,7 +554,8 @@
     "rotateLabel": "회전",
     "changeImage": "이미지 변경",
     "resetPosition": "위치 초기화",
-    "bgOpacityHint": "배경 농도는 위의 '투명도'로 조절하세요"
+    "bgOpacityHint": "배경 농도는 위의 '투명도'로 조절하세요",
+    "openFullPage": "전체 페이지로 열기"
   },
   "quest": {
     "heroTitle": "코드 던전 섬",
