@@ -103,7 +103,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const messages = await getMessages();
   const t = await getTranslations();
   return (
-    <html lang={locale === "en" ? "en" : "zh-Hant-TW"} className={`${inter.variable} ${outfit.variable} ${jbMono.variable}`}>
+    <html lang={locale === "en" ? "en" : locale === "ja" ? "ja" : locale === "ko" ? "ko" : "zh-Hant-TW"} className={`${inter.variable} ${outfit.variable} ${jbMono.variable}`}>
       <head>
         {/* 中文網頁字體：Noto Sans TC（Google 自動 unicode 分段、只下載用到的字）→ 全站中文變清爽 */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />

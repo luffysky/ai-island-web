@@ -1,0 +1,46 @@
+{
+  "nav": {
+    "chapters": "チャプター",
+    "courses": "ダンジョン",
+    "quest": "ゲーム",
+    "notes": "ノート",
+    "forum": "フォーラム",
+    "blog": "ブログ",
+    "leaderboard": "ランキング",
+    "career": "キャリアパス",
+    "creatorIsland": "クリエイター島",
+    "explore": "探索",
+    "exploreIsland": "AI島を探索",
+    "openMenu": "ナビゲーションを開く",
+    "closeMenu": "ナビゲーションを閉じる"
+  },
+  "auth": {
+    "login": "ログイン",
+    "signup": "登録",
+    "logout": "ログアウト",
+    "loggingOut": "ログアウト中..."
+  },
+  "userMenu": {
+    "dashboard": "学習ダッシュボード",
+    "progress": "学習の進捗",
+    "store": "ストア・チャージ / Pro",
+    "profile": "プロフィール",
+    "settings": "設定",
+    "aiMemory": "AIメモリ・プロンプト",
+    "aiKeys": "自分のAIキー (BYOK)",
+    "adminOwner": "プラットフォーム管理",
+    "admin": "管理"
+  },
+  "footer": {
+    "madeBy": "© 2026 AI島 · SnowRealm 制作 · 🐹 が見守る",
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約",
+    "cookies": "Cookieポリシー",
+    "skipToMain": "メインコンテンツへ"
+  },
+  "common": {
+    "language": "言語",
+    "chinese": "繁體中文",
+    "english": "English"
+  }
+}

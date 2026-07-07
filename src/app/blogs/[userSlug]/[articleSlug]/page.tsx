@@ -81,8 +81,8 @@ export default async function ArticlePage({
 
   // i18n：英文語系且已有快取翻譯 → 用英文；否則 fallback 中文（不即時翻、由後台批次預翻）
   const locale = await getLocale();
-  const tr = locale === "en"
-    ? await getCachedTranslations("blog", article.id, "en", { title: article.title, summary: article.summary ?? "", content: article.content })
+  const tr = locale !== "zh"
+    ? await getCachedTranslations("blog", article.id, locale, { title: article.title, summary: article.summary ?? "", content: article.content })
     : {};
   const dispTitle = tr.title ?? article.title;
   const dispSummary = tr.summary ?? article.summary;

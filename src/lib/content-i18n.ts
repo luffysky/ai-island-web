@@ -100,7 +100,8 @@ export async function translateAndCache(
   sourceType: ContentSourceType, sourceId: string | number, field: string, locale: string, zhText: string,
 ): Promise<string | null> {
   if (locale === "zh" || !zhText || !zhText.trim()) return null;
-  const translated = await aiTranslate(zhText);
+  const { LOCALE_AI_LABEL } = await import("@/i18n/request");
+  const translated = await aiTranslate(zhText, LOCALE_AI_LABEL[locale] ?? "English");
   if (!translated) return null;
   try {
     const admin = createSupabaseAdmin();

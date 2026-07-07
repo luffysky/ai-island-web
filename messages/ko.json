@@ -1,0 +1,46 @@
+{
+  "nav": {
+    "chapters": "챕터",
+    "courses": "던전",
+    "quest": "게임",
+    "notes": "노트",
+    "forum": "포럼",
+    "blog": "블로그",
+    "leaderboard": "순위표",
+    "career": "커리어 경로",
+    "creatorIsland": "크리에이터 섬",
+    "explore": "탐색",
+    "exploreIsland": "AI 섬 탐색",
+    "openMenu": "내비게이션 열기",
+    "closeMenu": "내비게이션 닫기"
+  },
+  "auth": {
+    "login": "로그인",
+    "signup": "회원가입",
+    "logout": "로그아웃",
+    "loggingOut": "로그아웃 중..."
+  },
+  "userMenu": {
+    "dashboard": "학습 대시보드",
+    "progress": "학습 진행도",
+    "store": "스토어 · 충전 / Pro",
+    "profile": "프로필",
+    "settings": "설정",
+    "aiMemory": "AI 메모리 · 프롬프트",
+    "aiKeys": "내 AI 키 (BYOK)",
+    "adminOwner": "플랫폼 관리자",
+    "admin": "관리"
+  },
+  "footer": {
+    "madeBy": "© 2026 AI 섬 · SnowRealm 제작 · 🐹 가 지킴",
+    "privacy": "개인정보 처리방침",
+    "terms": "이용약관",
+    "cookies": "쿠키 정책",
+    "skipToMain": "메인 콘텐츠로 이동"
+  },
+  "common": {
+    "language": "언어",
+    "chinese": "繁體中文",
+    "english": "English"
+  }
+}
