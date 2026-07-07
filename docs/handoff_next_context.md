@@ -1,22 +1,21 @@
-# 交接給下一個 Context（更新於 2026-07-07 深夜收尾）
+# 交接給下一個 Context（更新於 2026-07-08）
 
-> 這份是「接力棒」。上一棒把能安全 commit 的都推上線了、tree 乾淨（`git status` 只剩本檔與工作日誌）、`tsc` 綠。
-> 三塊，照順序做最穩：**① 最優先：i18n 4 區合併 ② 內容加量（手寫）③ 維運/擁有者待辦**。
+> 這份是「接力棒」。上一棒把能安全 commit 的都推上線了、`tsc` + `next build` 綠。
+> **① i18n 4 區合併：✅ 已完成（commit 82793021）。** 現在重點：**② 內容加量（手寫）③ 維運/擁有者待辦**。
 
 ---
 
-## ⚠️ 最優先 ①：i18n 重跑 4 區的 keymap「還沒合併」（task #162）
+## ✅ ①（已完成）：i18n 重跑 4 區已合併並 commit（task #162）
 
-**狀況**：creator-island / me / mentor / learn 四區的 UI 字串抽取，subagent 都跑完、keymap 也回傳了，但那批 `.tsx` 編輯**上一棒 revert 掉了、沒 commit**（避免這麼長的 session 中途斷、留下「元件呼叫 `t()` 但 messages 缺 key → 破頁」的髒 tree）。
+**狀況**：creator-island / me / mentor / learn 四區 UI 字串抽取 + 合併 + build 已全部收尾。
+- messages 新增 4 namespace：`creator`(560) / `me`(202) / `learn`(225) / `mentor`(145) = **1697 keys × 4 語**。
+- 綠寶吉祥物英日韓統一 **Emerald / エメラルド / 에메랄드**。
+- 市集副標「抽成 0%」已移除（task #168 ✅、改「果實可提現」，理由：提現有手續費、吹 0% 會誤導）。
+- tsc 0 錯、`next build` 綠、已 commit（`82793021` i18n、`0a6737a1` 市集文案）。
 
-- **keymap 在哪**：完整躺在**上一個 context 對話裡的 4 則 `<task-notification>` 的 `<result>`**（creator 606 / me 149 / mentor 154 / learn 240 keys，各含 zh/en/ja/ko）。
-- ⚠️ **agent 的 `tasks/<id>.output` transcript 檔是 0 bytes、程式抓不到**，只能從對話文字取。若你這個 context 看不到那 4 則 keymap → **直接重跑那 4 區的抽字串 agent**（比撈舊 keymap 快、也乾淨）。
+**抽字串已驗證的流程**（之後還要抽新區時沿用）：每批 3–4 個 subagent、各認一個 namespace、**用 Write 把扁平 `{key:{zh,en,ja,ko}}` 直接寫進 scratchpad JSON 檔**（別靠 task-notification 轉錄）、主線用 `scratchpad/merge_i18n.mjs` 掛進 4 個 message 檔。規則：只包「靜態 UI chrome」不包 DB 內容 / module-scope const / metadata；本地已有 `t` 變數就把 hook 命名 `tr`；`text-black` on accent / className / emoji / URL 不動。
 
-**怎麼收尾（兩條路擇一）**：
-- **A. 有拿到 keymap** → 併進 `messages/{zh,en,ja,ko}.json` 對應 namespace（`creator`/`me`/`mentor`/`learn`），**然後**照 keymap 把那 4 區元件的中文重新包成 `t("...")`（.tsx 被 revert 了、包裹要重做）→ `tsc` + `next build` 綠 → commit。
-- **B. 沒拿到 keymap（建議）** → 重跑 4 區 agent（同時改 .tsx + 回 keymap），再合併四語 → build → commit。
-
-**抽字串已驗證的流程**（沿用）：每批 3 個 subagent、各認一個 namespace、回傳**扁平 `{key:{zh,en,ja,ko}}`**、主線用 node merge script 掛進 4 個 message 檔（避免互撞）。規則：只包「靜態 UI chrome」不包 DB 內容；本地已有 `t` 變數就把 hook 命名 `tr`；`text-black` on accent / className / emoji / URL 不動。
+**i18n 地基（已穩定、別重做）**：`src/i18n/request.ts`（cookie locale + 地區預設語言 TW/HK/CN/MO→zh、JP→ja、KR→ko、其他→en）、`LanguageSwitcher`（已美化成自訂下拉）、`content-i18n.ts`（Data Cache 讀取、翻一次快取）。
 
 **i18n 地基（已穩定、別重做）**：`src/i18n/request.ts`（cookie locale + **地區預設語言**：TW/HK/CN/MO→zh、JP→ja、KR→ko、其他→en）、`src/i18n/locales.ts`、`LanguageSwitcher`、`content-i18n.ts`（**Data Cache** 讀取、翻一次快取）。
 
@@ -32,7 +31,7 @@
 
 ## ✍️ ②：內容待辦（使用者原則：**全部手寫、有真人味、不要腳本亂生**）
 
-1. **官方免費筆記：每一套（包）都要衝到「120 篇以上」**（目前遠遠不夠：Python 16 / 前端 13 / 後端 12 / 基本功 10，共 51）。這是**硬性數量**，4 包 = 480+ 篇。
+1. **官方免費筆記：每一套（包）都要衝到「120 篇以上」**（task #164，進行中）。目前 **Python 56 / 前端 54 / 後端 54 / 基本功 54 = 218 篇**；**4 個撰寫 agent 正各手寫 +66 篇**（寫到 `scratchpad/notes_{python,frontend,backend,basics}.json`），回來後合進 `seed-note-market.mjs` 的 PACKS → 重灌 DB → commit，目標每包 120+。這是**硬性數量**，4 包 = 480+ 篇。
    - ⚠️⚠️ **每一篇都要「親手認真寫」**——**不准用 AI 生成器 / 樣板批量產 / 湊數**。林董明講：「不要用腳本寫、要認真寫」。這裡的「腳本」指的是「別做一支 AI generator 亂生」，**不是**指不能用 seed 檔。
    - `scripts/seed-note-market.mjs` **只是把手寫內容塞進 DB 的載具**（hardcoded PACKS 陣列、`node scripts/seed-note-market.mjs` 重灌、idempotent）。你要做的是**在那個陣列裡一篇一篇手寫**，不是寫個程式去生。
    - 每篇品質門檻：**第一人稱、有踩雷經驗、口語但有料**（「我一開始也卡在…」「⚠️ 新手雷」），一個真正搞懂的人在整理自己的筆記——不是速查表、不是教科書、不是罐頭。每則配一個便利貼色（`color` 欄輪播）。
