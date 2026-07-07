@@ -358,7 +358,7 @@
   },
   "notes": {
     "market": "노트 마켓",
-    "marketIntro": "0부터 시작하기 싫다면? 다른 사람이 정리한 노트/지식 지도로 출발하세요. Z코인으로 구매, 플랫폼 10% 수수료·작가 90%.",
+    "marketIntro": "0부터 시작하기 싫다면? 다른 사람이 정리한 노트/지식 지도로 출발하세요. Z코인으로 구매.",
     "listMyNotes": "내 노트 등록",
     "marketEmpty": "아직 등록된 것이 없습니다. ",
     "beFirst": "당신이 첫 번째가 될 수 있어요!",
@@ -378,7 +378,7 @@
     "buyWithCoins": "{n} Z코인으로 구매",
     "missingTitleOrNote": "제목 없음 / 노트를 하나 이상 선택하세요",
     "listFailed": "등록 실패",
-    "listIntro": "정리한 노트를 하나의 상품으로 묶으세요. 구매자는 Z코인으로 결제하고, 플랫폼 10% 수수료·나머지 90%를 받습니다.",
+    "listIntro": "정리한 노트를 하나의 상품으로 묶으세요. 구매자는 Z코인으로 결제합니다.",
     "productTitlePlaceholder": "상품 제목 (예: Python 입문 완전 노트)",
     "productDescPlaceholder": "설명: 이 노트가 다루는 내용과 대상",
     "price": "가격",

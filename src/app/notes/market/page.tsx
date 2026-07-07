@@ -8,7 +8,7 @@ import { Store, FileText, ShoppingBag, Plus } from "lucide-react";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "筆記市集 — 用別人整理好的知識起步 | AI 島",
-  description: "買賣整理好的學習筆記/知識地圖，用 Z 幣交易，平台收 10%、作者拿 9 成。",
+  description: "買賣整理好的學習筆記/知識地圖，用 Z 幣交易。",
   alternates: { canonical: "/notes/market" },
 };
 

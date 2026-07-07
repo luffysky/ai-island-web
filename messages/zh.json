@@ -358,7 +358,7 @@
   },
   "notes": {
     "market": "筆記市集",
-    "marketIntro": "不想從 0 開始？用別人整理好的筆記／知識地圖起步。用 Z 幣買，平台收 10%、作者拿 9 成。",
+    "marketIntro": "不想從 0 開始？用別人整理好的筆記／知識地圖起步。用 Z 幣買。",
     "listMyNotes": "上架我的筆記",
     "marketEmpty": "還沒有人上架。",
     "beFirst": "你可以成為第一個！",
@@ -378,7 +378,7 @@
     "buyWithCoins": "用 {n} Z 幣購買",
     "missingTitleOrNote": "缺標題 / 至少選一則筆記",
     "listFailed": "上架失敗",
-    "listIntro": "把一組整理好的筆記打包成商品。買家用 Z 幣購買，平台收 10%、你實拿 9 成。",
+    "listIntro": "把一組整理好的筆記打包成商品。買家用 Z 幣購買。",
     "productTitlePlaceholder": "商品標題（例：Python 新手完整筆記）",
     "productDescPlaceholder": "描述：這組筆記涵蓋什麼、適合誰",
     "price": "價格",

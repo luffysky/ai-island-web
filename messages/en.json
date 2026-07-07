@@ -358,7 +358,7 @@
   },
   "notes": {
     "market": "Note market",
-    "marketIntro": "Don't want to start from scratch? Get a head start with notes and knowledge maps others have organized. Pay with Z coins — the platform takes 10%, creators keep 90%.",
+    "marketIntro": "Don't want to start from scratch? Get a head start with notes and knowledge maps others have organized. Pay with Z coins.",
     "listMyNotes": "List my notes",
     "marketEmpty": "Nothing listed yet. ",
     "beFirst": "You could be the first!",
@@ -378,7 +378,7 @@
     "buyWithCoins": "Buy for {n} Z coins",
     "missingTitleOrNote": "Missing title / select at least one note",
     "listFailed": "Listing failed",
-    "listIntro": "Bundle a set of organized notes into a product. Buyers pay with Z coins; the platform takes 10% and you keep 90%.",
+    "listIntro": "Bundle a set of organized notes into a product. Buyers pay with Z coins.",
     "productTitlePlaceholder": "Product title (e.g. Complete Python notes for beginners)",
     "productDescPlaceholder": "Description: what this set covers and who it's for",
     "price": "Price",
