@@ -90,3 +90,60 @@
 - **需瀏覽器 QA**：/quest 7 遊戲+發獎、11 夥伴人格、英文/日/韓切換、金流測試機各過一筆。
 - **金流上線**：填 live env(owner)；台灣訂閱→綠界定期定額、海外訂閱→MoR(目前一次性)。
 - **果實提現 B/C**：Stripe Connect(海外)/綠界藍新分潤(台灣)，需先申請服務(沿用 ci_payouts.method)。
+
+---
+---
+
+# i18n #158 抽字串進度 — 創作者島嶼（creator namespace）
+
+> 本輪把 `creator-island` 整區的硬字串全數抽進 `creator` namespace。動了 37 個檔（`src/app/creator-island/**/*.tsx` 全部 + `src/components/creator-island/ComingSoon.tsx`）。messages/*.json 未動（由統整端合併）。
+
+## 抽出的東西
+- 只抽 **靜態 UI chrome**：按鈕、標籤、標題、分頁名、空狀態、字面量 toast/confirm、表單 placeholder、區塊標題。
+- **不抽** DB/使用者內容（作品標題、使用者名、市集商品名、變數化的 Z幣/果實數字），不動 className / emoji / URL / logic / RWD。
+- 共 ~300 個 key，全 4 語（中/英/日/韓）。placeholder（`{n}` `{count}` `{name}` `{pct}` …）四語一致；Z幣→Z coins / Zコイン / Z코인 一致。
+
+## 怎麼分批執行 i18n（可複用 SOP）
+1. **Glob 先列全部檔**（`creator-island/**/*.tsx` + `src/components/creator-island/**`），確認 namespace 尚未存在（`node -e` 檢查 `messages/zh.json`）。
+2. **切區、開平行 subagent**：本區 37 檔 → 拆 8 組（hub / create / community / works / market+payout / friends+messages / studio+growth / reason+universe+activity+ComingSoon），一組一個 general-purpose subagent，同一則訊息一次發完（併發跑）。
+3. **每組指定唯一 key 前綴**（hub* / create* / comm* / work* / market*+payout* / friend*+msg* / studio*+growth* / reason*+universe*+activity*+soon*）→ 保證跨組 key 全域不撞。
+4. **subagent 只回中文 key map**（key→zh 字面，placeholder 直接寫在 zh 值裡），統整端再一次補齊 4 語 → 翻譯口徑一致、避免各 agent 亂翻。
+5. **規則交代死**：client 用 `useTranslations("creator")`；server async 用 `await getTranslations("creator")`；已存在區域變數 `t`（如 `.map(t=>…)`）改用 `tr` 避免撞名；dynamic 值走 `t("k",{n})`。
+6. **module-scope 字串（hooks 跑不了的頂層 const / metadata / SEO OG）先跳過並列清單**，之後改成 `labelKey` 於 render 時翻、或搬進 component。
+
+## 已知待收尾（module-scope，本輪按規則跳過、需另處理）
+- `CreatorIslandClient` `PRESET_WORKFLOWS` 標題/描述、`transLang` 語言名陣列（兼 API param）；`IslandTour` `STEPS` 13 步導覽文案。
+- `works/page` `STATUS_LABEL`/`TYPE_LABEL`；各頁 `generateMetadata`/`export const metadata` 的 SEO/OG 字串。
+- `PayoutClient` `STATUS`、`StudioClient` `ROLE_ZH`、`SocialFeed` `SCOPES`、`ReasonClient` `MODES` 與 `api()` 錯誤字面量。
+- 多處 `"創作者"`／`"訪客"` 名稱 fallback、`"未命名草稿"` 等寫進 DB 的預設值 → 屬資料層、刻意不抽。
+
+---
+
+# 0707 深夜收尾（同日、接續 context）
+
+## i18n（已 commit 上線的批次）
+- **地基強化**：`request.ts` 加**地區預設語言**（TW/HK/CN/MO→zh、JP→ja、KR→ko、其他→en，退回 Accept-Language）。
+- **內容翻譯改快取讀取**：`content-i18n.ts` 用 Next **Data Cache**（`unstable_cache` revalidate+tag、重翻 `revalidateTag` 立即失效）→ 同(內容,語言)每小時一次 DB、中文用戶零查詢。
+- **render wiring**（#161）：blog 文章頁 + **章節 `localizeChapter`**（章 title/subtitle + lesson title/content）+ **論壇主題頁** 都接上快取譯文。
+- **背景翻譯填充**：抽共用 `runTranslateBatch`；新 `/api/cron/translate-content` + **手動 workflow `Translate Content`**（只 dispatch、不排程、用使用者自己的 AI key、跑到 total=0）。
+- **UI 抽字串**：batch 1–4 已合併四語並 commit — home / store / chapters / quest(68) / forum(95) / notes(198) / island(175) / dashboard(32) / profile(17) / leaderboard(27) / career(8) + nav.works + notes.openFullPage。
+- ⚠️ **未完成**：creator(606) / me(149) / mentor(154) / learn(240) 四區 keymap agent 已回、但 .tsx **revert 未 commit**（避免 session 中斷留破頁）→ 見 `docs/handoff_next_context.md` #①。
+
+## Bug 修復
+- **141 header 破版**：語言切換改精簡藥丸（手機短碼 繁/EN/日/한、桌面全名）、header gap 手機收窄、logo 不換行 → Lv 徽章不再被擠出畫面。
+- **143 筆記懸浮鈕**：左下 → 右下、且可自由拖曳（點=開筆記、拖=移動、位置存 localStorage）。
+- **146 單篇筆記全頁**：新 `/me/notes/[id]`（prose-custom 正確分段、擁有者或公開可看）+ 筆記卡動作環加「整頁開啟」。
+
+## 內容（全部手寫、真人口吻、非腳本）
+- **官方免費筆記**改寫成真人口吻 + 加量至 **51 則**（Python 16 / 前端 13 / 後端 12 / 基本功 10），輪播便利貼配色。目標每包 120+（未完）。
+- **match-case** 補進正式教材 **Ch26** + `import_chapters_to_db ch26`（144 回饋：突然跳模式匹配沒鋪陳）。
+- **/works 公開作品牆**：新頁 + header nav + 創作者島入口；`seed-creator-works.mjs` 種 **7 件真作品 / 4 位正經創作者**（蘇晚/林之遠/何默/江見、碎片編織、`is_showcased`）→ 145「社群≠作品」解決。
+- **創作者部落格** `seed-creator-blog.mjs`：4 位創作者各一篇手寫文。
+- **討論區** +5 則學員口吻討論串（共 41 串）。
+
+## 商業模式修正
+- **筆記市集抽成 0% → 平台 10% / 作者 90%**：新 migration `notes_market_commission_migration.sql`（改 `buy_note_product` RPC，作者實收 `floor(price*0.9)`）、已 apply + 納入 `run-migrations.mjs`；文案（market page metadata + `marketIntro`/`listIntro` 四語）同步改。
+- ⚠️ 創作者島市集 `marketSubtitle`「抽成 0%」（果實經濟、不同流程）尚未改 → 留待確認。
+
+## 交接
+- 完整待辦見 **`docs/handoff_next_context.md`**（i18n 4 區合併 → 筆記加量到 120 → 維運/擁有者）。tree 乾淨、tsc 綠。

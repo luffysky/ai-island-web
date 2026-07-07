@@ -1,45 +1,72 @@
-# 交接：下一個 context 待辦（更新於 2026-07-07）
+# 交接給下一個 Context（更新於 2026-07-07 深夜收尾）
 
-> 前一輪超長 session 做了 69 commit（見 `docs/daily_works_0707.md` 全記錄）。build 綠、117 測試過、DB 物件都在。以下是**還沒完成**的，依優先序。
+> 這份是「接力棒」。上一棒把能安全 commit 的都推上線了、tree 乾淨（`git status` 只剩本檔與工作日誌）、`tsc` 綠。
+> 三塊，照順序做最穩：**① 最優先：i18n 4 區合併 ② 內容加量（手寫）③ 維運/擁有者待辦**。
 
 ---
 
-## 🔴 A. i18n 全站抽字串（最大宗、多輪工程）
-**現況**：地基好了 — next-intl cookie 切語言（不動路由）、**四語 中/英/日/韓**、右上切換鈕、chrome（導覽/頁尾/使用者選單）已抽；內容翻譯層（`content_translations`，翻一次快取、來源變才重翻）已上線、部落格文章頁已接。
+## ⚠️ 最優先 ①：i18n 重跑 4 區的 keymap「還沒合併」（task #162）
 
-**要做**：**除了後台 admin 以外，所有頁面（~800 檔）的硬字串逐頁抽進 `messages/{zh,en,ja,ko}.json`**。
-- 做法：一頁 `const t = useTranslations()` → 把中文字串換 `t('ns.key')` → 在 4 個 messages 檔補 key（zh 原文、en/ja/ko 翻譯）。
-- **建議用平行 subagent 一區一區掃**（首頁 / 章節 / 遊戲 / 論壇 / 筆記 / 創作島 / 商店 / 設定…），每個 subagent 認一個 top-level namespace，避免 4 個 JSON 互撞（或各寫獨立 namespace 檔再合併）。
-- 內容（章節/lesson/部落格/論壇）用 `/api/admin/translate-content`（scope+locale）**批次預翻**各語言，靠 hash 只翻一次。
-- **後台 admin 頁不做 i18n**（依林董指示）。
+**狀況**：creator-island / me / mentor / learn 四區的 UI 字串抽取，subagent 都跑完、keymap 也回傳了，但那批 `.tsx` 編輯**上一棒 revert 掉了、沒 commit**（避免這麼長的 session 中途斷、留下「元件呼叫 `t()` 但 messages 缺 key → 破頁」的髒 tree）。
 
-## 🟠 B. 需瀏覽器 QA（CLI 測不到）
-- `/quest` 7 種遊戲能玩 + 通關發 XP/Z 幣（Turtle 判定最可能要調 snap）。
-- AI 導師 11 位夥伴人格 + 記憶（尤其多聞純陪聊、專門角色轉介）。
-- 語言切換（英/日/韓）視覺 + Noto Sans TC 中文字體有沒有上（要確認**部署**上線 + 硬重整）。
-- 金流測試機各過一筆（見 `docs/payments_setup.md`）。
+- **keymap 在哪**：完整躺在**上一個 context 對話裡的 4 則 `<task-notification>` 的 `<result>`**（creator 606 / me 149 / mentor 154 / learn 240 keys，各含 zh/en/ja/ko）。
+- ⚠️ **agent 的 `tasks/<id>.output` transcript 檔是 0 bytes、程式抓不到**，只能從對話文字取。若你這個 context 看不到那 4 則 keymap → **直接重跑那 4 區的抽字串 agent**（比撈舊 keymap 快、也乾淨）。
 
-## 🟡 C. 金流上線（owner 操作 + 少量 code）
-- 填 live env（綠界個人賣家/藍新測試店→正式、Stripe 台灣開不了→用 MoR）。見 `/admin/payments` 面板 + `docs/payments_setup.md`。
-- **台灣訂閱**：接綠界「信用卡定期定額」（目前 Pro 只綁 Stripe、台灣用不到）。
-- **海外訂閱**：MoR（Lemon Squeezy/Paddle）目前走一次性，要接 subscription 事件才自動續訂。
-- **果實提現 B/C**：Stripe Connect（海外）/ 綠界藍新分潤（台灣）— 需先向金流商申請服務，再沿用 `ci_payouts.method` 接。
+**怎麼收尾（兩條路擇一）**：
+- **A. 有拿到 keymap** → 併進 `messages/{zh,en,ja,ko}.json` 對應 namespace（`creator`/`me`/`mentor`/`learn`），**然後**照 keymap 把那 4 區元件的中文重新包成 `t("...")`（.tsx 被 revert 了、包裹要重做）→ `tsc` + `next build` 綠 → commit。
+- **B. 沒拿到 keymap（建議）** → 重跑 4 區 agent（同時改 .tsx + 回 keymap），再合併四語 → build → commit。
 
-## 🟢 D. 這輪已完成（別重做；保留劃線、不刪）
-- [x] ~~設計系統打底 + Noto Sans TC 中文字體 + 光氛/表面 primitives~~
-- [x] ~~對話框全站美化（native alert/confirm/prompt → in-app modal）~~
-- [x] ~~導覽重構（左上章節 / 右上探索抽屜、加遊戲/筆記）~~
-- [x] ~~7 種遊戲（迷宮/畫圖/Turtle/數字/抓蟲/排序/CSS）+ AI 關卡生成器~~
-- [x] ~~AI 夥伴 3→11 位 + 人格被導師框架蓋掉的 bug 修好（多聞純陪聊）~~
-- [x] ~~種子：討論區36 / 部落格86(哥布林75篇生成器) / 社群 / 筆記市集免費包~~
-- [x] ~~種子工作室（討論區·部落格·筆記 一頁分頁、AI+手動）~~
-- [x] ~~部落格：系列收合 + owner/admin/客服 官方身份發文 + 官方部落格~~
-- [x] ~~創作者公開展示頁（作品庫發佈）~~
-- [x] ~~果實提現 A 版（申請 + 後台人工撥款對帳）~~
-- [x] ~~筆記 Notion 化（L1 樹 / L2 區塊引用）+ 知識市集金流~~
-- [x] ~~金流：綠界/藍新/Stripe + MoR(Lemon Squeezy/Paddle) + 狀態面板 + 雙 webhook secret~~
-- [x] ~~i18n 四語地基(中/英/日/韓) + 內容 AI 翻譯層(翻一次快取)~~
-- [x] ~~簽到後今日任務即時更新 / 2 支新 cron / PWA SW v16~~
+**抽字串已驗證的流程**（沿用）：每批 3 個 subagent、各認一個 namespace、回傳**扁平 `{key:{zh,en,ja,ko}}`**、主線用 node merge script 掛進 4 個 message 檔（避免互撞）。規則：只包「靜態 UI chrome」不包 DB 內容；本地已有 `t` 變數就把 hook 命名 `tr`；`text-black` on accent / className / emoji / URL 不動。
 
-## 開場白建議（貼給下一個 context）
-> 讀 `docs/handoff_next_context.md` + `docs/daily_works_0707.md`。主要做 **A：i18n 全站抽字串（除後台外所有頁面、中英日韓四語）**，用平行 subagent 一區一區掃、內容用 translate-content 批次預翻。每步 tsc/build 綠、動 DB 就 db:apply、改 UI 注意 RWD 不破版。
+**i18n 地基（已穩定、別重做）**：`src/i18n/request.ts`（cookie locale + **地區預設語言**：TW/HK/CN/MO→zh、JP→ja、KR→ko、其他→en）、`src/i18n/locales.ts`、`LanguageSwitcher`、`content-i18n.ts`（**Data Cache** 讀取、翻一次快取）。
+
+**已抽完並 commit 的區**：chrome、home、store、chapters、quest、forum、notes、island、dashboard、profile、leaderboard、career、nav.works、notes.openFullPage。
+
+**還沒抽的區（admin 後台不做）**：`blogs`(列表頁)、`courses`、`certificates`(頂層)、`changelog`、`search`、`settings`、`onboarding`、`teacher`、`auth`(剩餘)。
+
+**動態/JSON 內容翻譯**：
+- DB 內容走 `content-i18n.ts` 的 Data Cache（已接：blog 文章頁、章節 `localizeChapter`、論壇主題頁）。**要真的有譯文 → 跑背景翻譯**：手動觸發 GitHub workflow **Translate Content**（`.github/workflows/translate-content.yml` → 打 `/api/cron/translate-content`；用**使用者自己的 AI key**、不燒 Claude session；跑到回 `total=0` = 翻完）。
+- 純前端 data 檔的中文（`src/components/island/island-bus.ts`、`src/lib/types.ts` 的 `CAREER_PATHS`、`quest/*-levels.ts`）→ agent 都刻意留著當 content，要翻另開一批。
+
+---
+
+## ✍️ ②：內容待辦（使用者原則：**全部手寫、有真人味、不要腳本亂生**）
+
+1. **官方免費筆記衝「每包 120+」**（目前共 51：Python 16 / 前端 13 / 後端 12 / 基本功 10）。
+   - 檔案 `scripts/seed-note-market.mjs`（hardcoded PACKS；改完 `node scripts/seed-note-market.mjs` 重灌、idempotent）。
+   - 風格：**第一人稱、有踩雷經驗、口語但有料**（「我一開始也卡在…」「⚠️ 新手雷」），不是速查、不是教科書。每則輪播便利貼配色（`color` 欄）。
+   - 節奏：加幾則 → 重灌 → commit，持續往 120 疊。
+2. **部落格更生人樣 / 加創作者部落格**：`scripts/seed-blog.mjs`（AI 住民）、`scripts/seed-creator-blog.mjs`（4 位正經創作者各 1 篇，可再擴）。
+3. **討論區**：`scripts/seed-forum.mjs`（41 串，含新 5 則學員口吻），要更多照樣加。
+4. **創作者作品**：`scripts/seed-creator-works.mjs`（7 件、4 位創作者、碎片編織、`is_showcased`）。加更多時 ⚠️ `ci_works.status` 用預設別亂填、`ci_fragments.source_type` 用合法值(如 `human_original`)、碎片冪等靠 tag `作品種子`。
+
+---
+
+## 🛠️ ③：維運 / 擁有者要做的（CLI 做不了）
+
+- **瀏覽器實測**：`/quest` 各遊戲+獎勵、11 位 AI 夥伴人設、切語言(中/英/日/韓)、金流測試模式、`/works` 作品牆、`/me/notes/[id]` 單篇筆記頁、筆記懸浮鈕拖曳。
+- **金流上線**：live env、綠界定期定額(訂閱)、MoR(Paddle/Lemon Squeezy) subscription webhook。見 `docs/payments_setup.md`、`/admin/payments`。
+- **創作者分潤 B/C**：Stripe Connect(海外) / 綠界藍新分潤(台灣)，需先申請服務、沿用 `ci_payouts.method`。
+- **跑背景翻譯**：見 ① 動態內容翻譯。
+
+---
+
+## 🔒 安全紅線（延續上一棒、務必遵守）
+- **`.env.local`（真金鑰、已 gitignore）永遠不要 commit。**
+- **`docs/logerr.md`、`docs/note.md` 保持 untracked、不要 commit。**
+- service_role key / DB 密碼**等整個專案完成後**再輪替、別中途動。
+- 不繞過被拒絕的憑證探測。
+
+---
+
+## 🧭 專案關鍵雷（CLAUDE.md 也有）
+- **章節從 DB 讀不是 JSON**：改 `src/data/chapters/*.json` 後**一定** `node scripts/import_chapters_to_db.mjs chXX`（含 `sort_index`）。線上章節怪 → 先看 DB。
+- **Supabase 1000 筆截斷**：撈整表用分頁 `.range()`、別 `.select('*')`。
+- **部署走 GHCR 預建 image**（zbpack 偶爾誤建成只跑 Caddy）；push main → docker.yml build+推 image+`restartService`。
+- 編章節 JSON 用 **Python**（`json.dump(ensure_ascii=False, indent=2)+"\n"`）保格式一致。
+- commit 訊息結尾：`Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`。
+
+---
+
+## 📌 一句話交辦
+**先把 i18n 4 區合併收尾（①，建議直接重跑那 4 區 agent），再繼續筆記加量到 120（②）。tree 現在乾淨、tsc 綠、放心接。**

@@ -105,6 +105,8 @@ const MIGRATIONS = [
   "content_translations_migration.sql",
   // 2026-07 — 創作者作品公開展示（is_showcased）
   "ci_works_showcase_migration.sql",
+  // 2026-07 — 筆記市集抽成改 平台 10% / 作者 90%（原本 0 抽成）
+  "notes_market_commission_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
