@@ -124,6 +124,41 @@ export async function localizeChapter<T extends { id: any; title?: string; subti
   } catch { return chapter; }
 }
 
+/**
+ * 章節「列表」批次在地化（/chapters、nav 用）：一次撈所有章的 title/subtitle 譯文、覆蓋。
+ * 走 Data Cache（每語言一小時查一次 DB、跨請求共用）；hash 不符或無譯文 → fallback 中文。
+ * tag 綁每一章的 ctTag，所以某章翻譯更新（revalidateTag）時這份列表快取也會失效。
+ */
+export async function localizeChapterMetas<T extends { id: any; title?: string; subtitle?: string }>(
+  metas: T[], locale: string,
+): Promise<T[]> {
+  if (locale === "zh" || !Array.isArray(metas) || metas.length === 0) return metas;
+  try {
+    const ids = metas.map((m) => String(m.id));
+    const rows = await unstable_cache(
+      async () => {
+        const admin = createSupabaseAdmin();
+        const { data } = await admin.from("content_translations")
+          .select("source_id, field, translated, source_hash")
+          .eq("locale", locale).eq("source_type", "chapter").in("source_id", ids);
+        return (data as any[]) ?? [];
+      },
+      ["chapter-metas", locale, ids.join(",")],
+      { revalidate: 3600, tags: metas.map((m) => ctTag("chapter", m.id)) },
+    )();
+    const pick = (id: any, field: string, zh: any): string | undefined => {
+      if (zh == null || !String(zh).trim()) return undefined;
+      const r = rows.find((x) => String(x.source_id) === String(id) && x.field === field);
+      return r && r.source_hash === contentHash(String(zh)) ? r.translated : undefined;
+    };
+    return metas.map((m) => ({
+      ...m,
+      title: pick(m.id, "title", m.title) ?? m.title,
+      subtitle: pick(m.id, "subtitle", (m as any).subtitle) ?? (m as any).subtitle,
+    }));
+  } catch { return metas; }
+}
+
 // ── AI 翻譯（保留 HTML/markdown/程式碼，只翻人看的文字）──
 let _aiCache: { provider: string; model: string; apiKey: string } | null = null;
 async function getAi(): Promise<{ provider: string; model: string; apiKey: string } | null> {

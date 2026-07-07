@@ -1,4 +1,5 @@
 import { getChapterMetas } from "@/lib/content";
+import { localizeChapterMetas } from "@/lib/content-i18n";
 import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import { ChapterMap } from "@/components/home/ChapterMap";
 import { SITE_STATS } from "@/lib/site-stats";
@@ -6,7 +7,7 @@ import { itemListSchema, breadcrumbSchema, jsonLdScript } from "@/lib/seo-jsonld
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
@@ -34,7 +35,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ChaptersPage() {
   const t = await getTranslations("chapters");
-  const chapters = await getChapterMetas();
+  const locale = await getLocale();
+  const chapters = await localizeChapterMetas(await getChapterMetas(), locale);
   const lessonCount = chapters.reduce((s, c) => s + c.lessonCount, 0);
 
   // JSON-LD: ItemList (整章列表) + Breadcrumb
