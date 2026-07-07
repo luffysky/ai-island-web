@@ -38,6 +38,627 @@ const PACKS = [
     desc: "我自己從零學 Python 一路記下來的筆記，白話、有踩過的雷。從環境、語法、資料處理到爬蟲。免費拿去。",
     notes: [
       {
+        title: "itertools.chain：好幾串當一串跑，不用先合併",
+        content: P(
+          "我以前要把好幾個 list 接起來一起跑，都先 <code>a + b + c</code> 拼成一個大 list，資料一多超浪費記憶體。",
+          "後來用 <code>from itertools import chain</code>，<code>for x in chain(a, b, c)</code> 就像把好幾條水管接成一條，水一路流過去，中間不用先倒進大水桶。",
+          "如果你手上是「list 裡面又是一堆 list」，用 <code>chain.from_iterable(list_of_lists)</code> 一次攤平。",
+          "⚠️ 我踩過：chain 回的是「一次性的迭代器」，跑完就空了。想用兩次就得 <code>list(chain(...))</code> 存下來，不然第二個迴圈啥都沒有。",
+        ),
+      },
+      {
+        title: "groupby 有雷：不先排序就切得亂七八糟",
+        content: P(
+          "第一次用 <code>itertools.groupby</code> 分組，我氣死——同一種東西被切成好幾段，完全沒合起來。",
+          "重點是：groupby 只會把「<b>相鄰</b>且相同」的併一組，它不會幫你全域分類。你想成它像超市結帳輸送帶，只會把「連在一起」的同款商品算一堆，隔開的就各算各的。",
+          "所以一定要<b>先照分組的 key 排序</b>：<code>data.sort(key=f)</code> 之後再 <code>groupby(data, key=f)</code>，兩邊 key 要用同一個。",
+          "⚠️ 還有個雷：每組給你的是迭代器，你在跳到下一組前沒把它 <code>list()</code> 存起來，回頭再拿就沒了。",
+        ),
+      },
+      {
+        title: "要窮舉組合？product / combinations 一行搞定",
+        content: P(
+          "以前要「所有搭配」我都寫三層巢狀 for，醜又容易漏。itertools 有現成的。",
+          "<code>product(顏色, 尺寸)</code> = 兩兩配對（像巢狀迴圈）；密碼窮舉 <code>product(\"0123456789\", repeat=4)</code>。<code>combinations(隊員, 2)</code> = 挑 2 個不看順序（選人）；<code>permutations</code> = 排列，看順序。",
+          "口訣：要「同時選幾樣、順序無所謂」用 combinations；「排名次、順序有差」用 permutations。",
+          "⚠️ 這些數量會爆炸性成長，10 個東西挑 5 個就好幾百種。別直接 <code>list()</code> 一個大集合，先 <code>math.comb</code> 估一下數量再說。",
+        ),
+      },
+      {
+        title: "lru_cache：同樣的問題別算第二次",
+        content: P(
+          "我寫一個很慢的函式（遞迴算費氏數列），跑大一點就卡住。後來一個裝飾器就救了。",
+          "在函式上面加 <code>@functools.lru_cache</code>，它會偷偷把「這組參數算過的答案」記在小抄裡，下次一樣的參數直接抄答案、不重算。就像考卷寫過的題目老師幫你貼標籤。",
+          "很適合「同樣輸入永遠同樣輸出」又「重複被呼叫」的純計算。",
+          "⚠️ 雷：只能用在「參數可 hash」（數字、字串、tuple 可以，list、dict 不行）而且函式沒有副作用的情況。拿去快取「每次結果都不同」的東西（像讀當下時間、打 API）會給你舊答案。",
+        ),
+      },
+      {
+        title: "functools.partial：先把幾個參數固定起來",
+        content: P(
+          "我常常一個函式一直用同一組固定參數呼叫，重複打很煩。",
+          "<code>partial</code> 可以「先幫函式綁好幾個參數」，生出一個新函式。像 <code>int(x, base=2)</code> 每次都要打 base=2，那就 <code>to_bin = partial(int, base=2)</code>，之後只要 <code>to_bin(\"1010\")</code>。",
+          "很適合當回呼（callback）——人家只讓你傳一個「不帶參數的函式」，你就用 partial 把該帶的先包進去。",
+          "⚠️ 我搞混過：partial 綁的是「呼叫當下」才生效，但你綁進去的變數值是「綁的那一刻」抓的。在迴圈裡 partial 一堆函式時，記得該固定的值有沒有真的被固定住。",
+        ),
+      },
+      {
+        title: "reduce：把一整串「滾成」一個值",
+        content: P(
+          "加總我知道用 <code>sum</code>，但「連乘」「一路合併」就卡住。<code>functools.reduce</code> 是那個通用版。",
+          "它像滾雪球：拿前兩個做運算得一個結果，再拿這結果跟下一個做，一路滾到底。<code>reduce(lambda a, b: a*b, nums)</code> 就是全部相乘。",
+          "說真的，能用 <code>sum</code>、<code>max</code>、<code>\"\".join</code> 這種現成的就別 reduce，可讀性差很多。",
+          "⚠️ 空的可迭代物又沒給起始值，reduce 會直接噴錯。有疑慮就給第三個參數當起點：<code>reduce(f, nums, 0)</code>。",
+        ),
+      },
+      {
+        title: "deque：要從「頭」進出就別用 list",
+        content: P(
+          "我做一個先進先出的排隊，用 list 的 <code>pop(0)</code> 一直從頭拿，資料一多整個變慢。",
+          "原因：list 從頭刪，後面每個元素都要往前挪一格（像排隊有人從最前面走、後面全部得往前站）。<code>collections.deque</code> 兩頭進出都是瞬間的。",
+          "用法一樣直覺：<code>q.append(x)</code> 尾巴加、<code>q.popleft()</code> 頭拿；還能 <code>appendleft</code>。做 BFS、做「最近 N 筆」用 <code>deque(maxlen=N)</code> 超香，滿了自動擠掉最舊的。",
+          "⚠️ deque 支援索引但「用索引隨機存取中間」很慢（要一路走過去）。要常常 <code>q[中間某個]</code> 的還是乖乖用 list。",
+        ),
+      },
+      {
+        title: "ChainMap：好幾層設定疊起來，前面蓋後面",
+        content: P(
+          "我做設定檔時常要「使用者設定 > 專案設定 > 預設值」這種優先順序，以前一個個 merge 很煩。",
+          "<code>collections.ChainMap(user, project, default)</code> 把好幾個 dict 疊成一疊，查 key 時從最前面那層開始找，找到就回。像好幾張投影片疊著看，上面那張擋住下面的。",
+          "好處是它不真的複製資料，只是「看穿」下面幾層，原字典改了它也跟著變。",
+          "⚠️ 對 ChainMap 寫入（<code>cm[k]=v</code>）只會寫進<b>第一層</b>那個 dict，不會動到下面。以為改到 default 結果只改到最上層，這個我卡過。",
+        ),
+      },
+      {
+        title: "heapq：一直要「最小的那個」就用它",
+        content: P(
+          "我要一直拿「目前最小值」又邊拿邊加新資料，每次 sort 一遍慢死。heapq 就是為這個生的。",
+          "它把 list 維護成一個「堆」，<code>heappush</code> 加、<code>heappop</code> 每次都彈出<b>最小</b>的那個，成本很低。想成一個會自動把最輕的浮到頂端的水桶。",
+          "要「最大的 N 個」「最小的 N 個」直接 <code>heapq.nlargest(3, data)</code> / <code>nsmallest</code>，比全排序快。",
+          "⚠️ 它是<b>小根堆</b>（永遠彈最小）。要最大優先，把值存成負數推進去、拿出來再變回正，或在 tuple 裡放 <code>(-優先度, 資料)</code>。",
+        ),
+      },
+      {
+        title: "bisect：在已排序的 list 裡插隊、找位置",
+        content: P(
+          "我有一串已經排好序的分數，要塞新的一筆進去又保持排序，重排整串很浪費。",
+          "<code>bisect.insort(arr, x)</code> 用二分法幫你找到該插的位置直接插進去，順序自動維持。像圖書館把新書插進已排好的書架，不用把整排重排。",
+          "只想「查它該排第幾」不插的話用 <code>bisect_left / bisect_right</code>，很適合做「成績轉等第」這種區間對照。",
+          "⚠️ 大前提：list 本來就得是<b>已排序</b>的，bisect 不會幫你排。丟沒排序的進去，它給你的位置是錯的、還不報錯，超難抓。",
+        ),
+      },
+      {
+        title: "海象運算子 := ：一邊算一邊存起來",
+        content: P(
+          "我常常一個值要先算、判斷、然後又要用，變成算兩次或多寫一行。Python 3.8 的 <code>:=</code> 解決這個。",
+          "它讓你「在判斷式裡順手把值存進變數」。像 <code>while (line := f.readline()):</code>，讀一行、順便存進 line、順便判斷是不是空的，三件事一行做完。",
+          "推導式裡也很有用：<code>[y for x in data if (y := f(x)) > 0]</code>，f(x) 只算一次又能拿來過濾又能收進去。",
+          "⚠️ 別為了省行數硬塞，塞到一行看不懂就是負分。而且它叫「海象」是因為 <code>:=</code> 像海象的眼睛跟牙，別跟一般的 <code>=</code> 搞混。",
+        ),
+      },
+      {
+        title: "自己做 with：contextlib 幫你收尾",
+        content: P(
+          "<code>with open(...)</code> 好用在「自動關檔」。我想讓自己的東西（連線、計時、暫時改設定）也有這種「用完自動收拾」。",
+          "最省事的是 <code>from contextlib import contextmanager</code>，寫個函式：yield 之前是「進場準備」，yield 之後是「離場收尾」，中間加個 <code>@contextmanager</code> 就變成能 with 的東西。像進出房間自動開燈/關燈。",
+          "例如計時器：yield 前記開始時間、yield 後印花了多久，包起來就能 <code>with timer():</code>。",
+          "⚠️ 收尾程式碼一定要放進 <code>try/finally</code> 的 finally 或靠 with 的機制，不然中間噴錯就跳過收尾（沒關到檔、沒還原設定）。",
+        ),
+      },
+      {
+        title: "subprocess：在 Python 裡跑外部指令",
+        content: P(
+          "我想在程式裡跑 git、ffmpeg 那些命令列工具。以前用老舊的 <code>os.system</code>，抓不到輸出也不好判斷成功失敗。",
+          "現在統一用 <code>subprocess.run([\"git\", \"status\"], capture_output=True, text=True)</code>，回來的物件有 <code>.stdout</code>、<code>.returncode</code>（0 代表成功）。",
+          "指令用<b>list</b>一個一個字分開傳（<code>[\"ls\", \"-l\"]</code>），別自己拼成一整串字串。",
+          "⚠️ 大雷：加了 <code>shell=True</code> 又把使用者輸入拼進指令字串，等於開後門讓人執行任意指令（command injection）。能不用 shell=True 就別用，參數用 list 傳最安全。",
+        ),
+      },
+      {
+        title: "argparse：讓你的腳本能吃命令列參數",
+        content: P(
+          "我的小工具本來把設定寫死在程式裡，每次改都要動 code。想做成 <code>python tool.py --name 小明 --count 3</code> 這樣。",
+          "<code>import argparse</code>，建 <code>parser = argparse.ArgumentParser()</code>，用 <code>add_argument(\"--count\", type=int, default=1)</code> 一個個加，最後 <code>args = parser.parse_args()</code>，就能 <code>args.count</code> 拿到。",
+          "最爽的是它自動生 <code>--help</code> 說明，還會幫你檢查型別、必填。",
+          "⚠️ 別自己土炮解析 <code>sys.argv</code>，處理「有沒有給、順序、預設值、型別」很快就一團糟。幾個參數以上就用 argparse。",
+        ),
+      },
+      {
+        title: "requests：打 API 我只記這幾招",
+        content: P(
+          "第一次串 API 我被一堆術語嚇到，其實 requests 超簡單。",
+          "拿資料 <code>r = requests.get(url, params={\"q\": \"貓\"})</code>；送資料 <code>requests.post(url, json={...})</code>。回傳是 JSON 就 <code>r.json()</code> 直接變 dict。",
+          "一定要檢查狀態：<code>r.status_code</code>（200 才是成功），或直接 <code>r.raise_for_status()</code> 讓失敗自己噴錯。",
+          "⚠️ 兩個必踩：一是不設 <code>timeout=10</code>，對方掛掉你的程式會<b>永遠卡住</b>等它；二是把 API 金鑰硬寫在程式裡推上 GitHub。金鑰放環境變數、timeout 一定要給。",
+        ),
+      },
+      {
+        title: "pip / poetry / uv 到底用哪個裝套件",
+        content: P(
+          "剛學就 <code>pip install</code> 加 <code>requirements.txt</code>，夠用。但團隊協作、要鎖死版本時就會想要更好的工具。",
+          "我的白話比較：<b>pip+venv</b>=最原始、人人都有，但版本鎖得鬆。<b>poetry/pipenv</b>=幫你管相依關係、生 lock 檔（大家裝到一模一樣的版本），但速度普通。<b>uv</b>=新星，用 Rust 寫的、超快，也能鎖版本，正在紅。",
+          "新專案我現在會直接試 uv：<code>uv venv</code>、<code>uv pip install</code> 快到有感。",
+          "⚠️ 別在同個專案混用（一下 pip、一下 poetry），相依關係會兩邊打架。選一個、整個專案貫徹到底。",
+        ),
+      },
+      {
+        title: "async / await：不是變快，是「等的時候去做別的」",
+        content: P(
+          "asyncio 我卡最久的觀念是：它<b>不會讓計算變快</b>，它是讓你「在等網路/等 IO 的空檔去做別的事」。",
+          "比喻：你一個人煮三鍋麵，不用站著等第一鍋滾完才下第二鍋——水滾的空檔就去下別鍋。<code>await</code> 就是「這裡要等一下，你先去忙別的」。",
+          "函式前面加 <code>async def</code>，裡面該等的地方 <code>await</code>，最後用 <code>asyncio.run(main())</code> 啟動。要一起跑很多個用 <code>asyncio.gather(...)</code>。",
+          "⚠️ 大雷：在 async 裡呼叫「會卡住的同步函式」（像普通的 <code>time.sleep</code>、普通的 requests），整個事件迴圈被你卡死，async 白搭。要用 async 版（<code>asyncio.sleep</code>、httpx/aiohttp）。",
+        ),
+      },
+      {
+        title: "懶得碰 async？concurrent.futures 更好上手",
+        content: P(
+          "想「同時做很多件事」但不想學整套 asyncio，我很多時候用 <code>concurrent.futures</code> 就夠。",
+          "<code>with ThreadPoolExecutor() as ex: results = ex.map(下載, 網址們)</code>，它自動開一堆工人分頭做，你收結果就好。像找一票人同時去不同櫃檯排隊。",
+          "選哪種池子：<b>等網路/讀檔（IO 密集）</b>用 ThreadPoolExecutor；<b>純計算很吃 CPU</b>用 ProcessPoolExecutor（繞開 GIL）。",
+          "⚠️ 多執行緒同時改同一個共用變數（例如一個計數器）會算錯，要嘛用 Lock、要嘛讓每個工人回傳自己的結果、最後你再合。",
+        ),
+      },
+      {
+        title: "sqlite3：一個檔案就是一個資料庫，免安裝",
+        content: P(
+          "想存結構化資料又不想架 MySQL，Python 內建的 sqlite3 超讚——整個資料庫就是一個 <code>.db</code> 檔。",
+          "<code>con = sqlite3.connect(\"app.db\")</code>，拿 <code>cur = con.cursor()</code> 下 SQL，改完資料一定要 <code>con.commit()</code> 才會真的存進去。",
+          "查詢帶參數用問號：<code>cur.execute(\"select * from users where age > ?\", (18,))</code>。",
+          "⚠️ 兩個必踩：一是忘了 commit，程式關掉資料全沒；二是用 f-string 把值拼進 SQL（<code>f\"... where name='{name}'\"</code>）＝SQL injection 大門。<b>永遠用問號帶參數</b>，別自己拼字串。",
+        ),
+      },
+      {
+        title: "SQLAlchemy 入門：用「物件」操作資料庫，少寫 SQL",
+        content: P(
+          "純手寫 SQL 字串久了很累、又容易拼錯。SQLAlchemy 讓我把資料表對應成 Python class，操作物件就等於操作資料庫（這叫 ORM）。",
+          "定義一個繼承自 Base 的 <code>User</code> class、欄位當 class 屬性；之後 <code>session.add(User(name=\"小明\"))</code>、<code>session.commit()</code> 就寫進去，查詢用 <code>session.query(User).filter(...)</code>。",
+          "好處：跨資料庫（SQLite 換 Postgres）程式幾乎不用改，還幫你擋掉 injection。",
+          "⚠️ ORM 方便但會偷偷發很多 SQL——經典的 <b>N+1 查詢</b>：迴圈裡每一圈都去撈關聯資料，1 筆變幾百筆查詢。該用 <code>joinedload</code> 一次撈就別偷懶。",
+        ),
+      },
+      {
+        title: "pickle：把 Python 物件存成檔、再原封不動讀回來",
+        content: P(
+          "我算了半天的結果想存下來下次直接用，存成 JSON 又塞不下自訂物件。pickle 可以把幾乎任何 Python 物件「醃」成檔案。",
+          "存 <code>pickle.dump(obj, open(\"data.pkl\", \"wb\"))</code>、讀 <code>obj = pickle.load(open(\"data.pkl\", \"rb\"))</code>，讀回來連 class、巢狀結構都在。注意是二進位模式 <code>wb</code>/<code>rb</code>。",
+          "適合自己程式內部暫存中間結果，不適合當跨語言/對外的資料格式（那用 JSON）。",
+          "⚠️ 超重要資安雷：<b>絕對不要 pickle.load 來路不明的檔案</b>。它反序列化時可以執行任意程式碼，等於幫對方在你電腦跑指令。只 load 你自己產生、信得過的。",
+        ),
+      },
+      {
+        title: "if __name__ == \"__main__\"：這行到底在幹嘛",
+        content: P(
+          "我一直看到這行卻不懂，後來搞懂它其實很單純：它是問「這個檔案是被<b>直接執行</b>、還是被別人 import 的？」",
+          "你 <code>python a.py</code> 直接跑時，a 的 <code>__name__</code> 會是 <code>\"__main__\"</code>；但如果 a 是被別的檔 <code>import a</code>，它就變成 <code>\"a\"</code>。所以這個 if 底下放「只有直接跑才要做的事」（像測試、啟動）。",
+          "比喻：這是一個「只有我自己主演時才播的開場」，被當配角 import 進別的戲時就不播。",
+          "⚠️ 沒包這行、又把「馬上執行的程式」寫在檔案最外層，那別人一 <code>import</code> 你的檔，那些程式就<b>立刻亂跑一遍</b>。函式定義放外面、真正要跑的動作放進這個 if。",
+        ),
+      },
+      {
+        title: "循環 import：A 要 B、B 又要 A，卡死",
+        content: P(
+          "我兩個檔案互相 import，結果噴 <code>ImportError</code> 或某個東西「還沒定義好」。這就是循環 import。",
+          "原因：Python 執行 import 是「從上往下跑一遍那個檔」，A 跑到一半去 import B、B 又回頭 import 還沒跑完的 A，就拿到半成品。像兩個人互相等對方先講話。",
+          "解法通常是：把共用的東西抽到第三個檔（<code>common.py</code>）大家都 import 它；或把 import 移到「用到的函式裡面」延後執行。",
+          "⚠️ 別靠「調換 import 順序」硬喬過去，那是碰運氣、之後一定復發。看到循環，代表你的模組邊界該重新切了。",
+        ),
+      },
+      {
+        title: "property：讓「方法」用起來像「屬性」",
+        content: P(
+          "我想在讀寫一個屬性時偷偷做點事（檢查、換算），但又不想把 <code>obj.攝氏</code> 改成醜醜的 <code>obj.get_攝氏()</code>。property 就是幹這個的。",
+          "在方法上面加 <code>@property</code>，之後 <code>obj.攝氏</code> 看起來是屬性、其實背後跑了一個函式；再配 <code>@攝氏.setter</code> 就能攔截「賦值」那一刻做檢查（例如溫度不准低於絕對零度就擋下）。",
+          "好處：對外介面不變（還是 <code>obj.攝氏 = 25</code>），內部想加驗證/換算隨時能加，不用改所有用到的地方。",
+          "⚠️ 別在 property 裡塞很重的計算（每次讀都重算會很慢），也別讓 getter 有副作用——別人只是「讀個值」不預期你偷偷改東西。",
+        ),
+      },
+      {
+        title: "classmethod 還是 staticmethod？我這樣分",
+        content: P(
+          "class 裡三種方法我一直搞混。白話分：一般方法第一個參數 <code>self</code>（拿到那個物件實例）；classmethod 第一個是 <code>cls</code>（拿到類別本身）；staticmethod 兩個都不拿。",
+          "<b>classmethod</b> 最常用來做「另一種建構方式」，像 <code>User.from_json(s)</code>——它需要 <code>cls</code> 才能 <code>cls(...)</code> 生出正確的子類。",
+          "<b>staticmethod</b> 就是「剛好放在這 class 底下、但其實不碰實例也不碰類別」的工具函式，純粹歸類用。",
+          "⚠️ 判斷法：方法裡有用到 self 就一般方法；沒用 self 但有用到 cls（要建實例、讀類別屬性）就 classmethod；兩個都沒用到才 staticmethod。硬把該用 self 的寫成 static，之後要拿實例資料就卡住。",
+        ),
+      },
+      {
+        title: "__str__ 跟 __repr__ 差在哪（別再只有一堆記憶體位址）",
+        content: P(
+          "我 print 自己的物件都跳出 <code>&lt;User object at 0x7f...&gt;</code>，完全看不懂。加這兩個方法就解決。",
+          "<code>__str__</code> 是「給人看的漂亮版」，<code>print(obj)</code> 和 <code>str(obj)</code> 會用它。<code>__repr__</code> 是「給開發者看的精確版」，你在互動視窗直接打變數名、或看 list 裡的元素、debug 時看到的就是它。",
+          "我的習慣：<b>一定先寫 __repr__</b>，寫成「能重建這個物件」的樣子像 <code>User(name='小明')</code>；__str__ 沒寫時會自動退回用 __repr__，所以先顧好它最划算。",
+          "⚠️ list 裡的元素、還有噴錯訊息裡顯示物件，用的都是 __repr__ 不是 __str__。只寫 __str__ 的話 debug 時還是一片看不懂。",
+        ),
+      },
+      {
+        title: "__eq__ 跟 __hash__ 要成雙成對",
+        content: P(
+          "我讓兩個「內容一樣」的自訂物件被判定相等，就寫了 <code>__eq__</code>。結果拿去放 set 或當 dict 的 key 時出怪事。",
+          "規則：只要你定義了 <code>__eq__</code>，Python 會把 <code>__hash__</code> 設成 None，你的物件就<b>不能</b>放進 set、不能當 dict 的 key。因為「相等的東西 hash 必須一樣」，你改了相等定義就得一起交代 hash。",
+          "解法：兩個一起定義，而且用「同一組欄位」算。<code>__eq__</code> 比哪些欄位，<code>__hash__</code> 就 <code>hash((那些欄位))</code>。",
+          "⚠️ 別把「會變的欄位」拿去算 hash——物件放進 set 後你又改了那欄，它就在 set 裡「找不到自己」。當 key/放 set 的物件，拿來算 hash 的欄位要是不可變的。",
+        ),
+      },
+      {
+        title: "__slots__：物件很多時偷偷省一大把記憶體",
+        content: P(
+          "我一次生幾十萬個小物件，記憶體爆掉。原因是每個 Python 物件預設都背著一個 <code>__dict__</code>（可以隨時加屬性用的），量一大就很肥。",
+          "在 class 裡加一行 <code>__slots__ = (\"x\", \"y\")</code>，就是跟 Python 說「這個物件只會有這幾個屬性、別給我那個 dict」，記憶體省很多、存取還變快。像從「可以無限塞的抽屜櫃」換成「剛好幾格的收納盒」。",
+          "很適合資料量大、欄位固定的小資料類。",
+          "⚠️ 代價：加了 slots 就<b>不能臨時再塞新屬性</b>（<code>obj.z = 1</code> 會噴錯），這正是它省記憶體的原因。也和某些功能（多重繼承、需要 __dict__ 的套件）會衝突，用之前想清楚欄位。",
+        ),
+      },
+      {
+        title: "ABC 抽象基底類：規定子類「一定要實作這幾個」",
+        content: P(
+          "我做外掛系統，希望每個外掛都<b>保證</b>有 <code>run()</code> 方法，但父類自己給不出實作。ABC 就是拿來立這種規矩的。",
+          "<code>from abc import ABC, abstractmethod</code>，父類繼承 ABC、要求的方法上面加 <code>@abstractmethod</code>。這樣任何忘了實作 run 的子類，一<b>建立實例</b>就直接噴錯，不會拖到執行才爆。",
+          "把它想成合約：簽了（繼承）就必須履行（實作那些方法），不然當場擋下。",
+          "⚠️ 抽象類本身不能被實例化（<code>MyABC()</code> 會報錯，這是故意的）。它只是模板，要用就繼承它、把該實作的補齊。",
+        ),
+      },
+      {
+        title: "dataclass 進階：field 跟 frozen 別踩雷",
+        content: P(
+          "dataclass 幫我省掉一堆 <code>__init__</code>。但兩個地方我踩過雷，記一下。",
+          "第一：欄位預設值如果是 list/dict 這種可變物件，<b>不能直接寫</b> <code>items: list = []</code>（會報錯，因為所有實例會共用同一個）。要用 <code>field(default_factory=list)</code>，每個實例才有自己的。",
+          "第二：加 <code>@dataclass(frozen=True)</code> 可以做出「不可改」的資料物件（建完就凍結、改欄位噴錯），還自動能 hash、能放 set，很適合當設定或 key。",
+          "⚠️ frozen 的物件真的不能改，你需要「改一點點的新版本」時用 <code>dataclasses.replace(obj, x=5)</code> 生一個新的，別想直接賦值。",
+        ),
+      },
+      {
+        title: "typing 三寶：Protocol / TypedDict / Literal",
+        content: P(
+          "型別註記寫久了，這三個讓我少寫很多、也讓工具更懂我的意圖。",
+          "<b>Protocol</b>＝「鴨子型別」寫成型別：不管你是誰，只要有 <code>read()</code> 方法就算數，不用硬去繼承。<b>TypedDict</b>＝規定一個 dict「該有哪些 key、各是什麼型別」（像描述 API 回傳的 JSON 形狀）。<b>Literal</b>＝限定只能是某幾個固定值，<code>Literal[\"asc\", \"desc\"]</code>。",
+          "它們讓 <code>mypy</code>、編輯器能在你打錯 key、傳錯字串時當場提醒。",
+          "⚠️ 提醒：這些型別註記<b>執行時不會真的檢查</b>，Python 照跑不誤。真正抓錯要靠 mypy 之類的工具去掃，別以為寫了註記就會自動擋。",
+        ),
+      },
+      {
+        title: "mypy：在跑之前就抓出型別對不上的地方",
+        content: P(
+          "Python 不管型別，很多錯要跑到那行才炸。mypy 讓我「不用執行」就先掃一遍，提早抓包。",
+          "配合 type hints 用：<code>def add(a: int, b: int) -> int:</code>，然後命令列 <code>mypy 你的檔.py</code>，它會挑出「你把字串傳給要 int 的參數」「函式可能回 None 你卻直接 .strip()」這種問題。",
+          "對大專案、多人協作特別值得，等於多一層免費的自動審查。",
+          "⚠️ 別想一次全套嚴格模式套上舊專案，會被幾百個錯淹沒。從新檔案、關鍵模組開始，逐步加註記，體感才好。",
+        ),
+      },
+      {
+        title: "zoneinfo：算時區別再自己 +8 小時",
+        content: P(
+          "我以前處理時區都手動加減 8 小時，遇到日光節約時間就整個崩。Python 3.9 內建的 <code>zoneinfo</code> 一勞永逸。",
+          "<code>from zoneinfo import ZoneInfo</code>，把時區「貼」到時間上：<code>dt.astimezone(ZoneInfo(\"Asia/Taipei\"))</code>，它自己知道每個地區在每個日期的正確偏移。",
+          "我的鐵則：<b>存資料一律存 UTC</b>，只有要顯示給使用者看時才轉成當地時區。",
+          "⚠️ 別用「沒帶時區的 naive 時間」（<code>datetime.now()</code>）去跟帶時區的比大小，會直接噴錯或算歪。要嘛全帶時區、要嘛全不帶，別混。",
+        ),
+      },
+      {
+        title: "timedelta：日期加減、算天數的正確姿勢",
+        content: P(
+          "「三天後是幾號」「兩個日期差幾天」這種我以前傻傻自己算，遇到跨月跨年就錯。datetime 早就幫你算好了。",
+          "<code>from datetime import timedelta</code>，直接 <code>今天 + timedelta(days=3)</code> 就是三天後，跨月自動處理。兩個 datetime 相減會得到一個 timedelta，<code>(d2 - d1).days</code> 就是差幾天。",
+          "timedelta 能裝 days、hours、minutes、seconds，混著加也行。",
+          "⚠️ timedelta 沒有「months」「years」——因為一個月幾天不固定。要「幾個月後」得用 <code>dateutil.relativedelta</code> 或自己處理年月，別硬用 <code>days=30</code> 湊，久了一定歪。",
+        ),
+      },
+      {
+        title: "uuid：要一個「幾乎不可能撞」的 ID",
+        content: P(
+          "我要給每筆資料一個唯一 ID，又不想靠資料庫的自增號（會外洩數量、多台機器還會撞）。uuid 解決這個。",
+          "<code>import uuid</code>，<code>uuid.uuid4()</code> 產一個隨機的長 ID，長到你這輩子產再多也幾乎不可能重複。轉成字串 <code>str(uuid.uuid4())</code> 就能當檔名、當 key。",
+          "跨機器、離線先產 ID、不想讓人猜到下一個是誰，都很適合。",
+          "⚠️ 別把 uuid4 拿去當「安全的 token / 密碼」——它是為了唯一、不是為了保密，理論上可被推測。要防人猜的秘密用 <code>secrets</code> 模組產。",
+        ),
+      },
+      {
+        title: "hashlib：算檔案/字串的指紋",
+        content: P(
+          "我想確認「這兩個檔一不一樣」「下載的檔有沒有被動過」，一個個 byte 比太慢。hash 就是內容的指紋。",
+          "<code>import hashlib</code>，<code>hashlib.sha256(資料的bytes).hexdigest()</code> 給你一串固定長度的字。內容只要差一個 byte，指紋就整個不同；一樣的內容永遠一樣的指紋。",
+          "常拿來做檔案完整性校驗、資料去重（比指紋就好）。注意輸入要是 bytes，字串記得先 <code>.encode()</code>。",
+          "⚠️ <b>存密碼別用普通 sha256/md5</b>。那類太快，被撈走後暴力破解很快。密碼要用專門的慢雜湊（bcrypt、argon2）加 salt。hashlib 適合「校驗完整性」不是「存密碼」。",
+        ),
+      },
+      {
+        title: "secrets：要「安全的隨機」就別用 random",
+        content: P(
+          "我曾經用 <code>random</code> 產「重設密碼的連結 token」，後來才知道這超危險。",
+          "<code>random</code> 是「可預測的偽隨機」，適合洗牌、抽獎這種不涉及安全的；但拿去產 token、密碼、驗證碼，攻擊者有機會推算出來。要安全隨機用內建的 <code>secrets</code>。",
+          "<code>secrets.token_urlsafe(32)</code> 產一段能塞網址的安全亂碼、<code>secrets.choice(候選)</code> 安全地隨機挑一個，拿來做臨時密碼很讚。",
+          "⚠️ 判斷法很簡單：這個隨機值「被別人猜到會不會出事」？會出事（token、密碼、金鑰）→ secrets；不會（遊戲、抽樣）→ random 就好。",
+        ),
+      },
+      {
+        title: "base64：把二進位「翻譯」成純文字，不是加密",
+        content: P(
+          "我要把圖片塞進 JSON、或放進網址，二進位資料直接塞會壞掉。base64 把它轉成只有英數符號的純文字。",
+          "<code>import base64</code>，編 <code>base64.b64encode(bytes)</code>、解 <code>base64.b64decode(字串)</code>。你在 HTML 看到的 <code>data:image/png;base64,...</code> 就是這個。",
+          "重點觀念：它是「換一種表示法」讓文字通道能載二進位，體積還會變大約 1/3。",
+          "⚠️ <b>base64 不是加密</b>！任何人都能一秒解回原文。別拿它「藏」密碼或敏感資料以為安全了，那只是把明文換個樣子而已。",
+        ),
+      },
+      {
+        title: "tempfile：要暫存檔就別自己在桌面亂丟",
+        content: P(
+          "我以前處理中間檔都自己 <code>open(\"temp.txt\")</code> 丟在當前資料夾，忘了刪、還會兩支程式同時搶同一個檔名打架。",
+          "<code>import tempfile</code> 幫你在系統的暫存區生一個「名字不會撞、用完自動刪」的檔。<code>with tempfile.NamedTemporaryFile() as f:</code> 離開 with 就自動清掉。要暫存整個資料夾用 <code>TemporaryDirectory()</code>。",
+          "好處：跨平台（自己找到正確的暫存位置）、不會殘留垃圾、多程式同時跑也不撞名。",
+          "⚠️ 在 Windows 上，用 NamedTemporaryFile 時「同時間用別的方式再開那個檔」可能開不了（檔案鎖）。需要「先寫完、再讓別的程式讀」的場景，設 <code>delete=False</code> 自己控制刪除時機。",
+        ),
+      },
+      {
+        title: "glob：用 *.csv 這種模式一次抓一堆檔",
+        content: P(
+          "我要處理資料夾裡「所有 csv」，以前 <code>os.listdir</code> 撈全部再自己過濾副檔名，很囉唆。",
+          "<code>from glob import glob</code>，<code>glob(\"data/*.csv\")</code> 直接回一個符合的檔案路徑 list，<code>*</code> 代表「任意字」。要連子資料夾一起找用 <code>glob(\"data/**/*.csv\", recursive=True)</code>。",
+          "純文字模式很直覺，跟你在命令列打的萬用字元一樣。",
+          "⚠️ 兩個雷：一是回來的順序<b>不保證</b>照檔名排，需要固定順序就 <code>sorted(glob(...))</code>；二是預設抓不到 <code>.env</code> 這種點開頭的隱藏檔。",
+        ),
+      },
+      {
+        title: "shutil：複製、搬移、砍整個資料夾",
+        content: P(
+          "檔案層級的操作（開檔讀寫）我會了，但「複製一整個資料夾」「搬檔」用底層 os 很痛。shutil 是高階版。",
+          "常用就這幾個：<code>shutil.copy(src, dst)</code> 複製檔、<code>shutil.copytree(src, dst)</code> 複製整個資料夾、<code>shutil.move(src, dst)</code> 搬移或改名、<code>shutil.rmtree(dir)</code> 砍掉整個資料夾。還能 <code>make_archive</code> 打包成 zip。",
+          "把它想成程式版的「複製貼上/剪下/整個資料夾丟垃圾桶」。",
+          "⚠️ <code>rmtree</code> 是<b>直接刪、不進垃圾桶、沒得反悔</b>。路徑組錯（例如不小心指到根目錄）後果不堪設想。刪之前務必 print 出要刪的路徑確認，或先 <code>if os.path.isdir(path)</code> 把關。",
+        ),
+      },
+      {
+        title: "正則的群組：用括號把要的部分「圈起來抓」",
+        content: P(
+          "正則我一開始只會判斷「符不符合」，不會「把符合的某段挖出來」。關鍵就是<b>括號</b>。",
+          "在 pattern 裡用 <code>()</code> 圈住你要的部分，比對後 <code>m.group(1)</code> 拿第一個括號抓到的、<code>m.group(2)</code> 第二個。像 <code>(\\d{4})-(\\d{2})</code> 就能分別拿到年跟月。",
+          "括號一多就數不清第幾個，改用<b>命名群組</b> <code>(?P&lt;year&gt;\\d{4})</code>，之後 <code>m.group(\"year\")</code> 用名字拿，清楚多了。",
+          "⚠️ 先判斷有沒有配到再拿：<code>re.search</code> 沒配到會回 <code>None</code>，你直接 <code>.group()</code> 會噴 <code>AttributeError</code>。一定先 <code>if m:</code> 再取值。",
+        ),
+      },
+      {
+        title: "re.sub：批次取代，還能用抓到的東西重組",
+        content: P(
+          "「把所有電話號碼中間打碼」「統一日期格式」這種批次替換，用普通的 <code>str.replace</code> 做不到（它只能換固定字串）。re.sub 可以。",
+          "<code>re.sub(pattern, 換成什麼, 文字)</code> 把所有符合 pattern 的都換掉。厲害的是「換成什麼」裡能用 <code>\\1</code>、<code>\\g&lt;name&gt;</code> 引用剛抓到的群組，等於邊抓邊重組（把 <code>2024-01</code> 換成 <code>01/2024</code>）。",
+          "要更靈活時，「換成什麼」可以傳一個<b>函式</b>，每個配到的地方叫一次，回傳要換的字。",
+          "⚠️ 替換字串裡的反斜線要小心（Python 字串本身也吃反斜線）。pattern 和替換字建議都用 <code>r\"...\"</code> raw 字串，不然 <code>\\1</code> 會被吃掉。",
+        ),
+      },
+      {
+        title: "算錢別用 float：認識 Decimal",
+        content: P(
+          "我做金額計算，<code>0.1 + 0.2</code> 印出來竟然是 <code>0.30000000000000004</code>，帳就差一點點、越加越歪。這是 float 的天生問題。",
+          "原因：float 用二進位存，很多十進位小數（像 0.1）根本存不準，是「很接近但不完全等於」。錢這種<b>要精確</b>的東西不能用它。",
+          "改用 <code>from decimal import Decimal</code>，<code>Decimal(\"0.1\") + Decimal(\"0.2\")</code> 就老實給你 <code>0.3</code>。它照十進位精確運算。",
+          "⚠️ 一定用<b>字串</b>建：<code>Decimal(\"0.1\")</code> 對，<code>Decimal(0.1)</code> 會把已經不準的 float 灌進去、照樣歪。錢的源頭就別讓 float 碰。",
+        ),
+      },
+      {
+        title: "fractions：要「三分之一」就別用小數硬湊",
+        content: P(
+          "有些計算用小數會累積誤差（<code>1/3</code> 永遠除不盡），如果你要的是<b>精確的分數</b>，Python 有現成的 Fraction。",
+          "<code>from fractions import Fraction</code>，<code>Fraction(1, 3) + Fraction(1, 6)</code> 老實給你 <code>Fraction(1, 2)</code>，全程精確、還自動約分。",
+          "適合做需要精確比例的計算、教學、或當 Decimal 之外的另一種精確選擇。",
+          "⚠️ 同樣別用 float 建 <code>Fraction(0.1)</code>（會得到一個超醜的近似分數）。要嘛給整數分子分母 <code>Fraction(1, 10)</code>、要嘛給字串 <code>Fraction(\"0.1\")</code>。",
+        ),
+      },
+      {
+        title: "math 跟 statistics：內建就有，別自己造輪子",
+        content: P(
+          "算平均、開根號、無條件進位這些，我以前自己寫迴圈或用魔法數字。其實內建早就有、又快又準。",
+          "<code>math</code>：<code>math.sqrt</code> 開根號、<code>math.ceil / floor</code> 進位捨去、<code>math.gcd</code> 最大公因數、還有 <code>math.pi</code>、<code>math.inf</code>（無限大）。<code>statistics</code>：<code>mean</code> 平均、<code>median</code> 中位數、<code>stdev</code> 標準差，一行搞定。",
+          "資料量不大、又不想扛 numpy 這種大套件時，statistics 剛剛好。",
+          "⚠️ 別用 <code>int(x)</code> 當「四捨五入」——它是<b>直接砍掉小數</b>（無條件捨去），<code>int(2.9)</code> 是 2 不是 3。要四捨五入用 <code>round()</code>，要進位用 <code>math.ceil</code>。",
+        ),
+      },
+      {
+        title: "weakref 與 gc：為什麼物件明明沒用了卻不消失",
+        content: P(
+          "Python 會自動回收沒人用的物件（垃圾回收）。但我遇過「該被回收的卻一直佔記憶體」，原因是有東西還<b>抓著它不放</b>。",
+          "只要還有一個變數指著它、或它被放在某個還活著的 list/快取裡，它就不會被回收。經典雷是「快取 dict 抓住一堆物件，永遠不放」。",
+          "解法之一是 <code>weakref</code>（弱引用）：讓你「參考一個物件，但不算數」——當別人都不用它時，它照樣能被回收，你的弱引用就自動變空。很適合做不想造成記憶體洩漏的快取。",
+          "⚠️ 兩個物件互相抓（循環引用）Python 的 gc 能處理，但如果類別有寫 <code>__del__</code> 又循環引用，舊版可能卡住不回收。發現記憶體只增不減，先找「誰還抓著它」。",
+        ),
+      },
+      {
+        title: "id() 跟 is：兩個東西是不是「同一個」",
+        content: P(
+          "<code>==</code> 是問「內容一不一樣」，<code>is</code> 是問「是不是<b>同一個</b>物件」（記憶體同一格）。<code>id(obj)</code> 就是那個物件的「身分證號」，兩個 id 一樣才是同一個。",
+          "比喻：兩個一模一樣的雙胞胎，<code>==</code> 說「長得一樣」，<code>is</code> 說「是不是同一個人」。內容相同不代表是同一個物件。",
+          "實務上 <code>is</code> 只固定用來比 <code>None</code>、<code>True</code>、<code>False</code>（<code>if x is None</code>）。",
+          "⚠️ 別用 <code>is</code> 比數字或字串！<code>a is b</code> 對小整數/短字串有時「剛好成立」（Python 會暫存共用），你以為它可靠，換個大數字或字串就 False。比值一律用 <code>==</code>。",
+        ),
+      },
+      {
+        title: "keyword-only 參數：逼呼叫的人「寫出名字」",
+        content: P(
+          "我有個函式 <code>send(msg, urgent=False, silent=False)</code>，別人呼叫 <code>send(\"hi\", True, False)</code>——那兩個布林到底哪個是哪個？完全看不出來。",
+          "在參數列放一個單獨的 <code>*</code>，它後面的參數就變成「<b>只能用名字傳</b>」：<code>def send(msg, *, urgent=False, silent=False)</code>。之後只能 <code>send(\"hi\", urgent=True)</code>，一眼就懂。",
+          "尤其一堆布林旗標、選項的函式，強制寫名字能救掉超多「傳錯位置」的 bug。",
+          "⚠️ 反過來，用 <code>/</code> 可以做「只能照位置傳」的參數（positional-only）。一般人用 <code>*</code> 就夠了，重點是：容易搞混的選項，強迫寫名字。",
+        ),
+      },
+      {
+        title: "for-else / while-else：迴圈「沒被 break」才做的事",
+        content: P(
+          "Python 的 for/while 後面可以接 <code>else</code>，我第一次看以為是「迴圈沒跑就做」，結果完全會錯意。",
+          "真正的意思是：<b>迴圈正常跑完、中途沒有被 break</b>，才會執行 else。一旦 break 跳出，else 就跳過。",
+          "最經典用途是「找東西」：迴圈裡找到就 break，<code>else</code> 放「整圈都沒找到」要做的事，省掉一個 <code>found = False</code> 旗標。",
+          "⚠️ 這個 else 太容易誤讀，隊友看不懂也是常事。用之前加個註解，或乾脆改用旗標/包成函式 return，可讀性有時更重要。",
+        ),
+      },
+      {
+        title: "字串驗證：isdigit / isalpha 有你沒想到的坑",
+        content: P(
+          "要判斷使用者輸入「是不是純數字」，我用 <code>s.isdigit()</code>，大部分沒事，但踩過幾個坑。",
+          "常用的：<code>isdigit()</code>（全是數字）、<code>isalpha()</code>（全是字母）、<code>isalnum()</code>（字母或數字）、<code>isspace()</code>（全空白）。判斷前記得先 <code>strip()</code> 去頭尾空白。",
+          "要「能不能轉成數字」其實更常見，那用 <code>try: int(s) except ValueError:</code> 比 isdigit 準（isdigit 對負號、小數點都會回 False）。",
+          "⚠️ 兩個雷：一是空字串 <code>\"\".isdigit()</code> 是 <b>False</b>，別忘了先擋空的；二是 <code>\"²\".isdigit()</code>、全形數字這些也可能回 True，真要嚴格判斷阿拉伯數字用 <code>s.isdecimal()</code> 或直接試轉型。",
+        ),
+      },
+      {
+        title: "os.environ：機密別寫死在程式裡，讀環境變數",
+        content: P(
+          "API 金鑰、資料庫密碼我以前直接寫在 code 裡，推上 GitHub 才驚覺全世界都看得到。正解是放環境變數。",
+          "<code>import os</code>，<code>os.environ[\"API_KEY\"]</code> 讀，或 <code>os.environ.get(\"API_KEY\")</code>（沒設回 None、不會爆）、<code>os.getenv(\"PORT\", \"3000\")</code> 還能給預設。開發時常搭配 <code>.env</code> 檔加 <code>python-dotenv</code> 載入。",
+          "好處：同一份 code，本機、測試、上線各用各的設定，機密也不進版控。",
+          "⚠️ 一定把 <code>.env</code> 加進 <code>.gitignore</code>！我看過太多人把 .env 一起推上去。還有，環境變數<b>都是字串</b>，要數字記得自己 <code>int(os.getenv(\"PORT\"))</code>。",
+        ),
+      },
+      {
+        title: "__init__.py：資料夾怎麼變成「可以 import 的套件」",
+        content: P(
+          "我把程式拆成好幾個檔放進資料夾，結果 import 一直失敗。關鍵是那個常被忽略的 <code>__init__.py</code>。",
+          "一個資料夾裡放個（可以是空的）<code>__init__.py</code>，Python 就把它當成一個「套件」，你才能 <code>from 資料夾 import 某檔</code>。它像資料夾的「這是一個正式套件」標籤。",
+          "你也能在 <code>__init__.py</code> 裡 <code>from .core import main</code>，讓外面直接 <code>from 套件 import main</code>，把好用的東西提到門口。",
+          "⚠️ 現代 Python（3.3+）就算沒有 __init__.py 有時也能 import（namespace package），但行為容易出意外、工具支援也參差。<b>老實每個套件資料夾放一個</b>，省很多鬼打牆。",
+        ),
+      },
+      {
+        title: "multiprocessing：吃 CPU 的活，開好幾個「真的」平行",
+        content: P(
+          "我做一個超吃 CPU 的計算，開多執行緒（thread）卻沒變快。原因是 Python 的 <b>GIL</b>——同一時間只有一條 thread 真的在算。",
+          "解法是 <code>multiprocessing</code>：它開的是「多個獨立的行程」，各有各的直譯器、繞開 GIL，能真正同時吃好幾顆 CPU 核心。像找好幾個人各用一台電腦分頭算。",
+          "<code>with Pool() as p: results = p.map(重計算函式, 資料)</code>，它自動分給各行程、幫你收回結果。",
+          "⚠️ 行程之間<b>不共享記憶體</b>，資料要用 pickle 搬來搬去（所以傳大物件很貴、函式和資料還得能被 pickle）。純等網路/讀檔的活別用它，那種用 thread 或 async 就好。",
+        ),
+      },
+      {
+        title: "queue.Queue：多執行緒之間安全地傳東西",
+        content: P(
+          "多個 thread 想共用一份「待辦清單」，直接用 list 大家一起 append/pop 會出亂子（同時動就資料錯亂）。<code>queue.Queue</code> 是為這個生的。",
+          "它<b>本身就是執行緒安全</b>的，你放心讓一堆 thread <code>q.put(工作)</code>、另一堆 <code>q.get()</code> 拿，內部自己上鎖不會打架。經典的「生產者—消費者」模型。",
+          "消費者做完一件 <code>q.task_done()</code>，主程式 <code>q.join()</code> 就能等到全部做完。",
+          "⚠️ <code>q.get()</code> 在佇列空時會<b>卡住等</b>（這常是你要的）。要「沒東西就別等」用 <code>q.get_nowait()</code> 或設 timeout，不然收工時 thread 可能永遠卡在那等一個不會來的工作。",
+        ),
+      },
+      {
+        title: "dict 現在是「保序」的了，但別依賴到底",
+        content: P(
+          "老教學都說「dict 沒有順序」，這在 Python 3.7 之後<b>變了</b>——dict 現在保證照「你放進去的順序」記著，迭代出來也照那個順序。",
+          "所以 <code>for k in d</code>、<code>d.keys()</code>、轉成 JSON 的欄位順序，都跟你插入時一致，很多以前要用 OrderedDict 的場合現在普通 dict 就夠。",
+          "要「照 key 或 value 排序」還是得自己排：<code>dict(sorted(d.items()))</code>。保序≠自動排序，兩回事。",
+          "⚠️ 「保序」是插入順序、不是排序，別搞混。另外若你的程式碼還要支援很舊的 Python（3.6 以前），那邊不保證，需要順序就明確用 <code>collections.OrderedDict</code>。",
+        ),
+      },
+      {
+        title: "合併字典：Python 3.9 的 | 超好用",
+        content: P(
+          "合併兩個 dict 我以前寫 <code>{**a, **b}</code>，會但不直覺。Python 3.9 之後有更白話的寫法。",
+          "<code>c = a | b</code> 就合併成新的（b 的 key 若跟 a 撞，以 <b>b 為準</b>覆蓋）；想「就地更新 a」用 <code>a |= b</code>，跟 <code>a.update(b)</code> 同效果。",
+          "跟數字的「或」共用同一個符號，但對 dict 是「合併」，讀起來像「a 疊上 b」。",
+          "⚠️ 重點記牢：<b>右邊蓋左邊</b>。想保留舊值、只補沒有的 key，就把舊的放右邊 <code>新 | 舊</code>，順序反了資料就被覆蓋掉。",
+        ),
+      },
+      {
+        title: "串一大堆字串用 join，別用 += 慢慢接",
+        content: P(
+          "我在迴圈裡 <code>result += line</code> 把幾萬行接成一大串，跑超慢。這是很多人不知道的效能雷。",
+          "因為字串是<b>不可變</b>的，每次 <code>+=</code> 都是「開一個新字串、把舊的全抄過去再加新的」，越接越長、越抄越久（是 N² 等級的慢）。",
+          "正解：先把片段收進 list，最後一次 <code>\"\".join(片段)</code> 或 <code>\"\\n\".join(行們)</code>。join 一次算好總長、只抄一遍，快非常多。",
+          "⚠️ join 只能接<b>字串</b>元素，list 裡有數字會噴 <code>TypeError</code>。先轉：<code>\",\".join(str(x) for x in nums)</code>。",
+        ),
+      },
+      {
+        title: "raise from：包裝例外時別把原兇手弄丟",
+        content: P(
+          "我 catch 到一個底層錯誤，想換成自己好懂的訊息再往上丟，結果原本的錯誤堆疊不見了、之後 debug 找不到根源。",
+          "用 <code>raise MyError(\"存檔失敗\") from e</code>，它會把「新錯誤」跟「原本的 e」串起來，錯誤訊息會顯示 <code>直接原因是上面這個</code>，兩層都看得到，追根究底超方便。",
+          "這叫例外鏈（exception chaining），保留因果關係。",
+          "⚠️ 若你是「這個底層錯誤本來就該被吞掉、別再顯示」，用 <code>raise MyError(...) from None</code> 明確斷開鏈。但多數時候你會想留著 <code>from e</code>，別無腦吞掉真兇。",
+        ),
+      },
+      {
+        title: "finally 的雷：它一定會跑，包括你 return 之後",
+        content: P(
+          "<code>finally</code> 我知道是「不管有沒有出錯都會執行」，拿來關檔、釋放資源很讚。但它有幾個會坑人的地方。",
+          "重點：就算 try 裡面 <code>return</code> 了，離開前還是會<b>先跑 finally</b> 再真的回去。所以 finally 是收尾的最後保險。",
+          "但反過來——如果你在 finally 裡也寫了 <code>return</code>，它會<b>蓋掉</b> try 裡本來要回的值，連 try 裡正在噴的例外都被吞掉、無聲無息。這超難抓。",
+          "⚠️ finally 裡別放 return / break / continue，也別放可能自己噴錯的重活。它就乖乖做「關檔、解鎖」這種收尾，別搶戲。",
+        ),
+      },
+      {
+        title: "cProfile：程式慢在哪，別用猜的",
+        content: P(
+          "程式跑很慢，我以前憑感覺猜「大概是那個迴圈」然後亂優化，常常改錯地方。內建的 cProfile 直接告訴你答案。",
+          "命令列 <code>python -m cProfile -s cumtime 你的檔.py</code>，它會列出「每個函式被呼叫幾次、各花多少時間」，照累計時間排序，一眼看出誰是大魔王。",
+          "優化的鐵律：<b>先量再改</b>。九成的時間常常卡在你意想不到的一小段。",
+          "⚠️ 別憑直覺瞎優化——最慢的往往不是你以為的那行。也別花時間優化只跑一次、佔比極小的部分，抓住 profile 指出的那個熱點就好。",
+        ),
+      },
+      {
+        title: "計時要用 perf_counter，不是 time.time()",
+        content: P(
+          "我要量「這段跑多久」，一開始用 <code>time.time()</code> 前後相減，偶爾量出<b>負數</b>或怪值，嚇一跳。",
+          "原因：<code>time.time()</code> 是「牆上時鐘」，會被系統校時、對時調整（甚至倒退）。量「經過多少時間」要用<b>單調時鐘</b> <code>time.perf_counter()</code>，它只會往前、精度也高。",
+          "用法一樣：<code>t = time.perf_counter()</code> ... <code>time.perf_counter() - t</code> 就是秒數。",
+          "⚠️ perf_counter 的「絕對值」沒意義（不是現在幾點），只能拿來<b>相減</b>算差。要知道「現在幾點/幾號」還是用 <code>time.time()</code> 或 datetime，兩者用途別搞混。",
+        ),
+      },
+      {
+        title: "contextlib.suppress：優雅地「這個錯就算了」",
+        content: P(
+          "有些錯誤我就是想忽略（例如「刪一個可能本來就不存在的檔」），寫 <code>try/except/pass</code> 三行有點囉唆。",
+          "<code>from contextlib import suppress</code>，<code>with suppress(FileNotFoundError): os.remove(path)</code>——一行講明「這段裡如果冒出 FileNotFoundError，就默默略過」，比空的 except 清楚多了。",
+          "它讀起來很白話：「壓下這種錯」。",
+          "⚠️ 只 suppress <b>你明確指定的那種</b>錯，別 <code>suppress(Exception)</code> 把所有錯都吞掉——那會連你沒預期的 bug 一起靜音，出事完全查不到。範圍越小越安全。",
+        ),
+      },
+      {
+        title: "寫裝飾器記得加 functools.wraps",
+        content: P(
+          "我自己寫裝飾器（decorator）包函式，包完發現被包的函式「名字」跟「說明文件」都不見了，變成裝飾器內層那個 wrapper 的。",
+          "因為裝飾器其實是「用一個新函式替換掉原函式」，新函式當然有自己的名字。解法：在內層 wrapper 上面加 <code>@functools.wraps(原函式)</code>，它會把原函式的名字、docstring、簽名都<b>複製過來</b>。",
+          "這樣 <code>help(你的函式)</code>、<code>函式.__name__</code>、還有一堆靠函式名工作的工具（像測試框架、API 路由）才不會壞掉。",
+          "⚠️ 這幾乎是寫裝飾器的「一定要做」步驟，但超容易忘。忘了它，平常看不出問題，等某個依賴函式名的工具出怪事才發現，超難聯想到是這裡。",
+        ),
+      },
+      {
+        title: "Optional 跟 Union：這個值「可能沒有」怎麼標",
+        content: P(
+          "函式參數「可以不給、給的話是字串」、回傳「有時是結果、有時是 None」——這種型別怎麼註記，我一開始不會寫。",
+          "<code>Optional[str]</code> 意思是「str 或 None」，等同 <code>Union[str, None]</code>。Python 3.10 之後更簡潔：直接寫 <code>str | None</code>。多種型別就 <code>int | str | None</code>。",
+          "這讓 mypy 和編輯器知道「這裡可能是 None」，會提醒你用之前先檢查。",
+          "⚠️ 觀念別誤會：<code>Optional</code> 不代表「這個參數可以省略」，它只代表「值可能是 None」。要「參數可省略」是給它<b>預設值</b>（<code>def f(x: str | None = None)</code>）——兩件事常一起出現但意義不同。",
+        ),
+      },
+      {
+        title: "無限迭代器：count / cycle / repeat + islice 喊停",
+        content: P(
+          "itertools 有三個「會無限流下去」的產生器，配合 <code>islice</code> 取前幾個超好用。",
+          "<code>count(1)</code> 從 1 一直數上去（當自動編號）、<code>cycle([\"紅\",\"綠\",\"燈\"])</code> 循環繞圈（輪班、輪色）、<code>repeat(0, 5)</code> 重複某值。它們像永遠轉的跑馬燈，你要多少自己取多少。",
+          "喊停靠 <code>islice(可迭代, 10)</code> 取前 10 個，或在迴圈裡自己 <code>break</code>。<code>zip(count(1), 資料)</code> 也是一種手動編號法。",
+          "⚠️ 大雷：對 <code>count()</code>、<code>cycle()</code> 直接 <code>list()</code> 或 <code>for</code> 沒 break，程式會<b>永遠跑下去、記憶體吃爆</b>。無限的東西一定要有「取幾個」或「何時停」的機制。",
+        ),
+      },
+      {
+        title: "textwrap：把長文字漂亮地折行、縮排",
+        content: P(
+          "我要把一大段文字印成「每行不超過 40 字」的整齊區塊，自己數字元折行寫到瘋。<code>textwrap</code> 幫你做好。",
+          "<code>textwrap.fill(長文字, width=40)</code> 直接折成一段整齊的多行字串；<code>textwrap.shorten(text, width=20, placeholder=\"…\")</code> 把太長的截斷加省略號（做預覽超好用）。",
+          "還有 <code>textwrap.dedent</code>，能把程式裡「因為縮排而多出來的前導空白」統一去掉——寫多行字串常用。",
+          "⚠️ <code>fill</code> 預設是<b>按空白斷詞</b>設計給英文的，中文沒有空白、可能整段不折或折得怪。中文要按字數折得自己來（或設 <code>break_long_words</code> 相關參數試），別預期它自動漂亮。",
+        ),
+      },
+      {
+        title: "pprint：巢狀資料印出來別擠成一坨",
+        content: P(
+          "我 print 一個很深的巢狀 dict/list（像 API 回來的 JSON），整包擠成一行完全看不懂結構。",
+          "<code>from pprint import pprint</code>，<code>pprint(資料)</code> 會自動照層次縮排、換行，一眼看出誰包著誰。debug 複雜資料時我幾乎都用它取代 print。",
+          "想控制深度用 <code>pprint(data, depth=2)</code> 只展開兩層，太深的用 <code>...</code> 帶過，看整體骨架很方便。",
+          "⚠️ 它是給「人看」的排版，別拿 pprint 的輸出當資料儲存格式（那用 json.dumps）。純看結構、debug 用，兩者別搞混。",
+        ),
+      },
+      {
+        title: "string.Template：給非工程師填的簡單模板",
+        content: P(
+          "有時我要讓「不太懂程式的人」改一段有變數的文字模板，用 f-string 或 format 他們容易打壞（一個大括號打錯整個爆）。<code>string.Template</code> 更安全。",
+          "<code>from string import Template</code>，<code>Template(\"嗨 $name，你有 $n 則通知\").substitute(name=\"小明\", n=3)</code>，變數用 <code>$名字</code>，語法夠白話、少踩雷。",
+          "適合信件模板、設定檔那種「給人填」的場景。",
+          "⚠️ 用 <code>substitute</code> 時少給一個變數會噴 <code>KeyError</code>；容忍缺漏就用 <code>safe_substitute</code>（缺的原樣留著不報錯）。看你要「嚴格要求填滿」還是「能填多少填多少」。",
+        ),
+      },
+      {
         title: "環境先搞定，不然後面一直卡",
         content: P(
           "我一開始最挫折的不是寫程式，是「怎麼裝東西一直錯」。後來搞懂虛擬環境就順了。",
@@ -1099,6 +1720,600 @@ const PACKS = [
     desc: "從「前後端到底怎麼溝通」講起，再帶 HTTP / SQL / Supabase / 安全 / 部署。都是我實際做專案記下來的。免費。",
     notes: [
       {
+        title: "參數化查詢：SQL injection 我第一天就被講到怕",
+        content: P(
+          "剛學後端我最愛用字串拼 SQL：<code>\"select * from users where name='\" + name + \"'\"</code>。看起來很直覺，其實是天大的洞。",
+          "如果有人把 name 填成 <code>' or '1'='1</code>，你的查詢就變成「永遠成立」，整張表被撈光；填 <code>'; drop table users;--</code> 還能刪你的表。使用者輸入的東西，你當它是「資料」，它卻被當成「指令」執行了。",
+          "正解是<b>參數化查詢</b>：把值用 <code>$1</code> / <code>?</code> 佔位，資料另外傳。<code>select * from users where name = $1</code>，值走另一條路，資料庫永遠把它當純資料、不會拿去當指令跑。",
+          "⚠️ 我踩過：以為「我有先 replace 掉單引號就安全」。別自己過濾——漏洞百出。只要有拼字串進 SQL 的地方就是紅燈，一律改參數化，一個都別留。",
+        ),
+      },
+      {
+        title: "外鍵的 cascade：刪一個爸爸，小孩要怎麼辦",
+        content: P(
+          "設外鍵時你會被問一句「parent 被刪了，指著它的 child 怎麼處理？」這就是 <code>ON DELETE</code> 行為，選錯後患無窮。",
+          "常見三種：<code>CASCADE</code>（爸爸刪，小孩一起刪掉）、<code>SET NULL</code>（小孩的外鍵設成 NULL、自己留著）、<code>RESTRICT</code>/<code>NO ACTION</code>（還有小孩就不准刪爸爸、直接擋）。",
+          "舉例：刪一個使用者，他的訂單要不要一起消失？多數情況你不想真的連環刪訂單（財務紀錄要留），這時 CASCADE 反而危險。",
+          "⚠️ 我踩過：隨手設了 <code>ON DELETE CASCADE</code>，某天刪一筆分類，底下幾千筆商品無聲無息全沒了。cascade 很方便也很致命——刪之前先想清楚連鎖範圍，重要資料寧可用 RESTRICT 擋著。",
+        ),
+      },
+      {
+        title: "unique 與 check 約束：讓資料庫幫你守規矩",
+        content: P(
+          "很多「這欄位不能重複」「這數字不能是負的」的規則，新手都寫在程式裡用 <code>if</code> 檔。但程式有漏洞、也擋不住並發，最可靠的守門員是資料庫本身。",
+          "<b>UNIQUE</b>：保證欄位不重複，<code>email</code> 加 unique，第二個人用同 email 註冊直接被資料庫擋下。<b>CHECK</b>：限制值的範圍，<code>check (price &gt;= 0)</code> 讓負價格根本存不進去。",
+          "好處：不管是哪支程式、哪個後門、還是兩個請求同時進來，資料庫這一關永遠成立。程式的檢查是「體驗」，約束才是「底線」。",
+          "⚠️ 雷點：靠程式擋「email 不重複」，兩個請求同一瞬間進來、都查到「沒人用過」、就都寫進去了。唯一性一定要落在資料庫的 UNIQUE 約束上，程式檢查擋不住這種競態。",
+        ),
+      },
+      {
+        title: "欄位預設值 default：別讓 NULL 到處亂竄",
+        content: P(
+          "建表時很多欄位其實有「天生的初始值」：建立時間就是現在、狀態就是 <code>pending</code>、計數就是 0。這些用 <code>DEFAULT</code> 交給資料庫填，別每次 insert 都手動帶。",
+          "例：<code>created_at timestamptz default now()</code>、<code>status text default 'active'</code>、<code>views int default 0</code>。你 insert 時不寫這些欄位，資料庫自動補上。",
+          "好處：少了忘記填的機會、也保證一致。尤其 <code>created_at default now()</code>，比在程式裡到處抓時間可靠多了。",
+          "⚠️ 雷點：預設值只在「insert 時完全沒提到這欄位」才生效。如果你程式明確傳了 <code>undefined</code> 或 <code>null</code>，多數 client 會真的寫 NULL 進去、蓋掉預設。想吃 default 就整個別帶那個欄位。",
+        ),
+      },
+      {
+        title: "generated 生成欄位：算出來的值別自己維護",
+        content: P(
+          "有些欄位是「別的欄位算出來的」：總價 = 單價 × 數量、全名 = 姓 + 名。新手常在程式裡算完再存一份，然後某天忘了同步就對不上。",
+          "更好的是<b>生成欄位（generated column）</b>：直接告訴資料庫「這欄位永遠等於這個公式」，它自動幫你算、幫你維護。<code>total numeric generated always as (price * qty) stored</code>。",
+          "你只要改 price 或 qty，total 自動跟著對，永遠不會不一致——因為它根本不是你手動存的。",
+          "⚠️ 雷點：生成欄位不能自己寫值（它是算出來的）。還有 <code>stored</code>（存下來、佔空間但查得快）跟 <code>virtual</code>（查詢時才算）差很多，Postgres 目前只支援 stored，別照別的資料庫語法抄。",
+        ),
+      },
+      {
+        title: "在 JSON 欄位裡查資料：方便但別當萬用桶",
+        content: P(
+          "Postgres 的 <code>jsonb</code> 欄位可以塞一整包彈性資料，很香——但很多人不知道怎麼「查裡面」，或反過來什麼都往裡塞。",
+          "取值：<code>data-&gt;&gt;'name'</code> 拿文字、<code>data-&gt;'addr'</code> 拿子物件。條件查：<code>where data-&gt;&gt;'city' = 'Taipei'</code>、或用 <code>@&gt;</code> 包含運算子 <code>where data @&gt; '{\"vip\":true}'</code>。",
+          "要查得快，對 jsonb 建 <b>GIN 索引</b>：<code>create index on t using gin (data)</code>，不然一樣是全表掃描。",
+          "⚠️ 雷點：把「經常要查、要 join、要約束」的欄位塞進 JSON 是自找麻煩——沒型別、沒外鍵、沒預設好用的索引。JSON 適合放「結構常變、只整包讀寫」的附屬資料，核心欄位還是拆成正規欄位。",
+        ),
+      },
+      {
+        title: "全文搜尋 full text：別再用 LIKE '%關鍵字%'",
+        content: P(
+          "做站內搜尋，新手第一招都是 <code>where title like '%关键字%'</code>。小資料看不出問題，資料一多會慢到爆——前面加 % 讓索引完全用不上，只能整表掃。",
+          "Postgres 內建<b>全文搜尋</b>：把文字轉成 <code>tsvector</code>（拆成詞、去掉語助詞），查詢用 <code>tsquery</code> 比對，還會處理詞形。<code>where to_tsvector(body) @@ to_tsquery('cat &amp; dog')</code>。",
+          "配 GIN 索引就快，還能排相關性（<code>ts_rank</code>）。真的要更強（中文分詞、模糊、拼錯容錯）再上 Elasticsearch/Meilisearch。",
+          "⚠️ 雷點：Postgres 內建全文搜尋對<b>中文分詞</b>支援很弱（它靠空白斷詞，中文不空白）。做中文站要嘛裝中文分詞外掛（如 zhparser）、要嘛用專門的搜尋引擎，別以為內建就搞定中文。",
+        ),
+      },
+      {
+        title: "upsert：有就更新、沒有就新增，一句搞定",
+        content: P(
+          "「這筆資料在就更新、不在就插入」——新手常寫成「先 select 看在不在、再決定 insert 還 update」，兩趟查詢還有競態問題。",
+          "資料庫有一句話解決：<b>upsert</b>，Postgres 寫成 <code>insert ... on conflict (key) do update set ...</code>。撞到唯一鍵就改、沒撞到就新增，一趟、原子。",
+          "只想「撞到就當沒事、別報錯」用 <code>on conflict do nothing</code>。常用在「記一次就好」的場景（按讚、每日簽到）。",
+          "⚠️ 雷點：<code>on conflict</code> 要指定「衝突判定的欄位」，而那欄位<b>必須有 unique 約束或索引</b>，不然資料庫不知道怎麼算衝突、會直接報錯。先確認唯一鍵存在再用 upsert。",
+        ),
+      },
+      {
+        title: "returning 子句：insert 完直接拿回結果，別再多查一次",
+        content: P(
+          "新增一筆資料後，你常需要它的「自動產生的 id / created_at」。新手做法：insert 完再 <code>select</code> 一次去撈。多此一舉、還可能撈錯筆。",
+          "Postgres 的 <code>RETURNING</code> 讓你在同一句就把結果帶回來：<code>insert into users(name) values('小明') returning id, created_at;</code>。一趟拿到新資料。",
+          "update 和 delete 也能用：<code>update ... returning *</code> 拿到「改完後長怎樣」、<code>delete ... returning id</code> 知道「刪掉了哪些」。",
+          "⚠️ 雷點：批次 insert 多筆時 <code>returning</code> 回來的<b>順序不保證</b>跟你插入的順序一致（尤其並發下）。要對應回原本哪筆，靠回傳的 id 對，別靠陣列位置。",
+        ),
+      },
+      {
+        title: "CTE（with）：把複雜查詢拆成看得懂的步驟",
+        content: P(
+          "一句 SQL 巢狀塞了三層子查詢，寫的人痛、讀的人更痛。CTE（Common Table Expression，就是 <code>WITH</code>）能把它拆成「一步一步」的具名區塊。",
+          "寫法：<code>with active as (select * from users where status='active') select * from active where age &gt; 18;</code>。先定義 <code>active</code> 這個暫時結果、後面直接引用，像變數一樣。",
+          "好處：可讀性大增，複雜報表查詢可以一層層疊上去、每層有名字，改起來也好定位。",
+          "⚠️ 雷點：早期 Postgres 會把 CTE 當「最佳化邊界」（先算完整段再往下），大資料下可能比等價子查詢慢。Postgres 12 後預設會 inline 優化，但若你想強制物化，記得 CTE 不等於「一定比較快」，慢的時候用 EXPLAIN 看它到底怎麼跑。",
+        ),
+      },
+      {
+        title: "window function 視窗函式：分組又不失明細",
+        content: P(
+          "我以前遇到「每個部門的員工，各自標上部門排名」這種需求，用 GROUP BY 就卡住——一 group 明細就沒了。答案是<b>視窗函式</b>。",
+          "它讓你在「一整組」上算聚合，但<b>不會把明細壓成一列</b>。<code>rank() over (partition by dept order by salary desc)</code>：每一列都保留，但多帶一欄「在自己部門的薪水排名」。",
+          "超好用的幾個：<code>row_number()</code> 編號、<code>rank()</code> 排名、<code>sum() over (...)</code> 累計、<code>lag()/lead()</code> 拿前一列/後一列（算環比、找連續）。",
+          "⚠️ 雷點：<code>over ()</code> 裡的 <code>partition by</code>（分組）和 <code>order by</code>（組內排序）是兩件事、別搞混。還有視窗函式不能放在 <code>WHERE</code> 裡（那時還沒算），要篩它的結果得包一層子查詢或 CTE 再篩。",
+        ),
+      },
+      {
+        title: "子查詢 subquery：查詢裡面再塞一個查詢",
+        content: P(
+          "子查詢就是「把一個查詢的結果，拿去當另一個查詢的條件或來源」。看懂它，很多需求就不用分兩趟做了。",
+          "常見三種：當條件 <code>where id in (select user_id from orders)</code>（有下過單的人）；當單一值 <code>where price &gt; (select avg(price) from products)</code>（高於平均）；當一張暫時的表放在 <code>FROM</code> 裡。",
+          "還有<b>相關子查詢</b>：內層會用到外層的欄位，逐列去算（如 <code>exists</code> 檢查「這人有沒有訂單」）。",
+          "⚠️ 雷點：相關子查詢會「外層每一列都跑一次內層」，資料一多就是隱形的 N+1、慢到不行。很多時候改寫成 <code>JOIN</code> 快非常多——慢的子查詢先想想能不能 join 掉。",
+        ),
+      },
+      {
+        title: "EXPLAIN：查詢到底慢在哪，別用猜的",
+        content: P(
+          "查詢很慢，新手都在瞎猜「是不是資料太多」。其實資料庫可以直接告訴你它「打算怎麼執行」——用 <code>EXPLAIN</code>。",
+          "<code>EXPLAIN ANALYZE select ...</code> 會印出執行計畫 + 實際耗時。你要看的關鍵字：<b>Seq Scan</b>（全表掃描，資料多就是它慢）、<b>Index Scan</b>（有走索引，好）、還有每一步「預估 vs 實際」的筆數。",
+          "看到該走索引卻在 Seq Scan，通常就是「沒建索引」或「查詢寫法讓索引用不上」（欄位被函式包住、前綴模糊比對）。",
+          "⚠️ 雷點：<code>EXPLAIN</code>（不加 ANALYZE）只給「預估」、不真的跑；<code>EXPLAIN ANALYZE</code> 會<b>真的執行</b>那句 SQL。對 <code>UPDATE/DELETE</code> 加 ANALYZE 是真的會改資料的——要嘛包在交易裡 rollback，別在正式庫直接 ANALYZE 一句 delete。",
+        ),
+      },
+      {
+        title: "複合索引的欄位順序：擺錯就白建了",
+        content: P(
+          "一個索引蓋多個欄位叫複合索引，很多人以為「欄位有進去就會用到」，其實<b>順序</b>決定它能不能被用上。",
+          "把複合索引想成電話簿（先姓、後名）：查「姓王」很快、查「姓王名小明」也快，但只查「名叫小明」（不給姓）就用不上——因為它是先照姓排的。這叫<b>最左前綴原則</b>。",
+          "所以建 <code>index (a, b)</code>：查 <code>where a=?</code> 或 <code>where a=? and b=?</code> 都吃得到；只查 <code>where b=?</code> 吃不到。順序要照「最常單獨拿來查的欄位」放前面。",
+          "⚠️ 雷點：等值條件放前、範圍條件放後。<code>where a=? and b&gt;?</code> 用 <code>(a,b)</code> 很好；但 <code>where a&gt;? and b=?</code> 用 <code>(a,b)</code> 時，一遇到範圍 <code>a&gt;?</code>，後面的 b 就用不上索引了。範圍欄位擺最後。",
+        ),
+      },
+      {
+        title: "覆蓋索引：查詢不用回表，快上加快",
+        content: P(
+          "一般走索引是：先在索引找到位置、再「回主表」把整列資料撈出來（回表）。如果你要的欄位「索引裡就有」，連回表都省了——這叫<b>覆蓋索引</b>。",
+          "例：<code>index (user_id, status)</code>，查 <code>select status from t where user_id = ?</code>，要的 status 索引裡就有，資料庫直接從索引回你、不碰主表，超快。",
+          "Postgres 可以用 <code>INCLUDE</code> 把「只是要一起帶回、但不參與排序」的欄位塞進索引：<code>create index on t(user_id) include (status)</code>。",
+          "⚠️ 雷點：覆蓋索引是拿「索引變胖、寫入變慢、佔更多空間」換查詢快。別為了覆蓋而把一堆欄位塞進索引——只在「這個查詢超高頻、又只要少數幾欄」時才值得。",
+        ),
+      },
+      {
+        title: "部分索引 partial index：只索引你真的會查的那部分",
+        content: P(
+          "如果一張表裡「你 99% 只查某一小撮資料」（例如只查 <code>status = 'active'</code> 的、已刪的從不查），對整張表建索引很浪費。用<b>部分索引</b>只索引那一撮。",
+          "寫法加個 <code>WHERE</code>：<code>create index on orders(created_at) where status = 'pending';</code>。索引只收 pending 的列，體積小、更新快、查 pending 時飛快。",
+          "很適合軟刪除：<code>... where deleted_at is null</code>，索引只管「活著」的資料，已刪的不佔位。",
+          "⚠️ 雷點：查詢的條件要「對得上」索引的 <code>WHERE</code> 才會被用到。你建的是 <code>where status='pending'</code> 的部分索引，查 <code>where status='active'</code> 就用不上它。條件不吻合，等於沒建。",
+        ),
+      },
+      {
+        title: "死鎖 deadlock：兩個人互相等對方先放手",
+        content: P(
+          "死鎖不是資料庫壞了，是兩個交易「卡成死結」：A 鎖了第 1 筆要第 2 筆、B 鎖了第 2 筆要第 1 筆，兩邊都在等對方先放、永遠等不到。",
+          "資料庫夠聰明，偵測到死結會<b>主動犧牲其中一個交易</b>（回傳 deadlock 錯誤讓它 rollback），另一個就能過。所以你會偶爾在 log 看到 deadlock detected。",
+          "最有效的預防：讓所有交易<b>用固定的順序</b>去鎖資料（例如永遠先鎖 id 小的）。大家都照同方向排隊，就不會頭尾對撞。",
+          "⚠️ 雷點：死鎖多半不是 bug、而是並發下的正常現象——所以踩到 deadlock 錯誤的交易要<b>能自動重試</b>。別讓一次死鎖就直接回使用者 500，捕捉到就退一步、重跑一次通常就過了。",
+        ),
+      },
+      {
+        title: "隔離級別 isolation level：交易之間要多「絕緣」",
+        content: P(
+          "多個交易同時跑，彼此會不會看到對方「做到一半」的資料？這個「絕緣程度」就是隔離級別，級別越高越乾淨、但越可能卡。",
+          "由鬆到嚴會擋掉不同的怪現象：<b>髒讀</b>（讀到別人還沒 commit 的）、<b>不可重複讀</b>（同一筆讀兩次值變了）、<b>幻讀</b>（同一條件讀兩次筆數變了）。常見級別：Read Committed、Repeatable Read、Serializable。",
+          "Postgres 預設是 <b>Read Committed</b>（每句看到的都是「已提交」的最新資料），日常夠用。需要一整個交易內「看到的世界不變」就用 Repeatable Read。",
+          "⚠️ 雷點：級別不是越高越好。<code>Serializable</code> 最安全，但並發衝突時會直接讓交易失敗（序列化錯誤）、要你重試。用高級別的程式一定要配「衝突自動重試」，不然使用者一堆莫名其妙的錯誤。",
+        ),
+      },
+      {
+        title: "statement timeout：別讓一句爛查詢拖垮整台",
+        content: P(
+          "一句沒帶好條件的查詢，可能跑十分鐘、把資料庫連線和 CPU 全佔住，後面所有請求跟著卡死。防這個最簡單的閘門就是<b>語句逾時</b>。",
+          "設 <code>statement_timeout</code>：超過設定時間還沒跑完的 SQL，資料庫直接砍掉它、回一個 timeout 錯誤。<code>set statement_timeout = '5s'</code>，或在連線設定裡給。",
+          "好處：一句失控的查詢最多拖 5 秒就被斬斷，不會無限吃資源拖累別人。等於幫資料庫裝了保險絲。",
+          "⚠️ 雷點：別把 timeout 設得太齊頭。「使用者面向的即時查詢」設短（幾秒）；但「後台報表、批次匯入」本來就慢，套同一個短 timeout 會一直被砍。針對不同用途的連線設不同 timeout。",
+        ),
+      },
+      {
+        title: "大量插入：一筆一筆 insert 慢到你懷疑人生",
+        content: P(
+          "要匯入十萬筆資料，新手寫個迴圈「一次 insert 一筆」，跑了半小時還沒完。慢的不是資料庫，是你「來回一萬趟」的成本。",
+          "改法一：<b>批次 insert</b>，一句塞多筆 <code>insert into t values (...),(...),(...)</code>，一趟送幾百上千筆，網路來回和交易成本瞬間攤平。",
+          "改法二（最快）：用 <code>COPY</code>。它是 Postgres 專門為大量灌資料設計的通道，比 insert 快好幾倍。<code>COPY t FROM STDIN</code> 直接餵資料流。",
+          "⚠️ 雷點：一次塞太多也會出事——單句參數有上限、交易太大會吃爆記憶體和 WAL。實務上「分批」（每批幾千筆各自 commit）最穩，別想著一句話塞完一百萬筆。灌大量資料前也可考慮先卸索引、灌完再建。",
+        ),
+      },
+      {
+        title: "keyset 分頁：資料越後面 OFFSET 越慢，換個做法",
+        content: P(
+          "<code>LIMIT 20 OFFSET 100000</code> 看起來只要 20 筆，但資料庫其實得「先數過前面十萬筆再丟掉」，越翻後面越慢。這是 offset 分頁的死穴。",
+          "<b>keyset 分頁</b>（又叫 seek）換個思路：記住「上一頁最後一筆的排序值」，下一頁直接查「比它更後面的」。<code>where (created_at, id) &lt; ($1, $2) order by created_at desc, id desc limit 20</code>。不管翻到第幾頁都一樣快。",
+          "關鍵是排序欄位要建索引，資料庫就能「跳到位置直接讀 20 筆」，不用數過前面。",
+          "⚠️ 雷點：排序欄位若有重複值（例如很多筆同一秒 created_at），只靠它當游標會漏資料或重複。要<b>加一個唯一欄位當 tie-breaker</b>（通常是 id），用 <code>(created_at, id)</code> 一組當游標才穩。",
+        ),
+      },
+      {
+        title: "ETag 與條件請求：沒變的東西別重傳一遍",
+        content: P(
+          "同一份資料，使用者重新整理十次就重傳十次、很浪費頻寬。ETag 讓「沒變就別傳」變可能。",
+          "運作：後端回應時附一個 <code>ETag</code>（這份內容的指紋，內容變指紋才變）。瀏覽器下次請求帶 <code>If-None-Match: 那個指紋</code>，後端一比對「沒變」，就回 <b>304 Not Modified</b>、空 body，瀏覽器直接用本地快取。",
+          "省的是「重傳整包內容」的頻寬和時間，尤其大 JSON、圖片很有感。<code>Last-Modified</code> + <code>If-Modified-Since</code> 是時間版的同套機制。",
+          "⚠️ 雷點：ETag 要能「內容變、指紋就變」才有意義。用「內容 hash」當 ETag 最準；別拿「當下時間」之類每次都不同的東西當 ETag，那樣永遠比對不中、304 永遠不觸發，等於白做。",
+        ),
+      },
+      {
+        title: "內容協商：同一個網址，回你看得懂的格式/語言",
+        content: P(
+          "同一支 API，有人要 JSON、有人要 CSV；有人要中文錯誤訊息、有人要英文。內容協商（content negotiation）讓「同一個網址」按客戶端偏好回不同版本。",
+          "客戶端用請求標頭表達偏好：<code>Accept: application/json</code>（要什麼格式）、<code>Accept-Language: zh-TW</code>（要什麼語言）。後端讀這些標頭、回對應版本，並用 <code>Content-Type</code> 標明「我回的是什麼」。",
+          "好處：一個資源一個網址，不用開 <code>/data.json</code>、<code>/data.csv</code> 一堆分身。",
+          "⚠️ 雷點：有做內容協商就要回應 <code>Vary: Accept</code> 標頭，告訴快取/CDN「這個回應會因 Accept 不同而不同」。忘了設，CDN 可能把「給某人的 JSON 版」快取起來、回給想要 CSV 的下一個人。",
+        ),
+      },
+      {
+        title: "gzip 壓縮：回應在路上先瘦身再傳",
+        content: P(
+          "一包 200KB 的 JSON，文字重複性很高，壓縮後可能只剩 20KB。傳輸量少一個數量級，使用者載得更快——這幾乎是免費的效能。",
+          "運作：瀏覽器帶 <code>Accept-Encoding: gzip, br</code> 說「我能解壓」，後端就把 body 壓縮後傳、附 <code>Content-Encoding: gzip</code>，瀏覽器自動解開。文字類（JSON/HTML/CSS/JS）壓縮率很高。",
+          "多數框架/反向代理（nginx、Caddy）或 CDN 開個設定就有，不用自己動手壓。<code>br</code>（Brotli）通常比 gzip 更小。",
+          "⚠️ 雷點：別壓「已經壓過的東西」（jpg/png/mp4/zip），CPU 花了、體積幾乎不變甚至變大。還有壓縮 + 機密內容 + 攻擊者可注入的組合有 BREACH 這類側信道風險，敏感回應要留意。",
+        ),
+      },
+      {
+        title: "HTTP/2：一條連線同時跑很多請求",
+        content: P(
+          "HTTP/1.1 時代，瀏覽器對同一網域的並發連線有限，很多請求得排隊（隊頭阻塞）。HTTP/2 主要就是來解「連線太少、請求塞車」。",
+          "它用<b>多工（multiplexing）</b>：同一條 TCP 連線上，多個請求/回應同時交錯傳，不用一個等一個。還有標頭壓縮、伺服器推送等優化。",
+          "對你的意義：以前為了繞開並發限制而做的「合併檔案、圖片精靈圖、分散多網域」等土炮優化，在 HTTP/2 下大多不必要了。",
+          "⚠️ 雷點：HTTP/2 幾乎都跑在 TLS 上（要 HTTPS）。還有它解的是「HTTP 層」的隊頭阻塞，底層 TCP 丟包時仍會卡——這是 HTTP/3（走 QUIC/UDP）才進一步解決的，別以為升 HTTP/2 就萬事無阻。",
+        ),
+      },
+      {
+        title: "TLS / HTTPS：不只是網址列那把鎖",
+        content: P(
+          "HTTPS = HTTP + TLS 加密。它做三件事：<b>加密</b>（中間人看不到內容）、<b>完整性</b>（傳輸中被竄改會被發現）、<b>身分驗證</b>（憑證證明「你連的真的是這個網站」）。",
+          "運作靠憑證：網站出示由受信任 CA 簽發的憑證，瀏覽器驗證通過才建立加密連線。現在憑證能免費自動申請（Let's Encrypt），沒理由不上 HTTPS。",
+          "沒 HTTPS 的站，使用者在公共 Wi-Fi 打的密碼、cookie 都可能被旁邊的人抓走——這是底線，不是加分。",
+          "⚠️ 雷點：憑證會<b>過期</b>（Let's Encrypt 90 天）。忘了自動續約，某天全站突然「不安全」警告、使用者全被擋。一定要設好自動續期 + 到期前告警，別靠人工記。",
+        ),
+      },
+      {
+        title: "HSTS：逼瀏覽器只走 HTTPS，別給降級機會",
+        content: P(
+          "就算你全站上了 HTTPS，使用者第一次打 <code>http://你的站</code>（或被攻擊者引導走 http），那一下仍是明文、可被中間人劫持再導去假站。HSTS 就是來堵這個縫。",
+          "作法：回一個標頭 <code>Strict-Transport-Security: max-age=31536000; includeSubDomains</code>。瀏覽器記住後，接下來一整年「這個網域一律強制 HTTPS」，連 http 的網址都自動改成 https 才發出去，根本不給明文機會。",
+          "等於跟瀏覽器說：「我這站永遠只走加密，別再試 http。」",
+          "⚠️ 雷點：HSTS 是「說出去就收不回」的承諾——設了長 max-age，期間內瀏覽器<b>拒絕</b>用 http 連你的站。萬一你某子網域還沒好 HTTPS 卻加了 <code>includeSubDomains</code>，那個子網域會直接連不上。先確定全站（含子網域）都穩穩 HTTPS 再開，preload 更是幾乎不可逆。",
+        ),
+      },
+      {
+        title: "CSP 標頭：就算被塞了惡意腳本也跑不起來",
+        content: P(
+          "XSS 的可怕在於「攻擊者的 JS 在你的頁面上執行」。CSP（Content Security Policy）是最後一道防線：告訴瀏覽器「只准載入/執行我允許來源的東西」。",
+          "用回應標頭設白名單：<code>Content-Security-Policy: default-src 'self'; script-src 'self'</code> 意思是「腳本只准來自我自己的網域」。攻擊者注入的 inline script 或外部惡意腳本，瀏覽器直接拒絕執行。",
+          "它擋不住漏洞本身，但能大幅降低「就算被注入也造成不了危害」——是深度防禦的一層。",
+          "⚠️ 雷點：CSP 很容易一設就把自家正常資源也擋掉（第三方分析、字型、inline style），畫面全壞。先用 <code>Content-Security-Policy-Report-Only</code> 模式「只回報不阻擋」，看清楚會擋到什麼、調好白名單，再正式啟用。別直接上 enforce。",
+        ),
+      },
+      {
+        title: "cookie 的三個關鍵屬性：Secure / HttpOnly / SameSite",
+        content: P(
+          "登入 token 放 cookie 很方便，但沒設好這三個屬性，等於門沒鎖。它們各擋一種攻擊。",
+          "<b>HttpOnly</b>：JS 讀不到這個 cookie——就算頁面被 XSS 注入腳本，也偷不走你的登入 token。<b>Secure</b>：只在 HTTPS 下才送，防明文外洩。<b>SameSite</b>：控制「跨站請求要不要帶這 cookie」，<code>Lax</code>/<code>Strict</code> 能擋掉大部分 CSRF。",
+          "對登入 session cookie，標配就是 <code>HttpOnly; Secure; SameSite=Lax</code>。這是幾乎不用思考的預設。",
+          "⚠️ 雷點：<code>SameSite=None</code>（允許跨站帶 cookie，某些第三方嵌入需要）<b>必須</b>同時加 <code>Secure</code>，否則現代瀏覽器直接拒收。還有把 token 放 <code>localStorage</code> 反而更危險——那是 JS 讀得到的，XSS 一注入就被撈走，比 HttpOnly cookie 差。",
+        ),
+      },
+      {
+        title: "CSRF：有人借你的登入狀態，替你送出請求",
+        content: P(
+          "CSRF（跨站請求偽造）很陰險：你登入了 A 網站，瀏覽器存著登入 cookie。攻擊者誘你點開他的頁面，那頁偷偷對 A 發一個「轉帳/改密碼」請求——瀏覽器會<b>自動帶上你的 cookie</b>，A 以為是你本人。",
+          "重點：攻擊者看不到你的 cookie，但能「借用」它替你發請求。防的核心是「證明這個請求真的是從你的網站發出、不是別站偷發」。",
+          "兩個主流解法：<b>SameSite cookie</b>（跨站請求不帶 cookie，擋掉大半）＋<b>CSRF token</b>（表單/請求要帶一個伺服器發的隨機值，第三方網站拿不到）。",
+          "⚠️ 雷點：純 token 驗證的 API（token 放 Authorization 標頭、不靠 cookie）天生對 CSRF 免疫——因為第三方頁面沒辦法自動帶上你的 Authorization 標頭。CSRF 只在「靠 cookie 自動帶身分」時才是問題，別無腦到處加 CSRF token。",
+        ),
+      },
+      {
+        title: "後端也要防 XSS：輸出的時候編碼",
+        content: P(
+          "很多人以為 XSS 是前端的事，其實「資料進 DB、再吐回頁面」這條路是後端在管。使用者存了一段 <code>&lt;script&gt;偷cookie&lt;/script&gt;</code> 當暱稱，下次別人看他的檔案就中招。",
+          "防的關鍵是<b>輸出編碼（output encoding）</b>：把資料放進 HTML 前，把 <code>&lt; &gt; &amp; \"</code> 這些字元轉成 <code>&amp;lt; &amp;gt;</code> 等實體，瀏覽器就當「文字」顯示、不當「標籤」執行。",
+          "現代前端框架（React 等）預設會幫你編碼，但你用 <code>dangerouslySetInnerHTML</code>、後端自己拼 HTML、或回傳富文本時，就得自己顧。",
+          "⚠️ 雷點：防 XSS 要在<b>「輸出到哪個情境」</b>做對應編碼——放進 HTML、放進屬性、放進 URL、放進 JS 裡，編碼規則各不同。還有「存進去時就過濾」不如「輸出時才編碼」可靠，因為同一份資料可能輸出到不同情境。要接受富文本（HTML）就用成熟的清洗庫（DOMPurify 之類），別自己寫黑名單。",
+        ),
+      },
+      {
+        title: "SSRF：你的伺服器被騙去打內部網路",
+        content: P(
+          "SSRF（伺服器端請求偽造）常出現在「讓使用者給一個網址、後端去抓」的功能（抓縮圖、匯入遠端圖片、webhook 測試）。攻擊者不給正常網址，給的是 <code>http://169.254.169.254/</code>（雲端的內部中繼資料位址）或 <code>http://localhost:內部服務</code>。",
+          "後端傻傻照著打，就替攻擊者存取了「只有內網打得到」的東西——雲端金鑰、內部管理介面、資料庫。你的伺服器變成他的跳板。",
+          "防法：對使用者給的網址做<b>白名單</b>（只允許特定網域）、解析出 IP 後擋掉內網/保留位址（127.x、10.x、169.254.x…）、禁跟隨重導向到內網。",
+          "⚠️ 雷點：只檢查「網址字串」擋不住——攻擊者用重導向、DNS rebinding（網域先解析成外部 IP、真連時再變內網 IP）繞過。要在<b>真正發連線的那一刻</b>檢查解析出來的 IP，不是只看使用者填的字串。",
+        ),
+      },
+      {
+        title: "路徑穿越 path traversal：../ 讓人跳出你的資料夾",
+        content: P(
+          "只要你的程式「用使用者給的檔名去讀/寫檔案」，就要小心路徑穿越。使用者不給 <code>photo.jpg</code>，給 <code>../../../../etc/passwd</code>，用一堆 <code>../</code> 往上跳，就讀到系統敏感檔了。",
+          "根源是「把使用者輸入直接接到檔案路徑」。<code>readFile('/uploads/' + userInput)</code> 看起來鎖在 uploads 裡，其實 <code>../</code> 能一路往上爬出去。",
+          "防法：不信任使用者給的檔名——自己產生檔名（UUID）；真的要用就把路徑正規化後，檢查它「仍在允許的根目錄底下」再動手。",
+          "⚠️ 雷點：光 replace 掉 <code>../</code> 擋不乾淨——有 URL 編碼（<code>%2e%2e%2f</code>）、絕對路徑（<code>/etc/...</code>）、Windows 反斜線等變形。正解是「解析成絕對路徑後，驗證它的前綴確實是你允許的目錄」，別玩字串過濾的貓抓老鼠。",
+        ),
+      },
+      {
+        title: "mass assignment：一次收整包，連不該改的欄位也被改了",
+        content: P(
+          "圖方便，很多人把前端傳來的整包 body 直接倒進資料庫：<code>update user set ...req.body</code>。問題是——使用者可以在 body 裡多塞一個 <code>\"role\":\"admin\"</code> 或 <code>\"is_verified\":true</code>，一併被寫進去。",
+          "這叫<b>mass assignment（過度綁定）</b>：你以為使用者只會改暱稱，他卻連「權限、餘額、已驗證」這些欄位一起偷改了，因為你來者不拒地全收。",
+          "防法：用<b>白名單</b>——明確列出「這個 API 只准改哪幾個欄位」，只挑那幾個出來用，其餘一律無視。schema 驗證工具（zod 等）定義好允許的形狀最省事。",
+          "⚠️ 雷點：黑名單（列「不准改的」）幾乎一定會漏——你今天新增一個敏感欄位、忘了加進黑名單就破功。永遠用「只允許這些」的白名單，別用「除了這些都可以」的黑名單。",
+        ),
+      },
+      {
+        title: "retry 要配指數退避：別失敗就馬上狂重試",
+        content: P(
+          "呼叫外部 API 偶爾失敗很正常，加重試很合理。但新手常寫「失敗就立刻重試、連試五次」——結果對方正好在忙/掛掉，你的猛烈重試反而把它壓得更慘（雪上加霜）。",
+          "正解是<b>指數退避（exponential backoff）</b>：每次失敗等的時間翻倍——1 秒、2 秒、4 秒、8 秒…給對方喘息，也降低你自己的壓力。",
+          "再加一點<b>抖動（jitter）</b>：在等待時間上加隨機偏移。不然「一萬個 client 同時失敗、又同時在第 2 秒重試」會形成一波波同步的衝擊。",
+          "⚠️ 雷點：只重試「暫時性錯誤」（逾時、503、429、連線中斷）。像 400 參數錯、401 沒授權這種「重試幾次都一樣錯」的，重試只是浪費、還可能把壞資料送更多次。重試前先分清楚錯誤能不能靠重試解決。",
+        ),
+      },
+      {
+        title: "斷路器 circuit breaker：對方掛了就先別一直去撞",
+        content: P(
+          "下游服務掛了，你每個請求都還傻傻去呼叫、每個都等到 timeout 才失敗——連線、執行緒被大量占住，連你自己也被拖垮。斷路器就是來停損的。",
+          "它像家裡的跳電開關：短時間內失敗次數超過門檻，就「跳閘（open）」——接下來一段時間直接快速失敗、根本不去打對方，讓它有空間恢復，也保住你自己的資源。",
+          "過一陣子進「半開（half-open）」狀態：放幾個試探請求過去，成功就「合閘」恢復正常，還在失敗就繼續跳著。",
+          "⚠️ 雷點：斷路器跳閘時，你要有<b>降級方案（fallback）</b>——回快取的舊資料、回預設值、或友善提示「稍後再試」。只是跳閘卻沒後路，使用者一樣看到錯誤，只是換個方式壞而已。",
+        ),
+      },
+      {
+        title: "timeout 預算：每一層都要有時間上限",
+        content: P(
+          "一個請求進來，可能要呼叫 DB、再呼叫外部 API、再算一堆。如果每一環都「沒設 timeout、無限等」，只要一環卡住，整條請求就永遠掛著、連線被占死，堆積起來全站癱瘓。",
+          "每個對外的呼叫（DB 查詢、HTTP 請求、佇列）都要設<b>合理的 timeout</b>。更進一步是<b>timeout 預算</b>：整個請求我只給 3 秒，那分給 DB 1.5 秒、外部 API 1 秒…下游拿到的時間要比上游短。",
+          "這樣一環卡住，會在預算內被斬斷、回一個明確的錯，而不是無止盡地等下去拖累全部。",
+          "⚠️ 雷點：內層的 timeout 若比外層還長，就白設了——外層早就放棄回錯給使用者了，內層還在傻傻地跑、白占資源。timeout 要「越往下游越短」，並把「上游已經放棄」的取消訊號（context/AbortSignal）往下傳，讓下游也一起停手。",
+        ),
+      },
+      {
+        title: "優雅關閉 graceful shutdown：關機前先把手上的事做完",
+        content: P(
+          "部署更新時要停掉舊的伺服器程序。如果直接砍掉，那些「正在處理到一半的請求」就斷了——使用者收到錯誤、甚至資料寫一半。優雅關閉就是「好好收尾再走」。",
+          "流程：收到關閉訊號後，① 先停止接收新請求（從負載平衡摘掉）、② 把「手上還沒處理完的請求」做完、③ 關掉 DB 連線、背景 worker 也把當前任務做完，④ 才真正退出。",
+          "多數框架/runtime 都有 hook 讓你註冊「關閉前要做什麼」，把清理邏輯放進去。",
+          "⚠️ 雷點：平台通常給你「寬限時間」（例如 30 秒），逾時就強制砍（SIGKILL）。所以收尾邏輯要能在寬限期內完成——長任務別想在關閉那一刻硬做完，該設計成「可中斷 + 之後能續作」，別指望無限的收尾時間。",
+        ),
+      },
+      {
+        title: "signal 訊號處理：作業系統怎麼跟你的程式說「該停了」",
+        content: P(
+          "上一則的「優雅關閉」是怎麼被觸發的？靠<b>訊號（signal）</b>——作業系統/容器編排傳給你程序的通知。你的程式要「聽」這些訊號才知道該收尾。",
+          "最常見兩個：<b>SIGTERM</b>（「請你正常結束」，Docker/K8s 停容器、部署換版時發的，可以攔截來做清理）；<b>SIGKILL</b>（「立刻死」，攔不了、也清不了，是寬限期過後的強制手段）。<code>Ctrl+C</code> 送的是 SIGINT。",
+          "所以你在程式裡註冊「收到 SIGTERM 就跑優雅關閉」，才接得住部署時的停機通知。",
+          "⚠️ 雷點：SIGKILL（<code>kill -9</code>）無法被攔截、不會給你任何收尾機會——所以「一定要做的清理」不能只寄望於關閉 hook，要設計成「就算被硬砍，重啟後也能恢復/續作」。還有：容器裡若你的程式不是 PID 1，訊號可能傳不到它，記得處理好轉發。",
+        ),
+      },
+      {
+        title: "零停機部署：換版的時候使用者不該看到錯誤",
+        content: P(
+          "最土炮的部署是「關掉舊的、開新的」，中間那幾秒到幾十秒，使用者全吃 502。稍有規模就不能這樣——要做到換版期間服務不中斷，這叫零停機部署。",
+          "核心手法：<b>先起後停（rolling）</b>——新版本先啟動、通過 health check、被加進負載平衡，才把舊的一台台摘掉、關閉（配合優雅關閉收尾）。任何一刻都有「活著且健康」的實例在服務。",
+          "配套要件：health check 要準（別把還沒 ready 的算成健康）、優雅關閉要做好、以及「新舊版本同時在線」那段要能共存。",
+          "⚠️ 雷點：零停機部署期間<b>新舊版本會同時在跑</b>。如果這次更新改了資料庫結構，舊版程式碰到新結構（或反之）可能爆掉。所以 migration 要「向後相容、分兩步走」（先加相容的欄位、兩版都能跑，之後再清理），不能程式和 DB 一刀切一起換。",
+        ),
+      },
+      {
+        title: "藍綠部署：兩套環境切換，出事秒回滾",
+        content: P(
+          "藍綠部署是零停機的一種漂亮做法：同時養兩套完整環境——<b>藍</b>（目前對外的）和<b>綠</b>（新版本）。新版先整套部署到綠、在綠上驗好，再把流量「一次切」過去。",
+          "最大好處是<b>回滾超快</b>：綠上線後發現有問題，把流量切回藍就好——藍原封不動還在，幾秒回到穩定版，不用手忙腳亂重新部署舊版。",
+          "跟 rolling（一台台換）相比，藍綠是「整批切換」，切換乾脆、驗證環境完整；代價是要準備兩套資源、比較花錢。",
+          "⚠️ 雷點：藍綠切換時，兩套環境<b>共用同一個資料庫</b>是常態——所以 DB schema 一樣要向後相容，切回藍時綠寫進去的新資料/新結構不能讓藍爆掉。還有 session、進行中的長連線在切換瞬間怎麼接手，也要先想好。",
+        ),
+      },
+      {
+        title: "feature flag：功能先上線、但用開關控制誰看得到",
+        content: P(
+          "想上一個新功能，但怕出事、想先給少數人試。傳統做法是拉一個 branch 慢慢憋，越憋越難合。feature flag 換個思路：<b>程式碼照常合併上線，但用一個開關決定它開不開</b>。",
+          "程式裡包一層 <code>if (flags.newCheckout) { 新流程 } else { 舊流程 }</code>。開關的值放設定/資料庫，可以隨時改，甚至「只對 5% 使用者開」「只對內部帳號開」。出事把開關關掉就好，不用回滾部署。",
+          "好處：部署和「放出功能」解耦、能灰度放量、能做 A/B 測試、出問題止血超快。",
+          "⚠️ 雷點：flag 是技術債，用完要<b>清掉</b>。很多團隊留了一堆「早就全開/全關、卻沒刪」的 flag，程式碼裡到處是死掉的 if 分支，越積越亂。每個 flag 該有「壽命」和「清理負責人」。",
+        ),
+      },
+      {
+        title: "設定的優先序：同一個值，該聽誰的",
+        content: P(
+          "同一個設定（例如 <code>PORT</code>）可能在好幾個地方都有：程式寫死的預設、設定檔、環境變數、啟動時的命令列參數。它們同時存在時，到底用哪個？要有明確的優先序，不然行為飄忽你會抓狂。",
+          "常見且合理的順序（後者蓋前者）：<b>寫死的預設 &lt; 設定檔 &lt; 環境變數 &lt; 命令列參數/執行時覆寫</b>。越「靠近這次實際執行」的，優先級越高。",
+          "這樣的好處：預設能跑、設定檔給常態、部署時用環境變數覆寫、臨時除錯用命令列蓋一下——層層可覆蓋、又可預測。",
+          "⚠️ 雷點：「線上明明改了設定卻沒生效」十之八九是<b>被更高優先序的來源蓋掉了</b>（你改了設定檔，但環境變數還有一份舊的在蓋它）。排查設定問題，先搞清楚這套系統的優先序、逐層對，別只盯著你改的那一份。",
+        ),
+      },
+      {
+        title: "12-Factor：讓 app 天生就適合雲端部署的一套原則",
+        content: P(
+          "12-Factor 是一份「雲端時代的 app 該怎麼寫」的經典守則。不用背全部，抓幾個對日常最有感的心法就受用。",
+          "幾個核心：<b>設定放環境變數</b>（不寫死、不進 git）；<b>app 要無狀態</b>（別把資料存單台本機記憶體/硬碟，才好水平擴展）；<b>把後端服務當附加資源</b>（DB、快取、佇列都用連線字串接，可替換）；<b>log 當作事件流</b>（往 stdout 印，交給平台收集，別自己寫檔案管理）。",
+          "跟著這些走，你的 app 自然就好部署、好擴展、好搬家。",
+          "⚠️ 雷點：最常被違反、也最傷的是「<b>無狀態</b>」那條——把 session、上傳的檔案、快取存在單台本機。單機時沒事，一水平擴展成多台就爆（請求落到別台就找不到）。從一開始就把狀態放共用的地方（Redis、物件儲存），別等要擴展了才痛苦重構。",
+        ),
+      },
+      {
+        title: "correlation ID：一次請求橫跨好幾個服務，怎麼串起來",
+        content: P(
+          "一個請求可能經過「前端 → API → 下游服務 → 佇列 → worker」好幾站。出事時，這些站各自的 log 散落各處，你根本對不起來「這一筆」到底在哪掛的。correlation ID 就是解這個。",
+          "作法：請求一進來就產一個唯一 id（correlation / request id），<b>一路傳下去</b>——放進 log、呼叫下游時放進標頭往下帶、丟進佇列的訊息也帶著。之後用這個 id 一搜，整條鏈路的 log 全串起來。",
+          "跟結構化 log 是絕配：每行 log 都帶這個 id，追一筆請求就像拉一條線，不會斷。",
+          "⚠️ 雷點：這個 id 必須<b>跨服務邊界時被顯式傳遞</b>——最常斷在「丟進佇列/呼叫外部服務時忘了帶」。只要有一站沒往下傳，那之後的 log 就跟前面接不上了。每一個「跨越邊界」的地方都要記得把它塞進去。",
+        ),
+      },
+      {
+        title: "分散式 tracing：不只知道慢，還知道慢在哪一段",
+        content: P(
+          "correlation ID 讓你「串起同一筆請求的 log」，但要看「這筆請求在每一段各花多久、哪一段是瓶頸」，就要更進一步的<b>分散式追蹤（distributed tracing）</b>。",
+          "概念：一次請求是一個 <b>trace</b>，裡面每一段工作（一次 DB 查詢、一次外部呼叫）是一個 <b>span</b>，span 之間有父子關係。串起來就是一張「這筆請求的時間瀑布圖」，一眼看出「原來 80% 時間卡在那支外部 API」。",
+          "業界標準是 <b>OpenTelemetry</b>（統一的埋點規格），資料送進 Jaeger、Tempo、或各家 APM 呈現。",
+          "⚠️ 雷點：每一筆都完整追蹤，資料量和開銷會很可觀。生產環境通常做<b>取樣（sampling）</b>——只追一部分請求。取樣策略要挑好（例如「錯誤的、慢的一定留」），不然剛好想查的那筆沒被取樣、什麼都看不到。",
+        ),
+      },
+      {
+        title: "metrics 可觀測性：不是等使用者哭，是你先看到儀表板變色",
+        content: P(
+          "log 是「一件件事的細節」，metrics 是「彙總後的數字趨勢」——像儀表板上的轉速、油溫。有它你才能『在使用者發現前』就看到不對勁。",
+          "後端最該盯的幾個（業界叫黃金訊號）：<b>流量</b>（每秒幾個請求）、<b>錯誤率</b>（5xx 佔比）、<b>延遲</b>（回應時間，看 p95/p99 不是只看平均）、<b>飽和度</b>（CPU/記憶體/連線池快滿了沒）。",
+          "常見組合：程式吐 metrics → Prometheus 收集 → Grafana 畫圖 + 設告警（錯誤率飆高就通知你）。",
+          "⚠️ 雷點：延遲<b>只看平均會騙你</b>。平均 100ms 很漂亮，但可能有 5% 的使用者卡了 5 秒——那 5% 全被平均稀釋掉了。一定要看 p95/p99（尾端延遲），那才是「最慘的一批使用者」的真實體驗。",
+        ),
+      },
+      {
+        title: "dead letter queue：一直處理失敗的訊息，先移到一旁",
+        content: P(
+          "用佇列跑背景任務時，總有些訊息「怎麼重試都失敗」（資料壞了、格式不對、觸發到 bug）。如果讓它一直卡在佇列頭反覆重試，會塞住後面所有正常訊息，還一直空轉燒資源。",
+          "解法是<b>死信佇列（DLQ）</b>：一則訊息重試超過 N 次還失敗，就把它「搬到旁邊的死信佇列」、放它過去，讓主佇列繼續處理後面正常的。",
+          "死信佇列裡的訊息不是丟掉、而是「隔離起來待調查」——你事後去看它們為什麼失敗、修好問題後可以重新投遞。",
+          "⚠️ 雷點：DLQ 設了就要<b>有人盯</b>、要有告警。很多團隊訊息默默進了死信佇列卻沒人看，等於資料/任務靜靜地掉了、還以為系統一切正常。DLQ 堆積本身就該觸發警報。",
+        ),
+      },
+      {
+        title: "at-least-once vs exactly-once：訊息可能被處理不只一次",
+        content: P(
+          "分散式訊息系統有個殘酷真相：大多數保證的是 <b>at-least-once（至少一次）</b>——訊息保證會送達，但可能<b>重複送</b>（網路抖動、ack 遺失導致重投）。真正的 exactly-once（精準一次）極難、代價很高。",
+          "為什麼會重複：worker 處理完、正要回報「我做完了」時斷線，系統以為沒做完、就再投一次給另一個 worker。同一則訊息被做了兩遍。",
+          "所以務實的做法不是「追求絕不重複」，而是<b>讓重複不造成傷害</b>——也就是讓你的處理邏輯冪等（同一則訊息做幾次結果都一樣）。",
+          "⚠️ 雷點：別天真假設「訊息只會來一次」就直接扣款/發獎/寄信。一定要用「訊息 id 去重」或冪等鍵：處理前先查「這則 id 處理過沒」，處理過就跳過。這是分散式訊息的基本功，不是加分項。",
+        ),
+      },
+      {
+        title: "訊息順序：別假設佇列一定按順序給你",
+        content: P(
+          "「先加入購物車、再結帳」——如果這兩個事件到 worker 手上順序反了，就會出錯。但很多人不知道：一般佇列在多消費者/多分區下，<b>不保證全域順序</b>。",
+          "為什麼順序會亂：為了吞吐，佇列常把訊息分散給多個 worker 並行處理，A 先發但 B 先做完是常有的事。要順序，就得犧牲一部分並行。",
+          "常見解法：<b>同一個實體的事件走同一個分區</b>（例如用 <code>user_id</code> 當 partition key），保證「同一個使用者的事件」有序，不同使用者之間則可並行。這是吞吐和順序的折衷。",
+          "⚠️ 雷點：更穩的設計是「別依賴順序」——在訊息裡帶<b>版本號/時間戳</b>，處理時「比自己記錄的還舊就丟棄」。這樣就算亂序或重複到達也不會用到過期資料，比硬求嚴格順序省心得多。",
+        ),
+      },
+      {
+        title: "outbox pattern：資料庫寫了、訊息卻沒發出去怎麼辦",
+        content: P(
+          "常見場景：下單要「寫進資料庫」+「發一則訊息到佇列通知別的服務」。問題是——DB 寫成功了，但發訊息那步失敗（或反過來），兩邊就不一致：訂單存了、下游卻不知道。這兩個動作不在同一個交易裡，沒法一起成敗。",
+          "<b>outbox pattern</b> 巧妙地繞過：發訊息時不直接發，而是把「要發的訊息」<b>寫進同一個資料庫的一張 outbox 表</b>，跟業務資料在同一個交易裡——這樣「訂單」和「待發訊息」保證同生共死。",
+          "然後有個獨立的程序（或 CDC）不斷把 outbox 表裡的訊息撈出來、真正發到佇列、發成功就標記已送。DB 和訊息就不會再對不上。",
+          "⚠️ 雷點：outbox 的投遞是 at-least-once——那個轉發程序可能「發了、但還沒來得及標記已送就掛了」，重啟後又發一次。所以<b>消費端一樣要冪等/去重</b>。outbox 解的是「不漏發」，不是「不重發」。",
+        ),
+      },
+      {
+        title: "saga：跨多個服務的交易，靠一連串補償",
+        content: P(
+          "單一資料庫裡「要嘛全成、要嘛全退」有交易罩著。但「訂機票 + 訂飯店 + 租車」分散在三個不同服務/資料庫時，沒有一個大交易能一起 rollback。saga 就是處理這種跨服務流程的模式。",
+          "作法：把大流程拆成一連串本地小交易，<b>每一步都配一個「補償動作」</b>。訂機票成功、訂飯店也成功、租車失敗了——就依序執行補償：取消飯店、退機票，把已完成的步驟一步步「倒帶」回去。",
+          "它換來的不是「原子性」，而是「最終要嘛全部完成、要嘛全部被補償抵銷」的一致性。",
+          "⚠️ 雷點：補償動作本身也可能失敗、也要能重試、也要冪等——「退款」重複執行不能退兩次。而且有些步驟「做了就補償不回來」（信已經寄出去了），這類不可逆的動作要盡量往流程<b>最後</b>擺，別排在前面。saga 比想像中難寫對。",
+        ),
+      },
+      {
+        title: "最終一致性：不是不一致，是「稍等一下就一致」",
+        content: P(
+          "強一致性（寫完馬上到處都讀得到最新值）在單機資料庫很自然，但一旦資料跨多台/多地複製，硬要「每次都全球即時一致」會慢到不能用。於是很多系統選<b>最終一致性</b>。",
+          "意思是：更新後，各個副本會「在很短的時間內」陸續同步到最新——不是永遠不一致，是「有一個短暫的窗口，不同地方讀到的可能還不一樣，但終究會收斂到一致」。",
+          "生活例子：你改了個人頭像，自己馬上看到新的，但朋友那邊過幾秒才更新。這體驗完全可接受——用最終一致換來了速度和可用性。",
+          "⚠️ 雷點：最經典的坑是<b>「讀自己剛寫的」</b>——使用者剛送出留言、頁面重整卻看不到（讀到還沒同步的舊副本），以為壞了。對「自己的操作」要保證能立刻讀到（讀主庫或讀寫黏同一節點）；能容忍延遲的（別人的資料）才放給最終一致。分清楚哪些能等、哪些不能。",
+        ),
+      },
+      {
+        title: "advisory lock：用資料庫當「全應用共用的鎖」",
+        content: P(
+          "多台伺服器同時跑，你想確保「某件事同一時間只有一台在做」（例如同一個排程任務別被兩台重複執行）。在記憶體裡加鎖沒用（各台記憶體不通）。Postgres 的 <b>advisory lock</b> 剛好能當這個跨機共用鎖。",
+          "它是「應用自己定義意義」的鎖，不綁定某一列資料。<code>pg_try_advisory_lock(key)</code>：搶到回 true、沒搶到回 false（不會等）。搶到的那台去做事、做完 <code>pg_advisory_unlock</code> 釋放，其他台搶不到就跳過。",
+          "常用來做：分散式互斥、「同一資源同時只准一個 worker 處理」、防止排程重複跑。",
+          "⚠️ 雷點：<b>session 級</b>的 advisory lock 綁在連線上——連線一斷（程序崩了、連線池回收）鎖會自動釋放，可能你以為還鎖著、其實早放了。而且用連線池時，unlock 要用「當初 lock 的同一條連線」，池子換連線就對不上。搞不清就用「交易級」（<code>pg_advisory_xact_lock</code>），交易結束自動放，比較不會漏。",
+        ),
+      },
+      {
+        title: "row level security（RLS）：權限直接寫在資料庫那一列",
+        content: P(
+          "一般權限檢查寫在應用層（每支 API 自己判斷「這個人能不能看這筆」）。RLS 把這道關<b>下沉到資料庫</b>：直接定義「哪個使用者能讀/寫哪些列」，繞不過去。",
+          "作法：對表開啟 RLS，寫 policy，例如「使用者只能 select <code>user_id = 當前登入者</code> 的列」。之後不管是哪支查詢、哪個後門進來，資料庫都只吐出符合政策的列。這是 Supabase 安全的核心。",
+          "好處：就算某支 API 忘了做權限檢查，資料庫這層仍擋著——多一道不可繞過的防線。",
+          "⚠️ 雷點：兩個常見致命錯——① 開了 RLS 卻<b>忘了寫 policy</b>，預設是「什麼都讀不到」，功能整個壞掉還以為程式錯了；② 用 <code>service_role</code> / 超級權限的連線會<b>直接繞過 RLS</b>，別把這種金鑰用在面向使用者的路徑上，等於門開著。上線前逐表確認 policy。",
+        ),
+      },
+      {
+        title: "讀寫分離：查詢分流到副本，別全壓在主庫",
+        content: P(
+          "網站讀多寫少（看的人遠比改的人多）。當單一資料庫扛不住，一個經典解法是<b>讀寫分離</b>：一台<b>主庫（primary）</b>負責所有寫入，資料同步複製到多台<b>副本（replica）</b>，把大量的讀查詢分流到副本上。",
+          "這樣主庫專心處理寫、不被海量讀查拖累；讀的容量也能靠「多加幾台副本」水平擴充。很多雲資料庫（含 Supabase）都提供唯讀副本。",
+          "程式端要做的：寫走主庫連線、讀走副本連線，把查詢導對地方。",
+          "⚠️ 雷點：主庫到副本的複製<b>有延遲</b>（通常毫秒級，但存在）。使用者「剛寫完、馬上讀」若讀到副本，可能讀到還沒同步的舊值（就是前面說的最終一致性坑）。對「寫後要立刻讀到」的操作，強制走主庫；能容忍一點延遲的讀才放去副本。",
+        ),
+      },
+      {
+        title: "sharding 分片：一張表大到單機裝不下，就拆到多台",
+        content: P(
+          "讀寫分離解「讀」的壓力，但「寫」和「總資料量」還是全壓在一台主庫。當資料大到單機的磁碟/記憶體都裝不下，就要<b>分片（sharding）</b>——把資料<b>水平切開、分散到多台獨立的資料庫</b>。",
+          "怎麼切：挑一個<b>分片鍵（shard key）</b>（例如 <code>user_id</code>），用它決定「這筆資料放哪一台」（雜湊或範圍）。查某使用者的資料，就去他所在的那台。每台只存全部的一部分，各自扛自己那份的讀寫。",
+          "這是「水平擴展寫入」的終極手段，超大規模（很多筆、很多寫）才需要。",
+          "⚠️ 雷點：sharding 是複雜度炸彈，<b>能不分就別分</b>。跨分片的查詢（要 join 不同台的資料、跨片交易、全域排序分頁）會變得極難；分片鍵選錯導致資料/流量集中在某台（熱點）更慘；日後要「重新分片」是惡夢。先把單機優化（索引、快取、讀副本、分區）榨乾，真的到瓶頸再考慮。",
+        ),
+      },
+      {
+        title: "分區 partitioning：一張大表，資料庫內部切成好幾塊",
+        content: P(
+          "分片是「拆到多台機器」，<b>分區（partitioning）</b>是輕量版——<b>同一台資料庫裡</b>，把一張邏輯上的大表，內部依規則切成好幾個小塊（分區），但你查起來還是當它一張表。",
+          "最常見是<b>按時間分區</b>：日誌/訂單表按月切，<code>logs_2026_01</code>、<code>logs_2026_02</code>…。查「上個月的」時，資料庫只掃那一個分區、跳過其他（叫 partition pruning），快很多。",
+          "另一大好處：清舊資料超快——要刪掉一整個月的舊 log，直接 <code>drop</code> 掉那個分區（瞬間），比 <code>delete ... where</code> 慢慢刪好上百倍。",
+          "⚠️ 雷點：分區的好處只有在「查詢條件帶到分區鍵」時才吃得到（按月分區、查詢就要帶時間範圍，資料庫才能只掃相關分區）。查詢沒帶分區鍵，等於掃全部分區、沒省到。還有唯一約束、索引在分區表上有些限制，設計時要一併想清楚。",
+        ),
+      },
+      {
+        title: "物化視圖 materialized view：把慢查詢的結果先算好存起來",
+        content: P(
+          "有些報表查詢很重（多表 join + 大量聚合），每次即時算要好幾秒。如果這結果「不需要每秒最新、允許有點延遲」，就可以用<b>物化視圖</b>把算好的結果實體存下來，查的時候直接讀。",
+          "跟一般 view 的差別：普通 view 是「每次查都重新跑一次底層 SQL」（只是存了語句），物化視圖是<b>真的把結果算出來存成一張表</b>，查它就像查一般表一樣快。",
+          "適合：儀表板統計、排行榜、每日彙總這種「算很久、但不用即時、可以定時更新」的資料。",
+          "⚠️ 雷點：物化視圖的資料<b>不會自動更新</b>——底層資料變了，它還是舊的，要你手動或排程 <code>REFRESH MATERIALIZED VIEW</code> 重算。而且一般的 refresh 會<b>鎖住整張</b>（refresh 期間不能查），資料量大要用 <code>REFRESH ... CONCURRENTLY</code>（要有唯一索引）才不擋讀。別忘了排 refresh，不然使用者看到的永遠是舊數字。",
+        ),
+      },
+      {
+        title: "vacuum：Postgres 為什麼要定期「打掃」",
+        content: P(
+          "Postgres 的 <code>UPDATE</code>/<code>DELETE</code> 不是真的當場改掉/清掉舊資料——它是把舊版本標記為「死掉的（dead tuple）」、另寫新版本（這是它做多版本並發控制 MVCC 的方式）。這些死掉的舊資料會一直佔著空間，得靠 <b>VACUUM</b> 來回收。",
+          "所以更新頻繁的表會「膨脹（bloat）」：實際有效資料沒多少，但檔案越長越大、查詢越來越慢。VACUUM 就是回收這些死 tuple 的空間、讓它能被重用。它平常由 <b>autovacuum</b> 自動在背景做。",
+          "另一個關鍵任務：VACUUM 會更新統計資訊（給查詢規劃器參考）、還防止一個叫 transaction ID 環繞的嚴重問題。",
+          "⚠️ 雷點：大量更新/刪除的表，autovacuum 可能<b>追不上</b>膨脹速度，表越來越肥、查詢越來越慢。症狀是「資料筆數沒暴增、但查詢莫名變慢、磁碟一直漲」。這時要調 autovacuum 更積極，或針對熱點表手動 VACUUM。注意 <code>VACUUM FULL</code> 會鎖表、慎用。",
+        ),
+      },
+      {
+        title: "PITR 時間點還原：救回「刪掉前那一秒」的資料",
+        content: P(
+          "每日備份能救「昨天」，但如果今天下午三點有人手滑跑了個沒帶 where 的 <code>delete</code>，你只能還原到昨天午夜、今天一整天的資料全沒了。<b>PITR（時間點還原）</b>能把你救到「災難發生前的任意一秒」。",
+          "原理：一份基底備份 + 之後<b>持續累積的交易日誌（WAL）</b>。還原時，先套用基底備份、再把 WAL「重放」到你指定的那個時間點就停——精準回到「下午 2:59:59」，剛好在那個手滑 delete 之前。",
+          "很多雲資料庫（含 Supabase 較高方案）提供 PITR，讓你選一個時間戳去還原。",
+          "⚠️ 雷點：PITR 通常是還原成「一個新的資料庫實例」、不是就地倒回——你要把救回的資料再搬回正式庫，中間服務怎麼處理要先想好。而且它有「保留窗口」（例如只能回到 7 天內），過期就救不回。最重要的老話：<b>先演練過還原，別等真出事才第一次用</b>。",
+        ),
+      },
+      {
+        title: "線上加欄位：一個 ALTER TABLE 差點鎖垮全站",
+        content: P(
+          "正式環境幫大表加欄位，看起來人畜無害的 <code>ALTER TABLE</code>，卻可能瞬間鎖住整張表、讓所有讀寫卡住、全站掛掉。加欄位這件小事，在大表上要很小心。",
+          "好消息：現代 Postgres 加「<b>可為 NULL、或帶常數預設值</b>」的欄位是很快的（只改中繼資料、不重寫全表）。<code>add column note text</code>、<code>add column status text default 'active'</code> 都很輕。",
+          "危險的是「加欄位<b>同時</b>要回填一個非常數的值」（例如預設值是個函式、或加 NOT NULL 又要算舊資料）——那可能要掃/改寫整張表，大表上就是長時間鎖表。",
+          "⚠️ 雷點：安全的做法是<b>拆成多步</b>——① 先加可空的新欄位（快）；② 分批回填舊資料（別一句 update 全表）；③ 資料補齊後再視需要加約束/NOT NULL。加約束時用 <code>NOT VALID</code> 先掛上、再 <code>VALIDATE</code>（不鎖寫）。別在正式大表上一句 ALTER 打天下。",
+        ),
+      },
+      {
+        title: "安全地移除欄位：drop column 前先「假裝它不存在」",
+        content: P(
+          "一個欄位不用了想刪掉。直接 <code>drop column</code> 看似乾脆，但在零停機部署下——「還在跑的舊版程式」可能仍會讀寫這個欄位，你一刪，舊版當場報錯。移除欄位比新增更要小心順序。",
+          "安全的<b>擴展-收縮（expand-contract）</b>做法：① 先改程式，讓<b>所有版本都不再用</b>這個欄位（但欄位還留著）；② 部署、確認線上沒有任何程式碼碰它了；③ 再真正 <code>drop column</code>。",
+          "順序反過來（先刪欄位、再改程式）就是災難——中間那段舊程式找不到欄位、狂噴錯。",
+          "⚠️ 雷點：drop 之前<b>務必確認沒有殘留依賴</b>——view、觸發器、外鍵、生成欄位、程式裡的 <code>select *</code> 或 ORM 模型可能都還指著它。還有一刪就<b>資料真的沒了</b>，先確認有備份、且短期內不會想反悔。不確定就先「停用」一陣子（改名加前綴、確認無人使用），再刪。",
+        ),
+      },
+      {
+        title: "API 版本管理：改壞舊客戶端是大忌",
+        content: P(
+          "API 上線後就有人在用（前端、App、第三方）。你一改回傳格式或拿掉欄位，那些還在用舊版的客戶端當場壞掉。API 版本管理就是讓你「能演進、又不砸爛既有使用者」。",
+          "最常見是<b>放在網址</b>：<code>/api/v1/users</code>、<code>/api/v2/users</code>。要做破壞性變更就開 v2，v1 維持不動，客戶端各自按步調遷移。也有用標頭帶版本的做法。",
+          "關鍵心法：分清楚<b>相容 vs 破壞</b>。「加一個新欄位、加一個選填參數」是相容的（舊客戶端不受影響），可以直接改；「刪欄位、改欄位意義、把選填改必填」是破壞性的，才需要升版本。",
+          "⚠️ 雷點：開了新版本不代表舊版能立刻殺掉——要<b>公告棄用（deprecation）時程、給遷移期</b>，並想辦法知道「還有誰在用 v1」（看 log/用量）。沒人用了再下線。悄悄關掉舊版，等於突襲所有還沒遷移的使用者。",
+        ),
+      },
+      {
+        title: "批次 API：讓前端一次送多筆，別打一百次",
+        content: P(
+          "前端要一次建立/更新 50 筆資料，如果 API 只能「一次一筆」，它就得發 50 個請求——網路來回、連線、驗證各重複 50 次，慢又浪費。批次 API 就是「一個請求收多筆」。",
+          "設計：接受一個陣列 <code>POST /items/batch { items: [...] }</code>，後端一次處理完回結果。內部盡量用批次 insert/upsert，別自己在迴圈裡一筆筆打 DB（又變 N+1）。",
+          "好處：大幅減少往返次數、後端能包成一個交易保證一致、整體吞吐好很多。",
+          "⚠️ 雷點：批次最尷尬的是<b>「部分成功」</b>——50 筆裡第 30 筆壞了，怎麼回？要嘛「全有全無」（包交易，一筆錯整批 rollback），要嘛「逐筆回報成敗」（回一個陣列，標明哪幾筆成功哪幾筆失敗、各自原因）。<b>一定要講清楚是哪種語意</b>，別讓前端猜。另外要限制單批筆數上限，防有人一次塞十萬筆打爆你。",
+        ),
+      },
+      {
+        title: "樂觀鎖實作：用一個 version 欄位擋掉「後蓋前」",
+        content: P(
+          "兩個人同時打開同一筆資料編輯，A 先存、B 後存——B 是拿「A 改之前的舊底稿」去覆蓋，A 的修改就被靜默蓋掉了（lost update）。樂觀鎖用一個小小的 version 欄位就能擋住這種悲劇，這裡講怎麼實作。",
+          "作法：表加一個 <code>version int</code> 欄位。讀資料時連 version 一起讀（例如讀到 version = 5）。更新時把它當條件、並讓它 +1：<code>update t set ..., version = version + 1 where id = ? and version = 5</code>。",
+          "關鍵在看「<b>更新影響的筆數</b>」：如果是 1，代表沒人在你之前改過（version 還是 5），更新成功；如果是 <b>0</b>，代表在你讀完到要存之間、別人已經改過（version 早就不是 5 了），這次更新就撲空——你回報衝突，讓使用者「重新載入最新版再改」。",
+          "⚠️ 雷點：一定要<b>檢查 affected rows</b> 來判斷成敗——很多人寫了 <code>where version = ?</code> 卻不看回傳筆數，更新 0 筆也當成功，等於白做、衝突照樣發生。也可以用 <code>updated_at</code> 時間戳代替 version，但精度不夠時（同毫秒）會誤判，用整數 version 最穩。",
+        ),
+      },
+      {
         title: "先懂全貌：一次請求的旅程",
         content: P(
           "後端很多概念，理解這張圖就通一半：使用者點按鈕 → 前端送 request 到後端某網址(API) → 後端處理(可能查 DB) → 回 response(通常 JSON) → 前端更新畫面。",
@@ -1616,6 +2831,600 @@ const PACKS = [
     title: "🧰 課程沒特別教、但你天天會用到（新手必備基本功）",
     desc: "這些「沒人專門教、卻決定你走多快」的基本功，我踩過才知道多重要：終端機、Git、看錯誤、DevTools、怎麼問問題、讀文件。免費。",
     notes: [
+      {
+        title: "grep：在一堆檔案裡秒找那行字",
+        content: P(
+          "我以前找「這個字串到底寫在哪個檔」都用滑鼠一個個開來看，蠢到爆。後來會了 grep 才發現三秒能解決。",
+          "grep 就是「幫你在文字堆裡撈出含關鍵字的行」。找單檔：<code>grep TODO app.js</code>；整個資料夾遞迴找：<code>grep -r \"API_KEY\" .</code>。加 <code>-n</code> 顯示行號、<code>-i</code> 不分大小寫。",
+          "常搭配管道：<code>cat log.txt | grep ERROR</code> 只留錯誤行。想看前後文用 <code>-C 3</code>（上下各三行）。",
+          "⚠️ 我踩過：<code>grep -r</code> 沒排除就把 <code>node_modules</code> 也掃了、跑超久還一堆雜訊。用 <code>--exclude-dir=node_modules</code>，或直接學 <code>rg</code>（ripgrep）預設就會跳過。",
+        ),
+      },
+      {
+        title: "find：按名字、時間、大小把檔案挖出來",
+        content: P(
+          "grep 是找「檔案內容」，find 是找「檔案本身」。我第一次要清掉一堆散落的暫存檔，就是靠它。",
+          "最常用：<code>find . -name \"*.log\"</code> 找當前資料夾以下所有 .log。想按時間：<code>-mtime -7</code>（七天內改過）；按大小：<code>-size +100M</code>（大於 100MB）。",
+          "威力在 <code>-exec</code>：找到直接處理，例 <code>find . -name \"*.tmp\" -delete</code> 一次刪光。",
+          "⚠️ <code>-delete</code> 和 <code>-exec rm</code> 不會問你、刪了就沒了。我習慣先不加刪除、跑一次看「印出來的清單」對不對，確認了再加動作。",
+        ),
+      },
+      {
+        title: "sed：不用開編輯器就把字換掉",
+        content: P(
+          "有時候我只是要把一個檔裡的某個字全換掉，開編輯器嫌慢，sed 一行搞定。",
+          "基本替換：<code>sed 's/舊字/新字/g' 檔案</code>——<code>s</code> 是 substitute、結尾 <code>g</code> 是「一行內全部換」（不加只換每行第一個）。這樣只是印出來、不改原檔。",
+          "真的要寫回檔案要加 <code>-i</code>（in-place）：<code>sed -i 's/http:/https:/g' config.txt</code>。",
+          "⚠️ <code>-i</code> 直接動原檔、沒有還原鍵。我一定先不加 <code>-i</code> 預覽結果，或先 <code>git commit</code> 存個檔，改壞了還能 <code>git checkout</code> 救回來。",
+        ),
+      },
+      {
+        title: "chmod：檔案權限那串 rwx 到底在講什麼",
+        content: P(
+          "第一次 <code>ls -l</code> 看到 <code>-rwxr-xr--</code> 一串我完全看不懂，其實拆開超簡單。",
+          "分三組人：<b>擁有者 / 群組 / 其他人</b>。每組三個位：<code>r</code> 讀、<code>w</code> 寫、<code>x</code> 執行。想成一棟房子的三串鑰匙，各自能開哪些門。",
+          "數字寫法：r=4、w=2、x=1 相加。<code>chmod 755 檔</code>＝擁有者 7(rwx)、其他人 5(r-x)。腳本要能跑就得有 <code>x</code>：<code>chmod +x deploy.sh</code>。",
+          "⚠️ 別為了「省事」一律 <code>chmod 777</code>——那是「任何人都能改能執行」，等於門全開。上傳目錄、金鑰檔給 777 是很經典的資安漏洞。",
+        ),
+      },
+      {
+        title: "SSH 金鑰：別再每次都打密碼",
+        content: P(
+          "以前我 <code>git push</code> 每次都要輸帳密，煩死。設好 SSH 金鑰之後就再也不用了。",
+          "金鑰是一對的：<b>私鑰</b>留在你電腦（像你家鑰匙、絕不外流）、<b>公鑰</b>貼到 GitHub/伺服器（像門上的鎖）。對得上就放行。",
+          "產一把：<code>ssh-keygen -t ed25519 -C \"你的email\"</code>，然後把 <code>~/.ssh/id_ed25519.pub</code> 的內容貼到 GitHub 設定的 SSH keys。",
+          "⚠️ 私鑰（沒有 <code>.pub</code> 的那個）<b>絕對不能</b>貼出去、不能進 git。我看過有人把整個 <code>.ssh</code> 資料夾 commit 上去——等於把家裡鑰匙貼在公佈欄，趕快換掉。",
+        ),
+      },
+      {
+        title: "scp / rsync：把檔案傳到另一台機器",
+        content: P(
+          "要把本機檔案丟到伺服器、或從伺服器拉回來，我以前用 FTP 工具點半天，其實命令列一行就好。",
+          "<b>scp</b> 像「複製貼上到遠端」：<code>scp 本機檔 user@host:/路徑/</code> 上傳、反過來就是下載。單檔、少量很方便。",
+          "<b>rsync</b> 更聰明：只傳「有變的部分」，中斷還能續傳，適合大量檔或反覆同步。<code>rsync -avz 資料夾/ user@host:/路徑/</code>。",
+          "⚠️ rsync 的來源路徑<b>結尾斜線很要命</b>：<code>dir/</code> 是「把 dir 裡的東西」傳過去、<code>dir</code>（沒斜線）是「把 dir 這個資料夾」傳過去，位置會差一層。先加 <code>-n</code>（dry-run）看它「打算做什麼」再真的跑。",
+        ),
+      },
+      {
+        title: "curl：不開瀏覽器就測一支 API",
+        content: P(
+          "後端寫好一支 API，我要驗它通不通，用 curl 比開 Postman 還快。",
+          "最單純：<code>curl https://api.site.com/users</code> 直接把回傳印出來。想看狀態碼與 header 加 <code>-i</code>。",
+          "送 POST + JSON：<code>curl -X POST -H \"Content-Type: application/json\" -d '{\"name\":\"小明\"}' 網址</code>。帶身分：<code>-H \"Authorization: Bearer 你的token\"</code>。",
+          "⚠️ curl 預設<b>不會</b>印出 4xx/5xx 的錯誤細節、你可能以為成功。加 <code>-i</code> 或 <code>-w \"%{http_code}\"</code> 看真正的狀態碼，別被「有回東西」騙了。",
+        ),
+      },
+      {
+        title: "PATH：為什麼有時候「找不到指令」",
+        content: P(
+          "剛裝好一個工具、打指令卻說 <code>command not found</code>，明明就裝了啊——問題幾乎都出在 PATH。",
+          "PATH 是一串資料夾清單，你打指令時系統<b>照順序去這些資料夾找</b>那支程式。不在清單裡的，它就當作不存在。",
+          "看你的 PATH：<code>echo $PATH</code>（用冒號分隔）。查某指令實際用哪個：<code>which node</code>。裝了找不到，通常是那支程式的資料夾沒被加進 PATH。",
+          "⚠️ 改 PATH 要寫進 shell 設定檔（<code>.bashrc</code> / <code>.zshrc</code>）才會永久生效；在當前視窗 <code>export PATH=...</code> 只對這個視窗有用，關掉就沒了。順序也有影響——排前面的同名程式會先被找到。",
+        ),
+      },
+      {
+        title: "shell 別名與 dotfiles：把常打的指令變短",
+        content: P(
+          "我每天打 <code>git status</code> 幾十次，後來設個別名 <code>gs</code> 就好，手指少受罪。",
+          "別名（alias）就是幫長指令取小名。在 <code>.zshrc</code> / <code>.bashrc</code> 加 <code>alias gs=\"git status\"</code>、<code>alias ll=\"ls -la\"</code>，存檔後 <code>source ~/.zshrc</code> 生效。",
+          "這些設定檔（開頭是點的 <code>.zshrc</code>、<code>.gitconfig</code>…）合稱 <b>dotfiles</b>。很多人把它們放一個 git repo 管理，換新電腦 clone 一下、環境秒還原。",
+          "⚠️ 別把含金鑰、token 的設定檔也推上公開 repo。dotfiles 要上 GitHub 前，先確認裡面沒有密碼、公司內網位址這種東西。",
+        ),
+      },
+      {
+        title: "cron：讓電腦定時自動幫你做事",
+        content: P(
+          "要「每天半夜備份一次」「每小時抓一次資料」這種排程，靠 cron，設好就自動跑、不用你守著。",
+          "用 <code>crontab -e</code> 編輯，每行是「五個時間欄位 + 要跑的指令」。五欄依序是<b>分 時 日 月 星期</b>，<code>*</code> 代表「每」。",
+          "例：<code>0 3 * * * /path/backup.sh</code>＝每天 03:00 跑備份；<code>*/15 * * * *</code>＝每 15 分鐘一次。記不起來就用 crontab.guru 這網站邊調邊看白話解釋。",
+          "⚠️ cron 跑的環境很乾淨、<b>沒有你平常的 PATH 和變數</b>，本機能跑的腳本在 cron 裡常因「找不到指令」而默默失敗。指令用絕對路徑、把輸出導到 log（<code>&gt;&gt; /tmp/job.log 2&gt;&amp;1</code>）才查得到問題。",
+        ),
+      },
+      {
+        title: "ps / top / kill：看誰在跑、把卡死的關掉",
+        content: P(
+          "程式當掉、port 被佔住、風扇狂轉——這些都要先「看清楚是哪個程序在搞」，再處理。",
+          "<b>top</b>（或 <code>htop</code>）：即時看哪個程序吃 CPU/記憶體，像工作管理員。<b>ps</b>：列出程序清單，<code>ps aux | grep node</code> 找出你的 node 程序和它的 PID（程序編號）。",
+          "關掉：<code>kill PID</code> 好好請它結束；不理你就 <code>kill -9 PID</code> 強制砍。查是誰佔了某個 port：<code>lsof -i :3000</code>。",
+          "⚠️ <code>kill -9</code> 是「直接拔電源」、程式來不及善後（存檔、關連線）可能留下壞狀態。先試普通 <code>kill</code>，真的不動了再 <code>-9</code>。也別亂砍不認識的系統程序。",
+        ),
+      },
+      {
+        title: "df / du：硬碟滿了，找出誰在吃空間",
+        content: P(
+          "有次伺服器突然狂報錯，查半天原來是<b>硬碟滿了</b>。這種問題不先想到、會 debug 到懷疑人生。",
+          "<b>df</b> 看「整體還剩多少」：<code>df -h</code>（<code>-h</code> = 人看得懂的 GB/MB），看哪個磁碟用到 100%。",
+          "<b>du</b> 看「是誰在佔」：<code>du -sh *</code> 列出當前資料夾各項多大，一路往裡追到肥的那個。",
+          "⚠️ 硬碟滿了常是 <b>log 檔無限長大</b>或一堆暫存沒清。刪之前先確認那真的是可丟的東西；也別忘了有些程式「檔案刪了但沒放手」，空間要重啟該程序才真的釋放。",
+        ),
+      },
+      {
+        title: "tar / zip：打包壓縮，別再手動一個個傳",
+        content: P(
+          "要把整個資料夾傳給別人、或備份起來，先打包成一個檔最省事。",
+          "Linux/Mac 常用 <b>tar</b>：壓 <code>tar -czf out.tar.gz 資料夾/</code>、解 <code>tar -xzf out.tar.gz</code>。記法：<code>c</code>reate / e<code>x</code>tract、<code>z</code> 用 gzip 壓、<code>f</code> 指定檔名。",
+          "跨平台給人（尤其 Windows 用戶）用 <b>zip</b> 最保險：<code>zip -r out.zip 資料夾/</code> 壓、<code>unzip out.zip</code> 解。",
+          "⚠️ 我最常記反的是解壓：拿到別人的 <code>.tar.gz</code> 要 <code>-x</code>（extract）不是 <code>-c</code>（create）——打 <code>-c</code> 會反而<b>覆蓋掉</b>那個檔！看到 <code>.tar.gz</code> 就是 <code>xzf</code>、記死。",
+        ),
+      },
+      {
+        title: "符號連結 symlink：一個捷徑指到別的地方",
+        content: P(
+          "symlink（軟連結）你就想成桌面的「捷徑」：它本身不是檔案，只是一個「指向真正檔案的箭頭」。",
+          "建立：<code>ln -s /真正的/路徑 捷徑名</code>。之後讀寫這個捷徑，實際上動的是它指到的那個檔或資料夾。",
+          "很多工具靠它運作，例如 <code>node_modules/.bin</code> 裡一堆指令、nvm 切 node 版本，背後都是換 symlink 指向。",
+          "⚠️ 兩個雷：一是<b>刪捷徑不會刪到本體</b>，但有些指令加了斜線或 <code>-r</code> 會誤刪到裡面的東西；二是<b>指向的目標被搬走/刪掉，捷徑就變死連結</b>（dangling），指令會報「檔案不存在」但你明明看到那個名字在。用 <code>ls -l</code> 可看到箭頭指去哪。",
+        ),
+      },
+      {
+        title: "exit code：0 是成功，非 0 是出事",
+        content: P(
+          "寫腳本或看 CI 常聽到「回傳碼」，其實概念超簡單：每個指令跑完都會留一個數字，說它成不成功。",
+          "<b>0 = 成功</b>，任何<b>非 0 = 有問題</b>（不同數字代表不同錯誤）。看上一個指令的結果：<code>echo $?</code>。",
+          "這就是 <code>指令A &amp;&amp; 指令B</code> 的原理——A 回 0（成功）才做 B；<code>||</code> 則是失敗才做。CI 判斷「這步過了沒」也是看 exit code。",
+          "⚠️ 自己寫腳本時，出錯要記得 <code>exit 1</code> 讓外面知道失敗，不然它<b>預設回 0</b>、CI 會以為一切正常照樣往下跑、把壞東西部署上去。",
+        ),
+      },
+      {
+        title: "stdout / stderr：把正常輸出和錯誤分開",
+        content: P(
+          "程式的輸出其實有兩條管道：<b>stdout</b>（標準輸出，正常結果）和 <b>stderr</b>（標準錯誤，錯誤訊息）。分開是有用的。",
+          "導向：<code>&gt;</code> 只接 stdout。<code>指令 &gt; out.txt</code> 把正常輸出存檔，但<b>錯誤還是會噴到畫面</b>——因為錯誤走 stderr。",
+          "要一起收：<code>指令 &gt; all.txt 2&gt;&amp;1</code>（<code>2</code> 是 stderr、<code>1</code> 是 stdout，意思是「把 stderr 也併到 stdout 去的地方」）。只想把錯誤丟掉：<code>2&gt;/dev/null</code>。",
+          "⚠️ 「我明明有 <code>&gt; log</code> 存檔，怎麼 log 裡沒有錯誤？」就是這個坑——錯誤走 stderr 沒被接到。要抓完整記錄一定要 <code>2&gt;&amp;1</code>。",
+        ),
+      },
+      {
+        title: "rebase vs merge：兩種把分支併起來的方式",
+        content: P(
+          "同樣是「把 main 的更新弄進我的分支」，merge 和 rebase 結果不一樣，搞懂差別才不會亂用。",
+          "<b>merge</b>：把兩條線接起來、多生一個「合併 commit」。歷史保留真實的分岔樣貌，像「兩條路匯流」。",
+          "<b>rebase</b>：把你的 commit「一個個搬到 main 最新的後面」，歷史變成一條漂亮直線，像「把你的積木重新疊到最新的塔頂」。",
+          "⚠️ 鐵律：<b>不要 rebase 已經 push、別人也在用的分支</b>。rebase 會重寫 commit，公共歷史被改掉，同事會對不上、天下大亂。自己本機、還沒分享的分支才 rebase 整理。",
+        ),
+      },
+      {
+        title: "cherry-pick：只挑某一個 commit 搬過來",
+        content: P(
+          "有時我在某分支修好一個 bug，但另一條分支也急著要那個修正——不用整條合過去，挑那一顆就好。",
+          "<code>git cherry-pick &lt;commit的hash&gt;</code>＝把那一個 commit 的改動「複製」一份、套到你現在的分支上。像從一整籃水果裡只夾走你要的那顆。",
+          "常見用途：hotfix 要同時上到 main 和 release 分支；或某功能還沒好，但其中一個小修正想先拿來用。",
+          "⚠️ cherry-pick 是<b>複製</b>不是搬移，會產生一顆「內容一樣但 hash 不同」的新 commit。之後兩條分支真的合併時可能撞到「同樣的改動出現兩次」。挑幾顆救急可以，別拿它當日常合併手段。",
+        ),
+      },
+      {
+        title: "git bisect：二分法揪出哪次 commit 弄壞的",
+        content: P(
+          "「上週還好好的、現在壞了，中間幾百個 commit 到底哪個害的？」一個個試會瘋掉，bisect 幫你二分法找。",
+          "原理像猜數字：你給它一個「還正常的舊版」和「已壞的新版」，它自動跳到中間那個 commit 讓你測，你回報「好/壞」，它再切一半，幾步就鎖定兇手。",
+          "流程：<code>git bisect start</code> → <code>git bisect bad</code>（現在壞的）→ <code>git bisect good &lt;舊commit&gt;</code>，然後每次測完 <code>git bisect good</code> 或 <code>bad</code>，最後 <code>git bisect reset</code> 收工。",
+          "⚠️ 幾百個 commit 用線性找是 O(n)、bisect 是 O(log n)——500 個 commit 大概九次就找到。前提是每個測試點你都能<b>明確判斷「好還壞」</b>，判斷標準先想清楚，不然會誤導它。",
+        ),
+      },
+      {
+        title: "git reflog：以為刪掉救不回的，它記得",
+        content: P(
+          "我曾經 <code>git reset --hard</code> 手滑、把一整天的 commit 弄不見，冷汗直流——結果 reflog 全救回來了。",
+          "reflog 是 Git 偷偷記的「你 HEAD 去過哪」的流水帳，連你 reset、rebase 掉的 commit 都還留著參照，一段時間內不會真的被清掉。",
+          "救援：<code>git reflog</code> 找到你想回去的那一步（像 <code>HEAD@{5}</code> 或某個 hash），<code>git reset --hard 那個hash</code> 或 <code>git checkout -b 救回來 那個hash</code>。",
+          "⚠️ reflog 是<b>本機</b>的、別台電腦看不到；而且它有保留期限（預設幾十天）會被回收。出事要救趁早，別拖。也因此它救不了「從沒 commit 過」的改動——那種是真的沒了。",
+        ),
+      },
+      {
+        title: "git tag：幫重要版本插一支旗子",
+        content: P(
+          "commit hash 一串亂碼沒人記得住，要標「這就是 v1.0.0 上線的版本」，用 tag 給它一個好記的名字。",
+          "打標籤：<code>git tag -a v1.0.0 -m \"首次上線\"</code>，然後 <code>git push origin v1.0.0</code>（tag 預設<b>不會</b>跟著 push，要自己推）。",
+          "之後隨時能回到那個版本、GitHub 也會用 tag 生 Release、很多發版工具靠它判斷版號。命名通常配 semver：<code>v1.2.3</code>。",
+          "⚠️ 常忘記「tag 要另外 push」——本機打了標籤、GitHub 上卻沒有，CI/發版就抓不到。還有 tag 不像分支會動，它<b>釘死在那個 commit</b>，這正是我們要的「這個版本永遠指這裡」。",
+        ),
+      },
+      {
+        title: "git blame：這行是誰、什麼時候改的",
+        content: P(
+          "看到一行很怪的 code 想罵人之前，先用 blame 查清楚它的來歷——常常那個人就是三個月前的自己。",
+          "<code>git blame 檔名</code>＝每一行左邊標出「最後改它的 commit、作者、日期」。編輯器（VS Code 裝 GitLens）通常滑到那行就直接顯示，更方便。",
+          "真正的用途不是甩鍋，是<b>考古</b>：找到那個 commit，看它的訊息和當時一起改了什麼，就懂「為什麼會寫成這樣」，別急著改壞。",
+          "⚠️ 純排版、改個縮排的 commit 會把 blame「洗掉」、蓋掉真正有意義的那次改動，害你追錯人。可以用 <code>git blame -w</code> 忽略空白變動，追得比較準。",
+        ),
+      },
+      {
+        title: "Conventional Commits：讓 commit 訊息有規矩",
+        content: P(
+          "團隊久了會發現 commit 訊息五花八門很難讀，Conventional Commits 就是一套大家講好的格式。",
+          "格式：<code>類型: 說明</code>。常見類型 <code>feat</code>（新功能）、<code>fix</code>（修 bug）、<code>docs</code>（文件）、<code>refactor</code>（重構不改行為）、<code>chore</code>（雜項）。例：<code>fix: 修好登入按鈕在手機點不到</code>。",
+          "好處不只整齊——工具能靠這些類型<b>自動產生 changelog、自動決定版號</b>（feat 升 minor、fix 升 patch、破壞性改動升 major）。",
+          "⚠️ 別為了套格式硬塞——重點還是「說明要講清楚做了什麼」。<code>feat: 更新</code> 有前綴也是廢話。破壞性改動記得標 <code>!</code> 或寫 <code>BREAKING CHANGE:</code>，不然自動升版會判錯。",
+        ),
+      },
+      {
+        title: "monorepo：多個專案放同一個 repo",
+        content: P(
+          "以前每個服務一個 repo，改一個共用的東西要開五個 repo 分別 commit，超痛苦。monorepo 是「把相關的多個專案放進同一個倉庫」。",
+          "想像一棟公寓（一個 repo）裡有很多戶（前端、後端、共用元件庫），共用的水電（工具設定、shared 套件）一次搞定，跨戶改動一個 PR 就涵蓋。",
+          "工具幫你管：pnpm/yarn workspaces、Turborepo、Nx——處理套件共享、只重建有變的部分。",
+          "⚠️ monorepo 不是萬靈丹：小團隊、少專案用它反而多一層複雜度和學習成本。而且整包會越長越大、CI 可能變慢（要靠「只測有改到的部分」來救）。沒那個規模別跟風。",
+        ),
+      },
+      {
+        title: "npm / yarn / pnpm / bun：套件管理器選哪個",
+        content: P(
+          "JS 世界一堆套件管理器，新手會被搞混，其實它們做的事一樣：照 package.json 幫你裝套件。差在速度和細節。",
+          "<b>npm</b>：Node 內建、最通用，不用另裝。<b>yarn</b>：早年比 npm 快、帶起很多概念。<b>pnpm</b>：用「硬連結共享」省超多硬碟空間、又快，現在很多人主推。<b>bun</b>：新星，超快、還想一手包辦執行環境。",
+          "怎麼選：<b>跟著專案已經在用的那個走</b>（看 lockfile 是 <code>package-lock.json</code>/<code>yarn.lock</code>/<code>pnpm-lock.yaml</code>）。自己新開專案，圖穩用 npm、圖快省空間用 pnpm。",
+          "⚠️ <b>一個專案只能用一種</b>、別混。混用會產生多個互相打架的 lockfile，「我這台好好的、他那台裝壞了」十次有八次是這原因。lockfile 要選一種、進 git、全隊統一。",
+        ),
+      },
+      {
+        title: "lockfile 衝突：合併時 lockfile 打架怎麼辦",
+        content: P(
+          "兩個人各自裝了新套件、合併時 <code>package-lock.json</code> 一大片衝突，看得頭皮發麻——其實不用手改。",
+          "lockfile 是<b>自動產生</b>的，手動去解那些 hash 衝突幾乎必錯。正解是：讓工具重生一份。",
+          "做法：先解 <code>package.json</code> 的衝突（那個是人寫的、要好好合），然後刪掉衝突的 lockfile、重跑 <code>npm install</code>（pnpm/yarn 同理），它會照合好的 package.json 重新產出乾淨的 lockfile，再 commit。",
+          "⚠️ 千萬別用滑鼠在 lockfile 裡「選我的/選他的」硬解——很可能裝出一個實際上跑不起來的依賴組合。記住：<b>lockfile 衝突 = 重生，不是手改</b>。",
+        ),
+      },
+      {
+        title: "peerDependencies：外掛跟宿主的版本約定",
+        content: P(
+          "裝套件時偶爾跳出 <code>peer dependency</code> 警告，看不懂就跳過，結果東西壞掉。這個概念值得搞懂。",
+          "peerDependency 是套件說：「我需要你的專案<b>已經</b>裝了某個東西的某版本，我不自己帶、跟你共用那一份。」最典型是各種 React 外掛——它們要你專案裡的 React，而不是自己再裝一份。",
+          "為什麼要共用？因為像 React 這種<b>同時存在兩份會出鬼</b>（hooks 錯亂）。peer 就是強制「大家用同一份宿主」。",
+          "⚠️ 常見的坑是「外掛要 React 18、你專案是 React 17」的版本不合警告。別無視——它常常正是「畫面莫名壞掉」的根因。要嘛升級對齊，要嘛換相容版本的外掛。",
+        ),
+      },
+      {
+        title: "dependencies vs devDependencies：正式用還是開發用",
+        content: P(
+          "package.json 裡套件分兩區，新手常隨便裝、其實分清楚很重要。",
+          "<b>dependencies</b>：程式<b>跑起來</b>就需要的（React、Express、資料庫驅動）。<b>devDependencies</b>：只有<b>開發/建置</b>時要、上線後不需要的（測試框架、打包工具、ESLint、型別定義 <code>@types/*</code>）。",
+          "指令差在旗標：<code>npm install 套件</code> 進正式、<code>npm install -D 套件</code> 進 dev。",
+          "⚠️ 放錯會出事：把「正式要用」的套件裝成 <code>-D</code>，上正式環境（跑 <code>npm install --production</code> 時只裝 dependencies）就<b>缺套件掛掉</b>。反過來把打包工具塞進正式區，也讓 production 依賴變肥。裝之前想一下：「上線後還需要它嗎？」",
+        ),
+      },
+      {
+        title: "npm scripts：把常用指令收進 package.json",
+        content: P(
+          "每次要打一長串啟動指令，記不住又容易打錯。npm scripts 讓你把它們取個短名字收好。",
+          "在 package.json 的 <code>scripts</code> 區寫 <code>\"dev\": \"next dev -p 3000\"</code>，之後只要 <code>npm run dev</code>。專案怎麼跑、怎麼測、怎麼 build，一看 scripts 就懂。",
+          "有幾個保留名可省略 run：<code>npm start</code>、<code>npm test</code>。也能串接，例 <code>\"build\": \"tsc &amp;&amp; vite build\"</code>。",
+          "⚠️ 別把 scripts 寫成只有你電腦跑得動的怪路徑或 OS 專屬指令（Windows 的 <code>rm</code> 和 Mac 不一樣）。要跨平台就用 <code>cross-env</code>、<code>rimraf</code> 這類工具，不然隊友 clone 下來第一個指令就爆。",
+        ),
+      },
+      {
+        title: "npx：不用裝就跑一次的工具",
+        content: P(
+          "有些工具我一輩子只用一次（建專案的鷹架），為它 <code>npm install -g</code> 裝到全域很浪費，npx 幫你「跑完就走」。",
+          "<code>npx create-next-app</code>＝下載、執行、用完不留在系統。像叫外送吃一餐，不用把整間餐廳搬回家。",
+          "也能指定版本跑：<code>npx cowsay@2 hi</code>；專案本機裝的工具也能 <code>npx</code> 跑（會優先用 <code>node_modules/.bin</code> 裡那份，版本跟專案一致）。",
+          "⚠️ npx 會<b>去網路抓來直接執行</b>——名字打錯或抄到來路不明的套件，等於執行陌生人的程式。跑之前確認套件名沒拼錯、是官方的，別複製奇怪教學裡的 <code>npx 某某某</code>。",
+        ),
+      },
+      {
+        title: "nvm 與 .nvmrc：多個 Node 版本切著用",
+        content: P(
+          "A 專案要 Node 18、B 專案要 Node 20，全域只能裝一個版本很痛。nvm 讓你隨時切換。",
+          "nvm（Node Version Manager）像「Node 版本的遙控器」：<code>nvm install 20</code> 裝、<code>nvm use 20</code> 切。Windows 用 nvm-windows 或 fnm。",
+          "在專案根目錄放一個 <code>.nvmrc</code>（裡面就寫版本號如 <code>20</code>），隊友進來 <code>nvm use</code> 就自動切成專案要的版本，不用問。",
+          "⚠️ 「本機好好的、CI/隊友那邊裝不起來」很常是 <b>Node 版本不一致</b>——某套件只支援特定版本。專案一定要放 <code>.nvmrc</code> 或在 package.json 的 <code>engines</code> 標明版本，把這個變因鎖死。",
+        ),
+      },
+      {
+        title: "tsconfig：TypeScript 設定看這幾個就好",
+        content: P(
+          "第一次打開 <code>tsconfig.json</code> 幾十個選項會嚇到，其實新手真正要在意的沒幾個。",
+          "<b>strict</b>：開了它，TS 才會真的幫你抓 null、型別對不上這些問題——<b>務必開</b>，不然等於白用 TS。<b>target</b>：編譯成哪個 JS 版本。<b>paths</b>：設路徑別名（讓 <code>@/utils</code> 指到 <code>src/utils</code>，不用寫一堆 <code>../../</code>）。",
+          "<b>include / exclude</b>：管哪些檔要編譯。多數框架（Next、Vite）已幫你設好一份合理的，不用從零寫。",
+          "⚠️ 為了「少一點紅線」而把 <code>strict</code> 關掉，是把 TS 最值錢的部分丟掉——那些紅線正是它在幫你擋 runtime bug。寧可一個個修，別關 strict。",
+        ),
+      },
+      {
+        title: "ESLint 與 Prettier：一個抓錯、一個排版",
+        content: P(
+          "很多人把這兩個搞混或以為只要一個。它們分工不同、最好一起用。",
+          "<b>Prettier</b>：管「長相」——縮排、引號、分號、換行，存檔自動排整齊，讓全隊 code 風格一致，不用再為「單引號還雙引號」吵架。",
+          "<b>ESLint</b>：管「品質」——抓可能的 bug 和壞習慣（宣告了沒用的變數、可能是 undefined、危險寫法），有些還能 <code>--fix</code> 自動修。",
+          "⚠️ 兩個都碰排版時會打架（互相把對方改回去）。標準解是讓 <b>Prettier 管格式、ESLint 只管邏輯</b>（用 <code>eslint-config-prettier</code> 關掉 ESLint 的排版規則）。設定檔記得進 git，隊友才會一致。",
+        ),
+      },
+      {
+        title: "EditorConfig：連沒裝外掛的人也能統一縮排",
+        content: P(
+          "隊裡有人用 Tab、有人用空白，有人檔案結尾沒換行，diff 一片亂。<code>.editorconfig</code> 是最底層的解法。",
+          "在專案根放一個 <code>.editorconfig</code>，寫好「用空白、縮排 2、結尾留一個換行、去掉行尾空白」，<b>大多數編輯器原生支援或裝一下就吃</b>，不分 VS Code 還是別的。",
+          "它跟 Prettier 不衝突、是互補：EditorConfig 管你「打字當下」的基本行為，Prettier 管「存檔時」的完整排版。",
+          "⚠️ 這是最容易被跳過、卻最省事的一個檔。沒有它，光是 <b>Tab vs 空白、CRLF vs LF</b> 就能讓 PR 出現一堆「其實沒改什麼」的雜訊 diff，review 的人白費眼力。新專案順手加。",
+        ),
+      },
+      {
+        title: "source map：壓縮後的 code 怎麼還能 debug",
+        content: P(
+          "上線的 JS 都被壓成一行亂碼，出錯時 console 說「錯在第 1 行第 88293 個字」——完全沒用。source map 就是來救這個的。",
+          "它是一張「對照表」，把壓縮後的位置<b>映射回你原本好讀的原始碼</b>行號。瀏覽器 DevTools 有它，就能顯示「其實是 <code>Cart.tsx</code> 第 42 行」。",
+          "打包工具（Vite、webpack）都能產 source map，DevTools 自動抓來用，你 debug 時看到的是原始碼不是亂碼。",
+          "⚠️ 別把「含原始碼內容」的 source map 公開部署到正式站——等於把你的原始碼攤給所有人看。要嘛正式環境不出、要嘛只上傳到錯誤監控服務（Sentry 那種）私下對照。",
+        ),
+      },
+      {
+        title: "HTTP 快取標頭：瀏覽器為什麼記住舊檔",
+        content: P(
+          "「我明明重新部署了、使用者卻還是看到舊版」——很多時候是 HTTP 快取標頭在作怪，值得懂原理。",
+          "伺服器回檔案時會附標頭告訴瀏覽器「這個可以存多久」：<code>Cache-Control: max-age=31536000</code> 就是「放一年別再問我」。<code>ETag</code> 則像檔案的指紋，瀏覽器拿它問「變了沒」，沒變伺服器回 304、省下重傳。",
+          "現代做法：HTML 設「不快取或短快取」、JS/CSS/圖這種靜態檔設「快取超久」但<b>檔名帶 hash</b>（<code>app.a1b2c3.js</code>）——內容一變檔名就變，自然抓新的。",
+          "⚠️ 把 HTML 也設成長快取是災難——使用者會一直卡在舊版、還抓不到新檔名。原則記牢：<b>會變的別快取、不變的（帶 hash 的）狠狠快取</b>。",
+        ),
+      },
+      {
+        title: "DNS 紀錄 A / CNAME：網域怎麼指到你的站",
+        content: P(
+          "買了網域要讓它指到你的網站，就要設 DNS 紀錄。剛開始被 A、CNAME 這些搞混，其實對照一下就懂。",
+          "<b>A 紀錄</b>：把網域直接指到一個 <b>IP 位址</b>（<code>example.com → 1.2.3.4</code>）。<b>CNAME</b>：把網域指到<b>另一個網域名</b>（<code>www → example.com</code> 或指到平台給的網址），像「改名轉寄」。",
+          "常見設法：主網域用 A 指 IP、<code>www</code> 用 CNAME 指主網域；用 Vercel/Zeabur 這類平台則多半照它給的 CNAME 設。",
+          "⚠️ 兩個坑：一是 DNS 改了<b>不會馬上生效</b>，有 TTL 快取，可能等幾分鐘到幾小時，別以為沒設好一直重弄。二是<b>根網域（裸網域）通常不能用 CNAME</b>，要用 A 或平台的 ALIAS/ANAME。",
+        ),
+      },
+      {
+        title: "SSL 憑證與 Let's Encrypt：免費把網站變 https",
+        content: P(
+          "以前裝憑證要花錢又麻煩，現在 Let's Encrypt 免費、還能自動續，https 已經沒有藉口不做。",
+          "憑證的作用：<b>加密</b>（別人攔不到你和使用者之間的資料）+ <b>證明身分</b>（這真的是你的站，瀏覽器才不標「不安全」）。",
+          "現在多數平台（Vercel、Zeabur、Cloudflare）幫你<b>全自動</b>申請和續期，你只要把網域設好就有 https。自架伺服器可用 <code>certbot</code> 一鍵搞定。",
+          "⚠️ Let's Encrypt 憑證<b>90 天就到期</b>，一定要設自動續期。我看過站台憑證過期整個掛掉、瀏覽器紅色警告嚇跑使用者——自動續好、順便設個到期監控。",
+        ),
+      },
+      {
+        title: "反向代理：nginx 站在你的服務前面幹嘛",
+        content: P(
+          "自己架站常聽到「用 nginx 做反向代理」，反向代理到底在做什麼？其實就是個「門口櫃檯」。",
+          "使用者不直接碰你的 node 程式，而是先到 nginx，nginx 再<b>轉發</b>給後面真正的服務。像大樓櫃檯：訪客先到櫃檯，櫃檯再幫你轉到正確樓層。",
+          "櫃檯順便做很多雜事：<b>掛 https 憑證</b>、把 <code>80/443</code> 導到你程式的 <code>3000</code>、發靜態檔、把流量分給多台後端（負載平衡）、擋一點壞流量。",
+          "⚠️ 很多「本機好好的、上正式 502/404」都出在反向代理設定：轉發的 port 打錯、路徑沒對上、或程式根本沒起來。查問題先看 <b>nginx 的 error log</b>，再確認後面的服務真的在跑。",
+        ),
+      },
+      {
+        title: "防火牆與 port：只開該開的門",
+        content: P(
+          "架了台伺服器，防火牆決定「外面能連進哪些 port」。設錯不是連不上、就是門戶大開。",
+          "把伺服器想成一棟樓，每個 port 是一扇門。防火牆是保全，決定哪些門對外開。網站通常只需要開 <code>80</code>（http）、<code>443</code>（https），還有給你自己連的 <code>22</code>（SSH）。",
+          "其他像資料庫的 <code>5432</code>、你程式的 <code>3000</code>，應該<b>只開給內部</b>、不對公開網路開。",
+          "⚠️ 最常見的災難：把<b>資料庫 port 對全世界開、還用預設密碼</b>——幾小時內就會被掃到、資料被偷或被勒索。原則是「預設全關、只開必要的、來源能限制就限制」。雲平台的 security group 也是同一回事。",
+        ),
+      },
+      {
+        title: "Docker 基礎：把環境打包成一個箱子",
+        content: P(
+          "「我這台跑得動、你那台跑不動」的環境地獄，Docker 就是來終結它的。概念其實不難。",
+          "把 Docker 想成<b>貨櫃</b>：你的程式、它需要的 Node 版本、系統套件、設定，全裝進一個標準箱子（image）。搬到任何有 Docker 的機器，箱子一開、跑起來都一樣。",
+          "三個詞：<b>Dockerfile</b>（怎麼組箱子的食譜）→ build 成 <b>image</b>（打包好的箱子）→ run 起來變 <b>container</b>（正在跑的實例）。",
+          "⚠️ 新手常把 image 弄到超肥（幾 GB）——因為 base image 選太大、又把 <code>node_modules</code> 和一堆沒用的東西都塞進去。用小的 base（<code>-alpine</code>）、寫 <code>.dockerignore</code> 排掉 <code>node_modules</code>/<code>.git</code>、善用多階段 build，箱子才輕。",
+        ),
+      },
+      {
+        title: "密鑰輪替：金鑰要定期換，不是設一次就好",
+        content: P(
+          "很多人金鑰、密碼設好就放十年，這其實很危險。輪替（rotation）＝定期換掉，是重要的自保習慣。",
+          "道理跟門鎖一樣：就算沒被偷過，用久了外流風險累積（進過 log、給過廠商、離職員工看過）。定期換一把新的，舊的失效，把風險歸零。",
+          "怎麼做順一點：金鑰別寫死在 code、集中放<b>環境變數或密鑰管理服務</b>，換的時候改一個地方就好，不用翻遍程式。",
+          "⚠️ 最該立刻輪替的時機：<b>金鑰不小心進了 git / 貼到聊天室 / 出現在截圖</b>——即使馬上刪掉，也要當它已外洩、<b>立刻換新的</b>。git 歷史刪不乾淨，舊金鑰還在那躺著等人挖。",
+        ),
+      },
+      {
+        title: "密碼熵：為什麼「短又亂」不如「長」",
+        content: P(
+          "大家都以為密碼要「有大小寫數字符號」才安全，其實真正決定強度的是<b>熵</b>——白話說就是「要猜多少種可能」。",
+          "熵越高越難暴力破解，而拉高熵最有效的是<b>長度</b>，不是硬塞奇怪符號。<code>Tr0ub4dor&3</code> 這種又難記又其實不夠強；四個隨機單字 <code>correct horse battery staple</code> 又長又好記、熵反而更高。",
+          "所以現代建議：<b>用密碼片語（passphrase）或密碼管理器產的長隨機字串</b>，把長度堆上去。",
+          "⚠️ 熵只算「隨機性」——你拿生日、寵物名、<code>P@ssw0rd</code> 這種可猜的東西，再長也沒用，因為攻擊者先猜這些。真正安全＝<b>夠長 + 真的隨機 + 每站不同</b>，這三個一起才成立。",
+        ),
+      },
+      {
+        title: "HTTPS 到處都要用：不是只有登入頁",
+        content: P(
+          "以前很多人覺得「只有登入、付款頁才需要 https，看看內容的頁面 http 就好」——現在這觀念過時且危險。",
+          "沒加密的 http，中間任何一站（公共 Wifi、電信商、路由器）都能<b>看光你傳的東西、甚至偷改</b>（塞廣告、注入惡意腳本）。不只是偷密碼的問題。",
+          "現在的共識是 <b>HTTPS Everywhere</b>：全站一律 https。憑證免費（Let's Encrypt）、平台自動裝，成本幾乎是零。",
+          "⚠️ 常見的坑是<b>混合內容（mixed content）</b>：頁面是 https、卻還載入一張 http 的圖或 script，瀏覽器會擋掉或警告、東西壞掉。全站資源都要用 https（或用不指定協定的相對路徑）。",
+        ),
+      },
+      {
+        title: "釣魚辨識：那封「快來驗證帳號」的信",
+        content: P(
+          "工程師帳號（GitHub、雲平台）被盜，很多不是被硬破解，是<b>自己被騙著把密碼交出去</b>——這就是釣魚。",
+          "手法：一封長得跟官方一模一樣的信/訊息，用「帳號異常、限時、要驗證」製造緊張，連結點過去是<b>假的登入頁</b>，你一輸入帳密就送到壞人手上。",
+          "破解招數就一個：<b>永遠自己手動打官網網址進去</b>，不要點信裡的連結。順便看寄件網域對不對、網址是不是差一個字母（<code>g1thub.com</code>）。",
+          "⚠️ 最容易上鉤的時刻是「你正在急、正在等某個通知」時。開了 2FA 也別鬆懈——進階釣魚會連你的 2FA 驗證碼一起騙。慢一秒、用書籤或自己打網址，就躲掉九成。",
+        ),
+      },
+      {
+        title: "npm audit：一鍵掃出依賴裡的已知漏洞",
+        content: P(
+          "你的專案裝了幾百個套件，其中某個舊版可能有已知安全漏洞你根本不知道。<code>npm audit</code> 幫你掃。",
+          "跑 <code>npm audit</code> 會列出「哪個套件的哪個版本有什麼等級的漏洞、建議升到哪版」。CI 裡加一步，有高危漏洞就擋下來。",
+          "多數能自動修：<code>npm audit fix</code> 會在<b>不破壞相容</b>的範圍內幫你升級。修不動的通常是要跨大版本、得手動處理。",
+          "⚠️ 別看到一堆警告就狂按 <code>npm audit fix --force</code>——<code>--force</code> 會裝進破壞性的大版本升級，很可能<b>直接把你專案弄壞</b>。先看嚴重度，很多「漏洞」其實在你的用法下根本觸發不到，別被數字嚇到亂升。",
+        ),
+      },
+      {
+        title: "供應鏈安全：你信的不只你自己的 code",
+        content: P(
+          "你 <code>npm install</code> 一個套件，其實是把「那個作者、以及他依賴的所有作者」的程式，全請進你的專案裡跑——這就是供應鏈風險。",
+          "出過真實事故：熱門套件被駭客或不爽的作者<b>植入惡意程式</b>，或用相近名字騙你裝錯（typosquatting，如 <code>croos-env</code> 假冒 <code>cross-env</code>）。一裝就中招。",
+          "自保：裝之前看一下這套件（下載量、維護狀況、名字有沒有拼對）；<b>commit lockfile</b> 鎖死版本、別讓它偷偷升級；定期 <code>npm audit</code>；CI 用鎖定安裝 <code>npm ci</code>。",
+          "⚠️ 最危險的一句話是「反正大家都在用」。用得多不代表不會出事——愛用的套件被入侵，波及範圍反而最大。能自己幾行寫的小功能，別為它請一整包陌生依賴進門。",
+        ),
+      },
+      {
+        title: "changelog：升級前先讀「這版改了什麼」",
+        content: P(
+          "我以前升級套件都直接升、然後東西壞了才回頭查。後來養成習慣：升級前先讀 changelog，省超多時間。",
+          "changelog 就是套件作者寫的「每版做了什麼」清單，重點看 <b>Breaking Changes</b>（破壞性改動）和 <b>Migration Guide</b>（升級指南）——那裡會講「哪個 API 改名了、你要跟著改什麼」。",
+          "通常在 repo 的 <code>CHANGELOG.md</code>、GitHub Releases 頁、或官方 blog。配合 semver 看：跳大版本（major）就一定要讀。",
+          "⚠️ 「一次升好幾個大版本」最痛——中間每一版的破壞性改動疊在一起，壞了都不知道是哪個害的。要嘛<b>一版一版升、每步都測</b>，要嘛升前把相關 changelog 都掃過再動手。",
+        ),
+      },
+      {
+        title: "處理 deprecation：看到「已棄用」警告別當沒看到",
+        content: P(
+          "console 或安裝時常跳 <code>deprecated</code>（已棄用）警告，很多人習慣性無視——這其實是作者在<b>提前通知你</b>，善待它未來會少很多痛。",
+          "deprecated 的意思是「這東西還能用，但已經不建議、未來某版會拿掉」。它通常會告訴你<b>該改用什麼替代</b>。",
+          "正確態度：不用當下慌張全改，但<b>記下來、排進待辦</b>，趁還相容時從容遷移。等它哪天真的被移除，你就是被迫在壓力下緊急處理。",
+          "⚠️ 最坑的是「棄用警告積了一兩年沒理」，某次大升級一次全爆、你面對一堆同時失效的舊 API。棄用警告是<b>免費的預警</b>——小步跟上，別欠這種債。",
+        ),
+      },
+      {
+        title: "向後相容：改東西別讓舊的人碎掉",
+        content: P(
+          "當你的 API/函式/套件<b>有別人在用</b>，改它就要顧「向後相容」——白話說：舊的用法不要突然壞掉。",
+          "比喻：你家餐廳把招牌菜換了名字沒公告，老客人照舊菜名點餐就撲空。程式也一樣——別人依賴你原本的參數、回傳格式、網址，你一改他就爆。",
+          "相容的改法：<b>加</b>新的（新參數給預設值、新欄位）而不是<b>改/刪</b>舊的；真要淘汰，先標 deprecated、給過渡期、再於<b>大版本（major）</b>才移除，並寫進 changelog。",
+          "⚠️ 「這欄位應該沒人用吧」是最危險的猜測——你看不到所有用你東西的人。有疑慮就當有人在用，走「先加不刪、破壞性留給 major」這條穩路。",
+        ),
+      },
+      {
+        title: "時區處理：存時間的血淚教訓",
+        content: P(
+          "時間相關的 bug 特別陰險，因為在你電腦（同一時區）測都對，換個時區的使用者就錯亂。這坑我踩過不只一次。",
+          "鐵則：<b>資料庫和後端一律存 UTC</b>（世界統一時間），只在「顯示給使用者看」的最後一刻，才轉成他當地的時區。像所有帳目先用同一種貨幣記、要給客人看才換算。",
+          "存的時候帶時區資訊（用 <code>timestamptz</code>、ISO 8601 的 <code>2026-07-08T10:00:00Z</code>），別存一個沒說是哪個時區的「裸時間」。",
+          "⚠️ 幾個經典雷：夏令時間（DST）一年會有一小時重複/消失；<b>「日期」跟「時間點」不一樣</b>（生日、國定假日是純日期，別硬塞時區反而算錯一天）；還有月份從 0 開始（JS）害你差一個月。時間邏輯多、就用成熟的日期函式庫，別自己硬算。",
+        ),
+      },
+      {
+        title: "Unicode 與 emoji：一個字元不一定是一個字",
+        content: P(
+          "以前我以為「字串長度 = 字數」，直到處理 emoji 和中文才發現沒那麼單純，還因此切壞過字。",
+          "電腦裡文字用 Unicode 編號，但「一個你看到的字」可能由<b>好幾個編碼單位</b>組成。很多 emoji（尤其膚色、國旗、家庭那種）是好幾個碼點用「連接符」黏起來的一坨。",
+          "後果：<code>\"👨‍👩‍👧\".length</code> 在 JS 可能是 8 不是 1；你用「取前 10 個字元」截字串，很可能<b>從一個 emoji 中間切開</b>，變成亂碼方框。",
+          "⚠️ 要「按人眼看到的字」處理，別用最原始的長度/索引硬切。用語言提供的字素分割（JS 的 <code>Intl.Segmenter</code>）或現成函式庫。還有——DB 存 emoji 要用 <b>utf8mb4</b>，用舊的 utf8 會存不進去或變亂碼。",
+        ),
+      },
+      {
+        title: "CRLF vs LF：換行符號害的跨平台 diff 地獄",
+        content: P(
+          "有次我拉了隊友的 code，git 顯示「整個檔都改了」但明明沒動幾行——元兇是換行符號。",
+          "看不見的換行字元有兩派：<b>Windows 用 CRLF</b>（<code>\\r\\n</code>）、<b>Mac/Linux 用 LF</b>（<code>\\n</code>）。同一個檔在不同系統存，換行全變、git 就以為每行都改過。",
+          "解法：專案根放 <code>.gitattributes</code> 寫 <code>* text=auto eol=lf</code>，強制倉庫裡統一存 LF；再配 <code>.editorconfig</code> 讓編輯器也乖乖用 LF。",
+          "⚠️ 這種「假 diff」會把 PR 淹沒、code review 完全沒法看、還可能引發假衝突。而且 <code>.sh</code> 腳本若被存成 CRLF，在 Linux 會<b>直接跑不起來</b>（報奇怪的 <code>\\r</code> 錯誤）。新專案第一天就把 <code>.gitattributes</code> 設好。",
+        ),
+      },
+      {
+        title: "Tab vs 空白：這場聖戰你只要記一條",
+        content: P(
+          "縮排用 Tab 還是空白，工程師吵了幾十年。與其選邊站，你只要記住真正重要的那條原則。",
+          "<b>整個專案一致</b>比選哪個重要一百倍。混用是災難——你的 Tab 在別人編輯器顯示成 8 格、他的空白顯示成 2 格，同一段 code 縮排看起來忽寬忽窄、亂成一團。",
+          "怎麼一致：交給工具、別靠自律。用 <code>.editorconfig</code> + Prettier 定好規則，存檔自動統一，誰打什麼都會被轉成專案標準。",
+          "⚠️ 有個例外要知道：<b>Python 和 Makefile 對縮排是認真的</b>——Python 混用 Tab 和空白會直接語法錯誤、Makefile 規則<b>必須用 Tab</b>。這兩個場合別亂來。其他語言則是「一致就好、別開戰」。",
+        ),
+      },
+      {
+        title: "魔法數字：程式裡憑空出現的 86400 是什麼",
+        content: P(
+          "讀到別人 code 裡突然冒出 <code>if (x > 86400)</code>、<code>* 0.07</code> 這種沒頭沒尾的數字，完全不知道在幹嘛——這就是魔法數字（magic number）。",
+          "問題是它<b>沒有名字、沒有解釋</b>：86400 是一天的秒數？0.07 是稅率還是手續費？三個月後連寫的人都忘了，改動時還可能有好幾處要一起改、漏一個就出錯。",
+          "解法很簡單：<b>給它一個有意義的常數名</b>。<code>const SECONDS_PER_DAY = 86400;</code>、<code>const TAX_RATE = 0.07;</code>——名字本身就是註解，改也只改一處。",
+          "⚠️ 不是每個數字都要抽——<code>i + 1</code>、<code>* 2</code> 這種語意自明的別過度包裝。判準是：<b>「這個數字代表什麼」不看上下文說不出來，就該給它名字</b>。",
+        ),
+      },
+      {
+        title: "DRY 與 YAGNI：別重複，但也別想太多",
+        content: P(
+          "這兩句是我覺得最實用的寫 code 原則，而且它們剛好互相拉住對方、避免走極端。",
+          "<b>DRY</b>（Don't Repeat Yourself）：同一段邏輯複製貼上三個地方，之後改就要改三處、還會漏。重複的東西抽成一個函式/常數，改一處就好。",
+          "<b>YAGNI</b>（You Aren't Gonna Need It）：別為了「以後搞不好會用到」現在就寫一堆用不上的彈性和抽象。多數「以後」根本不會來，那些提前寫的複雜反而變包袱。",
+          "⚠️ 兩者要平衡：太追 DRY 會<b>過度抽象</b>（把其實只是「剛好長得像」的兩段硬湊成一個，之後需求一分岔就綁死）。務實準則：<b>重複第三次</b>再抽、抽的是「真的同一件事」而不只是「看起來像」。",
+        ),
+      },
+      {
+        title: "童子軍原則：離開時比來的時候乾淨一點",
+        content: P(
+          "童子軍有句話：離開營地時，讓它比你來的時候更乾淨一點。套到寫 code 上，是我覺得最能對抗技術債的習慣。",
+          "意思是：你為了改 bug、加功能而<b>經過</b>某段 code 時，順手做一點小清理——改個爛名字、補一句註解、拆掉一段太長的、刪掉沒用的死 code。",
+          "威力在<b>複利</b>：不用專門排「大重構」（那種往往永遠排不到），靠每次經過的一點點小改善，codebase 會慢慢變好而不是慢慢爛掉。",
+          "⚠️ 關鍵是<b>「順手、小範圍」</b>。別在修一個小 bug 的 PR 裡順便重構半個模組——那會讓 review 的人分不清「哪些是修 bug、哪些是整理」，也容易夾帶新 bug。清理要小、要跟主要改動分得清。",
+        ),
+      },
+      {
+        title: "小黃鴨除錯法：講給一隻鴨子聽",
+        content: P(
+          "卡關卡到懷疑人生時，最有效的一招不是 Google，是<b>把問題從頭到尾講一遍給一隻塑膠鴨聽</b>——我第一次聽也覺得很蠢，用了才知道真的有效。",
+          "原理是：當你被迫「一行一行、一步一步用嘴巴解釋」你的程式在幹嘛、你以為它會怎樣，你的大腦會<b>從「快速掃過」切換成「認真檢查」</b>，那個你自動略過的假設常常就在講的過程中露餡。",
+          "不用真的有鴨——對著同事、對著空氣、寫進一份文件、打字問 AI，效果一樣。很多人打到問題一半自己就「啊我知道了」然後把訊息刪掉。",
+          "⚠️ 重點是<b>真的逐步、具體地講</b>，不是含糊地想「應該是哪裡怪怪的」。把「這行我預期 x 是 5」這種明確假設講出來，才會撞到「可是它其實是 undefined」的真相。",
+        ),
+      },
+      {
+        title: "番茄鐘：25 分鐘專心，別再邊寫邊滑手機",
+        content: P(
+          "寫 code 最怕的不是難，是<b>一直被打斷、心一直飄</b>。番茄鐘是我用過最簡單有效的專注法。",
+          "做法：設 <b>25 分鐘</b>只做一件事、其他通知全關；時間到<b>休息 5 分鐘</b>（真的離開螢幕）；每四輪休長一點。就這樣。",
+          "為什麼有用：25 分鐘短到「再撐一下就好」不會抗拒開始；而且它逼你<b>一次只做一件事</b>，切斷「寫兩行就去看訊息」的碎片化——那是效率最大的殺手。",
+          "⚠️ 別把休息拿去滑社群媒體——那只會把注意力扯更散、回不來。休息就是<b>離開螢幕</b>（站起來、喝水、看遠方）。也別為了「湊完一顆番茄」而在已經卡死時硬撐，卡住時休息一下換腦袋反而快。",
+        ),
+      },
+      {
+        title: "做筆記與間隔複習：學過的別讓它漏光",
+        content: P(
+          "學程式最挫折的不是學不會，是「上週明明查過、這週又忘光重查一次」。這是因為沒有把它<b>留下來</b>。",
+          "<b>用自己的話記</b>：查到解法別只收藏連結，寫一兩句「我遇到什麼問題、怎麼解的、為什麼」。用自己的話重述一遍，記憶會深很多，之後也搜得到。",
+          "<b>間隔複習</b>：記憶會隨時間衰退，但在快忘記時<b>再看一次</b>就能大幅拉長保存。所以隔幾天、隔一週回頭翻自己的筆記，比一次狂讀有用得多。",
+          "⚠️ 別做成「抄一堆卻從不回看」的收藏家——收藏 100 篇文章 ≠ 學會。筆記的價值在<b>「未來的你會回來查、而且看得懂」</b>。記得簡短、可搜尋、寫下「為什麼」，比記一堆語法有用。",
+        ),
+      },
+      {
+        title: "冒牌者症候群：覺得自己是不是在混，其實大家都這樣",
+        content: P(
+          "「我是不是根本不會、只是運氣好還沒被發現？」——如果你有過這種念頭，先跟你說：這叫冒牌者症候群，而且<b>越認真的人越常有</b>。",
+          "為什麼會這樣：這行永遠有你不會的東西、你只看到別人「已經會」的成果、卻拿它跟自己「正在掙扎」的過程比。這比較本身就不公平。",
+          "怎麼緩解：<b>記錄你的成長</b>——翻翻三個月前的 code，你會發現進步很多。把「我不會這個」改成「我還沒學這個」。而且，會 Google、會查、會問，本來就是這行的正常工作方式，不是弱點。",
+          "⚠️ 別讓這種感覺害你<b>不敢問、不敢承接、不敢秀作品</b>——那才是真的擋住成長。連做很久的資深工程師都天天在查東西、在覺得自己不夠懂。你不孤單，繼續做就對了。",
+        ),
+      },
+      {
+        title: "什麼時候該求助：卡多久算太久",
+        content: P(
+          "新手常有兩個極端：一種卡 5 分鐘就狂問、一種硬撐三天不肯開口。兩個都不好，中間有個甜蜜點。",
+          "我的原則是<b>「15 分鐘規則」的變形</b>：卡住先自己認真試——讀錯誤、搜尋、看文件、拆小重現。如果<b>試了一段時間（比如 30 分鐘到一小時）完全沒進展、也想不出新方向</b>，就該問了。",
+          "問之前先「把卡點整理清楚」：你想做什麼、試了哪些、完整錯誤是什麼。這個整理過程本身常常讓你自己找到答案；就算沒有，對方也能秒懂、秒回。",
+          "⚠️ 「怕被覺得笨所以不問」害你浪費一整天、還可能走歪；「什麼都不查直接問」則讓人不想幫你、你也學不會查。健康的做法是<b>先誠實嘗試、卡到沒方向就帶著整理好的資訊求助</b>——這是能力，不是丟臉。",
+        ),
+      },
+      {
+        title: "怎麼開始一個新專案：別急著寫第一行 code",
+        content: P(
+          "開新專案最讓人卡的往往是「第一步」。我的經驗是：別急著開編輯器狂敲，先花十分鐘想清楚幾件事。",
+          "先問<b>「最小能動的版本是什麼」</b>：不是想像最終功能全開的樣子，而是「一個小到不可能失敗、但看得到結果」的起點（畫面能顯示一行字、按鈕能印出 log）。先讓它動，再長大。",
+          "起手式：建資料夾、<code>git init</code>、開 README 寫一句「這要做什麼」、設好 <code>.gitignore</code>，用框架的 <code>create</code> 指令生鷹架、跑起來確認能開，<b>第一個 commit</b> 存下這個乾淨起點。",
+          "⚠️ 兩個新手陷阱：一是<b>過度規劃</b>——還沒寫就先設計十張資料表、選一堆之後用不到的技術；二是<b>過度追新</b>——為了學而硬塞最潮的框架，結果卡在工具而不是做事。先小、先動、先能跑，再迭代。",
+        ),
+      },
+      {
+        title: "備份你的程式與資料：3-2-1 原則",
+        content: P(
+          "「等出事才後悔沒備份」是這行的通用悲劇。硬碟會壞、手滑會刪、勒索軟體會鎖——備份不是選配。",
+          "程式碼的備份靠 <b>git + 推到遠端</b>（GitHub/GitLab）就有一份異地副本；但別忘了 <b>git 不管的東西</b>——資料庫、使用者上傳的檔案、<code>.env</code> 設定，這些才是真的救不回的。",
+          "老經驗是 <b>3-2-1 原則</b>：至少 <b>3</b> 份、放 <b>2</b> 種不同媒介、其中 <b>1</b> 份異地（雲端/離線）。重要資料庫設<b>自動定期備份</b>，別靠手動。",
+          "⚠️ 最狠的一句話：<b>「沒還原測試過的備份，等於沒備份」</b>。我看過備份跑了兩年、真的要用時發現全是壞檔或根本沒包到關鍵資料。定期<b>真的把備份還原一次</b>驗證，才叫有備份。",
+        ),
+      },
+      {
+        title: "當機/當掉先看什麼：別急著亂改",
+        content: P(
+          "服務掛了、頁面白了、程式沒反應——越慌越容易亂改把事情弄更糟。我的第一動作永遠是<b>先看，不是先改</b>。",
+          "第一步<b>讀 log</b>：伺服器 log、瀏覽器 console、部署平台的 log——錯誤訊息通常直接告訴你哪裡爆、哪一行。這一步能省掉九成瞎猜。",
+          "接著問<b>「剛剛改了什麼」</b>：剛部署？剛升級套件？剛改設定？最近一次變動幾乎都是頭號嫌犯（<code>git log</code> 看、必要時先 revert 回上一個好版本止血）。再排除環境因素：硬碟滿了？記憶體爆了？外部服務掛了？",
+          "⚠️ 生產環境出事，<b>先止血、再找根因</b>——先回滾到能動的版本讓使用者可用，別在正式站上邊燒邊實驗。也別「重開機看看好了就算了」——沒找到根因，它一定會再來一次，下次可能更難搞。",
+        ),
+      },
+      {
+        title: "學習資源怎麼篩：不是收藏越多越強",
+        content: P(
+          "剛入門時我拚命囤教學、收藏一堆「必看清單」，結果看不完、也記不住。後來才學會<b>篩</b>比囤重要。",
+          "篩的第一關是<b>看日期</b>：這行變很快，一篇 2018 年的框架教學可能整個過時、照做只會踩一堆已被修掉的坑。優先看<b>官方文件</b>和近一兩年、對得上你版本的資源。",
+          "第二關是<b>對準你現在的目標</b>：你正在做的事需要什麼就學什麼，別被「這個好像很重要」牽著到處開分頁。一次跟完<b>一個</b>好資源，勝過同時開五個都半途而廢。",
+          "⚠️ 別掉進「收藏 = 學會」的錯覺——躺在書籤裡沒看的教學，價值是零。也別追「最完整的終極教學」遲遲不開始。挑一個夠新、對得上目標的，<b>邊做邊學</b>，缺什麼再回頭補，比先囤一堆有用得多。",
+        ),
+      },
       {
         title: "終端機不可怕：先會這幾個就能出發",
         content: P(
