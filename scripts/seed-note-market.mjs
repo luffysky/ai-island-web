@@ -423,6 +423,123 @@ const PACKS = [
           "⚠️ 能用鍵盤 Tab 走完整個流程嗎？試一次，很多互動元件會卡在這關。",
         ),
       },
+      {
+        title: "CSS 選擇器與優先級：為什麼我的樣式沒生效",
+        content: P(
+          "「明明寫了樣式卻沒變」十之八九是<b>優先級（specificity）</b>被別的規則壓過去了。",
+          "由弱到強大致：標籤(<code>div</code>) < class(<code>.box</code>) < id(<code>#main</code>) < 行內 style < <code>!important</code>。越具體的贏。",
+          "同分時「後面寫的」贏，所以引入 CSS 的順序也有影響。",
+          "查法：DevTools 的 Styles 面板會把「被劃掉的規則」顯示出來，一眼看出誰蓋掉誰。",
+          "⚠️ 別動不動用 <code>!important</code> 硬蓋——它會讓之後更難覆蓋、越滾越亂。先想能不能用更精準的選擇器。",
+        ),
+      },
+      {
+        title: "CSS 單位：px / rem / em / % / vw vh 怎麼選",
+        content: P(
+          "單位選錯，RWD 跟無障礙都會出問題。給我自己的原則：",
+          "<code>px</code>：固定死值（邊框 1px、小圓角）。<code>rem</code>：相對「網頁根字級」，字體、間距用它，使用者調大字級時整體會跟著放大（對無障礙友善）。",
+          "<code>em</code>：相對「自己的字級」，做「跟著文字比例縮放」的元件好用，但巢狀會層層相乘、容易亂。",
+          "<code>%</code>：相對父元素（寬度常用）。<code>vw</code>/<code>vh</code>：螢幕寬/高的百分比（滿版區塊、hero 高度）。",
+          "⚠️ 字體別用 px 寫死——用 rem，使用者放大字級才有效。",
+        ),
+      },
+      {
+        title: "CSS 變數與深色模式：一處改、全站變",
+        content: P(
+          "CSS 變數（custom properties）讓你把顏色、間距集中管理，改一個地方全站跟著變。",
+          "定義在 <code>:root{ --accent: #22c55e; }</code>，用的時候 <code>color: var(--accent);</code>。",
+          "深色模式超好做：在 <code>@media (prefers-color-scheme: dark)</code> 或某個 <code>[data-theme=\"dark\"]</code> 底下，把同一組變數換值，畫面整套就變了、不用改每個元件。",
+          "⚠️ 顏色別散落在各元件寫死；集中成變數，改主題、調品牌色才不會漏東漏西。",
+        ),
+      },
+      {
+        title: "transition 與 animation：讓介面順順地動",
+        content: P(
+          "介面「瞬間跳」很生硬，加一點過渡就質感大升。",
+          "<code>transition</code>：狀態改變時「補間」。<code>button{ transition: all .2s; }</code>，之後 hover 變色/放大就會平滑過去。",
+          "<code>@keyframes</code> + <code>animation</code>：自訂多階段動畫（loading 轉圈、淡入）。",
+          "只動 <code>transform</code>（位移/縮放）和 <code>opacity</code> 最順——它們不會觸發重新排版，效能好。",
+          "⚠️ 動畫別太久太多，會拖慢感受、也可能讓人不舒服。尊重 <code>prefers-reduced-motion</code>（有人會暈）。",
+        ),
+      },
+      {
+        title: "z-index 與堆疊脈絡：彈窗被蓋住怎麼辦",
+        content: P(
+          "「我 z-index 設 9999 了怎麼還是被蓋住」是經典坑。",
+          "關鍵：z-index 只在「同一個堆疊脈絡（stacking context）」裡比大小。父層一旦有 <code>transform</code>、<code>opacity < 1</code>、<code>position + z-index</code> 等，就會開一個新脈絡，子元素的 z-index 再大也跳不出這個父層的層級。",
+          "所以彈窗/下拉常見解法：把它<b>放到 body 底下</b>（portal）、脫離會限制它的父層。",
+          "⚠️ z-index 要生效，元素通常得有 <code>position</code>（relative/absolute/fixed）。狂加大數字沒用時，先看是不是卡在某個父層的脈絡裡。",
+        ),
+      },
+      {
+        title: "表單：受控元件與基本驗證",
+        content: P(
+          "表單是前端最常做、也最多細節的地方。",
+          "受控元件（React）：input 的值綁 state、<code>onChange</code> 更新——這樣「畫面的值」永遠等於「你資料裡的值」，好驗證好送出。",
+          "先用瀏覽器內建驗證省力：<code>required</code>、<code>type=\"email\"</code>、<code>minlength</code>，再補程式邏輯驗證。",
+          "送出一定要 <code>e.preventDefault()</code>（不然頁面會整個重整）；送出中把按鈕 disable、避免連點兩次送兩筆。",
+          "⚠️ 前端驗證只是體驗好——後端一定要再驗一次，前端的檢查使用者繞得過。",
+        ),
+      },
+      {
+        title: "this 是什麼：箭頭函式差在哪",
+        content: P(
+          "JS 的 <code>this</code> 讓很多人抓狂，因為它「看你怎麼呼叫」而不是「在哪定義」。",
+          "一般函式：<code>this</code> 取決於呼叫方式，當 callback 傳出去常常就「丟失」變成 undefined。",
+          "箭頭函式：<b>沒有自己的 this</b>，會沿用外層的——所以 callback、event handler 用箭頭函式最省事，不會突然拿到奇怪的 this。",
+          "React 元件裡幾乎都用箭頭函式，就是為了少踩這個坑。",
+          "⚠️ 物件的「方法」如果用箭頭函式定義，this 不會指向那個物件——需要指向自己的方法用一般函式寫。",
+        ),
+      },
+      {
+        title: "模組 import / export：前端怎麼拆檔",
+        content: P(
+          "現代前端（ES Modules）跟 Python 的 import 概念很像，一個檔匯出、另一個匯入。",
+          "具名匯出：<code>export function add(){}</code> → <code>import { add } from './utils'</code>（名字要對）。",
+          "預設匯出：<code>export default Button</code> → <code>import Button from './Button'</code>（名字自己取）。",
+          "一個檔一個預設匯出、其餘用具名；路徑相對用 <code>./</code>、<code>../</code>。",
+          "⚠️ 具名匯入的大括號別漏、名字要一模一樣；預設匯入不用大括號。搞混這兩個是最常見的 import 錯誤。",
+        ),
+      },
+      {
+        title: "圖片與效能：別讓大圖拖垮頁面",
+        content: P(
+          "圖片常是頁面最肥的東西，幾招就能快很多。",
+          "尺寸別亂塞：需要 400px 寬就別放 4000px 原圖，先壓縮/裁切。用對格式（照片 jpg/webp、圖示 svg）。",
+          "延遲載入：<code>&lt;img loading=\"lazy\"&gt;</code>，畫面外的圖等捲到再載。",
+          "給 <code>width</code>/<code>height</code>（或固定容器）避免圖載入時版面「跳一下」（CLS）。",
+          "⚠️ 首屏最大那張圖別 lazy（會延後顯示、感覺變慢）；反而要優先載。",
+        ),
+      },
+      {
+        title: "debounce / throttle：搜尋框別狂打 API",
+        content: P(
+          "使用者打字很快，每個字都打一次 API 會炸。這兩招節流。",
+          "<b>debounce（防抖）</b>：等「停手一下下」才觸發。搜尋輸入最適合——停打 300ms 才送查詢，中間狂打不送。",
+          "<b>throttle（節流）</b>：固定「每隔一段時間最多一次」。捲動、視窗縮放這種連續事件適合。",
+          "React 裡常配合 <code>useEffect</code> 的 cleanup 或現成 hook 實作。",
+          "⚠️ 沒做這個，搜尋/自動完成會送出大量請求，前端卡、後端也被打爆。",
+        ),
+      },
+      {
+        title: "狀態放哪：什麼時候把 state 往上提",
+        content: P(
+          "React 新手常煩惱「這個 state 要放哪個元件」。原則很簡單。",
+          "state 放在「需要用到它的元件們，最近的共同父層」。只有自己用 → 放自己；兄弟元件要共用 → 提到它們的父層（lift state up），再用 props 傳下去。",
+          "全站到處都要（登入狀態、主題）→ 才用 Context 或狀態管理工具，別一開始就上重工具。",
+          "⚠️ 同一份資料別在兩個地方各存一份（會不同步）——存一處、其他人用 props 拿。",
+        ),
+      },
+      {
+        title: "破版救星：overflow 與 min-width:0",
+        content: P(
+          "手機版「有東西被撐出去、整頁能左右滑」是最常見的破版，幾個固定招數。",
+          "長內容（程式碼、長網址、表格）用 <code>overflow-x: auto</code> 讓它「自己那塊」可捲，而不是把整頁撐開。",
+          "flex/grid 子元素文字不換行撐爆時，加 <code>min-width: 0</code>（flex 子項預設 min-width 是內容寬、會頂破）。",
+          "圖片一律 <code>max-width: 100%</code>；容器該收的地方加 <code>overflow: hidden</code>。",
+          "⚠️ 檢查破版：DevTools 開手機寬度，看 body 有沒有水平捲軸——有就是有東西超出，順著找那個元素。",
+        ),
+      },
     ],
   },
   {
