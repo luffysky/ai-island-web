@@ -175,8 +175,9 @@ function PostCard({ p, meId, onDelete }: { p: Post; meId: string; onDelete: () =
       </div>
       {showC && (
         <div className="border-t border-border pt-2 space-y-2">
-          {(comments ?? []).map((c) => <div key={c.id} className="text-xs"><b>{name(c.author)}</b> {c.body}</div>)}
-          <div className="flex gap-2">
+          {(comments ?? []).map((c) => <div key={c.id} className="text-xs"><b>{name(c.author)}</b> <EmojiText text={c.body} size={16} /></div>)}
+          <div className="flex gap-2 items-center">
+            <AnimatedEmojiPicker onSelect={(e) => setCbody((v) => v + e)} buttonClassName="w-7 h-7" />
             <input value={cbody} onChange={(e) => setCbody(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") addComment(); }} placeholder={t("communityCommentPlaceholder")} className="flex-1 bg-bg-elevated border border-border rounded-full px-3 py-1.5 text-xs outline-none focus:border-accent" />
             <button onClick={addComment} className="text-accent text-xs">{t("communitySend")}</button>
           </div>

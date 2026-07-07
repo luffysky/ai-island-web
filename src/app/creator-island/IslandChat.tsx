@@ -7,6 +7,8 @@ import { Sparkles, History, Plus, X, Mic, Camera, Paperclip, Send, Target, Copy,
 import { uploadMedia } from "@/lib/creator-upload";
 import { useToast } from "@/components/ui/Toast";
 import { useTranslations } from "next-intl";
+import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
+import { EmojiText } from "@/components/ui/EmojiText";
 
 type Msg = { role: "user" | "assistant"; content: string };
 type FocusFrag = { id: string; title: string; content: string };
@@ -206,7 +208,7 @@ export function IslandChat({ workspaceId, focusFragments = [], onClearFocus }: {
               {msgs.map((m, i) => (
                 m.role === "user" ? (
                   <div key={i} className="flex justify-end">
-                    <div className="max-w-[85%] rounded-2xl rounded-br-md px-3.5 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words bg-gradient-to-br from-emerald-400 to-teal-500 text-black shadow-sm">{m.content}</div>
+                    <div className="max-w-[85%] rounded-2xl rounded-br-md px-3.5 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words bg-gradient-to-br from-emerald-400 to-teal-500 text-black shadow-sm"><EmojiText text={m.content} size={18} /></div>
                   </div>
                 ) : (
                   <div key={i} className="flex items-end gap-2">
@@ -254,6 +256,7 @@ export function IslandChat({ workspaceId, focusFragments = [], onClearFocus }: {
               <button onClick={voice} title={t("chatVoice")} className="hover:text-accent"><Mic size={18} /></button>
               <label title={t("chatImage")} className="cursor-pointer hover:text-accent"><Camera size={18} /><input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) pickImage(f); e.currentTarget.value = ""; }} /></label>
               <label title={t("chatFile")} className="cursor-pointer hover:text-accent"><Paperclip size={18} /><input type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) pickFile(f); e.currentTarget.value = ""; }} /></label>
+              <AnimatedEmojiPicker onSelect={(e) => setText((v) => v + e)} />
               <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder={t("chatPlaceholder")} className="flex-1 min-w-0 bg-bg-elevated border border-border rounded-full px-3 py-2 text-sm outline-none focus:border-emerald-400 transition" />
               <button onClick={send} disabled={busy || (!text.trim() && !img)} title={t("chatSend")} className="shrink-0 w-9 h-9 grid place-items-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-black shadow-sm hover:scale-105 active:scale-95 transition disabled:opacity-40 disabled:hover:scale-100"><Send size={16} /></button>
             </div>
