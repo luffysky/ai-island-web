@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, Paperclip } from "lucide-react";
 import { uploadMedia } from "@/lib/creator-upload";
+import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
+import { EmojiText } from "@/components/ui/EmojiText";
 
 type Thread = { id: string; last_message_at?: string; other?: { id: string; username?: string; display_name?: string; avatar_url?: string } };
 type Msg = { id: number; sender_id: string; body?: string | null; media_url?: string | null; media_type?: string | null; created_at: string };
@@ -75,7 +77,7 @@ export function MessagesClient({ initialThreads, meId, initialThreadId }: { init
               {err && <div className="text-xs text-red-400">⚠️ {err}</div>}
               {msgs.map((m) => (
                 <div key={m.id} className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${m.sender_id === meId ? "ml-auto bg-accent text-black" : "bg-bg-elevated"}`}>
-                  {m.body}
+                  {m.body && <EmojiText text={m.body} size={18} />}
                   {m.media_url && m.media_type === "image" && <img src={m.media_url} className="rounded-lg mt-1 max-h-48" />}
                   {m.media_url && m.media_type === "video" && <video src={m.media_url} controls className="rounded-lg mt-1 max-h-48" />}
                   {m.media_url && m.media_type === "audio" && <audio src={m.media_url} controls className="mt-1 w-full" />}
@@ -85,6 +87,7 @@ export function MessagesClient({ initialThreads, meId, initialThreadId }: { init
             </div>
             <div className="p-2 border-t border-border flex items-center gap-2">
               <label className="cursor-pointer hover:text-accent"><Paperclip size={18} /><input type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) sendMedia(f); e.currentTarget.value = ""; }} /></label>
+              <AnimatedEmojiPicker onSelect={(e) => setText((v) => v + e)} />
               <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") send(); }} placeholder={tr("msgPlaceholder")} className="flex-1 bg-bg-elevated border border-border rounded-full px-3 py-2 text-sm outline-none focus:border-accent" />
               <button onClick={send} disabled={busy} className="px-4 py-2 rounded-full bg-accent text-black text-sm disabled:opacity-40">{tr("msgSend")}</button>
             </div>
