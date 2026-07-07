@@ -105,6 +105,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={locale === "en" ? "en" : "zh-Hant-TW"} className={`${inter.variable} ${outfit.variable} ${jbMono.variable}`}>
       <head>
+        {/* 中文網頁字體：Noto Sans TC（Google 自動 unicode 分段、只下載用到的字）→ 全站中文變清爽 */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
         {/* JSON-LD 全站結構化資料：Organization + WebSite */}
         <script
           type="application/ld+json"

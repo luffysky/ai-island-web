@@ -44,7 +44,7 @@
   --chip-neutral-fg: #d1d5db;   /* gray-300 — 對比 11:1 AAA */
 
   /* 字體：Latin 走 next/font 自架（--font-inter/outfit/jbmono）、中文走系統 CJK（清晰又免下載）*/
-  --font-cjk: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", "Heiti TC", sans-serif;
+  --font-cjk: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Heiti TC", sans-serif;
   --font-sans: var(--font-inter), var(--font-cjk), system-ui, sans-serif;
   --font-display: var(--font-outfit), var(--font-inter), var(--font-cjk), system-ui, sans-serif;
   --font-mono: var(--font-jbmono), "JetBrains Mono", ui-monospace, "Fira Code", monospace;
@@ -129,9 +129,9 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(60rem 60rem at 12% -10%, color-mix(in srgb, var(--color-accent) 8%, transparent), transparent 60%),
-    radial-gradient(50rem 50rem at 100% 0%, color-mix(in srgb, var(--color-accent-3) 9%, transparent), transparent 55%),
-    radial-gradient(70rem 40rem at 50% 120%, color-mix(in srgb, var(--color-accent-2) 6%, transparent), transparent 60%);
+    radial-gradient(55rem 55rem at 10% -8%, color-mix(in srgb, var(--color-accent) 16%, transparent), transparent 58%),
+    radial-gradient(48rem 48rem at 100% 2%, color-mix(in srgb, var(--color-accent-3) 16%, transparent), transparent 52%),
+    radial-gradient(65rem 40rem at 50% 118%, color-mix(in srgb, var(--color-accent-2) 12%, transparent), transparent 58%);
 }
 html[data-theme="light"] body::before {
   background:
@@ -151,7 +151,7 @@ html[data-theme="light"] body::before {
   background: var(--color-bg-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
-  box-shadow: var(--elev-1);
+  box-shadow: var(--elev-2);
 }
 .surface-glass {
   background: color-mix(in srgb, var(--color-bg-card) 72%, transparent);
