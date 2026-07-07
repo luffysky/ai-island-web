@@ -42,6 +42,16 @@ export function QuestsPanel() {
 
   useEffect(() => {
     load();
+    // 別的元件（簽到 / 完成 lesson / AI 對話…）推進任務後會 dispatch 這個事件 → 這裡即時重抓
+    const onProgress = () => load();
+    window.addEventListener("quest:progress", onProgress);
+    // 回到分頁時也刷新（換裝置/隔天）
+    const onVis = () => { if (document.visibilityState === "visible") load(); };
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      window.removeEventListener("quest:progress", onProgress);
+      document.removeEventListener("visibilitychange", onVis);
+    };
   }, []);
 
   const claim = async (questId: string) => {

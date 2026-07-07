@@ -66,13 +66,15 @@ export function DailyCheckin() {
     });
     setJustGotXp(data.xp_awarded);
     if (data.z_awarded) setJustGotZ(data.z_awarded);
-    // 推進任務進度
+    // 推進任務進度 → 完成後通知「今日任務」面板即時重抓（跨元件）
     fetch("/api/quests/progress", {
       credentials: "include",
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ type: "daily_checkin", delta: 1 }),
-    }).catch(() => {});
+    })
+      .then(() => { try { window.dispatchEvent(new CustomEvent("quest:progress")); } catch {} })
+      .catch(() => {});
     // 連勝里程碑通知（命中 7/30/100/365 才會真的 push、其他天 endpoint 內早 return）
     fetch("/api/me/notify-streak", {
       credentials: "include",
