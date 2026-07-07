@@ -1,11 +1,13 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { ledgerLabel } from "@/lib/ledger-labels";
 import { formatTW } from "@/lib/format-date";
+import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
 export default async function MyLedgerPage() {
   const supabase = await createSupabaseServer();
+  const t = await getTranslations("me");
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
@@ -20,41 +22,42 @@ export default async function MyLedgerPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">🪙 Z幣 / 經驗明細</h1>
-        <p className="text-sm text-fg-muted mt-1">你的每一筆經驗值與 Z幣是怎麼來的、花到哪去，全部記在這。</p>
+        <h1 className="text-2xl font-bold flex items-center gap-2">🪙 {t("ledgerTitle")}</h1>
+        <p className="text-sm text-fg-muted mt-1">{t("ledgerSubtitle")}</p>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-bg-card border border-border rounded-xl p-4">
-          <div className="text-xs text-fg-muted">等級</div>
+          <div className="text-xs text-fg-muted">{t("ledgerLevel")}</div>
           <div className="text-2xl font-bold text-purple-400 mt-1">Lv {p?.level ?? 1}</div>
         </div>
         <div className="bg-bg-card border border-border rounded-xl p-4">
-          <div className="text-xs text-fg-muted">總經驗 XP</div>
+          <div className="text-xs text-fg-muted">{t("ledgerTotalXp")}</div>
           <div className="text-2xl font-bold text-accent mt-1">{(p?.xp ?? 0).toLocaleString()}</div>
         </div>
         <div className="bg-bg-card border border-border rounded-xl p-4">
-          <div className="text-xs text-fg-muted">Z幣餘額</div>
+          <div className="text-xs text-fg-muted">{t("ledgerCoinBalance")}</div>
           <div className="text-2xl font-bold text-yellow-400 mt-1">🪙 {(p?.z_coin ?? 0).toLocaleString()}</div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Ledger title="📈 經驗（XP）明細" rows={(xp as any[]) ?? []} positiveClass="text-green-400" />
-        <Ledger title="🪙 Z幣明細" rows={(coin as any[]) ?? []} positiveClass="text-yellow-400" showBalance />
+        <Ledger title={`📈 ${t("ledgerXpTitle")}`} rows={(xp as any[]) ?? []} positiveClass="text-green-400" />
+        <Ledger title={`🪙 ${t("ledgerCoinTitle")}`} rows={(coin as any[]) ?? []} positiveClass="text-yellow-400" showBalance />
       </div>
     </div>
   );
 }
 
-function Ledger({ title, rows, positiveClass, showBalance }: {
+async function Ledger({ title, rows, positiveClass, showBalance }: {
   title: string; rows: any[]; positiveClass: string; showBalance?: boolean;
 }) {
+  const t = await getTranslations("me");
   return (
     <div className="bg-bg-card border border-border rounded-xl p-4">
       <h2 className="font-bold mb-2">{title}</h2>
       {rows.length === 0 ? (
-        <p className="text-xs text-fg-muted py-6 text-center">還沒有紀錄。</p>
+        <p className="text-xs text-fg-muted py-6 text-center">{t("ledgerNoRecords")}</p>
       ) : (
         <div className="max-h-[480px] overflow-y-auto">
           {rows.map((e, i) => (
@@ -64,7 +67,7 @@ function Ledger({ title, rows, positiveClass, showBalance }: {
               </span>
               <span className="flex-1 truncate text-fg">{ledgerLabel(e.reason, e.meta)}</span>
               <span className="shrink-0 text-fg-muted text-[10px] text-right">
-                {showBalance && e.balance_after != null && <span className="block">餘 {e.balance_after}</span>}
+                {showBalance && e.balance_after != null && <span className="block">{t("ledgerBalance", { n: e.balance_after })}</span>}
                 {formatTW(e.created_at)}
               </span>
             </div>

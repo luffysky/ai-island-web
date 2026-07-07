@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { MockInterviewClient } from "./MockInterviewClient";
 
@@ -10,6 +11,7 @@ export const metadata = {
 };
 
 export default async function MockInterviewPage() {
+  const t = await getTranslations("mentor");
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/me/mock-interview");
@@ -17,9 +19,9 @@ export default async function MockInterviewPage() {
   return (
     <div className="p-4 md:p-6 max-w-4xl mx-auto">
       <header className="mb-5">
-        <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">🎤 AI 模擬面試</h1>
+        <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">🎤 {t("mockPageTitle")}</h1>
         <p className="text-sm text-fg-muted mt-1">
-          選類型 + 角色、雪鑰當面試官、結束按「結束面試」拿完整評分 + 改進建議
+          {t("mockPageSubtitle")}
         </p>
       </header>
       <MockInterviewClient />

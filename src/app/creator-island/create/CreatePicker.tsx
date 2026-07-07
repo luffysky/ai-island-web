@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { Library, Disc3, Tag, FolderOpen, Sparkles } from "lucide-react";
 import { CREATION_TYPES, getType } from "./engine-types";
@@ -12,6 +13,7 @@ type Series = { id: string; kind: string; title: string; category: string };
 
 export function CreatePicker({ workspaceId, drafts, series = [] }: { workspaceId: string; drafts: Draft[]; series?: Series[] }) {
   const router = useRouter();
+  const tr = useTranslations("creator");
   const [busy, setBusy] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
@@ -20,9 +22,9 @@ export function CreatePicker({ workspaceId, drafts, series = [] }: { workspaceId
     try {
       const r = await fetch("/api/creator-island/drafts", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ workspaceId, workType, title: "未命名草稿" }),
+        body: JSON.stringify({ workspaceId, workType, title: tr("createUntitledDraft") }),
       }).then((x) => x.json());
-      if (!r.draft) throw new Error(r.message || "建立失敗");
+      if (!r.draft) throw new Error(r.message || tr("createCreateFailed"));
       router.push(`/creator-island/create/${r.draft.id}`);
     } catch (e: any) { setErr(e.message); setBusy(null); }
   }
@@ -33,7 +35,7 @@ export function CreatePicker({ workspaceId, drafts, series = [] }: { workspaceId
 
       {/* 開新創作 */}
       <section>
-        <div className="text-sm font-bold text-fg-muted mb-3 inline-flex items-center gap-1.5"><Sparkles size={14} /> 開始一個新創作</div>
+        <div className="text-sm font-bold text-fg-muted mb-3 inline-flex items-center gap-1.5"><Sparkles size={14} /> {tr("createStartNew")}</div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {CREATION_TYPES.map((t) => (
             <motion.button key={t.key} onClick={() => startNew(t.key)} disabled={busy !== null}
@@ -42,7 +44,7 @@ export function CreatePicker({ workspaceId, drafts, series = [] }: { workspaceId
               <t.icon size={30} className="text-accent" />
               <div className="font-bold mt-2 group-hover:text-accent transition">{t.label}</div>
               <div className="text-[11px] text-fg-muted mt-1 leading-relaxed line-clamp-3">{t.blurb}</div>
-              {busy === t.key && <div className="text-[11px] text-accent mt-1 animate-pulse">建立中…</div>}
+              {busy === t.key && <div className="text-[11px] text-accent mt-1 animate-pulse">{tr("createCreating")}</div>}
             </motion.button>
           ))}
         </div>
@@ -51,10 +53,10 @@ export function CreatePicker({ workspaceId, drafts, series = [] }: { workspaceId
       {/* 系列 / 專輯（依分類分組） */}
       {series.length > 0 && (() => {
         const byCat: Record<string, Series[]> = {};
-        series.forEach((s) => { (byCat[s.category || "未分類"] ??= []).push(s); });
+        series.forEach((s) => { (byCat[s.category || tr("createUncategorized")] ??= []).push(s); });
         return (
           <section>
-            <div className="text-sm font-bold text-fg-muted mb-3 inline-flex items-center gap-1.5"><Library size={14} /> 系列 / <Disc3 size={14} /> 專輯（依分類）</div>
+            <div className="text-sm font-bold text-fg-muted mb-3 inline-flex items-center gap-1.5"><Library size={14} /> {tr("createSeries")} / <Disc3 size={14} /> {tr("createAlbumsByCategory")}</div>
             <div className="space-y-4">
               {Object.entries(byCat).map(([cat, list]) => (
                 <div key={cat}>
@@ -66,7 +68,7 @@ export function CreatePicker({ workspaceId, drafts, series = [] }: { workspaceId
                         <div key={s.id} className="rounded-xl border border-border bg-bg-card p-3">
                           <div className="font-bold text-sm flex items-center gap-1.5">
                             {s.kind === "album" ? <Disc3 size={14} className="shrink-0" /> : <Library size={14} className="shrink-0" />}<span className="truncate">{s.title}</span>
-                            <span className="ml-auto text-[11px] text-fg-muted shrink-0">{items.length} 篇</span>
+                            <span className="ml-auto text-[11px] text-fg-muted shrink-0">{tr("createPiecesCount", { n: items.length })}</span>
                           </div>
                           {items.length > 0 && (
                             <ul className="mt-2 space-y-1">
@@ -76,7 +78,7 @@ export function CreatePicker({ workspaceId, drafts, series = [] }: { workspaceId
                                 <li key={d.id}>
                                   <button onClick={() => router.push(`/creator-island/create/${d.id}`)}
                                     className="w-full text-left text-xs text-fg-muted hover:text-accent truncate flex items-center gap-1.5">
-                                    <DraftIcon size={13} className="shrink-0" /><span className="truncate">{d.title || "未命名草稿"}</span>
+                                    <DraftIcon size={13} className="shrink-0" /><span className="truncate">{d.title || tr("createUntitledDraft")}</span>
                                   </button>
                                 </li>
                                 );
@@ -96,9 +98,9 @@ export function CreatePicker({ workspaceId, drafts, series = [] }: { workspaceId
 
       {/* 我的草稿 */}
       <section>
-        <div className="text-sm font-bold text-fg-muted mb-3 inline-flex items-center gap-1.5"><FolderOpen size={14} /> 繼續未完成的草稿（{drafts.length}）</div>
+        <div className="text-sm font-bold text-fg-muted mb-3 inline-flex items-center gap-1.5"><FolderOpen size={14} /> {tr("createContinueDrafts", { n: drafts.length })}</div>
         {drafts.length === 0 ? (
-          <div className="text-sm text-fg-muted bg-bg-card border border-border rounded-2xl p-6 text-center">還沒有草稿。從上面挑一種開始，或在島上「編織」後一鍵導入。</div>
+          <div className="text-sm text-fg-muted bg-bg-card border border-border rounded-2xl p-6 text-center">{tr("createNoDrafts")}</div>
         ) : (
           <ul className="space-y-2">
             {drafts.map((d) => {
@@ -109,10 +111,10 @@ export function CreatePicker({ workspaceId, drafts, series = [] }: { workspaceId
                     className="w-full text-left flex items-center gap-3 rounded-xl px-4 py-3 bg-bg-card border border-border hover:border-accent/50 transition">
                     <t.icon size={24} className="shrink-0 text-accent" />
                     <span className="min-w-0 flex-1">
-                      <span className="font-bold block truncate">{d.title || "未命名草稿"}</span>
-                      <span className="text-xs text-fg-muted">{t.label} · {d.word_count} 字 · {new Date(d.updated_at).toLocaleDateString("zh-TW")}{d.status === "published" && " · 已發布"}</span>
+                      <span className="font-bold block truncate">{d.title || tr("createUntitledDraft")}</span>
+                      <span className="text-xs text-fg-muted">{t.label} · {tr("createWordsCount", { n: d.word_count })} · {new Date(d.updated_at).toLocaleDateString("zh-TW")}{d.status === "published" && ` · ${tr("createPublished")}`}</span>
                     </span>
-                    <span className="text-accent text-sm shrink-0">開啟 →</span>
+                    <span className="text-accent text-sm shrink-0">{tr("createOpen")} →</span>
                   </button>
                 </li>
               );

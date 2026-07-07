@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { uploadMedia } from "@/lib/creator-upload";
@@ -9,6 +10,7 @@ type Story = { id: string; user_id: string; media_url: string; media_type: "imag
 const name = (a?: Story["author"]) => a?.display_name || a?.username || "創作者";
 
 export function Stories({ initial, meId }: { initial: Story[]; meId: string }) {
+  const t = useTranslations("creator");
   const [stories, setStories] = useState<Story[]>(initial);
   const [busy, setBusy] = useState(false);
   const [viewer, setViewer] = useState<{ uid: string; idx: number } | null>(null);
@@ -52,7 +54,7 @@ export function Stories({ initial, meId }: { initial: Story[]; meId: string }) {
       <div className="flex gap-3 overflow-x-auto pb-1">
         <label className="shrink-0 flex flex-col items-center gap-1 cursor-pointer">
           <div className="w-16 h-16 rounded-full border-2 border-dashed border-accent/50 grid place-items-center text-accent text-xl">{busy ? "…" : <Plus size={20} />}</div>
-          <span className="text-[10px] text-fg-muted">{busy ? "上傳" : "我的限動"}</span>
+          <span className="text-[10px] text-fg-muted">{busy ? t("communityStoryUploading") : t("communityMyStory")}</span>
           <input type="file" accept="image/*,video/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) add(f); e.currentTarget.value = ""; }} />
         </label>
         {groups.map((g) => (
@@ -60,7 +62,7 @@ export function Stories({ initial, meId }: { initial: Story[]; meId: string }) {
             <div className="w-16 h-16 rounded-full p-0.5 bg-gradient-to-tr from-amber-400 via-pink-500 to-violet-500">
               {g.author?.avatar_url ? <img src={g.author.avatar_url} className="w-full h-full rounded-full object-cover border-2 border-bg" /> : <div className="w-full h-full rounded-full bg-bg-card grid place-items-center text-sm border-2 border-bg">{name(g.author)[0]}</div>}
             </div>
-            <span className="text-[10px] text-fg-muted max-w-16 truncate">{g.uid === meId ? "你" : name(g.author)}</span>
+            <span className="text-[10px] text-fg-muted max-w-16 truncate">{g.uid === meId ? t("communityYou") : name(g.author)}</span>
           </button>
         ))}
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
@@ -10,6 +11,7 @@ import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 export default function MyBlogPage() {
+  const t = useTranslations("me");
   const toast = useToast();
   const confirm = useConfirm();
   const [articles, setArticles] = useState<any[]>([]);
@@ -35,9 +37,9 @@ export default function MyBlogPage() {
     const target = articles.find((a) => a.id === id);
     if (!target) return;
     const ok = await confirm({
-      title: `刪除「${target.title}」？`,
-      description: "5 秒內可在右下方提示中撤銷。",
-      confirmLabel: "刪除",
+      title: t("blogDeleteTitle", { title: target.title }),
+      description: t("blogDeleteDesc"),
+      confirmLabel: t("blogDelete"),
       destructive: true,
     });
     if (!ok) return;
@@ -46,10 +48,10 @@ export default function MyBlogPage() {
     setArticles((prev) => prev.filter((a) => a.id !== id));
 
     let undone = false;
-    toast.warning("已刪除一篇文章", {
+    toast.warning(t("blogDeleted"), {
       duration: 5000,
       action: {
-        label: "撤銷",
+        label: t("blogUndo"),
         onClick: () => {
           undone = true;
           setArticles(snapshot);
@@ -63,7 +65,7 @@ export default function MyBlogPage() {
       credentials: "include", method: "DELETE" });
       if (!res.ok) {
         setArticles(snapshot);
-        toast.error("刪除失敗、已恢復");
+        toast.error(t("blogDeleteFail"));
       }
     }, 5000);
   };
@@ -84,10 +86,10 @@ export default function MyBlogPage() {
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <PenLine size={22} className="text-accent" /> 我的部落格
+            <PenLine size={22} className="text-accent" /> {t("blogMyBlog")}
           </h1>
           <p className="text-sm text-fg-muted mt-1">
-            {settings?.blog_title || "尚未設定部落格標題"}
+            {settings?.blog_title || t("blogNoTitle")}
           </p>
         </div>
         <div className="flex gap-2">
@@ -96,26 +98,26 @@ export default function MyBlogPage() {
             target="_blank"
             className="px-3 py-2 rounded-lg bg-bg-card border border-border text-sm hover:border-accent transition flex items-center gap-1"
           >
-            <ExternalLink size={14} /> 看我的部落格
+            <ExternalLink size={14} /> {t("blogViewMine")}
           </Link>
           <Link
             href="/me/blog/settings"
             className="px-3 py-2 rounded-lg bg-bg-card border border-border text-sm hover:border-accent transition flex items-center gap-1"
           >
-            <Settings size={14} /> 設定
+            <Settings size={14} /> {t("blogSettings")}
           </Link>
           <Link
             href="/me/blog/new"
             className="px-4 py-2 rounded-lg bg-accent text-black font-semibold text-sm hover:scale-105 transition flex items-center gap-1"
           >
-            <Plus size={16} /> 寫新文章
+            <Plus size={16} /> {t("blogNewArticle")}
           </Link>
         </div>
       </div>
 
       {/* 文章列表 */}
       {articles.length === 0 ? (
-        <EmptyState icon={PenLine} title="還沒有文章" desc="寫第一篇分享學習心得" action={{ label: "開始寫作", href: "/me/blog/new" }} />
+        <EmptyState icon={PenLine} title={t("blogEmptyTitle")} desc={t("blogEmptyDesc")} action={{ label: t("blogEmptyAction"), href: "/me/blog/new" }} />
       ) : (
         <div className="space-y-2">
           {articles.map((a) => (
@@ -138,16 +140,16 @@ export default function MyBlogPage() {
                   <h3 className="font-bold truncate">{a.title}</h3>
                   {a.is_public ? (
                     <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-900 dark:text-green-200 flex items-center gap-0.5 shrink-0">
-                      <Globe size={9} /> 公開
+                      <Globe size={9} /> {t("blogPublic")}
                     </span>
                   ) : (
                     <span className="text-[10px] px-1.5 py-0.5 rounded bg-bg-elevated text-fg-muted flex items-center gap-0.5 shrink-0">
-                      <Lock size={9} /> 草稿
+                      <Lock size={9} /> {t("blogDraft")}
                     </span>
                   )}
                 </div>
                 <p className="text-xs text-fg-muted line-clamp-1">
-                  {a.summary || "（沒有摘要）"}
+                  {a.summary || t("blogNoSummary")}
                 </p>
                 <div className="text-[11px] text-fg-muted mt-1 flex items-center gap-3">
                   <span className="flex items-center gap-0.5"><Eye size={11} /> {a.view_count}</span>
@@ -160,20 +162,20 @@ export default function MyBlogPage() {
                     href={`${blogUrl}/${a.slug}` as any}
                     target="_blank"
                     className="px-3 py-1.5 rounded-lg bg-bg-elevated text-sm hover:text-accent transition flex items-center gap-1"
-                    title="在新分頁查看公開文章"
+                    title={t("blogViewPublicTitle")}
                   >
-                    <ExternalLink size={13} /> 查看
+                    <ExternalLink size={13} /> {t("blogView")}
                   </Link>
                 )}
                 <Link
                   href={`/me/blog/edit/${a.id}`}
                   className="px-3 py-1.5 rounded-lg bg-bg-elevated text-sm hover:text-accent transition"
                 >
-                  編輯
+                  {t("blogEdit")}
                 </Link>
                 <button
                   onClick={() => deleteArticle(a.id)}
-                  aria-label="刪除"
+                  aria-label={t("blogDelete")}
                   className="p-1.5 rounded-lg hover:bg-red-500/20 text-red-400 transition"
                 >
                   <Trash2 size={16} />

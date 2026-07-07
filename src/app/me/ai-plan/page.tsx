@@ -1,10 +1,12 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { AiPlanClient } from "./AiPlanClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function MyAiPlanPage() {
+  const t = await getTranslations("mentor");
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -22,9 +24,9 @@ export default async function MyAiPlanPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold flex items-center gap-2">🧭 AI 導師客製化規劃</h1>
+        <h1 className="text-2xl font-bold flex items-center gap-2">🧭 {t("aiPlanPageTitle")}</h1>
         <p className="text-sm text-fg-muted mt-1">
-          AI 看你的學習歷史、產出個人化的學習計畫。3 種深度模式自己選。
+          {t("aiPlanPageSubtitle")}
         </p>
       </header>
       <AiPlanClient initialPlan={plan as any} defaultCareer={profile?.career_path ?? "fullstack"} />

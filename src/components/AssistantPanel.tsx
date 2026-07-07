@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { Bot, X, Loader2, Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useToast } from "@/components/ui/Toast";
 import { ASSISTANT_LABEL, type AssistantMode } from "@/lib/ai-assistant";
 import { useEdgeSafe } from "@/lib/use-edge-safe";
@@ -26,6 +27,7 @@ export function AssistantPanel({
   inline?: boolean;
   initialPrompt?: string;
 }) {
+  const t = useTranslations("mentor");
   const meta = ASSISTANT_LABEL[mode];
   const [open, setOpen] = useState(inline);
   const [input, setInput] = useState(initialPrompt);
@@ -49,11 +51,11 @@ export function AssistantPanel({
       });
       const j = await res.json();
       if (res.ok) setReply(j.text || "");
-      else if (j.error === "quota_exceeded") toast.warning("今日免費額度用完、升級或自帶 key");
-      else if (j.error === "rate_limited") toast.warning("問太快、稍後再試");
-      else if (j.error === "no_system_key" || j.error === "no_model_available") toast.error("AI 尚未設定、聯絡管理員");
-      else toast.error(j.message ?? j.error ?? "失敗");
-    } catch { toast.error("網路錯誤"); }
+      else if (j.error === "quota_exceeded") toast.warning(t("assistantQuotaExceeded"));
+      else if (j.error === "rate_limited") toast.warning(t("assistantRateLimited"));
+      else if (j.error === "no_system_key" || j.error === "no_model_available") toast.error(t("assistantNotConfigured"));
+      else toast.error(j.message ?? j.error ?? t("mentorSaveFailed"));
+    } catch { toast.error(t("assistantNetworkError")); }
     finally { setBusy(false); }
   };
 
@@ -70,7 +72,7 @@ export function AssistantPanel({
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder={placeholder ?? "輸入要問的"}
+          placeholder={placeholder ?? t("assistantInputPlaceholder")}
           rows={3}
           className="w-full bg-bg border border-border rounded-lg p-2 text-sm mb-2"
         />
@@ -80,7 +82,7 @@ export function AssistantPanel({
           className="w-full py-2 rounded-lg bg-accent text-black font-bold text-sm disabled:opacity-40 inline-flex items-center justify-center gap-1"
         >
           {busy ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-          {busy ? "思考中" : "問助教"}
+          {busy ? t("assistantThinking") : t("assistantAsk")}
         </button>
         {reply && (
           <div className="mt-3 p-3 rounded-lg bg-bg text-sm whitespace-pre-wrap leading-relaxed">
@@ -123,7 +125,7 @@ export function AssistantPanel({
         />
         <button onClick={ask} disabled={busy || !input.trim()} className="w-full py-1.5 rounded-lg bg-accent text-black font-bold text-xs disabled:opacity-40 inline-flex items-center justify-center gap-1">
           {busy ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
-          {busy ? "..." : "問"}
+          {busy ? "..." : t("assistantAskShort")}
         </button>
         {reply && (
           <div className="mt-2 p-2 rounded-lg bg-bg text-xs whitespace-pre-wrap leading-relaxed max-h-60 overflow-y-auto">

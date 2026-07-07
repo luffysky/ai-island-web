@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Brain, Sparkles, Save, Trash2, MessageSquare, Check, Loader2 } from "lucide-react";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
+import { useTranslations } from "next-intl";
 
 type Topic = { topic: string; count: number };
 type Prefs = {
@@ -36,6 +37,7 @@ const HIGHLIGHT_KEYS: { key: string; label: string }[] = [
 
 export function AiProfileClient({ initial }: { initial: Initial }) {
   const confirm = useConfirm();
+  const t = useTranslations("mentor");
   const p = initial.preferences || {};
   const [customPrompt, setCustomPrompt] = useState<string>(p.custom_prompt ?? "");
   const [tone, setTone] = useState<string>(p.tone ?? "");
@@ -69,7 +71,7 @@ export function AiProfileClient({ initial }: { initial: Initial }) {
       setSavedPrefs(true);
       setTimeout(() => setSavedPrefs(false), 2500);
     } catch (e) {
-      setErr("儲存失敗 " + (e as Error).message);
+      setErr(t("aiProfileSaveFailed") + " " + (e as Error).message);
     } finally {
       setSavingPrefs(false);
     }
@@ -83,14 +85,14 @@ export function AiProfileClient({ initial }: { initial: Initial }) {
       setSavedSummary(true);
       setTimeout(() => setSavedSummary(false), 2500);
     } catch (e) {
-      setErr("儲存失敗 " + (e as Error).message);
+      setErr(t("aiProfileSaveFailed") + " " + (e as Error).message);
     } finally {
       setSavingSummary(false);
     }
   };
 
   const clearAll = async () => {
-    if (!(await confirm({ title: "確定要清除 AI 對你的所有記憶嗎？", description: "此動作無法復原。", destructive: true, confirmLabel: "清除" }))) return;
+    if (!(await confirm({ title: t("aiProfileClearTitle"), description: t("aiProfileClearDesc"), destructive: true, confirmLabel: t("aiProfileClearConfirm") }))) return;
     setClearing(true);
     setErr(null);
     try {
@@ -103,7 +105,7 @@ export function AiProfileClient({ initial }: { initial: Initial }) {
       setTone("");
       setRemember(true);
     } catch (e) {
-      setErr("清除失敗 " + (e as Error).message);
+      setErr(t("aiProfileClearFailed") + " " + (e as Error).message);
     } finally {
       setClearing(false);
     }
@@ -123,10 +125,10 @@ export function AiProfileClient({ initial }: { initial: Initial }) {
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <Brain className="w-6 h-6 text-accent" />
-          AI 記憶與偏好
+          {t("aiProfileTitle")}
         </h1>
         <p className="text-sm text-fg-muted mt-1">
-          自訂綠寶與各處 AI 助理如何跟你互動、並管理它對你的長期記憶。
+          {t("aiProfileSubtitle")}
         </p>
       </div>
 
@@ -140,27 +142,27 @@ export function AiProfileClient({ initial }: { initial: Initial }) {
       <section className="p-5 bg-bg-card border border-border rounded-lg space-y-5">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-accent" />
-          自訂綠寶 / AI
+          {t("aiProfileCustomize")}
         </h2>
 
         <div className="space-y-2">
           <label className="block text-sm font-medium">
-            自訂指示
-            <span className="text-fg-muted font-normal">（AI 會優先遵守，例如「用台語詞彙」「先給結論再解釋」）</span>
+            {t("aiProfileCustomInstruction")}
+            <span className="text-fg-muted font-normal">{t("aiProfileCustomInstructionHint")}</span>
           </label>
           <textarea
             value={customPrompt}
             onChange={(e) => setCustomPrompt(e.target.value)}
             rows={4}
             maxLength={2000}
-            placeholder="例如：請叫我阿明、回答時多給程式碼範例、避免太長的鋪陳。"
+            placeholder={t("aiProfileCustomPlaceholder")}
             className="w-full p-3 rounded-lg bg-bg-elevated border border-border text-sm resize-y focus:outline-none focus:border-accent"
           />
           <div className="text-xs text-fg-muted text-right">{customPrompt.length} / 2000</div>
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium">語氣偏好</label>
+          <label className="block text-sm font-medium">{t("aiProfileToneLabel")}</label>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
@@ -169,7 +171,7 @@ export function AiProfileClient({ initial }: { initial: Initial }) {
                 tone === "" ? "bg-accent text-black border-accent font-medium" : "bg-bg-elevated border-border hover:border-accent"
               }`}
             >
-              預設
+              {t("aiProfileToneDefault")}
             </button>
             {TONES.map((t) => (
               <button
@@ -194,9 +196,9 @@ export function AiProfileClient({ initial }: { initial: Initial }) {
             className="mt-1 accent-accent"
           />
           <div className="flex-1">
-            <div className="font-medium text-sm">記住我的偏好</div>
+            <div className="font-medium text-sm">{t("aiProfileRemember")}</div>
             <div className="text-xs text-fg-muted">
-              關閉後，AI 不會在對話中使用你的長期記憶與自訂指示（不影響已儲存的內容）。
+              {t("aiProfileRememberDesc")}
             </div>
           </div>
         </label>
@@ -207,7 +209,7 @@ export function AiProfileClient({ initial }: { initial: Initial }) {
           className="w-full px-4 py-3 bg-accent text-black rounded-lg font-bold hover:scale-[1.01] transition disabled:opacity-50 flex items-center justify-center gap-2"
         >
           {savingPrefs ? <Loader2 className="w-4 h-4 animate-spin" /> : savedPrefs ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
-          {savingPrefs ? "儲存中…" : savedPrefs ? "已儲存" : "儲存偏好"}
+          {savingPrefs ? t("aiProfileSaving") : savedPrefs ? t("aiProfileSaved") : t("aiProfileSavePrefs")}
         </button>
       </section>
 
@@ -215,21 +217,21 @@ export function AiProfileClient({ initial }: { initial: Initial }) {
       <section className="p-5 bg-bg-card border border-border rounded-lg space-y-5">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <MessageSquare className="w-5 h-5 text-accent" />
-          AI 對你的記憶
-          <span className="text-xs font-normal text-fg-muted ml-auto">累積 {initial.turn_count} 次對話</span>
+          {t("aiProfileMemory")}
+          <span className="text-xs font-normal text-fg-muted ml-auto">{t("aiProfileTurnCount", { n: initial.turn_count })}</span>
         </h2>
 
         <div className="space-y-2">
           <label className="block text-sm font-medium">
-            近期摘要
-            <span className="text-fg-muted font-normal">（AI 自動整理，你也可以修改）</span>
+            {t("aiProfileSummary")}
+            <span className="text-fg-muted font-normal">{t("aiProfileSummaryHint")}</span>
           </label>
           <textarea
             value={summary}
             onChange={(e) => setSummary(e.target.value)}
             rows={4}
             maxLength={4000}
-            placeholder="目前還沒有記憶。多跟 AI 對話後，這裡會出現它對你的了解。"
+            placeholder={t("aiProfileSummaryPlaceholder")}
             className="w-full p-3 rounded-lg bg-bg-elevated border border-border text-sm resize-y focus:outline-none focus:border-accent"
           />
           <button
@@ -238,13 +240,13 @@ export function AiProfileClient({ initial }: { initial: Initial }) {
             className="px-4 py-2 bg-bg-elevated border border-border rounded-lg text-sm font-medium hover:border-accent transition disabled:opacity-50 flex items-center gap-2"
           >
             {savingSummary ? <Loader2 className="w-4 h-4 animate-spin" /> : savedSummary ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
-            {savingSummary ? "儲存中…" : savedSummary ? "已儲存" : "儲存摘要"}
+            {savingSummary ? t("aiProfileSaving") : savedSummary ? t("aiProfileSaved") : t("aiProfileSaveSummary")}
           </button>
         </div>
 
         {topics.length > 0 && (
           <div className="space-y-2">
-            <div className="text-sm font-medium">常聊主題</div>
+            <div className="text-sm font-medium">{t("aiProfileTopics")}</div>
             <div className="flex flex-wrap gap-2">
               {topics.slice(0, 12).map((t) => (
                 <span key={t.topic} className="px-3 py-1 rounded-full text-xs bg-bg-elevated border border-border">
@@ -258,7 +260,7 @@ export function AiProfileClient({ initial }: { initial: Initial }) {
 
         {highlights.length > 0 && (
           <div className="space-y-2">
-            <div className="text-sm font-medium">記憶亮點</div>
+            <div className="text-sm font-medium">{t("aiProfileHighlights")}</div>
             <ul className="space-y-1 text-sm text-fg-muted">
               {highlights.map((h) => (
                 <li key={h.label}>
@@ -277,10 +279,10 @@ export function AiProfileClient({ initial }: { initial: Initial }) {
             className="px-4 py-2 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 border border-red-500/30 hover:bg-red-500/10 transition disabled:opacity-50 flex items-center gap-2"
           >
             {clearing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-            {clearing ? "清除中…" : "清除所有記憶"}
+            {clearing ? t("aiProfileClearing") : t("aiProfileClearAll")}
           </button>
           <p className="text-xs text-fg-muted mt-2">
-            這會清空摘要、常聊主題與 AI 累積的偏好（不含你上方的自訂指示，除非一併重設）。
+            {t("aiProfileClearNote")}
           </p>
         </div>
       </section>

@@ -5,6 +5,7 @@ import { Loader2, Trophy, RotateCcw, Check, X } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useTranslations } from "next-intl";
 
 type Question = {
   q: string;
@@ -28,6 +29,7 @@ type Attempt = {
 
 export function DailyQuizClient() {
   const toast = useToast();
+  const t = useTranslations("learn");
   const [loading, setLoading] = useState(true);
   const [attempt, setAttempt] = useState<Attempt | null>(null);
   const [empty, setEmpty] = useState<string | null>(null);
@@ -71,7 +73,7 @@ export function DailyQuizClient() {
         if (cancelled) return;
         applyPayload(j);
       })
-      .catch(() => toast.error("載入測驗失敗"))
+      .catch(() => toast.error(t("toastLoadQuizFailed")))
       .finally(() => !cancelled && setLoading(false));
     return () => {
       cancelled = true;
@@ -85,13 +87,13 @@ export function DailyQuizClient() {
       const j = await fetch("/api/quiz/today?extra=1").then((r) => r.json());
       if (j.noCredit) {
         setCreditsLeft(0);
-        toast.warning("沒有可用的測驗次數了");
+        toast.warning(t("toastNoCredits"));
         return;
       }
       applyPayload(j);
-      toast.success("已用 1 次測驗次數、重新抽題");
+      toast.success(t("toastRedrawn"));
     } catch {
-      toast.error("重抽失敗");
+      toast.error(t("toastRedrawFailed"));
     } finally {
       setReloading(false);
     }
@@ -100,7 +102,7 @@ export function DailyQuizClient() {
   const submit = async () => {
     if (!attempt) return;
     if (answers.some((a) => !a)) {
-      toast.warning("請先答完所有題目");
+      toast.warning(t("toastAnswerAll"));
       return;
     }
     setSubmitting(true);
@@ -112,9 +114,9 @@ export function DailyQuizClient() {
         body: JSON.stringify({ answers }),
       });
       const j = await res.json();
-      if (!res.ok) throw new Error(j.error || "失敗");
+      if (!res.ok) throw new Error(j.error || t("failed"));
       setResult({ correct: j.correct, total: j.total, pass: j.pass, reward_xp: j.reward_xp, reward_z: j.reward_z });
-      toast.success(`${j.correct}/${j.total} 答對 · +${j.reward_xp} XP · +${j.reward_z} 🪙`);
+      toast.success(t("toastQuizResult", { correct: j.correct, total: j.total, xp: j.reward_xp, z: j.reward_z }));
       // 島嶼每日學習任務 — 做完一次每日測驗
       import("@/components/island/island-bus").then((m) => m.bumpQuest("quiz", 1)).catch(() => {});
       // 每日任務進度（daily_quests）
@@ -125,7 +127,7 @@ export function DailyQuizClient() {
         body: JSON.stringify({ type: "daily_quiz", delta: 1 }),
       }).catch(() => {});
     } catch (e: any) {
-      toast.error(`送出失敗：${e?.message || ""}`);
+      toast.error(t("toastSubmitError", { msg: e?.message || "" }));
     } finally {
       setSubmitting(false);
     }
@@ -134,7 +136,7 @@ export function DailyQuizClient() {
   if (loading) {
     return (
       <div className="text-center py-16 text-fg-muted">
-        <Loader2 size={20} className="animate-spin inline mr-2" /> 載入中…
+        <Loader2 size={20} className="animate-spin inline mr-2" /> {t("loading")}
       </div>
     );
   }
@@ -155,16 +157,16 @@ export function DailyQuizClient() {
       {result && (
         <div className={`rounded-xl p-5 border-2 ${result.pass ? "border-emerald-500 bg-emerald-500/10" : "border-orange-500 bg-orange-500/10"}`}>
           <div className="text-2xl font-bold flex items-center gap-2">
-            {result.pass ? "🎉 過關！" : "📚 再加油"}
+            {result.pass ? t("passTitle") : t("failTitle")}
           </div>
           <div className="mt-2 text-sm">
-            答對 <span className="font-bold text-2xl">{result.correct}</span> / {result.total}
+            {t("correctCount")} <span className="font-bold text-2xl">{result.correct}</span> / {result.total}
             {result.reward_xp > 0 && (
-              <span className="ml-3">· 獎勵：<span className="text-accent font-bold">+{result.reward_xp} XP</span> + <span className="text-yellow-400 font-bold">+{result.reward_z} 🪙</span></span>
+              <span className="ml-3">· {t("rewardLabel")}<span className="text-accent font-bold">+{result.reward_xp} XP</span> + <span className="text-yellow-400 font-bold">+{result.reward_z} 🪙</span></span>
             )}
           </div>
           <div className="text-xs text-fg-muted mt-2">
-            明天再來、題庫會重新抽。今天的解答都在下方。
+            {t("quizComeBackTomorrow")}
           </div>
           {creditsLeft > 0 && (
             <button
@@ -173,7 +175,7 @@ export function DailyQuizClient() {
               className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent/15 text-accent font-semibold text-sm hover:bg-accent/25 disabled:opacity-50"
             >
               {reloading ? <Loader2 size={14} className="animate-spin" /> : <RotateCcw size={14} />}
-              再測一次（剩 {creditsLeft} 次測驗次數）
+              {t("retryQuiz", { n: creditsLeft })}
             </button>
           )}
         </div>
@@ -191,11 +193,11 @@ export function DailyQuizClient() {
                   {i + 1}
                 </span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-bg-elevated text-fg-muted">
-                  {q.source === "chapter" ? "📚 章節" : "💻 leetcode"}
+                  {q.source === "chapter" ? t("sourceChapter") : t("sourceLeetcode")}
                 </span>
                 {showAnswer && (
                   <span className={`ml-auto text-[10px] px-1.5 py-0.5 rounded-full font-bold ${isCorrect ? "bg-emerald-500/15 text-emerald-900 dark:text-emerald-200" : "bg-red-500/15 text-red-900 dark:text-red-200"}`}>
-                    {isCorrect ? "✓ 對" : "✕ 錯"}
+                    {isCorrect ? t("answerCorrect") : t("answerWrong")}
                   </span>
                 )}
               </div>
@@ -254,7 +256,7 @@ export function DailyQuizClient() {
             className="w-full px-6 py-3 rounded-xl bg-accent text-black font-bold shadow-2xl disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {submitting ? <Loader2 size={16} className="animate-spin" /> : <Trophy size={16} />}
-            {submitting ? "送出中…" : "送出答案"}
+            {submitting ? t("submittingAnswers") : t("submitAnswers")}
           </button>
         </div>
       )}

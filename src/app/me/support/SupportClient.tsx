@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Plus, MessageSquare, Send } from "lucide-react";
@@ -34,6 +35,7 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 export function SupportClient({ initial }: { initial: Ticket[] }) {
+  const t = useTranslations("me");
   const router = useRouter();
   const toast = useToast();
   const [list, setList] = useState(initial);
@@ -46,7 +48,7 @@ export function SupportClient({ initial }: { initial: Ticket[] }) {
 
   const submit = async () => {
     if (!subject.trim() || !body.trim()) {
-      toast.warning("主旨 / 內文必填");
+      toast.warning(t("supportSubjectBodyRequired"));
       return;
     }
     setBusy(true);
@@ -58,13 +60,13 @@ export function SupportClient({ initial }: { initial: Ticket[] }) {
         body: JSON.stringify({ subject, body, category, priority }),
       });
       const j = await res.json();
-      if (!res.ok) throw new Error(j.error || "失敗");
-      toast.success("已送出、admin 會儘速處理");
+      if (!res.ok) throw new Error(j.error || t("supportGenericFail"));
+      toast.success(t("supportSubmitted"));
       setSubject(""); setBody(""); setCategory("general"); setPriority("normal");
       setOpen(false);
       router.refresh();
     } catch (e: any) {
-      toast.error(`送出失敗：${e?.message || ""}`);
+      toast.error(t("supportSubmitFail", { msg: e?.message || "" }));
     } finally {
       setBusy(false);
     }
@@ -77,53 +79,53 @@ export function SupportClient({ initial }: { initial: Ticket[] }) {
           onClick={() => setOpen(true)}
           className="w-full p-4 border border-dashed border-border rounded-xl hover:border-accent flex items-center justify-center gap-2"
         >
-          <Plus size={16} /> 開新工單
+          <Plus size={16} /> {t("supportNewTicket")}
         </button>
       ) : (
         <div className="rounded-xl bg-bg-card border border-border p-4 space-y-3">
           <input
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
-            placeholder="主旨"
+            placeholder={t("supportSubjectPlaceholder")}
             className="w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm"
           />
           <div className="grid grid-cols-2 gap-3">
             <select value={category} onChange={(e) => setCategory(e.target.value)} className="bg-bg border border-border rounded-lg px-2 py-1.5 text-sm">
-              <option value="general">一般</option>
-              <option value="billing">付款 / 訂閱</option>
-              <option value="bug">問題回報</option>
-              <option value="feature">功能建議</option>
-              <option value="complaint">投訴</option>
-              <option value="refund">退費</option>
-              <option value="account">帳號</option>
+              <option value="general">{t("supportCatGeneral")}</option>
+              <option value="billing">{t("supportCatBilling")}</option>
+              <option value="bug">{t("supportCatBug")}</option>
+              <option value="feature">{t("supportCatFeature")}</option>
+              <option value="complaint">{t("supportCatComplaint")}</option>
+              <option value="refund">{t("supportCatRefund")}</option>
+              <option value="account">{t("supportCatAccount")}</option>
             </select>
             <select value={priority} onChange={(e) => setPriority(e.target.value)} className="bg-bg border border-border rounded-lg px-2 py-1.5 text-sm">
-              <option value="low">低</option>
-              <option value="normal">普通</option>
-              <option value="high">高</option>
-              <option value="urgent">緊急</option>
+              <option value="low">{t("supportPriorityLow")}</option>
+              <option value="normal">{t("supportPriorityNormal")}</option>
+              <option value="high">{t("supportPriorityHigh")}</option>
+              <option value="urgent">{t("supportPriorityUrgent")}</option>
             </select>
           </div>
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
-            placeholder="詳細描述..."
+            placeholder={t("supportBodyPlaceholder")}
             rows={6}
             className="w-full bg-bg border border-border rounded-lg p-2 text-sm"
           />
           <div className="flex gap-2 pt-2 border-t border-border">
             <button onClick={submit} disabled={busy} className="px-4 py-1.5 rounded-lg bg-accent text-black font-bold text-sm disabled:opacity-50 flex items-center gap-1">
-              <Send size={13} /> 送出
+              <Send size={13} /> {t("supportSubmit")}
             </button>
-            <button onClick={() => setOpen(false)} className="px-4 py-1.5 rounded-lg border border-border text-sm">取消</button>
+            <button onClick={() => setOpen(false)} className="px-4 py-1.5 rounded-lg border border-border text-sm">{t("supportCancel")}</button>
           </div>
         </div>
       )}
 
       <div className="rounded-xl bg-bg-card border border-border">
-        <div className="px-4 py-2 border-b border-border text-sm font-bold">我的工單</div>
+        <div className="px-4 py-2 border-b border-border text-sm font-bold">{t("supportMyTickets")}</div>
         {list.length === 0 ? (
-          <div className="text-center py-12 text-fg-muted text-sm">尚無工單</div>
+          <div className="text-center py-12 text-fg-muted text-sm">{t("supportNoTickets")}</div>
         ) : (
           <ul className="divide-y divide-border">
             {list.map((t) => (
@@ -142,7 +144,7 @@ export function SupportClient({ initial }: { initial: Ticket[] }) {
       </div>
 
       <p className="text-[10px] text-fg-muted text-center">
-        💡 急事可在工單裡留 LINE / Email、admin 會儘速主動聯繫
+        💡 {t("supportFooter")}
       </p>
     </div>
   );

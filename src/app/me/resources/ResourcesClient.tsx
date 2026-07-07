@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Sparkles, Search, ExternalLink, X, Loader2, BookOpen, Youtube, Newspaper, GraduationCap, Wrench, Users, Mic, FileText, Globe, Gamepad2 } from "lucide-react";
 
 type Resource = {
@@ -49,6 +50,7 @@ const LANGUAGE_LABEL: Record<string, string> = {
 };
 
 export function ResourcesClient() {
+  const t = useTranslations("me");
   const [tab, setTab] = useState<"recommend" | "browse">("recommend");
   const [resources, setResources] = useState<Resource[]>([]);
   const [picks, setPicks] = useState<Pick[] | null>(null);
@@ -114,13 +116,13 @@ export function ResourcesClient() {
           onClick={() => setTab("recommend")}
           className={`px-4 py-2 text-sm font-medium border-b-2 transition ${tab === "recommend" ? "border-accent text-accent" : "border-transparent text-fg-muted hover:text-fg"}`}
         >
-          <Sparkles size={14} className="inline mr-1" /> 雪鑰推薦
+          <Sparkles size={14} className="inline mr-1" /> {t("resourcesTabRecommend")}
         </button>
         <button
           onClick={() => setTab("browse")}
           className={`px-4 py-2 text-sm font-medium border-b-2 transition ${tab === "browse" ? "border-accent text-accent" : "border-transparent text-fg-muted hover:text-fg"}`}
         >
-          <Search size={14} className="inline mr-1" /> 全部搜尋
+          <Search size={14} className="inline mr-1" /> {t("resourcesTabBrowse")}
         </button>
       </div>
 
@@ -150,19 +152,20 @@ function RecommendTab({ loading, picks, resMap, onOpen, onRefresh }: {
   loading: boolean; picks: Pick[] | null;
   resMap: Map<string, Resource>; onOpen: (r: Resource) => void; onRefresh: () => void;
 }) {
+  const t = useTranslations("me");
   if (loading) {
     return (
       <div className="py-16 text-center text-fg-muted">
         <Loader2 size={24} className="animate-spin mx-auto mb-3" />
-        雪鑰看你的學習狀況、挑選中...
+        {t("resourcesRecommendLoading")}
       </div>
     );
   }
   if (!picks || picks.length === 0) {
     return (
       <div className="py-16 text-center text-fg-muted">
-        <p>沒有推薦、雪鑰可能還在學習你的偏好</p>
-        <button onClick={onRefresh} className="btn-chip btn-chip-info mt-4">重新推薦</button>
+        <p>{t("resourcesNoRecommend")}</p>
+        <button onClick={onRefresh} className="btn-chip btn-chip-info mt-4">{t("resourcesRefresh")}</button>
       </div>
     );
   }
@@ -170,7 +173,7 @@ function RecommendTab({ loading, picks, resMap, onOpen, onRefresh }: {
   return (
     <div>
       <p className="text-sm text-fg-muted mb-3 italic">
-        ✨ 雪鑰根據你最近學的章節 + 風格偏好挑了這 {picks.length} 個資源
+        ✨ {t("resourcesRecommendIntro", { n: picks.length })}
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {picks.map((p) => {
@@ -181,7 +184,7 @@ function RecommendTab({ loading, picks, resMap, onOpen, onRefresh }: {
       </div>
       <div className="text-center mt-6">
         <button onClick={onRefresh} className="btn-chip btn-chip-info">
-          <Sparkles size={14} /> 重新推薦
+          <Sparkles size={14} /> {t("resourcesRefresh")}
         </button>
       </div>
     </div>
@@ -189,6 +192,7 @@ function RecommendTab({ loading, picks, resMap, onOpen, onRefresh }: {
 }
 
 function BrowseTab({ loading, resources, search, setSearch, filterType, setFilterType, filterDifficulty, setFilterDifficulty, filterLanguage, setFilterLanguage, totalCount, onOpen }: any) {
+  const t = useTranslations("me");
   return (
     <div>
       <div className="flex flex-wrap items-center gap-2 mb-4 bg-bg-card border border-border rounded-xl p-3">
@@ -197,34 +201,34 @@ function BrowseTab({ loading, resources, search, setSearch, filterType, setFilte
           <input
             value={search}
             onChange={(e: any) => setSearch(e.target.value)}
-            placeholder="搜尋資源（標題 / 描述 / 標籤）..."
+            placeholder={t("resourcesSearchPlaceholder")}
             className="flex-1 bg-transparent outline-none text-sm"
           />
         </div>
         <select value={filterType} onChange={(e: any) => setFilterType(e.target.value)} className="bg-bg-elevated border border-border rounded px-3 py-1.5 text-sm">
-          <option value="">全部類型</option>
+          <option value="">{t("resourcesAllTypes")}</option>
           {Object.entries(TYPE_META).map(([k, v]) => (
             <option key={k} value={k}>{v.label}</option>
           ))}
         </select>
         <select value={filterDifficulty} onChange={(e: any) => setFilterDifficulty(e.target.value)} className="bg-bg-elevated border border-border rounded px-3 py-1.5 text-sm">
-          <option value="">全部難度</option>
-          <option value="beginner">🌱 新手</option>
-          <option value="intermediate">💪 中階</option>
-          <option value="advanced">🔥 進階</option>
+          <option value="">{t("resourcesAllDifficulty")}</option>
+          <option value="beginner">🌱 {t("resourcesDifficultyBeginner")}</option>
+          <option value="intermediate">💪 {t("resourcesDifficultyIntermediate")}</option>
+          <option value="advanced">🔥 {t("resourcesDifficultyAdvanced")}</option>
         </select>
         <select value={filterLanguage} onChange={(e: any) => setFilterLanguage(e.target.value)} className="bg-bg-elevated border border-border rounded px-3 py-1.5 text-sm">
-          <option value="">全部語言</option>
-          <option value="zh">🇹🇼 中文</option>
-          <option value="en">🇬🇧 英文</option>
+          <option value="">{t("resourcesAllLanguages")}</option>
+          <option value="zh">🇹🇼 {t("resourcesLangZh")}</option>
+          <option value="en">🇬🇧 {t("resourcesLangEn")}</option>
         </select>
-        <span className="text-xs text-fg-muted">{resources.length} / {totalCount} 條</span>
+        <span className="text-xs text-fg-muted">{t("resourcesCount", { shown: resources.length, total: totalCount })}</span>
       </div>
 
       {loading ? (
         <div className="py-16 text-center text-fg-muted"><Loader2 size={20} className="animate-spin mx-auto" /></div>
       ) : resources.length === 0 ? (
-        <div className="py-16 text-center text-fg-muted">沒符合條件的資源、換個關鍵字試試</div>
+        <div className="py-16 text-center text-fg-muted">{t("resourcesNoMatch")}</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {resources.map((r: Resource) => (
@@ -237,6 +241,7 @@ function BrowseTab({ loading, resources, search, setSearch, filterType, setFilte
 }
 
 function ResourceCard({ r, reason, onOpen }: { r: Resource; reason?: string; onOpen: () => void }) {
+  const t = useTranslations("me");
   const meta = TYPE_META[r.type] ?? TYPE_META.docs;
   const Icon = meta.icon;
   return (
@@ -249,7 +254,7 @@ function ResourceCard({ r, reason, onOpen }: { r: Resource; reason?: string; onO
           <Icon size={11} /> {meta.label}
         </span>
         {r.curated_by === "xueyue" && (
-          <span className="chip chip-info text-[10px]">✨ 雪鑰精選</span>
+          <span className="chip chip-info text-[10px]">✨ {t("resourcesXueyuePick")}</span>
         )}
       </div>
       <h3 className="font-bold mb-1 leading-snug">{r.title}</h3>
@@ -263,13 +268,14 @@ function ResourceCard({ r, reason, onOpen }: { r: Resource; reason?: string; onO
       <div className="flex items-center justify-between mt-3 pt-2 border-t border-border text-[10px] text-fg-muted">
         <span>{DIFFICULTY_LABEL[r.difficulty] ?? r.difficulty}</span>
         <span>{LANGUAGE_LABEL[r.language] ?? r.language}</span>
-        {!r.is_free && <span className="chip chip-warn text-[10px]">💰 付費</span>}
+        {!r.is_free && <span className="chip chip-warn text-[10px]">💰 {t("resourcesPaid")}</span>}
       </div>
     </div>
   );
 }
 
 function DetailModal({ r, onClose }: { r: Resource; onClose: () => void }) {
+  const t = useTranslations("me");
   const meta = TYPE_META[r.type] ?? TYPE_META.docs;
   const Icon = meta.icon;
   return (
@@ -282,7 +288,7 @@ function DetailModal({ r, onClose }: { r: Resource; onClose: () => void }) {
                 <Icon size={11} /> {meta.label}
               </span>
               {r.curated_by === "xueyue" && (
-                <span className="chip chip-info text-[10px]">✨ 雪鑰精選</span>
+                <span className="chip chip-info text-[10px]">✨ {t("resourcesXueyuePick")}</span>
               )}
             </div>
             <h2 className="text-xl font-bold">{r.title}</h2>
@@ -309,7 +315,7 @@ function DetailModal({ r, onClose }: { r: Resource; onClose: () => void }) {
             <span>{DIFFICULTY_LABEL[r.difficulty] ?? r.difficulty}</span>
             <span>·</span>
             <span>{LANGUAGE_LABEL[r.language] ?? r.language}</span>
-            {!r.is_free && <><span>·</span><span className="text-amber-700 dark:text-amber-300">💰 需付費</span></>}
+            {!r.is_free && <><span>·</span><span className="text-amber-700 dark:text-amber-300">💰 {t("resourcesNeedPaid")}</span></>}
           </div>
         </div>
 
@@ -320,7 +326,7 @@ function DetailModal({ r, onClose }: { r: Resource; onClose: () => void }) {
             rel="noopener noreferrer"
             className="btn-chip btn-chip-success w-full justify-center text-sm py-3"
           >
-            <ExternalLink size={14} /> 前往 — 開新分頁
+            <ExternalLink size={14} /> {t("resourcesGoNewTab")}
           </a>
         </div>
       </div>

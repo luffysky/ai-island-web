@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { ArrowLeft, Loader2, Save } from "lucide-react";
 
 export default function BlogSettingsPage() {
+  const t = useTranslations("me");
   const [settings, setSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -42,7 +44,7 @@ export default function BlogSettingsPage() {
       return;
     }
     setSettings(json.settings);
-    setMsg("✓ 已儲存");
+    setMsg(`✓ ${t("blogSettingsSaved")}`);
     setTimeout(() => setMsg(""), 2500);
   };
 
@@ -53,34 +55,34 @@ export default function BlogSettingsPage() {
   return (
     <div className="max-w-2xl">
       <Link href="/me/blog" className="text-sm text-fg-muted hover:text-fg flex items-center gap-1 mb-4">
-        <ArrowLeft size={14} /> 回部落格
+        <ArrowLeft size={14} /> {t("blogBackToBlog")}
       </Link>
-      <h1 className="text-2xl font-bold mb-6">部落格設定</h1>
+      <h1 className="text-2xl font-bold mb-6">{t("blogSettingsTitle")}</h1>
 
       <div className="space-y-5">
         <div>
-          <label className="text-sm font-medium mb-1.5 block">部落格標題</label>
+          <label className="text-sm font-medium mb-1.5 block">{t("blogSettingsTitleLabel")}</label>
           <input
             value={settings?.blog_title ?? ""}
             onChange={(e) => set("blog_title", e.target.value)}
-            placeholder="例如：Luffy 的程式日記"
+            placeholder={t("blogSettingsTitlePlaceholder")}
             className="w-full bg-bg-card border border-border rounded-lg p-2.5 text-sm outline-none focus:border-accent"
           />
         </div>
 
         <div>
-          <label className="text-sm font-medium mb-1.5 block">部落格簡介</label>
+          <label className="text-sm font-medium mb-1.5 block">{t("blogSettingsDescLabel")}</label>
           <textarea
             value={settings?.blog_desc ?? ""}
             onChange={(e) => set("blog_desc", e.target.value)}
             rows={3}
-            placeholder="介紹一下你的部落格"
+            placeholder={t("blogSettingsDescPlaceholder")}
             className="w-full bg-bg-card border border-border rounded-lg p-2.5 text-sm outline-none focus:border-accent resize-none"
           />
         </div>
 
         <div>
-          <label className="text-sm font-medium mb-1.5 block">自訂網址</label>
+          <label className="text-sm font-medium mb-1.5 block">{t("blogSettingsSlugLabel")}</label>
           <div className="flex items-center gap-1 text-sm">
             <span className="text-fg-muted">/blogs/</span>
             <input
@@ -91,7 +93,7 @@ export default function BlogSettingsPage() {
             />
           </div>
           <p className="text-xs text-fg-muted mt-1">
-            留空的話、網址會用你的帳號 ID。只能用英數字和連字號。
+            {t("blogSettingsSlugHint")}
           </p>
         </div>
 
@@ -101,7 +103,7 @@ export default function BlogSettingsPage() {
             checked={settings?.is_enabled ?? true}
             onChange={(e) => set("is_enabled", e.target.checked)}
           />
-          公開我的部落格（關閉後別人看不到）
+          {t("blogSettingsPublicToggle")}
         </label>
 
         <div className="flex items-center gap-3 pt-2">
@@ -111,7 +113,7 @@ export default function BlogSettingsPage() {
             className="px-5 py-2.5 rounded-lg bg-accent text-black font-bold text-sm hover:scale-105 transition flex items-center gap-1 disabled:opacity-50"
           >
             {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-            儲存設定
+            {t("blogSettingsSave")}
           </button>
           {msg && (
             <span className={`text-sm ${msg.startsWith("✓") ? "text-green-400" : "text-red-400"}`}>

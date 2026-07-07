@@ -2,6 +2,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { redirect } from "next/navigation";
 import { ReferralClient } from "./ReferralClient";
+import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,7 @@ function generateCode(seed: string): string {
 
 export default async function MyReferralsPage() {
   const supabase = await createSupabaseServer();
+  const t = await getTranslations("me");
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
@@ -61,9 +63,9 @@ export default async function MyReferralsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">🎁 我的邀請碼</h1>
+      <h1 className="text-2xl font-bold">🎁 {t("referralsTitle")}</h1>
       <p className="text-sm text-fg-muted">
-        分享邀請碼給朋友，對方用你的連結註冊後，<span className="text-accent font-semibold">雙方各立即獲得 50 Z幣</span>。
+        {t("referralsIntro1")}<span className="text-accent font-semibold">{t("referralsIntroBonus")}</span>{t("referralsIntro2")}
       </p>
 
       <ReferralClient

@@ -1,6 +1,7 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { chapters as ALL_CHAPTERS } from "@/data/chapters";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 30;
@@ -18,12 +19,13 @@ export const revalidate = 30;
  */
 export default async function FootprintPage() {
   const supabase = await createSupabaseServer();
+  const t = await getTranslations("me");
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     return (
       <div className="p-8 text-center text-fg-muted">
-        <p>登入後可以看學習足跡</p>
-        <Link href="/login" className="text-accent underline">去登入</Link>
+        <p>{t("footprintLoginPrompt")}</p>
+        <Link href="/login" className="text-accent underline">{t("footprintGoLogin")}</Link>
       </div>
     );
   }
@@ -104,26 +106,26 @@ export default async function FootprintPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">🛤️ 學習足跡</h1>
+        <h1 className="text-2xl font-bold flex items-center gap-2">🛤️ {t("footprintTitle")}</h1>
         <p className="text-sm text-fg-muted">
-          {profile?.display_name || profile?.username || "學員"} · Lv {profile?.level ?? 1} · {profile?.xp ?? 0} XP
+          {profile?.display_name || profile?.username || t("footprintStudentFallback")} · Lv {profile?.level ?? 1} · {profile?.xp ?? 0} XP
         </p>
       </div>
 
       {/* 1. 簽到 / 狀態 banner */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <StatCard label="🔥 連續簽到" value={`${(profile as any)?.streak_days ?? 0} 天`} />
-        <StatCard label="📚 30 天完成" value={`${recent30.length} 課`} />
-        <StatCard label="📂 涉獵章節" value={`${byChapter.size} 章`} />
-        <StatCard label="⚠️ 弱項" value={`${weaks.length} 章`} />
+        <StatCard label={`🔥 ${t("footprintStatStreak")}`} value={t("footprintDaysValue", { n: (profile as any)?.streak_days ?? 0 })} />
+        <StatCard label={`📚 ${t("footprintStat30Day")}`} value={t("footprintLessonsValue", { n: recent30.length })} />
+        <StatCard label={`📂 ${t("footprintStatChapters")}`} value={t("footprintChaptersValue", { n: byChapter.size })} />
+        <StatCard label={`⚠️ ${t("footprintStatWeak")}`} value={t("footprintChaptersValue", { n: weaks.length })} />
       </div>
 
       {/* 2. 30 天 timeline */}
       <section>
-        <h2 className="text-lg font-bold mb-3">📅 最近 30 天每日完成</h2>
+        <h2 className="text-lg font-bold mb-3">📅 {t("footprintTimelineTitle")}</h2>
         {byDay.size === 0 ? (
           <div className="bg-bg-card border border-border rounded-xl p-8 text-center text-fg-muted">
-            還沒有學習紀錄、<Link href="/chapters" className="text-accent underline">挑一章開始</Link>
+            {t("footprintNoRecords")}<Link href="/chapters" className="text-accent underline">{t("footprintPickChapter")}</Link>
           </div>
         ) : (
           <div className="space-y-3">
@@ -131,7 +133,7 @@ export default async function FootprintPage() {
               <div key={day} className="bg-bg-card border border-border rounded-xl p-4">
                 <div className="font-bold mb-2 flex items-center gap-2">
                   <span>📅 {day}</span>
-                  <span className="text-xs text-fg-muted">完成 {items.length} 件</span>
+                  <span className="text-xs text-fg-muted">{t("footprintDoneItems", { n: items.length })}</span>
                 </div>
                 <ul className="space-y-1">
                   {items.map((p: any, i: number) => {
@@ -158,9 +160,9 @@ export default async function FootprintPage() {
 
       {/* 3. 章節進度卡 */}
       <section>
-        <h2 className="text-lg font-bold mb-3">📂 章節進度（最近碰過）</h2>
+        <h2 className="text-lg font-bold mb-3">📂 {t("footprintChapterProgressTitle")}</h2>
         {byChapter.size === 0 ? (
-          <div className="text-sm text-fg-muted">還沒有章節進度</div>
+          <div className="text-sm text-fg-muted">{t("footprintNoChapterProgress")}</div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {Array.from(byChapter.entries())
@@ -178,13 +180,13 @@ export default async function FootprintPage() {
                   >
                     <div className="font-bold truncate">Ch{String(cid).padStart(2, "0")} {ch?.title || "—"}</div>
                     <div className="text-xs text-fg-muted mt-1">
-                      {info.count} / {total} 課 · {pct}%
+                      {t("footprintChapterCount", { done: info.count, total, pct })}
                     </div>
                     <div className="h-1.5 bg-bg-elevated rounded-full mt-2 overflow-hidden">
                       <div className="h-full bg-accent" style={{ width: `${pct}%` }} />
                     </div>
                     <div className="text-[10px] text-fg-muted mt-2">
-                      {new Date(info.lastAt).toLocaleDateString("zh-TW", { month: "2-digit", day: "2-digit" })} 最後碰
+                      {t("footprintLastTouched", { date: new Date(info.lastAt).toLocaleDateString("zh-TW", { month: "2-digit", day: "2-digit" }) })}
                     </div>
                   </Link>
                 );
@@ -196,16 +198,16 @@ export default async function FootprintPage() {
       {/* 4. 複習推薦 */}
       {(reviewBuckets.week.length + reviewBuckets.month.length + reviewBuckets.longer.length) > 0 && (
         <section>
-          <h2 className="text-lg font-bold mb-3">💡 該複習了（艾賓浩斯遺忘曲線）</h2>
+          <h2 className="text-lg font-bold mb-3">💡 {t("footprintReviewTitle")}</h2>
           <div className="space-y-3">
             {reviewBuckets.week.length > 0 && (
-              <ReviewBucket label="🟡 7-14 天前學過" items={reviewBuckets.week} />
+              <ReviewBucket label={`🟡 ${t("footprintReviewWeek")}`} items={reviewBuckets.week} />
             )}
             {reviewBuckets.month.length > 0 && (
-              <ReviewBucket label="🟠 14-30 天前學過" items={reviewBuckets.month} />
+              <ReviewBucket label={`🟠 ${t("footprintReviewMonth")}`} items={reviewBuckets.month} />
             )}
             {reviewBuckets.longer.length > 0 && (
-              <ReviewBucket label="🔴 30-90 天前學過、可能忘了" items={reviewBuckets.longer} />
+              <ReviewBucket label={`🔴 ${t("footprintReviewLonger")}`} items={reviewBuckets.longer} />
             )}
           </div>
         </section>
@@ -214,7 +216,7 @@ export default async function FootprintPage() {
       {/* 5. 弱項章節 */}
       {weaks.length > 0 && (
         <section>
-          <h2 className="text-lg font-bold mb-3">⚠️ 弱項章節（quiz 平均偏低）</h2>
+          <h2 className="text-lg font-bold mb-3">⚠️ {t("footprintWeakTitle")}</h2>
           <div className="bg-bg-card border border-border rounded-xl divide-y divide-border">
             {weaks.map((w) => {
               const ch = ALL_CHAPTERS.find((c: any) => c.id === w.chapter_id);
@@ -226,10 +228,10 @@ export default async function FootprintPage() {
                 >
                   <div>
                     <div className="font-bold">Ch{String(w.chapter_id).padStart(2, "0")} {ch?.title}</div>
-                    <div className="text-xs text-fg-muted">{w.attempt_count} 次 quiz</div>
+                    <div className="text-xs text-fg-muted">{t("footprintQuizAttempts", { n: w.attempt_count })}</div>
                   </div>
                   <div className="text-lg font-mono text-orange-600 dark:text-orange-300">
-                    {Number(w.avg_pct).toFixed(0)} 分
+                    {t("footprintScore", { n: Number(w.avg_pct).toFixed(0) })}
                   </div>
                 </Link>
               );
@@ -239,8 +241,8 @@ export default async function FootprintPage() {
       )}
 
       <div className="text-center text-xs text-fg-muted py-4">
-        🤖 綁定 LINE bot 後、每晚 20:00 自動推學習回顧 ·{" "}
-        <Link href="/settings/notifications" className="text-accent underline">通知設定</Link>
+        🤖 {t("footprintLineFooter")}{" "}
+        <Link href="/settings/notifications" className="text-accent underline">{t("footprintNotifSettings")}</Link>
       </div>
     </div>
   );

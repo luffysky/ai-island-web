@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Loader2, Save, LogOut, Users, GraduationCap, Handshake } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
+import { useTranslations } from "next-intl";
 
 const ROLES = [
   { value: "mentor",  label: "我想當 mentor 帶人",   emoji: "🎓", desc: "你已有經驗、想 give back、教更新的學員" },
@@ -21,6 +22,7 @@ const TOPIC_SUGGEST = [
 export function MentorClient() {
   const toast = useToast();
   const confirm = useConfirm();
+  const t = useTranslations("mentor");
   const [state, setState] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState("");
@@ -49,7 +51,7 @@ export function MentorClient() {
   }
 
   async function save() {
-    if (!role) { toast.error("先選身份"); return; }
+    if (!role) { toast.error(t("mentorSelectRole")); return; }
     setSaving(true);
     try {
       const r = await fetch("/api/me/mentor", {
@@ -62,12 +64,12 @@ export function MentorClient() {
       });
       const j = await r.json();
       if (j.ok) await load();
-      else toast.error(j.error ?? "失敗");
+      else toast.error(j.error ?? t("mentorSaveFailed"));
     } finally { setSaving(false); }
   }
 
   async function exit() {
-    if (!(await confirm({ title: "退出配對、不再被其他人看到？", destructive: true, confirmLabel: "退出" }))) return;
+    if (!(await confirm({ title: t("mentorExitTitle"), destructive: true, confirmLabel: t("mentorExitConfirm") }))) return;
     await fetch("/api/me/mentor", { method: "DELETE", credentials: "include" });
     await load();
   }
@@ -81,9 +83,9 @@ export function MentorClient() {
     <div className="space-y-4">
       {/* 設定 */}
       <div className="bg-bg-card border border-border rounded-xl p-5">
-        <h3 className="font-bold mb-3">{mine ? "更新我的配對設定" : "建立配對 profile"}</h3>
+        <h3 className="font-bold mb-3">{mine ? t("mentorFormTitleUpdate") : t("mentorFormTitleCreate")}</h3>
 
-        <label className="text-sm font-medium block mb-2">身份</label>
+        <label className="text-sm font-medium block mb-2">{t("mentorRoleLabel")}</label>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
           {ROLES.map((r) => (
             <button key={r.value} onClick={() => setRole(r.value)}
@@ -95,35 +97,35 @@ export function MentorClient() {
           ))}
         </div>
 
-        <label className="text-xs text-fg-muted">自介（可選、給對方看你想做什麼 / 想學什麼）</label>
+        <label className="text-xs text-fg-muted">{t("mentorBioLabel")}</label>
         <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3} maxLength={500}
-          placeholder="例：學 React 半年、想找有經驗的 mentor 幫看 PR、晚上有空..."
+          placeholder={t("mentorBioPlaceholder")}
           className="w-full bg-bg-elevated border border-border rounded p-2 text-sm mb-3" />
 
-        <label className="text-xs text-fg-muted">主題（逗號分隔、推：{TOPIC_SUGGEST.slice(0, 6).join(" / ")}...）</label>
+        <label className="text-xs text-fg-muted">{t("mentorTopicsLabel", { list: TOPIC_SUGGEST.slice(0, 6).join(" / ") })}</label>
         <input value={topicsRaw} onChange={(e) => setTopicsRaw(e.target.value)}
           placeholder="react, typescript, ai-engineering"
           className="w-full bg-bg-elevated border border-border rounded p-2 text-sm mb-3" />
 
-        <label className="text-xs text-fg-muted">可用時段</label>
+        <label className="text-xs text-fg-muted">{t("mentorAvailabilityLabel")}</label>
         <input value={availability} onChange={(e) => setAvailability(e.target.value)}
-          placeholder="例：平日晚上 / 週末"
+          placeholder={t("mentorAvailabilityPlaceholder")}
           className="w-full bg-bg-elevated border border-border rounded p-2 text-sm mb-3" />
 
-        <label className="text-xs text-fg-muted">聯絡方式（給配對成功的人）</label>
+        <label className="text-xs text-fg-muted">{t("mentorContactLabel")}</label>
         <input value={contactMethod} onChange={(e) => setContactMethod(e.target.value)}
-          placeholder="例：discord:xxx 或 line:xxx"
+          placeholder={t("mentorContactPlaceholder")}
           className="w-full bg-bg-elevated border border-border rounded p-2 text-sm mb-3" />
 
         <div className="flex gap-2">
           <button onClick={save} disabled={saving || !role}
             className="btn-chip btn-chip-success flex-1 justify-center py-2.5 disabled:opacity-50">
             {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-            {mine ? "更新" : "建立"}
+            {mine ? t("mentorUpdate") : t("mentorCreate")}
           </button>
           {mine && (
             <button onClick={exit} className="btn-chip btn-chip-danger">
-              <LogOut size={12} /> 退出配對
+              <LogOut size={12} /> {t("mentorExitMatch")}
             </button>
           )}
         </div>
@@ -133,10 +135,10 @@ export function MentorClient() {
       {mine && (
         <div className="bg-bg-card border border-border rounded-xl p-5">
           <h3 className="font-bold mb-3 flex items-center gap-2">
-            <Users size={16} /> 為你推薦的配對候選（{candidates.length}）
+            <Users size={16} /> {t("mentorCandidatesTitle", { n: candidates.length })}
           </h3>
           {candidates.length === 0 ? (
-            <p className="text-sm text-fg-muted py-6 text-center">還沒有適合的、晚點再來看 / 邀請朋友來</p>
+            <p className="text-sm text-fg-muted py-6 text-center">{t("mentorNoCandidates")}</p>
           ) : (
             <div className="space-y-2">
               {candidates.map((c: any) => {
@@ -148,7 +150,7 @@ export function MentorClient() {
                       <span className="font-bold">{c.name}</span>
                       <span className="chip chip-neutral text-[10px]">Lv {c.level}</span>
                       <span className="chip chip-info text-[10px]">{roleMeta?.label}</span>
-                      {c.overlap > 0 && <span className="chip chip-success text-[10px]">🎯 {c.overlap} 共同主題</span>}
+                      {c.overlap > 0 && <span className="chip chip-success text-[10px]">🎯 {t("mentorCommonTopics", { n: c.overlap })}</span>}
                     </div>
                     {c.bio && <p className="text-sm text-fg-muted mb-1.5">{c.bio}</p>}
                     {c.topics?.length > 0 && (

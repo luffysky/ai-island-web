@@ -9,6 +9,7 @@ import {
   Lightbulb, Magnet, Leaf, Wand2, Languages, FolderTree, Pencil, Copy, Music, Film, PenTool,
   X, Check, Bot, Egg, Recycle, GitFork, Hand, ScrollText, BrainCircuit, type LucideIcon,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useConfirm, usePrompt } from "@/components/ui/ConfirmDialog";
 import { EggHatch } from "./EggHatch";
 import { IslandTour } from "./IslandTour";
@@ -58,6 +59,7 @@ const PRESET_WORKFLOWS: { title: string; desc: string; steps: { agent: string; p
 ];
 
 export function CreatorIslandClient({ workspaceId, initialFragments, initialCollections = [] }: { workspaceId: string; initialFragments: Fragment[]; initialCollections?: Collection[] }) {
+  const t = useTranslations("creator");
   const [fragments, setFragments] = useState<Fragment[]>(initialFragments);
   const [collections, setCollections] = useState<Collection[]>(initialCollections);
   const [activeCol, setActiveCol] = useState<string | null>(null);
@@ -114,10 +116,10 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
     } catch (e: any) { setErr(e.message); }
   }
   async function deleteFragment(id: string) {
-    if (!(await confirm({ title: "刪除這個碎片？", confirmLabel: "刪除", destructive: true }))) return;
+    if (!(await confirm({ title: t("hubDeleteFragmentConfirm"), confirmLabel: t("hubDelete"), destructive: true }))) return;
     try {
       const res = await fetch(`/api/creator-island/fragments/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("刪除失敗");
+      if (!res.ok) throw new Error(t("hubDeleteFailed"));
       setFragments((p) => p.filter((x) => x.id !== id)); setEditing(null);
       setSelected((p) => { const n = new Set(p); n.delete(id); return n; });
     } catch (e: any) { setErr(e.message); }
@@ -125,14 +127,14 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
 
   // === 自訂分類（Collections） ===
   async function createCollection() {
-    const name = await prompt({ title: "新分類名稱" }); if (!name?.trim()) return;
+    const name = await prompt({ title: t("hubNewCollectionName") }); if (!name?.trim()) return;
     try {
       const { collection } = await api("/api/creator-island/collections", { workspaceId, name: name.trim() });
       setCollections((p) => [...p, { id: collection.id, name: collection.name, assetIds: [] }]);
     } catch (e: any) { setErr(e.message); }
   }
   async function deleteCollection(id: string) {
-    if (!(await confirm({ title: "刪除這個分類？", description: "碎片本身不會刪", confirmLabel: "刪除", destructive: true }))) return;
+    if (!(await confirm({ title: t("hubDeleteCollectionConfirm"), description: t("hubDeleteCollectionDesc"), confirmLabel: t("hubDelete"), destructive: true }))) return;
     try {
       await fetch(`/api/creator-island/collections/${id}`, { method: "DELETE" });
       setCollections((p) => p.filter((c) => c.id !== id));
@@ -194,17 +196,17 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
   }
   function startVoice() {
     const SR = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-    if (!SR) { setErr("此瀏覽器不支援語音輸入"); return; }
+    if (!SR) { setErr(t("hubNoVoiceSupport")); return; }
     const rec = new SR(); rec.lang = "zh-TW"; rec.interimResults = false;
     rec.onresult = (e: any) => setNt((prev) => (prev ? prev + " " : "") + e.results[0][0].transcript);
-    rec.onerror = () => setErr("語音輸入失敗"); rec.start();
+    rec.onerror = () => setErr(t("hubVoiceFailed")); rec.start();
   }
   async function onPhoto(file: File) {
     setErr(null); setBusy("photo");
     try {
       const fd = new FormData(); fd.append("file", file);
       const up = await fetch("/api/upload", { method: "POST", body: fd }).then((r) => r.json());
-      if (!up.url) throw new Error(up.message || "上傳失敗");
+      if (!up.url) throw new Error(up.message || t("hubUploadFailed"));
       const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title: file.name.slice(0, 60) || "圖片碎片", content: `![](${up.url})`, tags: ["圖片"] });
       setFragments((p) => [fragment, ...p]);
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
@@ -214,7 +216,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
     try {
       const fd = new FormData(); fd.append("file", file);
       const up = await fetch("/api/upload", { method: "POST", body: fd }).then((r) => r.json());
-      if (!up.url) throw new Error(up.message || "上傳失敗（影片上限 30MB）");
+      if (!up.url) throw new Error(up.message || t("hubUploadVideoFailed"));
       const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title: file.name.slice(0, 60) || "影片碎片", content: `!video(${up.url})`, tags: ["影片"] });
       setFragments((p) => [fragment, ...p]);
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
@@ -261,7 +263,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
   async function saveFragment(title: string, content: string) {
-    try { const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title, content, sourceType: "ai_assisted", derivedFrom: result?.sourceIds ?? [], relationType: "condensed_from" }); setFragments((p) => [fragment, ...p]); flash("已存成碎片 ✓"); setResult(null); setSelected(new Set()); }
+    try { const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title, content, sourceType: "ai_assisted", derivedFrom: result?.sourceIds ?? [], relationType: "condensed_from" }); setFragments((p) => [fragment, ...p]); flash(t("hubSavedFragment")); setResult(null); setSelected(new Set()); }
     catch (e: any) { setErr(e.message); }
   }
   // 演化變體：單獨存（不關面板、標記已存、跳提示），可全部存
@@ -269,7 +271,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
     if (savedKeys.has(key)) return;
     try {
       const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title: v.title, content: v.content, sourceType: "ai_assisted", derivedFrom: result?.sourceIds ?? [], relationType: "evolved_from" });
-      setFragments((p) => [fragment, ...p]); setSavedKeys((p) => new Set(p).add(key)); flash("已存成碎片 ✓");
+      setFragments((p) => [fragment, ...p]); setSavedKeys((p) => new Set(p).add(key)); flash(t("hubSavedFragment"));
     } catch (e: any) { setErr(e.message); }
   }
   async function saveAllVariants(variants: { title: string; content: string }[]) {
@@ -281,8 +283,8 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
         const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title: variants[i].title, content: variants[i].content, sourceType: "ai_assisted", derivedFrom: result?.sourceIds ?? [], relationType: "evolved_from" });
         created.push(fragment); setSavedKeys((p) => new Set(p).add(key));
       }
-      if (created.length) { setFragments((p) => [...created.reverse(), ...p]); flash(`已存 ${created.length} 個碎片 ✓`); }
-      else flash("都已經存過了");
+      if (created.length) { setFragments((p) => [...created.reverse(), ...p]); flash(t("hubSavedNFragments", { n: created.length })); }
+      else flash(t("hubAllSaved"));
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
   async function saveWork() {
@@ -291,7 +293,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       const body = workType === "song"
         ? { workspaceId, title: r.title, workType, body: r.lyricsSectioned, fragmentIds: sel, sourceType: "ai_assisted", meta: { sunoPrompt: r.sunoPrompt, mvPrompt: r.mvPrompt } }
         : { workspaceId, title: r.title, workType, body: r.body, fragmentIds: sel, sourceType: "ai_assisted" };
-      await api("/api/creator-island/works", body); setResult(null); setSelected(new Set()); flash("已存成作品（作品庫看）");
+      await api("/api/creator-island/works", body); setResult(null); setSelected(new Set()); flash(t("hubSavedWork"));
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
   async function importToEngine() {
@@ -309,8 +311,8 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
     } catch (e: any) { setErr(e.message); setBusy(null); }
   }
   async function saveWorkflow() {
-    const title = await prompt({ title: `把剛剛這 ${recording.length} 步存成工作流，取個名字` }); if (!title) return;
-    try { await api("/api/creator-island/workflows", { workspaceId, title, steps: recording }); setRecording([]); flash("已存成工作流"); }
+    const title = await prompt({ title: t("hubSaveWorkflowPrompt", { n: recording.length }) }); if (!title) return;
+    try { await api("/api/creator-island/workflows", { workspaceId, title, steps: recording }); setRecording([]); flash(t("hubSavedWorkflow")); }
     catch (e: any) { setErr(e.message); }
   }
   async function loadWorkflows() {
@@ -320,7 +322,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
   }
   async function addPreset(p: typeof PRESET_WORKFLOWS[number]) {
     setErr(null);
-    try { await api("/api/creator-island/workflows", { workspaceId, title: p.title, steps: p.steps }); await loadWorkflows(); flash("已加入工作流 ✓、選碎片後就能重播"); }
+    try { await api("/api/creator-island/workflows", { workspaceId, title: p.title, steps: p.steps }); await loadWorkflows(); flash(t("hubWorkflowAdded")); }
     catch (e: any) { setErr(e.message); }
   }
   async function replay(id: string) {
@@ -330,16 +332,16 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
   }
 
   const empty = fragments.length === 0;
-  const busyMsg = busy === "synthesize" ? "綠寶正在凝聚碎片…" : busy === "evolve" ? "綠寶正在演化想法…" : busy === "compose" ? "綠寶正在編織作品…" : busy === "transcreate" ? "文化轉譯中…" : busy === "pairs" ? "探索意外配對…" : busy === "related" ? "搜尋相關碎片…" : busy === "replay" ? "重播工作流…" : null;
+  const busyMsg = busy === "synthesize" ? t("hubBusySynthesize") : busy === "evolve" ? t("hubBusyEvolve") : busy === "compose" ? t("hubBusyCompose") : busy === "transcreate" ? t("hubBusyTranscreate") : busy === "pairs" ? t("hubBusyPairs") : busy === "related" ? t("hubBusyRelated") : busy === "replay" ? t("hubBusyReplay") : null;
 
   return (
     <div className="space-y-5 pb-32">
       {/* HUD */}
       <div data-tour="hud" className="flex items-center gap-2 flex-wrap text-xs">
         <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 to-yellow-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-200"><Coins size={13} /> Dust {dust ?? "…"}</span>
-        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-bg-card border border-border text-fg-muted"><Trees size={13} /> 碎片 {fragments.length}</span>
-        {sel.length > 0 && <span className="px-3 py-1.5 rounded-full bg-accent/20 border border-accent/40 text-accent">已選 {sel.length}</span>}
-        <span className="ml-auto text-fg-muted">綠寶陪你創作中</span>
+        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-bg-card border border-border text-fg-muted"><Trees size={13} /> {t("hubFragmentsLabel")} {fragments.length}</span>
+        {sel.length > 0 && <span className="px-3 py-1.5 rounded-full bg-accent/20 border border-accent/40 text-accent">{t("hubSelected")} {sel.length}</span>}
+        <span className="ml-auto text-fg-muted">{t("hubEmeraldCompanion")}</span>
       </div>
 
       {err && <div className="bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-300 rounded-xl px-4 py-2 text-sm flex justify-between items-center gap-2"><span>{err}</span><button onClick={() => setErr(null)}><X size={14} /></button></div>}
@@ -349,10 +351,10 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
           <DriftBottleSea className="border border-cyan-400/25 shadow-xl">
             <div className="p-5 sm:p-6 flex items-center justify-between gap-3 flex-wrap text-white">
               <div className="max-w-md drop-shadow">
-                <div className="text-lg font-bold inline-flex items-center gap-1.5">🌊 海上漂來了 300 個故事</div>
-                <p className="text-sm text-cyan-50/90 mt-1">海面漂來 <b>300 個</b>來自各地的靈感碎片（含稀有 SSR）——生活、夢境、回憶、街景、遺憾……它們不是你的，卻可以和你的回憶相遇。也可以自己先寫第一句。</p>
+                <div className="text-lg font-bold inline-flex items-center gap-1.5">🌊 {t("hubDriftTitle")}</div>
+                <p className="text-sm text-cyan-50/90 mt-1">{t("hubDriftDescPre")}<b>300</b>{t("hubDriftDescPost")}</p>
               </div>
-              <button onClick={seedPool} disabled={busy === "seed"} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-gradient-to-r from-cyan-300 to-blue-400 text-black text-sm font-bold shadow-lg disabled:opacity-50 whitespace-nowrap hover:scale-105 transition">{busy === "seed" ? "打撈中…" : <>🌊 撈起 300 個漂流瓶</>}</button>
+              <button onClick={seedPool} disabled={busy === "seed"} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-gradient-to-r from-cyan-300 to-blue-400 text-black text-sm font-bold shadow-lg disabled:opacity-50 whitespace-nowrap hover:scale-105 transition">{busy === "seed" ? t("hubDraggingUp") : <>🌊 {t("hubDragUp300")}</>}</button>
             </div>
           </DriftBottleSea>
         </motion.div>
@@ -363,13 +365,13 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
           className="bg-gradient-to-r from-violet-500/12 to-fuchsia-500/10 border border-violet-400/30 rounded-2xl p-4 flex items-center justify-between gap-3 flex-wrap">
           <div className="min-w-0">
-            <div className="text-xs font-bold text-violet-600 dark:text-violet-300 inline-flex items-center gap-1.5"><Shuffle size={13} /> 今日 AI 配對</div>
+            <div className="text-xs font-bold text-violet-600 dark:text-violet-300 inline-flex items-center gap-1.5"><Shuffle size={13} /> {t("hubTodayPair")}</div>
             <div className="text-sm mt-1"><b>{todayPair.a_title}</b> <span className="text-violet-400">×</span> <b>{todayPair.b_title}</b></div>
-            <div className="text-[11px] text-fg-muted mt-0.5">AI 覺得這兩個撞在一起有戲——今天就從這裡開始寫？</div>
+            <div className="text-[11px] text-fg-muted mt-0.5">{t("hubTodayPairHint")}</div>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <button onClick={() => setSelected(new Set([todayPair.a_id, todayPair.b_id]))} className="text-xs px-3 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent">選起來</button>
-            <Link href={`/creator-island/reason?seed=${todayPair.a_id},${todayPair.b_id}`} className="text-xs px-3 py-1.5 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white font-bold inline-flex items-center gap-1"><BrainCircuit size={13} /> 來推理</Link>
+            <button onClick={() => setSelected(new Set([todayPair.a_id, todayPair.b_id]))} className="text-xs px-3 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent">{t("hubSelectThese")}</button>
+            <Link href={`/creator-island/reason?seed=${todayPair.a_id},${todayPair.b_id}`} className="text-xs px-3 py-1.5 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white font-bold inline-flex items-center gap-1"><BrainCircuit size={13} /> {t("hubToReason")}</Link>
           </div>
         </motion.div>
       )}
@@ -380,29 +382,29 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
           <EggHatch onOpen={openEgg} disabled={busy !== null} />
         </div>
         <div data-tour="capture" className="sm:col-span-3 rounded-2xl p-4 bg-bg-card border border-border space-y-2">
-          <div className="font-bold text-sm flex items-center gap-2"><PenLine size={15} /> 捕捉碎片
-            <button onClick={startVoice} title="語音" className="ml-auto hover:scale-110 transition"><Mic size={17} /></button>
-            <label title="拍照/圖片" className="cursor-pointer hover:scale-110 transition"><Camera size={17} /><input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onPhoto(f); e.currentTarget.value = ""; }} /></label>
-            <label title="影片（上限 30MB）" className="cursor-pointer hover:scale-110 transition"><Film size={17} /><input type="file" accept="video/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onVideo(f); e.currentTarget.value = ""; }} /></label>
+          <div className="font-bold text-sm flex items-center gap-2"><PenLine size={15} /> {t("hubCapture")}
+            <button onClick={startVoice} title={t("hubVoice")} className="ml-auto hover:scale-110 transition"><Mic size={17} /></button>
+            <label title={t("hubPhoto")} className="cursor-pointer hover:scale-110 transition"><Camera size={17} /><input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onPhoto(f); e.currentTarget.value = ""; }} /></label>
+            <label title={t("hubVideo")} className="cursor-pointer hover:scale-110 transition"><Film size={17} /><input type="file" accept="video/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onVideo(f); e.currentTarget.value = ""; }} /></label>
           </div>
-          <input value={nt} onChange={(e) => setNt(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") addFragment(); }} placeholder="一句想法 / 回憶 / 點子…"
+          <input value={nt} onChange={(e) => setNt(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") addFragment(); }} placeholder={t("hubCapturePlaceholder")}
             className="w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-accent" />
           <div className="flex gap-2">
-            <input value={ntags} onChange={(e) => setNtags(e.target.value)} placeholder="標籤（逗號分隔）" className="flex-1 bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-accent" />
-            <button onClick={addFragment} disabled={busy === "add" || !nt.trim()} title="新增" className="px-4 rounded-lg bg-accent text-white font-bold disabled:opacity-40 grid place-items-center"><Plus size={16} /></button>
+            <input value={ntags} onChange={(e) => setNtags(e.target.value)} placeholder={t("hubTagsPlaceholder")} className="flex-1 bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-accent" />
+            <button onClick={addFragment} disabled={busy === "add" || !nt.trim()} title={t("hubAddNew")} className="px-4 rounded-lg bg-accent text-white font-bold disabled:opacity-40 grid place-items-center"><Plus size={16} /></button>
           </div>
         </div>
       </div>
 
       {/* 探索列 */}
       <div data-tour="explore" className="flex gap-2 text-xs flex-wrap">
-        <button onClick={explorePairs} disabled={busy !== null} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-violet-500/15 text-violet-700 dark:text-violet-200 hover:bg-violet-500/25 disabled:opacity-40"><Shuffle size={13} /> 意外配對</button>
-        <button onClick={loadWorkflows} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent"><Wrench size={13} /> 工作流{recording.length > 0 ? `（錄製 ${recording.length}）` : ""}</button>
-        {recording.length > 0 && <button onClick={saveWorkflow} className="px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-200">存成工作流</button>}
-        <Link href={`/creator-island/activity?ws=${workspaceId}`} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent"><ScrollText size={13} /> 操作記錄</Link>
-        <Link href="/creator-island/reason" className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-accent/15 text-accent border border-accent/30 hover:bg-accent/25"><BrainCircuit size={13} /> 推理台</Link>
-        <Link href="/creator-island/universe" className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r from-fuchsia-500/15 to-indigo-500/15 text-fuchsia-600 dark:text-fuchsia-300 border border-fuchsia-400/30 hover:opacity-90">🌌 碎片宇宙</Link>
-        <Link href="/works" className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent">🎨 作品牆</Link>
+        <button onClick={explorePairs} disabled={busy !== null} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-violet-500/15 text-violet-700 dark:text-violet-200 hover:bg-violet-500/25 disabled:opacity-40"><Shuffle size={13} /> {t("hubSerendipity")}</button>
+        <button onClick={loadWorkflows} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent"><Wrench size={13} /> {t("hubWorkflows")}{recording.length > 0 ? t("hubRecordingCount", { n: recording.length }) : ""}</button>
+        {recording.length > 0 && <button onClick={saveWorkflow} className="px-3 py-1.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-200">{t("hubSaveAsWorkflow")}</button>}
+        <Link href={`/creator-island/activity?ws=${workspaceId}`} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent"><ScrollText size={13} /> {t("hubActivityLog")}</Link>
+        <Link href="/creator-island/reason" className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-accent/15 text-accent border border-accent/30 hover:bg-accent/25"><BrainCircuit size={13} /> {t("hubReasonBench")}</Link>
+        <Link href="/creator-island/universe" className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-to-r from-fuchsia-500/15 to-indigo-500/15 text-fuchsia-600 dark:text-fuchsia-300 border border-fuchsia-400/30 hover:opacity-90">🌌 {t("hubFragmentUniverse")}</Link>
+        <Link href="/works" className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent">🎨 {t("hubWorksWall")}</Link>
       </div>
 
       {/* 意外配對面板 */}
@@ -410,13 +412,13 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
         {panel === "pairs" && pairs && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="bg-bg-card border border-violet-500/30 rounded-2xl p-4 overflow-hidden">
             <div className="flex items-center justify-between gap-2 flex-wrap mb-2">
-              <div className="text-sm font-bold inline-flex items-center gap-1.5"><Shuffle size={14} /> AI 意外配對 <span className="text-xs font-normal text-fg-muted">可點多對累加碎片 → 凝聚/編織 或丟進推理台</span></div>
+              <div className="text-sm font-bold inline-flex items-center gap-1.5"><Shuffle size={14} /> {t("hubAiSerendipity")} <span className="text-xs font-normal text-fg-muted">{t("hubSerendipityHint")}</span></div>
               <div className="flex items-center gap-2">
-                {sel.length > 0 && <Link href={`/creator-island/reason?seed=${sel.join(",")}`} className="text-[11px] font-bold text-accent hover:underline inline-flex items-center gap-0.5"><BrainCircuit size={12} /> 丟進推理台（{sel.length}）</Link>}
-                {sel.length > 0 && <button onClick={() => setSelected(new Set())} className="text-[11px] text-fg-muted hover:text-accent inline-flex items-center gap-0.5"><X size={11} /> 清空</button>}
+                {sel.length > 0 && <Link href={`/creator-island/reason?seed=${sel.join(",")}`} className="text-[11px] font-bold text-accent hover:underline inline-flex items-center gap-0.5"><BrainCircuit size={12} /> {t("hubToReasonN", { n: sel.length })}</Link>}
+                {sel.length > 0 && <button onClick={() => setSelected(new Set())} className="text-[11px] text-fg-muted hover:text-accent inline-flex items-center gap-0.5"><X size={11} /> {t("hubClear")}</button>}
               </div>
             </div>
-            {pairs.length === 0 ? <div className="text-xs text-fg-muted">碎片太少、或需要更多語意向量，多寫幾個再探索。</div> : (
+            {pairs.length === 0 ? <div className="text-xs text-fg-muted">{t("hubTooFewFragments")}</div> : (
               <div className="grid sm:grid-cols-2 gap-2">
                 {pairs.map((p, i) => {
                   const active = selected.has(p.a_id) && selected.has(p.b_id);
@@ -434,12 +436,12 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
         )}
         {panel === "flows" && workflows && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="bg-bg-card border border-border rounded-2xl p-4 overflow-hidden space-y-1">
-            <div className="text-sm font-bold mb-1 inline-flex items-center gap-1.5"><Wrench size={14} /> 我的工作流</div>
-            {workflows.length === 0 ? <div className="text-xs text-fg-muted">還沒有自己的工作流。做幾個動作後「存成工作流」，或直接從下面的範例加入。</div> :
+            <div className="text-sm font-bold mb-1 inline-flex items-center gap-1.5"><Wrench size={14} /> {t("hubMyWorkflows")}</div>
+            {workflows.length === 0 ? <div className="text-xs text-fg-muted">{t("hubNoWorkflows")}</div> :
               workflows.map((w) => (
                 <div key={w.id} className="flex items-center justify-between text-xs bg-bg-elevated rounded-lg px-3 py-2">
                   <span><b>{w.title}</b> <span className="text-fg-muted">· {(w.steps ?? []).map((s: any) => s.agent).join("→")}</span></span>
-                  <button onClick={() => replay(w.id)} disabled={busy !== null || sel.length < 1} className="text-accent disabled:opacity-40">▶ 重播</button>
+                  <button onClick={() => replay(w.id)} disabled={busy !== null || sel.length < 1} className="text-accent disabled:opacity-40">▶ {t("hubReplay")}</button>
                 </div>
               ))}
             {/* 預置範例工作流：一鍵加入（尚未加入的才顯示） */}
@@ -449,11 +451,11 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
               if (avail.length === 0) return null;
               return (
                 <div className="pt-2 mt-1 border-t border-border/60 space-y-1">
-                  <div className="text-[11px] text-fg-muted px-1">✨ 範例工作流（點加入，選碎片後即可重播）</div>
+                  <div className="text-[11px] text-fg-muted px-1">✨ {t("hubPresetWorkflows")}</div>
                   {avail.map((p) => (
                     <div key={p.title} className="flex items-center justify-between gap-2 text-xs bg-bg-elevated/60 rounded-lg px-3 py-2">
                       <span className="min-w-0"><b>{p.title}</b> <span className="text-fg-muted">· {p.desc}</span></span>
-                      <button onClick={() => addPreset(p)} className="shrink-0 text-accent hover:underline">＋ 加入</button>
+                      <button onClick={() => addPreset(p)} className="shrink-0 text-accent hover:underline">＋ {t("hubAdd")}</button>
                     </div>
                   ))}
                 </div>
@@ -463,8 +465,8 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
         )}
         {related && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-bg-card border border-border rounded-2xl p-4">
-            <div className="text-sm font-bold mb-1 inline-flex items-center gap-1.5"><Search size={14} /> 你可能也想到過…</div>
-            {related.length === 0 ? <div className="text-xs text-fg-muted">沒找到明顯相關的舊碎片。</div> :
+            <div className="text-sm font-bold mb-1 inline-flex items-center gap-1.5"><Search size={14} /> {t("hubMaybeThought")}</div>
+            {related.length === 0 ? <div className="text-xs text-fg-muted">{t("hubNoRelated")}</div> :
               related.map((r) => <button key={r.id} onClick={() => setSelected((p) => new Set([...p, r.id]))} className="block text-left text-xs text-fg-muted hover:text-accent">＋ {r.title} <span className="opacity-60">{Math.round((r.similarity ?? 0) * 100)}%</span></button>)}
           </motion.div>
         )}
@@ -474,15 +476,15 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       <AnimatePresence>
         {advice && (
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-gradient-to-br from-amber-500/10 to-pink-500/10 border border-amber-500/30 rounded-2xl p-4 space-y-2">
-            <div className="flex items-center justify-between"><div className="font-bold inline-flex items-center gap-1.5"><Lightbulb size={16} /> 這些碎片適合做什麼</div><button onClick={() => setAdvice(null)} className="text-fg-muted hover:text-fg"><X size={15} /></button></div>
+            <div className="flex items-center justify-between"><div className="font-bold inline-flex items-center gap-1.5"><Lightbulb size={16} /> {t("hubWhatToMake")}</div><button onClick={() => setAdvice(null)} className="text-fg-muted hover:text-fg"><X size={15} /></button></div>
             {advice.insight && <p className="text-sm text-fg-muted">{advice.insight}</p>}
             <div className="grid sm:grid-cols-2 gap-2">
               {(advice.suggestions ?? []).map((s: any, i: number) => (
                 <div key={i} className="bg-bg-card/60 rounded-lg p-3 text-sm">
                   <div className="font-bold">{s.workType} <span className="text-xs text-accent">· {s.genre}</span></div>
                   <div className="text-xs text-fg-muted mt-0.5">{s.why}</div>
-                  {s.angle && <div className="text-xs text-accent-3 mt-0.5">切入：{s.angle}</div>}
-                  <button onClick={() => composeAs(s.genre ? `${s.workType}（${s.genre}）` : s.workType)} disabled={busy !== null} className="mt-1.5 text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-200 disabled:opacity-40">用這個編織 →</button>
+                  {s.angle && <div className="text-xs text-accent-3 mt-0.5">{t("hubAngle")}{s.angle}</div>}
+                  <button onClick={() => composeAs(s.genre ? `${s.workType}（${s.genre}）` : s.workType)} disabled={busy !== null} className="mt-1.5 text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-200 disabled:opacity-40">{t("hubWeaveWithThis")}</button>
                 </div>
               ))}
             </div>
@@ -497,41 +499,41 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
             {result.action === "synthesize" && (<>
               <div className="font-bold inline-flex items-center gap-1.5"><Magnet size={15} /> {result.result.title}</div>
               <p className="text-sm text-fg-muted whitespace-pre-wrap">{result.result.summary}</p>
-              <div className="text-xs"><b className="text-accent">核心：</b>{result.result.coreIdea}</div>
+              <div className="text-xs"><b className="text-accent">{t("hubCore")}</b>{result.result.coreIdea}</div>
               {result.result.connections?.length > 0 && <ul className="text-xs text-fg-muted list-disc list-inside">{result.result.connections.map((c: string, i: number) => <li key={i}>{c}</li>)}</ul>}
               <div className="flex gap-2">
-                <button onClick={() => saveFragment(result.result.title, `${result.result.coreIdea}\n\n${result.result.summary}`)} className="px-3 py-1.5 rounded-full bg-accent text-white text-sm">存成碎片</button>
-                <button onClick={() => navigator.clipboard?.writeText(`${result.result.title}\n${result.result.coreIdea}\n\n${result.result.summary}`)} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent"><Copy size={12} /> 複製</button>
+                <button onClick={() => saveFragment(result.result.title, `${result.result.coreIdea}\n\n${result.result.summary}`)} className="px-3 py-1.5 rounded-full bg-accent text-white text-sm">{t("hubSaveAsFragment")}</button>
+                <button onClick={() => navigator.clipboard?.writeText(`${result.result.title}\n${result.result.coreIdea}\n\n${result.result.summary}`)} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent"><Copy size={12} /> {t("hubCopy")}</button>
               </div>
             </>)}
             {result.action === "evolve" && (<>
               <div className="flex items-center gap-2 flex-wrap">
-                <div className="font-bold inline-flex items-center gap-1.5"><Leaf size={16} /> 演化出 {result.variants.length} 個</div>
-                <button onClick={() => saveAllVariants(result.variants)} disabled={busy === "saveall"} className="ml-auto inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-accent text-white font-bold disabled:opacity-40">{busy === "saveall" ? "存入中…" : <><Plus size={12} /> 全部存起來</>}</button>
+                <div className="font-bold inline-flex items-center gap-1.5"><Leaf size={16} /> {t("hubEvolvedN", { n: result.variants.length })}</div>
+                <button onClick={() => saveAllVariants(result.variants)} disabled={busy === "saveall"} className="ml-auto inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-accent text-white font-bold disabled:opacity-40">{busy === "saveall" ? t("hubSaving") : <><Plus size={12} /> {t("hubSaveAll")}</>}</button>
               </div>
               <div className="space-y-2">{result.variants.map((v: any, i: number) => {
                 const saved = savedKeys.has(`evolve:${i}`);
                 return (
                 <div key={i} className="bg-bg-elevated rounded-lg p-2 text-sm flex justify-between gap-2"><div><b>{v.title}</b><div className="text-xs text-fg-muted whitespace-pre-wrap">{v.content}</div></div>
                   <motion.button whileTap={{ scale: 0.9 }} onClick={() => saveVariant(v, `evolve:${i}`)} disabled={saved}
-                    className={`shrink-0 inline-flex items-center gap-0.5 text-xs px-2 self-start rounded-full ${saved ? "text-emerald-500" : "text-accent hover:bg-accent/10"}`}>{saved ? <><Check size={12} /> 已存</> : <><Plus size={12} /> 存</>}</motion.button>
+                    className={`shrink-0 inline-flex items-center gap-0.5 text-xs px-2 self-start rounded-full ${saved ? "text-emerald-500" : "text-accent hover:bg-accent/10"}`}>{saved ? <><Check size={12} /> {t("hubSaved")}</> : <><Plus size={12} /> {t("hubSave")}</>}</motion.button>
                 </div>
               ); })}</div>
             </>)}
             {result.action === "replay" && (<>
-              <div className="font-bold inline-flex items-center gap-1.5"><Play size={15} /> 工作流重播</div>
-              {result.results?.map((s: any, i: number) => <div key={i} className="text-xs bg-bg-elevated rounded-lg p-2"><b>{s.agent}</b> {s.ok ? "✅" : `❌ ${s.error}`}{s.ok && <div className="text-fg-muted mt-0.5">{s.output?.title ?? s.output?.coreIdea ?? (s.output?.variants ? `${s.output.variants.length} 變體` : "")}</div>}</div>)}
+              <div className="font-bold inline-flex items-center gap-1.5"><Play size={15} /> {t("hubWorkflowReplay")}</div>
+              {result.results?.map((s: any, i: number) => <div key={i} className="text-xs bg-bg-elevated rounded-lg p-2"><b>{s.agent}</b> {s.ok ? "✅" : `❌ ${s.error}`}{s.ok && <div className="text-fg-muted mt-0.5">{s.output?.title ?? s.output?.coreIdea ?? (s.output?.variants ? t("hubNVariants", { n: s.output.variants.length }) : "")}</div>}</div>)}
             </>)}
             {result.action === "compose" && (<>
               <div className="font-bold inline-flex items-center gap-1.5"><Wand2 size={15} /> {result.result.title}</div>
               <pre className="text-sm text-fg-muted whitespace-pre-wrap font-sans">{result.result.lyricsSectioned ?? result.result.body}</pre>
-              {result.result.sunoPrompt && <div className="text-xs bg-bg-elevated rounded-lg p-2"><b className="inline-flex items-center gap-1"><Music size={12} /> Suno：</b>{result.result.sunoPrompt}<br /><b className="inline-flex items-center gap-1"><Film size={12} /> MV：</b>{result.result.mvPrompt}</div>}
+              {result.result.sunoPrompt && <div className="text-xs bg-bg-elevated rounded-lg p-2"><b className="inline-flex items-center gap-1"><Music size={12} /> {t("hubSunoLabel")}</b>{result.result.sunoPrompt}<br /><b className="inline-flex items-center gap-1"><Film size={12} /> {t("hubMvLabel")}</b>{result.result.mvPrompt}</div>}
               <div className="flex flex-wrap gap-2">
-                <button onClick={() => navigator.clipboard?.writeText(result.result.lyricsSectioned ?? result.result.body ?? "")} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent"><Copy size={12} /> 複製{result.result.lyricsSectioned ? "歌詞" : "內容"}</button>
+                <button onClick={() => navigator.clipboard?.writeText(result.result.lyricsSectioned ?? result.result.body ?? "")} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent"><Copy size={12} /> {result.result.lyricsSectioned ? t("hubCopyLyrics") : t("hubCopyContent")}</button>
                 {result.result.sunoPrompt && <button onClick={() => navigator.clipboard?.writeText(result.result.sunoPrompt)} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent"><Copy size={12} /> Suno</button>}
                 {result.result.mvPrompt && <button onClick={() => navigator.clipboard?.writeText(result.result.mvPrompt)} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent"><Copy size={12} /> MV</button>}
-                <button onClick={importToEngine} disabled={busy === "import"} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-violet-500/20 text-violet-700 dark:text-violet-200 text-sm hover:bg-violet-500/30 disabled:opacity-40">{busy === "import" ? "導入中…" : <><PenTool size={13} /> 導入創作引擎續寫</>}</button>
-                <button onClick={saveWork} disabled={busy === "savework"} className="px-3 py-1.5 rounded-full bg-accent text-white text-sm disabled:opacity-40">存成作品</button>
+                <button onClick={importToEngine} disabled={busy === "import"} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-violet-500/20 text-violet-700 dark:text-violet-200 text-sm hover:bg-violet-500/30 disabled:opacity-40">{busy === "import" ? t("hubImporting") : <><PenTool size={13} /> {t("hubImportToEngine")}</>}</button>
+                <button onClick={saveWork} disabled={busy === "savework"} className="px-3 py-1.5 rounded-full bg-accent text-white text-sm disabled:opacity-40">{t("hubSaveAsWork")}</button>
               </div>
             </>)}
           </motion.div>
@@ -541,27 +543,27 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       {/* 自訂分類 + 碎片森林（可拖曳複製到分類） */}
       <DndContext sensors={sensors} onDragEnd={onDragEnd} onDragOver={(e) => setDropTarget(e.over ? String(e.over.id) : null)} onDragCancel={() => setDropTarget(null)}>
         <div className="flex items-center gap-2 flex-wrap text-xs mb-1">
-          <span className="text-fg-muted inline-flex items-center gap-1"><FolderTree size={13} /> 分類：</span>
-          <button onClick={() => setActiveCol(null)} className={`px-2.5 py-1 rounded-full border transition ${activeCol === null ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>全部 {fragments.length}</button>
+          <span className="text-fg-muted inline-flex items-center gap-1"><FolderTree size={13} /> {t("hubCategory")}</span>
+          <button onClick={() => setActiveCol(null)} className={`px-2.5 py-1 rounded-full border transition ${activeCol === null ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>{t("hubAll")} {fragments.length}</button>
           {collections.map((c) => (
             <CollectionChip key={c.id} c={c} active={activeCol === c.id} isOver={dropTarget === `col:${c.id}`}
               onClick={() => setActiveCol(activeCol === c.id ? null : c.id)} onDelete={() => deleteCollection(c.id)} />
           ))}
-          <button onClick={createCollection} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-dashed border-border text-fg-muted hover:text-accent"><Plus size={12} /> 新分類</button>
+          <button onClick={createCollection} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-dashed border-border text-fg-muted hover:text-accent"><Plus size={12} /> {t("hubNewCollection")}</button>
         </div>
-        <div className="text-[10px] text-fg-muted mb-3">把碎片卡拖到分類上＝複製進該分類（一個碎片可同時屬於多類）。</div>
+        <div className="text-[10px] text-fg-muted mb-3">{t("hubDragHint")}</div>
 
         <div className="flex items-center gap-2 flex-wrap mb-2">
-          <div data-tour="forest" className="text-sm uppercase tracking-wider text-fg-muted inline-flex items-center gap-1.5"><Trees size={14} /> 碎片森林（{shownFragments.length}）</div>
+          <div data-tour="forest" className="text-sm uppercase tracking-wider text-fg-muted inline-flex items-center gap-1.5"><Trees size={14} /> {t("hubFragmentForestN", { n: shownFragments.length })}</div>
           <div className="relative flex-1 min-w-[140px] max-w-xs">
             <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted pointer-events-none" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="搜尋碎片…"
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("hubSearchPlaceholder")}
               className="w-full bg-bg-elevated border border-border rounded-full pl-7 pr-7 py-1.5 text-xs outline-none focus:border-accent" />
-            {q && <button onClick={() => setQ("")} title="清除" className="absolute right-2 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg"><X size={12} /></button>}
+            {q && <button onClick={() => setQ("")} title={t("hubClearSearch")} className="absolute right-2 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg"><X size={12} /></button>}
           </div>
           {shownFragments.length > 0 && (
             <button onClick={toggleSelectAllShown} className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full border border-border bg-bg-card text-xs hover:border-accent/40 whitespace-nowrap">
-              <Check size={12} /> {allShownSelected ? "取消全選" : `全選${qLower || activeCol ? "本頁" : ""}`}
+              <Check size={12} /> {allShownSelected ? t("hubDeselectAll") : `${t("hubSelectAll")}${qLower || activeCol ? t("hubThisPage") : ""}`}
             </button>
           )}
         </div>
@@ -578,31 +580,31 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
           <motion.div initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }}
             className="fixed bottom-[5.5rem] md:bottom-4 left-1/2 -translate-x-1/2 z-[52] w-[min(92vw,720px)] max-h-[55vh] overflow-y-auto bg-bg-card/95 backdrop-blur border-2 border-accent/40 rounded-2xl shadow-2xl shadow-accent/10 p-3">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs text-fg-muted mr-auto inline-flex items-center gap-1"><Wand2 size={13} /> 已選 <b className="text-fg">{sel.length}</b> 個碎片</span>
-              <button onClick={() => run("synthesize")} disabled={busy !== null || sel.length < 2} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40"><Magnet size={14} /> 凝聚</button>
-              <button onClick={() => run("evolve")} disabled={busy !== null || sel.length < 1} title={sel.length > 1 ? "把選中的碎片交叉演化" : "演化這個碎片"} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40"><Leaf size={14} /> 演化{sel.length > 1 ? `×${sel.length}` : ""}</button>
-              <button onClick={() => findRelated(sel[0])} disabled={busy !== null || sel.length !== 1} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40"><Search size={14} /> 相關</button>
-              <button onClick={getAdvice} disabled={busy !== null || sel.length < 1} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-200 text-sm hover:bg-amber-500/25 disabled:opacity-40"><Lightbulb size={14} /> 適合做什麼</button>
+              <span className="text-xs text-fg-muted mr-auto inline-flex items-center gap-1"><Wand2 size={13} /> {t("hubSelectedPre")} <b className="text-fg">{sel.length}</b> {t("hubFragmentsUnit")}</span>
+              <button onClick={() => run("synthesize")} disabled={busy !== null || sel.length < 2} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40"><Magnet size={14} /> {t("hubSynthesize")}</button>
+              <button onClick={() => run("evolve")} disabled={busy !== null || sel.length < 1} title={sel.length > 1 ? t("hubEvolveCrossTitle") : t("hubEvolveOneTitle")} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40"><Leaf size={14} /> {t("hubEvolve")}{sel.length > 1 ? `×${sel.length}` : ""}</button>
+              <button onClick={() => findRelated(sel[0])} disabled={busy !== null || sel.length !== 1} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40"><Search size={14} /> {t("hubRelated")}</button>
+              <button onClick={getAdvice} disabled={busy !== null || sel.length < 1} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-200 text-sm hover:bg-amber-500/25 disabled:opacity-40"><Lightbulb size={14} /> {t("hubAdvise")}</button>
               <select value={transLang} onChange={(e) => setTransLang(e.target.value)} className="bg-bg-elevated border border-border rounded-full px-2 py-2 text-xs">{["日語", "韓語", "English", "法語", "西班牙語", "粵語", "文言文"].map((l) => <option key={l} value={l}>{l}</option>)}</select>
-              <button onClick={transcreateSel} disabled={busy !== null || sel.length !== 1} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40"><Languages size={14} /> 轉譯</button>
+              <button onClick={transcreateSel} disabled={busy !== null || sel.length !== 1} className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-bg-elevated text-sm hover:text-accent disabled:opacity-40"><Languages size={14} /> {t("hubTranscreate")}</button>
               <select value={workType} onChange={(e) => setWorkType(e.target.value)} className="bg-bg-elevated border border-border rounded-full px-2 py-2 text-xs">
-                <option value="article">文章</option>
-                <option value="散文">散文</option>
-                <option value="song">歌曲</option>
-                <option value="詩">詩</option>
-                <option value="短篇小說">短篇小說</option>
-                <option value="story">故事</option>
-                <option value="劇本">劇本</option>
-                <option value="短影音腳本">短影音腳本</option>
-                <option value="文案">文案/Slogan</option>
-                <option value="品牌故事">品牌故事</option>
-                <option value="世界觀">世界觀設定</option>
-                <option value="角色設定">角色設定</option>
-                <option value="課程大綱">課程大綱</option>
-                <option value="產品企劃">產品企劃</option>
+                <option value="article">{t("hubWtArticle")}</option>
+                <option value="散文">{t("hubWtProse")}</option>
+                <option value="song">{t("hubWtSong")}</option>
+                <option value="詩">{t("hubWtPoem")}</option>
+                <option value="短篇小說">{t("hubWtShortStory")}</option>
+                <option value="story">{t("hubWtStory")}</option>
+                <option value="劇本">{t("hubWtScript")}</option>
+                <option value="短影音腳本">{t("hubWtShortVideo")}</option>
+                <option value="文案">{t("hubWtCopy")}</option>
+                <option value="品牌故事">{t("hubWtBrandStory")}</option>
+                <option value="世界觀">{t("hubWtWorldview")}</option>
+                <option value="角色設定">{t("hubWtCharacter")}</option>
+                <option value="課程大綱">{t("hubWtCourseOutline")}</option>
+                <option value="產品企劃">{t("hubWtProductPlan")}</option>
               </select>
-              <button onClick={() => run("compose")} disabled={busy !== null || sel.length < 1} className="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-gradient-to-r from-amber-400 to-pink-500 text-black text-sm font-bold disabled:opacity-40"><Wand2 size={14} /> 編織</button>
-              <button onClick={() => setSelected(new Set())} title="清除選取" className="text-fg-muted hover:text-fg px-1"><X size={15} /></button>
+              <button onClick={() => run("compose")} disabled={busy !== null || sel.length < 1} className="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-gradient-to-r from-amber-400 to-pink-500 text-black text-sm font-bold disabled:opacity-40"><Wand2 size={14} /> {t("hubWeave")}</button>
+              <button onClick={() => setSelected(new Set())} title={t("hubClearSelection")} className="text-fg-muted hover:text-fg px-1"><X size={15} /></button>
             </div>
             {busyMsg && <div className="text-xs text-accent mt-2 animate-pulse">{busyMsg}</div>}
           </motion.div>
@@ -628,12 +630,13 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
 }
 
 function CollectionChip({ c, active, isOver, onClick, onDelete }: { c: Collection; active: boolean; isOver: boolean; onClick: () => void; onDelete: () => void }) {
+  const t = useTranslations("creator");
   const { setNodeRef } = useDroppable({ id: `col:${c.id}` });
   return (
     <span ref={setNodeRef}
       className={`group inline-flex items-center gap-1 px-2.5 py-1 rounded-full border transition ${isOver ? "border-accent bg-accent/25 scale-110" : active ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>
       <button onClick={onClick} className="inline-flex items-center gap-1"><FolderTree size={12} /> {c.name} {c.assetIds.length}</button>
-      <button onClick={onDelete} title="刪除分類" className="opacity-0 group-hover:opacity-100 text-fg-muted hover:text-red-400"><X size={12} /></button>
+      <button onClick={onDelete} title={t("hubDeleteCollection")} className="opacity-0 group-hover:opacity-100 text-fg-muted hover:text-red-400"><X size={12} /></button>
     </span>
   );
 }
@@ -655,6 +658,7 @@ function fragRarity(tags?: string[]): string {
 }
 
 function DraggableFragment({ f, on, onToggle, onEdit }: { f: Fragment; on: boolean; onToggle: () => void; onEdit: () => void }) {
+  const t = useTranslations("creator");
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: f.id });
   const style = transform ? { transform: `translate(${transform.x}px, ${transform.y}px)` } : undefined;
   const rarity = fragRarity(f.tags);
@@ -662,7 +666,7 @@ function DraggableFragment({ f, on, onToggle, onEdit }: { f: Fragment; on: boole
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners} onClick={onToggle} role="button" tabIndex={0}
       className={`group relative block w-full text-left rounded-xl p-3 border transition cursor-grab active:cursor-grabbing ${isDragging ? "opacity-70 ring-2 ring-accent z-50 shadow-xl" : on ? "border-accent bg-accent/[0.08] ring-1 ring-accent/40" : rs.card}`}>
-      <button onClick={(e) => { e.stopPropagation(); onEdit(); }} onPointerDown={(e) => e.stopPropagation()} title="編輯"
+      <button onClick={(e) => { e.stopPropagation(); onEdit(); }} onPointerDown={(e) => e.stopPropagation()} title={t("hubEdit")}
         className="absolute top-2 right-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition text-fg-muted hover:text-accent p-1 -m-1"><Pencil size={14} /></button>
       <div className="font-bold text-sm flex items-start gap-1.5 pr-5"><span className="mt-0.5"><SrcIcon type={f.source_type} /></span><span className="flex-1">{f.title}</span>{on && <Check size={14} className="text-accent shrink-0" />}</div>
       {f.subtitle && <div className="text-xs text-accent-3 mt-0.5">{f.subtitle}</div>}
@@ -681,6 +685,7 @@ function DraggableFragment({ f, on, onToggle, onEdit }: { f: Fragment; on: boole
 }
 
 function FragmentEditModal({ frag, onClose, onSave, onDelete }: { frag: Fragment; onClose: () => void; onSave: (f: Fragment) => void; onDelete: (id: string) => void }) {
+  const t = useTranslations("creator");
   const [title, setTitle] = useState(frag.title);
   const [subtitle, setSubtitle] = useState(frag.subtitle ?? "");
   const [content, setContent] = useState(frag.content);
@@ -693,26 +698,26 @@ function FragmentEditModal({ frag, onClose, onSave, onDelete }: { frag: Fragment
       className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
       <motion.div initial={{ scale: 0.95, y: 10 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0 }} onClick={(e) => e.stopPropagation()}
         className="w-[min(94vw,560px)] max-h-[88vh] overflow-y-auto bg-bg-card border border-border rounded-2xl p-5 space-y-3">
-        <div className="flex items-center justify-between"><div className="font-bold inline-flex items-center gap-1.5"><Pencil size={15} /> 編輯碎片</div><button onClick={onClose} className="text-fg-muted hover:text-fg"><X size={16} /></button></div>
-        <label className="block text-xs text-fg-muted">標題
+        <div className="flex items-center justify-between"><div className="font-bold inline-flex items-center gap-1.5"><Pencil size={15} /> {t("hubEditFragment")}</div><button onClick={onClose} className="text-fg-muted hover:text-fg"><X size={16} /></button></div>
+        <label className="block text-xs text-fg-muted">{t("hubTitle")}
           <input value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm text-fg outline-none focus:border-accent" /></label>
-        <label className="block text-xs text-fg-muted">副標題
-          <input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} placeholder="一句副標 / 註解" className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm text-fg outline-none focus:border-accent" /></label>
-        <label className="block text-xs text-fg-muted">內容
+        <label className="block text-xs text-fg-muted">{t("hubSubtitle")}
+          <input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} placeholder={t("hubSubtitlePlaceholder")} className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm text-fg outline-none focus:border-accent" /></label>
+        <label className="block text-xs text-fg-muted">{t("hubContentLabel")}
           <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={6} className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm text-fg outline-none focus:border-accent resize-y" /></label>
         <div className="grid grid-cols-2 gap-3">
-          <label className="block text-xs text-fg-muted">類別
-            <input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="例：歌詞素材" className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm text-fg outline-none focus:border-accent" /></label>
-          <label className="block text-xs text-fg-muted">心情
-            <input value={mood} onChange={(e) => setMood(e.target.value)} placeholder="例：懷舊" className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm text-fg outline-none focus:border-accent" /></label>
+          <label className="block text-xs text-fg-muted">{t("hubCategoryLabel")}
+            <input value={category} onChange={(e) => setCategory(e.target.value)} placeholder={t("hubCategoryPlaceholder")} className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm text-fg outline-none focus:border-accent" /></label>
+          <label className="block text-xs text-fg-muted">{t("hubMood")}
+            <input value={mood} onChange={(e) => setMood(e.target.value)} placeholder={t("hubMoodPlaceholder")} className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm text-fg outline-none focus:border-accent" /></label>
         </div>
-        <label className="block text-xs text-fg-muted">標籤（逗號分隔）
+        <label className="block text-xs text-fg-muted">{t("hubTagsLabel")}
           <input value={tags} onChange={(e) => setTags(e.target.value)} className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm text-fg outline-none focus:border-accent" /></label>
         <div className="flex items-center gap-2 pt-1">
-          <button onClick={() => onSave({ ...frag, title, subtitle, content, mood, category, tags: tags.split(/[,，、]/).map((t) => t.trim()).filter(Boolean) })}
-            disabled={!title.trim()} className="px-4 py-2 rounded-full bg-accent text-white text-sm font-bold disabled:opacity-40">儲存</button>
-          <button onClick={onClose} className="px-4 py-2 rounded-full bg-bg-elevated text-sm">取消</button>
-          <button onClick={() => onDelete(frag.id)} className="ml-auto px-3 py-2 rounded-full bg-red-500/15 text-red-300 text-sm hover:bg-red-500/25">刪除</button>
+          <button onClick={() => onSave({ ...frag, title, subtitle, content, mood, category, tags: tags.split(/[,，、]/).map((x) => x.trim()).filter(Boolean) })}
+            disabled={!title.trim()} className="px-4 py-2 rounded-full bg-accent text-white text-sm font-bold disabled:opacity-40">{t("hubSaveBtn")}</button>
+          <button onClick={onClose} className="px-4 py-2 rounded-full bg-bg-elevated text-sm">{t("hubCancel")}</button>
+          <button onClick={() => onDelete(frag.id)} className="ml-auto px-3 py-2 rounded-full bg-red-500/15 text-red-300 text-sm hover:bg-red-500/25">{t("hubDelete")}</button>
         </div>
       </motion.div>
     </motion.div>

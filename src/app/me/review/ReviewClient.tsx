@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Check, X, Lightbulb, PartyPopper, ArrowRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { MiniQuiz } from "@/lib/types";
 
 interface SrsReview {
@@ -14,6 +15,7 @@ interface SrsReview {
 }
 
 export function ReviewClient({ initialReviews }: { initialReviews: SrsReview[] }) {
+  const t = useTranslations("mentor");
   const [queue] = useState<SrsReview[]>(initialReviews);
   const [idx, setIdx] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
@@ -55,9 +57,9 @@ export function ReviewClient({ initialReviews }: { initialReviews: SrsReview[] }
     return (
       <div className="rounded-xl border border-border bg-bg-card p-10 text-center">
         <PartyPopper size={40} className="mx-auto text-accent mb-3" />
-        <p className="text-lg font-semibold">今天沒有到期複習 🎉</p>
+        <p className="text-lg font-semibold">{t("reviewEmptyTitle")} 🎉</p>
         <p className="text-sm text-fg-muted mt-2">
-          去<Link href="/chapters" className="text-accent hover:underline">章節</Link>做測驗、答錯的題目會排進這裡等你複習。
+          {t("reviewEmptyBefore")}<Link href="/chapters" className="text-accent hover:underline">{t("reviewChaptersLink")}</Link>{t("reviewEmptyAfter")}
         </p>
       </div>
     );
@@ -68,12 +70,12 @@ export function ReviewClient({ initialReviews }: { initialReviews: SrsReview[] }
     return (
       <div className="rounded-xl border border-border bg-bg-card p-10 text-center">
         <PartyPopper size={40} className="mx-auto text-accent mb-3" />
-        <p className="text-lg font-semibold">複習完成！</p>
+        <p className="text-lg font-semibold">{t("reviewDoneTitle")}</p>
         <p className="text-sm text-fg-muted mt-2">
-          本輪 {stats.total} 題、答對 {stats.correct} 題。答對的題目已往後延、答錯的明天再考你一次。
+          {t("reviewDoneSummary", { total: stats.total, correct: stats.correct })}
         </p>
         <a href="/me" className="mt-4 inline-flex items-center gap-1 text-sm text-accent hover:underline">
-          回個人頁 <ArrowRight size={14} />
+          {t("reviewBackToProfile")} <ArrowRight size={14} />
         </a>
       </div>
     );
@@ -85,15 +87,15 @@ export function ReviewClient({ initialReviews }: { initialReviews: SrsReview[] }
   return (
     <div>
       <div className="flex items-center justify-between mb-3 text-sm text-fg-muted">
-        <span>今日到期 {queue.length} 題</span>
-        <span>第 {idx + 1} / {queue.length} 題</span>
+        <span>{t("reviewDueToday", { n: queue.length })}</span>
+        <span>{t("reviewProgress", { cur: idx + 1, total: queue.length })}</span>
       </div>
       <div className="h-1.5 w-full rounded-full bg-bg-elevated mb-4 overflow-hidden">
         <div className="h-full bg-accent transition-all" style={{ width: `${(idx / queue.length) * 100}%` }} />
       </div>
 
       <div className="rounded-xl border border-blue-500/30 bg-blue-500/5 p-4">
-        <div className="text-[11px] text-fg-muted mb-2">來源：{current.lesson_ref}</div>
+        <div className="text-[11px] text-fg-muted mb-2">{t("reviewSource")}{current.lesson_ref}</div>
         <p className="mb-3 text-sm font-medium">{q.question}</p>
 
         <div className="space-y-2">
@@ -131,13 +133,13 @@ export function ReviewClient({ initialReviews }: { initialReviews: SrsReview[] }
             disabled={!selected}
             className="mt-3 px-4 py-1.5 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 disabled:opacity-40"
           >
-            提交答案
+            {t("reviewSubmit")}
           </button>
         ) : (
           <div className="mt-3 space-y-2">
             <div className={`text-sm font-semibold inline-flex items-center gap-1 ${isCorrect ? "text-green-400" : "text-red-400"}`}>
               {isCorrect ? <Check size={15} /> : <X size={15} />}
-              {isCorrect ? "答對了！往後延" : "答錯了、明天再複習"}
+              {isCorrect ? t("reviewCorrect") : t("reviewWrong")}
             </div>
             {q.explanation && (
               <div className="text-xs text-fg-muted p-3 bg-bg rounded-lg flex items-start gap-1.5">
@@ -149,7 +151,7 @@ export function ReviewClient({ initialReviews }: { initialReviews: SrsReview[] }
               disabled={grading}
               className="mt-1 inline-flex items-center gap-1 px-4 py-1.5 bg-accent text-black text-sm font-bold rounded-lg hover:scale-[1.02] transition disabled:opacity-50"
             >
-              {idx + 1 >= queue.length ? "完成複習" : "下一題"} <ArrowRight size={14} />
+              {idx + 1 >= queue.length ? t("reviewFinish") : t("reviewNext")} <ArrowRight size={14} />
             </button>
           </div>
         )}

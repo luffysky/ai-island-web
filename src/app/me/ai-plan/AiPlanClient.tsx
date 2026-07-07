@@ -6,6 +6,7 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Sparkles, RefreshCw, ArrowRight, Loader2, Calendar, Target } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { formatTW } from "@/lib/format-date";
@@ -49,6 +50,7 @@ export function AiPlanClient({ initialPlan, defaultCareer }: { initialPlan: Plan
   const router = useRouter();
   const toast = useToast();
   const confirm = useConfirm();
+  const t = useTranslations("mentor");
   const [plan, setPlan] = useState<Plan | null>(initialPlan);
   const [depth, setDepth] = useState<"lazy" | "standard" | "detail">("standard");
   const [career, setCareer] = useState(defaultCareer);
@@ -59,9 +61,9 @@ export function AiPlanClient({ initialPlan, defaultCareer }: { initialPlan: Plan
   const generate = async () => {
     if (plan) {
       const ok = await confirm({
-        title: "重新生成計畫？",
-        description: "目前的計畫會被存成歷史紀錄、用新的取代。",
-        confirmLabel: "重新生成",
+        title: t("aiPlanRegenTitle"),
+        description: t("aiPlanRegenDesc"),
+        confirmLabel: t("aiPlanRegenConfirm"),
       });
       if (!ok) return;
     }
@@ -74,12 +76,12 @@ export function AiPlanClient({ initialPlan, defaultCareer }: { initialPlan: Plan
         body: JSON.stringify({ depth, career_path: career, goal, schedule }),
       });
       const j = await res.json();
-      if (!res.ok) throw new Error(j.error || "AI 生成失敗");
+      if (!res.ok) throw new Error(j.error || t("aiPlanGenFailed"));
       setPlan(j.plan);
-      toast.success("已生成個人化計畫");
+      toast.success(t("aiPlanGenSuccess"));
       router.refresh();
     } catch (e: any) {
-      toast.error(`生成失敗：${e?.message || ""}`);
+      toast.error(t("aiPlanGenFailedToast", { msg: e?.message || "" }));
     } finally {
       setGenerating(false);
     }
@@ -92,7 +94,7 @@ export function AiPlanClient({ initialPlan, defaultCareer }: { initialPlan: Plan
         <div className="rounded-xl bg-gradient-to-br from-accent/15 to-accent-2/10 border border-accent/40 p-4">
           <div className="flex items-center gap-2 flex-wrap mb-2">
             <Sparkles size={14} className="text-accent" />
-            <span className="text-xs text-fg-muted">當前計畫</span>
+            <span className="text-xs text-fg-muted">{t("aiPlanCurrent")}</span>
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-bg-elevated">{plan.depth}</span>
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-bg-elevated">{plan.career_path}</span>
             <span className="text-[10px] text-fg-muted ml-auto">{formatTW(plan.created_at)} · by {plan.generated_by?.split("/")[0]}</span>
@@ -107,19 +109,19 @@ export function AiPlanClient({ initialPlan, defaultCareer }: { initialPlan: Plan
             href={`/chapters/${plan.next_action.chapter_id}#lesson-${plan.next_action.lesson_id}` as any}
             className="block rounded-xl bg-bg-card border-2 border-accent p-4 hover:scale-[1.01] transition"
           >
-            <div className="text-xs text-accent font-bold mb-1">👉 馬上開始</div>
+            <div className="text-xs text-accent font-bold mb-1">👉 {t("aiPlanStartNow")}</div>
             <div className="text-lg font-bold">
               Ch {plan.next_action.chapter_id} · {plan.next_action.lesson_id}
             </div>
             <p className="text-sm text-fg-muted mt-1 italic">💡 {plan.next_action.reason}</p>
-            <div className="text-xs text-accent mt-2 flex items-center gap-1">前往 <ArrowRight size={12} /></div>
+            <div className="text-xs text-accent mt-2 flex items-center gap-1">{t("aiPlanGoto")} <ArrowRight size={12} /></div>
           </Link>
         )}
 
         {/* 每週計畫 */}
         {plan.weekly_chapters?.length > 0 && (
           <section className="rounded-xl bg-bg-card border border-border p-4">
-            <h2 className="font-bold mb-3 flex items-center gap-2">📅 週計畫</h2>
+            <h2 className="font-bold mb-3 flex items-center gap-2">📅 {t("aiPlanWeekly")}</h2>
             <ol className="space-y-2">
               {plan.weekly_chapters.map((w) => (
                 <li key={w.week} className="flex items-start gap-3 p-2 rounded-lg bg-bg">
@@ -127,7 +129,7 @@ export function AiPlanClient({ initialPlan, defaultCareer }: { initialPlan: Plan
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium">{w.focus ?? "—"}</div>
                     <div className="text-[10px] text-fg-muted">
-                      {w.hours} 小時 · 章節 {w.chapter_ids.join(", ")}
+                      {t("aiPlanWeekMeta", { hours: w.hours, ids: w.chapter_ids.join(", ") })}
                     </div>
                   </div>
                 </li>
@@ -149,7 +151,7 @@ export function AiPlanClient({ initialPlan, defaultCareer }: { initialPlan: Plan
           className="w-full px-4 py-3 rounded-xl border-2 border-dashed border-border hover:border-accent text-sm flex items-center justify-center gap-2"
         >
           {generating ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
-          重新生成計畫
+          {t("aiPlanRegen")}
         </button>
       </div>
     );
@@ -160,7 +162,7 @@ export function AiPlanClient({ initialPlan, defaultCareer }: { initialPlan: Plan
     <div className="space-y-4">
       <div className="rounded-xl bg-bg-card border border-border p-5 space-y-4">
         <div>
-          <label className="text-sm font-bold block mb-2">🎯 你的職涯路線</label>
+          <label className="text-sm font-bold block mb-2">🎯 {t("aiPlanCareerPath")}</label>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
             {CAREERS.map((c) => (
               <button
@@ -175,7 +177,7 @@ export function AiPlanClient({ initialPlan, defaultCareer }: { initialPlan: Plan
         </div>
 
         <div>
-          <label className="text-sm font-bold block mb-2">📚 深度</label>
+          <label className="text-sm font-bold block mb-2">📚 {t("aiPlanDepth")}</label>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
             {DEPTHS.map((d) => (
               <button
@@ -191,18 +193,18 @@ export function AiPlanClient({ initialPlan, defaultCareer }: { initialPlan: Plan
         </div>
 
         <div>
-          <label className="text-sm font-bold block mb-2">⏰ 每週時間</label>
+          <label className="text-sm font-bold block mb-2">⏰ {t("aiPlanWeeklyTime")}</label>
           <select value={schedule} onChange={(e) => setSchedule(e.target.value)} className="w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm">
             {SCHEDULES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
           </select>
         </div>
 
         <div>
-          <label className="text-sm font-bold block mb-2">💭 你的目標（選填）</label>
+          <label className="text-sm font-bold block mb-2">💭 {t("aiPlanGoal")}</label>
           <textarea
             value={goal}
             onChange={(e) => setGoal(e.target.value)}
-            placeholder="例如：3 個月後能投前端職、半年內做出自己的 SaaS、想接案賺零用..."
+            placeholder={t("aiPlanGoalPlaceholder")}
             rows={3}
             maxLength={500}
             className="w-full bg-bg border border-border rounded-lg p-2 text-sm"
@@ -215,10 +217,10 @@ export function AiPlanClient({ initialPlan, defaultCareer }: { initialPlan: Plan
           className="w-full px-6 py-3 rounded-xl bg-gradient-to-br from-accent to-accent-2 text-black font-bold disabled:opacity-50 flex items-center justify-center gap-2"
         >
           {generating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
-          {generating ? "AI 生成中（10-20 秒）…" : "🪄 讓 AI 為我規劃"}
+          {generating ? t("aiPlanGenerating") : `🪄 ${t("aiPlanGenerate")}`}
         </button>
         <p className="text-[10px] text-fg-muted text-center">
-          💡 AI 會看你完成的 lesson / quiz 表現、結合上面填的偏好、給專屬計畫。可隨時重新生成。
+          💡 {t("aiPlanHint")}
         </p>
       </div>
     </div>

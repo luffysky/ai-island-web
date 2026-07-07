@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { MentorClient } from "./MentorClient";
 
@@ -10,6 +11,7 @@ export const metadata = {
 };
 
 export default async function MentorPage() {
+  const t = await getTranslations("mentor");
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/me/mentor");
@@ -17,9 +19,9 @@ export default async function MentorPage() {
   return (
     <div className="p-4 md:p-6 max-w-4xl mx-auto">
       <header className="mb-5">
-        <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">🤝 學員配對</h1>
+        <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">🤝 {t("mentorPageTitle")}</h1>
         <p className="text-sm text-fg-muted mt-1">
-          找 mentor 帶你 / 當 mentor 幫人 / 找 peer 一起學 — 不再孤身一人
+          {t("mentorPageSubtitle")}
         </p>
       </header>
       <MentorClient />

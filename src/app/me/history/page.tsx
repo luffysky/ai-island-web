@@ -1,9 +1,11 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { chapters } from "@/data/chapters";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 export default async function HistoryPage() {
   const supabase = await createSupabaseServer();
+  const t = await getTranslations("me");
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
@@ -31,19 +33,19 @@ export default async function HistoryPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">📅 學習紀錄</h1>
-      <p className="text-sm text-fg-muted">最近 100 筆完成的 lesson</p>
+      <h1 className="text-2xl font-bold">📅 {t("historyTitle")}</h1>
+      <p className="text-sm text-fg-muted">{t("historySubtitle")}</p>
 
       {!progress || progress.length === 0 ? (
         <div className="bg-bg-card border border-border rounded-xl p-12 text-center text-fg-muted">
-          <p>還沒有學習紀錄</p>
+          <p>{t("historyNoRecords")}</p>
         </div>
       ) : (
         <div className="space-y-4">
           {Object.entries(grouped).map(([date, items]) => (
             <div key={date}>
               <div className="text-sm font-bold text-fg-muted mb-2 sticky top-0 bg-bg py-1">
-                {date}（完成 {items.length} 個）
+                {t("historyDayGroup", { date, n: items.length })}
               </div>
               <div className="bg-bg-card border border-border rounded-xl divide-y divide-border">
                 {items.map((p) => {

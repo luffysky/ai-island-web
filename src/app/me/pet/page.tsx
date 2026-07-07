@@ -1,11 +1,13 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { PetSettings } from "./PetSettings";
 
 export const dynamic = "force-dynamic";
 
 export default async function PetSettingsPage() {
+  const t = await getTranslations("learn");
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -29,10 +31,9 @@ export default async function PetSettingsPage() {
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">🐾 我的寵物</h1>
+        <h1 className="text-2xl font-bold">🐾 {t("petTitle")}</h1>
         <p className="text-sm text-fg-muted mt-1">
-          選一隻陪你學習的小夥伴。會在前台跟著你走動、完成 lesson 時跳起來。
-          PR 1 預設：走動 + 反應事件；之後升級加 AI 對話、心跳主動互動。
+          {t("petSubtitle")}
         </p>
       </div>
       <PetSettings initial={pet} />

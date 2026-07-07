@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HelpCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type Step = { sel?: string; title: string; body: string };
 
@@ -25,6 +26,7 @@ const STEPS: Step[] = [
 const SEEN_KEY = "ci_tour_seen_v1";
 
 export function IslandTour() {
+  const t = useTranslations("creator");
   const [open, setOpen] = useState(false);
   const [i, setI] = useState(0);
   const [rect, setRect] = useState<DOMRect | null>(null);
@@ -73,7 +75,7 @@ export function IslandTour() {
 
   return (
     <>
-      <button onClick={start} title="導覽" className="fixed bottom-[5.5rem] md:bottom-4 right-4 z-[55] w-11 h-11 rounded-full bg-accent text-white shadow-lg grid place-items-center hover:scale-105 transition"><HelpCircle size={20} /></button>
+      <button onClick={start} title={t("tourGuide")} className="fixed bottom-[5.5rem] md:bottom-4 right-4 z-[55] w-11 h-11 rounded-full bg-accent text-white shadow-lg grid place-items-center hover:scale-105 transition"><HelpCircle size={20} /></button>
 
       <AnimatePresence>
         {open && (
@@ -95,11 +97,11 @@ export function IslandTour() {
               <div className="flex items-center justify-between mt-3">
                 <span className="text-[10px] text-fg-muted">{i + 1} / {STEPS.length}</span>
                 <div className="flex gap-2 text-sm">
-                  <button onClick={close} className="px-3 py-1.5 rounded-full bg-bg-elevated text-fg-muted">略過</button>
-                  {i > 0 && <button onClick={() => setI(i - 1)} className="px-3 py-1.5 rounded-full bg-bg-elevated">上一步</button>}
+                  <button onClick={close} className="px-3 py-1.5 rounded-full bg-bg-elevated text-fg-muted">{t("tourSkip")}</button>
+                  {i > 0 && <button onClick={() => setI(i - 1)} className="px-3 py-1.5 rounded-full bg-bg-elevated">{t("tourPrev")}</button>}
                   {i < STEPS.length - 1
-                    ? <button onClick={() => setI(i + 1)} className="px-4 py-1.5 rounded-full bg-accent text-white font-bold">下一步</button>
-                    : <button onClick={close} className="px-4 py-1.5 rounded-full bg-accent text-white font-bold">開始創作</button>}
+                    ? <button onClick={() => setI(i + 1)} className="px-4 py-1.5 rounded-full bg-accent text-white font-bold">{t("tourNext")}</button>
+                    : <button onClick={close} className="px-4 py-1.5 rounded-full bg-accent text-white font-bold">{t("tourStart")}</button>}
                 </div>
               </div>
             </motion.div>

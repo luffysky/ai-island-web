@@ -1,4 +1,5 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { getTranslations } from "next-intl/server";
 import { chapters } from "@/data/chapters";
 import { Award } from "lucide-react";
 import { ShareButton } from "@/components/share/ShareButton";
@@ -6,6 +7,7 @@ import { ShareButton } from "@/components/share/ShareButton";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://ai-island-web.snowrealm.pet";
 
 export default async function CertificatesPage() {
+  const t = await getTranslations("learn");
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
@@ -33,35 +35,35 @@ export default async function CertificatesPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">🏅 我的證書</h1>
+      <h1 className="text-2xl font-bold">🏅 {t("certPageTitle")}</h1>
       <p className="text-sm text-fg-muted">
-        完成整章可獲得章節證書 · 已獲得 {earnedCount} 張
+        {t("certEarnedCount", { count: earnedCount })}
       </p>
 
       {/* 已獲得 */}
       {certs && certs.length > 0 && (
         <div>
-          <h2 className="font-bold mb-3">✨ 已獲得</h2>
+          <h2 className="font-bold mb-3">✨ {t("certEarnedHeading")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {certs.map((c: any) => (
               <div key={c.id} className="relative bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border-2 border-yellow-500/50 rounded-xl p-5">
                 <Award size={32} className="text-yellow-400 mb-2" />
                 <h3 className="font-bold text-lg">{c.title}</h3>
                 <div className="text-xs text-fg-muted mt-1">
-                  發出於 {new Date(c.issued_at).toLocaleDateString('zh-TW')}
+                  {t("certIssuedAt", { date: new Date(c.issued_at).toLocaleDateString('zh-TW') })}
                 </div>
                 {c.verification_code && (
                   <div className="text-xs font-mono text-fg-muted mt-2">
-                    驗證碼：{c.verification_code}
+                    {t("certVerifyCodeLabel")}{c.verification_code}
                   </div>
                 )}
                 {c.verification_code && (
                   <div className="mt-3">
                     <ShareButton
                       url={`${SITE_URL}/certificates/${c.verification_code}`}
-                      title={`我在 AI 島拿到「${c.title}」完課證書`}
-                      text={`我在 AI 島完成了「${c.title}」🎓`}
-                      label="炫耀 / 分享"
+                      title={t("shareCertTitle", { title: c.title })}
+                      text={t("shareCertText", { title: c.title })}
+                      label={t("shareCertLabel")}
                     />
                   </div>
                 )}
@@ -74,7 +76,7 @@ export default async function CertificatesPage() {
       {/* 已可申請 */}
       {fullyCompleted.length > 0 && (
         <div>
-          <h2 className="font-bold mb-3">🎯 已可申請（{fullyCompleted.length} 章完成）</h2>
+          <h2 className="font-bold mb-3">🎯 {t("certAvailable", { count: fullyCompleted.length })}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {fullyCompleted.map(({ ch }) => {
               const alreadyEarned = certs?.some((c: any) => c.cert_key === `ch${String(ch.id).padStart(2, "0")}`);
@@ -84,7 +86,7 @@ export default async function CertificatesPage() {
                   <div className="text-xs text-fg-muted mb-1">Ch {String(ch.id).padStart(2, "0")}</div>
                   <h3 className="font-bold mb-2">{ch.title}</h3>
                   <button disabled className="text-xs px-3 py-1.5 bg-accent/20 text-accent rounded">
-                    🎓 領取證書（自動發放中）
+                    🎓 {t("certClaimAuto")}
                   </button>
                 </div>
               );
@@ -95,7 +97,7 @@ export default async function CertificatesPage() {
 
       {/* 進行中 */}
       <div>
-        <h2 className="font-bold mb-3">📚 進行中</h2>
+        <h2 className="font-bold mb-3">📚 {t("certInProgress")}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {completedChapters
             .filter((c) => !c.completed && c.done > 0)

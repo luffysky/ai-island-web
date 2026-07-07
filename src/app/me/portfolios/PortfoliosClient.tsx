@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { formatTWDate } from "@/lib/format-date";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { useTranslations } from "next-intl";
 
 type Portfolio = {
   id: string;
@@ -40,6 +41,7 @@ export function PortfoliosClient({
 }) {
   const router = useRouter();
   const toast = useToast();
+  const t = useTranslations("learn");
   const confirm = useConfirm();
   const [list, setList] = useState(initial);
   const [editing, setEditing] = useState<Partial<Portfolio> | null>(null);
@@ -49,7 +51,7 @@ export function PortfoliosClient({
   const save = async () => {
     if (!editing) return;
     if (!editing.title?.trim()) {
-      toast.warning("title 必填");
+      toast.warning(t("toastTitleRequired"));
       return;
     }
     const payload = {
@@ -65,24 +67,24 @@ export function PortfoliosClient({
         body: JSON.stringify(payload),
       });
       const j = await res.json();
-      if (!res.ok) throw new Error(j.error || "失敗");
-      toast.success(isEdit ? "已更新" : "已建立");
+      if (!res.ok) throw new Error(j.error || t("failed"));
+      toast.success(isEdit ? t("toastUpdated") : t("toastCreated"));
       setEditing(null);
       router.refresh();
     } catch (e: any) {
-      toast.error(`儲存失敗：${e?.message || ""}`);
+      toast.error(t("toastSaveFailed", { msg: e?.message || "" }));
     }
   };
 
   const del = async (id: string) => {
-    const ok = await confirm({ title: "刪除這個作品集？", destructive: true, confirmLabel: "刪除" });
+    const ok = await confirm({ title: t("confirmDeletePortfolio"), destructive: true, confirmLabel: t("deleteLabel") });
     if (!ok) return;
     const res = await fetch(`/api/me/portfolios/${id}`, {
       credentials: "include", method: "DELETE" });
     if (res.ok) {
       setList((l) => l.filter((p) => p.id !== id));
-      toast.success("已刪除");
-    } else toast.error("刪除失敗");
+      toast.success(t("toastDeleted"));
+    } else toast.error(t("toastDeleteFailed"));
   };
 
   const togglePg = (id: string) => {
@@ -99,20 +101,20 @@ export function PortfoliosClient({
     <div className="space-y-4">
       {editing ? (
         <div className="rounded-xl bg-bg-card border border-border p-4 space-y-3">
-          <h2 className="font-bold">{editing.id ? "編輯作品集" : "新增作品集"}</h2>
+          <h2 className="font-bold">{editing.id ? t("editPortfolio") : t("newPortfolio")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <input value={editing.title ?? ""} onChange={(e) => setEditing({ ...editing, title: e.target.value })} placeholder="標題" className="bg-bg border border-border rounded-lg px-3 py-2 text-sm" />
-            <input value={editing.slug ?? ""} onChange={(e) => setEditing({ ...editing, slug: e.target.value })} placeholder="slug（網址、空白自動生）" className="bg-bg border border-border rounded-lg px-3 py-2 text-sm font-mono" />
+            <input value={editing.title ?? ""} onChange={(e) => setEditing({ ...editing, title: e.target.value })} placeholder={t("placeholderTitle")} className="bg-bg border border-border rounded-lg px-3 py-2 text-sm" />
+            <input value={editing.slug ?? ""} onChange={(e) => setEditing({ ...editing, slug: e.target.value })} placeholder={t("placeholderSlug")} className="bg-bg border border-border rounded-lg px-3 py-2 text-sm font-mono" />
           </div>
-          <textarea value={editing.description ?? ""} onChange={(e) => setEditing({ ...editing, description: e.target.value })} placeholder="說明（你做了什麼、用到什麼技術）" rows={3} className="w-full bg-bg border border-border rounded-lg p-2 text-sm" />
-          <input value={editing.cover_image ?? ""} onChange={(e) => setEditing({ ...editing, cover_image: e.target.value })} placeholder="封面圖 URL（選）" className="w-full bg-bg border border-border rounded-lg px-2 py-1.5 text-sm" />
-          <input value={editing.tags?.join(", ") ?? ""} onChange={(e) => setEditing({ ...editing, tags: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} placeholder="標籤（用逗號分、例：React, AI, todo-app）" className="w-full bg-bg border border-border rounded-lg px-2 py-1.5 text-sm" />
+          <textarea value={editing.description ?? ""} onChange={(e) => setEditing({ ...editing, description: e.target.value })} placeholder={t("placeholderDesc")} rows={3} className="w-full bg-bg border border-border rounded-lg p-2 text-sm" />
+          <input value={editing.cover_image ?? ""} onChange={(e) => setEditing({ ...editing, cover_image: e.target.value })} placeholder={t("placeholderCover")} className="w-full bg-bg border border-border rounded-lg px-2 py-1.5 text-sm" />
+          <input value={editing.tags?.join(", ") ?? ""} onChange={(e) => setEditing({ ...editing, tags: e.target.value.split(",").map(s => s.trim()).filter(Boolean) })} placeholder={t("placeholderTags")} className="w-full bg-bg border border-border rounded-lg px-2 py-1.5 text-sm" />
 
           {/* 選 playgrounds */}
           <div>
-            <label className="text-sm font-bold block mb-2">包含的 playgrounds（多選）</label>
+            <label className="text-sm font-bold block mb-2">{t("includePlaygrounds")}</label>
             {playgrounds.length === 0 ? (
-              <div className="text-xs text-fg-muted text-center py-4">還沒有 playground、去 <Link href="/chapters" className="text-accent">章節</Link> 寫一些再回來</div>
+              <div className="text-xs text-fg-muted text-center py-4">{t.rich("noPlaygroundHint", { link: (c) => <Link href="/chapters" className="text-accent">{c}</Link> })}</div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-1 max-h-60 overflow-y-auto">
                 {playgrounds.map((p) => {
@@ -127,29 +129,29 @@ export function PortfoliosClient({
                 })}
               </div>
             )}
-            <div className="text-[10px] text-fg-muted mt-1">已選 {(editing.playground_ids ?? []).length} 個</div>
+            <div className="text-[10px] text-fg-muted mt-1">{t("selectedCount", { n: (editing.playground_ids ?? []).length })}</div>
           </div>
 
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={!!editing.is_public} onChange={(e) => setEditing({ ...editing, is_public: e.target.checked })} />
-            公開到 /portfolio/{username}/{editing.slug || "your-slug"}（不勾即草稿）
+            {t("publishTo")} /portfolio/{username}/{editing.slug || "your-slug"}{t("publishToDraft")}
           </label>
 
           <div className="flex gap-2 pt-2 border-t border-border">
-            <button onClick={save} className="px-4 py-1.5 rounded-lg bg-accent text-black font-bold text-sm">儲存</button>
-            <button onClick={() => setEditing(null)} className="px-4 py-1.5 rounded-lg border border-border text-sm">取消</button>
+            <button onClick={save} className="px-4 py-1.5 rounded-lg bg-accent text-black font-bold text-sm">{t("saveLabel")}</button>
+            <button onClick={() => setEditing(null)} className="px-4 py-1.5 rounded-lg border border-border text-sm">{t("cancelLabel")}</button>
           </div>
         </div>
       ) : (
         <button onClick={() => setEditing({ is_public: false, tags: [], playground_ids: [] })} className="w-full p-3 border border-dashed border-border rounded-xl hover:border-accent flex items-center justify-center gap-1 text-sm">
-          <Plus size={14} /> 新增作品集
+          <Plus size={14} /> {t("newPortfolio")}
         </button>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {list.length === 0 ? (
           <div className="md:col-span-2">
-            <EmptyState icon={Palette} title="還沒有作品集" desc="把你寫過的 code / 作品集中放一處、做個對外展示" />
+            <EmptyState icon={Palette} title={t("emptyPortfoliosTitle")} desc={t("emptyPortfoliosDesc")} />
           </div>
         ) : list.map((p) => (
           <div key={p.id} className="rounded-xl bg-bg-card border border-border p-4">
@@ -168,16 +170,16 @@ export function PortfoliosClient({
               ))}
             </div>
             <div className="text-[10px] text-fg-muted">
-              {p.playground_ids.length} 個 playground · <Eye size={9} className="inline" /> {p.view_count} · {formatTWDate(p.updated_at)}
+              {p.playground_ids.length} {t("playgroundUnit")} · <Eye size={9} className="inline" /> {p.view_count} · {formatTWDate(p.updated_at)}
             </div>
             <div className="flex gap-1 mt-3 pt-2 border-t border-border">
               {p.is_public && (
                 <Link href={`/portfolio/${username}/${p.slug}` as any} target="_blank" className="text-xs px-2 py-1 rounded-lg border border-border hover:text-accent hover:border-accent flex items-center gap-1">
-                  <ExternalLink size={11} /> 看公開頁
+                  <ExternalLink size={11} /> {t("viewPublicPage")}
                 </Link>
               )}
               <button onClick={() => setEditing(p)} className="text-xs px-2 py-1 rounded-lg border border-border hover:text-accent flex items-center gap-1 ml-auto">
-                <Edit size={11} /> 編輯
+                <Edit size={11} /> {t("editLabel")}
               </button>
               <button onClick={() => del(p.id)} className="p-1.5 text-fg-muted hover:text-red-400">
                 <Trash2 size={13} />

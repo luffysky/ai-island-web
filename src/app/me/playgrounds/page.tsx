@@ -1,10 +1,12 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { getTranslations } from "next-intl/server";
 import { chapters } from "@/data/chapters";
 import Link from "next/link";
 import { Code2 } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 export default async function MyPlaygroundsPage() {
+  const t = await getTranslations("learn");
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
@@ -17,13 +19,13 @@ export default async function MyPlaygroundsPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">💻 我的程式碼</h1>
+      <h1 className="text-2xl font-bold">💻 {t("myCodeTitle")}</h1>
       <p className="text-sm text-fg-muted">
-        你在學習園地存的 code、共 {playgrounds?.length ?? 0} 個
+        {t("myCodeCount", { n: playgrounds?.length ?? 0 })}
       </p>
 
       {!playgrounds || playgrounds.length === 0 ? (
-        <EmptyState icon={Code2} title="還沒存過任何 code" desc="在學習園地改完 code 按 💾 存到雲端" action={{ label: "看章節", href: "/chapters" }} />
+        <EmptyState icon={Code2} title={t("emptyCodeTitle")} desc={t("emptyCodeDesc")} action={{ label: t("viewChapters"), href: "/chapters" }} />
       ) : (
         <div className="space-y-3">
           {playgrounds.map((p: any) => {

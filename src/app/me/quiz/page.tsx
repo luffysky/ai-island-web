@@ -1,14 +1,16 @@
 import { DailyQuizClient } from "./DailyQuizClient";
+import { getTranslations } from "next-intl/server";
 
 export const dynamic = "force-dynamic";
 
-export default function MyDailyQuizPage() {
+export default async function MyDailyQuizPage() {
+  const t = await getTranslations("learn");
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold flex items-center gap-2">🧠 每日測驗</h1>
+        <h1 className="text-2xl font-bold flex items-center gap-2">🧠 {t("quizTitle")}</h1>
         <p className="text-sm text-fg-muted mt-1">
-          從學過的章節 + leetcode 抽 8 題、答對 60% 過關、領 XP + Z-coin。每天限玩一次。
+          {t("quizSubtitle")}
         </p>
       </header>
       <DailyQuizClient />

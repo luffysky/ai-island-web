@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { SkillRadar } from "@/components/me/SkillRadar";
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 
 export interface FunnelStage {
   key: string;
@@ -39,6 +40,7 @@ const ICONS = {
 
 /** 圓環：整體求職準備度 */
 function ReadinessRing({ pct }: { pct: number }) {
+  const t = useTranslations("learn");
   const r = 52;
   const c = 2 * Math.PI * r;
   const off = c * (1 - Math.max(0, Math.min(100, pct)) / 100);
@@ -67,7 +69,7 @@ function ReadinessRing({ pct }: { pct: number }) {
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-3xl font-extrabold text-accent">{pct}%</span>
-        <span className="text-[10px] text-fg-muted">求職準備度</span>
+        <span className="text-[10px] text-fg-muted">{t("readinessLabel")}</span>
       </div>
     </div>
   );
@@ -82,6 +84,7 @@ export function CareerFunnel({
   readiness: number;
   completedLessonIds: string[];
 }) {
+  const t = useTranslations("learn");
   const completedSet = useMemo(() => new Set(completedLessonIds), [completedLessonIds]);
   const doneCount = stages.filter((s) => s.done).length;
   const nextStage = stages.find((s) => !s.done) ?? null;
@@ -95,10 +98,10 @@ export function CareerFunnel({
           <div className="flex-1 min-w-0 text-center sm:text-left">
             <div className="flex items-center gap-2 justify-center sm:justify-start">
               <Target size={18} className="text-accent shrink-0" />
-              <h2 className="font-bold text-lg">求職成果閉環</h2>
+              <h2 className="font-bold text-lg">{t("careerLoopTitle")}</h2>
             </div>
             <p className="text-sm text-fg-muted mt-1">
-              完成 {doneCount} / {stages.length} 個關卡。走完這條路、你就有課程進度、作品、面試手感、證書、履歷——投遞前的東西全備齊。
+              {t("funnelProgressDesc", { done: doneCount, total: stages.length })}
             </p>
             {nextStage ? (
               <Link
@@ -106,12 +109,12 @@ export function CareerFunnel({
                 className="inline-flex items-center gap-1.5 mt-3 px-4 py-2 rounded-lg bg-gradient-to-r from-accent to-accent-2 text-white text-sm font-bold hover:opacity-90 transition"
               >
                 <Sparkles size={14} />
-                下一步：{nextStage.title}
+                {t("nextStep")}{nextStage.title}
                 <ArrowRight size={14} />
               </Link>
             ) : (
               <div className="inline-flex items-center gap-1.5 mt-3 px-4 py-2 rounded-lg bg-green-500/15 text-green-400 text-sm font-bold">
-                <CheckCircle2 size={14} /> 全部關卡完成、可以開始投履歷了
+                <CheckCircle2 size={14} /> {t("allStagesDone")}
               </div>
             )}
           </div>
@@ -155,19 +158,19 @@ export function CareerFunnel({
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[10px] font-bold text-fg-muted">關卡 {i + 1}</span>
+                      <span className="text-[10px] font-bold text-fg-muted">{t("stageN", { n: i + 1 })}</span>
                       <h3 className="font-bold truncate">{s.title}</h3>
                       {s.done ? (
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold text-green-400">
-                          <CheckCircle2 size={12} /> 完成
+                          <CheckCircle2 size={12} /> {t("stageDone")}
                         </span>
                       ) : isNext ? (
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold text-accent">
-                          <Circle size={12} /> 進行中
+                          <Circle size={12} /> {t("inProgress")}
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold text-fg-muted">
-                          <Circle size={12} /> 待完成
+                          <Circle size={12} /> {t("pending")}
                         </span>
                       )}
                     </div>
@@ -182,7 +185,7 @@ export function CareerFunnel({
                     <div className="text-[11px] mt-1.5 flex items-center justify-between gap-2">
                       <span className={s.progress > 0 || s.done ? "text-fg" : "text-fg-muted"}>{s.detail}</span>
                       <span className="text-accent font-semibold shrink-0 inline-flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition">
-                        {s.done ? "查看" : s.cta} <ArrowRight size={11} />
+                        {s.done ? t("viewLabel") : s.cta} <ArrowRight size={11} />
                       </span>
                     </div>
                     {/* 空狀態引導 */}

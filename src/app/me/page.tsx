@@ -18,9 +18,11 @@ import { RecommendedChapters } from "@/components/me/RecommendedChapters";
 import { MeHero } from "@/components/me/MeHero";
 import { formatTWDate } from "@/lib/format-date";
 import { ELO_DEFAULT } from "@/lib/elo";
+import { getTranslations } from "next-intl/server";
 
 export default async function MeOverviewPage() {
   const supabase = await createSupabaseServer();
+  const t = await getTranslations("me");
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
@@ -95,16 +97,16 @@ export default async function MeOverviewPage() {
 
       {/* 統計 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Stat label="完成 lesson" value={`${completedLessons} / ${totalLessons}`} color="text-accent" />
-        <Stat label="總進度" value={`${pct}%`} color="text-yellow-400" />
-        <Stat label="我的筆記" value={notesCount ?? 0} color="text-blue-400" />
-        <Stat label="書籤" value={bookmarksCount ?? 0} color="text-pink-400" />
+        <Stat label={t("overviewStatCompletedLesson")} value={`${completedLessons} / ${totalLessons}`} color="text-accent" />
+        <Stat label={t("overviewStatTotalProgress")} value={`${pct}%`} color="text-yellow-400" />
+        <Stat label={t("overviewStatMyNotes")} value={notesCount ?? 0} color="text-blue-400" />
+        <Stat label={t("overviewStatBookmarks")} value={bookmarksCount ?? 0} color="text-pink-400" />
       </div>
 
       {/* 進度條 */}
       <div className="bg-bg-card border border-border rounded-xl p-5">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-bold">📈 整體進度</h2>
+          <h2 className="font-bold">📈 {t("overviewProgressTitle")}</h2>
           <span className="text-sm text-fg-muted">{completedLessons} / {totalLessons}</span>
         </div>
         <div className="h-3 bg-bg rounded-full overflow-hidden">
@@ -140,12 +142,12 @@ export default async function MeOverviewPage() {
       >
         <div className="shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center text-2xl shadow-lg">🎯</div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-bold">🎯 求職準備進度</h3>
+          <h3 className="font-bold">🎯 {t("careerPathTitle")}</h3>
           <p className="text-xs text-fg-muted leading-snug">
-            學課程 → 做作品 → 模擬面試 → 拿證書 → 完成履歷，看你離投履歷還差幾關
+            {t("careerPathDesc")}
           </p>
         </div>
-        <span className="text-sm text-accent font-semibold shrink-0 group-hover:translate-x-0.5 transition">看進度 →</span>
+        <span className="text-sm text-accent font-semibold shrink-0 group-hover:translate-x-0.5 transition">{t("careerPathCta")} →</span>
       </Link>
 
       {/* 解鎖工作力 */}
@@ -163,7 +165,7 @@ export default async function MeOverviewPage() {
       {/* 進行中的章節 */}
       {inProgress.length > 0 && (
         <div>
-          <h2 className="font-bold mb-3">📚 繼續學習</h2>
+          <h2 className="font-bold mb-3">📚 {t("overviewContinueLearning")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {inProgress.map((ch) => (
               <Link
@@ -191,7 +193,7 @@ export default async function MeOverviewPage() {
       {/* 最近完成 */}
       {recentLessons && recentLessons.length > 0 && (
         <div>
-          <h2 className="font-bold mb-3">⏱️ 最近完成</h2>
+          <h2 className="font-bold mb-3">⏱️ {t("overviewRecentCompleted")}</h2>
           <div className="bg-bg-card border border-border rounded-xl divide-y divide-border">
             {recentLessons.map((p: any) => {
               const ch = chapters.find((c) => c.id === p.chapter_id);

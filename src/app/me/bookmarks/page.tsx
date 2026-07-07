@@ -3,9 +3,11 @@ import { chapters } from "@/data/chapters";
 import Link from "next/link";
 import { BookmarkCheck, Bookmark } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { getTranslations } from "next-intl/server";
 
 export default async function BookmarksPage() {
   const supabase = await createSupabaseServer();
+  const t = await getTranslations("me");
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
@@ -24,11 +26,11 @@ export default async function BookmarksPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">🔖 我的書籤</h1>
-      <p className="text-sm text-fg-muted">共 {bookmarks?.length ?? 0} 個書籤</p>
+      <h1 className="text-2xl font-bold">🔖 {t("bookmarksTitle")}</h1>
+      <p className="text-sm text-fg-muted">{t("bookmarksCount", { n: bookmarks?.length ?? 0 })}</p>
 
       {!bookmarks || bookmarks.length === 0 ? (
-        <EmptyState icon={Bookmark} title="還沒有書籤" desc="在 lesson 頁面點 🔖 圖示加入書籤" action={{ label: "看章節", href: "/chapters" }} />
+        <EmptyState icon={Bookmark} title={t("bookmarksEmptyTitle")} desc={t("bookmarksEmptyDesc")} action={{ label: t("bookmarksEmptyAction"), href: "/chapters" }} />
       ) : (
         <div className="space-y-6">
           {Object.entries(grouped).map(([chId, items]) => {

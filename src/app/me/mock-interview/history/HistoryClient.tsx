@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Loader2, Trash2, ChevronDown, ChevronRight, Trophy } from "lucide-react";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
+import { useTranslations } from "next-intl";
 
 const ROLE_LABEL: Record<string, string> = {
   frontend: "前端", backend: "後端", fullstack: "全端", mobile: "行動 App",
@@ -19,6 +20,7 @@ const MODE_LABEL: Record<string, string> = {
 
 export function HistoryClient() {
   const confirm = useConfirm();
+  const t = useTranslations("mentor");
   const [sessions, setSessions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
@@ -35,13 +37,13 @@ export function HistoryClient() {
   }
 
   async function del(id: string) {
-    if (!(await confirm({ title: "刪除這次面試記錄？", destructive: true, confirmLabel: "刪除" }))) return;
+    if (!(await confirm({ title: t("mockHistoryDeleteTitle"), destructive: true, confirmLabel: t("deleteLabel") }))) return;
     await fetch(`/api/me/mock-interview/history?id=${id}`, { method: "DELETE", credentials: "include" });
     setSessions((ss) => ss.filter((s) => s.id !== id));
   }
 
   if (loading) return <div className="py-16 text-center"><Loader2 size={20} className="animate-spin mx-auto" /></div>;
-  if (sessions.length === 0) return <p className="py-16 text-center text-fg-muted">還沒面試記錄、去面一場</p>;
+  if (sessions.length === 0) return <p className="py-16 text-center text-fg-muted">{t("mockHistoryEmpty")}</p>;
 
   const avgScore = sessions.filter((s) => s.overall_score != null).reduce((s, x) => s + x.overall_score, 0) / sessions.filter((s) => s.overall_score != null).length || 0;
 
@@ -51,15 +53,15 @@ export function HistoryClient() {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
         <div className="bg-bg-card border border-border rounded-xl p-4 text-center">
           <div className="text-2xl font-extrabold text-accent">{sessions.length}</div>
-          <div className="text-xs text-fg-muted">總面試場次</div>
+          <div className="text-xs text-fg-muted">{t("mockHistoryTotalSessions")}</div>
         </div>
         <div className="bg-bg-card border border-border rounded-xl p-4 text-center">
           <div className="text-2xl font-extrabold text-amber-500">{avgScore ? avgScore.toFixed(1) : "—"}</div>
-          <div className="text-xs text-fg-muted">平均分</div>
+          <div className="text-xs text-fg-muted">{t("mockHistoryAvgScore")}</div>
         </div>
         <div className="bg-bg-card border border-border rounded-xl p-4 text-center">
           <div className="text-2xl font-extrabold text-green-500">{Math.max(0, ...sessions.map((s) => s.overall_score ?? 0))}</div>
-          <div className="text-xs text-fg-muted">最高分</div>
+          <div className="text-xs text-fg-muted">{t("mockHistoryMaxScore")}</div>
         </div>
       </div>
 
@@ -110,7 +112,7 @@ export function HistoryClient() {
                   )}
                   {Array.isArray(s.next_steps) && s.next_steps.length > 0 && (
                     <div>
-                      <h4 className="text-xs font-bold mb-1.5">📝 下一步</h4>
+                      <h4 className="text-xs font-bold mb-1.5">📝 {t("mockNextSteps")}</h4>
                       <ul className="space-y-1">
                         {s.next_steps.map((n: string, i: number) => (
                           <li key={i} className="bg-bg-elevated rounded p-2 text-sm">• {n}</li>
@@ -119,7 +121,7 @@ export function HistoryClient() {
                     </div>
                   )}
                   <button onClick={() => del(s.id)} className="btn-chip btn-chip-danger text-xs">
-                    <Trash2 size={12} /> 刪除
+                    <Trash2 size={12} /> {t("deleteLabel")}
                   </button>
                 </div>
               )}

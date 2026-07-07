@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Loader2, Send, Square, Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type Msg = { role: "interviewer" | "candidate"; content: string };
 
@@ -35,6 +36,7 @@ const ROLES = [
 ];
 
 export function MockInterviewClient() {
+  const t = useTranslations("mentor");
   const [mode, setMode] = useState("tech");
   const [role, setRole] = useState("frontend");
   const [started, setStarted] = useState(false);
@@ -62,7 +64,7 @@ export function MockInterviewClient() {
       });
       const j = await r.json();
       if (j.question) setHistory([{ role: "interviewer", content: j.question }]);
-      else setHistory([{ role: "interviewer", content: `❌ ${j.error ?? "啟動失敗"}` }]);
+      else setHistory([{ role: "interviewer", content: `❌ ${j.error ?? t("mockStartFailed")}` }]);
     } catch (e: any) {
       setHistory([{ role: "interviewer", content: `❌ ${e?.message}` }]);
     } finally {
@@ -85,7 +87,7 @@ export function MockInterviewClient() {
       });
       const j = await r.json();
       if (j.question) setHistory([...newHistory, { role: "interviewer", content: j.question }]);
-      else setHistory([...newHistory, { role: "interviewer", content: `❌ ${j.error ?? "失敗"}` }]);
+      else setHistory([...newHistory, { role: "interviewer", content: `❌ ${j.error ?? t("mockFailed")}` }]);
     } finally {
       setBusy(false);
     }
@@ -118,9 +120,9 @@ export function MockInterviewClient() {
   if (!started) {
     return (
       <div className="bg-bg-card border border-border rounded-xl p-6">
-        <h3 className="font-bold text-lg mb-4">設定面試</h3>
+        <h3 className="font-bold text-lg mb-4">{t("mockSetupTitle")}</h3>
 
-        <label className="text-sm font-medium block mb-2">類型</label>
+        <label className="text-sm font-medium block mb-2">{t("mockTypeLabel")}</label>
         <div className="grid grid-cols-3 md:grid-cols-5 gap-2 mb-4">
           {MODES.map((m) => (
             <button key={m.value} onClick={() => setMode(m.value)}
@@ -131,7 +133,7 @@ export function MockInterviewClient() {
           ))}
         </div>
 
-        <label className="text-sm font-medium block mb-2">職位 / 行業</label>
+        <label className="text-sm font-medium block mb-2">{t("mockRoleLabel")}</label>
         <div className="grid grid-cols-3 md:grid-cols-7 gap-2 mb-6">
           {ROLES.map((r) => (
             <button key={r.value} onClick={() => setRole(r.value)}
@@ -143,7 +145,7 @@ export function MockInterviewClient() {
         </div>
 
         <button onClick={start} disabled={busy} className="btn-chip btn-chip-success w-full justify-center py-3 text-sm font-bold disabled:opacity-50">
-          {busy ? <><Loader2 size={14} className="animate-spin" /> 雪鑰準備中...</> : <><Sparkles size={14} /> 🎤 開始面試</>}
+          {busy ? <><Loader2 size={14} className="animate-spin" /> {t("mockPreparing")}</> : <><Sparkles size={14} /> 🎤 {t("mockStartInterview")}</>}
         </button>
       </div>
     );
@@ -152,12 +154,12 @@ export function MockInterviewClient() {
   if (feedback) {
     return (
       <div className="bg-bg-card border border-border rounded-xl p-6">
-        <h3 className="font-bold text-xl mb-4 flex items-center gap-2">📊 面試評分</h3>
+        <h3 className="font-bold text-xl mb-4 flex items-center gap-2">📊 {t("mockScoreTitle")}</h3>
 
         {feedback.overall_score !== undefined && (
           <div className="text-center mb-6 p-6 bg-bg-elevated rounded-xl">
             <div className="text-5xl font-extrabold text-accent">{feedback.overall_score}</div>
-            <div className="text-xs text-fg-muted mt-1">總分 / 100</div>
+            <div className="text-xs text-fg-muted mt-1">{t("mockTotalScore")}</div>
           </div>
         )}
 
@@ -186,7 +188,7 @@ export function MockInterviewClient() {
 
         {Array.isArray(feedback.next_steps) && (
           <div className="mb-5">
-            <h4 className="font-bold mb-2">📝 下一步</h4>
+            <h4 className="font-bold mb-2">📝 {t("mockNextSteps")}</h4>
             <ul className="space-y-1.5">
               {feedback.next_steps.map((s: string, i: number) => (
                 <li key={i} className="bg-bg-elevated rounded p-2.5 text-sm">{s}</li>
@@ -201,10 +203,10 @@ export function MockInterviewClient() {
 
         <div className="flex gap-2">
           <button onClick={reset} className="btn-chip btn-chip-info flex-1 justify-center py-2.5">
-            再面一場
+            {t("mockAgain")}
           </button>
           <a href="/me/mock-interview/history" className="btn-chip btn-chip-neutral py-2.5">
-            📋 看歷史
+            📋 {t("mockViewHistory")}
           </a>
         </div>
       </div>
@@ -219,7 +221,7 @@ export function MockInterviewClient() {
           <span className="chip chip-neutral">{ROLES.find((r) => r.value === role)?.label}</span>
         </div>
         <button onClick={finish} disabled={busy || history.length < 2} className="btn-chip btn-chip-warn text-xs disabled:opacity-50">
-          <Square size={12} /> 結束面試
+          <Square size={12} /> {t("mockEndInterview")}
         </button>
       </div>
 
@@ -228,7 +230,7 @@ export function MockInterviewClient() {
           <div key={i} className={`flex ${m.role === "candidate" ? "justify-end" : "justify-start"}`}>
             <div className={`max-w-[85%] rounded-2xl p-3 text-sm leading-relaxed ${m.role === "candidate" ? "bg-accent/15 border border-accent/30" : "bg-bg-elevated border border-border"}`}>
               <div className="text-[10px] text-fg-muted mb-1 font-medium">
-                {m.role === "candidate" ? "🧑 你" : "🎤 雪鑰面試官"}
+                {m.role === "candidate" ? `🧑 ${t("you")}` : `🎤 ${t("mockInterviewer")}`}
               </div>
               <div className="whitespace-pre-wrap">{m.content}</div>
             </div>
@@ -237,7 +239,7 @@ export function MockInterviewClient() {
         {busy && (
           <div className="flex justify-start">
             <div className="bg-bg-elevated border border-border rounded-2xl p-3 text-sm flex items-center gap-2 text-fg-muted">
-              <Loader2 size={14} className="animate-spin" /> 雪鑰思考中...
+              <Loader2 size={14} className="animate-spin" /> {t("mockThinking")}
             </div>
           </div>
         )}
@@ -249,13 +251,13 @@ export function MockInterviewClient() {
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); submit(); } }}
-            placeholder="輸入你的回答... (Ctrl/Cmd + Enter 送出)"
+            placeholder={t("mockAnswerPlaceholder")}
             rows={3}
             disabled={busy}
             className="flex-1 bg-bg-elevated border border-border rounded-lg p-2.5 text-sm resize-none outline-none focus:border-accent disabled:opacity-50"
           />
           <button onClick={submit} disabled={busy || !answer.trim()} className="btn-chip btn-chip-success self-end disabled:opacity-50">
-            <Send size={14} /> 送
+            <Send size={14} /> {t("mockSend")}
           </button>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { redirect, notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { isCreatorIslandEnabled } from "@/lib/app-settings";
 import { FeatureOffNotice } from "@/components/FeatureOffNotice";
@@ -24,7 +25,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 }
 
 export default async function WorkPage({ params }: { params: Promise<{ id: string }> }) {
-  if (!(await isCreatorIslandEnabled())) return <FeatureOffNotice title="🎨 創作者島嶼即將開放" />;
+  const t = await getTranslations("creator");
+  if (!(await isCreatorIslandEnabled())) return <FeatureOffNotice title={`🎨 ${t("featureOffTitle")}`} />;
   const { id } = await params;
   const sb = await createSupabaseServer();
   const { data: { user } } = await sb.auth.getUser();

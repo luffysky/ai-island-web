@@ -1,4 +1,5 @@
 import { redirect, notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { isCreatorIslandEnabled } from "@/lib/app-settings";
 import { FeatureOffNotice } from "@/components/FeatureOffNotice";
@@ -10,8 +11,9 @@ import { EngineWorkspace } from "./EngineWorkspace";
 export const dynamic = "force-dynamic";
 
 export default async function DraftEditorPage({ params }: { params: Promise<{ id: string }> }) {
+  const t = await getTranslations("creator");
   if (!(await isCreatorIslandEnabled())) {
-    return <FeatureOffNotice title="🎨 創作者島嶼即將開放" desc="這座島還在建造中，敬請期待。" />;
+    return <FeatureOffNotice title={`🎨 ${t("createFeatureOffTitle")}`} desc={t("createFeatureOffDesc")} />;
   }
   const sb = await createSupabaseServer();
   const { data: { user } } = await sb.auth.getUser();
@@ -30,7 +32,7 @@ export default async function DraftEditorPage({ params }: { params: Promise<{ id
   const { data: profile } = await sb.from("profiles").select("username, display_name").eq("id", user.id).maybeSingle();
   const currentUser = {
     id: user.id,
-    name: (profile as any)?.display_name || (profile as any)?.username || "訪客",
+    name: (profile as any)?.display_name || (profile as any)?.username || t("createGuest"),
   };
 
   return <EngineWorkspace draft={draft as any} fragments={fragments as any} currentUser={currentUser} />;

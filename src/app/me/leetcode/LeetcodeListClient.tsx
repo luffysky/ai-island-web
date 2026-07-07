@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ExternalLink, Check, RefreshCcw, Loader2, Code2, Sparkles, Search } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { useTranslations } from "next-intl";
 
 type Problem = {
   id: string;
@@ -34,6 +35,7 @@ export function LeetcodeListClient({
   leetcodeStats: any;
 }) {
   const toast = useToast();
+  const t = useTranslations("learn");
   const [solved, setSolved] = useState<Set<string>>(new Set(solvedIds));
   const [diff, setDiff] = useState<"all" | "easy" | "medium" | "hard">("all");
   const [tag, setTag] = useState<string>("all");
@@ -101,24 +103,24 @@ export function LeetcodeListClient({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ problem_id: id }),
       });
-      toast.success("已標記為解過");
-    } catch { toast.error("標記失敗"); }
+      toast.success(t("toastMarkedSolved"));
+    } catch { toast.error(t("toastMarkFailed")); }
   };
 
   const syncStats = async () => {
-    if (!leetcodeUsername) { toast.warning("先在主後台綁定 leetcode username"); return; }
+    if (!leetcodeUsername) { toast.warning(t("toastBindFirst")); return; }
     setBusy(true);
     try {
       const res = await fetch("/api/me/leetcode/sync", {
       credentials: "include", method: "POST" });
       const j = await res.json();
       if (res.ok) {
-        toast.success(`同步 ${j.added} 題已解`);
+        toast.success(t("toastSynced", { n: j.added }));
         if (j.added > 0) location.reload();
       } else {
-        toast.error(j.error ?? "同步失敗");
+        toast.error(j.error ?? t("toastSyncFailed"));
       }
-    } catch { toast.error("網路錯誤"); }
+    } catch { toast.error(t("toastNetworkError")); }
     finally { setBusy(false); }
   };
 
@@ -126,15 +128,15 @@ export function LeetcodeListClient({
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6">
       <header className="flex items-start justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2"><Code2 size={24} /> Leetcode 推薦</h1>
+          <h1 className="text-2xl font-bold flex items-center gap-2"><Code2 size={24} /> {t("leetcodeTitle")}</h1>
           <p className="text-sm text-fg-muted mt-1">
-            點題目開到 leetcode 寫、回來標已解。
-            {leetcodeUsername && <span className="ml-2">已綁 @{leetcodeUsername}（總解 {leetcodeStats?.totalSolved ?? "?"} 題）</span>}
+            {t("leetcodeSubtitle")}
+            {leetcodeUsername && <span className="ml-2">{t("leetcodeBound", { name: leetcodeUsername, total: leetcodeStats?.totalSolved ?? "?" })}</span>}
           </p>
         </div>
         <button onClick={syncStats} disabled={busy} className="px-4 py-2 rounded-lg bg-accent text-black font-bold text-sm flex items-center gap-1 disabled:opacity-50">
           {busy ? <Loader2 size={14} className="animate-spin" /> : <RefreshCcw size={14} />}
-          同步 leetcode 解題數
+          {t("leetcodeSyncBtn")}
         </button>
       </header>
 
@@ -142,7 +144,7 @@ export function LeetcodeListClient({
       {recommended.length > 0 && (
         <section className="rounded-xl bg-gradient-to-br from-accent/10 to-accent-2/10 border border-accent/30 p-4">
           <h2 className="font-bold mb-3 flex items-center gap-2">
-            <Sparkles size={16} className="text-accent" /> 今日推薦（5 題）
+            <Sparkles size={16} className="text-accent" /> {t("leetcodeRecommendToday")}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
             {recommended.map((p) => (
@@ -154,22 +156,22 @@ export function LeetcodeListClient({
 
       {/* Filter */}
       <div className="flex items-center gap-2 flex-wrap text-xs">
-        <span className="text-fg-muted">難度：</span>
+        <span className="text-fg-muted">{t("filterDifficulty")}</span>
         {(["all", "easy", "medium", "hard"] as const).map((d) => (
           <button key={d} onClick={() => setDiff(d)} className={`px-2.5 py-1 rounded-full ${diff === d ? "bg-accent text-black font-bold" : "border border-border hover:border-accent"}`}>
-            {d === "all" ? "全部" : d}
+            {d === "all" ? t("filterAll") : d}
           </button>
         ))}
-        <span className="text-fg-muted ml-3">標籤：</span>
+        <span className="text-fg-muted ml-3">{t("filterTag")}</span>
         <select value={tag} onChange={(e) => setTag(e.target.value)} className="bg-bg border border-border rounded-lg px-2 py-1 text-xs">
-          <option value="all">全部</option>
-          {allTags.map((t) => <option key={t} value={t}>{t}</option>)}
+          <option value="all">{t("filterAll")}</option>
+          {allTags.map((tg) => <option key={tg} value={tg}>{tg}</option>)}
         </select>
         <label className="flex items-center gap-1 text-xs ml-3 cursor-pointer">
           <input type="checkbox" checked={hideSolved} onChange={(e) => setHideSolved(e.target.checked)} />
-          隱藏已解
+          {t("hideSolved")}
         </label>
-        <span className="text-fg-muted ml-auto">{filtered.length.toLocaleString()} 題 · 已解 {solved.size}</span>
+        <span className="text-fg-muted ml-auto">{t("leetcodeCount", { count: filtered.length, solved: solved.size })}</span>
       </div>
 
       {/* 搜尋 + 虛擬化 list */}
@@ -178,7 +180,7 @@ export function LeetcodeListClient({
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="搜尋題號 / 標題 / 標籤..."
+          placeholder={t("searchPlaceholder")}
           className="flex-1 bg-transparent outline-none text-sm py-1.5"
         />
       </div>
@@ -191,6 +193,7 @@ export function LeetcodeListClient({
 function VirtualGrid({ filtered, itemsPerRow, solved, onMark }: {
   filtered: Problem[]; itemsPerRow: number; solved: Set<string>; onMark: (id: string) => void;
 }) {
+  const t = useTranslations("learn");
   const parentRef = useRef<HTMLDivElement>(null);
   const rowCount = Math.ceil(filtered.length / itemsPerRow);
 
@@ -202,7 +205,7 @@ function VirtualGrid({ filtered, itemsPerRow, solved, onMark }: {
   });
 
   if (filtered.length === 0) {
-    return <p className="text-center py-12 text-fg-muted">沒符合條件的題目</p>;
+    return <p className="text-center py-12 text-fg-muted">{t("noMatchingProblems")}</p>;
   }
 
   return (
@@ -241,6 +244,7 @@ function VirtualGrid({ filtered, itemsPerRow, solved, onMark }: {
 }
 
 function ProblemCard({ p, solved, onMark, compact }: { p: Problem; solved: boolean; onMark: () => void; compact?: boolean }) {
+  const t = useTranslations("learn");
   return (
     <div className={`rounded-xl border ${solved ? "border-emerald-500/40 bg-emerald-500/5" : "border-border bg-bg-card"} p-3`}>
       <div className="flex items-start gap-2 mb-2">
@@ -258,11 +262,11 @@ function ProblemCard({ p, solved, onMark, compact }: { p: Problem; solved: boole
       </div>
       <div className="flex gap-1">
         <a href={p.url} target="_blank" rel="noopener" className="flex-1 text-xs px-2 py-1.5 rounded border border-border hover:border-accent text-center flex items-center justify-center gap-1">
-          <ExternalLink size={11} /> 打開
+          <ExternalLink size={11} /> {t("openLabel")}
         </a>
         {!solved && (
           <button onClick={onMark} className="text-xs px-2 py-1.5 rounded bg-accent text-black font-bold">
-            ✓ 解過了
+            ✓ {t("markSolvedBtn")}
           </button>
         )}
       </div>

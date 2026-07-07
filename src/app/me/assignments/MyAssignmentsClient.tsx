@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import { Send, Check, Edit } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { formatTWDate, formatTW } from "@/lib/format-date";
+import { useTranslations } from "next-intl";
 
 type Assignment = {
   id: string;
@@ -35,6 +36,7 @@ export function MyAssignmentsClient({
   submissionByAssignment: Record<string, Submission>;
 }) {
   const toast = useToast();
+  const t = useTranslations("learn");
   const [expanded, setExpanded] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<string | null>(null);
@@ -43,7 +45,7 @@ export function MyAssignmentsClient({
   const submit = async (assignmentId: string) => {
     const content = drafts[assignmentId] ?? "";
     if (!content.trim()) {
-      toast.warning("作答內容不能空白");
+      toast.warning(t("toastAnswerEmpty"));
       return;
     }
     setBusy(assignmentId);
@@ -55,11 +57,11 @@ export function MyAssignmentsClient({
         body: JSON.stringify({ content_md: content }),
       });
       const j = await res.json();
-      if (!res.ok) throw new Error(j.error || "失敗");
-      toast.success("已提交、等待批改");
+      if (!res.ok) throw new Error(j.error || t("failed"));
+      toast.success(t("toastSubmitted"));
       setSubs({ ...subs, [assignmentId]: { id: j.id ?? "new", content_md: content, submitted_at: new Date().toISOString(), score: null, feedback_md: null, graded_at: null } });
     } catch (e: any) {
-      toast.error(`提交失敗：${e?.message || ""}`);
+      toast.error(t("toastSubmitFailed", { msg: e?.message || "" }));
     } finally {
       setBusy(null);
     }
@@ -68,7 +70,7 @@ export function MyAssignmentsClient({
   if (assignments.length === 0) {
     return (
       <div className="rounded-xl bg-bg-card border border-border p-12 text-center text-fg-muted">
-        目前沒有作業
+        {t("noAssignments")}
       </div>
     );
   }
@@ -88,22 +90,22 @@ export function MyAssignmentsClient({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <h3 className="font-bold truncate">{a.title}</h3>
-                  {a.is_required && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-900 dark:text-red-200">必交</span>}
-                  {overdue && !my && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-orange-500/15 text-orange-900 dark:text-orange-200">逾期</span>}
+                  {a.is_required && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/15 text-red-900 dark:text-red-200">{t("required")}</span>}
+                  {overdue && !my && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-orange-500/15 text-orange-900 dark:text-orange-200">{t("overdue")}</span>}
                   {my?.graded_at && (
                     <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 font-bold">
-                      已批 {my.score}/{a.max_score}
+                      {t("graded", { score: my.score, max: a.max_score })}
                     </span>
                   )}
                   {my && !my.graded_at && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-900 dark:text-blue-200">已提交、待批</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-900 dark:text-blue-200">{t("submittedPending")}</span>
                   )}
                 </div>
                 <div className="text-[10px] text-fg-muted">
                   {a.chapter_id && `Ch ${a.chapter_id} `}
                   {a.lesson_id && `· ${a.lesson_id} `}
-                  {a.due_date && ` · 截止 ${formatTWDate(a.due_date)}`}
-                  · 滿分 {a.max_score}
+                  {a.due_date && ` · ${t("dueLabel")} ${formatTWDate(a.due_date)}`}
+                  · {t("maxScoreLabel")} {a.max_score}
                 </div>
               </div>
               {my?.graded_at ? <Check size={16} className="text-emerald-400" /> : <Edit size={14} className="text-fg-muted" />}
@@ -118,14 +120,14 @@ export function MyAssignmentsClient({
                 {my ? (
                   <>
                     <div className="rounded-lg bg-bg p-3">
-                      <div className="text-[10px] text-fg-muted mb-1">我的作答（提交於 {formatTW(my.submitted_at)}）</div>
+                      <div className="text-[10px] text-fg-muted mb-1">{t("mySubmissionAt", { date: formatTW(my.submitted_at) })}</div>
                       <div className="prose-custom text-sm">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>{my.content_md}</ReactMarkdown>
                       </div>
                     </div>
                     {my.feedback_md && (
                       <div className="rounded-lg bg-emerald-500/5 border border-emerald-500/30 p-3">
-                        <div className="text-[10px] text-emerald-400 font-bold mb-1">📝 教師回饋（{formatTW(my.graded_at ?? "")}）</div>
+                        <div className="text-[10px] text-emerald-400 font-bold mb-1">📝 {t("teacherFeedback", { date: formatTW(my.graded_at ?? "") })}</div>
                         <div className="prose-custom text-sm">
                           <ReactMarkdown remarkPlugins={[remarkGfm]}>{my.feedback_md}</ReactMarkdown>
                         </div>
@@ -134,12 +136,12 @@ export function MyAssignmentsClient({
                   </>
                 ) : (
                   <div>
-                    <label className="text-xs text-fg-muted block mb-1">作答（markdown）</label>
+                    <label className="text-xs text-fg-muted block mb-1">{t("answerLabel")}</label>
                     <textarea
                       value={drafts[a.id] ?? ""}
                       onChange={(e) => setDrafts({ ...drafts, [a.id]: e.target.value })}
                       rows={8}
-                      placeholder="寫下你的答案..."
+                      placeholder={t("answerPlaceholder")}
                       className="w-full bg-bg border border-border rounded-lg p-2 text-sm"
                     />
                     <button
@@ -147,7 +149,7 @@ export function MyAssignmentsClient({
                       disabled={busy === a.id || !(drafts[a.id]?.trim())}
                       className="mt-2 px-4 py-2 rounded-lg bg-accent text-black font-bold text-sm disabled:opacity-50 flex items-center gap-1"
                     >
-                      <Send size={13} /> {busy === a.id ? "提交中…" : "提交作業"}
+                      <Send size={13} /> {busy === a.id ? t("submitting") : t("submitAssignment")}
                     </button>
                   </div>
                 )}

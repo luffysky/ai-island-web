@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 
 interface Prefs {
@@ -12,6 +13,7 @@ interface Prefs {
 }
 
 export function EmailPrefsForm({ initial }: { initial: Prefs }) {
+  const t = useTranslations("me");
   const [prefs, setPrefs] = useState(initial);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -49,10 +51,10 @@ export function EmailPrefsForm({ initial }: { initial: Prefs }) {
   };
 
   const items = [
-    { key: "newsletter" as const, label: "📰 電子報", desc: "每月精選、學習技巧" },
-    { key: "product_updates" as const, label: "🚀 產品更新", desc: "新功能、改版" },
-    { key: "course_announcements" as const, label: "📚 課程通知", desc: "新章節上線" },
-    { key: "weekly_digest" as const, label: "📊 每週學習摘要", desc: "你的進度回顧" },
+    { key: "newsletter" as const, label: `📰 ${t("emailNewsletterLabel")}`, desc: t("emailNewsletterDesc") },
+    { key: "product_updates" as const, label: `🚀 ${t("emailProductLabel")}`, desc: t("emailProductDesc") },
+    { key: "course_announcements" as const, label: `📚 ${t("emailCourseLabel")}`, desc: t("emailCourseDesc") },
+    { key: "weekly_digest" as const, label: `📊 ${t("emailWeeklyLabel")}`, desc: t("emailWeeklyDesc") },
   ];
 
   return (
@@ -75,9 +77,9 @@ export function EmailPrefsForm({ initial }: { initial: Prefs }) {
       </div>
 
       <div className="p-4 bg-bg-elevated rounded-lg text-sm">
-        <strong>🔒 必要通知</strong>（不可關閉）
+        <strong>🔒 {t("emailRequiredTitle")}</strong>{t("emailRequiredCannotDisable")}
         <div className="text-xs text-fg-muted mt-1">
-          訂單確認、密碼重設、帳號安全等系統通知會持續發送、以保護你的帳號。
+          {t("emailRequiredDesc")}
         </div>
       </div>
 
@@ -86,7 +88,7 @@ export function EmailPrefsForm({ initial }: { initial: Prefs }) {
         disabled={saving}
         className="w-full px-4 py-3 bg-accent text-black rounded-lg font-bold hover:scale-[1.01] transition disabled:opacity-50"
       >
-        {saving ? "儲存中..." : saved ? "✅ 已儲存" : "儲存設定"}
+        {saving ? t("emailSaving") : saved ? `✅ ${t("emailSaved")}` : t("emailSaveBtn")}
       </button>
     </div>
   );

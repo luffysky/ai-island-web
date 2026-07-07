@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Loader2, Download, Copy, Printer, Sparkles } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
+import { useTranslations } from "next-intl";
 
 const TARGETS = [
   { value: "junior",    label: "Junior 工程師", emoji: "🌱" },
@@ -33,6 +34,7 @@ function renderMarkdown(md: string): string {
 
 export function ResumeClient() {
   const toast = useToast();
+  const t = useTranslations("learn");
   const [target, setTarget] = useState("junior");
   const [md, setMd] = useState("");
   const [loading, setLoading] = useState(false);
@@ -55,7 +57,7 @@ export function ResumeClient() {
         setMd(j.markdown);
         setModel(j.model ?? "");
       } else {
-        setMd(`❌ ${j.error ?? "未知錯誤"}`);
+        setMd(`❌ ${j.error ?? t("unknownError")}`);
       }
     } catch (e: any) {
       setMd(`❌ ${e?.message ?? "fetch failed"}`);
@@ -65,7 +67,7 @@ export function ResumeClient() {
   }
 
   function copyMd() {
-    navigator.clipboard.writeText(md).then(() => toast.success("已複製 markdown 到剪貼簿"));
+    navigator.clipboard.writeText(md).then(() => toast.success(t("toastCopied")));
   }
 
   function downloadMd() {
@@ -103,13 +105,13 @@ export function ResumeClient() {
           disabled={loading}
           className="btn-chip btn-chip-success w-full justify-center py-3 text-sm font-bold disabled:opacity-50"
         >
-          {loading ? <><Loader2 size={14} className="animate-spin" /> 雪鑰寫作中...</> : <><Sparkles size={14} /> ✨ 讓雪鑰幫我生成履歷</>}
+          {loading ? <><Loader2 size={14} className="animate-spin" /> {t("resumeWriting")}</> : <><Sparkles size={14} /> {t("resumeGenerateBtn")}</>}
         </button>
         {md && (
           <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-border">
-            <button onClick={copyMd} className="btn-chip btn-chip-info"><Copy size={12} /> 複製 markdown</button>
-            <button onClick={downloadMd} className="btn-chip btn-chip-info"><Download size={12} /> 下載 .md</button>
-            <button onClick={printPdf} className="btn-chip btn-chip-info"><Printer size={12} /> 印 PDF (Ctrl+P)</button>
+            <button onClick={copyMd} className="btn-chip btn-chip-info"><Copy size={12} /> {t("copyMarkdown")}</button>
+            <button onClick={downloadMd} className="btn-chip btn-chip-info"><Download size={12} /> {t("downloadMd")}</button>
+            <button onClick={printPdf} className="btn-chip btn-chip-info"><Printer size={12} /> {t("printPdf")}</button>
             {model && <span className="text-xs text-fg-muted ml-auto self-center">by {model}</span>}
           </div>
         )}

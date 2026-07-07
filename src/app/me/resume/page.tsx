@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { ResumeClient } from "./ResumeClient";
 
@@ -10,6 +11,7 @@ export const metadata = {
 };
 
 export default async function ResumePage() {
+  const t = await getTranslations("learn");
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/me/resume");
@@ -18,10 +20,10 @@ export default async function ResumePage() {
     <div className="p-4 md:p-6 max-w-4xl mx-auto">
       <header className="mb-5">
         <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
-          🪪 AI 履歷生成
+          🪪 {t("resumeTitle")}
         </h1>
         <p className="text-sm text-fg-muted mt-1">
-          雪鑰看你 lesson 進度 / LeetCode / 作品集 / 連勝、生成一份 markdown 履歷、可貼 LinkedIn / GitHub / 印 PDF
+          {t("resumeSubtitle")}
         </p>
       </header>
       <ResumeClient />

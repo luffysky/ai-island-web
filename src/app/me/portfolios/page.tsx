@@ -1,10 +1,12 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { PortfoliosClient } from "./PortfoliosClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function MyPortfoliosPage() {
+  const t = await getTranslations("learn");
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -18,9 +20,9 @@ export default async function MyPortfoliosPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold flex items-center gap-2">🎨 我的作品集</h1>
+        <h1 className="text-2xl font-bold flex items-center gap-2">🎨 {t("portfoliosTitle")}</h1>
         <p className="text-sm text-fg-muted mt-1">
-          把學過的 playgrounds 整理成公開作品集、放履歷用、給朋友看。
+          {t("portfoliosSubtitle")}
         </p>
       </header>
       <PortfoliosClient

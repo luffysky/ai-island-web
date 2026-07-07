@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { X, ArrowRight, ArrowLeft, Check, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/lib/auth-context";
 
 /**
@@ -34,6 +35,7 @@ const PETS = [
 ];
 
 export function OnboardingWizard() {
+  const t = useTranslations("onboarding");
   const { status } = useAuth();
   const pathname = usePathname() || "/";
   const router = useRouter();
@@ -96,10 +98,10 @@ export function OnboardingWizard() {
       <div className="relative w-full max-w-2xl bg-bg-card border border-border rounded-3xl shadow-2xl overflow-hidden">
         {/* header */}
         <div className="px-6 pt-5 pb-3 bg-gradient-to-r from-accent/10 via-accent-2/10 to-transparent">
-          <button onClick={() => finish(true)} aria-label="跳過" className="absolute top-3 right-3 p-1.5 rounded-full text-fg-muted hover:bg-bg-elevated">
+          <button onClick={() => finish(true)} aria-label={t("skipAria")} className="absolute top-3 right-3 p-1.5 rounded-full text-fg-muted hover:bg-bg-elevated">
             <X size={14} />
           </button>
-          <div className="text-[10px] text-fg-muted">歡迎來到 AI 島 · 3 步入門</div>
+          <div className="text-[10px] text-fg-muted">{t("welcome3steps")}</div>
           <div className="flex items-center gap-2 mt-2">
             {[0, 1, 2].map((i) => (
               <div key={i} className={`h-1.5 flex-1 rounded-full transition ${i <= step ? "bg-gradient-to-r from-accent to-accent-2" : "bg-bg-elevated"}`} />
@@ -110,8 +112,8 @@ export function OnboardingWizard() {
         <div className="p-6">
           {step === 0 && (
             <>
-              <h2 className="text-2xl font-bold mb-1">想學什麼方向？</h2>
-              <p className="text-sm text-fg-muted mb-5">先選一條、之後隨時可改。</p>
+              <h2 className="text-2xl font-bold mb-1">{t("careerHeading")}</h2>
+              <p className="text-sm text-fg-muted mb-5">{t("careerHint")}</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {CAREERS.map((c) => (
                   <button
@@ -130,8 +132,8 @@ export function OnboardingWizard() {
 
           {step === 1 && (
             <>
-              <h2 className="text-2xl font-bold mb-1">選一隻寵物陪你</h2>
-              <p className="text-sm text-fg-muted mb-5">會記你的學習狀態、會主動講話。</p>
+              <h2 className="text-2xl font-bold mb-1">{t("petHeading")}</h2>
+              <p className="text-sm text-fg-muted mb-5">{t("petHint")}</p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {PETS.map((p) => (
                   <button
@@ -150,19 +152,19 @@ export function OnboardingWizard() {
 
           {step === 2 && (
             <>
-              <h2 className="text-2xl font-bold mb-1">準備好了 🎉</h2>
+              <h2 className="text-2xl font-bold mb-1">{t("ready")} 🎉</h2>
               <p className="text-sm text-fg-muted mb-5">
-                依你的選擇、雪鑰推薦從這一章開始：
+                {t("recommendIntro")}
               </p>
               <div className="rounded-2xl border border-accent/40 bg-gradient-to-br from-accent/10 to-accent-2/5 p-5 text-center">
                 <div className="text-5xl mb-2">{CAREERS.find((c) => c.id === career)?.emoji ?? "🚀"}</div>
-                <div className="text-xs text-fg-muted">推薦起點</div>
+                <div className="text-xs text-fg-muted">{t("recommendStart")}</div>
                 <div className="text-lg font-bold mt-1">
                   Ch{String(CAREERS.find((c) => c.id === career)?.starting ?? 1).padStart(2, "0")}
                 </div>
                 <div className="text-xs text-fg-muted mt-3 leading-relaxed">
-                  選完按「開始學習」會帶你過去。<br />
-                  寵物 <b>{PETS.find((p) => p.id === pet)?.name}</b> 已綁定、右下角會找你。
+                  {t("goThere")}<br />
+                  {t("petBoundPrefix")}<b>{PETS.find((p) => p.id === pet)?.name}</b>{t("petBoundSuffix")}
                 </div>
               </div>
             </>
@@ -172,11 +174,11 @@ export function OnboardingWizard() {
           <div className="mt-6 flex items-center gap-2">
             {step > 0 && (
               <button onClick={() => setStep(step - 1)} className="text-xs text-fg-muted hover:text-fg inline-flex items-center gap-1">
-                <ArrowLeft size={12} /> 上一步
+                <ArrowLeft size={12} /> {t("back")}
               </button>
             )}
             <button onClick={() => finish(true)} className="text-xs text-fg-muted hover:text-fg ml-auto">
-              先跳過
+              {t("skip")}
             </button>
             {step < 2 ? (
               <button
@@ -184,7 +186,7 @@ export function OnboardingWizard() {
                 disabled={(step === 0 && !career) || (step === 1 && !pet)}
                 className="text-sm px-4 py-2 rounded-full bg-gradient-to-r from-accent to-accent-2 text-black font-bold inline-flex items-center gap-1 disabled:opacity-30"
               >
-                下一步 <ArrowRight size={12} />
+                {t("next")} <ArrowRight size={12} />
               </button>
             ) : (
               <button
@@ -193,7 +195,7 @@ export function OnboardingWizard() {
                 className="text-sm px-4 py-2 rounded-full bg-gradient-to-r from-accent to-accent-2 text-black font-bold inline-flex items-center gap-1 disabled:opacity-50"
               >
                 {saving ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
-                開始學習
+                {t("startLearning")}
               </button>
             )}
           </div>

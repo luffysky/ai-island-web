@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { getPost } from "@/lib/creator-engine/social";
 import { ShareButton } from "@/components/share/ShareButton";
 
@@ -30,14 +31,15 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function PostPermalink({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const t = await getTranslations("creator");
   const post: any = await getPost(id);
 
   if (!post || post.visibility !== "public") {
     return (
       <main className="max-w-lg mx-auto px-4 py-20 text-center space-y-4">
         <div className="text-5xl">🔒</div>
-        <h1 className="text-xl font-bold">這則貼文不存在或非公開</h1>
-        <Link href="/creator-island/community" className="inline-block px-5 py-2.5 rounded-full bg-accent text-black font-semibold">來 AI 島社群看看</Link>
+        <h1 className="text-xl font-bold">{t("profileNotFound")}</h1>
+        <Link href="/creator-island/community" className="inline-block px-5 py-2.5 rounded-full bg-accent text-black font-semibold">{t("profileVisitCommunityFull")}</Link>
       </main>
     );
   }
@@ -50,7 +52,7 @@ export default async function PostPermalink({ params }: { params: Promise<{ id: 
             ? <img src={post.author.avatar_url} alt="" className="w-9 h-9 rounded-full object-cover" />
             : <div className="w-9 h-9 rounded-full bg-accent/20 grid place-items-center text-sm">{name(post.author)[0]}</div>}
           <div className="font-bold">{name(post.author)}</div>
-          {post.type === "reel" && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-pink-500/15 text-pink-300">短影音</span>}
+          {post.type === "reel" && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-pink-500/15 text-pink-300">{t("profileReel")}</span>}
           <span className="ml-auto text-xs text-fg-muted">{new Date(post.created_at).toLocaleDateString("zh-TW")}</span>
         </div>
         {post.content && <div className="text-sm whitespace-pre-wrap leading-relaxed">{post.content}</div>}
@@ -67,8 +69,8 @@ export default async function PostPermalink({ params }: { params: Promise<{ id: 
         </div>
       </article>
       <div className="flex flex-wrap items-center justify-center gap-3">
-        <Link href="/creator-island/community" className="px-5 py-2.5 rounded-full bg-accent text-black font-semibold hover:opacity-90 transition">🏝️ 來 AI 島社群</Link>
-        <Link href="/creator-island" className="px-5 py-2.5 rounded-full border border-border hover:bg-bg-elevated transition">創作者島嶼</Link>
+        <Link href="/creator-island/community" className="px-5 py-2.5 rounded-full bg-accent text-black font-semibold hover:opacity-90 transition">🏝️ {t("profileVisitCommunity")}</Link>
+        <Link href="/creator-island" className="px-5 py-2.5 rounded-full border border-border hover:bg-bg-elevated transition">{t("profileCreatorIsland")}</Link>
       </div>
     </main>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Loader2, Plus, Trash2, Copy, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
@@ -17,6 +18,7 @@ type Key = {
 };
 
 export function ApiKeysClient() {
+  const t = useTranslations("me");
   const toast = useToast();
   const confirm = useConfirm();
   const [keys, setKeys] = useState<Key[]>([]);
@@ -38,7 +40,7 @@ export function ApiKeysClient() {
   }
 
   async function create() {
-    if (!name.trim()) { toast.error("給 key 一個名字"); return; }
+    if (!name.trim()) { toast.error(t("apiKeysNameRequired")); return; }
     setCreating(true);
     try {
       const r = await fetch("/api/me/api-keys", {
@@ -53,19 +55,19 @@ export function ApiKeysClient() {
         setName("");
         await load();
       } else {
-        toast.error(j.error ?? "建立失敗");
+        toast.error(j.error ?? t("apiKeysCreateFail"));
       }
     } finally { setCreating(false); }
   }
 
   async function disable(id: string) {
-    if (!(await confirm({ title: "停用這把 key？", description: "之後拿這 key 打 API 都會 403", destructive: true, confirmLabel: "停用" }))) return;
+    if (!(await confirm({ title: t("apiKeysDisableTitle"), description: t("apiKeysDisableDesc"), destructive: true, confirmLabel: t("apiKeysDisableConfirm") }))) return;
     await fetch(`/api/me/api-keys?id=${id}`, { method: "DELETE", credentials: "include" });
     await load();
   }
 
   function copy(text: string) {
-    navigator.clipboard.writeText(text).then(() => toast.success("已複製"));
+    navigator.clipboard.writeText(text).then(() => toast.success(t("apiKeysCopied")));
   }
 
   return (
@@ -73,7 +75,7 @@ export function ApiKeysClient() {
       {/* 新生成的 key（一次性顯示）*/}
       {newPlain && (
         <div className="bg-amber-500/15 border-2 border-amber-500/50 rounded-xl p-4">
-          <h3 className="font-bold text-amber-700 dark:text-amber-300 mb-2">⚠️ 新 key（只此一次顯示、立刻複製）</h3>
+          <h3 className="font-bold text-amber-700 dark:text-amber-300 mb-2">⚠️ {t("apiKeysNewKeyTitle")}</h3>
           <div className="flex items-center gap-2 bg-bg p-2 rounded font-mono text-xs">
             <code className="flex-1 break-all">{reveal ? newPlain : "•".repeat(newPlain.length)}</code>
             <button onClick={() => setReveal(!reveal)} className="p-1">
@@ -82,22 +84,22 @@ export function ApiKeysClient() {
             <button onClick={() => copy(newPlain)} className="p-1"><Copy size={14} /></button>
           </div>
           <button onClick={() => setNewPlain(null)} className="text-xs mt-2 text-fg-muted hover:text-fg">
-            我已複製、關閉
+            {t("apiKeysCopiedClose")}
           </button>
         </div>
       )}
 
       {/* 新增 */}
       <div className="bg-bg-card border border-border rounded-xl p-4">
-        <h3 className="font-bold mb-2">建新 API key</h3>
+        <h3 className="font-bold mb-2">{t("apiKeysCreateTitle")}</h3>
         <div className="flex gap-2">
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="例：My App / Test"
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t("apiKeysNamePlaceholder")}
             className="flex-1 bg-bg-elevated border border-border rounded p-2 text-sm" />
           <button onClick={create} disabled={creating || !name.trim()} className="btn-chip btn-chip-success disabled:opacity-50">
-            {creating ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />} 生成
+            {creating ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />} {t("apiKeysGenerate")}
           </button>
         </div>
-        <p className="text-xs text-fg-muted mt-2">每個 key 預設 100 calls / 月、最多 5 把 active key</p>
+        <p className="text-xs text-fg-muted mt-2">{t("apiKeysQuotaNote")}</p>
       </div>
 
       {/* 已有 keys */}
@@ -105,7 +107,7 @@ export function ApiKeysClient() {
         <div className="py-8 text-center"><Loader2 size={20} className="animate-spin mx-auto" /></div>
       ) : keys.length === 0 ? (
         <div className="bg-bg-card border border-border rounded-xl p-8 text-center text-fg-muted text-sm">
-          還沒 key、上面建一個試試
+          {t("apiKeysEmpty")}
         </div>
       ) : (
         <div className="space-y-2">
@@ -118,15 +120,15 @@ export function ApiKeysClient() {
                 </div>
                 {k.active && (
                   <button onClick={() => disable(k.id)} className="btn-chip btn-chip-danger text-xs">
-                    <Trash2 size={12} /> 停用
+                    <Trash2 size={12} /> {t("apiKeysDisableConfirm")}
                   </button>
                 )}
-                {!k.active && <span className="chip chip-neutral text-xs">已停用</span>}
+                {!k.active && <span className="chip chip-neutral text-xs">{t("apiKeysDisabled")}</span>}
               </div>
               <div className="flex items-center gap-3 text-xs text-fg-muted flex-wrap">
-                <span>用量：{k.used_this_month} / {k.quota_per_month}</span>
-                {k.last_used_at && <span>最後使用：{new Date(k.last_used_at).toLocaleString("zh-TW")}</span>}
-                <span>建立：{new Date(k.created_at).toLocaleDateString("zh-TW")}</span>
+                <span>{t("apiKeysUsage", { used: k.used_this_month, quota: k.quota_per_month })}</span>
+                {k.last_used_at && <span>{t("apiKeysLastUsed", { date: new Date(k.last_used_at).toLocaleString("zh-TW") })}</span>}
+                <span>{t("apiKeysCreated", { date: new Date(k.created_at).toLocaleDateString("zh-TW") })}</span>
               </div>
               <div className="mt-2 h-1.5 bg-bg-elevated rounded overflow-hidden">
                 <div className="h-full bg-accent" style={{ width: `${Math.min(100, (k.used_this_month / k.quota_per_month) * 100)}%` }} />

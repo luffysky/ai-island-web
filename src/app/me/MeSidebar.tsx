@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 import { CountUp } from "@/components/ui/CountUp";
@@ -69,6 +70,7 @@ const SECONDARY_LINKS: { href: string; label: string; emoji: string }[] = [
 ];
 
 export function MeSidebar({ profile }: { profile: Profile | null }) {
+  const t = useTranslations("me");
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
@@ -113,7 +115,7 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
         <button
           type="button"
           onClick={toggle}
-          aria-label={collapsed ? "展開側欄" : "收合側欄"}
+          aria-label={collapsed ? t("sidebarExpand") : t("sidebarCollapse")}
           className="w-full flex items-center justify-end mb-2 p-1.5 text-fg-muted hover:text-accent transition"
         >
           {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
@@ -157,7 +159,7 @@ export function MeSidebar({ profile }: { profile: Profile | null }) {
                 <div className="text-orange-400 font-bold flex items-center justify-center gap-1">
                   <StreakFlame streak={profile?.streak_days ?? 0} /> <CountUp value={profile?.streak_days ?? 0} />
                 </div>
-                <div className="text-fg-muted">連續天</div>
+                <div className="text-fg-muted">{t("sidebarStreakDays")}</div>
               </div>
             </div>
           </div>

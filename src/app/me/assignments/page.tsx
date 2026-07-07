@@ -1,11 +1,13 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { MyAssignmentsClient } from "./MyAssignmentsClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function MyAssignmentsPage() {
+  const t = await getTranslations("learn");
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -33,8 +35,8 @@ export default async function MyAssignmentsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">📋 我的作業</h1>
-      <p className="text-sm text-fg-muted">完成作業、teacher 批改後可看到分數與回饋。</p>
+      <h1 className="text-2xl font-bold">📋 {t("assignmentsTitle")}</h1>
+      <p className="text-sm text-fg-muted">{t("assignmentsSubtitle")}</p>
       <MyAssignmentsClient
         assignments={(assignments ?? []) as any}
         submissionByAssignment={submissionByAssignment}

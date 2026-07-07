@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { chapters } from "@/data/chapters";
 import { CareerFunnel, type FunnelStage } from "@/components/career/CareerFunnel";
@@ -11,6 +12,7 @@ export const metadata = {
 };
 
 export default async function CareerPathPage() {
+  const t = await getTranslations("learn");
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/me/career-path");
@@ -56,68 +58,68 @@ export default async function CareerPathPage() {
     {
       key: "learn",
       icon: "bookOpen",
-      title: "學完課程",
-      subtitle: "打底：把該職涯路線的課上到有料",
-      detail: `已完成 ${completedLessons} / ${totalLessons} 課（${coursePct}%）`,
+      title: t("stageLearnTitle"),
+      subtitle: t("stageLearnSubtitle"),
+      detail: t("stageLearnDetail", { done: completedLessons, total: totalLessons, pct: coursePct }),
       href: "/chapters",
-      cta: "去上課",
+      cta: t("stageLearnCta"),
       done: coursePct >= 60,
       progress: coursePct,
-      emptyHint: "從第一章開始、完成 lesson 會即時反映在這裡",
+      emptyHint: t("stageLearnHint"),
     },
     {
       key: "portfolio",
       icon: "palette",
-      title: "做出作品",
-      subtitle: "把 playground 整理成可放履歷的公開作品集",
+      title: t("stagePortfolioTitle"),
+      subtitle: t("stagePortfolioSubtitle"),
       detail:
         portfolioCount > 0
-          ? `${portfolioCount} 件作品（公開 ${publicPortfolios} 件）`
-          : "還沒有作品",
+          ? t("stagePortfolioDetail", { count: portfolioCount, publicCount: publicPortfolios })
+          : t("stagePortfolioEmpty"),
       href: "/me/portfolios",
-      cta: "建立作品",
+      cta: t("stagePortfolioCta"),
       done: portfolioCount >= 1,
       progress: Math.min(portfolioCount, 3) / 3 * 100,
-      emptyHint: "把學過的 playground 一鍵整理成作品、面試最加分",
+      emptyHint: t("stagePortfolioHint"),
     },
     {
       key: "interview",
       icon: "mic",
-      title: "模擬面試",
-      subtitle: "雪鑰當面試官、練手感 + 拿評分回饋",
+      title: t("stageInterviewTitle"),
+      subtitle: t("stageInterviewSubtitle"),
       detail:
         mockCount > 0
-          ? `${mockCount} 場 · 最佳 ${bestScore ?? "—"} 分`
-          : "還沒面試過",
+          ? t("stageInterviewDetail", { count: mockCount, best: bestScore ?? "—" })
+          : t("stageInterviewEmpty"),
       href: "/me/mock-interview",
-      cta: "開始面試",
+      cta: t("stageInterviewCta"),
       done: mockCount >= 1,
       progress: mockCount > 0 ? Math.max(20, bestScore ?? 40) : 0,
-      emptyHint: "先來一場、5 模式 14 行業可選、結束有完整評分",
+      emptyHint: t("stageInterviewHint"),
     },
     {
       key: "certificate",
       icon: "award",
-      title: "拿證書",
-      subtitle: "完成整章自動發放章節完課證書",
-      detail: certCount > 0 ? `已獲得 ${certCount} 張證書` : "還沒有證書",
+      title: t("stageCertTitle"),
+      subtitle: t("stageCertSubtitle"),
+      detail: certCount > 0 ? t("stageCertDetail", { count: certCount }) : t("stageCertEmpty"),
       href: "/me/certificates",
-      cta: "看證書資格",
+      cta: t("stageCertCta"),
       done: certCount >= 1,
       progress: Math.min(certCount, 3) / 3 * 100,
-      emptyHint: "把任一章 lesson 全部完成、就會自動發證書",
+      emptyHint: t("stageCertHint"),
     },
     {
       key: "resume",
       icon: "fileText",
-      title: "完成履歷",
-      subtitle: "雪鑰看你的學習資料自動生成 markdown 履歷",
-      detail: resumeReady ? "素材就緒、可生成履歷" : "先累積學習資料再生成",
+      title: t("stageResumeTitle"),
+      subtitle: t("stageResumeSubtitle"),
+      detail: resumeReady ? t("stageResumeReady") : t("stageResumeNotReady"),
       href: "/me/resume",
-      cta: "生成履歷",
+      cta: t("stageResumeCta"),
       done: resumeReady,
       progress: resumeReady ? 100 : Math.min(coursePct, 40),
-      emptyHint: "完成幾課、加一件作品或證書、雪鑰就有東西幫你寫",
+      emptyHint: t("stageResumeHint"),
     },
   ];
 
@@ -129,9 +131,9 @@ export default async function CareerPathPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">🎯 求職準備進度</h1>
+        <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">🎯 {t("careerPathTitle")}</h1>
         <p className="text-sm text-fg-muted mt-1">
-          從學課程到投履歷，一條完整的求職成果閉環。每一關都是你真實的資料、缺哪關就補哪關。
+          {t("careerPathSubtitle")}
         </p>
       </header>
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { PlaygroundCard } from "@/components/chapter/PlaygroundCard";
 import { Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type Example = { label: string; language: string; code: string };
 
@@ -69,20 +70,21 @@ func main() {
 ];
 
 export function MePlaygroundClient() {
+  const t = useTranslations("learn");
   const [ex, setEx] = useState<Example>(EXAMPLES[0]);
 
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold">🧪 程式碼遊樂場</h1>
+        <h1 className="text-2xl font-bold">🧪 {t("playgroundTitle")}</h1>
         <p className="text-sm text-fg-muted">
-          支援 Python / JS / HTML / SQL / Go / Rust / Java… 邊寫邊跑。換語言用編輯器右上角下拉選。
+          {t("playgroundSubtitle")}
         </p>
       </div>
 
       {/* 範例 */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs text-fg-muted">載入範例：</span>
+        <span className="text-xs text-fg-muted">{t("loadExample")}</span>
         {EXAMPLES.map((e) => (
           <button
             key={e.label}
@@ -99,7 +101,7 @@ export function MePlaygroundClient() {
       {/* 編輯器（換範例時 remount 載新 code） */}
       <PlaygroundCard
         key={ex.label}
-        playground={{ key: `me-playground-${ex.label}`, language: ex.language, initialCode: ex.code, title: `${ex.label} 範例` } as any}
+        playground={{ key: `me-playground-${ex.label}`, language: ex.language, initialCode: ex.code, title: t("exampleTitle", { label: ex.label }) } as any}
         lessonId="me-playground"
         isLoggedIn
       />
@@ -107,11 +109,10 @@ export function MePlaygroundClient() {
       {/* 問綠寶 */}
       <div className="rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-5">
         <div className="flex items-center gap-2 font-bold mb-1">
-          <Sparkles size={18} className="text-purple-400" /> 卡住了？問綠寶
+          <Sparkles size={18} className="text-purple-400" /> {t("askGreenGemTitle")}
         </div>
         <p className="text-sm text-fg-muted">
-          把你的 code 或錯誤訊息複製起來，點右下角 🟢 <b>綠寶 AI 導師</b>，貼給它問「這段為什麼錯 / 怎麼優化」。
-          綠寶會看你的學習進度給建議、還能引用任何章節。
+          {t.rich("askGreenGemDesc", { b: (c) => <b>{c}</b> })}
         </p>
       </div>
     </div>

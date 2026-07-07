@@ -9,6 +9,7 @@ import { listCollectionsWithItems } from "@/lib/creator-engine/collections";
 import { BackgroundBeams } from "@/components/ui/BackgroundBeams";
 import { Sparkles } from "@/components/ui/Sparkles";
 import { PenTool, Library, Building2, Store, Globe, TrendingUp, Palette } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { CreatorIslandClient } from "./CreatorIslandClient";
 
 const NAV = [
@@ -24,9 +25,10 @@ const NAV = [
 export const dynamic = "force-dynamic";
 
 export default async function CreatorIslandPage({ searchParams }: { searchParams: Promise<{ ws?: string }> }) {
+  const t = await getTranslations("creator");
   // 1) 功能旗標（預設關、owner 在 /admin/settings 開）
   if (!(await isCreatorIslandEnabled())) {
-    return <FeatureOffNotice title="🎨 創作者島嶼即將開放" desc="這座島還在建造中，敬請期待。" />;
+    return <FeatureOffNotice title={t("hubFeatureOffTitle")} desc={t("hubFeatureOffDesc")} />;
   }
 
   // 2) 認證
@@ -58,11 +60,11 @@ export default async function CreatorIslandPage({ searchParams }: { searchParams
         <Sparkles count={14} />
         <div className="relative flex items-end justify-between gap-3 flex-wrap">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-amber-300 via-pink-400 to-violet-400 bg-clip-text text-transparent inline-flex items-center gap-2"><Palette className="text-pink-400" size={32} /> 創作者島嶼</h1>
+            <h1 className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-amber-300 via-pink-400 to-violet-400 bg-clip-text text-transparent inline-flex items-center gap-2"><Palette className="text-pink-400" size={32} /> {t("hubHeading")}</h1>
             <p className="text-sm text-fg-muted mt-1.5">
               {isStudio
-                ? <span className="inline-flex items-center gap-1"><Building2 size={13} className="shrink-0" /> 工作室：<b className="text-fg">{active.name}</b> · <Link href="/creator-island" className="text-accent hover:underline">回我的島</Link></span>
-                : "把散落的碎片，變成你的創作宇宙。綠寶 ✨ 陪你一起。"}
+                ? <span className="inline-flex items-center gap-1"><Building2 size={13} className="shrink-0" /> {t("hubStudioPrefix")}<b className="text-fg">{active.name}</b> · <Link href="/creator-island" className="text-accent hover:underline">{t("hubBackToMyIsland")}</Link></span>
+                : t("hubTagline")}
             </p>
           </div>
           <nav className="flex items-center gap-1.5 text-sm flex-wrap">

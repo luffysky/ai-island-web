@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ExternalLink, Sparkles } from "lucide-react";
 import { SPECIES_LIST, getSpecies, type SpeciesId } from "@/lib/pet-species";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { useTranslations } from "next-intl";
 
 type AIModel = {
   id: string;
@@ -15,6 +16,7 @@ type AIModel = {
 };
 
 export function PetSettings({ initial }: { initial: any }) {
+  const t = useTranslations("learn");
   const [pet, setPet] = useState({
     name: initial?.name ?? "招財",
     species: (initial?.species ?? "hamster") as SpeciesId,
@@ -52,8 +54,8 @@ export function PetSettings({ initial }: { initial: any }) {
         body: JSON.stringify(pet),
       });
       const data = await res.json();
-      if (!res.ok) setMsg(`失敗：${data.error}`);
-      else setMsg("✅ 已儲存");
+      if (!res.ok) setMsg(t("saveFailedMsg", { err: data.error }));
+      else setMsg(t("savedMsg"));
     } finally {
       setSaving(false);
     }
@@ -71,7 +73,7 @@ export function PetSettings({ initial }: { initial: any }) {
 
       <div className="bg-bg-card border border-border rounded-2xl p-4 space-y-3">
         <div>
-          <label className="text-xs text-fg-muted block mb-1">寵物名稱</label>
+          <label className="text-xs text-fg-muted block mb-1">{t("petNameLabel")}</label>
           <input
             type="text"
             maxLength={30}
@@ -82,7 +84,7 @@ export function PetSettings({ initial }: { initial: any }) {
         </div>
 
         <div>
-          <label className="text-xs text-fg-muted block mb-2">物種</label>
+          <label className="text-xs text-fg-muted block mb-2">{t("speciesLabel")}</label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {SPECIES_LIST.map((s) => {
               const active = pet.species === s.id;
@@ -104,14 +106,14 @@ export function PetSettings({ initial }: { initial: any }) {
         </div>
 
         <Toggle
-          label="允許在頁面走動"
-          help="關閉後寵物會待在固定位置"
+          label={t("toggleWalkLabel")}
+          help={t("toggleWalkHelp")}
           value={pet.walk_enabled}
           onChange={(v) => setPet({ ...pet, walk_enabled: v })}
         />
         <Toggle
-          label="主動互動訊息"
-          help="開啟後寵物會在閒置時偶爾主動找你聊（每 15 分一次）"
+          label={t("toggleProactiveLabel")}
+          help={t("toggleProactiveHelp")}
           value={pet.proactive_enabled}
           onChange={(v) => setPet({ ...pet, proactive_enabled: v })}
         />
@@ -121,18 +123,18 @@ export function PetSettings({ initial }: { initial: any }) {
       <div className="bg-bg-card border border-border rounded-2xl p-4 space-y-3">
         <div className="flex items-center gap-2">
           <Sparkles size={16} className="text-accent" />
-          <h2 className="font-bold text-sm">AI 對話客製</h2>
-          <span className="text-[10px] text-fg-muted">不設就用預設</span>
+          <h2 className="font-bold text-sm">{t("aiCustomTitle")}</h2>
+          <span className="text-[10px] text-fg-muted">{t("aiCustomHint")}</span>
         </div>
 
         <div>
-          <label className="text-xs text-fg-muted block mb-1">AI 模型</label>
+          <label className="text-xs text-fg-muted block mb-1">{t("aiModelLabel")}</label>
           <select
             value={pet.ai_model_id ?? ""}
             onChange={(e) => setPet({ ...pet, ai_model_id: e.target.value || null })}
             className="w-full bg-bg border border-border rounded-lg px-3 py-2 text-sm"
           >
-            <option value="">系統預設（Claude Haiku 4.5、快又便宜）</option>
+            <option value="">{t("aiModelDefault")}</option>
             {models.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.display_name}（{m.provider}）
@@ -140,18 +142,18 @@ export function PetSettings({ initial }: { initial: any }) {
             ))}
           </select>
           <p className="text-[10px] text-fg-muted mt-1 leading-snug">
-            選別的 model 寵物回應風格 / 速度 / 成本會不一樣。Haiku 是預設便宜款；Sonnet 比較有個性；GPT 風格不同。
+            {t("aiModelNote")}
           </p>
         </div>
 
         <div>
           <label className="text-xs text-fg-muted block mb-1">
-            自訂個性提示詞（給 AI 看的、控制寵物說話風格）
+            {t("customPromptLabel")}
           </label>
           <textarea
             value={pet.custom_prompt}
             onChange={(e) => setPet({ ...pet, custom_prompt: e.target.value })}
-            placeholder={`例如：你是一隻很臭屁的暹羅貓、覺得自己最帥、講話高高在上但其實很黏人。\n\n（留空 = 用我們的預設模板：依物種自動撒嬌 / 吐槽 / 短句）`}
+            placeholder={t("customPromptPlaceholder")}
             rows={5}
             maxLength={2000}
             className="w-full bg-bg border border-border rounded-lg p-2 text-xs outline-none focus:border-accent resize-none font-mono"
@@ -163,7 +165,7 @@ export function PetSettings({ initial }: { initial: any }) {
                 onClick={() => setPet({ ...pet, custom_prompt: "" })}
                 className="text-[10px] text-fg-muted hover:text-accent"
               >
-                清空、改用預設
+                {t("clearUseDefault")}
               </button>
             )}
           </div>
@@ -171,8 +173,8 @@ export function PetSettings({ initial }: { initial: any }) {
 
         <div>
           <Toggle
-            label="用我自己的 AI API key"
-            help={pet.use_byok ? "開啟中 — 用你 /settings/ai-keys 設定的 key、不算系統額度" : "關閉 — 用平台共池額度（每日免費 10 次）"}
+            label={t("toggleByokLabel")}
+            help={pet.use_byok ? t("byokHelpOn") : t("byokHelpOff")}
             value={pet.use_byok}
             onChange={(v) => setPet({ ...pet, use_byok: v })}
           />
@@ -181,7 +183,7 @@ export function PetSettings({ initial }: { initial: any }) {
               href="/settings/ai-keys"
               className="inline-flex items-center gap-1 text-xs text-accent hover:underline mt-1 ml-12"
             >
-              去設定 API key <ExternalLink size={11} />
+              {t("goSetApiKey")} <ExternalLink size={11} />
             </Link>
           )}
         </div>
@@ -193,14 +195,13 @@ export function PetSettings({ initial }: { initial: any }) {
             disabled={saving}
             className="px-5 py-1.5 text-sm bg-accent text-black font-bold rounded-lg disabled:opacity-50"
           >
-            {saving ? "儲存中..." : "💾 儲存全部"}
+            {saving ? t("savingLabel") : t("saveAllBtn")}
           </button>
         </div>
       </div>
 
       <div className="text-xs text-fg-muted bg-bg-card border border-border rounded-xl p-3 leading-relaxed">
-        💡 <b>不設任何 AI 客製、寵物就用平台預設</b>（Haiku 模型 + 內建個性模板 + 共池額度）。
-        想要更有個性可選別的 model + 自己寫 prompt；想無限聊就接自己的 key。
+        {t.rich("byokTip", { b: (c) => <b>{c}</b> })}
       </div>
     </div>
   );

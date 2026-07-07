@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Banknote, ArrowLeft, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
+import { useTranslations } from "next-intl";
 
 type Payout = { id: string; fruit_amount: number; ntd_amount: number; fee_ntd: number; status: string; admin_note?: string | null; requested_at: string; processed_at?: string | null };
 type Cfg = { fruitPerNtd: number; minFruit: number; feePct: number };
@@ -16,6 +17,7 @@ const STATUS: Record<string, { label: string; cls: string }> = {
 };
 
 export function PayoutClient({ balance, initialPayouts, cfg }: { balance: number; initialPayouts: Payout[]; cfg: Cfg }) {
+  const t = useTranslations("creator");
   const toast = useToast();
   const [bal, setBal] = useState(balance);
   const [rows, setRows] = useState<Payout[]>(initialPayouts);
@@ -39,8 +41,8 @@ export function PayoutClient({ balance, initialPayouts, cfg }: { balance: number
         body: JSON.stringify({ fruitAmount: fruitNum, accountName, bankName, bankAccount }),
       });
       const j = await res.json();
-      if (!res.ok || !j.ok) throw new Error(j.message || "申請失敗");
-      toast.success("提現申請已送出 · 待平台撥款");
+      if (!res.ok || !j.ok) throw new Error(j.message || t("payoutErrorSubmitFailed"));
+      toast.success(t("payoutToastSubmitted"));
       setBal((b) => b - fruitNum);
       setRows((r) => [{ id: j.id, fruit_amount: fruitNum, ntd_amount: gross, fee_ntd: fee, status: "pending", requested_at: new Date().toISOString() }, ...r]);
     } catch (e: any) { toast.error(e.message); } finally { setBusy(false); }
@@ -49,37 +51,37 @@ export function PayoutClient({ balance, initialPayouts, cfg }: { balance: number
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 space-y-5">
       <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold inline-flex items-center gap-1.5"><Banknote size={20} /> 果實提現</h1>
-        <Link href="/creator-island" className="text-sm text-accent hover:underline inline-flex items-center gap-1.5"><ArrowLeft size={14} /> 回島</Link>
+        <h1 className="text-2xl font-bold inline-flex items-center gap-1.5"><Banknote size={20} /> {t("payoutTitle")}</h1>
+        <Link href="/creator-island" className="text-sm text-accent hover:underline inline-flex items-center gap-1.5"><ArrowLeft size={14} /> {t("payoutBackToIsland")}</Link>
       </header>
 
       <div className="surface p-4">
-        <div className="text-sm text-fg-muted">目前可提果實</div>
+        <div className="text-sm text-fg-muted">{t("payoutAvailable")}</div>
         <div className="text-3xl font-extrabold mt-0.5">🌰 {bal.toLocaleString()}</div>
-        <div className="text-xs text-fg-muted mt-1">匯率 {cfg.fruitPerNtd} 果實 = NT$1{cfg.feePct > 0 ? ` · 手續費 ${cfg.feePct}%` : " · 免手續費"} · 最低提領 {cfg.minFruit.toLocaleString()} 果實</div>
+        <div className="text-xs text-fg-muted mt-1">{t("payoutRate", { rate: cfg.fruitPerNtd })}{cfg.feePct > 0 ? t("payoutFeePct", { pct: cfg.feePct }) : t("payoutNoFee")} · {t("payoutMinWithdraw", { min: cfg.minFruit.toLocaleString() })}</div>
       </div>
 
       <div className="surface p-4 space-y-3">
-        <div className="font-bold text-sm">申請提現</div>
-        <label className="block text-sm">提領果實
+        <div className="font-bold text-sm">{t("payoutApplyHeading")}</div>
+        <label className="block text-sm">{t("payoutWithdrawFruit")}
           <input type="number" min={cfg.minFruit} value={fruit} onChange={(e) => setFruit(e.target.value)} className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm" />
         </label>
-        <div className="text-xs text-fg-muted">預估實拿 <b className="text-accent">NT${net.toLocaleString()}</b>（毛額 NT${gross.toLocaleString()}{fee > 0 ? ` − 手續費 NT$${fee}` : ""}）</div>
+        <div className="text-xs text-fg-muted">{t("payoutEstimateNet")} <b className="text-accent">NT${net.toLocaleString()}</b>（{t("payoutGross")} NT${gross.toLocaleString()}{fee > 0 ? ` − ${t("payoutFee")} NT$${fee}` : ""}）</div>
         <div className="grid sm:grid-cols-3 gap-2">
-          <input value={accountName} onChange={(e) => setAccountName(e.target.value)} placeholder="收款人姓名" className="bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm" />
-          <input value={bankName} onChange={(e) => setBankName(e.target.value)} placeholder="銀行 / 分行" className="bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm" />
-          <input value={bankAccount} onChange={(e) => setBankAccount(e.target.value)} placeholder="帳號" className="bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm" />
+          <input value={accountName} onChange={(e) => setAccountName(e.target.value)} placeholder={t("payoutAccountName")} className="bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm" />
+          <input value={bankName} onChange={(e) => setBankName(e.target.value)} placeholder={t("payoutBankName")} className="bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm" />
+          <input value={bankAccount} onChange={(e) => setBankAccount(e.target.value)} placeholder={t("payoutBankAccount")} className="bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm" />
         </div>
         <button onClick={submit} disabled={busy || fruitNum < cfg.minFruit || fruitNum > bal} className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-accent text-accent-contrast font-bold disabled:opacity-40">
-          {busy ? <><Loader2 size={16} className="animate-spin" /> 送出中…</> : "送出申請"}
+          {busy ? <><Loader2 size={16} className="animate-spin" /> {t("payoutSubmitting")}</> : t("payoutSubmit")}
         </button>
-        <p className="text-[11px] text-fg-muted">送出當下果實會先扣住；若被駁回會自動退回。撥款為人工作業，約 3–7 個工作天。</p>
+        <p className="text-[11px] text-fg-muted">{t("payoutNotice")}</p>
       </div>
 
       <div className="surface p-4">
-        <div className="font-bold text-sm mb-2">提現紀錄</div>
+        <div className="font-bold text-sm mb-2">{t("payoutHistory")}</div>
         {rows.length === 0 ? (
-          <div className="text-xs text-fg-muted">還沒有提現紀錄。</div>
+          <div className="text-xs text-fg-muted">{t("payoutHistoryEmpty")}</div>
         ) : (
           <div className="space-y-2">
             {rows.map((p) => {

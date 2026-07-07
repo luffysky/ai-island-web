@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/lib/auth-context";
 import { chaptersLite } from "@/data/chapters-lite";
 
@@ -30,6 +31,7 @@ const STEPS: Step[] = [
 ];
 
 export function OnboardingTour() {
+  const t = useTranslations("onboarding");
   const { status } = useAuth();
   const pathname = usePathname() || "/";
   const [open, setOpen] = useState(false);
@@ -109,16 +111,16 @@ export function OnboardingTour() {
         <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
           className="absolute z-[81] max-h-[62vh] overflow-y-auto bg-bg-card border border-accent/40 rounded-2xl p-4 shadow-2xl"
           style={{ top: tip.top, left: tip.left, width: tip.width }}>
-          <button onClick={finish} aria-label="關閉" className="absolute top-2.5 right-2.5 p-1.5 rounded-full text-fg-muted hover:bg-bg-elevated"><X size={14} /></button>
-          <div className="text-[10px] text-fg-muted mb-1 inline-flex items-center gap-1"><Sparkles size={10} className="text-accent" /> 新手導覽 {i + 1}/{STEPS.length}</div>
+          <button onClick={finish} aria-label={t("closeAria")} className="absolute top-2.5 right-2.5 p-1.5 rounded-full text-fg-muted hover:bg-bg-elevated"><X size={14} /></button>
+          <div className="text-[10px] text-fg-muted mb-1 inline-flex items-center gap-1"><Sparkles size={10} className="text-accent" /> {t("tourProgress", { current: i + 1, total: STEPS.length })}</div>
           <div className="text-3xl mb-1.5">{s.emoji}</div>
           <div className="font-bold">{s.title}</div>
           <p className="text-sm text-fg-muted mt-1 leading-relaxed">{s.body}</p>
           <div className="flex items-center gap-2 mt-3">
             {s.href && <Link href={s.href as any} onClick={finish} className="text-xs px-3 py-1.5 rounded-full border border-border hover:border-accent transition">{s.cta}</Link>}
-            <button onClick={finish} className="text-xs text-fg-muted hover:text-fg ml-auto">略過</button>
-            {i > 0 && <button onClick={() => setI(i - 1)} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated">上一步</button>}
-            <button onClick={() => (isLast ? finish() : setI(i + 1))} className="text-xs px-4 py-1.5 rounded-full bg-accent text-black font-bold">{isLast ? "開始學習" : "下一步"}</button>
+            <button onClick={finish} className="text-xs text-fg-muted hover:text-fg ml-auto">{t("skipTour")}</button>
+            {i > 0 && <button onClick={() => setI(i - 1)} className="text-xs px-3 py-1.5 rounded-full bg-bg-elevated">{t("back")}</button>}
+            <button onClick={() => (isLast ? finish() : setI(i + 1))} className="text-xs px-4 py-1.5 rounded-full bg-accent text-black font-bold">{isLast ? t("startLearning") : t("next")}</button>
           </div>
         </motion.div>
       </motion.div>

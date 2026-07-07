@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { ASSISTANT_LABEL, type AssistantMode } from "@/lib/ai-assistant";
 import { AssistantPanel } from "@/components/AssistantPanel";
 
 const MODES: AssistantMode[] = ["grade_draft", "hint", "recommend", "companion"];
 
 export function AssistantHub() {
+  const t = useTranslations("mentor");
   const [mode, setMode] = useState<AssistantMode>("companion");
   return (
     <div className="space-y-4">
@@ -29,7 +31,7 @@ export function AssistantHub() {
       </div>
       <AssistantPanel mode={mode} inline placeholder={PLACEHOLDER[mode]} />
       <div className="text-[10px] text-fg-muted text-center">
-        每用戶 30 次/分鐘、走免費 quota（升級 Premium 無上限）
+        {t("assistantQuota")}
       </div>
     </div>
   );

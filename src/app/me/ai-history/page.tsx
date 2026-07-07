@@ -1,10 +1,12 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { AiHistoryClient } from "./AiHistoryClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function MyAiHistoryPage() {
+  const t = await getTranslations("mentor");
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -19,9 +21,9 @@ export default async function MyAiHistoryPage() {
   return (
     <div className="space-y-4">
       <header>
-        <h1 className="text-2xl font-bold">🤖 AI 學伴對話紀錄</h1>
+        <h1 className="text-2xl font-bold">🤖 {t("aiHistoryPageTitle")}</h1>
         <p className="text-sm text-fg-muted mt-1">
-          你跟 AI 導師（綠寶 / 肥仔 / 菇寶）的所有對話、按時間排序、點開看完整內容。
+          {t("aiHistoryPageSubtitle")}
         </p>
       </header>
       <AiHistoryClient initial={(conversations ?? []) as any} />

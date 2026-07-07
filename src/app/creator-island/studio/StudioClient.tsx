@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Building2, Plus, Ticket, Users, ArrowRight, FileText, AlertTriangle, CheckCircle } from "lucide-react";
 import { useConfirm, usePrompt } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/Toast";
+import { useTranslations } from "next-intl";
 
 type Ws = { id: string; name: string; type: "personal" | "studio"; role: string };
 
@@ -16,6 +17,7 @@ async function call(url: string, method: string, body?: any) {
 }
 
 export function StudioClient({ initialWorkspaces }: { initialWorkspaces: Ws[] }) {
+  const t = useTranslations("creator");
   const [list, setList] = useState<Ws[]>(initialWorkspaces);
   const [name, setName] = useState("");
   const [redeem, setRedeem] = useState("");
@@ -27,14 +29,14 @@ export function StudioClient({ initialWorkspaces }: { initialWorkspaces: Ws[] })
     if (!name.trim()) return;
     setBusy(true); setErr(null);
     try { const { workspace } = await call("/api/creator-island/workspaces", "POST", { name: name.trim() });
-      setList((p) => [...p, { ...workspace, role: "owner" }]); setName(""); setMsg("已建立工作室"); }
+      setList((p) => [...p, { ...workspace, role: "owner" }]); setName(""); setMsg(t("studioCreated")); }
     catch (e: any) { setErr(e.message); } finally { setBusy(false); }
   }
   async function redeemCode() {
     if (!redeem.trim()) return;
     setBusy(true); setErr(null);
     try { const { workspace } = await call(`/api/creator-island/invitations/${encodeURIComponent(redeem.trim())}/redeem`, "POST");
-      setList((p) => p.some((w) => w.id === workspace.id) ? p : [...p, { ...workspace, role: "member" as any }]); setRedeem(""); setMsg("已加入工作室"); }
+      setList((p) => p.some((w) => w.id === workspace.id) ? p : [...p, { ...workspace, role: "member" as any }]); setRedeem(""); setMsg(t("studioJoined")); }
     catch (e: any) { setErr(e.message); } finally { setBusy(false); }
   }
 
@@ -43,10 +45,10 @@ export function StudioClient({ initialWorkspaces }: { initialWorkspaces: Ws[] })
   return (
     <div className="max-w-3xl mx-auto px-6 py-10 space-y-6">
       <header className="flex items-center justify-between gap-2 flex-wrap">
-        <h1 className="text-2xl font-bold inline-flex items-center gap-2"><Building2 size={22} /> 工作室</h1>
+        <h1 className="text-2xl font-bold inline-flex items-center gap-2"><Building2 size={22} /> {t("studioTitle")}</h1>
         <div className="flex items-center gap-2 flex-wrap">
-          <Link href="/me/blog" className="text-sm px-3 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent hover:text-accent transition inline-flex items-center gap-1.5"><FileText size={14} /> 我的部落格</Link>
-          <Link href="/creator-island" className="text-sm text-accent hover:underline">← 回島</Link>
+          <Link href="/me/blog" className="text-sm px-3 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent hover:text-accent transition inline-flex items-center gap-1.5"><FileText size={14} /> {t("studioMyBlog")}</Link>
+          <Link href="/creator-island" className="text-sm text-accent hover:underline">← {t("studioBackToIsland")}</Link>
         </div>
       </header>
       {err && <div className="bg-red-500/10 border border-red-500/30 text-red-300 rounded-xl px-4 py-2 text-sm inline-flex items-center gap-1.5"><AlertTriangle size={14} className="shrink-0" /> {err}</div>}
@@ -54,19 +56,19 @@ export function StudioClient({ initialWorkspaces }: { initialWorkspaces: Ws[] })
 
       <div className="grid sm:grid-cols-2 gap-3">
         <div className="bg-bg-card border border-border rounded-2xl p-4 space-y-2">
-          <div className="font-bold text-sm inline-flex items-center gap-1.5"><Plus size={15} /> 建立工作室</div>
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="工作室名稱" className="w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-accent" />
-          <button onClick={createStudio} disabled={busy || !name.trim()} className="px-4 py-2 rounded-full bg-accent text-white text-sm font-bold disabled:opacity-40">建立</button>
+          <div className="font-bold text-sm inline-flex items-center gap-1.5"><Plus size={15} /> {t("studioCreateStudio")}</div>
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t("studioNamePlaceholder")} className="w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-accent" />
+          <button onClick={createStudio} disabled={busy || !name.trim()} className="px-4 py-2 rounded-full bg-accent text-white text-sm font-bold disabled:opacity-40">{t("studioCreateBtn")}</button>
         </div>
         <div className="bg-bg-card border border-border rounded-2xl p-4 space-y-2">
-          <div className="font-bold text-sm inline-flex items-center gap-1.5"><Ticket size={15} /> 用邀請碼加入</div>
-          <input value={redeem} onChange={(e) => setRedeem(e.target.value)} placeholder="貼上邀請碼" className="w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-accent" />
-          <button onClick={redeemCode} disabled={busy || !redeem.trim()} className="px-4 py-2 rounded-full bg-bg-elevated text-sm disabled:opacity-40">加入</button>
+          <div className="font-bold text-sm inline-flex items-center gap-1.5"><Ticket size={15} /> {t("studioJoinWithCode")}</div>
+          <input value={redeem} onChange={(e) => setRedeem(e.target.value)} placeholder={t("studioCodePlaceholder")} className="w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-accent" />
+          <button onClick={redeemCode} disabled={busy || !redeem.trim()} className="px-4 py-2 rounded-full bg-bg-elevated text-sm disabled:opacity-40">{t("studioJoinBtn")}</button>
         </div>
       </div>
 
       <div className="space-y-3">
-        {studios.length === 0 && <div className="text-sm text-fg-muted text-center py-6">還沒有工作室。建立一個、邀請夥伴一起創作。</div>}
+        {studios.length === 0 && <div className="text-sm text-fg-muted text-center py-6">{t("studioEmpty")}</div>}
         {studios.map((w) => <StudioCard key={w.id} ws={w} onRemoved={() => setList((p) => p.filter((x) => x.id !== w.id))} />)}
       </div>
     </div>
@@ -76,6 +78,7 @@ export function StudioClient({ initialWorkspaces }: { initialWorkspaces: Ws[] })
 const ROLE_ZH: Record<string, string> = { owner: "擁有者", manager: "管理員", admin: "管理員", contributor: "創作者", viewer: "檢視者", member: "成員" };
 
 function StudioCard({ ws, onRemoved }: { ws: Ws; onRemoved: () => void }) {
+  const t = useTranslations("creator");
   const [members, setMembers] = useState<any[] | null>(null);
   const [showMembers, setShowMembers] = useState(false);
   const [loadingMembers, setLoadingMembers] = useState(false);
@@ -101,13 +104,13 @@ function StudioCard({ ws, onRemoved }: { ws: Ws; onRemoved: () => void }) {
     catch (e: any) { setErr(e.message); }
   }
   async function transfer() {
-    const to = await prompt({ title: "輸入要轉移擁有權的成員 userId" });
+    const to = await prompt({ title: t("studioTransferPrompt") });
     if (!to) return;
-    try { await call(`/api/creator-island/workspaces/${ws.id}/transfer`, "POST", { toUserId: to.trim() }); toast.success("已轉移"); }
+    try { await call(`/api/creator-island/workspaces/${ws.id}/transfer`, "POST", { toUserId: to.trim() }); toast.success(t("studioTransferred")); }
     catch (e: any) { setErr(e.message); }
   }
   async function del() {
-    if (!(await confirm({ title: `刪除工作室「${ws.name}」？`, confirmLabel: "刪除", destructive: true }))) return;
+    if (!(await confirm({ title: t("studioDeleteConfirm", { name: ws.name }), confirmLabel: t("studioDelete"), destructive: true }))) return;
     try { await call(`/api/creator-island/workspaces/${ws.id}`, "DELETE"); onRemoved(); }
     catch (e: any) { setErr(e.message); }
   }
@@ -117,17 +120,17 @@ function StudioCard({ ws, onRemoved }: { ws: Ws; onRemoved: () => void }) {
       <div className="flex items-center justify-between">
         <div className="font-bold flex items-center gap-2"><Building2 size={16} /> {ws.name} <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/15 text-accent">{ROLE_ZH[ws.role] ?? ws.role}</span></div>
         <div className="flex items-center gap-3 text-xs">
-          <a href={`/creator-island?ws=${ws.id}`} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-accent text-white font-bold">進入工作室 <ArrowRight size={13} /></a>
+          <a href={`/creator-island?ws=${ws.id}`} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-accent text-white font-bold">{t("studioEnter")} <ArrowRight size={13} /></a>
           <button onClick={loadMembers} className="inline-flex items-center gap-1 text-accent">
-            <Users size={13} /> {loadingMembers ? "載入中…" : showMembers ? "收合成員" : "查看成員"}
+            <Users size={13} /> {loadingMembers ? t("studioLoadingMembers") : showMembers ? t("studioCollapseMembers") : t("studioViewMembers")}
           </button>
         </div>
       </div>
       {err && <div className="text-xs text-red-400 inline-flex items-center gap-1"><AlertTriangle size={12} className="shrink-0" /> {err}</div>}
       {showMembers && members && (
         <div className="bg-bg-elevated rounded-xl p-3 space-y-1.5">
-          <div className="text-xs font-bold inline-flex items-center gap-1.5 text-fg"><Users size={13} /> 成員（{members.length}）</div>
-          {members.length === 0 ? <div className="text-xs text-fg-muted">還沒有其他成員。用「產生邀請碼」邀請夥伴。</div> :
+          <div className="text-xs font-bold inline-flex items-center gap-1.5 text-fg"><Users size={13} /> {t("studioMembersCount", { n: members.length })}</div>
+          {members.length === 0 ? <div className="text-xs text-fg-muted">{t("studioNoMembers")}</div> :
             members.map((m: any) => (
               <div key={m.user_id} className="flex items-center justify-between text-xs">
                 <span className="text-fg truncate">{m.profile?.display_name || m.profile?.username || m.user_id}</span>
@@ -138,12 +141,12 @@ function StudioCard({ ws, onRemoved }: { ws: Ws; onRemoved: () => void }) {
       )}
       {canManage && (
         <div className="flex flex-wrap gap-2 text-xs">
-          <button onClick={invite} className="px-2.5 py-1 rounded-full bg-bg-elevated hover:text-accent">產生邀請碼</button>
-          {ws.role === "owner" && <button onClick={transfer} className="px-2.5 py-1 rounded-full bg-bg-elevated hover:text-accent">轉移擁有權</button>}
-          {ws.role === "owner" && <button onClick={del} className="px-2.5 py-1 rounded-full bg-bg-elevated hover:text-red-400">刪除</button>}
+          <button onClick={invite} className="px-2.5 py-1 rounded-full bg-bg-elevated hover:text-accent">{t("studioGenCode")}</button>
+          {ws.role === "owner" && <button onClick={transfer} className="px-2.5 py-1 rounded-full bg-bg-elevated hover:text-accent">{t("studioTransfer")}</button>}
+          {ws.role === "owner" && <button onClick={del} className="px-2.5 py-1 rounded-full bg-bg-elevated hover:text-red-400">{t("studioDelete")}</button>}
         </div>
       )}
-      {code && <div className="text-xs bg-bg-elevated rounded-lg p-2">邀請碼（只顯示一次）：<b className="text-accent">{code}</b></div>}
+      {code && <div className="text-xs bg-bg-elevated rounded-lg p-2">{t("studioCodeOnce")}<b className="text-accent">{code}</b></div>}
     </div>
   );
 }

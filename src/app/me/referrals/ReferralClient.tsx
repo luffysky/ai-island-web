@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Copy, Share2, Users, Gift, Coins } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
@@ -27,6 +28,7 @@ export function ReferralClient({
   siteUrl: string;
   referrals: Referral[];
 }) {
+  const t = useTranslations("me");
   const toast = useToast();
   const [copied, setCopied] = useState(false);
 
@@ -36,10 +38,10 @@ export function ReferralClient({
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
-      toast.success("已複製邀請連結");
+      toast.success(t("referralsCopied"));
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      toast.error("複製失敗、請手動選取");
+      toast.error(t("referralsCopyFail"));
     }
   };
 
@@ -47,8 +49,8 @@ export function ReferralClient({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "來 AI 島跟我一起學",
-          text: "用我的邀請碼 " + code,
+          title: t("referralsShareTitle"),
+          text: t("referralsShareText", { code }),
           url,
         });
       } catch {}
@@ -62,34 +64,34 @@ export function ReferralClient({
     <div className="space-y-4">
       {/* Code 卡 */}
       <div className="rounded-2xl bg-gradient-to-br from-accent to-accent-2 p-5 text-black">
-        <div className="text-xs font-bold mb-1 uppercase tracking-wide">你的邀請碼</div>
+        <div className="text-xs font-bold mb-1 uppercase tracking-wide">{t("referralsYourCode")}</div>
         <div className="font-mono font-extrabold text-3xl">{code}</div>
         <div className="text-xs mt-2 opacity-80 break-all">{url}</div>
         <div className="flex gap-2 mt-3">
           <button onClick={copyUrl} className="px-3 py-1.5 rounded-lg bg-black/20 text-white text-xs font-bold flex items-center gap-1 hover:bg-black/30">
-            <Copy size={12} /> {copied ? "已複製" : "複製連結"}
+            <Copy size={12} /> {copied ? t("referralsCopiedShort") : t("referralsCopyLink")}
           </button>
           <button onClick={share} className="px-3 py-1.5 rounded-lg bg-black/20 text-white text-xs font-bold flex items-center gap-1 hover:bg-black/30">
-            <Share2 size={12} /> 分享
+            <Share2 size={12} /> {t("referralsShare")}
           </button>
         </div>
       </div>
 
       {/* 統計 */}
       <div className="grid grid-cols-3 gap-3">
-        <Stat label="成功邀請" value={referrals.length} icon={<Users size={16} />} />
-        <Stat label="使用次數" value={usesCount} icon={<Gift size={16} />} />
-        <Stat label="已賺 Z幣" value={earnedZcoin} icon={<Coins size={16} />} />
+        <Stat label={t("referralsStatSuccess")} value={referrals.length} icon={<Users size={16} />} />
+        <Stat label={t("referralsStatUses")} value={usesCount} icon={<Gift size={16} />} />
+        <Stat label={t("referralsStatEarned")} value={earnedZcoin} icon={<Coins size={16} />} />
       </div>
 
       {/* 列表 */}
       <div className="rounded-xl bg-bg-card border border-border">
-        <div className="px-4 py-2 border-b border-border text-sm font-bold">我邀請的人</div>
+        <div className="px-4 py-2 border-b border-border text-sm font-bold">{t("referralsMyInvitees")}</div>
         {referrals.length === 0 ? (
           <div className="text-center py-12 text-fg-muted text-sm">
-            還沒有人用你的邀請碼註冊。
+            {t("referralsEmptyLine1")}
             <br />
-            分享出去看看吧！
+            {t("referralsEmptyLine2")}
           </div>
         ) : (
           <ul className="divide-y divide-border">
@@ -105,7 +107,7 @@ export function ReferralClient({
                 <div className="flex-1 min-w-0">
                   <div className="font-medium truncate">{r.referred?.display_name || r.referred?.username || "—"}</div>
                   <div className="text-[10px] text-fg-muted">
-                    註冊 {formatTWDate(r.signed_up_at)}
+                    {t("referralsSignedUp", { date: formatTWDate(r.signed_up_at) })}
                     {r.referred && ` · Lv ${r.referred.level} · ${r.referred.xp} XP`}
                   </div>
                 </div>
@@ -114,7 +116,7 @@ export function ReferralClient({
                     ? "bg-emerald-500/15 text-emerald-900 dark:text-emerald-200"
                     : "bg-yellow-500/15 text-yellow-900 dark:text-yellow-200"
                 }`}>
-                  {r.reward_granted ? "✓ 已獎勵 +50" : "處理中"}
+                  {r.reward_granted ? t("referralsRewarded") : t("referralsPending")}
                 </span>
               </li>
             ))}

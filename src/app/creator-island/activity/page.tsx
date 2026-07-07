@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { ScrollText, ArrowLeft, Sparkles, Sprout, Wand2, PenTool, Palmtree } from "lucide-react";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { isCreatorIslandEnabled } from "@/lib/app-settings";
@@ -18,7 +19,8 @@ const KIND_COLOR = {
 } as const;
 
 export default async function ActivityPage({ searchParams }: { searchParams: Promise<{ ws?: string }> }) {
-  if (!(await isCreatorIslandEnabled())) return <FeatureOffNotice title="🎨 創作者島嶼即將開放" />;
+  const t = await getTranslations("creator");
+  if (!(await isCreatorIslandEnabled())) return <FeatureOffNotice title={`🎨 ${t("comingSoonFeatureOff")}`} />;
   const sb = await createSupabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) redirect("/login?next=/creator-island/activity");
@@ -33,28 +35,28 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
   return (
     <div className="max-w-3xl mx-auto px-6 py-10 space-y-5">
       <header className="flex items-center justify-between gap-2 flex-wrap">
-        <h1 className="text-2xl font-bold inline-flex items-center gap-2"><ScrollText size={22} /> 操作記錄</h1>
-        <Link href="/creator-island" className="text-sm text-accent hover:underline inline-flex items-center gap-1.5"><ArrowLeft size={14} /> 回島</Link>
+        <h1 className="text-2xl font-bold inline-flex items-center gap-2"><ScrollText size={22} /> {t("activityTitle")}</h1>
+        <Link href="/creator-island" className="text-sm text-accent hover:underline inline-flex items-center gap-1.5"><ArrowLeft size={14} /> {t("activityBackToIsland")}</Link>
       </header>
 
       {workspaces.length > 0 && (
         <div className="flex items-center gap-1.5 flex-wrap text-xs">
-          <span className="text-fg-muted mr-0.5">範圍：</span>
+          <span className="text-fg-muted mr-0.5">{t("activityScope")}</span>
           {workspaces.map((w) => (
             <Link key={w.id} href={`/creator-island/activity?ws=${w.id}`}
               className={`px-2.5 py-1 rounded-full border transition inline-flex items-center gap-1 ${scope === w.id ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>
-              {w.type === "personal" ? <><Palmtree size={12} /> 個人島</> : w.name}
+              {w.type === "personal" ? <><Palmtree size={12} /> {t("activityPersonalIsland")}</> : w.name}
             </Link>
           ))}
           <Link href="/creator-island/activity?ws=all"
             className={`px-2.5 py-1 rounded-full border transition ${scope === "all" ? "border-accent bg-accent/10 text-accent" : "border-border bg-bg-card hover:border-accent/40"}`}>
-            全部
+            {t("activityAll")}
           </Link>
         </div>
       )}
 
       {items.length === 0 ? (
-        <div className="text-sm text-fg-muted text-center py-12">還沒有操作記錄。去島上捕捉碎片、跟綠寶創作吧。</div>
+        <div className="text-sm text-fg-muted text-center py-12">{t("activityEmpty")}</div>
       ) : (
         <ul className="space-y-1.5">
           {items.map((it, i) => {
@@ -66,7 +68,7 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
                   <div className="text-sm">
                     <span className="font-medium">{it.label}</span>
                     {it.title && <span className="text-fg-muted"> · {it.title}</span>}
-                    {it.status === "failed" && <span className="text-red-500"> · 失敗</span>}
+                    {it.status === "failed" && <span className="text-red-500"> · {t("activityFailed")}</span>}
                   </div>
                 </div>
                 <time className="shrink-0 text-[11px] text-fg-muted">{new Date(it.at).toLocaleString("zh-TW", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</time>
@@ -75,7 +77,7 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
           })}
         </ul>
       )}
-      <p className="text-[11px] text-fg-muted">記錄彙整自你的 AI 動作、碎片、作品與草稿，僅你本人可見。</p>
+      <p className="text-[11px] text-fg-muted">{t("activityFootnote")}</p>
     </div>
   );
 }

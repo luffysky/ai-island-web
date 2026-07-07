@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { ArrowLeft, Sparkles, Loader2, RefreshCw, Telescope } from "lucide-react";
 
 type Stats = {
@@ -18,6 +19,7 @@ type Report = {
 };
 
 export function UniverseClient({ stats, initialReport, generatedAt }: { stats: Stats; initialReport: Report | null; generatedAt: string | null }) {
+  const tr = useTranslations("creator");
   const [report, setReport] = useState<Report | null>(initialReport);
   const [genAt, setGenAt] = useState<string | null>(generatedAt);
   const [busy, setBusy] = useState(false);
@@ -29,8 +31,8 @@ export function UniverseClient({ stats, initialReport, generatedAt }: { stats: S
     try {
       const res = await fetch("/api/creator-island/growth/universe", { method: "POST" });
       const raw = await res.text();
-      let j: any = null; try { j = raw ? JSON.parse(raw) : null; } catch { throw new Error("伺服器忙不過來，稍後再試"); }
-      if (!res.ok) throw new Error(j?.message || "生成失敗");
+      let j: any = null; try { j = raw ? JSON.parse(raw) : null; } catch { throw new Error(tr("universeServerBusy")); }
+      if (!res.ok) throw new Error(j?.message || tr("universeGenerateFailed"));
       setReport(j.report); setGenAt(new Date().toISOString());
     } catch (e: any) { setErr(e.message); } finally { setBusy(false); }
   }
@@ -48,16 +50,16 @@ export function UniverseClient({ stats, initialReport, generatedAt }: { stats: S
 
       <div className="relative max-w-3xl mx-auto px-4 sm:px-6 py-8 text-slate-100">
         <header className="flex items-center justify-between gap-2 mb-6">
-          <h1 className="text-2xl font-bold inline-flex items-center gap-2"><span className="text-2xl">🌌</span> 碎片宇宙</h1>
-          <Link href="/creator-island" className="text-sm text-fuchsia-300 hover:underline inline-flex items-center gap-1.5"><ArrowLeft size={14} /> 回島</Link>
+          <h1 className="text-2xl font-bold inline-flex items-center gap-2"><span className="text-2xl">🌌</span> {tr("universeTitle")}</h1>
+          <Link href="/creator-island" className="text-sm text-fuchsia-300 hover:underline inline-flex items-center gap-1.5"><ArrowLeft size={14} /> {tr("universeBackToIsland")}</Link>
         </header>
 
         {/* 統計星軌 */}
         <div className="flex flex-wrap gap-2 text-xs mb-6">
-          <Stat label="碎片" value={stats.count} />
-          <Stat label="橫跨天數" value={stats.spanDays} />
-          <Stat label="活躍月份" value={stats.activeMonths} />
-          <Stat label="題材" value={stats.categories.length} />
+          <Stat label={tr("universeStatFragments")} value={stats.count} />
+          <Stat label={tr("universeStatSpanDays")} value={stats.spanDays} />
+          <Stat label={tr("universeStatActiveMonths")} value={stats.activeMonths} />
+          <Stat label={tr("universeStatCategories")} value={stats.categories.length} />
         </div>
 
         {err && <div className="bg-red-500/15 border border-red-400/30 text-red-200 rounded-xl px-4 py-2 text-sm mb-4">{err}</div>}
@@ -67,13 +69,13 @@ export function UniverseClient({ stats, initialReport, generatedAt }: { stats: S
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm p-8 text-center">
             <Telescope size={40} className="mx-auto text-fuchsia-300 mb-3" />
-            <h2 className="text-lg font-bold mb-1">看看你一直在寫的，是什麼</h2>
-            <p className="text-sm text-slate-300/80 mb-5">AI 會讀你累積的 {stats.count} 個碎片，找出你自己可能沒發現的核心——你最常寫什麼、底下真正在意的又是什麼。</p>
+            <h2 className="text-lg font-bold mb-1">{tr("universeIntroHeading")}</h2>
+            <p className="text-sm text-slate-300/80 mb-5">{tr("universeIntroDesc", { n: stats.count })}</p>
             <button onClick={generate} disabled={busy || !canGen}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-fuchsia-500 to-indigo-500 text-white font-bold shadow-lg shadow-fuchsia-500/25 disabled:opacity-40">
-              {busy ? <><Loader2 size={18} className="animate-spin" /> 正在觀測你的宇宙…</> : <><Sparkles size={18} /> 生成我的碎片宇宙</>}
+              {busy ? <><Loader2 size={18} className="animate-spin" /> {tr("universeObserving")}</> : <><Sparkles size={18} /> {tr("universeGenerate")}</>}
             </button>
-            {!canGen && <p className="text-xs text-slate-400 mt-3">再收集一些碎片（至少 8 個）就能生成 · 目前 {stats.count} 個</p>}
+            {!canGen && <p className="text-xs text-slate-400 mt-3">{tr("universeNeedMore", { n: stats.count })}</p>}
           </motion.div>
         ) : (
           <div className="space-y-5">
@@ -83,7 +85,7 @@ export function UniverseClient({ stats, initialReport, generatedAt }: { stats: S
               <div className="text-lg sm:text-xl font-bold leading-relaxed">{report.headline}</div>
               {report.hiddenCore && (
                 <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/30 border border-fuchsia-400/30">
-                  <span className="text-xs text-slate-300">潛藏核心</span>
+                  <span className="text-xs text-slate-300">{tr("universeHiddenCore")}</span>
                   <span className="font-bold text-fuchsia-200">✦ {report.hiddenCore}</span>
                 </div>
               )}
@@ -106,7 +108,7 @@ export function UniverseClient({ stats, initialReport, generatedAt }: { stats: S
             {/* 反直覺發現 */}
             {report.surprising && (
               <div className="rounded-2xl border border-amber-300/25 bg-amber-400/[0.08] p-4">
-                <div className="text-xs font-bold text-amber-200 mb-1">🤯 你可能沒發現</div>
+                <div className="text-xs font-bold text-amber-200 mb-1">🤯 {tr("universeSurprisingLabel")}</div>
                 <p className="text-sm text-slate-100/90">{report.surprising}</p>
               </div>
             )}
@@ -114,7 +116,7 @@ export function UniverseClient({ stats, initialReport, generatedAt }: { stats: S
             {/* 星圖：常用標籤（大小依次數）*/}
             {stats.topTags.length > 0 && (
               <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-                <div className="text-xs text-slate-400 mb-3">你的星圖 · 反覆出現的元素</div>
+                <div className="text-xs text-slate-400 mb-3">{tr("universeStarMap")}</div>
                 <div className="flex flex-wrap gap-x-4 gap-y-1.5 items-baseline">
                   {stats.topTags.map((t) => (
                     <span key={t.name} className="text-fuchsia-100/90"
@@ -129,7 +131,7 @@ export function UniverseClient({ stats, initialReport, generatedAt }: { stats: S
             {/* 題材分布 */}
             {stats.categories.length > 0 && (
               <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-                <div className="text-xs text-slate-400 mb-3">題材分布</div>
+                <div className="text-xs text-slate-400 mb-3">{tr("universeCategoryDist")}</div>
                 <div className="space-y-1.5">
                   {stats.categories.map((cCat) => (
                     <div key={cCat.name} className="flex items-center gap-2 text-xs">
@@ -151,9 +153,9 @@ export function UniverseClient({ stats, initialReport, generatedAt }: { stats: S
             <div className="flex items-center justify-center gap-3 pt-1">
               <button onClick={generate} disabled={busy}
                 className="inline-flex items-center gap-1.5 text-xs text-slate-300 hover:text-white border border-white/15 rounded-full px-4 py-2 disabled:opacity-40">
-                {busy ? <Loader2 size={13} className="animate-spin" /> : <RefreshCw size={13} />} 重新觀測
+                {busy ? <Loader2 size={13} className="animate-spin" /> : <RefreshCw size={13} />} {tr("universeReobserve")}
               </button>
-              {genAt && <span className="text-[11px] text-slate-500">上次生成 {new Date(genAt).toLocaleDateString("zh-TW", { month: "2-digit", day: "2-digit" })}</span>}
+              {genAt && <span className="text-[11px] text-slate-500">{tr("universeLastGen", { date: new Date(genAt).toLocaleDateString("zh-TW", { month: "2-digit", day: "2-digit" }) })}</span>}
             </div>
           </div>
         )}

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import type { Editor } from "@tiptap/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wrench, Lightbulb, Trees, X, Copy, ArrowDownToLine, Disc3, Library, Plus, FileText, Search, Users } from "lucide-react";
@@ -24,6 +25,7 @@ function htmlify(text: string): string {
 }
 
 export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draft; fragments: Fragment[]; currentUser?: { id: string; name: string } }) {
+  const tr = useTranslations("creator");
   const t = getType(draft.work_type);
   const [title, setTitle] = useState(draft.title);
   const [body, setBody] = useState(draft.body);
@@ -49,7 +51,7 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
 
   // 系列/專輯（歌詞=專輯，其餘=系列）
   const seriesKind = draft.work_type === "song" ? "album" : "series";
-  const seriesNoun = seriesKind === "album" ? "專輯" : "系列";
+  const seriesNoun = seriesKind === "album" ? tr("createAlbum") : tr("createSeries");
   const SeriesIcon = seriesKind === "album" ? Disc3 : Library;
   const [seriesList, setSeriesList] = useState<{ id: string; title: string; category: string }[]>([]);
   const [seriesId, setSeriesId] = useState<string | null>(draft.series_id ?? null);
@@ -62,8 +64,8 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
     fetch(`/api/creator-island/drafts/${draft.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ seriesId: id }) }).catch(() => {});
   }
   async function newSeries() {
-    const title = await prompt({ title: `新${seriesNoun}名稱` }); if (!title?.trim()) return;
-    const category = (await prompt({ title: `分類（再分類，可留空。例：${seriesKind === "album" ? "情歌 / 搖滾" : "都市奇幻 / 懸疑"}）` })) || "";
+    const title = await prompt({ title: tr("createNewSeriesNamePrompt", { noun: seriesNoun }) }); if (!title?.trim()) return;
+    const category = (await prompt({ title: tr("createCategoryPrompt", { eg: seriesKind === "album" ? tr("createCategoryEgAlbum") : tr("createCategoryEgSeries") }) })) || "";
     try {
       const r = await fetch("/api/creator-island/series", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ workspaceId: draft.workspace_id, kind: seriesKind, title: title.trim(), category }) }).then((x) => x.json());
       if (r.series) { setSeriesList((p) => [r.series, ...p]); assignSeries(r.series.id); }
@@ -106,14 +108,14 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
     const { from, to, empty } = ed.state.selection;
     const selText = empty ? "" : ed.state.doc.textBetween(from, to, "\n");
     const full = ed.getText();
-    if (tool.needsSel && !selText) { setErr("請先在內文選取一段文字，再用這個工具。"); return; }
+    if (tool.needsSel && !selText) { setErr(tr("createNeedSelection")); return; }
 
     let instruction = "";
     if (tool.promptLang) {
-      const lang = await prompt({ title: "轉譯成哪個語言？（例：日語 / English / 韓語 / 粵語 / 文言文）", defaultValue: "日語" });
+      const lang = await prompt({ title: tr("createTranslateLangPrompt"), defaultValue: tr("createTranslateLangDefault") });
       if (!lang) return; instruction = `目標語言：${lang}（請用該語言書寫，融入其文化語感）`;
     } else if (tool.mode === "poem_form") {
-      const form = await prompt({ title: "詩的形式？（現代詩 / 俳句 / 絕句 / 律詩 / 十四行）", defaultValue: "現代詩" });
+      const form = await prompt({ title: tr("createPoemFormPrompt"), defaultValue: tr("createPoemFormDefault") });
       if (!form) return; instruction = `形式：${form}`;
     }
 
@@ -126,9 +128,9 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ workspaceId: draft.workspace_id, mode: tool.mode, workType: draft.work_type, input, context, instruction }),
       }).then((x) => x.json());
-      if (!r.text) throw new Error(r.message || "AI 沒有回應");
-      if (tool.action === "insertEnd") { insertAtEnd(r.text); flash("已插入文末"); }
-      else if (tool.action === "replaceSel") { replaceSelection(r.text); flash(selText ? "已取代選取" : "已插入"); }
+      if (!r.text) throw new Error(r.message || tr("createAiNoResponse"));
+      if (tool.action === "insertEnd") { insertAtEnd(r.text); flash(tr("createInsertedAtEnd")); }
+      else if (tool.action === "replaceSel") { replaceSelection(r.text); flash(selText ? tr("createReplacedSelection") : tr("createInserted")); }
       else { setPanel({ title: tool.label, text: r.text }); if (tool.toMeta) setMeta((m) => ({ ...m, [tool.toMeta!]: r.text })); }
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
@@ -137,7 +139,7 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
     const ed = editorRef.current; if (!ed) return;
     ed.chain().focus().insertContentAt(ed.state.doc.content.size, `<p></p>${htmlify(f.content || f.title)}`).run();
     setFragIds((p) => (p.includes(f.id) ? p : [...p, f.id]));
-    flash("已把碎片放進內文（並列為素材）");
+    flash(tr("createFragmentAdded"));
   }
 
   async function saveAsWork(alsoBlog: boolean) {
@@ -149,18 +151,18 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
         body: JSON.stringify({ title, body, meta, fragmentIds: fragIds }),
       });
       const pub = await fetch(`/api/creator-island/drafts/${draft.id}/publish`, { method: "POST" }).then((x) => x.json());
-      if (!pub.workId) throw new Error(pub.message || "存成作品失敗");
+      if (!pub.workId) throw new Error(pub.message || tr("createSaveWorkFailed"));
       if (alsoBlog) {
         const blog = await fetch(`/api/creator-island/works/${pub.workId}/publish`, { method: "POST" }).then((x) => x.json());
-        if (!blog.blogId) throw new Error(blog.message || "發部落格失敗");
-        flash("✅ 已存成作品並發成部落格草稿");
+        if (!blog.blogId) throw new Error(blog.message || tr("createPublishBlogFailed"));
+        flash(`✅ ${tr("createSavedAndBlogged")}`);
       } else {
-        flash("✅ 已存成作品（作品庫可見）");
+        flash(`✅ ${tr("createSavedAsWork")}`);
       }
     } catch (e: any) { setErr(e.message); } finally { setPublishing(false); }
   }
 
-  const saveLabel = save === "saved" ? "✓ 已儲存" : save === "saving" ? "儲存中…" : "● 未儲存";
+  const saveLabel = save === "saved" ? `✓ ${tr("createSaved")}` : save === "saving" ? tr("createSaving") : `● ${tr("createUnsaved")}`;
 
   return (
     <div className="max-w-6xl mx-auto px-3 sm:px-6 py-5 pb-28">
@@ -168,22 +170,22 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
       <div className="flex items-center gap-2 flex-wrap mb-3">
         <Link href="/creator-island/create" className="text-sm px-2.5 py-1.5 rounded-full bg-bg-card border border-border hover:text-accent">←</Link>
         <t.icon size={20} className="text-accent shrink-0" />
-        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="作品標題…"
+        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={tr("createTitlePlaceholder")}
           className="flex-1 min-w-[140px] bg-transparent text-lg sm:text-xl font-bold outline-none border-b border-transparent focus:border-accent py-1" />
-        <Link href="/me/blog" className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent hover:text-accent transition whitespace-nowrap"><FileText size={13} /> 部落格</Link>
+        <Link href="/me/blog" className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-full bg-bg-card border border-border hover:border-accent hover:text-accent transition whitespace-nowrap"><FileText size={13} /> {tr("createBlog")}</Link>
         {/* 共編狀態：N 人共編中 / 離線編輯 */}
         {collab && collabStatus !== "off" && (
           collabStatus === "offline" ? (
-            <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 whitespace-nowrap" title="即時同步暫時斷線，你仍可繼續編輯、變更會自動儲存">
-              <Users size={12} /> 離線編輯中
+            <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 whitespace-nowrap" title={tr("createOfflineEditingTip")}>
+              <Users size={12} /> {tr("createOfflineEditing")}
             </span>
           ) : peers > 1 ? (
             <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
-              <Users size={12} /> {peers} 人共編中
+              <Users size={12} /> {tr("createPeersEditing", { n: peers })}
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-bg-elevated text-fg-muted whitespace-nowrap" title="即時共編已開啟，目前只有你在線">
-              <Users size={12} /> 可共編
+            <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-bg-elevated text-fg-muted whitespace-nowrap" title={tr("createCollabOnTip")}>
+              <Users size={12} /> {tr("createCollabAvailable")}
             </span>
           )
         )}
@@ -217,9 +219,9 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
 
           {/* 完稿動作 */}
           <div className="flex flex-wrap gap-2 mt-3">
-            <button onClick={() => saveAsWork(false)} disabled={publishing} className="px-4 py-2 rounded-full bg-accent text-white text-sm font-bold disabled:opacity-40">{publishing ? "處理中…" : "存成作品"}</button>
-            <button onClick={() => saveAsWork(true)} disabled={publishing} className="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-bg-card border border-border text-sm hover:border-accent disabled:opacity-40"><FileText size={14} /> 存成作品並發部落格草稿</button>
-            {draft.published_work_id && <Link href="/creator-island/works" className="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-bg-card border border-border text-sm hover:text-accent"><Library size={14} /> 作品庫</Link>}
+            <button onClick={() => saveAsWork(false)} disabled={publishing} className="px-4 py-2 rounded-full bg-accent text-white text-sm font-bold disabled:opacity-40">{publishing ? tr("createProcessing") : tr("createSaveAsWorkBtn")}</button>
+            <button onClick={() => saveAsWork(true)} disabled={publishing} className="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-bg-card border border-border text-sm hover:border-accent disabled:opacity-40"><FileText size={14} /> {tr("createSaveAndBlogBtn")}</button>
+            {draft.published_work_id && <Link href="/creator-island/works" className="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-bg-card border border-border text-sm hover:text-accent"><Library size={14} /> {tr("createWorksLibrary")}</Link>}
           </div>
         </div>
 
@@ -227,17 +229,17 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
         <aside className="space-y-4 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:sticky lg:top-4 pr-0.5">
           {/* 類型專屬工具 */}
           <div className="rounded-2xl border border-border bg-bg-card p-3">
-            <div className="text-sm font-bold mb-2 inline-flex items-center gap-1.5"><Wrench size={14} /> {t.label}工具</div>
+            <div className="text-sm font-bold mb-2 inline-flex items-center gap-1.5"><Wrench size={14} /> {tr("createToolsHeading", { label: t.label })}</div>
             <div className="grid grid-cols-2 gap-1.5">
               {t.tools.map((tool) => (
                 <button key={tool.mode + tool.label} onClick={() => runTool(tool)} disabled={busy !== null}
-                  title={tool.needsSel ? "需先選取文字" : undefined}
+                  title={tool.needsSel ? tr("createNeedSelectFirst") : undefined}
                   className="text-xs px-2 py-2 rounded-lg bg-bg-elevated border border-border hover:border-accent hover:text-accent transition disabled:opacity-40 text-left leading-tight">
                   {busy === tool.mode ? "…" : tool.label}
                 </button>
               ))}
             </div>
-            <div className="text-[10px] text-fg-muted mt-2 flex items-start gap-1"><Lightbulb size={11} className="mt-0.5 shrink-0" /> 選取一段文字後再按「改寫/潤稿/轉譯」，會就地處理那段。</div>
+            <div className="text-[10px] text-fg-muted mt-2 flex items-start gap-1"><Lightbulb size={11} className="mt-0.5 shrink-0" /> {tr("createToolsHint")}</div>
           </div>
 
           {/* 系列 / 專輯 */}
@@ -245,11 +247,11 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
             <div className="text-sm font-bold mb-2 inline-flex items-center gap-1.5"><SeriesIcon size={15} /> {seriesNoun}</div>
             <select value={seriesId ?? ""} onChange={(e) => assignSeries(e.target.value || null)}
               className="w-full bg-bg-elevated border border-border rounded-lg px-2 py-2 text-sm outline-none focus:border-accent">
-              <option value="">（不屬於任何{seriesNoun}）</option>
+              <option value="">{tr("createNotInAnySeries", { noun: seriesNoun })}</option>
               {seriesList.map((s) => <option key={s.id} value={s.id}>{s.category ? `[${s.category}] ` : ""}{s.title}</option>)}
             </select>
-            <button onClick={newSeries} className="mt-2 inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border border-dashed border-border text-fg-muted hover:text-accent"><Plus size={12} /> 新{seriesNoun}</button>
-            <div className="text-[10px] text-fg-muted mt-2">把作品歸進{seriesNoun}；{seriesNoun}可再用「分類」分組。</div>
+            <button onClick={newSeries} className="mt-2 inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border border-dashed border-border text-fg-muted hover:text-accent"><Plus size={12} /> {tr("createNewSeriesBtn", { noun: seriesNoun })}</button>
+            <div className="text-[10px] text-fg-muted mt-2">{tr("createSeriesHint", { noun: seriesNoun })}</div>
           </div>
 
           {/* AI 結果面板（不直接插入的，如 Suno/一致性/Slogan） */}
@@ -263,8 +265,8 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
                 </div>
                 <pre className="text-xs text-fg-muted whitespace-pre-wrap font-sans max-h-64 overflow-y-auto">{panel.text}</pre>
                 <div className="flex gap-2 mt-2">
-                  <button onClick={() => { navigator.clipboard?.writeText(panel.text); flash("已複製"); }} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent"><Copy size={12} /> 複製</button>
-                  <button onClick={() => { insertAtEnd(panel.text); flash("已插入文末"); }} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent"><ArrowDownToLine size={12} /> 插入文末</button>
+                  <button onClick={() => { navigator.clipboard?.writeText(panel.text); flash(tr("createCopied")); }} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent"><Copy size={12} /> {tr("createCopy")}</button>
+                  <button onClick={() => { insertAtEnd(panel.text); flash(tr("createInsertedAtEnd")); }} className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-bg-elevated hover:text-accent"><ArrowDownToLine size={12} /> {tr("createInsertAtEnd")}</button>
                 </div>
               </motion.div>
             )}
@@ -272,29 +274,29 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
 
           {/* 碎片素材欄 */}
           <div className="rounded-2xl border border-border bg-bg-card p-3">
-            <div className="text-sm font-bold mb-2 inline-flex items-center gap-1.5"><Trees size={14} /> 碎片素材（{fragments.length}）</div>
+            <div className="text-sm font-bold mb-2 inline-flex items-center gap-1.5"><Trees size={14} /> {tr("createFragments", { n: fragments.length })}</div>
             {fragments.length > 0 && (
               <div className="relative mb-2">
                 <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted pointer-events-none" />
-                <input value={fragQ} onChange={(e) => setFragQ(e.target.value)} placeholder="搜尋碎片素材…"
+                <input value={fragQ} onChange={(e) => setFragQ(e.target.value)} placeholder={tr("createSearchFragments")}
                   className="w-full bg-bg-elevated border border-border rounded-full pl-7 pr-7 py-1.5 text-xs outline-none focus:border-accent" />
                 {fragQ && <button onClick={() => setFragQ("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg"><X size={12} /></button>}
               </div>
             )}
             {fragments.length === 0 ? (
-              <div className="text-xs text-fg-muted">這座島還沒有碎片。回島上捕捉或種島。</div>
+              <div className="text-xs text-fg-muted">{tr("createNoFragments")}</div>
             ) : (() => {
               const ql = fragQ.trim().toLowerCase();
               const shown = ql ? fragments.filter((f) => (f.title + " " + (f.content ?? "")).toLowerCase().includes(ql)) : fragments;
               return shown.length === 0 ? (
-                <div className="text-xs text-fg-muted">找不到符合「{fragQ}」的碎片。</div>
+                <div className="text-xs text-fg-muted">{tr("createFragNoMatch", { q: fragQ })}</div>
               ) : (
               <ul className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
                 {shown.map((f) => (
                   <li key={f.id}>
                     <button onClick={() => addFragment(f)}
                       className={`w-full text-left rounded-lg px-2.5 py-1.5 text-xs border transition ${fragIds.includes(f.id) ? "border-accent/50 bg-accent/[0.06]" : "border-border bg-bg-elevated hover:border-accent/40"}`}>
-                      <span className="font-bold block truncate">{f.title} {fragIds.includes(f.id) && <span className="text-accent">·素材</span>}</span>
+                      <span className="font-bold block truncate">{f.title} {fragIds.includes(f.id) && <span className="text-accent">{tr("createMaterialTag")}</span>}</span>
                       {f.content && !f.content.startsWith("![](") && <span className="text-fg-muted line-clamp-2">{f.content}</span>}
                     </button>
                   </li>
@@ -302,7 +304,7 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
               </ul>
               );
             })()}
-            <div className="text-[10px] text-fg-muted mt-2">點碎片＝放進內文並列為素材（作品家譜會記）。</div>
+            <div className="text-[10px] text-fg-muted mt-2">{tr("createFragmentTip")}</div>
           </div>
         </aside>
       </div>
