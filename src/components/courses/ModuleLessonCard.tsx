@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ChevronDown, Lock } from "lucide-react";
@@ -15,6 +16,7 @@ interface ModuleLessonCardProps {
 }
 
 export function ModuleLessonCard({ module, index, colorClass, accentHex }: ModuleLessonCardProps) {
+  const t = useTranslations("courses");
   const [open, setOpen] = useState(false);
   const hasContent = !!module.lessonContent;
 
@@ -104,12 +106,12 @@ export function ModuleLessonCard({ module, index, colorClass, accentHex }: Modul
               style={{ borderColor: accentHex + "55", background: accentHex + "0d" }}
             >
               <div className="font-bold text-sm mb-2 flex items-center gap-2">
-                ✏️ <span>動手練習</span>
+                ✏️ <span>{t("practiceLabel")}</span>
               </div>
               <p className="text-sm leading-relaxed mb-3">{module.practice.task}</p>
               <details className="text-sm">
                 <summary className="cursor-pointer text-fg-muted hover:text-fg">
-                  💡 看提示
+                  💡 {t("seeHint")}
                 </summary>
                 <p className="mt-2 text-fg-muted leading-relaxed">
                   {module.practice.hint}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Check, Sparkles } from "lucide-react";
 import ReactMarkdown from "react-markdown";
@@ -25,6 +26,7 @@ type Submission = {
 
 export function GradingClient({ initial, filterStatus }: { initial: Submission[]; filterStatus: string }) {
   const router = useRouter();
+  const t = useTranslations("teacher");
   const toast = useToast();
   const [subs, setSubs] = useState(initial);
   const [drafts, setDrafts] = useState<Record<string, { score: string; feedback: string }>>({});
@@ -41,14 +43,14 @@ export function GradingClient({ initial, filterStatus }: { initial: Submission[]
         headers: { "Content-Type": "application/json" },
       });
       const data = await res.json().catch(() => ({} as any));
-      if (!res.ok || !data?.ok) throw new Error(data?.message || "AI 評分失敗");
+      if (!res.ok || !data?.ok) throw new Error(data?.message || t("aiGradeFailed"));
 
       const parts: string[] = [];
       if (Array.isArray(data.strengths) && data.strengths.length) {
-        parts.push("**做得好：**\n" + data.strengths.map((x: string) => `- ${x}`).join("\n"));
+        parts.push(`**${t("strengthsHeading")}**\n` + data.strengths.map((x: string) => `- ${x}`).join("\n"));
       }
       if (Array.isArray(data.issues) && data.issues.length) {
-        parts.push("**可改進：**\n" + data.issues.map((x: string) => `- ${x}`).join("\n"));
+        parts.push(`**${t("issuesHeading")}**\n` + data.issues.map((x: string) => `- ${x}`).join("\n"));
       }
       if (data.suggestedComment) parts.push(data.suggestedComment);
       const feedback = parts.join("\n\n");
@@ -61,9 +63,9 @@ export function GradingClient({ initial, filterStatus }: { initial: Submission[]
           feedback: feedback || cur.feedback,
         },
       });
-      toast.success("已填入 AI 建議、請檢查修改後再送出");
+      toast.success(t("aiSuggestFilled"));
     } catch (e: any) {
-      toast.error(e?.message || "AI 評分失敗");
+      toast.error(e?.message || t("aiGradeFailed"));
     } finally {
       setAiBusy(null);
     }
@@ -73,7 +75,7 @@ export function GradingClient({ initial, filterStatus }: { initial: Submission[]
     const d = drafts[s.id] ?? { score: String(s.score ?? ""), feedback: s.feedback_md ?? "" };
     const score = Number(d.score);
     if (!Number.isFinite(score) || score < 0 || score > (s.assignment?.max_score ?? 100)) {
-      toast.warning(`分數需 0 ~ ${s.assignment?.max_score ?? 100}`);
+      toast.warning(t("scoreRange", { max: s.assignment?.max_score ?? 100 }));
       return;
     }
     setBusy(s.id);
@@ -86,9 +88,9 @@ export function GradingClient({ initial, filterStatus }: { initial: Submission[]
       });
       if (!res.ok) throw new Error();
       setSubs((rs) => rs.map((x) => x.id === s.id ? { ...x, score, feedback_md: d.feedback, graded_at: new Date().toISOString() } : x));
-      toast.success("已完成批改");
+      toast.success(t("gradeSuccess"));
     } catch {
-      toast.error("批改失敗");
+      toast.error(t("gradeFailed"));
     } finally {
       setBusy(null);
     }
@@ -98,9 +100,9 @@ export function GradingClient({ initial, filterStatus }: { initial: Submission[]
     <div className="space-y-4">
       <div className="flex gap-2 text-sm">
         {[
-          { v: "ungraded", l: "待批改" },
-          { v: "graded", l: "已批改" },
-          { v: "all", l: "全部" },
+          { v: "ungraded", l: t("filterUngraded") },
+          { v: "graded", l: t("filterGraded") },
+          { v: "all", l: t("filterAll") },
         ].map((f) => (
           <a
             key={f.v}
@@ -113,7 +115,7 @@ export function GradingClient({ initial, filterStatus }: { initial: Submission[]
       </div>
 
       {subs.length === 0 ? (
-        <div className="text-center py-16 text-fg-muted">🎉 沒有符合的提交</div>
+        <div className="text-center py-16 text-fg-muted">🎉 {t("noMatchingSubmissions")}</div>
       ) : subs.map((s) => {
         const max = s.assignment?.max_score ?? 100;
         const draft = drafts[s.id] ?? { score: String(s.score ?? ""), feedback: s.feedback_md ?? "" };
@@ -128,14 +130,14 @@ export function GradingClient({ initial, filterStatus }: { initial: Submission[]
               )}
               <div className="flex-1 min-w-0">
                 <div className="font-bold text-sm truncate">{s.user?.display_name || s.user?.username || "—"}</div>
-                <div className="text-[10px] text-fg-muted">作業：{s.assignment?.title || "—"} · 提交 {formatTW(s.submitted_at)}</div>
+                <div className="text-[10px] text-fg-muted">{t("assignmentLabel", { title: s.assignment?.title || "—" })} · {t("submittedAt", { time: formatTW(s.submitted_at) })}</div>
               </div>
               {s.graded_at ? (
                 <span className="text-xs text-emerald-400 font-bold flex items-center gap-1">
-                  <Check size={12} /> 已批 {s.score}/{max}
+                  <Check size={12} /> {t("gradedScore", { score: s.score, max })}
                 </span>
               ) : (
-                <span className="text-xs text-yellow-400 font-bold">待批改</span>
+                <span className="text-xs text-yellow-400 font-bold">{t("pendingGrade")}</span>
               )}
             </div>
 
@@ -147,7 +149,7 @@ export function GradingClient({ initial, filterStatus }: { initial: Submission[]
             {/* 給分 + feedback */}
             <div className="grid grid-cols-1 md:grid-cols-[1fr_3fr_auto] gap-2 items-end">
               <div>
-                <label className="text-[10px] text-fg-muted block mb-1">分數（滿分 {max}）</label>
+                <label className="text-[10px] text-fg-muted block mb-1">{t("scoreFieldLabel", { max })}</label>
                 <input
                   type="number"
                   min={0}
@@ -158,12 +160,12 @@ export function GradingClient({ initial, filterStatus }: { initial: Submission[]
                 />
               </div>
               <div>
-                <label className="text-[10px] text-fg-muted block mb-1">回饋（markdown）</label>
+                <label className="text-[10px] text-fg-muted block mb-1">{t("feedbackFieldLabel")}</label>
                 <textarea
                   value={draft.feedback}
                   onChange={(e) => updateDraft({ feedback: e.target.value })}
                   rows={3}
-                  placeholder="給學員的回饋..."
+                  placeholder={t("feedbackPlaceholder")}
                   className="w-full bg-bg border border-border rounded-lg p-2 text-sm"
                 />
               </div>
@@ -171,18 +173,18 @@ export function GradingClient({ initial, filterStatus }: { initial: Submission[]
                 <button
                   onClick={() => aiSuggest(s)}
                   disabled={aiBusy === s.id || busy === s.id}
-                  title="用 AI 產生建議分數與回饋、填入欄位供你檢查修改（不會自動送出）"
+                  title={t("aiButtonTitle")}
                   className="px-4 py-2 rounded-lg border border-accent text-accent font-bold text-sm disabled:opacity-50 flex items-center justify-center gap-1.5 hover:bg-accent/10"
                 >
                   <Sparkles size={14} />
-                  {aiBusy === s.id ? "AI 分析中…" : "AI 建議評分"}
+                  {aiBusy === s.id ? t("aiAnalyzing") : t("aiSuggestGrade")}
                 </button>
                 <button
                   onClick={() => grade(s)}
                   disabled={busy === s.id || aiBusy === s.id}
                   className="px-4 py-2 rounded-lg bg-accent text-black font-bold text-sm disabled:opacity-50"
                 >
-                  {busy === s.id ? "送出…" : s.graded_at ? "重新評分" : "完成批改"}
+                  {busy === s.id ? t("submitting") : s.graded_at ? t("regrade") : t("finishGrading")}
                 </button>
               </div>
             </div>

@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { Swords, Sparkles as SparkleIcon } from "lucide-react";
 import { BackgroundBeams } from "@/components/ui/BackgroundBeams";
 import { Sparkles as SparklesParticles } from "@/components/ui/Sparkles";
 
 export function CoursesClient({ dungeons, chapterCount }: { dungeons: any[]; chapterCount: number }) {
+  const tr = useTranslations("courses");
   return (
     <div className="relative min-h-screen overflow-hidden">
       <BackgroundBeams className="opacity-40" />
@@ -34,14 +36,13 @@ export function CoursesClient({ dungeons, chapterCount }: { dungeons: any[]; cha
           </motion.div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-bg-card/80 backdrop-blur border border-orange-500/30 mb-4">
             <SparkleIcon size={11} className="text-orange-400 animate-pulse" />
-            <span>實戰應用區</span>
+            <span>{tr("practiceZone")}</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold mb-3 bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent">
-            AI 任務副本
+            {tr("pageTitle")}
           </h1>
           <p className="text-fg-muted max-w-2xl mx-auto leading-relaxed">
-            {chapterCount} 章主課程打底、5 大副本實戰。每個副本鎖定一個 AI 應用方向、
-            打敗副本 boss、你就掌握了一項能變現的技能。
+            {tr("heroDesc", { count: chapterCount })}
           </p>
         </motion.div>
 
@@ -80,7 +81,7 @@ export function CoursesClient({ dungeons, chapterCount }: { dungeons: any[]; cha
                       </motion.span>
                     </div>
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-900 dark:text-red-200 font-bold inline-flex items-center gap-0.5 self-start mt-1">
-                      ⚔️ BOSS 戰
+                      ⚔️ {tr("bossBattle")}
                     </span>
                   </div>
 
@@ -91,7 +92,7 @@ export function CoursesClient({ dungeons, chapterCount }: { dungeons: any[]; cha
 
                   {/* Boss */}
                   <div className="border-t border-border pt-3 mb-3">
-                    <div className="text-xs text-fg-muted mb-1">副本 BOSS</div>
+                    <div className="text-xs text-fg-muted mb-1">{tr("dungeonBoss")}</div>
                     <div className="font-semibold text-sm flex items-center gap-1">
                       👹 {d.boss.name}
                     </div>
@@ -118,7 +119,7 @@ export function CoursesClient({ dungeons, chapterCount }: { dungeons: any[]; cha
                     className="mt-4 text-sm font-bold flex items-center gap-1 group-hover:gap-3 transition-all"
                     style={{ color: d.accentHex }}
                   >
-                    進入副本 <span className="group-hover:translate-x-1 transition-transform">→</span>
+                    {tr("enterDungeon")} <span className="group-hover:translate-x-1 transition-transform">→</span>
                   </div>
                 </div>
               </Link>
@@ -134,11 +135,9 @@ export function CoursesClient({ dungeons, chapterCount }: { dungeons: any[]; cha
           transition={{ duration: 0.5 }}
           className="mt-14 p-6 rounded-2xl bg-bg-card/80 backdrop-blur border border-border text-center"
         >
-          <h3 className="font-bold mb-2 text-lg">🗺️ 副本怎麼玩？</h3>
+          <h3 className="font-bold mb-2 text-lg">🗺️ {tr("howToPlayTitle")}</h3>
           <p className="text-sm text-fg-muted leading-relaxed max-w-2xl mx-auto">
-            每個副本都有一隻 boss——代表你在這個領域最容易卡住的問題。
-            副本內容教你打敗它的方法、推薦工具、以及對應的主課程章節。
-            不用全部都打、選你最想要的能力開始。
+            {tr("howToPlayDesc")}
           </p>
         </motion.div>
       </div>

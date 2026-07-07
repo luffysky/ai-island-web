@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Check, Unlink, Hash, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
@@ -13,6 +14,7 @@ type Bind = {
 };
 
 export function DiscordBindSection({ initialBind }: { initialBind: Bind | null }) {
+  const t = useTranslations("settings");
   const toast = useToast();
   const confirm = useConfirm();
   const [bind, setBind] = useState<Bind | null>(initialBind);
@@ -22,8 +24,8 @@ export function DiscordBindSection({ initialBind }: { initialBind: Bind | null }
   useEffect(() => {
     const sp = new URLSearchParams(window.location.search);
     const dc = sp.get("dc");
-    if (dc === "ok") toast.success("Discord 綁定成功！雪鑰已 DM 你歡迎訊息");
-    else if (dc?.startsWith("error_")) toast.error(`綁定失敗：${dc.slice(6)}`);
+    if (dc === "ok") toast.success(t("discordBindSuccess"));
+    else if (dc?.startsWith("error_")) toast.error(t("bindFailed", { msg: dc.slice(6) }));
     if (dc) {
       sp.delete("dc");
       const qs = sp.toString();
@@ -33,20 +35,20 @@ export function DiscordBindSection({ initialBind }: { initialBind: Bind | null }
 
   const unbind = async () => {
     const ok = await confirm({
-      title: "解除 Discord 綁定？",
-      description: "解除後不再收 DM 推播、VIP role 也會撤掉。隨時可重綁。",
-      confirmLabel: "解除",
+      title: t("discordUnbindTitle"),
+      description: t("discordUnbindDesc"),
+      confirmLabel: t("unbind"),
       destructive: true,
     });
     if (!ok) return;
     setBusy(true);
     try {
       const res = await fetch("/api/auth/discord/unbind", { method: "POST", credentials: "include" });
-      if (!res.ok) throw new Error("解除失敗");
+      if (!res.ok) throw new Error(t("unbindFailed"));
       setBind(null);
-      toast.success("已解除");
+      toast.success(t("unbound"));
     } catch (e: any) {
-      toast.error(e?.message || "失敗");
+      toast.error(e?.message || t("failed"));
     } finally {
       setBusy(false);
     }
@@ -55,10 +57,10 @@ export function DiscordBindSection({ initialBind }: { initialBind: Bind | null }
   return (
     <section className="bg-bg-card border border-border rounded-xl p-6">
       <h2 className="font-bold mb-1 flex items-center gap-2">
-        <Hash size={18} className="text-indigo-400" /> Discord 綁定
+        <Hash size={18} className="text-indigo-400" /> {t("discordBind")}
       </h2>
       <p className="text-xs text-fg-muted mb-4">
-        綁定後可在 Discord 用 <code>/quote</code> <code>/recommend</code> <code>/vision</code>、訂 Premium 自動拿 VIP role、學習里程碑播報到頻道。
+        {t("discordBindDescPrefix")}<code>/quote</code> <code>/recommend</code> <code>/vision</code>{t("discordBindDescSuffix")}
       </p>
 
       {bind ? (
@@ -74,11 +76,11 @@ export function DiscordBindSection({ initialBind }: { initialBind: Bind | null }
             <div className="flex-1">
               <div className="flex items-center gap-2 text-sm">
                 <Check size={16} className="text-green-400" />
-                <span className="font-medium">已綁定 @{bind.discord_username}</span>
+                <span className="font-medium">{t("discordBound", { name: bind.discord_username ?? "" })}</span>
               </div>
               <div className="text-[10px] text-fg-muted mt-0.5">
                 {new Date(bind.bound_at).toLocaleString("zh-TW")}
-                {bind.last_role_sync_at && ` · role 上次同步：${new Date(bind.last_role_sync_at).toLocaleDateString("zh-TW")}`}
+                {bind.last_role_sync_at && ` · ${t("roleLastSync")}${new Date(bind.last_role_sync_at).toLocaleDateString("zh-TW")}`}
               </div>
             </div>
           </div>
@@ -88,7 +90,7 @@ export function DiscordBindSection({ initialBind }: { initialBind: Bind | null }
             className="text-xs px-3 py-1.5 rounded-full border border-red-500/40 text-red-400 hover:bg-red-500/10 inline-flex items-center gap-1 disabled:opacity-50"
           >
             {busy ? <Loader2 size={12} className="animate-spin" /> : <Unlink size={12} />}
-            解除綁定
+            {t("unbindButton")}
           </button>
         </div>
       ) : (
@@ -97,7 +99,7 @@ export function DiscordBindSection({ initialBind }: { initialBind: Bind | null }
           className="px-4 py-2 rounded-lg bg-indigo-500 text-white font-bold text-sm inline-flex items-center gap-2"
         >
           <Hash size={14} />
-          綁定 Discord
+          {t("bindDiscord")}
         </a>
       )}
     </section>

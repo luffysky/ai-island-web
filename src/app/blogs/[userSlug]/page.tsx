@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { createSupabaseAdmin } from "@/lib/supabase";
 import { resolveBlog } from "@/lib/blog-resolve";
 import { Eye, Calendar, Rss, BookOpen, ChevronDown } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { SubscribeForm } from "@/components/blog/SubscribeForm";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
@@ -40,6 +41,7 @@ export default async function BlogHomePage({
   const blog = await resolveBlog(userSlug);
   if (!blog) notFound();
 
+  const t = await getTranslations("blogs");
   const admin = createSupabaseAdmin();
   const [{ data: articles }, { data: seriesRows }] = await Promise.all([
     admin
@@ -52,7 +54,7 @@ export default async function BlogHomePage({
   ]);
 
   const name = blog.profile?.display_name || blog.profile?.username || "用戶";
-  const title = blog.settings.blog_title || `${name} 的部落格`;
+  const title = blog.settings.blog_title || t("userBlogTitle", { name });
 
   // 依系列分組：有 series_id 的收進系列（可展開收合）、其餘放「其他文章」
   const seriesTitle = new Map<string, string>((seriesRows ?? []).map((s: any) => [s.id, s.title]));
@@ -129,7 +131,7 @@ export default async function BlogHomePage({
           target="_blank"
           className="inline-flex items-center gap-1 text-xs text-fg-muted hover:text-accent mt-2"
         >
-          <Rss size={12} /> RSS 訂閱源
+          <Rss size={12} /> {t("rssFeed")}
         </a>
       </header>
 
@@ -141,7 +143,7 @@ export default async function BlogHomePage({
       {/* 文章列表：系列用展開/收合分組、其餘平鋪 */}
       {!articles || articles.length === 0 ? (
         <div className="text-center py-16 text-fg-muted">
-          這個部落格還沒有公開的文章
+          {t("blogEmpty")}
         </div>
       ) : (
         <div className="space-y-5">
@@ -150,7 +152,7 @@ export default async function BlogHomePage({
               <summary className="flex items-center justify-between gap-2 px-4 py-3 cursor-pointer select-none list-none hover:bg-bg-elevated/50">
                 <span className="font-bold inline-flex items-center gap-2">
                   <BookOpen size={16} className="text-accent" /> {seriesTitle.get(sid)}
-                  <span className="text-xs font-normal text-fg-muted">· {arr.length} 篇</span>
+                  <span className="text-xs font-normal text-fg-muted">· {t("articlesShort", { count: arr.length })}</span>
                 </span>
                 <ChevronDown size={16} className="text-fg-muted transition-transform group-open/s:rotate-180" />
               </summary>
@@ -162,7 +164,7 @@ export default async function BlogHomePage({
 
           {loose.length > 0 && (
             <div className="space-y-4">
-              {seriesGroups.length > 0 && <h2 className="text-sm font-bold text-fg-muted pt-2">其他文章</h2>}
+              {seriesGroups.length > 0 && <h2 className="text-sm font-bold text-fg-muted pt-2">{t("otherArticles")}</h2>}
               {loose.map((a) => ArticleCard(a))}
             </div>
           )}

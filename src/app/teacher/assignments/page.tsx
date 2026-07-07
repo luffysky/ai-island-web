@@ -1,9 +1,11 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { getTranslations } from "next-intl/server";
 import { AssignmentsClient } from "./AssignmentsClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function TeacherAssignmentsPage() {
+  const t = await getTranslations("teacher");
   const admin = createSupabaseAdmin();
   const { data: assignments } = await admin
     .from("assignments")
@@ -22,8 +24,8 @@ export default async function TeacherAssignmentsPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold">📋 作業管理</h1>
-        <p className="text-sm text-fg-muted mt-1">建立 / 編輯作業、學員可在 /me/assignments 看到並提交。</p>
+        <h1 className="text-2xl font-bold">📋 {t("assignmentsTitle")}</h1>
+        <p className="text-sm text-fg-muted mt-1">{t("assignmentsSubtitle")}</p>
       </header>
       <AssignmentsClient initial={(assignments ?? []) as any} submissionCounts={submissionCounts} />
     </div>

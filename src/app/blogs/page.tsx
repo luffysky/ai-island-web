@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { Search, Eye, PenLine } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 
 export const metadata: Metadata = {
@@ -160,6 +161,7 @@ export default async function BlogsPage({
 }) {
   const params = await searchParams;
   const q = params.q?.trim() ?? "";
+  const t = await getTranslations("blogs");
 
   const [blogs, searchResults] = await Promise.all([
     q ? Promise.resolve([] as BlogItem[]) : getBlogs(),
@@ -171,9 +173,9 @@ export default async function BlogsPage({
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold">📝 部落格</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">📝 {t("title")}</h1>
           <p className="text-sm text-fg-muted mt-1.5">
-            探索 AI 島社群創作者的公開文章與部落格
+            {t("subtitle")}
           </p>
         </div>
 
@@ -187,7 +189,7 @@ export default async function BlogsPage({
             <input
               name="q"
               defaultValue={q}
-              placeholder="搜尋文章（標題、摘要、標籤）"
+              placeholder={t("searchPlaceholder")}
               className="w-full bg-bg-card border border-border rounded-lg pl-9 pr-3 py-2.5 text-sm outline-none focus:border-accent"
             />
           </div>
@@ -196,14 +198,14 @@ export default async function BlogsPage({
             className="px-5 py-2.5 rounded-lg bg-accent text-black font-semibold text-sm flex items-center gap-1"
           >
             <Search size={16} />
-            搜尋
+            {t("searchButton")}
           </button>
           {q && (
             <Link
               href="/blogs"
               className="px-4 py-2.5 rounded-lg bg-bg-card border border-border text-sm flex items-center"
             >
-              清除
+              {t("clear")}
             </Link>
           )}
         </form>
@@ -212,12 +214,12 @@ export default async function BlogsPage({
         {q && (
           <section className="mb-12">
             <h2 className="text-sm text-fg-muted mb-3">
-              「{q}」的搜尋結果（{searchResults.length} 篇）
+              {t("searchResultsHeading", { q, count: searchResults.length })}
             </h2>
             {searchResults.length === 0 ? (
               <div className="text-center py-16 text-fg-muted bg-bg-card rounded-xl border border-border">
                 <div className="text-4xl mb-3">🔍</div>
-                <p className="text-sm">找不到符合的文章</p>
+                <p className="text-sm">{t("noResults")}</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -271,8 +273,8 @@ export default async function BlogsPage({
             {blogs.length === 0 ? (
               <div className="text-center py-24 text-fg-muted bg-bg-card rounded-xl border border-border">
                 <div className="text-5xl mb-4">📝</div>
-                <p className="text-sm">目前還沒有公開部落格</p>
-                <p className="text-xs mt-1">成為第一位作者吧</p>
+                <p className="text-sm">{t("emptyTitle")}</p>
+                <p className="text-xs mt-1">{t("emptySubtitle")}</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -302,7 +304,7 @@ export default async function BlogsPage({
                     <div className="flex-1 min-w-0">
                       <h2 className="font-semibold group-hover:text-accent transition line-clamp-1">
                         {blog.blogTitle ??
-                          `${blog.authorName ?? blog.userSlug} 的部落格`}
+                          t("userBlogTitle", { name: blog.authorName ?? blog.userSlug })}
                       </h2>
                       {blog.authorName && (
                         <p className="text-xs text-fg-muted mt-0.5">
@@ -315,12 +317,12 @@ export default async function BlogsPage({
                         </p>
                       )}
                       <div className="flex items-center gap-3 mt-2.5 text-[11px] text-fg-muted">
-                        <span>📝 {blog.articleCount} 篇文章</span>
+                        <span>📝 {t("articleCount", { count: blog.articleCount })}</span>
                         {blog.latestPublishedAt && (
                           <>
                             <span>·</span>
                             <span>
-                              最新：
+                              {t("latestLabel")}
                               {new Date(
                                 blog.latestPublishedAt
                               ).toLocaleDateString("zh-TW")}
@@ -344,12 +346,12 @@ export default async function BlogsPage({
             <div className="relative">
               <div className="text-3xl mb-3">✍️</div>
               <h2 className="text-lg sm:text-xl font-bold mb-2">
-                開始你自己的部落格
+                {t("ctaTitle")}
               </h2>
               <p className="text-sm text-fg-muted leading-relaxed max-w-md mx-auto mb-6">
-                AI 輔助寫作、系列文章、讀者互動、RSS 訂閱，
+                {t("ctaDescLine1")}
                 <br />
-                所有功能 AI 島都幫你準備好了。
+                {t("ctaDescLine2")}
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <Link
@@ -357,7 +359,7 @@ export default async function BlogsPage({
                   className="inline-flex items-center gap-2 px-6 py-2.5 bg-accent hover:bg-accent-2 text-black font-semibold text-sm rounded-2xl transition-colors"
                 >
                   <PenLine size={16} />
-                  免費開始寫作 →
+                  {t("ctaButton")} →
                 </Link>
               </div>
             </div>

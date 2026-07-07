@@ -1,10 +1,12 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Loader2, Check, Upload, X } from "lucide-react";
 import { BG_PRESETS, backgroundCss } from "@/lib/user-background";
 
 export function BackgroundSection({ initial }: { initial: string | null }) {
+  const t = useTranslations("settings");
   const [bg, setBg] = useState<string>(initial ?? "");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -49,15 +51,15 @@ export function BackgroundSection({ initial }: { initial: string | null }) {
 
   return (
     <div className="rounded-2xl border border-border bg-bg-card p-5 space-y-3">
-      <div className="text-lg font-bold">🎨 個人背景</div>
-      <p className="text-sm text-fg-muted">選一個背景、或上傳自己的圖片當會員區背景。設定即時生效。</p>
+      <div className="text-lg font-bold">🎨 {t("personalBackground")}</div>
+      <p className="text-sm text-fg-muted">{t("backgroundDesc")}</p>
 
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
         <button
           onClick={() => apply("")}
           className={`h-16 rounded-lg border flex items-center justify-center text-xs text-fg-muted bg-bg ${!bg ? "border-accent ring-2 ring-accent" : "border-border"}`}
         >
-          預設
+          {t("defaultBg")}
         </button>
         {BG_PRESETS.map((p) => (
           <button
@@ -79,13 +81,13 @@ export function BackgroundSection({ initial }: { initial: string | null }) {
           disabled={uploading}
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-sm hover:border-accent disabled:opacity-50"
         >
-          {uploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />} 上傳圖片當背景
+          {uploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />} {t("uploadImageBg")}
         </button>
         {isCustomImage && (
           <span className="inline-flex items-center gap-1.5 text-xs text-fg-muted">
-            目前用自訂圖片
+            {t("usingCustomImage")}
             <button onClick={() => apply("")} className="text-red-400 hover:underline inline-flex items-center gap-0.5">
-              <X size={12} /> 移除
+              <X size={12} /> {t("remove")}
             </button>
           </span>
         )}

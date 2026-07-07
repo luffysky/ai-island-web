@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { DUNGEONS, getDungeon } from "@/data/dungeons";
 import { getDungeonLesson } from "@/data/dungeon-lessons";
 import { chapterDisplayNumberById } from "@/lib/chapter-display";
@@ -8,10 +9,10 @@ import { ModuleLessonCard } from "@/components/courses/ModuleLessonCard";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
-const PRICE_LABEL: Record<string, { label: string; color: string }> = {
-  free: { label: "免費", color: "bg-green-500/20 text-green-900 dark:text-green-200" },
-  paid: { label: "付費", color: "bg-orange-500/20 text-orange-900 dark:text-orange-200" },
-  freemium: { label: "部分免費", color: "bg-blue-500/20 text-blue-900 dark:text-blue-200" },
+const PRICE_LABEL: Record<string, { color: string }> = {
+  free: { color: "bg-green-500/20 text-green-900 dark:text-green-200" },
+  paid: { color: "bg-orange-500/20 text-orange-900 dark:text-orange-200" },
+  freemium: { color: "bg-blue-500/20 text-blue-900 dark:text-blue-200" },
 };
 
 export function generateStaticParams() {
@@ -60,12 +61,19 @@ export default async function DungeonPage({
   const d = getDungeon(slug);
   if (!d) notFound();
 
+  const tr = await getTranslations("courses");
+  const priceLabel: Record<string, string> = {
+    free: tr("priceFree"),
+    paid: tr("pricePaid"),
+    freemium: tr("priceFreemium"),
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 min-w-0 overflow-hidden">
       {/* 麵包屑 */}
       <div className="text-sm text-fg-muted mb-6">
         <Link href="/courses" className="hover:text-fg">
-          ⚔️ AI 任務副本
+          ⚔️ {tr("pageTitle")}
         </Link>
         {" / "}
         <span>{d.name}</span>
@@ -98,21 +106,21 @@ export default async function DungeonPage({
         <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-6">
           <div className="flex items-center gap-2 mb-4">
             <span className="text-[10px] px-2 py-0.5 rounded bg-red-500/20 text-red-900 dark:text-red-200 font-bold">
-              副本 BOSS
+              {tr("dungeonBoss")}
             </span>
             <h2 className="text-2xl font-bold">👹 {d.boss.name}</h2>
           </div>
           <div className="grid sm:grid-cols-3 gap-4 text-sm">
             <div>
-              <div className="text-red-400/80 font-semibold mb-1">⚠️ 你會遇到</div>
+              <div className="text-red-400/80 font-semibold mb-1">⚠️ {tr("bossSymptom")}</div>
               <p className="text-fg-muted leading-relaxed">{d.boss.symptom}</p>
             </div>
             <div>
-              <div className="text-yellow-400/80 font-semibold mb-1">🎯 弱點</div>
+              <div className="text-yellow-400/80 font-semibold mb-1">🎯 {tr("bossWeakness")}</div>
               <p>{d.boss.weakness}</p>
             </div>
             <div>
-              <div className="text-green-400/80 font-semibold mb-1">⚔️ 破解方式</div>
+              <div className="text-green-400/80 font-semibold mb-1">⚔️ {tr("bossHowToBeat")}</div>
               <p className="text-fg-muted leading-relaxed">{d.boss.howToBeat}</p>
             </div>
           </div>
@@ -122,7 +130,7 @@ export default async function DungeonPage({
       {/* 適合誰 + 學完能做什麼 */}
       <section className="mb-10 grid sm:grid-cols-2 gap-4">
         <div className="rounded-xl border border-border bg-bg-card p-5">
-          <h3 className="font-bold mb-3">👥 這個副本適合</h3>
+          <h3 className="font-bold mb-3">👥 {tr("whoForTitle")}</h3>
           <ul className="space-y-2 text-sm">
             {d.whoFor.map((w, i) => (
               <li key={i} className="flex gap-2">
@@ -133,7 +141,7 @@ export default async function DungeonPage({
           </ul>
         </div>
         <div className="rounded-xl border border-border bg-bg-card p-5">
-          <h3 className="font-bold mb-3">🎁 通關後你會</h3>
+          <h3 className="font-bold mb-3">🎁 {tr("outcomesTitle")}</h3>
           <ul className="space-y-2 text-sm">
             {d.outcomes.map((o, i) => (
               <li key={i} className="flex gap-2">
@@ -147,9 +155,9 @@ export default async function DungeonPage({
 
       {/* 學習模組 */}
       <section className="mb-10">
-        <h2 className="text-2xl font-bold mb-2">📚 副本關卡</h2>
+        <h2 className="text-2xl font-bold mb-2">📚 {tr("modulesTitle")}</h2>
         <p className="text-sm text-fg-muted mb-4">
-          點開每個關卡、看完整教學內容。
+          {tr("modulesDesc")}
         </p>
         <div className="space-y-3">
           {d.modules.map((m, i) => {
@@ -173,7 +181,7 @@ export default async function DungeonPage({
 
       {/* 推薦工具 */}
       <section className="mb-10">
-        <h2 className="text-2xl font-bold mb-4">🛠️ 推薦工具</h2>
+        <h2 className="text-2xl font-bold mb-4">🛠️ {tr("toolsTitle")}</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           {d.tools.map((t) => (
             <a
@@ -191,7 +199,7 @@ export default async function DungeonPage({
                   <span
                     className={`text-[10px] px-1.5 py-0.5 rounded ${PRICE_LABEL[t.price].color}`}
                   >
-                    {PRICE_LABEL[t.price].label}
+                    {priceLabel[t.price]}
                   </span>
                 </div>
                 <p className="text-xs text-fg-muted leading-relaxed">
@@ -208,7 +216,7 @@ export default async function DungeonPage({
 
       {/* 通關技巧 */}
       <section className="mb-10">
-        <h2 className="text-2xl font-bold mb-4">💡 通關技巧</h2>
+        <h2 className="text-2xl font-bold mb-4">💡 {tr("proTipsTitle")}</h2>
         <div className="rounded-xl border border-border bg-bg-card p-5">
           <ul className="space-y-3">
             {d.proTips.map((tip, i) => (
@@ -228,9 +236,9 @@ export default async function DungeonPage({
 
       {/* 相關章節 */}
       <section className="mb-10">
-        <h2 className="text-2xl font-bold mb-4">🔗 相關主課程章節</h2>
+        <h2 className="text-2xl font-bold mb-4">🔗 {tr("relatedChaptersTitle")}</h2>
         <p className="text-sm text-fg-muted mb-3">
-          副本是實戰、主課程是底子。這些章節能幫你打好基礎：
+          {tr("relatedChaptersDesc")}
         </p>
         <div className="grid sm:grid-cols-2 gap-3">
           {d.relatedChapters.map((c) => (
@@ -250,29 +258,29 @@ export default async function DungeonPage({
 
       {/* CTA */}
       <section className="rounded-2xl border border-border bg-gradient-to-br from-bg-card to-bg-elevated p-8 text-center">
-        <h2 className="text-2xl font-bold mb-2">準備好挑戰 {d.boss.name} 了嗎？</h2>
+        <h2 className="text-2xl font-bold mb-2">{tr("ctaTitle", { boss: d.boss.name })}</h2>
         <p className="text-sm text-fg-muted mb-5">
-          先打好基礎、再進副本實戰。註冊就送 100 Z-coin。
+          {tr("ctaDesc")}
         </p>
         <div className="flex gap-3 justify-center flex-wrap">
           <Link
             href="/signup"
             className="px-6 py-3 bg-accent text-black rounded-lg font-bold hover:scale-105 transition-transform"
           >
-            🚀 開始冒險
+            🚀 {tr("ctaStart")}
           </Link>
           <Link
             href="/courses"
             className="px-6 py-3 bg-bg-card border border-border rounded-lg hover:border-accent transition"
           >
-            看其他副本
+            {tr("viewOtherDungeons")}
           </Link>
         </div>
       </section>
 
       {/* 其他副本 */}
       <section className="mt-10">
-        <h3 className="text-sm font-bold text-fg-muted mb-3">其他副本</h3>
+        <h3 className="text-sm font-bold text-fg-muted mb-3">{tr("otherDungeons")}</h3>
         <div className="flex flex-wrap gap-2">
           {DUNGEONS.filter((x) => x.slug !== d.slug).map((x) => (
             <Link

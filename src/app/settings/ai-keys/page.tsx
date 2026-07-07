@@ -1,11 +1,13 @@
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import { AIKeysClient } from "./AIKeysClient";
+import { getTranslations } from "next-intl/server";
 
 // 需登入 + 讀使用者金鑰 → 一律動態、不在 build 時 prerender
 export const dynamic = "force-dynamic";
 
 export default async function AIKeysSettingsPage() {
+  const t = await getTranslations("settings");
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -19,10 +21,9 @@ export default async function AIKeysSettingsPage() {
   return (
     <div className="max-w-3xl mx-auto px-6 py-8 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">🔑 AI API Keys（BYOK）</h1>
+        <h1 className="text-2xl font-bold">🔑 {t("aiKeysTitle")}</h1>
         <p className="text-sm text-fg-muted mt-2">
-          自帶 API key、跳過每日免費額度限制、用多少付多少給原廠。
-          AI 島不收手續費、key 在 DB 加密存放。
+          {t("aiKeysDesc")}
         </p>
       </div>
       <AIKeysClient initialKeys={keys ?? []} />

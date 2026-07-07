@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { Mail, Check, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function SubscribeForm({ userSlug }: { userSlug: string }) {
+  const t = useTranslations("blogs");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
@@ -22,7 +24,7 @@ export function SubscribeForm({ userSlug }: { userSlug: string }) {
     const json = await res.json();
     if (!res.ok) {
       setStatus("error");
-      setErrMsg(json.error === "invalid_email" ? "email 格式不對" : "訂閱失敗、請稍後再試");
+      setErrMsg(json.error === "invalid_email" ? t("invalidEmail") : t("subscribeFailed"));
       return;
     }
     setStatus("done");
@@ -32,8 +34,8 @@ export function SubscribeForm({ userSlug }: { userSlug: string }) {
     return (
       <div className="rounded-xl border border-accent/40 bg-accent/10 p-5 text-center">
         <Check size={24} className="mx-auto mb-2 text-accent" />
-        <p className="font-semibold">訂閱成功！</p>
-        <p className="text-sm text-fg-muted">有新文章會通知你</p>
+        <p className="font-semibold">{t("subscribeSuccess")}</p>
+        <p className="text-sm text-fg-muted">{t("subscribeSuccessDesc")}</p>
       </div>
     );
   }
@@ -41,16 +43,16 @@ export function SubscribeForm({ userSlug }: { userSlug: string }) {
   return (
     <div className="rounded-xl border border-border bg-bg-card p-5">
       <h3 className="font-bold flex items-center gap-2 mb-1">
-        <Mail size={18} className="text-accent" /> 訂閱這個部落格
+        <Mail size={18} className="text-accent" /> {t("subscribeHeading")}
       </h3>
       <p className="text-sm text-fg-muted mb-3">
-        有新文章第一時間收到通知
+        {t("subscribeSubheading")}
       </p>
       <div className="space-y-2">
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="你的名字（選填）"
+          placeholder={t("namePlaceholder")}
           className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
         />
         <div className="flex gap-2">
@@ -59,7 +61,7 @@ export function SubscribeForm({ userSlug }: { userSlug: string }) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
-            placeholder="你的 email"
+            placeholder={t("emailPlaceholder")}
             className="flex-1 bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
           />
           <button
@@ -68,7 +70,7 @@ export function SubscribeForm({ userSlug }: { userSlug: string }) {
             className="px-4 py-2 rounded-lg bg-accent text-black text-sm font-semibold disabled:opacity-40 flex items-center gap-1"
           >
             {status === "sending" ? <Loader2 size={14} className="animate-spin" /> : null}
-            訂閱
+            {t("subscribe")}
           </button>
         </div>
       </div>

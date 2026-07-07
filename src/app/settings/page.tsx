@@ -8,11 +8,13 @@ import { GdprSection } from "./GdprSection";
 import { LineBindSection } from "./LineBindSection";
 import { DiscordBindSection } from "./DiscordBindSection";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { getTranslations } from "next-intl/server";
 
 // 設定頁需登入 + service-role 讀資料 → 一律動態、不在 build 時 prerender
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
+  const t = await getTranslations("settings");
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -30,7 +32,7 @@ export default async function SettingsPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-12 space-y-6">
-      <h1 className="text-2xl font-bold">設定</h1>
+      <h1 className="text-2xl font-bold">{t("pageTitle")}</h1>
       <SettingsForm profile={profile} email={user.email!} />
       <BackgroundSection initial={(profile as any).background ?? null} />
 
@@ -42,10 +44,10 @@ export default async function SettingsPage() {
         <div className="flex items-center justify-between gap-3">
           <div>
             <div className="text-lg font-bold flex items-center gap-2">
-              🔑 我的 AI API Keys（BYOK）
+              🔑 {t("byokEntryTitle")}
             </div>
             <p className="text-sm text-fg-muted mt-1">
-              自帶 OpenAI / Anthropic / Google key、跳過每日免費額度、用多少付多少給原廠。AI 島不收手續費、key 加密儲存。
+              {t("byokEntryDesc")}
             </p>
           </div>
           <span className="text-2xl text-purple-900 dark:text-purple-200">→</span>

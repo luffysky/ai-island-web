@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { Check, X, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 function UnsubscribeContent() {
+  const t = useTranslations("blogs");
   const params = useSearchParams();
   const token = params.get("token");
   const [status, setStatus] = useState<"loading" | "done" | "error">("loading");
@@ -35,7 +37,7 @@ function UnsubscribeContent() {
       {status === "loading" && (
         <>
           <Loader2 size={32} className="mx-auto mb-3 animate-spin text-fg-muted" />
-          <p className="text-fg-muted">處理中...</p>
+          <p className="text-fg-muted">{t("processing")}</p>
         </>
       )}
       {status === "done" && (
@@ -43,11 +45,11 @@ function UnsubscribeContent() {
           <div className="w-14 h-14 rounded-full bg-accent/15 flex items-center justify-center mx-auto mb-4">
             <Check size={28} className="text-accent" />
           </div>
-          <h1 className="text-xl font-bold mb-2">已取消訂閱</h1>
+          <h1 className="text-xl font-bold mb-2">{t("unsubscribed")}</h1>
           <p className="text-sm text-fg-muted mb-6">
-            {email && `${email} `}不會再收到這個部落格的通知。
+            {email && `${email} `}{t("unsubscribedDesc")}
           </p>
-          <Link href="/" className="text-sm text-accent">回 AI 島首頁</Link>
+          <Link href="/" className="text-sm text-accent">{t("backHome")}</Link>
         </>
       )}
       {status === "error" && (
@@ -55,20 +57,25 @@ function UnsubscribeContent() {
           <div className="w-14 h-14 rounded-full bg-red-500/15 flex items-center justify-center mx-auto mb-4">
             <X size={28} className="text-red-400" />
           </div>
-          <h1 className="text-xl font-bold mb-2">連結無效</h1>
+          <h1 className="text-xl font-bold mb-2">{t("invalidLink")}</h1>
           <p className="text-sm text-fg-muted mb-6">
-            這個退訂連結可能已失效、或你已經取消過訂閱了。
+            {t("invalidLinkDesc")}
           </p>
-          <Link href="/" className="text-sm text-accent">回 AI 島首頁</Link>
+          <Link href="/" className="text-sm text-accent">{t("backHome")}</Link>
         </>
       )}
     </div>
   );
 }
 
+function UnsubscribeFallback() {
+  const t = useTranslations("blogs");
+  return <div className="py-20 text-center text-fg-muted">{t("loading")}</div>;
+}
+
 export default function UnsubscribePage() {
   return (
-    <Suspense fallback={<div className="py-20 text-center text-fg-muted">載入中...</div>}>
+    <Suspense fallback={<UnsubscribeFallback />}>
       <UnsubscribeContent />
     </Suspense>
   );

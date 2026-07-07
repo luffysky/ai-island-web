@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useRouter } from "next/navigation";
@@ -26,6 +27,7 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
 
+  const t = useTranslations("settings");
   const router = useRouter();
   const supabase = createSupabaseBrowser();
   const toast = useToast();
@@ -51,31 +53,31 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
     if (error) {
       setMsg(`❌ ${error.message}`);
     } else {
-      setMsg("✅ 已儲存");
+      setMsg(`✅ ${t("saved")}`);
       router.refresh();
     }
   }
 
   async function handleDeleteAccount() {
     const ok1 = await confirm({
-      title: "確定要刪除帳號？",
-      description: "這個動作不可逆、所有資料都會被永久移除。",
-      confirmLabel: "下一步",
+      title: t("deleteConfirm1Title"),
+      description: t("deleteConfirm1Desc"),
+      confirmLabel: t("nextStep"),
       destructive: true,
     });
     if (!ok1) return;
 
     const ok2 = await confirm({
-      title: "最後確認",
-      description: "所有進度、成就、筆記、文章都會一起刪除。確定繼續？",
-      confirmLabel: "永久刪除",
+      title: t("finalConfirmTitle"),
+      description: t("deleteConfirm2Desc"),
+      confirmLabel: t("permanentDelete"),
       destructive: true,
     });
     if (!ok2) return;
 
     const { error } = await supabase.rpc("delete_user_account");
     if (error) {
-      toast.error(`刪除失敗：${error.message}、請聯絡客服`);
+      toast.error(t("deleteFailedContactSupport", { msg: error.message }));
       return;
     }
     await supabase.auth.signOut();
@@ -86,34 +88,34 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
     <form onSubmit={handleSave} className="space-y-6">
       {/* 基本資料 */}
       <section className="bg-bg-card rounded-xl p-6 space-y-4">
-        <h2 className="font-bold text-lg">基本資料</h2>
+        <h2 className="font-bold text-lg">{t("basicInfo")}</h2>
 
         <div>
           <label className="block text-sm mb-1">Email</label>
           <input type="email" value={email} disabled className="w-full bg-bg-elevated rounded-lg px-3 py-2 opacity-60" />
-          <p className="text-xs text-fg-muted mt-1">無法修改</p>
+          <p className="text-xs text-fg-muted mt-1">{t("cannotEdit")}</p>
         </div>
 
         <div>
-          <label className="block text-sm mb-1">Username（公開、@xxxxx）</label>
+          <label className="block text-sm mb-1">{t("usernameLabel")}</label>
           <input type="text" value={profile.username} disabled className="w-full bg-bg-elevated rounded-lg px-3 py-2 opacity-60" />
-          <p className="text-xs text-fg-muted mt-1">無法修改</p>
+          <p className="text-xs text-fg-muted mt-1">{t("cannotEdit")}</p>
         </div>
 
         <div>
-          <label className="block text-sm mb-1">顯示名稱</label>
+          <label className="block text-sm mb-1">{t("displayNameLabel")}</label>
           <input
             type="text"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             className="w-full bg-bg-elevated rounded-lg px-3 py-2"
-            placeholder="想被叫什麼？"
+            placeholder={t("displayNamePlaceholder")}
             maxLength={50}
           />
         </div>
 
         <div>
-          <label className="block text-sm mb-2">頭像</label>
+          <label className="block text-sm mb-2">{t("avatarLabel")}</label>
           <ImageUploader
             folder="avatar"
             value={avatarUrl}
@@ -125,25 +127,25 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
         </div>
 
         <div>
-          <label className="block text-sm mb-1">自我介紹</label>
+          <label className="block text-sm mb-1">{t("bioLabel")}</label>
           <textarea
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             className="w-full bg-bg-elevated rounded-lg px-3 py-2 min-h-[80px]"
-            placeholder="跟大家介紹一下..."
+            placeholder={t("bioPlaceholder")}
             maxLength={200}
           />
           <p className="text-xs text-fg-muted mt-1">{bio.length} / 200</p>
         </div>
 
         <div>
-          <label className="block text-sm mb-1">職業路線</label>
+          <label className="block text-sm mb-1">{t("careerPathLabel")}</label>
           <select
             value={careerPath}
             onChange={(e) => setCareerPath(e.target.value)}
             className="w-full bg-bg-elevated rounded-lg px-3 py-2"
           >
-            <option value="">未選擇</option>
+            <option value="">{t("notSelected")}</option>
             {CAREER_PATHS.map((p) => (
               <option key={p.id} value={p.id}>{p.label}</option>
             ))}
@@ -153,9 +155,9 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
 
       {/* 隱私 / 通知偏好 */}
       <section className="bg-bg-card border border-border rounded-xl p-6">
-        <h2 className="font-bold mb-1">🌙 低調模式</h2>
+        <h2 className="font-bold mb-1">🌙 {t("stealthModeTitle")}</h2>
         <p className="text-xs text-fg-muted mb-4">
-          影響平台運營端是否會「即時」感知到你的學習動態。學習進度 / XP / 排行榜照常記錄、不受影響。
+          {t("stealthModeDesc")}
         </p>
 
         <label className="flex items-start gap-3 cursor-pointer">
@@ -170,13 +172,13 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
             <span className="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4 shadow" />
           </span>
           <span className="flex-1 text-sm">
-            <span className="font-medium">啟用低調模式</span>
+            <span className="font-medium">{t("stealthModeToggle")}</span>
             <p className="text-xs text-fg-muted mt-0.5 leading-relaxed">
-              預設關閉。平台運營端會收到你的個人學習動態（登入 / 完課 / 升等 / 解鎖成就 / 論壇互動）即時通知、用於監看平台健康 + 第一時間替你慶祝里程碑。
+              {t("stealthModeHelp1")}
               <br />
-              <strong>啟用此選項</strong>後、你的活動<strong>不會即時推播</strong>到平台運營端。
+              <strong>{t("stealthModeHelp2Strong1")}</strong>{t("stealthModeHelp2Mid")}<strong>{t("stealthModeHelp2Strong2")}</strong>{t("stealthModeHelp2End")}
               <br />
-              <span className="text-fg-muted">兩種模式下、你的學習資料儲存 / 排行榜 / 統計都完全一樣、不會差。</span>
+              <span className="text-fg-muted">{t("stealthModeHelp3")}</span>
             </p>
           </span>
         </label>
@@ -189,23 +191,23 @@ export function SettingsForm({ profile, email }: { profile: any; email: string }
           disabled={saving}
           className="px-6 py-2 bg-accent text-black rounded-lg font-semibold hover:bg-accent-2 disabled:opacity-50 transition"
         >
-          {saving ? "儲存中..." : "儲存"}
+          {saving ? t("saving") : t("save")}
         </button>
         {msg && <span className="text-sm">{msg}</span>}
       </div>
 
       {/* 危險區 */}
       <section className="bg-red-950/30 border border-red-900/50 rounded-xl p-6 mt-12">
-        <h2 className="font-bold text-lg text-red-400 mb-2">⚠️ 危險區</h2>
+        <h2 className="font-bold text-lg text-red-400 mb-2">⚠️ {t("dangerZone")}</h2>
         <p className="text-sm text-fg-muted mb-4">
-          刪除帳號會永久移除所有資料、且不可恢復。
+          {t("dangerZoneDesc")}
         </p>
         <button
           type="button"
           onClick={handleDeleteAccount}
           className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm"
         >
-          刪除帳號
+          {t("deleteAccount")}
         </button>
       </section>
     </form>

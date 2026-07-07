@@ -1,10 +1,12 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
 export default async function TeacherOverviewPage() {
+  const t = await getTranslations("teacher");
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
@@ -29,18 +31,18 @@ export default async function TeacherOverviewPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">📊 教師總覽</h1>
+      <h1 className="text-2xl font-bold">📊 {t("overviewTitle")}</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <Stat label="作業總數" value={assignmentsCount ?? 0} href="/teacher/assignments" />
-        <Stat label="提交數" value={submissionsCount ?? 0} />
-        <Stat label="待批改" value={ungradedCount ?? 0} href="/teacher/grading" tone="warning" />
+        <Stat label={t("statAssignments")} value={assignmentsCount ?? 0} href="/teacher/assignments" />
+        <Stat label={t("statSubmissions")} value={submissionsCount ?? 0} />
+        <Stat label={t("pendingGrade")} value={ungradedCount ?? 0} href="/teacher/grading" tone="warning" />
       </div>
 
       <div className="rounded-xl bg-bg-card border border-border">
-        <div className="px-4 py-2 border-b border-border text-sm font-bold">最新提交</div>
+        <div className="px-4 py-2 border-b border-border text-sm font-bold">{t("latestSubmissions")}</div>
         {(recentSubs ?? []).length === 0 ? (
-          <div className="text-center py-8 text-fg-muted text-sm">尚無提交</div>
+          <div className="text-center py-8 text-fg-muted text-sm">{t("noSubmissions")}</div>
         ) : (
           <ul className="divide-y divide-border">
             {recentSubs!.map((s: any) => (
@@ -50,7 +52,7 @@ export default async function TeacherOverviewPage() {
                 {s.score !== null ? (
                   <span className="text-xs text-accent font-bold">{s.score}</span>
                 ) : (
-                  <Link href={`/teacher/grading?id=${s.id}` as any} className="text-xs px-2 py-1 rounded-lg bg-yellow-500/15 text-yellow-900 dark:text-yellow-200">待批改</Link>
+                  <Link href={`/teacher/grading?id=${s.id}` as any} className="text-xs px-2 py-1 rounded-lg bg-yellow-500/15 text-yellow-900 dark:text-yellow-200">{t("pendingGrade")}</Link>
                 )}
               </li>
             ))}

@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Trash2, Plus, ExternalLink, CheckCircle2, XCircle, Loader2, Power } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/components/ui/Toast";
@@ -25,6 +26,7 @@ const PROVIDERS = BYOK_PROVIDERS;
 const providerMeta = (v: string) => PROVIDERS.find((p) => p.value === v);
 
 export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
+  const t = useTranslations("settings");
   const toast = useToast();
   const confirm = useConfirm();
   const [keys, setKeys] = useState<UserKey[]>(initialKeys);
@@ -67,7 +69,7 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
         body: JSON.stringify({ provider, apiKey }),
       });
       const d = await res.json();
-      setTestResult({ ok: !!d.ok, hint: d.hint || d.error || "驗證失敗" });
+      setTestResult({ ok: !!d.ok, hint: d.hint || d.error || t("verifyFailed") });
     } catch (e: any) {
       setTestResult({ ok: false, hint: e.message });
     } finally {
@@ -78,7 +80,7 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
   const save = async () => {
     if (!apiKey.trim()) return;
     if (isCustom && (!baseUrl.trim() || !model.trim())) {
-      setError("自訂端點需填 Base URL 與模型名");
+      setError(t("customEndpointRequired"));
       return;
     }
     setSaving(true);
@@ -97,13 +99,13 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        setError(data.error || "儲存失敗");
+        setError(data.error || t("saveFailed"));
         return;
       }
       await refresh();
       resetForm();
       setAdding(false);
-      toast.success("已新增 API key");
+      toast.success(t("keyAdded"));
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -122,9 +124,9 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
       });
       if (res.ok) {
         setKeys((cur) => cur.map((x) => (x.id === k.id ? { ...x, is_active: !x.is_active } : x)));
-        toast.success(!k.is_active ? "已啟用" : "已停用");
+        toast.success(!k.is_active ? t("enabled") : t("disabled"));
       } else {
-        toast.error("切換失敗");
+        toast.error(t("toggleFailed"));
       }
     } finally {
       setBusyId(null);
@@ -134,9 +136,9 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
   const remove = async (k: UserKey) => {
     const pm = providerMeta(k.provider);
     const ok = await confirm({
-      title: `刪除「${k.label}」？`,
-      description: `${pm?.label ?? k.provider} 的這把 key 將被移除、需重新輸入才能再用。`,
-      confirmLabel: "刪除",
+      title: t("deleteKeyTitle", { label: k.label }),
+      description: t("deleteKeyDesc", { provider: pm?.label ?? k.provider }),
+      confirmLabel: t("delete"),
       destructive: true,
     });
     if (!ok) return;
@@ -146,9 +148,9 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
     });
     if (res.ok) {
       setKeys((cur) => cur.filter((x) => x.id !== k.id));
-      toast.success("已刪除");
+      toast.success(t("deleted"));
     } else {
-      toast.error("刪除失敗");
+      toast.error(t("deleteFailed"));
     }
   };
 
@@ -167,17 +169,17 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
                     {pm?.label ?? k.provider}
                     <span className="text-[11px] font-normal text-fg-muted">{k.label}</span>
                     {!k.is_active && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-fg-muted/15 text-fg-muted">停用中</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-fg-muted/15 text-fg-muted">{t("disabledBadge")}</span>
                     )}
                   </div>
                   <div className="text-xs text-fg-muted mt-0.5 break-all">
                     {md.masked && <span className="font-mono">{md.masked}</span>}
                     {k.provider === "custom" && md.base_url && (
-                      <span className="block mt-0.5">端點 {md.base_url} · 模型 {md.model}</span>
+                      <span className="block mt-0.5">{t("endpointModel", { url: md.base_url, model: md.model ?? "" })}</span>
                     )}
                     <span className="block mt-0.5">
-                      建立於 {new Date(k.created_at).toLocaleDateString("zh-TW")}
-                      {k.last_used_at && ` · 最後使用 ${new Date(k.last_used_at).toLocaleDateString("zh-TW")}`}
+                      {t("createdOn", { date: new Date(k.created_at).toLocaleDateString("zh-TW") })}
+                      {k.last_used_at && t("lastUsed", { date: new Date(k.last_used_at).toLocaleDateString("zh-TW") })}
                     </span>
                   </div>
                 </div>
@@ -185,7 +187,7 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
                   <button
                     onClick={() => toggleActive(k)}
                     disabled={busyId === k.id}
-                    title={k.is_active ? "停用" : "啟用"}
+                    title={k.is_active ? t("disable") : t("enable")}
                     className={`p-2 rounded disabled:opacity-50 ${
                       k.is_active ? "text-emerald-500 hover:bg-emerald-500/10" : "text-fg-muted hover:bg-fg-muted/10"
                     }`}
@@ -194,7 +196,7 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
                   </button>
                   <button
                     onClick={() => remove(k)}
-                    title="刪除"
+                    title={t("delete")}
                     className="p-2 text-red-400 hover:bg-red-500/10 rounded"
                   >
                     <Trash2 size={16} />
@@ -212,7 +214,7 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
           onClick={() => setAdding(true)}
           className="w-full p-4 border border-dashed border-border rounded-xl hover:border-accent hover:bg-bg-card transition flex items-center justify-center gap-2 text-sm"
         >
-          <Plus size={16} /> 新增 API Key
+          <Plus size={16} /> {t("addApiKey")}
         </button>
       ) : (
         <div className="bg-bg-card border border-border rounded-xl p-4 space-y-3">
@@ -234,17 +236,17 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
                 rel="noopener noreferrer"
                 className="text-xs text-accent hover:underline mt-1 inline-flex items-center gap-1"
               >
-                <ExternalLink size={12} /> 取得 {meta.label} API key
+                <ExternalLink size={12} /> {t("getProviderKey", { label: meta.label })}
               </a>
             )}
             <div className="mt-1.5 text-[11px] text-fg-muted">
-              {meta?.hint && <span className="block">格式：{meta.hint}</span>}
+              {meta?.hint && <span className="block">{t("format", { hint: meta.hint })}</span>}
               <span className="block mt-0.5">
                 {isCustom
-                  ? "可用模型：由你下面填的模型名決定"
-                  : `這把 key 可解鎖的模型：${meta?.models.join("、")}`}
+                  ? t("customModelsNote")
+                  : t("unlockedModels", { models: meta?.models.join("、") ?? "" })}
               </span>
-              <span className="block mt-0.5">（存好後、在 AI 對話框打開「用自己的 key」就能用你的額度）</span>
+              <span className="block mt-0.5">{t("byokUsageNote")}</span>
             </div>
           </div>
 
@@ -262,12 +264,12 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
                 />
               </div>
               <div>
-                <label className="text-xs text-fg-muted mb-1 block">模型名</label>
+                <label className="text-xs text-fg-muted mb-1 block">{t("modelNameLabel")}</label>
                 <input
                   type="text"
                   value={model}
                   onChange={(e) => setModel(e.target.value)}
-                  placeholder="例：llama-3.1-8b / gpt-4o-mini"
+                  placeholder={t("modelNamePlaceholder")}
                   className="w-full bg-bg border border-border rounded p-2 text-sm font-mono"
                 />
               </div>
@@ -280,18 +282,18 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
               type="password"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
-              placeholder={meta?.placeholder ?? "貼上 API key"}
+              placeholder={meta?.placeholder ?? t("pasteApiKey")}
               className="w-full bg-bg border border-border rounded p-2 text-sm font-mono"
             />
           </div>
 
           <div>
-            <label className="text-xs text-fg-muted mb-1 block">標籤（選填、同 provider 多把時用來分辨）</label>
+            <label className="text-xs text-fg-muted mb-1 block">{t("labelFieldLabel")}</label>
             <input
               type="text"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
-              placeholder="例：個人 Claude key / 公司 key"
+              placeholder={t("labelPlaceholder")}
               className="w-full bg-bg border border-border rounded p-2 text-sm"
             />
           </div>
@@ -310,7 +312,7 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
                 disabled={testing || !apiKey}
                 className="px-4 py-2 border border-accent text-accent rounded font-semibold disabled:opacity-50 flex items-center gap-1.5"
               >
-                {testing ? <Loader2 size={14} className="animate-spin" /> : null} 測試
+                {testing ? <Loader2 size={14} className="animate-spin" /> : null} {t("test")}
               </button>
             )}
             <button
@@ -318,27 +320,27 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
               disabled={saving || !apiKey || (isCustom && (!baseUrl || !model))}
               className="px-4 py-2 bg-accent text-black rounded font-semibold disabled:opacity-50"
             >
-              {saving ? "儲存中..." : "儲存"}
+              {saving ? t("saving") : t("save")}
             </button>
             <button
               onClick={() => { setAdding(false); resetForm(); }}
               className="px-4 py-2 border border-border rounded text-sm"
             >
-              取消
+              {t("cancel")}
             </button>
             {isCustom && (
-              <span className="text-[11px] text-fg-muted">自訂端點不做線上測試、直接儲存即可</span>
+              <span className="text-[11px] text-fg-muted">{t("customNoTest")}</span>
             )}
           </div>
 
           <p className="text-xs text-fg-muted">
-            🔒 你的 key 用 AES-256-GCM 加密、僅在你要求 AI 對話時解密、不會被其他人看到。
+            🔒 {t("keyEncryptedNote")}
           </p>
         </div>
       )}
 
       <Link href="/settings" className="block text-sm text-fg-muted hover:text-accent">
-        ← 回設定
+        {t("backToSettings")}
       </Link>
     </div>
   );

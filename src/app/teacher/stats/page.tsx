@@ -1,11 +1,13 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { createSupabaseServer } from "@/lib/supabase-server";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { formatTW } from "@/lib/format-date";
 
 export const dynamic = "force-dynamic";
 
 export default async function TeacherStatsPage() {
+  const t = await getTranslations("teacher");
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -46,21 +48,21 @@ export default async function TeacherStatsPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold">📊 我的教師業績</h1>
-        <p className="text-sm text-fg-muted mt-1">追蹤批改數、平均給分、回應速度。</p>
+        <h1 className="text-2xl font-bold">📊 {t("statsTitle")}</h1>
+        <p className="text-sm text-fg-muted mt-1">{t("statsSubtitle")}</p>
       </header>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Stat label="批改總數" value={totalGraded ?? 0} />
-        <Stat label="近 7 天" value={graded7d ?? 0} tone="accent" />
-        <Stat label="近 30 天" value={graded30d ?? 0} />
-        <Stat label="平均給分（30 天）" value={`${avgPct.toFixed(1)}%`} tone="accent" />
+        <Stat label={t("totalGraded")} value={totalGraded ?? 0} />
+        <Stat label={t("last7d")} value={graded7d ?? 0} tone="accent" />
+        <Stat label={t("last30d")} value={graded30d ?? 0} />
+        <Stat label={t("avgScore30d")} value={`${avgPct.toFixed(1)}%`} tone="accent" />
       </div>
 
       <div className="rounded-xl bg-bg-card border border-border">
-        <div className="px-4 py-2 border-b border-border text-sm font-bold">最近批改</div>
+        <div className="px-4 py-2 border-b border-border text-sm font-bold">{t("recentGrading")}</div>
         {(recent ?? []).length === 0 ? (
-          <div className="text-center py-12 text-fg-muted text-sm">還沒批改過任何作業</div>
+          <div className="text-center py-12 text-fg-muted text-sm">{t("noGradingYet")}</div>
         ) : (
           <ul className="divide-y divide-border">
             {recent!.map((s: any) => (
@@ -68,7 +70,7 @@ export default async function TeacherStatsPage() {
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-sm truncate">{s.assignment?.title ?? "—"}</div>
                   <div className="text-[10px] text-fg-muted">
-                    {s.user?.display_name || s.user?.username} · 給 {s.score}/{s.assignment?.max_score} 分 · {formatTW(s.graded_at)}
+                    {s.user?.display_name || s.user?.username} · {t("gaveScore", { score: s.score, max: s.assignment?.max_score })} · {formatTW(s.graded_at)}
                   </div>
                 </div>
               </li>

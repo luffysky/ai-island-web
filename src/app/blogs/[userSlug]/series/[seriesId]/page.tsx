@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Eye, ArrowLeft } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { resolveBlog } from "@/lib/blog-resolve";
 
@@ -78,6 +79,7 @@ export default async function SeriesPage({
   const { blog, series, articles } = data;
   const name =
     blog.profile?.display_name || blog.profile?.username || userSlug;
+  const t = await getTranslations("blogs");
 
   return (
     <div className="min-h-screen">
@@ -89,7 +91,7 @@ export default async function SeriesPage({
             className="inline-flex items-center gap-1.5 text-sm text-fg-muted hover:text-fg transition mb-6"
           >
             <ArrowLeft size={14} />
-            回到 {blog.settings.blog_title || `${name} 的部落格`}
+            {t("backTo")} {blog.settings.blog_title || t("userBlogTitle", { name })}
           </Link>
 
           <div className="flex items-start gap-4">
@@ -106,11 +108,11 @@ export default async function SeriesPage({
             <div className="min-w-0">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-accent text-sm">
-                  📖 系列文章
+                  📖 {t("seriesLabel")}
                 </span>
                 {series.is_completed && (
                   <span className="px-2 py-0.5 bg-emerald-500/15 text-emerald-900 dark:text-emerald-100 text-[11px] rounded-full">
-                    已完結
+                    {t("completed")}
                   </span>
                 )}
               </div>
@@ -121,7 +123,7 @@ export default async function SeriesPage({
                 </p>
               )}
               <p className="text-xs text-fg-muted mt-2">
-                共 {articles.length} 篇文章
+                {t("totalArticles", { count: articles.length })}
               </p>
             </div>
           </div>
@@ -133,7 +135,7 @@ export default async function SeriesPage({
         {articles.length === 0 ? (
           <div className="text-center py-16 text-fg-muted">
             <div className="text-4xl mb-3">📭</div>
-            <p className="text-sm">此系列尚無公開文章</p>
+            <p className="text-sm">{t("seriesEmpty")}</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -214,7 +216,7 @@ export default async function SeriesPage({
               {name}
             </Link>
             <p className="text-xs text-fg-muted">
-              {blog.settings.blog_title ?? "部落格"}
+              {blog.settings.blog_title ?? t("blog")}
             </p>
           </div>
         </div>
