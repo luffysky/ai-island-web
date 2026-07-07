@@ -10,7 +10,7 @@ import { CountUp } from "@/components/ui/CountUp";
 import { PulseDot } from "@/components/ui/PulseDot";
 import { AdminGreeting } from "@/components/admin/AdminGreeting";
 import { RingGauge } from "@/components/ui/RingGauge";
-import { Crown, AlertTriangle, CheckCircle, Megaphone, Zap, Users, DollarSign, MessageSquare, Bot, Search, Trophy, Sparkles, Activity, BellRing, Sprout, Gamepad2, Banknote } from "lucide-react";
+import { Crown, AlertTriangle, CheckCircle, Megaphone, Zap, Users, DollarSign, MessageSquare, Bot, Search, Trophy, Sparkles, Activity, BellRing, Sprout, Gamepad2, Banknote, CreditCard } from "lucide-react";
 import { runOpsAlertChecks } from "@/lib/ops-alerts";
 
 export default async function AdminOverviewPage() {
@@ -579,6 +579,7 @@ export default async function AdminOverviewPage() {
           <QuickAction href="/admin/forum-seed" label={<><Sprout className="w-4 h-4" /> 討論區種子</>} />
           <QuickAction href="/admin/quest-levels" label={<><Gamepad2 className="w-4 h-4" /> AI 關卡</>} />
           <QuickAction href="/admin/payouts" label={<><Banknote className="w-4 h-4" /> 提現對帳</>} />
+          <QuickAction href="/admin/payments" label={<><CreditCard className="w-4 h-4" /> 金流狀態</>} />
           <QuickAction href="/admin/broadcasts" label={<><Megaphone className="w-4 h-4" /> 發公告</>} />
           <QuickAction href="/admin/users" label={<><Users className="w-4 h-4" /> 找用戶</>} />
           <QuickAction href="/admin/orders" label={<><DollarSign className="w-4 h-4" /> 訂單</>} />
