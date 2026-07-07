@@ -25,15 +25,17 @@
 
 ## 🔨 待辦（照這順序）
 
-### D（進行中）：AI 夥伴「個性差異化」— 林董痛點：不同 AI 回話感覺一樣
-- **現況**：11 位人設定義在 `src/lib/ai-personas.ts`（`PERSONAS[id].promptBlock` 有各自語氣/口頭禪）；`src/lib/ai-tutor-prompt.ts` 的 `buildTutorSystemPrompt()` **有**把 `persona.promptBlock` 疊進 system prompt（line ~283），chatCompanion(多聞)還有「純陪聊模式」。所以人設**有**餵進去。
-- **問題**：差異不夠明顯——通用導師 prompt 太長把人設稀釋了。**要做**：把每個 promptBlock 寫得更「有辨識度」（口頭禪/句式/回答結構各自不同）、並在 system prompt 裡把人設區塊「往前挪、加權重字眼」讓它壓過通用腔；可考慮 few-shot（每人設 1-2 句示範回話）。改完用 AITutorWidget 各切一個人設實測回話。
-- ⚠️ `/api/me/mentor` 是**配對系統**(mentor/mentee/peer)、不是 AI 對話，別改錯。AI 對話走 AITutorWidget → `buildTutorSystemPrompt`。
+### ~~D：AI 夥伴「個性差異化」~~ ✅ 已完成（`d0fd2141`）
+- 根因：`ai-tutor-prompt.ts` 那塊「國中生講解風格」強制所有人設用同一種「別急/超常見/我們一起看看 + 購物清單類比」開場、把 persona 淹掉。
+- 修法：把講解風格改成「精神非模板、依角色」、加「角色語氣優先」宣告 + 🚫硬禁第一句用罐頭安撫腔；`ai-personas.ts` 每個角色加【開場】【禁】【結構】【這樣開場】few-shot。實測 4 角色開場/結構明顯不同 ✓。
+- ⚠️ `/api/me/mentor` 是**配對系統**、不是 AI 對話；AI 對話走 AITutorWidget → `buildTutorSystemPrompt`。**改完建議在瀏覽器各切一個人設再確認一次語氣。**
 
-### E：動態 emoji / GIPHY（林董已研究）
-- 方向（林董定）：**先自架 Google Noto Animated Emoji 做反應表情**（懂了/卡住/太神/救命…），**GIPHY 之後再接**（beta key 免費限 100/hr，別當核心、別被卡脖子）。Tenor 已關 API 別碰。
-- 建議架構：`animated-emoji`(自架Noto/Lottie) → `reaction-pack`(AI島專屬) → `giphy-search`(外部) → `moderation`。第一版只做前兩個。
-- 落點：留言/筆記反應、課程完成動畫、AI 導師情緒。
+### ~~E：動態 emoji（第一版）~~ ✅ 已完成（`a9c6c654`）— 後續見下
+- 已做：`src/lib/reactions.ts`（反應包 + Noto 動態 WebP 網址）、`AnimatedEmoji` 元件（`<img>` 動態 WebP、退回純 emoji）、論壇 `ThreadReactionBar` 反應動起來、`reactions` i18n。
+- **後續（E 第二、三版）**：
+  1. **學習反應 UI**：用 `LEARN_REACTIONS`（懂了/卡住/太神…）在 lesson 頁 / 筆記 / 課程完成做反應條 + 慶祝動畫；持久化要新 DB 表（lesson_reactions）。
+  2. **自架素材**：把用到的 `{code}/512.webp` 下載進 `public/noto/`、把 `reactions.ts` 的 `NOTO_BASE` 改成 `"/noto"`（現在走 gstatic CDN、能動但非自架）。
+  3. **GIPHY 搜尋**（第三版，別急）：`/gif bug` 這種；beta key 免費限 100/hr，做 moderation。Tenor 已關 API 別碰。
 
 ### #166 剩餘：翻譯 render wiring 擴更多頁 + 翻更多內容
 - render wiring 已接：blog 文章頁、章節詳情、論壇主題頁、**/chapters 列表、側欄 nav**。**還沒接**：/forum 版面 thread 列表、/blogs 文章列表（需比照做 forum/blog 的批次 localizer）。
@@ -73,4 +75,4 @@
 ---
 
 ## 📌 一句話交辦
-**D（AI 個性差異化，強化 persona promptBlock + 加權）先做 → E（動態 emoji，先自架 Noto 反應表情）→ #166 剩餘（forum/blog 列表在地化 + 跑 forum/blog 背景翻譯）。tree 乾淨、tsc 綠，放心接。**
+**林董 5 大需求 A~E 全交付（買到→我的筆記／便利貼樣式／筆記標章節可點跳／AI個性差異化／動態emoji第一版）。接下來：E 第二版（學習反應 UI + 自架 Noto 素材）、#166 剩餘（forum/blog 列表在地化 + 跑背景翻譯）。tree 乾淨、tsc + build 綠，放心接。**
