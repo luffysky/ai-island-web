@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { trackEvent } from "@/lib/analytics";
 import Link from "next/link";
@@ -23,6 +24,7 @@ const AUTH_ERROR_LABELS: Record<string, string> = {
 };
 
 export default function LoginPage() {
+  const t = useTranslations("authpages");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
@@ -33,7 +35,7 @@ export default function LoginPage() {
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get("error");
     if (code) {
-      setError(AUTH_ERROR_LABELS[code] ?? `登入失敗：${code}`);
+      setError(AUTH_ERROR_LABELS[code] ?? t("loginFailedCode", { code }));
     }
   }, []);
 
@@ -48,7 +50,7 @@ export default function LoginPage() {
       credentials: "include", method: "POST" });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        setError(data.error || "登入成功，但建立會員資料失敗");
+        setError(data.error || t("profileCreateFailed"));
         setLoading(false);
         return;
       }
@@ -69,7 +71,7 @@ export default function LoginPage() {
   const lineLogin = () => {
     const channelId = process.env.NEXT_PUBLIC_LINE_CHANNEL_ID;
     if (!channelId) {
-      setError("LINE 登入尚未設定、請聯絡管理員");
+      setError(t("lineNotConfigured"));
       return;
     }
     const redirectUri = encodeURIComponent(`${window.location.origin}/auth/line/callback`);
@@ -108,10 +110,10 @@ export default function LoginPage() {
             <Sparkles size={16} className="absolute -top-1 -right-1 text-yellow-400 animate-pulse" />
           </div>
           <h1 className="text-3xl md:text-4xl font-extrabold mb-2 tracking-tight">
-            登入
+            {t("heading")}
             <span className="bg-gradient-to-r from-accent to-accent-2 bg-clip-text text-transparent ml-2">AI 島</span>
           </h1>
-          <p className="text-sm text-fg-muted">繼續你的冒險之旅 ⚔️</p>
+          <p className="text-sm text-fg-muted">{t("subtitle")}</p>
         </motion.div>
 
         {/* 卡片 */}
@@ -135,7 +137,7 @@ export default function LoginPage() {
                 <path fill="#4CAF50" d="M24 45.5c5.4 0 10.3-2 14-5.4l-6.5-5.5c-2 1.5-4.6 2.4-7.5 2.4-5.2 0-9.6-3.3-11.3-8l-6.6 5.1c3 6 9.3 11.4 17.9 11.4z"/>
                 <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.6l6.5 5.5c-.5.4 7-5.1 7-14.6 0-1.4-.1-2.7-.6-4z"/>
               </svg>
-              用 Google 登入
+              {t("continueWithGoogle")}
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.02 }}
@@ -146,7 +148,7 @@ export default function LoginPage() {
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2C6.477 2 2 5.671 2 10.184c0 4.046 3.547 7.434 8.342 8.077.324.07.766.214.878.491.1.252.066.647.032.901l-.142.852c-.044.252-.2.985.864.537 1.064-.448 5.736-3.378 7.825-5.785C20.99 13.591 22 11.957 22 10.184 22 5.671 17.523 2 12 2zM7.992 12.572H6.001c-.282 0-.51-.229-.51-.51V8.084c0-.282.228-.51.51-.51.281 0 .51.228.51.51v3.468h1.481c.281 0 .51.229.51.51 0 .282-.229.51-.51.51zm2.001-.51c0 .282-.229.51-.51.51-.282 0-.51-.228-.51-.51V8.084c0-.282.228-.51.51-.51.281 0 .51.228.51.51v3.978zm4.665 0c0 .22-.14.413-.347.486a.51.51 0 0 1-.564-.181l-2.038-2.776v2.471c0 .282-.229.51-.51.51-.282 0-.51-.228-.51-.51V8.084c0-.22.14-.414.347-.486a.51.51 0 0 1 .564.18l2.039 2.778V8.084c0-.282.228-.51.51-.51.281 0 .509.228.509.51v3.978zm3.215-2.499c.282 0 .51.229.51.51 0 .282-.228.51-.51.51h-1.481v.971h1.481c.282 0 .51.229.51.51 0 .282-.228.51-.51.51h-1.991c-.282 0-.51-.228-.51-.51V8.084c0-.282.228-.51.51-.51h1.991c.282 0 .51.228.51.51 0 .282-.228.51-.51.51h-1.481v.971h1.481z"/>
               </svg>
-              用 LINE 登入
+              {t("continueWithLine")}
             </motion.button>
           </div>
 
@@ -156,7 +158,7 @@ export default function LoginPage() {
               <div className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="bg-bg-card px-3 text-fg-muted">或用 email</span>
+              <span className="bg-bg-card px-3 text-fg-muted">{t("orWithEmail")}</span>
             </div>
           </div>
 
@@ -169,7 +171,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                placeholder="Email"
+                placeholder={t("emailLabel")}
                 className="w-full pl-9 pr-3 py-2.5 bg-bg-elevated border border-border rounded-xl focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition"
               />
             </div>
@@ -180,11 +182,11 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                placeholder="密碼"
+                placeholder={t("passwordPlaceholder")}
                 autoComplete="current-password"
                 className="w-full pl-9 pr-10 py-2.5 bg-bg-elevated border border-border rounded-xl focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition"
               />
-              <button type="button" onClick={() => setShowPw(s => !s)} aria-label={showPw ? "隱藏密碼" : "顯示密碼"} className="absolute right-3 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg">
+              <button type="button" onClick={() => setShowPw(s => !s)} aria-label={showPw ? t("hidePassword") : t("showPassword")} className="absolute right-3 top-1/2 -translate-y-1/2 text-fg-muted hover:text-fg">
                 {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
@@ -204,24 +206,24 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full px-4 py-2.5 bg-gradient-to-r from-accent to-accent-2 text-black rounded-xl font-bold inline-flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-accent/20"
             >
-              {loading ? "登入中..." : (<>
-                登入 <ArrowRight size={14} />
+              {loading ? t("signingIn") : (<>
+                {t("submit")} <ArrowRight size={14} />
               </>)}
             </motion.button>
           </form>
 
           {/* 註冊連結 */}
           <p className="text-center text-sm mt-5 text-fg-muted">
-            還沒帳號？
-            <Link href="/signup" className="text-accent hover:underline ml-1 font-medium">立即註冊</Link>
+            {t("noAccount")}
+            <Link href="/signup" className="text-accent hover:underline ml-1 font-medium">{t("signUpNow")}</Link>
           </p>
 
           {/* 法律 */}
           <p className="text-center text-[10px] mt-5 pt-4 border-t border-border text-fg-muted leading-relaxed">
-            登入即表示您同意 AI 島的
-            <Link href="/terms" className="text-accent hover:underline mx-1">使用條款</Link>
-            <Link href="/privacy" className="text-accent hover:underline mx-1">隱私權政策</Link>
-            <Link href="/cookies" className="text-accent hover:underline mx-1">Cookie 政策</Link>
+            {t("legalPrefix")}
+            <Link href="/terms" className="text-accent hover:underline mx-1">{t("termsOfService")}</Link>
+            <Link href="/privacy" className="text-accent hover:underline mx-1">{t("privacyPolicy")}</Link>
+            <Link href="/cookies" className="text-accent hover:underline mx-1">{t("cookiePolicy")}</Link>
           </p>
         </motion.div>
       </motion.div>
