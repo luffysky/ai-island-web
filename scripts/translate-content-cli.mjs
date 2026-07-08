@@ -45,22 +45,60 @@ CRITICAL rules:
 - Keep programming terms in ${label} conventional form (e.g., keep "variable", "function", "for loop" style).
 Return ONLY the translated text — no preamble, no explanations, no wrapping.`;
 
+// 第 4 個參數 = provider（預設 anthropic）。用 openrouter / groq / openai 免費模型可不燒 Anthropic API $。
+//   node scripts/translate-content-cli.mjs lesson 120 openrouter
+const PROVIDER = (process.argv[4] || "anthropic").toLowerCase();
+// OpenAI 相容端點（chat/completions）
+const OPENAI_COMPAT = {
+  openrouter: "https://openrouter.ai/api/v1/chat/completions",
+  groq: "https://api.groq.com/openai/v1/chat/completions",
+  openai: "https://api.openai.com/v1/chat/completions",
+};
+
 const env = loadEnv();
 const c = new pg.Client({ connectionString: env.SUPABASE_DB_URL });
 await c.connect();
-const apiKey = await loadProviderKey(c, "anthropic", env.AI_KEY_SECRET);
-const model = await pickModelName(c, "anthropic");
-console.log(`▶️  翻譯 scope=${SCOPE} · model=${model} · 目標 en/ja/ko · 本次上限 ${LIMIT} 欄位×語言`);
+const apiKey = await loadProviderKey(c, PROVIDER, env.AI_KEY_SECRET);
+const model = await pickModelName(c, PROVIDER);
+console.log(`▶️  翻譯 scope=${SCOPE} · provider=${PROVIDER} · model=${model} · 目標 en/ja/ko · 本次上限 ${LIMIT} 欄位×語言`);
 
 async function aiTranslate(zh, label) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model, max_tokens: 4096, system: sysPrompt(label), messages: [{ role: "user", content: zh }] }),
-  });
-  if (!res.ok) throw new Error(`AI ${res.status}: ${(await res.text()).slice(0, 160)}`);
-  const data = await res.json();
-  return (data.content ?? []).filter((b) => b.type === "text").map((b) => b.text).join("").trim() || null;
+  if (PROVIDER === "anthropic") {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "x-api-key": apiKey, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+      body: JSON.stringify({ model, max_tokens: 4096, system: sysPrompt(label), messages: [{ role: "user", content: zh }] }),
+    });
+    if (!res.ok) throw new Error(`AI ${res.status}: ${(await res.text()).slice(0, 160)}`);
+    const data = await res.json();
+    return (data.content ?? []).filter((b) => b.type === "text").map((b) => b.text).join("").trim() || null;
+  }
+  // OpenAI 相容（OpenRouter / Groq / OpenAI）；免費模型常 429 → 指數退避重試
+  const endpoint = OPENAI_COMPAT[PROVIDER];
+  if (!endpoint) throw new Error(`不支援的 provider: ${PROVIDER}`);
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "content-type": "application/json",
+        ...(PROVIDER === "openrouter" ? { "HTTP-Referer": "https://ai-island-web.snowrealm.pet", "X-Title": "AI Island" } : {}),
+      },
+      body: JSON.stringify({
+        model, max_tokens: 4096, temperature: 0.3,
+        messages: [{ role: "system", content: sysPrompt(label) }, { role: "user", content: zh }],
+      }),
+    });
+    if (res.status === 429 || res.status >= 500) {
+      await sleep(Math.min(30000, 2500 * 2 ** attempt)); // 2.5s→5→10→20→30s
+      continue;
+    }
+    if (!res.ok) throw new Error(`AI ${res.status}: ${(await res.text()).slice(0, 160)}`);
+    const data = await res.json();
+    return (data.choices?.[0]?.message?.content ?? "").trim() || null;
+  }
+  throw new Error("AI 429/5xx 重試 5 次仍失敗（免費模型限流、稍後再跑）");
 }
 
 // 撈來源（最多 300 筆、依 updated_at）
