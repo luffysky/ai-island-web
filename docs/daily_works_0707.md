@@ -227,3 +227,31 @@
 1. **背景翻譯批次**：`translate-content-cli forum`（便宜先跑，forum 列表在地化 wiring 已備）、`blog`、`lesson 600`（1258 筆量大耗額度、先問林董）。**花 AI key、沒自動跑。**
 2. **#185 收尾**：完整「整章完課」慶祝動畫（現只有每則反應的 micro-burst）；自架 Noto webp 到 `public/noto/`、`NOTO_BASE` 改 `/noto`（現走 gstatic CDN）。
 3. **#177 延伸**：ch26 以外的可跑章若之後想補，跑 `python scripts/add-code-outputs.py chXX --review <file>` 先審再 `--write` + import。
+
+---
+
+# 2026-07-09 續2（筆記/翻譯/GIF/告警 追加）
+
+## 內容翻譯（#166 觸發背景翻譯）
+- forum **354 ✅ 完成**、blog 8→**163（未完）**、lesson **0（未開始）**、chapter 480(原完成)。
+- ⚠️ **AI API 額度用完**（Anthropic「credit balance too low」HTTP 400）→ blog/lesson 卡住。**充值後**續跑：`node scripts/translate-content-cli.mjs blog 120`（跑到 0）、`… lesson 120`（多批到完）。idempotent 從斷點續。
+- 註：站上自家 AI（綠寶/創作引擎）若共用這把 Anthropic key，額度用完期間會走 OpenRouter fallback 或失敗——充值後恢復。
+
+## 筆記
+- **標章節細到 lesson（#186）**：`tag-notes-lessons.mjs` 高精準關鍵字比對，77 筆標到 lesson（f-string→26.3.5、try/except→26.9…），其餘維持章級。點進去帶到該觀念 lesson。
+- **買來可編輯（#187）**：驗證＝購買副本 user_id=買家→owned→本來就可編輯。
+- **公開筆記牆（#188）**：`/notes/public` gallery（分類篩選、章節pill、作者）；`PublishToWallButton` 發佈對話框（選現有分類 or 自訂新增、可取消公開）；publish-public + public-categories API。/me/notes 加入口。
+
+## 部落格
+- 79 篇程式文標章節（64 細到 lesson），文章頁「相關課程」pill 可點；再加 12 篇種子留言（共 20 篇有留言）。
+
+## GIF / picker
+- emoji/GIF picker 改 **portal + fixed**（修 tiptap 被擋/跑版）；GifPicker 美化（分類/分頁/3欄）；AI 導師 + 朋友私訊加 GIF。
+
+## 告警
+- 修 telegram 投遞抖動誤觸「錯誤激增」的迴圈（anomaly 只數 level='error'、notify 網路失敗記 warn）。
+
+## ⬜ 待林董
+- **Anthropic 充值** → 續跑 blog/lesson 翻譯（指令如上）。
+- GIPHY GitHub Actions Variable（已加）。
+- logerr/note.md 已取消追蹤。
