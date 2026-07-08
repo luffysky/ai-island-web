@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
 import { adminHref } from "@/lib/admin-href";
+import { auditTargetHref } from "@/lib/audit-target-href";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHero } from "@/components/admin/PageHero";
 import { AlertTriangle, ArrowRight, ArrowLeft, Download, FileText } from "lucide-react";
@@ -212,9 +213,17 @@ export default async function AuditPage({
                     {log.target_type && (
                       <span className="text-fg-muted">{log.target_type}:</span>
                     )}
-                    <span className="ml-1 font-mono" title={log.target_id ?? ""}>
-                      {log.target_id ? (log.target_id.length > 12 ? log.target_id.slice(0, 12) + "…" : log.target_id) : "—"}
-                    </span>
+                    {(() => {
+                      const idShort = log.target_id ? (log.target_id.length > 12 ? log.target_id.slice(0, 12) + "…" : log.target_id) : "—";
+                      const href = auditTargetHref(log.target_type, log.target_id);
+                      return href ? (
+                        <Link href={href as any} className="ml-1 font-mono text-accent hover:underline inline-flex items-center gap-0.5" title={`點進去看：${log.target_id}`}>
+                          {idShort} <ArrowRight className="w-3 h-3 shrink-0" />
+                        </Link>
+                      ) : (
+                        <span className="ml-1 font-mono" title={log.target_id ?? ""}>{idShort}</span>
+                      );
+                    })()}
                   </td>
                   <td className="px-4 py-3 text-[10px] text-fg-muted max-w-xs align-top">
                     {log.changes ? (
