@@ -217,9 +217,13 @@
 - **#184 forum 列表在地化（wiring）**：`/api/forum/threads` GET 套 `localizeList("forum",...,["title"])`、回 private cache。**譯文待跑** `node scripts/translate-content-cli.mjs forum`（~354 便宜、花 AI key，林董在忙沒自動跑）。
 - **#185 學習反應 UI**：`lesson_reactions` 表 + `/api/lessons/[lessonId]/reactions` + `LearnReactionBar`（LEARN_REACTIONS 動態 emoji、按下 micro 慶祝上浮）掛在每節底部；未登入用 fingerprint。migration 已跑。
 
+## ✅ 再續做完成（同日，Nami/林董追加）
+- **#177 程式碼補執行結果**：新工具 `scripts/add-code-outputs.py`（**沙箱真跑**教學碼取真實輸出、補 inline # 註解；受限 import 白名單、拿掉 open/input/exec、步數上限、非確定性/已標/超長都跳過）。ch26 Python 基礎 7 課補上缺的輸出（含 Nami 指的 26.5）；框架章自動跳過不誤補。已 import DB。
+- **#182 操作記錄可點**：林董澄清＝使用者自己（創作者島嶼+全站操作）。做①後台 `/admin/audit` 目標欄可點（`lib/audit-target-href`）②使用者端 `/me/activity`「我的操作記錄」時間軸（聚合創作者島嶼AI/作品/課程/筆記/討論/Z幣/購買、每筆可點）+ MeSidebar 入口。
+- **#183 部落格種子留言**：`scripts/seed-blog-comments.mjs`，8 篇熱門文各 2-3 則手寫貼題留言（含新手問→學長回覆）、共 19 則、idempotent。
+- **🔔 緊急告警誤報修復**：TG 投遞抖動(fetch failed)被記 error → anomaly 不分 level 全數 → 誤報「錯誤激增」→ 又發 TG 放大。查證近12hr 僅 6 筆全是 TG 投遞失敗、0 筆真錯誤。修：anomaly 只數 `level='error'`、notify 網路失敗改記 `warn`。
+
 ## ⬜ 還沒做（排下次）
-1. **#177 程式碼區塊補執行結果**：章節 lesson code block 只有 code 沒輸出（147）。屬內容品質、量大要逐課仔細補（避免亂寫），排內容 pass。
-2. **#182 操作記錄可點（160）**：語意待林董澄清「操作記錄」指哪個（Z幣交易紀錄？管理審計？活動流？）。確認後把相關 entry 做成可點詳情。
-3. **#183 部落格種子加他人留言**：手寫他人留言塞進種子文章（seed 腳本）。
-4. **背景翻譯批次**：`translate-content-cli forum`（便宜先跑）、`blog`、`lesson 600`（1258 筆量大耗額度、先問林董）。
-5. **#185 收尾**：完整「整章完課」慶祝動畫（現只有 micro-burst）；自架 Noto webp 到 `public/noto/`、`NOTO_BASE` 改 `/noto`（現走 gstatic CDN）。
+1. **背景翻譯批次**：`translate-content-cli forum`（便宜先跑，forum 列表在地化 wiring 已備）、`blog`、`lesson 600`（1258 筆量大耗額度、先問林董）。**花 AI key、沒自動跑。**
+2. **#185 收尾**：完整「整章完課」慶祝動畫（現只有每則反應的 micro-burst）；自架 Noto webp 到 `public/noto/`、`NOTO_BASE` 改 `/noto`（現走 gstatic CDN）。
+3. **#177 延伸**：ch26 以外的可跑章若之後想補，跑 `python scripts/add-code-outputs.py chXX --review <file>` 先審再 `--write` + import。
