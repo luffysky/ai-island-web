@@ -1,12 +1,23 @@
 // 免費 Google 翻譯共用核心（零成本、非 AI、保護程式碼/佔位符）。
 // 給 translate-sync-all.mjs（DB 內容）、sync-ui-messages.mjs（UI 字串）共用。
-const S = "", E = ""; // 私有區 Unicode 哨兵（Google 不會動）
+// 支援任意語言互譯：sl=auto 自動偵測原文；guessLocale 免費本地猜原文語言（跳過同語言翻譯）。
+// 哨兵用數學括號 ⟦N⟧（U+27E6/27E7）：實測 Google 翻譯來回都原樣保留，不會像私有區字元被吃掉→避免 code 還原失敗。
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** 免費、離線的原文語言猜測：諺文→ko、假名→ja、漢字(無假名)→zh、其餘→en。 */
+export function guessLocale(text) {
+  const t = String(text || "");
+  if (!t.trim()) return "zh";
+  if (/[가-힯]/.test(t)) return "ko";              // 諺文
+  if (/[぀-ヿ]/.test(t)) return "ja";              // 平假名/片假名
+  if (/[㐀-鿿豈-﫿]/.test(t)) return "zh"; // 漢字（無假名）
+  return "en";
+}
 
 /** 保護不該翻的片段：``` 圍欄 / `inline` / <pre><code> / HTML tag / URL / ICU 佔位符 {name} {n} */
 export function protect(text, { icu = false } = {}) {
   const tokens = [];
-  const stash = (m) => { tokens.push(m); return `${S}${tokens.length - 1}${E}`; };
+  const stash = (m) => { tokens.push(m); return `⟦${tokens.length - 1}⟧`; };
   let t = text;
   t = t.replace(/```[\s\S]*?```/g, stash);
   t = t.replace(/`[^`\n]*`/g, stash);
@@ -18,7 +29,7 @@ export function protect(text, { icu = false } = {}) {
   return { masked: t, tokens };
 }
 export function restore(text, tokens) {
-  return text.replace(new RegExp(`${S}(\\d+)${E}`, "g"), (_, i) => tokens[Number(i)] ?? "");
+  return text.replace(/⟦\s*(\d+)\s*⟧/g, (_, i) => tokens[Number(i)] ?? ""); // 容忍括號內外空白
 }
 function chunk(text, max = 1600) {
   const parts = []; let cur = "";
@@ -30,7 +41,7 @@ function chunk(text, max = 1600) {
   return parts;
 }
 async function gcall(text, tl) {
-  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=zh-TW&tl=${tl}&dt=t&q=${encodeURIComponent(text)}`;
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${tl}&dt=t&q=${encodeURIComponent(text)}`;
   for (let attempt = 0; attempt < 5; attempt++) {
     try {
       const r = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
@@ -42,7 +53,7 @@ async function gcall(text, tl) {
   }
   throw new Error("google translate 重試失敗");
 }
-/** 翻一段（保護 code/佔位符、切塊、節流、還原）。tl: en/ja/ko。 */
+/** 翻一段（保護 code/佔位符、切塊、節流、還原）。tl: zh-TW/en/ja/ko。 */
 export async function translateText(zh, tl, opts = {}) {
   const { masked, tokens } = protect(zh, opts);
   const out = [];
@@ -53,4 +64,5 @@ export async function translateText(zh, tl, opts = {}) {
   }
   return restore(out.join("\n"), tokens);
 }
-export const TARGETS = [{ locale: "en", tl: "en" }, { locale: "ja", tl: "ja" }, { locale: "ko", tl: "ko" }];
+// 站上支援的語系（含中文）。批次時翻進「除了原文語言以外」的語系。
+export const TARGETS = [{ locale: "zh", tl: "zh-TW" }, { locale: "en", tl: "en" }, { locale: "ja", tl: "ja" }, { locale: "ko", tl: "ko" }];

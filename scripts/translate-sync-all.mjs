@@ -7,7 +7,7 @@
 import pg from "pg";
 import crypto from "node:crypto";
 import { loadEnv } from "./_lib/ai-crypto.mjs";
-import { translateText, TARGETS } from "./_lib/gtranslate.mjs";
+import { translateText, TARGETS, guessLocale } from "./_lib/gtranslate.mjs";
 
 const PER_SCOPE = Number(process.argv[2]) || 500;
 const hash = (t) => crypto.createHash("sha256").update(t).digest("hex").slice(0, 32);
@@ -38,8 +38,10 @@ for (const S of SCOPES) {
       const zh = String(row[field] ?? "");
       if (!zh.trim()) continue;
       const h = hash(zh);
+      const srcLoc = guessLocale(zh);          // 原文語言（任意語言互譯：翻進其他語言、含中文）
       for (const { locale, tl } of TARGETS) {
         if (budget <= 0) break outer;
+        if (locale === srcLoc) continue;        // 目標＝原文語言 → 不用翻
         const prev = seen.get(`${id}|${field}|${locale}`);
         if (prev === h) continue;              // 沒動 → 跳過
         if (prev && prev !== h) changed++;      // 中文改過 → 重翻

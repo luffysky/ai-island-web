@@ -20,15 +20,25 @@ const PART = (() => {
 })();
 const TABLE = { blog: "user_blog_articles", lesson: "lessons", chapter: "chapters", forum: "forum_threads" }[SCOPE];
 const WHERE = SCOPE === "blog" ? "where is_public = true" : "";
-const TARGETS = [{ locale: "en", tl: "en" }, { locale: "ja", tl: "ja" }, { locale: "ko", tl: "ko" }];
+// 站上語系（含中文）：任意語言互譯，翻進「除了原文語言外」的語系。
+const TARGETS = [{ locale: "zh", tl: "zh-TW" }, { locale: "en", tl: "en" }, { locale: "ja", tl: "ja" }, { locale: "ko", tl: "ko" }];
 const hash = (t) => crypto.createHash("sha256").update(t).digest("hex").slice(0, 32);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// 免費、離線的原文語言猜測：諺文→ko、假名→ja、漢字(無假名)→zh、其餘→en。
+function guessLocale(text) {
+  const t = String(text || "");
+  if (!t.trim()) return "zh";
+  if (/[가-힯]/.test(t)) return "ko";
+  if (/[぀-ヿ]/.test(t)) return "ja";
+  if (/[㐀-鿿豈-﫿]/.test(t)) return "zh";
+  return "en";
+}
 
 // 用私有區 Unicode 當佔位哨兵（Google 不會動它）
 const S = "", E = "";
 function protect(text) {
   const tokens = [];
-  const stash = (m) => { tokens.push(m); return `${S}${tokens.length - 1}${E}`; };
+  const stash = (m) => { tokens.push(m); return `⟦${tokens.length - 1}⟧`; };
   let t = text;
   t = t.replace(/```[\s\S]*?```/g, stash);      // markdown 圍欄
   t = t.replace(/`[^`\n]*`/g, stash);            // inline code
@@ -39,7 +49,7 @@ function protect(text) {
   return { masked: t, tokens };
 }
 function restore(text, tokens) {
-  return text.replace(new RegExp(`${S}(\\d+)${E}`, "g"), (_, i) => tokens[Number(i)] ?? "");
+  return text.replace(/⟦\s*(\d+)\s*⟧/g, (_, i) => tokens[Number(i)] ?? "");
 }
 
 // 依行/段切塊、每塊 < ~1600 字（Google GET 端點有長度限制）
@@ -55,7 +65,7 @@ function chunk(text, max = 1600) {
 }
 
 async function gtranslate(text, tl) {
-  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=zh-TW&tl=${tl}&dt=t&q=${encodeURIComponent(text)}`;
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${tl}&dt=t&q=${encodeURIComponent(text)}`;
   for (let attempt = 0; attempt < 5; attempt++) {
     try {
       const r = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
@@ -100,8 +110,10 @@ for (const row of rows) {
     const zh = String(row[field] ?? "");
     if (!zh.trim()) continue;
     const h = hash(zh);
+    const srcLoc = guessLocale(zh); // 原文語言 → 只翻進其他語言
     for (const { locale, tl } of TARGETS) {
       if (budget <= 0) break outer;
+      if (locale === srcLoc) { skip++; continue; }        // 目標＝原文語言 → 不用翻
       if (seen.get(`${id}|${field}|${locale}`) === h) { skip++; continue; }
       try {
         const out = await translateField(zh, tl);

@@ -9,6 +9,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { callAI } from "@/lib/ai-providers";
 import { decryptKey } from "@/lib/ai-crypto";
 import { pickModelForUsage } from "@/lib/ai-usage-models";
+import { guessLocale } from "@/lib/gtranslate";
 
 export type ContentSourceType = "lesson" | "chapter" | "blog" | "forum";
 
@@ -47,7 +48,8 @@ async function fetchTranslationRows(
 export async function getCachedTranslation(
   sourceType: ContentSourceType, sourceId: string | number, field: string, locale: string, zhText: string,
 ): Promise<string | null> {
-  if (locale === "zh" || !zhText || !zhText.trim()) return null;
+  // 原文為空、或「原文語言＝檢視語言」→ 直接用原文（不查 DB、支援任意語言原文）。
+  if (!zhText || !zhText.trim() || guessLocale(zhText) === locale) return null;
   try {
     const rows = await fetchTranslationRows(sourceType, sourceId, locale);
     const row = rows.find((r) => r.field === field);
@@ -61,7 +63,9 @@ export async function getCachedTranslations(
   sourceType: ContentSourceType, sourceId: string | number, locale: string, fields: Record<string, string>,
 ): Promise<Record<string, string>> {
   const out: Record<string, string> = {};
-  if (locale === "zh") return out;
+  // 同一筆內容語言一致：取最長欄位判斷原文語言，若＝檢視語言則全用原文（不查 DB）。
+  const sample = Object.values(fields).map(String).sort((a, b) => b.length - a.length)[0] ?? "";
+  if (guessLocale(sample) === locale) return out;
   try {
     const rows = await fetchTranslationRows(sourceType, sourceId, locale);
     for (const row of rows) {
@@ -102,7 +106,9 @@ async function fetchChapterBundle(
 export async function localizeChapter<T extends { id: any; title?: string; subtitle?: string; lessons?: any[] }>(
   chapter: T, locale: string,
 ): Promise<T> {
-  if (locale === "zh" || !chapter) return chapter;
+  if (!chapter) return chapter;
+  // 章內容語言一致：以標題判斷原文語言，＝檢視語言就用原文（不查 DB）。
+  if (guessLocale(String(chapter.title ?? "")) === locale) return chapter;
   try {
     const lessons = Array.isArray(chapter.lessons) ? chapter.lessons : [];
     const rows = await fetchChapterBundle(chapter.id, lessons.map((l: any) => l.id), locale);
@@ -132,7 +138,9 @@ export async function localizeChapter<T extends { id: any; title?: string; subti
 export async function localizeChapterMetas<T extends { id: any; title?: string; subtitle?: string }>(
   metas: T[], locale: string,
 ): Promise<T[]> {
-  if (locale === "zh" || !Array.isArray(metas) || metas.length === 0) return metas;
+  if (!Array.isArray(metas) || metas.length === 0) return metas;
+  // 全部項目原文語言都＝檢視語言 → 用原文（不查 DB）；只要有一項是別的語言就照常撈譯文（支援混語清單）。
+  if (metas.every((m) => guessLocale(String(m.title ?? "")) === locale)) return metas;
   try {
     const ids = metas.map((m) => String(m.id));
     const rows = await unstable_cache(
@@ -167,7 +175,9 @@ export async function localizeChapterMetas<T extends { id: any; title?: string; 
 export async function localizeList<T extends Record<string, any>>(
   sourceType: ContentSourceType, items: T[], locale: string, fields: string[], idKey: keyof T = "id" as keyof T,
 ): Promise<T[]> {
-  if (locale === "zh" || !Array.isArray(items) || items.length === 0) return items;
+  if (!Array.isArray(items) || items.length === 0) return items;
+  // 全部項目原文語言都＝檢視語言 → 用原文（不查 DB）；混語清單則照常撈譯文。
+  if (items.every((it) => guessLocale(String(it[fields[0]] ?? "")) === locale)) return items;
   try {
     const ids = items.map((it) => String(it[idKey]));
     const rows = await unstable_cache(
@@ -246,8 +256,12 @@ export const TRANSLATE_FIELDS: Record<ContentSourceType, { table: string; id: st
   forum: { table: "forum_threads", id: "id", fields: ["title", "content"] },
 };
 
-/** 中文以外的目標語系（預設批次翻這些）。 */
-export const TARGET_LOCALES = ["en", "ja", "ko"] as const;
+/**
+ * 批次翻譯要涵蓋的目標語系（含中文）。
+ * 任意語言互譯：每筆內容翻進「這裡除了它原文語言以外」的語系。
+ * 例：中文內容→en/ja/ko；外國人寫的英文文章→zh/ja/ko（會補上中文翻譯）。
+ */
+export const TARGET_LOCALES = ["zh", "en", "ja", "ko"] as const;
 
 /**
  * 批次翻某 scope 某語系：只翻「還沒翻 or 中文變過(hash 不同)」的欄位，翻一次不重翻、可重跑。
@@ -271,6 +285,8 @@ export async function runTranslateBatch(
       if (budgetLeft <= 0) break;
       const zh = String((row as any)[field] ?? "");
       if (!zh.trim()) continue;
+      // 原文語言＝目標語言 → 不用翻（原文即該語言）。
+      if (guessLocale(zh) === locale) { skipped++; continue; }
       const cached = await getCachedTranslation(scope, id, field, locale, zh);
       if (cached) { skipped++; continue; }
       const out = await translateAndCache(scope, id, field, locale, zh);
@@ -284,11 +300,16 @@ export async function runTranslateBatch(
 export async function translateAndCache(
   sourceType: ContentSourceType, sourceId: string | number, field: string, locale: string, zhText: string,
 ): Promise<string | null> {
-  if (locale === "zh" || !zhText || !zhText.trim()) return null;
-  // 用免費 Google 翻譯（零成本、非 AI、保護程式碼）；locale(en/ja/ko) 直接當 Google tl。
+  // 原文為空、或原文語言就是目標語言 → 不用翻。
+  if (!zhText || !zhText.trim() || guessLocale(zhText) === locale) return null;
+  // 免費 Google 翻譯（零成本、非 AI、保護程式碼）；sl=auto 自動偵測原文（支援任意語言互譯）。
   const { gtranslateText } = await import("@/lib/gtranslate");
   let translated: string | null = null;
-  try { translated = await gtranslateText(zhText, locale); } catch { translated = null; }
+  try {
+    const r = await gtranslateText(zhText, locale);
+    // Google 偵測到原文語言＝目標語言 → 識別翻譯、別存
+    translated = r.src === locale ? null : (r.translated || null);
+  } catch { translated = null; }
   if (!translated) return null;
   try {
     const admin = createSupabaseAdmin();
