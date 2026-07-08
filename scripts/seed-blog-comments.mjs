@@ -84,6 +84,46 @@ const GROUPS = [
       { name: "Joy", content: "開發日記系列給讚，看別人怎麼想比只看教學更有帶入感。" },
     ],
   },
+  // ── 第二批：程式類文章 ──
+  { match: "for 迴圈：重複做同一件事", comments: [
+    { name: "卡在迴圈的Ana", content: "一直搞不懂 range(5) 為什麼只到 4，看完「不含 5」那段終於懂了 😂" },
+    { name: "Ben", content: "原來 enumerate 這麼好用，之前都自己開一個 i 在那邊 +1。" },
+  ] },
+  { match: "dict 字典：用鑰匙查值", comments: [
+    { name: "小J", content: ".get() 給預設值那招學起來，再也不用怕 KeyError 了。" },
+  ] },
+  { match: "例外處理 try / except：讓程式不崩", comments: [
+    { name: "半夜還在debug", content: "try/except 一包程式不再整個掛掉，安心很多，但也提醒自己別 except 全部 🙈" },
+  ] },
+  { match: "物件導向 class 入門", comments: [
+    { name: "轉職Ray", content: "class 卡最久，用「一個模子印很多餅乾」的比喻我一下就通了。" },
+  ] },
+  { match: "裝飾器 decorator 是什麼", comments: [
+    { name: "進階中", content: "@ 那個符號困擾我很久，原來就是「包一層」，豁然開朗。" },
+  ] },
+  { match: "pandas 入門：資料界的 Excel", comments: [
+    { name: "Excel重度使用者", content: "看到 pandas 像進階版 Excel 就沒那麼怕了，df.head() 先看資料這習慣很受用。" },
+    { name: "資料新手Yuki", content: "groupby 一開始很抽象，多做幾次就順了，感謝教學。" },
+  ] },
+  { match: "numpy 陣列入門", comments: [
+    { name: "理工背景Sam", content: "向量化運算比 for 迴圈快超多，實測有感。" },
+  ] },
+  { match: "requests 入門：抓一個網頁", comments: [
+    { name: "想做爬蟲的人", content: "第一次抓到網頁 HTML 有點感動，雖然後面 parse 又是另一關 😆" },
+    { name: "Coco", content: "r.encoding 那個雷我也踩過，中文變亂碼查半天。" },
+  ] },
+  { match: "什麼是機器學習（給完全新手）", comments: [
+    { name: "ML好奇寶寶", content: "「給資料讓它自己找規則」這句話讓我第一次覺得 ML 沒那麼玄。" },
+  ] },
+  { match: "線性回歸：預測數值", comments: [
+    { name: "數學不好的我", content: "用畫一條線去逼近點的比喻很好懂，公式先放一邊也 OK。" },
+  ] },
+  { match: "評估指標：準確率、precision、recall", comments: [
+    { name: "抓小偷比喻愛好者", content: "抓小偷那個比喻神，終於分得清 precision 跟 recall 了。" },
+  ] },
+  { match: "神經網路的直覺理解", comments: [
+    { name: "深度學習萌新", content: "一層層疊起來、每層抓不同特徵，這樣想像好多了。" },
+  ] },
 ];
 
 // 給種子留言錯開一點時間（看起來像陸續留的）；用固定基準避免每次重跑時間亂跳
