@@ -116,6 +116,19 @@ import { linkifyChapterRefs } from "@/lib/linkify-chapters";
 import { CodeBlock } from "@/components/chapter/CodeBlock";
 import { CopyButton, TypingIndicator, ChatToolbar, formatChatTime, MicButton, SpeakButton } from "@/components/chat";
 import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
+import { GifPicker } from "@/components/ui/GifPicker";
+
+// 使用者訊息內的 GIF / 圖片網址 → 顯示成 <img>；其餘純文字
+const MEDIA_URL_RE = /^https?:\/\/(?:[^\s]+\.(?:gif|png|jpe?g|webp)(?:\?[^\s]*)?|(?:media\d?\.giphy\.com|i\.giphy\.com)\/[^\s]+)$/i;
+function renderUserContent(text: string) {
+  return text.split(/(https?:\/\/[^\s]+)/g).map((p, i) => {
+    if (MEDIA_URL_RE.test(p)) {
+      // eslint-disable-next-line @next/next/no-img-element
+      return <img key={i} src={p} alt="gif" loading="lazy" className="block max-w-[200px] max-h-[200px] rounded-lg my-1" />;
+    }
+    return <span key={i}>{p}</span>;
+  });
+}
 
 const TONE_OPTIONS = [
   { value: "friendly", label: "😊 親切" },
@@ -1208,7 +1221,7 @@ export function AITutorWidget({
                           ))}
                         </div>
                       )}
-                      {m.content && <p className="whitespace-pre-wrap">{m.content}</p>}
+                      {m.content && <p className="whitespace-pre-wrap break-words">{renderUserContent(m.content)}</p>}
                     </>
                   )}
                 </div>
@@ -1286,6 +1299,10 @@ export function AITutorWidget({
               <AnimatedEmojiPicker
                 onSelect={(e) => setInput((prev) => prev + e)}
                 buttonClassName="p-2 border border-border rounded-lg hover:border-accent hover:bg-accent/5 transition"
+                align="left"
+              />
+              <GifPicker
+                onSelect={(url) => setInput((prev) => (prev ? prev + " " : "") + url + " ")}
                 align="left"
               />
               <textarea

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { ArrowLeft, Paperclip } from "lucide-react";
 import { uploadMedia } from "@/lib/creator-upload";
 import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
+import { GifPicker } from "@/components/ui/GifPicker";
 import { EmojiText } from "@/components/ui/EmojiText";
 
 type Thread = { id: string; last_message_at?: string; other?: { id: string; username?: string; display_name?: string; avatar_url?: string } };
@@ -49,6 +50,14 @@ export function MessagesClient({ initialThreads, meId, initialThreadId }: { init
       setMsgs((m) => [...m, j.message]);
     } catch (e: any) { setErr(e.message); } finally { setBusy(false); }
   }
+  // GIF 直接以 media(image) 送出、顯示成圖泡泡
+  async function sendGif(url: string) {
+    if (!active) return; setBusy(true); setErr(null);
+    try {
+      const j = await call(`/api/creator-island/social/dm/${active}`, "POST", { mediaUrl: url, mediaType: "image" });
+      setMsgs((m) => [...m, j.message]);
+    } catch (e: any) { setErr(e.message); } finally { setBusy(false); }
+  }
 
   const activeThread = threads.find((t) => t.id === active);
 
@@ -88,6 +97,7 @@ export function MessagesClient({ initialThreads, meId, initialThreadId }: { init
             <div className="p-2 border-t border-border flex items-center gap-2">
               <label className="cursor-pointer hover:text-accent"><Paperclip size={18} /><input type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) sendMedia(f); e.currentTarget.value = ""; }} /></label>
               <AnimatedEmojiPicker onSelect={(e) => setText((v) => v + e)} />
+              <GifPicker onSelect={sendGif} />
               <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") send(); }} placeholder={tr("msgPlaceholder")} className="flex-1 bg-bg-elevated border border-border rounded-full px-3 py-2 text-sm outline-none focus:border-accent" />
               <button onClick={send} disabled={busy} className="px-4 py-2 rounded-full bg-accent text-black text-sm disabled:opacity-40">{tr("msgSend")}</button>
             </div>
