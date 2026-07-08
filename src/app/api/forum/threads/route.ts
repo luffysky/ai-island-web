@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { getLocale } from "next-intl/server";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 import { awardForumXp } from "@/lib/forum-xp";
 import { sanitizeRichHtmlStrict } from "@/lib/rich-html-server";
 import { parseBody } from "@/lib/validate";
 import { sortByHnScore } from "@/lib/forum-rank";
+import { localizeList } from "@/lib/content-i18n";
+
+// 非中文語系用已快取的譯文覆蓋主題標題（有譯文才動、無則中文）；zh 直接 no-op。
+// 內容隨語言 cookie 變 → 回 private cache、不進共用 CDN（避免跨語言汙染）。
+const LOCALE_HEADERS = { "Cache-Control": "private, max-age=15" } as const;
+async function localizeThreads(threads: any[], locale: string) {
+  return locale === "zh" ? threads : await localizeList("forum", threads, locale, ["title"]);
+}
 
 const ThreadSchema = z.object({
   title: z.string().trim().min(1).max(200),
@@ -19,6 +28,7 @@ export async function GET(req: NextRequest) {
   const sort = req.nextUrl.searchParams.get("sort") ?? "recent"; // recent | new | hot | trending
   const offset = Math.max(0, parseInt(req.nextUrl.searchParams.get("offset") ?? "0", 10) || 0);
   const limit = Math.max(1, Math.min(50, parseInt(req.nextUrl.searchParams.get("limit") ?? "20", 10) || 20));
+  const locale = await getLocale();
   const admin = createSupabaseAdmin();
 
   let boardId: string | null = null;
@@ -59,7 +69,7 @@ export async function GET(req: NextRequest) {
           return 0;
         })
       : page;
-    return NextResponse.json({ threads, hasMore });
+    return NextResponse.json({ threads: await localizeThreads(threads, locale), hasMore }, { headers: LOCALE_HEADERS });
   }
 
   // 一般排序：置頂永遠在前
@@ -83,7 +93,7 @@ export async function GET(req: NextRequest) {
       })
     : page;
 
-  return NextResponse.json({ threads, hasMore });
+  return NextResponse.json({ threads: await localizeThreads(threads, locale), hasMore }, { headers: LOCALE_HEADERS });
 }
 
 // POST /api/forum/threads — 發新主題串
