@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 import { streamAI, estimateCost, billableInputTokens } from "@/lib/ai-providers";
-import { pickFallbackModel, isQuotaOrTransientError, providerFromModel } from "@/lib/resolve-usage-ai";
+import { pickFallbackModel, pickFallbackModelExcluding, isQuotaOrTransientError, providerFromModel } from "@/lib/resolve-usage-ai";
 import { buildTutorSystemPrompt } from "@/lib/ai-tutor-prompt";
 import { getUserLearningState, formatLearningStateForPrompt } from "@/lib/user-learning-state";
 import { decryptKey } from "@/lib/ai-crypto";
@@ -70,7 +70,7 @@ async function handlePost(req: NextRequest) {
   const effectiveModelId = model.id;
 
   // 2. 取 API key
-  let apiKey: string;
+  let apiKey = "";
   let chargeable = false; // 走系統 key + 非特權 + 非 Premium → stream 結束扣 token cap
   if (useBYOK) {
     const { data: userKey } = await admin
@@ -121,28 +121,33 @@ async function handlePost(req: NextRequest) {
         }
       }
     }
-    const { data: sysKey, error: sysKeyError } = await admin
-      .from("ai_api_keys")
-      .select("api_key_encrypted, enabled, monthly_budget_usd, used_this_month_usd")
-      .eq("provider", model.provider)
-      .maybeSingle();
-    if (sysKeyError) {
-      console.error("[AI chat] system key lookup failed:", sysKeyError);
-      return errorResponse("system_key_lookup_failed", 500, "AI 系統 key 查詢失敗");
+    // 選的 provider 若沒 key/停用/超系統月預算 → 靜默換一家可用的 active 模型（就算使用者選了 Claude 也照切、不跟使用者說額度不足）。
+    // 只有「所有模型都沒得用」才回報（訊息通用）。per-user 免費 quota（上面）仍照舊，屬使用者自己的額度、不在此。
+    const triedKey = new Set<string>();
+    let gotKey = false;
+    for (let i = 0; i < 6 && !gotKey; i++) {
+      triedKey.add(model.provider);
+      const { data: sysKey } = await admin
+        .from("ai_api_keys")
+        .select("api_key_encrypted, enabled, monthly_budget_usd, used_this_month_usd")
+        .eq("provider", model.provider)
+        .maybeSingle();
+      const budget = Number(sysKey?.monthly_budget_usd ?? 0);
+      const used = Number(sysKey?.used_this_month_usd ?? 0);
+      // 有預算設定就檢查是否超支；沒設預算(=0)當作不限制（別因為沒設定就擋死）
+      const usable = !!sysKey && sysKey.enabled && (budget <= 0 || used < budget);
+      if (usable) {
+        try { apiKey = decryptKey(sysKey!.api_key_encrypted); gotKey = true; break; } catch { /* 解密失敗 → 換一家 */ }
+      }
+      // 換一家還沒試過、有 key 的 active 模型
+      const fb = await pickFallbackModelExcluding(triedKey).catch(() => null);
+      if (!fb) break;
+      const { data: fbRow } = await admin.from("ai_models").select("*").eq("model_name", fb.model).eq("is_active", true).maybeSingle();
+      if (!fbRow) { triedKey.add(fb.provider); continue; }
+      model = fbRow; apiKey = fb.apiKey; gotKey = true; break; // fb.apiKey 已解密、可直接用
     }
-    if (!sysKey || !sysKey.enabled) {
-      return errorResponse("system_key_unavailable", 503, `${model.provider} 暫時無法使用`);
-    }
-    if (Number(sysKey.monthly_budget_usd ?? 0) <= 0) {
-      return errorResponse("budget_not_configured", 503, `${model.provider} 月預算尚未設定`);
-    }
-    if (Number(sysKey.used_this_month_usd ?? 0) >= Number(sysKey.monthly_budget_usd ?? 0)) {
-      return errorResponse("budget_exceeded", 429, "本月系統額度已用完、請自帶 API key");
-    }
-    try {
-      apiKey = decryptKey(sysKey.api_key_encrypted);
-    } catch {
-      return errorResponse("key_decrypt_failed", 500);
+    if (!gotKey) {
+      return errorResponse("ai_busy", 503, "AI 現在有點忙，請稍後再試 🙏");
     }
   }
 
@@ -342,7 +347,9 @@ async function handlePost(req: NextRequest) {
       let usedModel = model.model_name;
 
       try {
-        // 串流；主模型「還沒吐字就 error」（如 OpenRouter 免費額度滿/429）→ 自動換備援模型重串、使用者無感
+        // 串流；主模型「還沒吐字就 error」（額度用完/限流/掛掉）→ 自動換備援模型「一路退到底」、使用者無感。
+        // 就算使用者選了 Claude、額度沒了也照樣切模型；只有「所有模型都沒得用」才回報（且訊息通用、不提額度）。
+        const tried = new Set<string>([model.provider]);
         const attempts: Array<{ provider: string; model: string; apiKey: string }> = [
           { provider: model.provider, model: model.model_name, apiKey },
         ];
@@ -364,15 +371,18 @@ async function handlePost(req: NextRequest) {
             }
           }
           if (!gotError) { usedProvider = a.provider; usedModel = a.model; break; }
-          // 還沒吐任何字 + 還沒排過備援 + 是額度/限流類錯誤 → 加一個備援模型再試
-          if (!fullText && attempts.length === 1 && isQuotaOrTransientError(gotError)) {
-            const fb = await pickFallbackModel(providerFromModel(a.model) as any);
-            if (fb) { attempts.push({ provider: fb.provider, model: fb.model, apiKey: fb.apiKey }); continue; }
+          // 還沒吐任何字 + 額度/限流類錯誤 → 換下一個「還沒試過」的備援模型，一路退到底
+          if (!fullText && isQuotaOrTransientError(gotError)) {
+            const fb = await pickFallbackModelExcluding(tried).catch(() => null);
+            if (fb) { tried.add(fb.provider); attempts.push({ provider: fb.provider, model: fb.model, apiKey: fb.apiKey }); continue; }
           }
-          // 沒得退 or 已吐字一半才壞 → 回報 error
-          streamError = gotError;
+          // 全部模型都試過/失敗 or 已吐字一半才壞 → 回報（訊息通用、不跟使用者提「額度不足」）
+          streamError = gotError; // server 端仍記真實錯誤
           usedProvider = a.provider; usedModel = a.model;
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "error", error: streamError })}\n\n`));
+          const clientMsg = fullText
+            ? "回應中途中斷了，請再送一次 🙏"
+            : "AI 現在有點忙（暫時沒有可用的模型），請稍後再試 🙏";
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "error", error: clientMsg })}\n\n`));
           break;
         }
 

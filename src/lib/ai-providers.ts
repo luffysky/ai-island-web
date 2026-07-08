@@ -32,6 +32,8 @@ export interface AICompletionRequest {
   temperature?: number;
   maxTokens?: number;
   stream?: boolean;
+  /** true = 這次呼叫不要自動退備援（給自己已管理備援的呼叫端，如 completeForUsage，避免雙重退避）。 */
+  noFallback?: boolean;
 }
 
 export interface AICompletionResponse {
@@ -337,12 +339,41 @@ async function dispatchCallAI(req: AICompletionRequest): Promise<AICompletionRes
 }
 
 export async function callAI(req: AICompletionRequest): Promise<AICompletionResponse> {
-  const res = await dispatchCallAI(req);
-  // best-effort 記用量/費用（含 Anthropic prompt-cache tokens；web 串流自己記）
-  import("./ai-usage-log")
-    .then((m) => m.logAiUsage(req.provider, req.model, res.tokensInput ?? 0, res.tokensOutput ?? 0, { write: res.cacheWriteTokens ?? 0, read: res.cacheReadTokens ?? 0 }))
-    .catch(() => {});
-  return res;
+  const logUsage = (provider: string, model: string, res: AICompletionResponse) => {
+    import("./ai-usage-log")
+      .then((m) => m.logAiUsage(provider, model, res.tokensInput ?? 0, res.tokensOutput ?? 0, { write: res.cacheWriteTokens ?? 0, read: res.cacheReadTokens ?? 0 }))
+      .catch(() => {});
+  };
+
+  // 全站自動備援：主模型額度用完/限流/掛掉 → 自動換另一家 active 模型重試，直到成功或所有模型都沒得用。
+  // （呼叫端可設 noFallback 自己管理備援，如 completeForUsage）
+  if (req.noFallback) {
+    const res = await dispatchCallAI(req);
+    logUsage(req.provider, req.model, res);
+    return res;
+  }
+
+  const tried = new Set<string>();
+  let cur: AICompletionRequest = req;
+  let lastErr: any;
+  for (let attempt = 0; attempt < 6; attempt++) {
+    tried.add(cur.provider);
+    try {
+      const res = await dispatchCallAI(cur);
+      logUsage(cur.provider, cur.model, res);
+      return res;
+    } catch (e) {
+      lastErr = e;
+      // 真錯誤（壞 prompt / 不支援）不亂退，直接拋
+      const { isQuotaOrTransientError, pickFallbackModelExcluding } = await import("./resolve-usage-ai");
+      if (!isQuotaOrTransientError(e)) throw e;
+      const fb = await pickFallbackModelExcluding(tried).catch(() => null);
+      if (!fb) throw e; // 所有模型都沒得換了 → 拋（呼叫端顯示「AI 忙線」）
+      console.warn(`[ai-providers] ${cur.provider}/${cur.model} 失敗、自動換 ${fb.provider}/${fb.model}：`, (e as any)?.message?.slice(0, 120));
+      cur = { ...req, provider: fb.provider, model: fb.model, apiKey: fb.apiKey };
+    }
+  }
+  throw lastErr;
 }
 
 // ============ Streaming ============

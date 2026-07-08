@@ -117,6 +117,29 @@ export async function pickFallbackModel(excludeProvider?: Provider): Promise<Res
   return resolveFallback(excludeProvider);
 }
 
+/** 智慧備援（排除「一組」已試過的 provider）：全站自動 fallback 用（callAI / 串流路由多次退到底）。 */
+export async function pickFallbackModelExcluding(exclude: Iterable<string>): Promise<Resolved | null> {
+  const ex = new Set(Array.from(exclude, (s) => String(s).toLowerCase()));
+  const { createSupabaseAdmin } = await import("./supabase-admin");
+  const admin = createSupabaseAdmin();
+  const { data } = await admin
+    .from("ai_models")
+    .select("model_name, provider, is_default, cost_output_per_1m")
+    .eq("is_active", true);
+  const cands = ((data as any[]) ?? [])
+    .filter((m) => !ex.has(String(m.provider).toLowerCase()))
+    // 跳閘中的 provider 排到最後（仍保留為最後手段）；再來 is_default、最便宜
+    .sort((a, b) =>
+      (isProviderTripped(a.provider) ? 1 : 0) - (isProviderTripped(b.provider) ? 1 : 0) ||
+      (b.is_default ? 1 : 0) - (a.is_default ? 1 : 0) ||
+      (a.cost_output_per_1m ?? 99) - (b.cost_output_per_1m ?? 99));
+  for (const c of cands) {
+    const apiKey = await getProviderKey(c.provider);
+    if (apiKey) return { model: c.model_name, provider: c.provider, apiKey };
+  }
+  return null;
+}
+
 // 智慧備援：撈 active 模型、排除剛失敗的 provider、優先 is_default、再來最便宜、且該 provider 有 key。
 async function resolveFallback(excludeProvider?: Provider): Promise<Resolved | null> {
   const { createSupabaseAdmin } = await import("./supabase-admin");
@@ -167,7 +190,7 @@ export async function completeForUsage(
   else messages.push(...opts.user);
 
   const call = (r: Resolved) =>
-    callAI({ provider: r.provider, model: r.model, apiKey: r.apiKey, messages, maxTokens: opts.maxTokens, temperature: opts.temperature });
+    callAI({ provider: r.provider, model: r.model, apiKey: r.apiKey, messages, maxTokens: opts.maxTokens, temperature: opts.temperature, noFallback: true });
 
   const candidates = await getCandidatesForUsage(usageKey, defaultModel);
 
