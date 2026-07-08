@@ -9,6 +9,7 @@ import { formatTW } from "@/lib/format-date";
 import { sanitizeRichHtml } from "@/lib/rich-html";
 import { resolveSticky, stickyRotate, clampOpacity, hexToRgba, noteBgImgStyle, type NoteBg } from "@/lib/note-sticky";
 import { dueLabel } from "@/lib/note-srs";
+import { PublishToWallButton } from "./PublishToWallButton";
 
 // HTML → 純文字（保留換行）給「點一下複製」用
 function htmlToPlain(html: string): string {
@@ -254,11 +255,13 @@ export function NoteCard({
               🤝 {owned ? t("sharing") : isViewer ? t("sharedReadonly") : t("shared")}
             </span>
           )}
-          {note.is_public && (
+          {owned ? (
+            <PublishToWallButton noteId={note.id} isPublic={note.is_public} category={note.category} />
+          ) : note.is_public ? (
             <span className="text-xs px-2 py-0.5 rounded" style={{ background: "rgba(0,0,0,0.1)", color: "#333" }}>
               {t("public")}
             </span>
-          )}
+          ) : null}
         </div>
       </div>
 

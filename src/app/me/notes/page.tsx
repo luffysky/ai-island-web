@@ -68,6 +68,7 @@ export default async function NotesPage() {
           <p className="text-sm text-fg-muted">{t("noteTotal", { n: list.length })}</p>
         </div>
         <div className="flex items-center gap-2">
+          <Link href="/notes/public" className="text-sm px-3 py-1.5 rounded-full border border-border hover:border-accent inline-flex items-center gap-1.5">🌐 筆記牆</Link>
           <Link href="/notes/market" className="text-sm px-3 py-1.5 rounded-full border border-border hover:border-accent inline-flex items-center gap-1.5">🏪 {t("market")}</Link>
           {list.length > 0 && <NotesExportButton />}
         </div>
