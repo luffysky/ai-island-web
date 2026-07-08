@@ -161,7 +161,14 @@ export async function compose(workspaceId: string, userId: string, workType: str
   const isSong = workType === "song";
   if (isSong) {
     const system = `你是「編織者」。把這些碎片編成『一首完整、前後呼應』的歌——不是把碎片各塞一段，而是先定一個貫穿全曲的主題與情緒弧線，再讓每個碎片成為推進這條線的段落，副歌要收束整首的核心。並產出可直接用的音樂提示詞。
-只回傳 JSON：{"title":"歌名","lyricsSectioned":"含【Verse】【Pre-Chorus】【Chorus】【Bridge】【Outro】標記的完整歌詞","sunoPrompt":"Suno 風格英文提示","mvPrompt":"MV 視覺英文提示","usedFragmentIds":["用到的碎片id"]}。歌詞繁中、prompt 可英文。`;
+
+【版權與人名硬規則（務必遵守）】
+- sunoPrompt 只能用「風格／情緒／樂器／節奏／人聲質地」等一般描述（例：dreamy city pop, warm female vocals, 90s synth, mid-tempo）。
+- 嚴禁出現任何真實人名（歌手、名人、角色本名）、樂團名、專輯／歌曲名，也不要用「像 XXX」「in the style of XXX」「sounds like XXX」這種指名模仿——Suno 會擋、也有版權/肖像權風險。
+- 歌詞必須是原創，不可引用或改寫任何既有受版權保護的歌詞。
+- 若碎片內含真實人名，歌詞可保留敘事需要的稱呼，但 sunoPrompt 一律不得出現人名。
+
+只回傳 JSON：{"title":"歌名","lyricsSectioned":"含【Verse】【Pre-Chorus】【Chorus】【Bridge】【Outro】標記的完整歌詞","sunoPrompt":"Suno 風格英文提示（純風格描述、無人名/無指名模仿）","mvPrompt":"MV 視覺英文提示","usedFragmentIds":["用到的碎片id"]}。歌詞繁中、prompt 可英文。`;
     return runAgent({
       agentType: "compose", workspaceId, userId, schema: ComposeSong,
       input: { workType, fragmentIds: frags.map((f) => f.id) },

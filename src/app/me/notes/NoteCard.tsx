@@ -116,8 +116,10 @@ export function NoteCard({
   };
   const closeRadial = () => { if (closeTimerRef.current) clearTimeout(closeTimerRef.current); setActionsOpen(false); };
 
+  // 章節 header：有 lesson 就細到 lesson（Ch XX · 章名 · 節名）
+  const hasLesson = !!note.lesson_id && !!lessonTitle && lessonTitle.trim() !== (note.title ?? "").trim();
   const header = note.chapter_id
-    ? `Ch ${String(note.chapter_id).padStart(2, "0")} · ${chapterTitle}`
+    ? `Ch ${String(note.chapter_id).padStart(2, "0")} · ${chapterTitle}${hasLesson ? ` · ${lessonTitle}` : ""}`
     : t("freeNote");
 
   const jumpHref =
@@ -289,16 +291,21 @@ export function NoteCard({
         )}
       </div>
 
-      {(note.category || (note.tags && note.tags.length > 0)) && (
-        <div className="flex items-center flex-wrap gap-1.5 mt-2">
-          {note.category && (
-            <span className="text-[11px] px-2 py-0.5 rounded-full" style={{ background: "rgba(0,0,0,0.12)", color: "#333" }}>📁 {note.category}</span>
-          )}
-          {(note.tags ?? []).map((t) => (
-            <span key={t} className="text-[11px] px-2 py-0.5 rounded-full" style={{ background: "rgba(0,0,0,0.07)", color: "#555" }}>#{t}</span>
-          ))}
-        </div>
-      )}
+      {(() => {
+        // 隱藏內部追蹤 tag（from:<product> 是購買冪等用、不給看；超長 UUID 也會撐爆卡片）
+        const visibleTags = (note.tags ?? []).filter((tg) => !tg.startsWith("from:"));
+        if (!note.category && visibleTags.length === 0) return null;
+        return (
+          <div className="flex items-center flex-wrap gap-1.5 mt-2 min-w-0">
+            {note.category && (
+              <span className="text-[11px] px-2 py-0.5 rounded-full max-w-full truncate" style={{ background: "rgba(0,0,0,0.12)", color: "#333" }}>📁 {note.category}</span>
+            )}
+            {visibleTags.map((t) => (
+              <span key={t} className="text-[11px] px-2 py-0.5 rounded-full max-w-full truncate" style={{ background: "rgba(0,0,0,0.07)", color: "#555" }}>#{t}</span>
+            ))}
+          </div>
+        );
+      })()}
 
       {/* 🔗 區塊引用（Notion page-mention 風格 inline pill）：即時解析標題 → 來源改動跟著變、點了開來源 */}
       {refNotes && refNotes.length > 0 && (

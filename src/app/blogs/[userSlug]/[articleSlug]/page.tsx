@@ -7,7 +7,8 @@ import { resolveBlog } from "@/lib/blog-resolve";
 import { resolveBlogAuthor } from "@/lib/blog-identities";
 import { getLocale } from "next-intl/server";
 import { getCachedTranslations } from "@/lib/content-i18n";
-import { Eye, Calendar, ArrowLeft, Clock } from "lucide-react";
+import { Eye, Calendar, ArrowLeft, Clock, BookOpen } from "lucide-react";
+import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import { BlogViewTracker } from "@/components/blog/BlogViewTracker";
 import { ReactionBar } from "@/components/blog/ReactionBar";
 import { CommentSection } from "@/components/blog/CommentSection";
@@ -122,6 +123,24 @@ export default async function ArticlePage({
     }
   }
 
+  // 關聯課程（筆記發布時帶入 chapter_id/lesson_id）→ 文章頁顯示可點 pill、跳該章/該節
+  let courseLink: { href: string; label: string } | null = null;
+  const artChapterId = (article as any).chapter_id as number | null;
+  const artLessonId = (article as any).lesson_id as string | null;
+  if (artChapterId) {
+    const { data: ch } = await adminSb.from("chapters").select("title").eq("id", artChapterId).maybeSingle();
+    let lessonTitle: string | null = null;
+    if (artLessonId) {
+      const { data: ls } = await adminSb.from("lessons").select("title").eq("id", artLessonId).maybeSingle();
+      lessonTitle = (ls as any)?.title ?? null;
+    }
+    const chTitle = (ch as any)?.title ?? "";
+    courseLink = {
+      href: artLessonId ? `/chapters/${artChapterId}#lesson-${artLessonId}` : `/chapters/${artChapterId}`,
+      label: `Ch${chapterDisplayNumberById(artChapterId)}${chTitle ? ` · ${chTitle}` : ""}${lessonTitle ? ` · ${lessonTitle}` : ""}`,
+    };
+  }
+
   // GEO：純文字內文（去標籤、收斂空白）+ 字數，餵給 Article JSON-LD 的 articleBody / wordCount
   const bodyText = plainText.replace(/\s+/g, " ").trim();
   const articleBody = bodyText.length > 5000 ? bodyText.slice(0, 5000) : bodyText;
@@ -214,6 +233,15 @@ export default async function ArticlePage({
         <h1 className="text-3xl sm:text-5xl font-extrabold leading-[1.15] tracking-tight mt-3 mb-4">{dispTitle}</h1>
         {dispSummary && (
           <p className="text-lg sm:text-xl text-fg-muted leading-relaxed mb-5">{dispSummary}</p>
+        )}
+        {courseLink && (
+          <Link
+            href={courseLink.href as any}
+            className="inline-flex items-center gap-1.5 mb-5 text-[13px] font-medium text-accent bg-accent/10 px-3 py-1.5 rounded-full hover:bg-accent/20 transition"
+            title="這篇跟這節課程相關，點我去上課"
+          >
+            <BookOpen size={14} /> {courseLink.label}
+          </Link>
         )}
         <div className="flex items-center gap-x-4 gap-y-2 text-sm text-fg-muted flex-wrap border-y border-border py-3">
           <span className="flex items-center gap-1.5 font-medium text-fg">

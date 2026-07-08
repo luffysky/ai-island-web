@@ -37,6 +37,8 @@ export function AnimatedEmojiPicker({
   const [cat, setCat] = useState("faces");
   const [q, setQ] = useState("");
   const ref = useRef<HTMLDivElement>(null);
+  const popRef = useRef<HTMLDivElement>(null);
+  const [shiftX, setShiftX] = useState(0); // 超出視口時把面板往內拉
 
   useEffect(() => {
     if (!open) return;
@@ -46,6 +48,22 @@ export function AnimatedEmojiPicker({
     document.addEventListener("keydown", onKey);
     return () => { document.removeEventListener("mousedown", onDoc); document.removeEventListener("keydown", onKey); };
   }, [open]);
+
+  // 開啟後量測面板、若左右超出視口就 translateX 拉回（手機防切邊）
+  useEffect(() => {
+    if (!open) { setShiftX(0); return; }
+    const el = popRef.current;
+    if (!el || typeof window === "undefined") return;
+    setShiftX(0);
+    requestAnimationFrame(() => {
+      const r = el.getBoundingClientRect();
+      const M = 8;
+      let dx = 0;
+      if (r.left < M) dx = M - r.left;
+      else if (r.right > window.innerWidth - M) dx = window.innerWidth - M - r.right;
+      if (dx) setShiftX(dx);
+    });
+  }, [open, q, cat]);
 
   const pick = (e: string) => { onSelect(e); setOpen(false); setQ(""); };
   const list = q.trim()
@@ -64,7 +82,7 @@ export function AnimatedEmojiPicker({
       </button>
 
       {open && (
-        <div className={`absolute z-[70] bottom-full mb-2 ${align === "right" ? "right-0" : "left-0"} w-[300px] max-w-[calc(100vw-1.5rem)] rounded-2xl border border-border bg-bg-card shadow-2xl overflow-hidden animate-[fadeIn_.12s_ease-out]`}>
+        <div ref={popRef} style={{ transform: shiftX ? `translateX(${shiftX}px)` : undefined }} className={`absolute z-[70] bottom-full mb-2 ${align === "right" ? "right-0" : "left-0"} w-[300px] max-w-[calc(100vw-1.5rem)] rounded-2xl border border-border bg-bg-card shadow-2xl overflow-hidden animate-[fadeIn_.12s_ease-out]`}>
           <div className="p-2 border-b border-border">
             <div className="relative">
               <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted" />

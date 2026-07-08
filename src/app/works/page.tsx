@@ -47,7 +47,7 @@ export default async function WorksGalleryPage() {
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {works.map((w) => (
-            <Link key={w.id} href={`/creator-island/works/${w.id}`} className="surface hover-lift p-5 block group">
+            <Link key={w.id} href={`/works/${w.id}`} className="surface hover-lift p-5 block group">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-500/15 text-violet-700 dark:text-violet-300">
                   {TYPE_LABEL[w.work_type] ?? w.work_type}

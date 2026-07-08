@@ -28,7 +28,7 @@ const MODES: Record<string, { instr: string; temp?: number; max?: number }> = {
   // 歌詞
   song_structure: { instr: "用【Verse】【Pre-Chorus】【Chorus】【Bridge】【Outro】標記，依主題搭出一首歌的『段落骨架』與每段要表達的情緒（可先放佔位歌詞）。", temp: 0.85, max: 1200 },
   rhyme: { instr: "針對這段歌詞/句子給『押韻建議』：列出可用的韻腳詞、以及 2–3 句改寫示範讓它更順口。", temp: 0.85, max: 700 },
-  suno: { instr: "產生可直接貼進 Suno 的『風格提示詞』（英文，逗號分隔：曲風、情緒、樂器、人聲、節奏 BPM）。只輸出提示詞本身。", temp: 0.8, max: 400 },
+  suno: { instr: "產生可直接貼進 Suno 的『風格提示詞』（英文，逗號分隔：曲風、情緒、樂器、人聲、節奏 BPM）。只輸出提示詞本身。【硬規則】嚴禁出現任何真實人名（歌手/名人）、樂團名、專輯或歌曲名，也不要用「like XXX / in the style of XXX」指名模仿特定藝人——只用一般的曲風/情緒/樂器/人聲描述，避免版權與肖像權問題。", temp: 0.8, max: 400 },
   mv: { instr: "產生這首歌的『MV 視覺/分鏡提示詞』（英文，可分鏡列點：場景、運鏡、色調、氛圍）。", temp: 0.85, max: 700 },
   // 詩
   poem_form: { instr: "依指定形式（現代詩/俳句/絕句/律詩/十四行，見指示）給出該形式的『骨架與格律提示』，並示範開頭。", temp: 0.85, max: 800 },

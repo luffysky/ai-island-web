@@ -1,7 +1,13 @@
-# 交接給下一個 Context（更新於 2026-07-08）
+# 交接給下一個 Context（更新於 2026-07-09）
 
 > 接力棒。能安全 commit 的都推上線了、`tsc` + `next build` 綠、tree 乾淨。
-> **完成的用 ~~刪除線~~ 保留可見（不刪）。** 現在重點：**D（AI 個性差異化，進行中）→ E（動態 emoji）→ #166 剩餘**。
+> **完成的用 ~~刪除線~~ 保留可見（不刪）。**
+>
+> **2026-07-09 批次**（林董 bug 147–160）已完成：GIPHY build arg、表情重複、手機筆記跑版、picker 被切、已登入卻要登入、作品牆 404、引用筆記可點、主文存成筆記+分享、部落格關聯課程到 lesson、Suno 防護、創作者品味庫、AI 人格第二輪。詳見 `daily_works_0707.md` 末段。
+>
+> **🚨 林董一定要做（不然 GIPHY 還是讀不到）**：到 **GitHub repo → Settings → Secrets and variables → Actions → Variables** 加 `NEXT_PUBLIC_GIPHY_API_KEY`（值＝你的 GIPHY key）。因為 GHCR image 是在 GitHub Actions build、`NEXT_PUBLIC_*` build 時嵌入；Zeabur 設的那個只有 runtime 讀得到、build 讀不到。加完隨便 push 一次就會嵌進前端。
+>
+> **下次剩餘**：#177 章節程式碼補執行結果、#182 操作記錄可點（語意待澄清）、#183 部落格種子加他人留言、#184 /forum 列表在地化+背景翻譯、#185 學習反應 UI + 自架 Noto。
 
 ---
 

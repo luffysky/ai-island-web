@@ -41,6 +41,9 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     user_id: user.id, title, slug,
     content: sanitizeRichHtmlStrict(content),
     tags, category, is_public: true,
+    // 帶入筆記的課程關聯（有的話）→ 文章頁可點跳該章/該節（準確、不用猜）
+    chapter_id: (note as any).chapter_id ?? null,
+    lesson_id: (note as any).lesson_id ?? null,
   }).select("id, slug").single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

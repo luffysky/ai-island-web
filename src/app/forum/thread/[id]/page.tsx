@@ -8,6 +8,7 @@ import { createSupabaseAdmin } from "@/lib/supabase";
 import { ThreadReplies } from "@/components/forum/ThreadReplies";
 import { ThreadViewTracker } from "@/components/forum/ThreadViewTracker";
 import { ThreadReactionBar } from "@/components/forum/ThreadReactionBar";
+import { ThreadPostActions } from "@/components/forum/ThreadPostActions";
 import { ArrowLeft, Eye, MessageSquare, Pin, Star, Lock } from "lucide-react";
 import type { ForumReply } from "@/lib/forum-types";
 import { sanitizeRichHtmlStrict } from "@/lib/rich-html-server";
@@ -159,6 +160,14 @@ export default async function ThreadPage({
 
         {/* 主題串 emoji 反應 */}
         <ThreadReactionBar threadId={id} />
+
+        {/* 主文操作：存成筆記 + 分享 */}
+        <ThreadPostActions
+          threadId={id}
+          threadTitle={dispTitle}
+          threadContentHtml={dispContent ? sanitizeRichHtmlStrict(dispContent) : ""}
+          threadUrl={`${SITE_URL}/forum/thread/${id}`}
+        />
       </article>
 
       {/* 回覆區 */}

@@ -19,6 +19,8 @@ export function GifPicker({ onSelect, align = "left" }: { onSelect: (gifUrl: str
   const [gifs, setGifs] = useState<Gif[]>([]);
   const [loading, setLoading] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const popRef = useRef<HTMLDivElement>(null);
+  const [shiftX, setShiftX] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
@@ -27,6 +29,22 @@ export function GifPicker({ onSelect, align = "left" }: { onSelect: (gifUrl: str
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
     document.addEventListener("mousedown", onDoc); document.addEventListener("keydown", onKey);
     return () => { document.removeEventListener("mousedown", onDoc); document.removeEventListener("keydown", onKey); };
+  }, [open]);
+
+  // 超出視口就把面板往內拉（手機防切邊）
+  useEffect(() => {
+    if (!open) { setShiftX(0); return; }
+    const el = popRef.current;
+    if (!el || typeof window === "undefined") return;
+    setShiftX(0);
+    requestAnimationFrame(() => {
+      const r = el.getBoundingClientRect();
+      const M = 8;
+      let dx = 0;
+      if (r.left < M) dx = M - r.left;
+      else if (r.right > window.innerWidth - M) dx = window.innerWidth - M - r.right;
+      if (dx) setShiftX(dx);
+    });
   }, [open]);
 
   const fetchGifs = async (query: string) => {
@@ -52,7 +70,7 @@ export function GifPicker({ onSelect, align = "left" }: { onSelect: (gifUrl: str
         GIF
       </button>
       {open && (
-        <div className={`absolute z-[70] bottom-full mb-2 ${align === "right" ? "right-0" : "left-0"} w-[300px] max-w-[calc(100vw-1.5rem)] rounded-2xl border border-border bg-bg-card shadow-2xl overflow-hidden animate-[fadeIn_.12s_ease-out]`}>
+        <div ref={popRef} style={{ transform: shiftX ? `translateX(${shiftX}px)` : undefined }} className={`absolute z-[70] bottom-full mb-2 ${align === "right" ? "right-0" : "left-0"} w-[300px] max-w-[calc(100vw-1.5rem)] rounded-2xl border border-border bg-bg-card shadow-2xl overflow-hidden animate-[fadeIn_.12s_ease-out]`}>
           {!GIPHY_KEY ? (
             <div className="p-4 text-center text-xs text-fg-muted space-y-1">
               <Film size={20} className="mx-auto text-fg-muted" />

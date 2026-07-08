@@ -185,3 +185,37 @@
 1. **#166 剩餘**：/forum thread 列表在地化（client API 端套 `localizeList`）；背景翻譯 forum(~354便宜) / blog / lesson(1258筆量大耗額度，先問林董)。
 2. **E 後續**：學習反應 UI（懂了/卡住/太神…用 `LEARN_REACTIONS`）+ 課程完成動畫；自架 Noto 素材（webp 放 `public/noto/`、`NOTO_BASE` 改 `/noto`）。
 3. **D 收尾**：瀏覽器各切一個 AI 人設實測語氣。
+
+---
+
+# 2026-07-09 續（林董 bug 批次 147–160 + 收尾 TODO）
+
+> 林董一批截圖 bug + 需求，自動連續處理。tsc + next build 綠、migration 已跑。
+
+## 上線體驗 bug（RWD / 建置 / auth）
+- **GIPHY 讀不到（149/151）**：`NEXT_PUBLIC_*` 是 **build 時嵌入**、GHCR build 在 GitHub Actions 跑（不是 Zeabur）。docker.yml + Dockerfile 補 `NEXT_PUBLIC_GIPHY_API_KEY` build arg。
+  - ⚠️ **林董待辦**：到 **GitHub repo → Settings → Secrets and variables → Actions → Variables** 加 `NEXT_PUBLIC_GIPHY_API_KEY`（Zeabur 那個只是 runtime、build 讀不到）。加完 push 一次才會嵌進 bundle。
+- **表情重複（153）**：`ThreadReactionBar` 渲染動態+靜態兩個 `AnimatedEmoji`（`hidden`/`inline-block` 跟 img base class 打架）→ 改單一動態。
+- **手機筆記跑版（148/152）**：`from:<uuid>` 購買追蹤 tag 撐爆卡片。顯示端過濾 `from:` 開頭 tag + pill 加 `max-w truncate` + `.note-rich` 加 overflow-wrap。
+- **emoji picker 被切（150）**：picker 用固定錨點超出視口不回推。`AnimatedEmojiPicker`/`GifPicker` 加視口 clamp（量測後 translateX 拉回）；AI 聊天 picker 改 `align="left"`。
+- **已登入卻要登入（154）**：`ThreadReplies` 用 `getUser()`（靜態頁 hydration race 回 null）→ 改用 `useAuth()` context 單一來源。
+
+## 功能
+- **作品牆點進去 404（157/158）**：公開作品牆連到 `/creator-island/works/[id]`（私人編輯頁、要 workspace 成員）→ 建**公開唯讀頁 `/works/[id]`**（admin 讀、只給 `is_showcased`、免登入），作品牆改連這。
+- **引用筆記可點（159）**：`insertNoteRef` 改嵌 `[[note:id|title]]` token，`renderContent` 解析成 Link → 點跳 `/me/notes/[id]`。
+- **主文存成筆記+分享（156）**：新 `ThreadPostActions`（存成筆記 + `ShareButton`）掛在討論串主文。
+- **部落格關聯課程到 lesson**：新 migration `blog_article_chapter_link`（`user_blog_articles` 加 `chapter_id/lesson_id`）；`publish-blog` 從筆記帶入（準確不猜）；文章頁顯示可點「Ch XX·章名·節名」pill 跳該 lesson。筆記卡 header 也細到 lesson。（在地化三元本來就有、待 blog 背景翻譯才顯現）
+- **Suno 歌詞防護（180）**：`compose` song 分支 + assist `suno` mode 加硬規則：sunoPrompt 禁真實人名/樂團/歌名、禁「like XXX」指名模仿；歌詞須原創。
+- **創作者 AI 餵喜好（181）**：`ci_memories` 已注入所有 agent（背景偏好）。新建**品味庫** `/creator-island/taste`（`TasteLibrary`）讓創作者放喜歡的作品/風格 → 存 personal memory kind='taste' → AI 編織/演化自動參考。creator-island nav 加「品味」入口。
+- **AI 人格第二輪（155）**：多聞（陪聊）缺 few-shot、開場仍問課程進度。補【開場】【禁】【這樣開場】硬禁「嗨X！怎樣Python學得如何」導師腔；綠寶也補開場 few-shot；`buildTutorSystemPrompt` 對 chatCompanion 不注入「目前在學 Ch/進度」context。
+
+## 維運
+- PWA `v17-2026-07-08` → `v18-2026-07-09`。
+- migration 跑過（62/62）；含新 blog chapter link。
+
+## ⬜ 還沒做（排下次）
+1. **#177 程式碼區塊補執行結果**：章節 lesson code block 只有 code 沒輸出（147）。屬內容品質、量大要逐課仔細補（避免亂寫），排內容 pass。
+2. **#182 操作記錄可點（160）**：語意待林董澄清「操作記錄」指哪個（Z幣交易紀錄？管理審計？活動流？）。確認後把相關 entry 做成可點詳情。
+3. **#183 部落格種子加他人留言**：手寫他人留言塞進種子文章（seed 腳本）。
+4. **#184 forum 列表在地化 + 背景翻譯**：`/forum/[boardSlug]` thread 標題在 API 端套 `localizeList`；跑 `translate-content-cli forum`（花 AI key、林董在忙先不自動跑）。
+5. **#185 學習反應 UI + 自架 Noto**：`LEARN_REACTIONS`（懂了/卡住/太神）反應條 + 完課動畫（要新 DB 表）；下載 Noto webp 到 `public/noto/`、`NOTO_BASE` 改 `/noto`。

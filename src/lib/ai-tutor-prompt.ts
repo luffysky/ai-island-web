@@ -200,8 +200,9 @@ export async function buildTutorSystemPrompt(options: {
   }
 
   // contextChapter / contextLesson：用 DB 即時讀（60 秒 cache）
+  // 純陪聊角色（多聞）不注入「目前在學 Ch/進度」context——那會誘導它開場就問學習進度、破壞陪聊人格
   let contextInfo = "";
-  if (options.contextChapterId) {
+  if (options.contextChapterId && !persona.chatCompanion) {
     const { chapters, lessonsByChapter } = await getChapterSummaries();
     const ch = chapters.find((c) => c.id === options.contextChapterId);
     if (ch) {

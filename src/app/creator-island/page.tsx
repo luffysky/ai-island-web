@@ -8,7 +8,7 @@ import { listAllFragments } from "@/lib/creator-engine/fragments";
 import { listCollectionsWithItems } from "@/lib/creator-engine/collections";
 import { BackgroundBeams } from "@/components/ui/BackgroundBeams";
 import { Sparkles } from "@/components/ui/Sparkles";
-import { PenTool, Library, Building2, Store, Globe, TrendingUp, Palette } from "lucide-react";
+import { PenTool, Library, Building2, Store, Globe, TrendingUp, Palette, Heart } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { CreatorIslandClient } from "./CreatorIslandClient";
 
@@ -19,6 +19,7 @@ const NAV = [
   { href: "/creator-island/market", label: "市集", Icon: Store },
   { href: "/creator-island/community", label: "社群", Icon: Globe },
   { href: "/creator-island/growth", label: "成長", Icon: TrendingUp },
+  { href: "/creator-island/taste", label: "品味", Icon: Heart },
 ] as const;
 
 // 旗標 / workspace 要即時反映

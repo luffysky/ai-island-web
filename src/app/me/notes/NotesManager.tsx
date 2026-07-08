@@ -299,7 +299,8 @@ export function NotesManager({
   const [toolsOpen, setToolsOpen] = useState(false); // 手機：工具列收合旋鈕
 
   const allTags = useMemo(
-    () => Array.from(new Set(notes.flatMap((n) => n.tags ?? []))).slice(0, 40),
+    // 過濾內部追蹤 tag（from:<product> 是購買冪等用、不顯示在標籤篩選）
+    () => Array.from(new Set(notes.flatMap((n) => n.tags ?? []).filter((tg) => !tg.startsWith("from:")))).slice(0, 40),
     [notes],
   );
   const [query, setQuery] = useState("");

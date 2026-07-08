@@ -1286,7 +1286,7 @@ export function AITutorWidget({
               <AnimatedEmojiPicker
                 onSelect={(e) => setInput((prev) => prev + e)}
                 buttonClassName="p-2 border border-border rounded-lg hover:border-accent hover:bg-accent/5 transition"
-                align="right"
+                align="left"
               />
               <textarea
                 value={input}

@@ -109,6 +109,8 @@ const MIGRATIONS = [
   "notes_market_commission_migration.sql",
   // 2026-07 — 買筆記後把整包複製進買家「我的筆記」（保留章節/便利貼色、冪等補發）
   "notes_purchase_copy_migration.sql",
+  // 2026-07 — 部落格文章關聯課程章節/課（筆記發布時帶入、文章頁可點跳 lesson）
+  "blog_article_chapter_link_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）

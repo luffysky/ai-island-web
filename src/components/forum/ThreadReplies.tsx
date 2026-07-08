@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { useAuth } from "@/lib/auth-context";
 import { Send, Trash2, CornerDownRight, Loader2, Check, BookmarkPlus, FileText } from "lucide-react";
 import type { ForumReply } from "@/lib/forum-types";
 import { LikeButton } from "@/components/blog/LikeButton";
@@ -38,18 +40,12 @@ export function ThreadReplies({
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [replyInput, setReplyInput] = useState("");
   const [sending, setSending] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // 用全站 AuthContext（單一來源、getSession cookie cache、不會像 getUser() 在靜態頁 hydration race 回 null）
+  const { user, status } = useAuth();
+  const currentUserId = user?.id ?? null;
+  const isLoggedIn = status === "in";
 
   const isThreadOwner = currentUserId === threadOwnerId;
-
-  useEffect(() => {
-    const supabase = createSupabaseBrowser();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setCurrentUserId(user?.id ?? null);
-      setIsLoggedIn(!!user);
-    });
-  }, []);
 
   const totalCount = replies.reduce((s, r) => s + 1 + (r.replies?.length ?? 0), 0);
 
@@ -198,7 +194,9 @@ export function ThreadReplies({
     }
   };
   const insertNoteRef = (n: { id: string; title: string }) => {
-    setInput((prev) => `${prev}${prev && !prev.endsWith("\n") ? "\n" : ""}${t("quoteNotePrefix", { title: n.title })}`.trim());
+    // 嵌入可解析 token（帶 note id）→ 顯示端渲染成可點連結、跳到該筆記
+    const safeTitle = n.title.replace(/[[\]|]/g, "").slice(0, 80);
+    setInput((prev) => `${prev}${prev && !prev.endsWith("\n") ? "\n" : ""}[[note:${n.id}|${safeTitle}]]`.trim());
     setShowNotePick(false); setNoteQ("");
   };
 
@@ -327,19 +325,39 @@ export function ThreadReplies({
   );
 }
 
-// 純文字回覆內的網址 → 可點連結（讓引用的筆記/部落格連結能點）
+// 回覆內文渲染：引用筆記 token [[note:id|title]] → 可點連結；圖片/GIF 網址 → <img>；其餘網址 → 連結；純文字 → 動態 emoji
 const IMG_URL_RE = /^https?:\/\/[^\s]+\.(gif|png|jpe?g|webp)(\?[^\s]*)?$/i;
 const GIPHY_URL_RE = /^https?:\/\/(media\d?\.giphy\.com|i\.giphy\.com)\/[^\s]+/i;
+// 同時抓 note token 與 URL；note id 是 uuid
+const CONTENT_RE = /\[\[note:([0-9a-fA-F-]{36})\|([^\]]*)\]\]|(https?:\/\/[^\s]+)/g;
 function renderContent(text: string) {
-  return text.split(/(https?:\/\/[^\s]+)/g).map((p, i) => {
-    if (IMG_URL_RE.test(p) || GIPHY_URL_RE.test(p)) {
-      // GIF / 圖片網址 → 直接顯示（GIPHY 選的 GIF 就是走這）
-      // eslint-disable-next-line @next/next/no-img-element
-      return <img key={i} src={p} alt="gif" loading="lazy" className="block max-w-[220px] max-h-[220px] rounded-lg my-1" />;
+  const out: React.ReactNode[] = [];
+  let last = 0;
+  let key = 0;
+  let m: RegExpExecArray | null;
+  CONTENT_RE.lastIndex = 0;
+  while ((m = CONTENT_RE.exec(text)) !== null) {
+    if (m.index > last) out.push(<EmojiText key={key++} text={text.slice(last, m.index)} size={18} />);
+    if (m[1]) {
+      // 引用筆記：可點 → 跳到該筆記
+      out.push(
+        <Link key={key++} href={`/me/notes/${m[1]}` as any} className="inline-flex items-center gap-0.5 text-accent underline decoration-dotted underline-offset-2 hover:opacity-80 break-all">
+          📄 {m[2] || "筆記"}
+        </Link>,
+      );
+    } else {
+      const url = m[3];
+      if (IMG_URL_RE.test(url) || GIPHY_URL_RE.test(url)) {
+        // eslint-disable-next-line @next/next/no-img-element
+        out.push(<img key={key++} src={url} alt="gif" loading="lazy" className="block max-w-[220px] max-h-[220px] rounded-lg my-1" />);
+      } else {
+        out.push(<a key={key++} href={url} target="_blank" rel="noreferrer" className="text-accent underline break-all">{url}</a>);
+      }
     }
-    if (/^https?:\/\//.test(p)) return <a key={i} href={p} target="_blank" rel="noreferrer" className="text-accent underline break-all">{p}</a>;
-    return <EmojiText key={i} text={p} size={18} />;
-  });
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) out.push(<EmojiText key={key++} text={text.slice(last)} size={18} />);
+  return out;
 }
 
 function ReplyItem({

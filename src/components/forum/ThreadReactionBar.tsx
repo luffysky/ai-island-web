@@ -66,9 +66,8 @@ export function ThreadReactionBar({ threadId }: { threadId: string }) {
                 : "border-border bg-bg hover:border-accent"
             }`}
           >
-            {/* 動態 emoji：選過或 hover 時才播（省資源），平常靜態；載不出退回純 emoji */}
-            <AnimatedEmoji emoji={emoji} code={codeForEmoji(emoji)} size={20} play={active} className="group-hover:hidden" />
-            <AnimatedEmoji emoji={emoji} code={codeForEmoji(emoji)} size={20} play className="hidden group-hover:inline-block" />
+            {/* 動態 emoji（單一、常態就動）；載不出退回純 emoji */}
+            <AnimatedEmoji emoji={emoji} code={codeForEmoji(emoji)} size={20} />
             {count > 0 && <span className="text-xs font-bold">{count}</span>}
           </button>
         );
