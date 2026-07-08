@@ -31,6 +31,8 @@ for (const S of SCOPES) {
   const seen = new Map(ex.map((r) => [`${r.source_id}|${r.field}|${r.locale}`, r.source_hash]));
 
   let translated = 0, changed = 0, budget = PER_SCOPE;
+  // 官方課程(chapter/lesson)不產生 zh 譯文；使用者內容(blog/forum)才翻進中文。
+  const scopeTargets = ["blog", "forum"].includes(S.scope) ? TARGETS : TARGETS.filter((t) => t.locale !== "zh");
   outer:
   for (const row of rows) {
     const id = String(row.id);
@@ -39,7 +41,7 @@ for (const S of SCOPES) {
       if (!zh.trim()) continue;
       const h = hash(zh);
       const srcLoc = guessLocale(zh);          // 原文語言（任意語言互譯：翻進其他語言、含中文）
-      for (const { locale, tl } of TARGETS) {
+      for (const { locale, tl } of scopeTargets) {
         if (budget <= 0) break outer;
         if (locale === srcLoc) continue;        // 目標＝原文語言 → 不用翻
         const prev = seen.get(`${id}|${field}|${locale}`);

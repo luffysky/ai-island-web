@@ -559,7 +559,9 @@
     "openFullPage": "전체 페이지로 열기",
     "addedToMyNotes": "내 노트에 추가됨 ({n}개)",
     "viewMyNotes": "내 노트 보기",
-    "alreadyOwnedSynced": "이미 보유 — 노트에 동기화됨"
+    "alreadyOwnedSynced": "이미 보유 — 노트에 동기화됨",
+    "rename": "이름 변경",
+    "removeFolder": "빈 폴더 삭제"
   },
   "quest": {
     "heroTitle": "코드 던전 섬",

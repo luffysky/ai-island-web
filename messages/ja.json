@@ -559,7 +559,9 @@
     "openFullPage": "全画面で開く",
     "addedToMyNotes": "あなたのノートに追加しました（{n} 件）",
     "viewMyNotes": "マイノートを見る",
-    "alreadyOwnedSynced": "所有済み、ノートに同期しました"
+    "alreadyOwnedSynced": "所有済み、ノートに同期しました",
+    "rename": "名前を変更",
+    "removeFolder": "空フォルダを削除"
   },
   "quest": {
     "heroTitle": "コードダンジョン島",

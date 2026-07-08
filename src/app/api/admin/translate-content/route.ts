@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-guard";
-import { runTranslateBatch, TARGET_LOCALES, type ContentSourceType } from "@/lib/content-i18n";
+import { runTranslateBatch, localesForScope, type ContentSourceType } from "@/lib/content-i18n";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
   const scope = (["blog", "lesson", "chapter", "forum"].includes(b.scope) ? b.scope : "blog") as ContentSourceType;
   const localeArg = String(b.locale ?? "en");
   const limit = Math.max(1, Math.min(50, Number(b.limit) || 20));
-  const locales = localeArg === "all" ? [...TARGET_LOCALES] : [localeArg];
+  const locales = localeArg === "all" ? [...localesForScope(scope)] : [localeArg];
 
   const per: Record<string, { translated: number; skipped: number }> = {};
   let total = 0;

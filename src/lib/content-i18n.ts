@@ -263,12 +263,25 @@ export const TRANSLATE_FIELDS: Record<ContentSourceType, { table: string; id: st
  */
 export const TARGET_LOCALES = ["zh", "en", "ja", "ko"] as const;
 
+/** 可能有外語原文的來源（使用者產生的內容）→ 才需要「翻進中文」。 */
+const FOREIGN_CAPABLE = new Set<ContentSourceType>(["blog", "forum"]);
+
+/**
+ * 某 scope 該翻進哪些語系。
+ * 官方課程（chapter/lesson）一律中文原著 → 只翻出去 en/ja/ko、不產生 zh 譯文
+ *   （英文技術標題如 "Error Handling" 是刻意的，不機翻成中文給中文使用者）。
+ * 使用者內容（blog/forum）可能任何語言 → 全語系（含 zh），翻進「原文語言以外」的語系。
+ */
+export function localesForScope(scope: ContentSourceType): readonly string[] {
+  return FOREIGN_CAPABLE.has(scope) ? TARGET_LOCALES : TARGET_LOCALES.filter((l) => l !== "zh");
+}
+
 /**
  * 批次翻某 scope 某語系：只翻「還沒翻 or 中文變過(hash 不同)」的欄位，翻一次不重翻、可重跑。
  * limit = 本次最多實際翻幾個欄位（控 AI 花費）。給 admin route + cron 共用。
  */
 export async function runTranslateBatch(
-  scope: ContentSourceType, locale: string, limit: number,
+  scope: ContentSourceType, locale: string, limit: number, deadline?: number,
 ): Promise<{ translated: number; skipped: number }> {
   const cfg = TRANSLATE_FIELDS[scope];
   const admin = createSupabaseAdmin();
@@ -279,10 +292,10 @@ export async function runTranslateBatch(
 
   let translated = 0, skipped = 0, budgetLeft = limit;
   for (const row of ((rows as any[]) ?? [])) {
-    if (budgetLeft <= 0) break;
+    if (budgetLeft <= 0 || (deadline && Date.now() > deadline)) break; // 時間到就收手（避免 Cloudflare 100s 逾時 524）
     const id = (row as any)[cfg.id];
     for (const field of cfg.fields) {
-      if (budgetLeft <= 0) break;
+      if (budgetLeft <= 0 || (deadline && Date.now() > deadline)) break;
       const zh = String((row as any)[field] ?? "");
       if (!zh.trim()) continue;
       // 原文語言＝目標語言 → 不用翻（原文即該語言）。

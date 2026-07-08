@@ -559,7 +559,9 @@
     "openFullPage": "整頁開啟",
     "addedToMyNotes": "已加入你的筆記（{n} 篇）",
     "viewMyNotes": "看我的筆記",
-    "alreadyOwnedSynced": "已擁有，已補齊到你的筆記"
+    "alreadyOwnedSynced": "已擁有，已補齊到你的筆記",
+    "rename": "改名",
+    "removeFolder": "移除空資料夾"
   },
   "quest": {
     "heroTitle": "程式副本島",

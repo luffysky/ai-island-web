@@ -21,7 +21,9 @@ const PART = (() => {
 const TABLE = { blog: "user_blog_articles", lesson: "lessons", chapter: "chapters", forum: "forum_threads" }[SCOPE];
 const WHERE = SCOPE === "blog" ? "where is_public = true" : "";
 // 站上語系（含中文）：任意語言互譯，翻進「除了原文語言外」的語系。
-const TARGETS = [{ locale: "zh", tl: "zh-TW" }, { locale: "en", tl: "en" }, { locale: "ja", tl: "ja" }, { locale: "ko", tl: "ko" }];
+const ALL_TARGETS = [{ locale: "zh", tl: "zh-TW" }, { locale: "en", tl: "en" }, { locale: "ja", tl: "ja" }, { locale: "ko", tl: "ko" }];
+// 官方課程(chapter/lesson)一律中文原著 → 不產生 zh 譯文；使用者內容(blog/forum)才翻進中文。
+const TARGETS = ["blog", "forum"].includes(SCOPE) ? ALL_TARGETS : ALL_TARGETS.filter((t) => t.locale !== "zh");
 const hash = (t) => crypto.createHash("sha256").update(t).digest("hex").slice(0, 32);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // 免費、離線的原文語言猜測：諺文→ko、假名→ja、漢字(無假名)→zh、其餘→en。
@@ -53,15 +55,20 @@ function restore(text, tokens) {
 }
 
 // 依行/段切塊、每塊 < ~1600 字（Google GET 端點有長度限制）
+// 依安全切點切塊、每塊 ≤ max；絕不切在 ⟦N⟧ 哨兵中間，找不到才硬切（小說類整篇一行也切得動）。
 function chunk(text, max = 1600) {
-  const parts = [];
-  let cur = "";
-  for (const line of text.split("\n")) {
-    if ((cur + "\n" + line).length > max && cur) { parts.push(cur); cur = line; }
-    else cur = cur ? cur + "\n" + line : line;
+  const out = []; let i = 0;
+  const SAFE = /[。！？!?\n>⟧、，,；;：: ]/g;
+  while (i < text.length) {
+    if (text.length - i <= max) { out.push(text.slice(i)); break; }
+    const win = text.slice(i, i + max);
+    let cut = -1, m; SAFE.lastIndex = 0;
+    while ((m = SAFE.exec(win))) cut = m.index;
+    const end = cut >= 0 ? i + cut + 1 : i + max;
+    out.push(text.slice(i, end));
+    i = end;
   }
-  if (cur) parts.push(cur);
-  return parts;
+  return out;
 }
 
 async function gtranslate(text, tl) {

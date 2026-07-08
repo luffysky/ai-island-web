@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyCronAuth } from "@/lib/cron-auth";
-import { runTranslateBatch, TARGET_LOCALES, type ContentSourceType } from "@/lib/content-i18n";
+import { runTranslateBatch, localesForScope, type ContentSourceType } from "@/lib/content-i18n";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -24,11 +24,16 @@ export async function GET(req: NextRequest) {
       ? [only as ContentSourceType]
       : ["chapter", "lesson", "blog", "forum"];
 
+  // Cloudflare 對 origin 有 ~100s 逾時（超過回 524）。設 75s 軟上限：跑到就收手、回傳部分，下次 cron 續翻。
+  const deadline = Date.now() + 75_000;
   const report: Record<string, { translated: number; skipped: number }> = {};
   let total = 0;
+  let hitDeadline = false;
+  outer:
   for (const scope of scopes) {
-    for (const loc of TARGET_LOCALES) {
-      const r = await runTranslateBatch(scope, loc, limit);
+    for (const loc of localesForScope(scope)) {
+      if (Date.now() > deadline) { hitDeadline = true; break outer; }
+      const r = await runTranslateBatch(scope, loc, limit, deadline);
       report[`${scope}:${loc}`] = r;
       total += r.translated;
     }
@@ -36,7 +41,9 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     ok: true,
     total,
+    hitDeadline,
     report,
-    note: total > 0 ? "本次有翻譯、可再跑一次續翻直到 total=0" : "全部已翻完（或無新內容）",
+    note: hitDeadline ? "達 75s 時間上限、已回傳部分、下次 cron 續翻"
+      : total > 0 ? "本次有翻譯、可再跑一次續翻直到 total=0" : "全部已翻完（或無新內容）",
   });
 }

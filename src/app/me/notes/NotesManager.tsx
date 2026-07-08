@@ -23,7 +23,7 @@ import { loadFolders, saveFolders, folderDropId, FOLDER_DROP_PREFIX, UNCATEGORIZ
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm, usePrompt } from "@/components/ui/ConfirmDialog";
 import { trackEvent } from "@/lib/analytics";
-import { Plus, X, Save, Loader2, Sparkles, GripVertical, Folder, FolderPlus, Image as ImageIcon, RotateCw, Copy, Link2, Search, Repeat2, SlidersHorizontal, ChevronRight, ChevronDown, FileText } from "lucide-react";
+import { Plus, X, Save, Loader2, Sparkles, GripVertical, Folder, FolderPlus, Image as ImageIcon, RotateCw, Copy, Link2, Search, Repeat2, SlidersHorizontal, ChevronRight, ChevronDown, FileText, Pencil } from "lucide-react";
 
 const UNCAT_FILTER = "__uncat__";
 
@@ -119,16 +119,17 @@ function DroppableFolderChip({
   );
 }
 
-/** 知識樹的一行（Notion 側欄風）；資料夾可拖入分類（droppable）。 */
-function FolderTreeRow({ dropId, active, droppable, indent, icon, label, count, onClick, onRemove, chevron, onToggle }: {
-  dropId?: string; active: boolean; droppable?: boolean; indent?: boolean; icon: React.ReactNode; label: string;
-  count?: number; onClick: () => void; onRemove?: () => void; chevron?: "open" | "closed" | "none"; onToggle?: () => void;
+/** 知識樹的一行（Notion 側欄風）；資料夾可拖入分類（droppable）。depth 0/1/2 控縮排（最多 3 層）。 */
+function FolderTreeRow({ dropId, active, droppable, depth = 0, icon, label, count, onClick, onRemove, onRename, chevron, onToggle }: {
+  dropId?: string; active: boolean; droppable?: boolean; depth?: number; icon: React.ReactNode; label: string;
+  count?: number; onClick: () => void; onRemove?: () => void; onRename?: () => void; chevron?: "open" | "closed" | "none"; onToggle?: () => void;
 }) {
   const t = useTranslations("notes");
   const { setNodeRef, isOver } = useDroppable({ id: dropId ?? "__none__", disabled: !droppable || !dropId });
+  const padCls = depth >= 2 ? "pl-10" : depth === 1 ? "pl-6" : "pl-1.5";
   return (
     <div ref={dropId ? setNodeRef : undefined} onClick={onClick}
-      className={`group flex items-center gap-1 rounded-md pr-1.5 py-1 cursor-pointer transition select-none text-sm ${indent ? "pl-6" : "pl-1.5"} ${isOver ? "ring-1 ring-accent bg-accent/20" : ""} ${active ? "bg-accent/15 text-accent font-medium" : "text-fg-muted hover:bg-bg-elevated hover:text-fg"}`}
+      className={`group flex items-center gap-1 rounded-md pr-1.5 py-1 cursor-pointer transition select-none text-sm ${padCls} ${isOver ? "ring-1 ring-accent bg-accent/20" : ""} ${active ? "bg-accent/15 text-accent font-medium" : "text-fg-muted hover:bg-bg-elevated hover:text-fg"}`}
       title={droppable ? t("filterAndDrop") : t("filterOnly")}>
       {chevron && chevron !== "none" ? (
         <button type="button" onClick={(e) => { e.stopPropagation(); onToggle?.(); }} className="shrink-0 text-fg-muted hover:text-fg -ml-0.5">
@@ -138,18 +139,20 @@ function FolderTreeRow({ dropId, active, droppable, indent, icon, label, count, 
       <span className="shrink-0 grid place-items-center w-4">{icon}</span>
       <span className="flex-1 min-w-0 truncate">{label}</span>
       {typeof count === "number" && count > 0 && <span className="text-[10px] text-fg-muted/70 shrink-0">{count}</span>}
-      {onRemove && <button type="button" onClick={(e) => { e.stopPropagation(); onRemove(); }} className="opacity-0 group-hover:opacity-100 text-fg-muted hover:text-red-400 shrink-0"><X size={12} /></button>}
+      {onRename && <button type="button" onClick={(e) => { e.stopPropagation(); onRename(); }} title={t("rename")} className="opacity-0 group-hover:opacity-100 text-fg-muted hover:text-accent shrink-0"><Pencil size={11} /></button>}
+      {onRemove && <button type="button" onClick={(e) => { e.stopPropagation(); onRemove(); }} title={t("removeFolder")} className="opacity-0 group-hover:opacity-100 text-fg-muted hover:text-red-400 shrink-0"><X size={12} /></button>}
     </div>
   );
 }
 
 function FolderBar({
   folderList, folderCounts, uncategorizedCount, fCat, setFCat,
-  onAddFolder, onRemoveFolder, allTags, fTag, setFTag, droppable,
+  onAddFolder, onRemoveFolder, onRenameFolder, allTags, fTag, setFTag, droppable,
 }: {
   folderList: string[]; folderCounts: Record<string, number>; uncategorizedCount: number;
   fCat: string; setFCat: (v: string) => void;
   onAddFolder: (name: string) => void; onRemoveFolder: (name: string) => void;
+  onRenameFolder: (full: string, newLeaf: string) => void;
   allTags: string[]; fTag: string; setFTag: (v: string) => void; droppable?: boolean;
 }) {
   const t = useTranslations("notes");
@@ -157,68 +160,105 @@ function FolderBar({
   const [name, setName] = useState("");
   const [subFor, setSubFor] = useState<string | null>(null);
   const [subName, setSubName] = useState("");
+  const [editing, setEditing] = useState<string | null>(null); // 正在改名的資料夾 full path
+  const [editName, setEditName] = useState("");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  const submit = () => { if (name.trim()) onAddFolder(name.trim()); setName(""); setAdding(false); };
-  const submitSub = (parent: string) => { if (subName.trim()) onAddFolder(`${parent}/${subName.trim()}`); setSubName(""); setSubFor(null); };
+  // 整棵知識樹可收合（記憶到 localStorage）；手機上把整區折起來省空間
+  const [treeCollapsed, setTreeCollapsed] = useState(false);
+  useEffect(() => { try { setTreeCollapsed(localStorage.getItem("notes.treeCollapsed") === "1"); } catch { /* ignore */ } }, []);
+  const toggleTree = () => setTreeCollapsed((v) => { const n = !v; try { localStorage.setItem("notes.treeCollapsed", n ? "1" : "0"); } catch { /* ignore */ } return n; });
+  const clean = (s: string) => s.replace(/\//g, "").trim(); // 資料夾名不含「/」（那是層級分隔）
+  const submit = () => { if (clean(name)) onAddFolder(clean(name)); setName(""); setAdding(false); };
+  const submitSub = (parent: string) => { const nm = clean(subName); if (nm) onAddFolder(`${parent}/${nm}`); setSubName(""); setSubFor(null); };
+  const submitRename = (full: string) => { const nm = clean(editName); const leaf = full.split("/").pop() ?? full; if (nm && nm !== leaf) onRenameFolder(full, nm); setEditName(""); setEditing(null); };
   const total = Object.values(folderCounts).reduce((a, b) => a + b, 0) + uncategorizedCount;
 
-  // 知識樹（2 層）：資料夾用「父/子」慣例
+  // 知識樹（最多 3 層）：資料夾用「a / a/b / a/b/c」慣例；補上中間層祖先節點，超過 3 層截斷
+  type TNode = { full: string; name: string; children: TNode[] };
   const tree = useMemo(() => {
-    const m = new Map<string, { name: string; children: { full: string; name: string }[] }>();
+    const roots: TNode[] = [];
+    const byPath = new Map<string, TNode>();
+    const ensure = (full: string): TNode => {
+      const hit = byPath.get(full); if (hit) return hit;
+      const idx = full.lastIndexOf("/");
+      const node: TNode = { full, name: idx === -1 ? full : full.slice(idx + 1), children: [] };
+      byPath.set(full, node);
+      (idx === -1 ? roots : ensure(full.slice(0, idx)).children).push(node);
+      return node;
+    };
+    const paths = new Set<string>();
     for (const f of folderList) {
-      const idx = f.indexOf("/");
-      const parent = (idx === -1 ? f : f.slice(0, idx)).trim();
-      if (!parent) continue;
-      if (!m.has(parent)) m.set(parent, { name: parent, children: [] });
-      if (idx !== -1) { const cn = f.slice(idx + 1).trim(); if (cn) m.get(parent)!.children.push({ full: f, name: cn }); }
+      const segs = f.split("/").map((s) => s.trim()).filter(Boolean).slice(0, 3);
+      for (let i = 1; i <= segs.length; i++) paths.add(segs.slice(0, i).join("/"));
     }
-    return [...m.values()].sort((a, b) => a.name.localeCompare(b.name, "zh-Hant"));
+    [...paths].sort((a, b) => a.localeCompare(b, "zh-Hant")).forEach(ensure);
+    const sortRec = (ns: TNode[]) => { ns.sort((a, b) => a.name.localeCompare(b.name, "zh-Hant")); ns.forEach((n) => sortRec(n.children)); };
+    sortRec(roots);
+    return roots;
   }, [folderList]);
-  const activeParent = fCat && fCat !== UNCAT_FILTER ? (fCat.indexOf("/") === -1 ? fCat : fCat.slice(0, fCat.indexOf("/"))) : "";
-  const isOpen = (n: string) => expanded.has(n) || activeParent === n;
+  const isOpen = (full: string) => expanded.has(full) || (fCat !== UNCAT_FILTER && !!fCat && (fCat === full || fCat.startsWith(full + "/")));
   const toggle = (n: string) => setExpanded((p) => { const s = new Set(p); s.has(n) ? s.delete(n) : s.add(n); return s; });
   const countUnder = (parent: string) => {
-    let t = folderCounts[parent] ?? 0;
-    for (const k in folderCounts) if (k.startsWith(parent + "/")) t += folderCounts[k];
-    return t;
+    let c = folderCounts[parent] ?? 0;
+    for (const k in folderCounts) if (k.startsWith(parent + "/")) c += folderCounts[k];
+    return c;
+  };
+  const pad = (d: number) => (d >= 2 ? "pl-10" : d === 1 ? "pl-6" : "pl-1.5");
+
+  // 遞迴渲染一個節點（depth 0/1/2；depth<2 才能再加子資料夾＝最多 3 層）
+  const renderNode = (node: TNode, depth: number): React.ReactNode => {
+    const cnt = countUnder(node.full);
+    const hasKids = node.children.length > 0;
+    const open = isOpen(node.full);
+    const icon = depth === 0 ? "📁" : depth === 1 ? "📂" : "📄";
+    return (
+      <div key={node.full}>
+        {editing === node.full ? (
+          <input autoFocus value={editName} onChange={(e) => setEditName(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") submitRename(node.full); if (e.key === "Escape") { setEditName(""); setEditing(null); } }}
+            onBlur={() => submitRename(node.full)} placeholder={t("folderName")}
+            className={`${pad(depth)} pr-1.5 my-0.5 py-1 rounded-md bg-bg border border-accent text-sm w-full outline-none`} />
+        ) : (
+          <FolderTreeRow
+            dropId={folderDropId(node.full)} active={fCat === node.full} droppable={droppable} depth={depth}
+            icon={<span className="text-xs">{icon}</span>} label={node.name} count={cnt}
+            chevron={hasKids ? (open ? "open" : "closed") : "none"}
+            onToggle={() => toggle(node.full)}
+            onClick={() => { setFCat(fCat === node.full ? "" : node.full); if (hasKids) setExpanded((s) => new Set(s).add(node.full)); }}
+            onRename={() => { setEditing(node.full); setEditName(node.name); }}
+            onRemove={cnt === 0 && !hasKids ? () => onRemoveFolder(node.full) : undefined}
+          />
+        )}
+        {open && (
+          <>
+            {node.children.map((ch) => renderNode(ch, depth + 1))}
+            {depth < 2 && (subFor === node.full ? (
+              <input autoFocus value={subName} onChange={(e) => setSubName(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") submitSub(node.full); if (e.key === "Escape") { setSubName(""); setSubFor(null); } }}
+                onBlur={() => submitSub(node.full)} placeholder={t("subfolderName")}
+                className={`${pad(depth + 1)} pr-1.5 my-0.5 py-1 rounded-md bg-bg border border-border text-xs w-full outline-none focus:border-accent`} />
+            ) : (
+              <button type="button" onClick={() => { setSubFor(node.full); setSubName(""); }} className={`${pad(depth + 1)} py-0.5 text-xs text-fg-muted/70 hover:text-accent inline-flex items-center gap-1`}><FolderPlus size={11} /> {t("subfolder")}</button>
+            ))}
+          </>
+        )}
+      </div>
+    );
   };
 
   return (
     <div className="space-y-0.5">
-      <div className="text-[11px] font-bold text-fg-muted px-1.5 mb-1 inline-flex items-center gap-1.5"><Folder size={13} /> {t("knowledgeTree")}</div>
+      <button type="button" onClick={toggleTree}
+        className="w-full text-[11px] font-bold text-fg-muted px-1.5 mb-1 inline-flex items-center gap-1.5 hover:text-fg transition rounded"
+        aria-expanded={!treeCollapsed}>
+        {treeCollapsed ? <ChevronRight size={13} /> : <ChevronDown size={13} />}
+        <Folder size={13} /> {t("knowledgeTree")}
+      </button>
+      {!treeCollapsed && (<>
       <FolderTreeRow dropId={undefined} active={!fCat} droppable={false} icon={<FileText size={14} />} label={t("allNotes")} count={total} onClick={() => setFCat("")} />
       <FolderTreeRow dropId={folderDropId(UNCATEGORIZED)} active={fCat === UNCAT_FILTER} droppable={droppable} icon={<span className="text-xs">📥</span>} label={t("uncategorized")} count={uncategorizedCount} onClick={() => setFCat(fCat === UNCAT_FILTER ? "" : UNCAT_FILTER)} />
 
-      {tree.map((p) => (
-        <div key={p.name}>
-          <FolderTreeRow
-            dropId={folderDropId(p.name)} active={activeParent === p.name} droppable={droppable}
-            icon={<span className="text-xs">📁</span>} label={p.name} count={countUnder(p.name)}
-            chevron={p.children.length ? (isOpen(p.name) ? "open" : "closed") : "none"}
-            onToggle={() => toggle(p.name)}
-            onClick={() => { setFCat(fCat === p.name ? "" : p.name); if (p.children.length) setExpanded((s) => new Set(s).add(p.name)); }}
-            onRemove={countUnder(p.name) === 0 ? () => onRemoveFolder(p.name) : undefined}
-          />
-          {isOpen(p.name) && (
-            <>
-              {p.children.map((ch) => (
-                <FolderTreeRow key={ch.full} dropId={folderDropId(ch.full)} active={fCat === ch.full} droppable={droppable} indent
-                  icon={<span className="text-[10px]">📄</span>} label={ch.name} count={folderCounts[ch.full] ?? 0}
-                  onClick={() => setFCat(fCat === ch.full ? p.name : ch.full)}
-                  onRemove={(folderCounts[ch.full] ?? 0) === 0 ? () => onRemoveFolder(ch.full) : undefined} />
-              ))}
-              {subFor === p.name ? (
-                <input autoFocus value={subName} onChange={(e) => setSubName(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter") submitSub(p.name); if (e.key === "Escape") { setSubName(""); setSubFor(null); } }}
-                  onBlur={() => submitSub(p.name)} placeholder={t("subfolderName")}
-                  className="ml-6 my-0.5 px-2 py-1 rounded-md bg-bg border border-border text-xs w-[calc(100%-1.5rem)] outline-none focus:border-accent" />
-              ) : (
-                <button type="button" onClick={() => { setSubFor(p.name); setSubName(""); }} className="pl-6 py-0.5 text-xs text-fg-muted/70 hover:text-accent inline-flex items-center gap-1"><FolderPlus size={11} /> {t("subfolder")}</button>
-              )}
-            </>
-          )}
-        </div>
-      ))}
+      {tree.map((n) => renderNode(n, 0))}
 
       {adding ? (
         <input autoFocus value={name} onChange={(e) => setName(e.target.value)}
@@ -228,6 +268,7 @@ function FolderBar({
       ) : (
         <button type="button" onClick={() => setAdding(true)} className="w-full text-left px-1.5 py-1 rounded-md text-xs text-fg-muted hover:bg-bg-elevated hover:text-fg inline-flex items-center gap-1.5"><FolderPlus size={13} /> {t("addFolder")}</button>
       )}
+      </>)}
 
       {allTags.length > 0 && (
         <div className="pt-2 mt-1 border-t border-border/60">
@@ -360,6 +401,24 @@ export function NotesManager({
   const removeFolder = (name: string) => {
     const next = folders.filter((f) => f !== name);
     setFolders(next); saveFolders(next);
+  };
+  // 改名（含整個子樹）：更新名單 + 把所有 category 以 oldFull 為前綴的筆記重寫前綴（state + DB）+ 目前篩選
+  const renameFolder = async (oldFull: string, newLeaf: string) => {
+    const leaf = newLeaf.replace(/\//g, "").trim();
+    if (!leaf) return;
+    const cut = oldFull.lastIndexOf("/");
+    const newFull = (cut === -1 ? "" : oldFull.slice(0, cut + 1)) + leaf;
+    if (newFull === oldFull) return;
+    const under = (p: string) => p === oldFull || p.startsWith(oldFull + "/");
+    const remap = (p: string) => (under(p) ? newFull + p.slice(oldFull.length) : p);
+    const nextFolders = Array.from(new Set(folders.map(remap)));
+    setFolders(nextFolders); saveFolders(nextFolders);
+    const affected = notes.filter((n) => n.category && under(n.category));
+    if (affected.length) {
+      setNotes((prev) => prev.map((n) => (n.category && under(n.category) ? { ...n, category: remap(n.category) } : n)));
+      await Promise.all(affected.map((n) => supabase.from("notes").update({ category: remap(n.category as string) }).eq("id", n.id)));
+    }
+    if (fCat && fCat !== UNCAT_FILTER && under(fCat)) setFCat(remap(fCat));
   };
   const assignCategory = async (noteId: string, category: string | null) => {
     setNotes((prev) => prev.map((n) => (n.id === noteId ? { ...n, category } : n)));
@@ -584,7 +643,7 @@ export function NotesManager({
             <aside className="md:w-56 md:shrink-0 md:border-r md:border-border/60 md:pr-3 md:self-start md:sticky md:top-2 md:max-h-[82vh] md:overflow-y-auto">
               <FolderBar
                 folderList={folderList} folderCounts={folderCounts} uncategorizedCount={uncategorizedCount}
-                fCat={fCat} setFCat={setFCat} onAddFolder={addFolder} onRemoveFolder={removeFolder}
+                fCat={fCat} setFCat={setFCat} onAddFolder={addFolder} onRemoveFolder={removeFolder} onRenameFolder={renameFolder}
                 allTags={allTags} fTag={fTag} setFTag={setFTag} droppable
               />
             </aside>
@@ -629,7 +688,7 @@ export function NotesManager({
           <aside className="md:w-56 md:shrink-0 md:border-r md:border-border/60 md:pr-3 md:self-start md:sticky md:top-2 md:max-h-[82vh] md:overflow-y-auto">
             <FolderBar
               folderList={folderList} folderCounts={folderCounts} uncategorizedCount={uncategorizedCount}
-              fCat={fCat} setFCat={setFCat} onAddFolder={addFolder} onRemoveFolder={removeFolder}
+              fCat={fCat} setFCat={setFCat} onAddFolder={addFolder} onRemoveFolder={removeFolder} onRenameFolder={renameFolder}
               allTags={allTags} fTag={fTag} setFTag={setFTag}
             />
           </aside>
@@ -639,7 +698,7 @@ export function NotesManager({
               const meta = chapterMap[n.lesson_id ?? ""] ?? chapterMap[`ch${n.chapter_id}`] ?? null;
               const isExp = n.id === expandedId;
               return (
-                <div key={n.id} className={isExp ? "sm:col-span-2" : ""} style={isExp ? { order: -1 } : undefined}>
+                <div key={n.id} className={`min-w-0 ${isExp ? "sm:col-span-2" : ""}`} style={isExp ? { order: -1 } : undefined}>
                   <NoteCard
                     note={n}
                     meId={meId}

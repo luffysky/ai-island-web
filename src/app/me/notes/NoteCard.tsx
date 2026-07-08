@@ -193,7 +193,7 @@ export function NoteCard({
   return (
     <div
       onClick={toggleExpand}
-      className="relative rounded-md shadow-md hover:shadow-xl hover:-translate-y-0.5 transition cursor-pointer"
+      className="relative min-w-0 max-w-full rounded-md shadow-md hover:shadow-xl hover:-translate-y-0.5 transition cursor-pointer"
       style={{ background: bgImg ? "transparent" : hexToRgba(sk.bg, opacity), color: TEXT, transform: `rotate(${rotate}deg)`, zIndex: actionsOpen ? 50 : undefined }}
     >
       {/* 複製成功懸浮氣泡（portal 到 body，避開卡片 rotate / overflow） */}

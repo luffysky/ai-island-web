@@ -16,6 +16,7 @@ import {
   Award,
   PenLine,
   Cat,
+  Globe,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -39,6 +40,7 @@ const ME_LINKS: { href: string; icon: React.ReactNode; label: string }[] = [
   { href: "/me/ledger", icon: <span>🪙</span>, label: "Z幣/經驗明細" },
   { href: "/settings/ai-keys", icon: <span>🔑</span>, label: "我的模型 Key (BYOK)" },
   { href: "/me/notes", icon: <StickyNote size={16} />, label: "我的筆記" },
+  { href: "/notes/public", icon: <Globe size={16} />, label: "筆記公開牆" },
   { href: "/me/bookmarks", icon: <Bookmark size={16} />, label: "我的書籤" },
   { href: "/me/playgrounds", icon: <Code2 size={16} />, label: "我的程式碼" },
   { href: "/me/playground", icon: <Code2 size={16} />, label: "程式碼遊樂場" },

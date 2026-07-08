@@ -75,7 +75,7 @@ export default async function PublicNotesPage({ searchParams }: { searchParams: 
             const author = p?.display_name || p?.username || "學習者";
             const chTitle = n.chapter_id ? chMap.get(n.chapter_id) : null;
             return (
-              <Link key={n.id} href={`/me/notes/${n.id}`} className="surface hover-lift p-5 block group">
+              <Link key={n.id} href={`/me/notes/${n.id}`} className="surface hover-lift p-5 block group min-w-0 max-w-full overflow-hidden">
                 {n.chapter_id && (
                   <span className="inline-flex items-center gap-1 text-[10px] font-medium text-accent bg-accent/10 px-2 py-0.5 rounded-full mb-2">
                     <BookOpen size={10} /> Ch{chapterDisplayNumberById(n.chapter_id)}{chTitle ? ` · ${chTitle}` : ""}

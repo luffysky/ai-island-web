@@ -1,7 +1,9 @@
-# 交接給下一個 Context（更新於 2026-07-09）
+# 交接給下一個 Context（更新於 2026-07-09 晚間）
 
 > 接力棒。能安全 commit 的都推上線了、`tsc` + `next build` 綠、tree 乾淨。
 > **完成的用 ~~刪除線~~ 保留可見（不刪）。**
+>
+> **🆕 2026-07-09 晚間批次**（詳見 `daily_works_0709.md`）：**全站四語翻譯全數完成（零成本免費 Google + 任意語言互譯 + 每 3h 自動補新內容）**；筆記系統升級（破版修復 161→162、知識樹可收合、CRUD+3 層、公開牆進側欄）；**全站稽核修正**（RWD 全域 2 條、PWA 離線 fallback、cron 524 時間預算、/api/mentions 補實作、quests 加固）。**下次最該優先：島嶼經濟刷幣漏洞（catch-fish/redeem/quests）+ E2E/煙霧測試——見 `daily_works_0709.md` 待辦區。**
 >
 > **2026-07-09 批次**（林董 bug 147–160）已完成：GIPHY build arg、表情重複、手機筆記跑版、picker 被切、已登入卻要登入、作品牆 404、引用筆記可點、主文存成筆記+分享、部落格關聯課程到 lesson、Suno 防護、創作者品味庫、AI 人格第二輪。詳見 `daily_works_0707.md` 末段。
 >
@@ -46,12 +48,17 @@
   2. **學習反應 UI**：用 `LEARN_REACTIONS`（懂了/卡住/太神…）在 lesson/筆記/課程完成做反應條 + 慶祝動畫；持久化要新 DB 表。
   3. **自架 Noto 素材**：把用到的 `{code}/512.webp` 下載進 `public/noto/`、`reactions.ts` 的 `NOTO_BASE` 改 `"/noto"`（現走 gstatic CDN、能動但非自架）。
 
-### #166 剩餘（排下次做，見下）
-- render wiring 已接：blog 文章頁、章節詳情、論壇主題頁、**/chapters 列表、側欄 nav、/blogs/[userSlug] 文章列表**（`localizeList` 通用 helper 已備）。
+### #166 剩餘
+- render wiring 已接：blog 文章頁、章節詳情、論壇主題頁、**/chapters 列表、側欄 nav、/blogs[userSlug] 文章列表**（`localizeList` 通用 helper 已備）。
+- ~~**背景翻譯 forum / blog / lesson**~~ ✅ **全數翻完（2026-07-09 晚間，零成本免費 Google）**：blog/chapter/forum 100%、lesson en/ja/ko ≈100%。改用免費 Google（`gtranslate`）取代付費 AI，之後每 3h cron 自動補新內容。詳見 `daily_works_0709.md`。
 - **⬜ 排下次 TODO**：
-  1. **/forum thread 列表在地化**：論壇列表是 client 端抓（`ForumClient`/API）→ 要像 `/api/nav` 那樣在 API route 端套 `localizeList("forum", threads, locale, ["title"])`。
-  2. **背景翻譯 forum / blog / lesson**：`node scripts/translate-content-cli.mjs forum`（~354，便宜）、`… blog`、`… lesson 600`（lesson 1258 筆很多、分批、耗 AI 額度）。**花 AI key、量大的先問林董**。章節已翻完(480)。
-- ⚠️ **林董翻譯規則**：背景翻譯**只在中文內容有改動時**才更新其他語言、沒動的不碰（`translate-content-cli.mjs` 已這樣：比對 `source_hash` 一樣就 skip）。**一般 UI 字串（messages/*.json）直接改、不用 API**；只有 DB 內容翻譯才跑腳本。
+  1. **/forum thread 列表在地化**：論壇列表是 client 端抓（`ForumClient`/API）→ 要像 `/api/nav` 那樣在 API route 端套 `localizeList("forum", threads, locale, ["title"])`。（譯文已在 DB、只差 render wiring。）
+- ⚠️ **林董翻譯規則**：背景翻譯**只在中文內容有改動時**才更新其他語言、沒動的不碰（比對 `source_hash` 一樣就 skip）。**一般 UI 字串（messages/*.json）用 `scripts/sync-ui-messages.mjs` 免費 Google 補、不用 API**；DB 內容翻譯走 `translate-sync-all.mjs` / cron（也免費）。
+
+### 🚨 下次最優先（2026-07-09 稽核發現，詳見 `daily_works_0709.md` 待辦區）
+- ⬜ **HIGH：島嶼經濟刷幣漏洞**——`island/catch-fish`（無 dedup 無上限刷幣）、`island/redeem`（數量信任 client 鑄幣）、`quests/progress`（今日已加 delta clamp+rate limit 緩解、根治仍需 server 權威事件驗證）。根因＝伺服器信任前端。
+- ⬜ **E2E 測試 + 煙霧測試（smoke test）**——關鍵流程自動化把關，配合經濟漏洞修復後回歸驗證。
+- ⬜ PWA icon 收斂、DB 任務函式 migration 一致性、反應計數防刷、admin route `req.json()` 未包 catch（十餘處）——皆低～中，見日誌。
 
 ---
 

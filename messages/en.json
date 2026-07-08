@@ -559,7 +559,9 @@
     "openFullPage": "Open full page",
     "addedToMyNotes": "Added to your notes ({n})",
     "viewMyNotes": "View my notes",
-    "alreadyOwnedSynced": "Already owned — synced to your notes"
+    "alreadyOwnedSynced": "Already owned — synced to your notes",
+    "rename": "Rename",
+    "removeFolder": "Remove empty folder"
   },
   "quest": {
     "heroTitle": "Code Dungeon Island",

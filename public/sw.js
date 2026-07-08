@@ -1,5 +1,5 @@
 /**
- * AI 島 Service Worker v3
+ * AI 島 Service Worker v19
  *
  * 策略：
  *   - 靜態 (/_next/static, /favicon, /og.png 等)：Cache First、永久（檔名帶 hash 自然 invalidate）
@@ -10,7 +10,7 @@
  *   - 不主動 navigate clients、避免破 OAuth callback (#access_token)
  */
 
-const VERSION = "v18-2026-07-09";
+const VERSION = "v19-2026-07-09";
 const STATIC_CACHE = `static-${VERSION}`;
 const PAGES_CACHE = `pages-${VERSION}`;
 const PYODIDE_CACHE = `pyodide-v0.26.4`;  // 跟 Pyodide 版本綁定、版本沒變就不換 cache
@@ -153,8 +153,8 @@ async function networkFirst(req, cacheName) {
     const offlineCache = await caches.open(OFFLINE_CACHE);
     const saved = await offlineCache.match(req, { ignoreSearch: true });
     if (saved) return saved;
-    // 離線 + 沒 cache → 給 offline 頁
-    const offline = await cache.match(OFFLINE_URL);
+    // 離線 + 沒 cache → 給 offline 頁（用 caches.match 跨所有 cache 找：OFFLINE_URL 存在 STATIC_CACHE、不是這個 cache）
+    const offline = await caches.match(OFFLINE_URL);
     if (offline) return offline;
     return Response.error();
   }
