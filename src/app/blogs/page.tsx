@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { Search, Eye, PenLine } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { localizeList } from "@/lib/content-i18n";
 
 export const metadata: Metadata = {
   title: "部落格 · AI 島",
@@ -163,10 +164,13 @@ export default async function BlogsPage({
   const q = params.q?.trim() ?? "";
   const t = await getTranslations("blogs");
 
-  const [blogs, searchResults] = await Promise.all([
+  const [blogs, searchResultsRaw] = await Promise.all([
     q ? Promise.resolve([] as BlogItem[]) : getBlogs(),
     q ? searchArticles(q) : Promise.resolve([] as SearchResult[]),
   ]);
+  // 搜尋結果的文章標題/摘要接內容翻譯（非中文才覆蓋、有譯文才動）
+  const locale = await getLocale();
+  const searchResults = q ? await localizeList("blog", searchResultsRaw as any[], locale, ["title", "summary"]) : searchResultsRaw;
 
   return (
     <div className="min-h-screen">

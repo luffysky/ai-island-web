@@ -2,8 +2,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { createSupabaseAdmin } from "@/lib/supabase";
+import { localizeList } from "@/lib/content-i18n";
 import { MessageSquare, FileText, Award, Eye, Star, ArrowLeft } from "lucide-react";
 import type { ForumReply } from "@/lib/forum-types";
 
@@ -75,7 +76,10 @@ export default async function ForumUserPage({
   if (!data) notFound();
 
   const t = await getTranslations("forum");
-  const { profile, threads, replies, stats } = data;
+  const { profile, threads: threadsRaw, replies, stats } = data;
+  // 使用者發的主題標題接內容翻譯（非中文才覆蓋、有譯文才動）
+  const locale = await getLocale();
+  const threads = await localizeList("forum", threadsRaw as any[], locale, ["title"]);
   const name = profile.display_name || profile.username || t("defaultUser");
 
   return (

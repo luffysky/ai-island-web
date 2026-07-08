@@ -3,9 +3,10 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Eye, ArrowLeft } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { resolveBlog } from "@/lib/blog-resolve";
+import { localizeList } from "@/lib/content-i18n";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
@@ -76,10 +77,13 @@ export default async function SeriesPage({
   const data = await getSeriesData(userSlug, seriesId);
   if (!data) notFound();
 
-  const { blog, series, articles } = data;
+  const { blog, series, articles: articlesRaw } = data;
   const name =
     blog.profile?.display_name || blog.profile?.username || userSlug;
   const t = await getTranslations("blogs");
+  // 系列文章標題/摘要接內容翻譯（非中文才覆蓋、有譯文才動）
+  const locale = await getLocale();
+  const articles = await localizeList("blog", articlesRaw as any[], locale, ["title", "summary"]);
 
   return (
     <div className="min-h-screen">
