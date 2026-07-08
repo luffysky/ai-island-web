@@ -35,3 +35,7 @@ asset/
 /playwright-report/
 /blob-report/
 /.playwright/
+
+# 敏感/本地檔（不進版控）
+docs/logerr.md
+docs/note.md
