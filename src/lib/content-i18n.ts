@@ -285,8 +285,10 @@ export async function translateAndCache(
   sourceType: ContentSourceType, sourceId: string | number, field: string, locale: string, zhText: string,
 ): Promise<string | null> {
   if (locale === "zh" || !zhText || !zhText.trim()) return null;
-  const { LOCALE_AI_LABEL } = await import("@/i18n/request");
-  const translated = await aiTranslate(zhText, LOCALE_AI_LABEL[locale] ?? "English");
+  // 用免費 Google 翻譯（零成本、非 AI、保護程式碼）；locale(en/ja/ko) 直接當 Google tl。
+  const { gtranslateText } = await import("@/lib/gtranslate");
+  let translated: string | null = null;
+  try { translated = await gtranslateText(zhText, locale); } catch { translated = null; }
   if (!translated) return null;
   try {
     const admin = createSupabaseAdmin();

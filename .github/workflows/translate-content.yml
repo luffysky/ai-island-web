@@ -1,10 +1,13 @@
 name: Translate Content
 
 # 背景把 DB 內容（章/lesson/blog/forum）翻成 en/ja/ko、寫進 content_translations 快取。
-# 只翻缺的或中文改過的、翻一次不重翻。**只手動觸發**（控 AI 花費）：Actions → Translate Content → Run workflow。
-# total>0 代表本次有翻、可再 Run 一次續翻，直到 total=0（全部翻完）。
+# 只翻缺的或中文改過的（比對 source_hash）、翻一次不重翻 → 新增/改動的內容會自動補上其他語言翻譯。
+# **後端已改用免費 Google 翻譯（零成本）**，所以開排程自動跑（每 3 小時）；也可手動 dispatch。
+# total>0 代表本次有翻；沒新內容時幾乎不做事。
 
 on:
+  schedule:
+    - cron: '0 */3 * * *'   # 每 3 小時（UTC）自動翻新增/改動內容
   workflow_dispatch:
     inputs:
       limit:
