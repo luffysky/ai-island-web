@@ -213,9 +213,13 @@
 - PWA `v17-2026-07-08` → `v18-2026-07-09`。
 - migration 跑過（62/62）；含新 blog chapter link。
 
+## ✅ 續做完成（同日）
+- **#184 forum 列表在地化（wiring）**：`/api/forum/threads` GET 套 `localizeList("forum",...,["title"])`、回 private cache。**譯文待跑** `node scripts/translate-content-cli.mjs forum`（~354 便宜、花 AI key，林董在忙沒自動跑）。
+- **#185 學習反應 UI**：`lesson_reactions` 表 + `/api/lessons/[lessonId]/reactions` + `LearnReactionBar`（LEARN_REACTIONS 動態 emoji、按下 micro 慶祝上浮）掛在每節底部；未登入用 fingerprint。migration 已跑。
+
 ## ⬜ 還沒做（排下次）
 1. **#177 程式碼區塊補執行結果**：章節 lesson code block 只有 code 沒輸出（147）。屬內容品質、量大要逐課仔細補（避免亂寫），排內容 pass。
 2. **#182 操作記錄可點（160）**：語意待林董澄清「操作記錄」指哪個（Z幣交易紀錄？管理審計？活動流？）。確認後把相關 entry 做成可點詳情。
 3. **#183 部落格種子加他人留言**：手寫他人留言塞進種子文章（seed 腳本）。
-4. **#184 forum 列表在地化 + 背景翻譯**：`/forum/[boardSlug]` thread 標題在 API 端套 `localizeList`；跑 `translate-content-cli forum`（花 AI key、林董在忙先不自動跑）。
-5. **#185 學習反應 UI + 自架 Noto**：`LEARN_REACTIONS`（懂了/卡住/太神）反應條 + 完課動畫（要新 DB 表）；下載 Noto webp 到 `public/noto/`、`NOTO_BASE` 改 `/noto`。
+4. **背景翻譯批次**：`translate-content-cli forum`（便宜先跑）、`blog`、`lesson 600`（1258 筆量大耗額度、先問林董）。
+5. **#185 收尾**：完整「整章完課」慶祝動畫（現只有 micro-burst）；自架 Noto webp 到 `public/noto/`、`NOTO_BASE` 改 `/noto`（現走 gstatic CDN）。
