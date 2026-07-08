@@ -13,6 +13,11 @@ import { loadEnv } from "./_lib/ai-crypto.mjs";
 const SCOPE = process.argv[2] || "blog";
 const FIELDS = (process.argv[3] || "content").split(",").map((s) => s.trim()).filter(Boolean);
 const LIMIT = Number(process.argv[4]) || 500; // 本次最多翻幾個「欄位×語言」
+// 分片：第 5 參數 "K/N" → 多 Agent 並行時各跑一段（只處理 rowIndex % N === K 的列、不重疊）。省略=全部。
+const PART = (() => {
+  const m = String(process.argv[5] || "").match(/^(\d+)\s*\/\s*(\d+)$/);
+  return m ? { k: Number(m[1]), n: Number(m[2]) } : null;
+})();
 const TABLE = { blog: "user_blog_articles", lesson: "lessons", chapter: "chapters", forum: "forum_threads" }[SCOPE];
 const WHERE = SCOPE === "blog" ? "where is_public = true" : "";
 const TARGETS = [{ locale: "en", tl: "en" }, { locale: "ja", tl: "ja" }, { locale: "ko", tl: "ko" }];
@@ -81,11 +86,12 @@ async function translateField(zh, tl) {
 const env = loadEnv();
 const c = new pg.Client({ connectionString: env.SUPABASE_DB_URL });
 await c.connect();
-const { rows } = await c.query(`select id, ${FIELDS.join(", ")} from public.${TABLE} ${WHERE} order by updated_at desc nulls last limit 2000`);
+const allRows = (await c.query(`select id, ${FIELDS.join(", ")} from public.${TABLE} ${WHERE} order by id limit 5000`)).rows;
+const rows = PART ? allRows.filter((_, i) => i % PART.n === PART.k) : allRows;
 const { rows: ex } = await c.query(`select source_id, field, locale, source_hash from public.content_translations where source_type=$1`, [SCOPE]);
 const seen = new Map(ex.map((r) => [`${r.source_id}|${r.field}|${r.locale}`, r.source_hash]));
 
-console.log(`▶️  Google 免費翻譯 scope=${SCOPE} fields=${FIELDS.join(",")} 上限 ${LIMIT}`);
+console.log(`▶️  Google 免費翻譯 scope=${SCOPE} fields=${FIELDS.join(",")} 上限 ${LIMIT}${PART ? ` 分片 ${PART.k}/${PART.n}(${rows.length}列)` : ""}`);
 let done = 0, skip = 0, fail = 0, budget = LIMIT;
 outer:
 for (const row of rows) {
