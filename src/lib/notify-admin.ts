@@ -248,13 +248,15 @@ function tgEscape(s: string): string {
   return s.replace(/([_*[\]()~`>#+=|{}.!\\-])/g, "\\$1");
 }
 
-async function logNotifyError(channel: string, message: string, extra: any = {}) {
+// level 預設 error；「暫時性網路投遞失敗（fetch failed）」用 warn——那是連外部 API 抖動、
+// 不是 app 錯誤，記 error 會誤觸「錯誤激增」異常偵測（甚至又發 TG 告警 → 放大迴圈）。
+async function logNotifyError(channel: string, message: string, extra: any = {}, level: "error" | "warn" = "error") {
   try {
     const { createSupabaseAdmin } = await import("./supabase-admin");
     const admin = createSupabaseAdmin();
     await admin.from("error_logs").insert({
       source: `notify-admin/${channel}`,
-      level: "error",
+      level,
       message: `[notify_${channel}_failed] ${message}`,
       extra,
     });
@@ -361,7 +363,7 @@ async function sendTelegram(botToken: string, chatId: string, text: string, kind
             : causeMsg.includes("ENOTFOUND") || causeMsg.includes("EAI_AGAIN") ? "DNS 解析 telegram.org 失敗、Zeabur 網路問題"
             : causeMsg.includes("ECONNRESET") || causeMsg.includes("UND_ERR") ? "TCP 連線斷、過會再試"
             : "看 cause 細節",
-      });
+      }, "warn"); // 網路暫時抖動 → warn，不算「錯誤激增」
       return;
     }
     if (!res.ok) {
@@ -482,7 +484,7 @@ async function sendDiscord(url: string, text: string) {
             : causeMsg.includes("ENOTFOUND") ? "DNS 解析 discord.com 失敗、Zeabur 網路問題"
             : causeMsg.includes("ECONNRESET") ? "TCP 連線斷、過會再試"
             : "看 cause",
-      });
+      }, "warn"); // 網路暫時抖動 → warn，不算「錯誤激增」
       return;
     }
     if (!res.ok) {
