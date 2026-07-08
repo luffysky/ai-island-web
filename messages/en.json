@@ -2469,6 +2469,7 @@
     "reactFighting": "Keep going",
     "reactLike": "Like",
     "reactLove": "Love",
-    "reactCelebrate": "Celebrate"
+    "reactCelebrate": "Celebrate",
+    "lessonPrompt": "How was this lesson?"
   }
 }

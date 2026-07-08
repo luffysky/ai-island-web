@@ -2469,6 +2469,7 @@
     "reactFighting": "화이팅",
     "reactLike": "좋아요",
     "reactLove": "사랑해요",
-    "reactCelebrate": "축하"
+    "reactCelebrate": "축하",
+    "lessonPrompt": "이 레슨은 어땠나요?"
   }
 }

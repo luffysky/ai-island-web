@@ -19,6 +19,7 @@ import { NotePanel } from "./NotePanel";
 import { CodeBlock } from "./CodeBlock";
 import { ResourceGroup } from "./ResourceCard";
 import { LessonImage } from "./LessonImage";
+import { LearnReactionBar } from "./LearnReactionBar";
 
 // 從 markdown content 抽 ### 標題、產生 outline
 function extractOutline(content: string): Array<{ text: string; level: number }> {
@@ -281,6 +282,9 @@ export function LessonCard({
           <Check size={16} /> 標記完成 (+{lesson.xp} XP)
         </button>
       )}
+
+      {/* 學習反應（懂了 / 卡住 / 太神…）— 只在有內容的節顯示 */}
+      {hasContent && <LearnReactionBar lessonId={lesson.id} chapterId={chapterId} />}
     </motion.div>
   );
 }

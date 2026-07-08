@@ -111,6 +111,8 @@ const MIGRATIONS = [
   "notes_purchase_copy_migration.sql",
   // 2026-07 — 部落格文章關聯課程章節/課（筆記發布時帶入、文章頁可點跳 lesson）
   "blog_article_chapter_link_migration.sql",
+  // 2026-07-09 — 學習反應（懂了/卡住/太神…每節課情緒反饋條）
+  "lesson_reactions_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
