@@ -254,7 +254,7 @@ function FolderBar({
         {treeCollapsed ? <ChevronRight size={13} /> : <ChevronDown size={13} />}
         <Folder size={13} /> {t("knowledgeTree")}
       </button>
-      {!treeCollapsed && (<>
+      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${treeCollapsed ? "max-h-0 opacity-0" : "max-h-[2000px] opacity-100"}`}>
       <FolderTreeRow dropId={undefined} active={!fCat} droppable={false} icon={<FileText size={14} />} label={t("allNotes")} count={total} onClick={() => setFCat("")} />
       <FolderTreeRow dropId={folderDropId(UNCATEGORIZED)} active={fCat === UNCAT_FILTER} droppable={droppable} icon={<span className="text-xs">📥</span>} label={t("uncategorized")} count={uncategorizedCount} onClick={() => setFCat(fCat === UNCAT_FILTER ? "" : UNCAT_FILTER)} />
 
@@ -268,7 +268,7 @@ function FolderBar({
       ) : (
         <button type="button" onClick={() => setAdding(true)} className="w-full text-left px-1.5 py-1 rounded-md text-xs text-fg-muted hover:bg-bg-elevated hover:text-fg inline-flex items-center gap-1.5"><FolderPlus size={13} /> {t("addFolder")}</button>
       )}
-      </>)}
+      </div>
 
       {allTags.length > 0 && (
         <div className="pt-2 mt-1 border-t border-border/60">

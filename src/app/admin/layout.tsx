@@ -122,7 +122,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </div>
         </div>
 
-      <div className="flex gap-6">
+      <div className="flex gap-2 md:gap-6">
         <CollapsibleAside>
           <nav className="space-y-4 text-sm">
 
