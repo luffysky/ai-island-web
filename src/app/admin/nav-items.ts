@@ -24,6 +24,7 @@ export type AdminNavGroup = {
 /** 置頂、不歸類的項目 */
 export const ADMIN_NAV_TOP: AdminNavItem[] = [
   { href: "/admin/idea-fragments", label: "💡 給我一個點子" },
+  { href: "/admin/grant", label: "🏆 補助 & 競賽作戰室" },
 ];
 
 export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
