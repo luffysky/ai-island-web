@@ -122,7 +122,7 @@ export function GrantHubClient() {
               </article>
             </div>
             <div className="text-center text-sm text-fg-muted py-6 inline-flex w-full items-center justify-center gap-1.5">
-              Nami 加油！我們一起把 AI 島做起來 <Heart size={14} className="text-emerald-500 fill-emerald-500" /> 💚
+              AI 島 · 補助 &amp; 競賽作戰計畫 <Heart size={14} className="text-emerald-500 fill-emerald-500" />
             </div>
           </main>
         </div>

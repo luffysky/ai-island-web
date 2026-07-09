@@ -172,6 +172,7 @@ export function AITutorWidget({
   useOverlayRegister(open, false);
   const [models, setModels] = useState<AIModel[]>([]);
   const [selectedModelId, setSelectedModelId] = useState<string>("auto"); // 預設 Auto（依難度自動分級、省成本）
+  const [canPickModel, setCanPickModel] = useState(true); // 免費用戶不能自選模型（伺服器一律 auto）
   // 初次載入：還原上次選的模型（localStorage）。models 載入後會再驗證該模型是否仍存在。
   useEffect(() => {
     try { const v = localStorage.getItem(TUTOR_MODEL_KEY); if (v) setSelectedModelId(v); } catch {}
@@ -306,6 +307,15 @@ export function AITutorWidget({
       setQuotaUsed({ used: q?.free_used ?? 0, limit: def?.free_tier_daily_limit ?? 10 });
     })();
   }, [authState, models]);
+
+  // 分層：免費用戶不能自選模型（只顯示 Auto）；Plus/Pro/特權可選
+  useEffect(() => {
+    if (authState !== "in") return;
+    fetch("/api/ai/tier", { credentials: "include" })
+      .then((r) => r.json())
+      .then((d) => { setCanPickModel(!!d.canPickModel); if (!d.canPickModel) setSelectedModelId("auto"); })
+      .catch(() => {});
+  }, [authState]);
 
   // 自動 scroll — 只動聊天容器自己，不用 scrollIntoView（會連帶捲動整個頁面）
   useEffect(() => {
@@ -954,6 +964,7 @@ export function AITutorWidget({
                 </p>
               </div>
 
+              {canPickModel ? (
               <div className="relative z-30">
                 <label className="text-xs text-fg-muted mb-1 block">AI 模型</label>
                 <button
@@ -1011,6 +1022,12 @@ export function AITutorWidget({
                   <p className="text-xs text-fg-muted mt-1">{selectedModel.description}</p>
                 )}
               </div>
+              ) : (
+                <div>
+                  <label className="text-xs text-fg-muted mb-1 block">AI 模型</label>
+                  <div className="bg-bg-card border border-border rounded p-2 text-sm text-fg-muted">🤖 Auto（自動選最適合的模型；升級方案可自選）</div>
+                </div>
+              )}
 
               <div>
                 <label className="text-xs text-fg-muted mb-1 block">語氣</label>
