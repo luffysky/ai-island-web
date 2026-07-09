@@ -57,7 +57,20 @@
 
 ## 🔨 待辦（下次）
 
-### 🚨 HIGH：AI 成本沒真正抓到所有 API 實際花費（林董指出）
+### 🚀 全站 AI 升級路線圖 P0–P4（詳規劃 → `docs/ai_upgrade_plan.md`）
+> 盤點：旗艦 AI 導師 `api/ai/chat` 全配；其餘 AI 只用一半工具箱、`streamAI` 出口記帳有洞。
+> 決策：創作者綠寶=只擋高階模型保持免費+軟上限預埋（見規劃書 §4）。
+
+- **P0 成本記帳補完（=下方 HIGH，最優先、低風險）**
+  - ⬜ `admin/quiz/generate:92`、`pet/tick:121` streamAI **零記帳** → 收尾補 `logAiUsage`。
+  - ⬜ 主聊天 `ai/chat:384` 沒進 `inc_model_usage`（per-model 儀表板漏最大宗）→ 補上、注意不重複計。
+  - ⬜ 抽 `streamAndLog` helper，掃全站 streamAI 出口都經過它。
+- **P1 創作者綠寶補漏**：⬜ `gateHighTierModel` ⬜ 改串流(+前端 IslandChat) ⬜ 語意快取 ⬜ 每日軟上限 config(預設關)。
+- **P2 語意快取推廣**：⬜ pop-quiz / learning-plan / blog-write / ai-assistant 接 `lookupSemanticCache`。
+- **P3 路由統一+補洞**：⬜ 面試/challenge/resume/admin生成器 → `completeForUsage` ⬜ 模擬面試只擋 start→每回合計 ⬜ 移除重複 `providerFromModel`。
+- **P4 能力擴充**：⬜ RAG 加到 assistant/面試/創作 ⬜ vision 加到面試/grade_draft ⬜ 舊 `consume_ai_quota`→`_v2` 統一。
+
+### 🚨 HIGH：AI 成本沒真正抓到所有 API 實際花費（林董指出）＝上方 P0
 - ⬜ 目前 `ai_model_usage` / `logAiUsage` 記帳**不完整**——不是每個用到 AI 的入口都有記真實 token/成本；且早期用量只在各供應商後台。
 - ⬜ 目標：**全站所有 `callAI`/`streamAI` 入口都確實記 token→成本**（含背景任務：學習計畫、模擬面試、創作引擎、LINE bot、summarize-memories、forum residents…），並對帳各供應商實際帳單。
 - ⬜ 免費供應商雖成本≈0，但要能區分「免費/付費」用量、算真實邊際成本。
