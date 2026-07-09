@@ -90,7 +90,7 @@ async function handlePost(req: NextRequest) {
       if (safe) model = safe;
     }
   }
-  let effectiveModelId = model.id;
+  const effectiveModelId = model.id;
 
   // 2. 取 API key
   let apiKey = "";
