@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 // RWD：手機寬度下不得有水平溢出，且行動版導覽（漢堡）可達。
 // 強制小 viewport → 桌面 project 也會以手機尺寸跑這支（Pixel 5 project 本來就是手機）。

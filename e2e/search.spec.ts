@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 // 語意搜尋流程：/search 打字送出 → 結果區或「找不到」皆算 pass、只要沒炸。
 // （語意索引可能還在建、所以「沒找到」也是合法結果、不當失敗。）

@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 // 公開頁面冒煙式點擊：每頁載入不報錯 + 一個關鍵可見元素。
 // 純公開流程、不需登入。auth-gated 頁（/me、/store 結帳、/admin）另見檔尾說明、故意跳過。

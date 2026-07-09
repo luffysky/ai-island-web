@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 // 章節列表點擊流程：/chapters 有列表 → 點進某章 → 看到 CH 內容 / lesson。
 // 內容從 DB 讀（force-dynamic），所以斷言可見文字、不只 status。

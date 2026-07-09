@@ -1,4 +1,5 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "./fixtures";
+import { type Page } from "@playwright/test";
 
 // 首頁點擊流程：載入 → 標題/hero → 導覽列有「章節/部落格」→ 點「章節」→ 到 /chapters。
 // 桌面與手機（Pixel 5 project）都會跑；手機時導覽列收在漢堡選單裡、先展開。
