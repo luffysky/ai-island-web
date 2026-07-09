@@ -22,8 +22,7 @@ const read = (f) => fs.readFileSync(path.join(DIR, f), "utf8").trim();
 
 const cover = `# AI 島（ai-island-web）數位服務創新補助計畫書
 
-> **合併版初稿**（由 \`scripts/build-full-plan.mjs\` 自九章合併）。標記：\`✅\` 已驗證 / \`🟡\` 半成品 / \`[待補]\` 待補內部數據 / \`[待查證]\` 待補外部來源 / \`[需確認]\` 待申請人確認。
-> 內部工作檔（不送審）：現況口徑見附錄 A、技術事實庫見 \`docs/grant/tech-inventory.md\`。
+> 撰稿標記（供內部校對，定稿前清除）：\`✅\` 已驗證 / \`🟡\` 半成品 / \`[待補]\` 待補數據 / \`[待查證]\` 待補來源 / \`[需確認]\` 待申請人確認。
 
 ## 目錄
 1. 執行摘要
@@ -35,14 +34,14 @@ const cover = `# AI 島（ai-island-web）數位服務創新補助計畫書
 7. 競品分析
 8. 經費需求與運用
 9. 關鍵績效指標（KPI）
-- 附錄 A：統一現況口徑與誠實界定
+- 附錄 A：現況與誠實界定（風險揭露）
 
 ---
 `;
 
 const parts = [cover];
 for (const f of CHAPTERS) parts.push(read(f) + "\n\n---\n");
-parts.push("# 附錄 A　統一現況口徑與誠實界定\n\n> 內部一致性基準，非送審章節；供全書口徑對齊。\n");
+parts.push("# 附錄 A　現況與誠實界定（風險揭露）\n\n> 本附錄為計畫之**現況揭露與口徑基準**，屬正式內容之一部分；主文各章之現況 / 用戶 / 營收描述均以本附錄為準。\n");
 for (const f of APPENDIX) parts.push(read(f).replace(/^#[^\n]*\n/, "") + "\n");
 
 const out = parts.join("\n");
