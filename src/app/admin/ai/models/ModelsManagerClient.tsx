@@ -53,7 +53,7 @@ type Notice = {
   message: string;
 };
 
-const PROVIDERS = ["anthropic", "openai", "google", "groq", "openrouter", "cerebras", "nvidia", "sambanova", "cloudflare"];
+const PROVIDERS = ["anthropic", "openai", "google", "groq", "openrouter", "cerebras", "nvidia", "github", "mistral", "sambanova", "cloudflare"];
 
 function keyHasSecret(key?: ApiKey) {
   if (!key) return false;

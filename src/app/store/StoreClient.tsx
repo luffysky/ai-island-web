@@ -5,14 +5,14 @@ import { useTranslations } from "next-intl";
 import { Coins, Crown, Check, Sparkles, CreditCard, Loader2, Info, Gift, Wallet, Palette, Zap } from "lucide-react";
 
 type Pkg = { id: string; twd: number; zcoin: number; bonusPct: number; popular?: boolean };
-type Plan = { id: string; label: string; twd: number; period: string; months: number; perMonth: number; popular?: boolean };
+type Plan = { id: string; label: string; twd: number; period: string; months: number; perMonth: number; popular?: boolean; tier?: string };
 type Provider = { id: string; label: string; fee: string; methods: string[] };
 type StoreItem = { id: string; category: "ai_credit" | "cosmetic" | "boost" | "unlock" | "pet"; name: string; desc: string; priceZ: number; effect: any };
 type Cosmetic = { cosmetic_id: string; cosmetic_type: string; value: string; equipped: boolean };
 type Studio = { id: string; name: string };
 
-export function StoreClient({ balance, isPro, packages, plans, perks, providers, methodLabels, catalog = [], cosmetics = [], studios = [] }: {
-  balance: number; isPro: boolean; packages: Pkg[]; plans: Plan[]; perks: string[];
+export function StoreClient({ balance, isPro, packages, plans, perks, plusPerks = [], providers, methodLabels, catalog = [], cosmetics = [], studios = [] }: {
+  balance: number; isPro: boolean; packages: Pkg[]; plans: Plan[]; perks: string[]; plusPerks?: string[];
   providers: Provider[]; methodLabels: Record<string, string>;
   catalog?: StoreItem[]; cosmetics?: Cosmetic[]; studios?: Studio[];
 }) {
@@ -107,22 +107,39 @@ export function StoreClient({ balance, isPro, packages, plans, perks, providers,
         </div>
       )}
       {tab === "pro" && (
-        <div className="space-y-3">
-          <div className="grid sm:grid-cols-2 gap-3">
-            {plans.map((p) => (
-              <button key={p.id} onClick={() => setPlanId(p.id)}
-                className={`relative text-left rounded-2xl border-2 p-4 transition ${planId === p.id ? "border-accent bg-accent/[0.06]" : "border-border bg-bg-card hover:border-accent/40"}`}>
-                {p.popular && <span className="absolute -top-2 right-3 text-[10px] px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-pink-500 text-black font-bold">{t("saveMost")}</span>}
-                <div className="font-bold inline-flex items-center gap-1.5"><Crown size={16} /> {p.label}</div>
-                <div className="text-2xl font-bold mt-1">NT$ {p.twd.toLocaleString()}<span className="text-sm text-fg-muted font-normal"> / {p.period === "year" ? t("perYear") : t("perMonth")}</span></div>
-                {p.period === "year" && <div className="text-[11px] text-emerald-600 dark:text-emerald-400">{t("avgPerMonth", { n: p.perMonth })}</div>}
-                {planId === p.id && <Check size={16} className="absolute top-3 left-3 text-accent" />}
-              </button>
-            ))}
-          </div>
-          <ul className="text-sm text-fg-muted space-y-1 bg-bg-card border border-border rounded-2xl p-4">
-            {perks.map((x, i) => <li key={i} className="inline-flex items-start gap-2"><Check size={15} className="text-emerald-500 mt-0.5 shrink-0" /> {x}</li>)}
-          </ul>
+        <div className="space-y-5">
+          {(["plus", "pro"] as const).map((tier) => {
+            const tierPlans = plans.filter((p) => (p.tier ?? "pro") === tier);
+            if (tierPlans.length === 0) return null;
+            const isPlus = tier === "plus";
+            const tierPerks = isPlus ? plusPerks : perks;
+            return (
+              <div key={tier} className="space-y-2">
+                <div className="text-sm font-bold inline-flex items-center gap-1.5">
+                  <Crown size={15} className={isPlus ? "text-sky-500" : "text-amber-500"} />
+                  {isPlus ? "學習 Plus" : "求職 Pro"}
+                  {!isPlus && <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 font-medium">含高階 AI + 求職工具</span>}
+                </div>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {tierPlans.map((p) => (
+                    <button key={p.id} onClick={() => setPlanId(p.id)}
+                      className={`relative text-left rounded-2xl border-2 p-4 transition ${planId === p.id ? "border-accent bg-accent/[0.06]" : "border-border bg-bg-card hover:border-accent/40"}`}>
+                      {p.popular && <span className="absolute -top-2 right-3 text-[10px] px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-pink-500 text-black font-bold">{t("saveMost")}</span>}
+                      <div className="font-bold">{p.label}</div>
+                      <div className="text-2xl font-bold mt-1">NT$ {p.twd.toLocaleString()}<span className="text-sm text-fg-muted font-normal"> / {p.period === "year" ? t("perYear") : t("perMonth")}</span></div>
+                      {p.period === "year" && <div className="text-[11px] text-emerald-600 dark:text-emerald-400">{t("avgPerMonth", { n: p.perMonth })}</div>}
+                      {planId === p.id && <Check size={16} className="absolute top-3 left-3 text-accent" />}
+                    </button>
+                  ))}
+                </div>
+                {tierPerks.length > 0 && (
+                  <ul className="text-xs text-fg-muted space-y-1 bg-bg-card border border-border rounded-2xl p-3">
+                    {tierPerks.map((x, i) => <li key={i} className="inline-flex items-start gap-2"><Check size={14} className="text-emerald-500 mt-0.5 shrink-0" /> {x}</li>)}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
 

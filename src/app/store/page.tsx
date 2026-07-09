@@ -4,7 +4,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { getZcoinBalance } from "@/lib/zcoin";
 import { isPro } from "@/lib/payments/orders";
 import {
-  ZCOIN_PACKAGES, PRO_PLANS, PRO_PERKS, enabledProviders, PROVIDER_METHODS,
+  ZCOIN_PACKAGES, PRO_PLANS, PRO_PERKS, PLUS_PERKS, enabledProviders, PROVIDER_METHODS,
   PROVIDER_LABEL, METHOD_LABEL, PROVIDER_FEE_NOTE,
 } from "@/lib/payments/config";
 import { getCatalog, listCosmetics } from "@/lib/store-redeem";
@@ -37,6 +37,7 @@ export default async function StorePage() {
       packages={ZCOIN_PACKAGES}
       plans={PRO_PLANS}
       perks={PRO_PERKS}
+      plusPerks={PLUS_PERKS}
       providers={providers.map((p) => ({ id: p, label: PROVIDER_LABEL[p], fee: PROVIDER_FEE_NOTE[p], methods: PROVIDER_METHODS[p] }))}
       methodLabels={METHOD_LABEL}
       catalog={getCatalog()}

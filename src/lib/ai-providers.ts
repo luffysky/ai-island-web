@@ -93,6 +93,8 @@ function openAiLikeUrl(provider: string): string {
   if (provider === "cerebras") return "https://api.cerebras.ai/v1/chat/completions";      // ~100 萬 tokens/天免費
   if (provider === "nvidia") return "https://integrate.api.nvidia.com/v1/chat/completions"; // NVIDIA NIM 免費
   if (provider === "sambanova") return "https://api.sambanova.ai/v1/chat/completions";     // 免費額度、快
+  if (provider === "github") return "https://models.inference.ai.azure.com/chat/completions"; // GitHub Models：免費 GPT-4o/Llama/Phi（GitHub PAT、免卡）
+  if (provider === "mistral") return "https://api.mistral.ai/v1/chat/completions";         // Mistral：Experiment 免費 ~10 億 tokens/月
   if (provider === "cloudflare") {
     // Cloudflare Workers AI 有 OpenAI 相容 endpoint（需 account id）。
     // account id 放 env（不是機密、但每帳號不同）；token 走 apiKey（BYOK / ai_api_keys）。
@@ -332,6 +334,8 @@ async function dispatchCallAI(req: AICompletionRequest): Promise<AICompletionRes
     case "cerebras":    // 以下皆 OpenAI 相容之免費 / 高額度供應商
     case "nvidia":
     case "sambanova":
+    case "github":
+    case "mistral":
       return callOpenAI(req);
     case "anthropic":
       return callAnthropic(req);
@@ -396,6 +400,8 @@ export async function* streamAI(req: AICompletionRequest): AsyncGenerator<Stream
     case "cerebras":
     case "nvidia":
     case "sambanova":
+    case "github":
+    case "mistral":
       yield* streamOpenAILike(req);
       break;
     case "anthropic":
@@ -422,7 +428,7 @@ async function* streamOpenAILike(req: AICompletionRequest): AsyncGenerator<Strea
     body: JSON.stringify({
       model: req.model,
       // groq / cloudflare / cerebras / nvidia / sambanova 多為純文字 model、強制純文字；openai / openrouter 用 multimodal 格式
-      messages: (["groq", "cloudflare", "cerebras", "nvidia", "sambanova"].includes(req.provider))
+      messages: (["groq", "cloudflare", "cerebras", "nvidia", "sambanova", "github", "mistral"].includes(req.provider))
         ? req.messages.map((m) => ({ role: m.role, content: contentToText(m.content) }))
         : toOpenAIMessages(req.messages),
       temperature: req.temperature ?? 0.7,

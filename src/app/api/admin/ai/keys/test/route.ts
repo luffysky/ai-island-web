@@ -180,6 +180,8 @@ export async function GET(req: NextRequest) {
         : provider === "cerebras" ? "csk-..."
         : provider === "nvidia" ? "nvapi-..."
         : provider === "sambanova" ? "(SambaNova key)"
+        : provider === "github" ? "ghp_... / github_pat_..."
+        : provider === "mistral" ? "(Mistral key)"
         : "(unknown)",
   };
 
@@ -192,6 +194,8 @@ export async function GET(req: NextRequest) {
   else if (provider === "cerebras") apiResult = await testModelsEndpoint("https://api.cerebras.ai/v1/models", decrypted);
   else if (provider === "nvidia") apiResult = await testModelsEndpoint("https://integrate.api.nvidia.com/v1/models", decrypted);
   else if (provider === "sambanova") apiResult = await testModelsEndpoint("https://api.sambanova.ai/v1/models", decrypted);
+  else if (provider === "mistral") apiResult = await testModelsEndpoint("https://api.mistral.ai/v1/models", decrypted);
+  else if (provider === "github") apiResult = await testModelsEndpoint("https://models.inference.ai.azure.com/models", decrypted);
   else if (provider === "cloudflare") apiResult = { ok: true, body: "cloudflare 需 account id + 模型路徑、略過連線測試（存 key 即可用）" };
   else apiResult = { ok: false, body: `no test for provider=${provider}` };
 
