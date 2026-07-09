@@ -109,6 +109,21 @@ async function testGroq(key: string): Promise<{ ok: boolean; status?: number; bo
   }
 }
 
+// OpenAI 相容供應商（cerebras / nvidia / sambanova）：打 /v1/models 驗 key
+async function testModelsEndpoint(url: string, key: string): Promise<{ ok: boolean; status?: number; body?: string }> {
+  try {
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${key}` },
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (res.ok) return { ok: true, status: res.status };
+    const body = await res.text();
+    return { ok: false, status: res.status, body: body.slice(0, 500) };
+  } catch (e: any) {
+    return { ok: false, body: `fetch failed: ${e?.message ?? "unknown"}` };
+  }
+}
+
 export async function GET(req: NextRequest) {
   const me = await requireAdmin();
   if (!me) return NextResponse.json({ error: "forbidden" }, { status: 403 });
@@ -162,6 +177,9 @@ export async function GET(req: NextRequest) {
         : provider === "google" ? "AIza..."
         : provider === "openrouter" ? "sk-or-..."
         : provider === "groq" ? "gsk_..."
+        : provider === "cerebras" ? "csk-..."
+        : provider === "nvidia" ? "nvapi-..."
+        : provider === "sambanova" ? "(SambaNova key)"
         : "(unknown)",
   };
 
@@ -171,6 +189,10 @@ export async function GET(req: NextRequest) {
   else if (provider === "google") apiResult = await testGoogle(decrypted);
   else if (provider === "openrouter") apiResult = await testOpenRouter(decrypted);
   else if (provider === "groq") apiResult = await testGroq(decrypted);
+  else if (provider === "cerebras") apiResult = await testModelsEndpoint("https://api.cerebras.ai/v1/models", decrypted);
+  else if (provider === "nvidia") apiResult = await testModelsEndpoint("https://integrate.api.nvidia.com/v1/models", decrypted);
+  else if (provider === "sambanova") apiResult = await testModelsEndpoint("https://api.sambanova.ai/v1/models", decrypted);
+  else if (provider === "cloudflare") apiResult = { ok: true, body: "cloudflare 需 account id + 模型路徑、略過連線測試（存 key 即可用）" };
   else apiResult = { ok: false, body: `no test for provider=${provider}` };
 
   const hint = apiResult.ok

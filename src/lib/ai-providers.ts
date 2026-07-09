@@ -89,6 +89,10 @@ function toOpenAIMessages(messages: AIMessage[]): any[] {
 function openAiLikeUrl(provider: string): string {
   if (provider === "groq") return "https://api.groq.com/openai/v1/chat/completions";
   if (provider === "openrouter") return "https://openrouter.ai/api/v1/chat/completions";
+  // 免費 / 高額度供應商（皆 OpenAI 相容；免信用卡）：擴大免費層可用量
+  if (provider === "cerebras") return "https://api.cerebras.ai/v1/chat/completions";      // ~100 萬 tokens/天免費
+  if (provider === "nvidia") return "https://integrate.api.nvidia.com/v1/chat/completions"; // NVIDIA NIM 免費
+  if (provider === "sambanova") return "https://api.sambanova.ai/v1/chat/completions";     // 免費額度、快
   if (provider === "cloudflare") {
     // Cloudflare Workers AI 有 OpenAI 相容 endpoint（需 account id）。
     // account id 放 env（不是機密、但每帳號不同）；token 走 apiKey（BYOK / ai_api_keys）。
@@ -325,6 +329,9 @@ async function dispatchCallAI(req: AICompletionRequest): Promise<AICompletionRes
     case "openai":
     case "openrouter":  // OpenAI 相容
     case "cloudflare":  // Cloudflare Workers AI — OpenAI 相容 endpoint（免費額度）
+    case "cerebras":    // 以下皆 OpenAI 相容之免費 / 高額度供應商
+    case "nvidia":
+    case "sambanova":
       return callOpenAI(req);
     case "anthropic":
       return callAnthropic(req);
@@ -386,6 +393,9 @@ export async function* streamAI(req: AICompletionRequest): AsyncGenerator<Stream
     case "meta":
     case "openrouter":
     case "cloudflare":
+    case "cerebras":
+    case "nvidia":
+    case "sambanova":
       yield* streamOpenAILike(req);
       break;
     case "anthropic":
@@ -411,8 +421,8 @@ async function* streamOpenAILike(req: AICompletionRequest): AsyncGenerator<Strea
     },
     body: JSON.stringify({
       model: req.model,
-      // groq / cloudflare 多數 model 不支援 image、強制純文字；openai / openrouter 用 multimodal 格式
-      messages: (req.provider === "groq" || req.provider === "cloudflare")
+      // groq / cloudflare / cerebras / nvidia / sambanova 多為純文字 model、強制純文字；openai / openrouter 用 multimodal 格式
+      messages: (["groq", "cloudflare", "cerebras", "nvidia", "sambanova"].includes(req.provider))
         ? req.messages.map((m) => ({ role: m.role, content: contentToText(m.content) }))
         : toOpenAIMessages(req.messages),
       temperature: req.temperature ?? 0.7,

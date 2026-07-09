@@ -4,7 +4,7 @@
  */
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { grantZcoinOnce } from "@/lib/zcoin";
-import { CURRENCY, getProPlan, getZcoinPackage, type PaymentMethod, type PaymentProvider } from "./config";
+import { CURRENCY, getProPlan, getZcoinPackage, planTier, type PaymentMethod, type PaymentProvider, type SubTier } from "./config";
 
 export type OrderPurpose = "zcoin" | "pro";
 
@@ -119,4 +119,17 @@ export async function isPro(userId: string): Promise<boolean> {
   const admin = createSupabaseAdmin();
   const { data } = await admin.from("subscriptions").select("expires_at, status").eq("user_id", userId).eq("status", "active").order("expires_at", { ascending: false }).maybeSingle();
   return !!(data?.expires_at && new Date(data.expires_at) > new Date());
+}
+
+/**
+ * 使用者的訂閱層級：`"plus"` / `"pro"` / `null`（無有效訂閱）。
+ * 由 subscriptions.metadata.plan_id（如 plus_monthly / pro_yearly）推導 tier。
+ * 舊資料無 plan_id 者視為 "pro"（維持既有 Pro 權益不打折）。
+ */
+export async function getUserSubTier(userId: string): Promise<SubTier | null> {
+  const admin = createSupabaseAdmin();
+  const { data } = await admin.from("subscriptions").select("expires_at, status, metadata").eq("user_id", userId).eq("status", "active").order("expires_at", { ascending: false }).maybeSingle();
+  if (!(data?.expires_at && new Date(data.expires_at) > new Date())) return null;
+  const planId = (data as any)?.metadata?.plan_id as string | undefined;
+  return (planId && planTier(planId)) || "pro";
 }

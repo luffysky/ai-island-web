@@ -88,17 +88,16 @@ async function handlePost(req: NextRequest) {
       return errorResponse("key_decrypt_failed", 500);
     }
   } else {
-    // 特權帳號（ai_unlimited / is_owner）或訂閱中 → 跳過所有 quota / cap、最高禮遇
+    // 特權帳號（ai_unlimited / is_owner）或訂閱中 → 跳過每日免費 quota。
+    // 分層：subTier = plus / pro / null（無訂閱）。unlimited 視為 pro。
     const unlimited = await hasAiUnlimited(user.id);
-    let isPremium = false;
-    if (!unlimited) {
-      const { data: premiumOk } = await admin.rpc("has_active_subscription", { p_user_id: user.id });
-      isPremium = !!premiumOk;
-    }
-    // 成本防護：免費 / 非特權用戶不得「手動指定」高階（昂貴）模型，靜默降級為排除 high 的自動選模。
-    // auto 模式本來就避開 high；特權（ai_unlimited / owner）與 Premium 不受限；
-    // 自帶金鑰（useBYOK）走上面另一分支、成本自負、亦不受此限。
-    if (!unlimited && !isPremium && model.tier === "high") {
+    const { getUserSubTier } = await import("@/lib/payments/orders");
+    const subTier = unlimited ? "pro" : await getUserSubTier(user.id); // "plus" | "pro" | null
+    const isPremium = !!subTier; // 有有效訂閱（Plus 或 Pro）→ 跳過每日免費 quota
+    // 成本防護 + 分層授權：高階（昂貴）模型僅 **Pro / 特權** 可用；
+    // 免費與 **Plus** 手動指定高階 → 靜默降級為排除 high 的自動選模（Plus 給中階、Pro 才給高階）。
+    // auto 模式本來就避開 high；自帶金鑰（useBYOK）走上面另一分支、成本自負、亦不受此限。
+    if (!unlimited && subTier !== "pro" && model.tier === "high") {
       const { data: actives } = await admin.from("ai_models").select("*").eq("is_active", true);
       const { classifyDifficulty, pickModelByTier } = await import("@/lib/ai-difficulty");
       const tier = classifyDifficulty(message ?? "", { hasImages: images.length > 0 });
