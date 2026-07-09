@@ -7,7 +7,7 @@ import { getUserLearningState, formatLearningStateForPrompt } from "@/lib/user-l
 import { decryptKey } from "@/lib/ai-crypto";
 import { rateLimit } from "@/lib/rate-limit";
 import { hasAiUnlimited } from "@/lib/ai-privilege";
-import { lookupCache, writeCache, bumpHit } from "@/lib/ai-cache";
+import { lookupCache, lookupSemanticCache, writeCache, bumpHit } from "@/lib/ai-cache";
 import { scanContent, flagContent } from "@/lib/moderation";
 
 export const maxDuration = 60;
@@ -270,7 +270,11 @@ async function handlePost(req: NextRequest) {
     contextChapterId: contextChapterId ?? null,
     contextLessonId: contextLessonId ?? null,
   };
-  const cached = isFirstMessage ? await lookupCache(message, cacheKey) : null;
+  // 精確快取(question_hash)先查；沒中且無圖片 → 再用語意快取找相似問題（省 LLM 呼叫）
+  const cached = isFirstMessage
+    ? (await lookupCache(message, cacheKey)) ||
+      (images.length === 0 && message ? await lookupSemanticCache(message, cacheKey) : null)
+    : null;
 
   // 6. 存 user message
   const { error: userMessageError } = await admin.from("ai_messages").insert({

@@ -47,12 +47,18 @@ describe("payments/config — lookups", () => {
     expect(getProPlan("pro_weekly")).toBeUndefined();
   });
 
-  it("yearly plan is cheaper per month than monthly", () => {
-    const monthly = getProPlan("pro_monthly")!;
-    const yearly = getProPlan("pro_yearly")!;
-    expect(yearly.perMonth).toBeLessThan(monthly.perMonth);
-    expect(yearly.months).toBe(12);
-    expect(PRO_PLANS.length).toBe(2);
+  it("yearly plan is cheaper per month than monthly (both tiers)", () => {
+    for (const tier of ["plus", "pro"] as const) {
+      const monthly = getProPlan(`${tier}_monthly`)!;
+      const yearly = getProPlan(`${tier}_yearly`)!;
+      expect(monthly.tier).toBe(tier);
+      expect(yearly.tier).toBe(tier);
+      expect(yearly.perMonth).toBeLessThan(monthly.perMonth);
+      expect(yearly.months).toBe(12);
+    }
+    // 2 層 × 月/年 = 4 個方案；Pro 月價高於 Plus 月價（分層錨定）
+    expect(PRO_PLANS.length).toBe(4);
+    expect(getProPlan("pro_monthly")!.twd).toBeGreaterThan(getProPlan("plus_monthly")!.twd);
   });
 });
 

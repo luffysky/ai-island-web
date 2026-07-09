@@ -11,6 +11,10 @@
 
 import { createHash } from "node:crypto";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { embedText } from "@/lib/ai-embeddings";
+
+// 語意快取相似度門檻（cosine）。0.93 ≈ 幾乎同義的問題才命中，避免回錯答案。
+const SEMANTIC_THRESHOLD = 0.93;
 
 export type CacheKey = {
   tone?: string | null;
@@ -75,7 +79,39 @@ export async function lookupCache(
 }
 
 /**
- * 寫快取。撞 UNIQUE 就忽略。
+ * 語意快取查詢：精確快取沒命中時用。把問題轉向量、在「相同情境」內找相似度達門檻的快取。
+ * 需 embedding（OpenAI key）；任何失敗都 fail-soft 回 null、不影響 AI 流程。
+ */
+export async function lookupSemanticCache(
+  question: string,
+  key: CacheKey,
+): Promise<{ id: string; answer: string; modelUsed: string | null } | null> {
+  try {
+    const normalized = normalizeQuestion(question);
+    if (!normalized) return null;
+    const emb = await embedText(normalized);
+    if (!emb) return null;
+    const admin = createSupabaseAdmin();
+    const { data, error } = await admin.rpc("match_ai_cache", {
+      p_embedding: emb,
+      p_tone: key.tone ?? null,
+      p_persona: key.personaId ?? null,
+      p_chapter: key.contextChapterId ?? null,
+      p_lesson: key.contextLessonId ?? null,
+      p_threshold: SEMANTIC_THRESHOLD,
+      p_limit: 1,
+    });
+    if (error || !Array.isArray(data) || data.length === 0) return null;
+    const hit = data[0] as any;
+    return { id: String(hit.id), answer: hit.answer, modelUsed: hit.model_used ?? null };
+  } catch (e) {
+    console.warn("[ai-cache] semantic lookup failed:", e);
+    return null;
+  }
+}
+
+/**
+ * 寫快取。撞 UNIQUE 就忽略。同時算 embedding 存入（供語意快取；失敗不影響）。
  */
 export async function writeCache(
   question: string,
@@ -87,8 +123,9 @@ export async function writeCache(
     const normalized = normalizeQuestion(question);
     if (!normalized || !answer) return;
     const qhash = hashQuestion(normalized);
+    const emb = await embedText(normalized).catch(() => null); // 語意快取用、失敗給 null
     const admin = createSupabaseAdmin();
-    await admin.from("ai_response_cache").insert({
+    const base: Record<string, any> = {
       question_hash: qhash,
       question_text: question.slice(0, 2000),
       answer,
@@ -97,7 +134,13 @@ export async function writeCache(
       context_chapter_id: key.contextChapterId ?? null,
       context_lesson_id: key.contextLessonId ?? null,
       model_used: modelUsed,
-    }).then(() => {}, () => {}); // 撞 UNIQUE 就忽略
+    };
+    // 先試含 embedding；若 embedding 欄位還沒建（migration 未套用）→ 退回不含 embedding 的寫入，
+    // 確保精確快取在 migration 前仍正常運作。
+    const { error } = await admin.from("ai_response_cache").insert({ ...base, embedding: emb });
+    if (error && emb) {
+      await admin.from("ai_response_cache").insert(base).then(() => {}, () => {});
+    }
   } catch (e) {
     console.warn("[ai-cache] write failed:", e);
   }
