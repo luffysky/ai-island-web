@@ -33,7 +33,9 @@ graph TD
 | AI 整合 | 自建多供應商 LLM 閘道（6 家協定，原生實作） | `src/lib/ai-providers.ts` |
 | 語意檢索 | pgvector（1536 維、ivfflat cosine 索引） | `supabase/ai_embeddings_migration.sql:6` |
 | 部署 | Docker standalone → GHCR → Zeabur（CI/CD 全自動） | `.github/workflows/docker.yml` |
-| 多語 | next-intl（介面）＋ 自建零成本內容翻譯管線（四語互譯） | `src/lib/gtranslate.ts` |
+| 多語 | next-intl（介面）＋ 自建零成本內容翻譯管線（四語互譯，機器翻譯 / 非官方端點） | `src/lib/gtranslate.ts` |
+
+> 佐證說明：本表部分列為**檔案 / 目錄層級**佐證（如 `supabase/*.sql`、`ai-providers.ts`）；各能力之精確行號見後續各節與 `tech-inventory.md`。凡以 glob 佐證者，查證方法為於 repo 執行對應 grep（如 `grep "create table" supabase/*.sql`）。
 
 ---
 
@@ -55,7 +57,7 @@ graph TD
 | 圖片多模態 | 使用者可貼上截圖，AI 讀圖作答（最多 5 張） | `ai-providers.ts:73/144/254` ✅ |
 | 自動容錯備援 | 主模型逾額 / 錯誤時，自動跨供應商重試（最多 6 次） | `ai-providers.ts:341` ✅ |
 | 熔斷器 | 供應商連續失敗時暫時停用、冷卻後恢復 | `resolve-usage-ai.ts:75` ✅ |
-| 工具呼叫 | 多輪 agentic loop，AI 可查詢真實營運數據 | `line-ai-tools.ts:429` ✅ |
+| 工具呼叫（限定範圍） | Anthropic 多輪 tool-use loop、11 個特定工具，用於**管理 bot 查詢營運數據**（非通用 agent） | `line-ai-tools.ts:429` ✅ |
 | Prompt 快取 | 穩定前綴設快取斷點，降低重複 token 成本 | `ai-providers.ts:175` ✅ |
 
 ```mermaid
@@ -96,9 +98,9 @@ flowchart LR
 | 回應快取 | 相同提問直接回快取，不呼叫 API | `ai-cache` |
 | BYOK | 使用者可自帶金鑰，成本轉移 | `chat/route.ts:75` |
 
-**（三）成本監控與告警**：每次呼叫記錄 token 與成本至 `ai_model_usage`（`ai-usage-log.ts:26`）；營運告警系統每日檢查 AI 成本，超過門檻即時通知管理者（站內 / LINE / Telegram / Discord）（`ops-alerts.ts`）。
+**（三）成本監控與告警**：每次呼叫記錄 token 與成本至 `ai_model_usage`（`ai-usage-log.ts:26`）；營運告警系統每日檢查 AI 成本，超過門檻可通知管理者（站內 / LINE / Telegram / Discord）（`ops-alerts.ts`）。`[待補]` 各通知通道於正式環境是否皆已設妥（LINE / TG / Discord token）、以及實際告警觸發紀錄，待補環境設定佐證。
 
-**成本上限之量化事實**（[待補] 以現行設定為例）：目前系統金鑰月預算合計約 US$90，任一金鑰達上限即自動停用並降級為「服務忙碌」，故**單月 AI 成本具硬性上限、不會因流量突增而失控**。此機制使本平台可安全對外推廣，並隨營收成長逐步調高預算。
+**成本上限之量化事實**（✅ 月預算上限與本月實支為 2026-07 資料庫實查；金額為現行設定、`[需確認]` 幣別 USD / 週期為月）：目前系統金鑰月預算合計約 US$90、本月實支約 US$2.7。任一金鑰達上限即自動停用並切換備援，全部達上限時**服務降級為「暫時忙碌」**。**須誠實說明：此為「成本具硬性上限」，其代價是達上限時之可用性降級（服務暫停），而非「服務不中斷且成本不漲」**；且上限之精確性仍取決於供應商計費延遲與預算設定之維護。此機制使本平台可安全對外推廣，並隨營收逐步調高預算。
 
 ---
 
@@ -178,10 +180,12 @@ flowchart LR
 | 金鑰加密 | 使用者自帶 API 金鑰以 AES-256-GCM 加密儲存 | `ai-crypto.ts:32` ✅ |
 | 後台授權 | 集中式守門，向 Supabase 驗證 token，三級權限（owner/admin/scoped） | `admin-guard.ts:66` ✅ |
 | 金流原子性 | 儲值 / 訂閱走資料庫函式原子執行、金額防偽、冪等發貨 | `payments/orders.ts:86` ✅ |
-| 個資合規（GDPR） | 提供帳號軟刪除、取消、硬刪除流程 | `supabase/*.sql` ✅ |
+| 個資刪除機制 | 已具備帳號軟刪除、取消、硬刪除流程（**非等同完整 GDPR 合規**） | `supabase/*.sql` ✅ |
 | 傳輸安全 | HSTS preload、X-Frame-Options、nosniff 等安全標頭 | `next.config.mjs:28` ✅ |
 
-> 誠實界定：應用層多數查詢以服務角色（service role）執行，RLS 作為第二道防線；輸入驗證目前以各端點手寫檢查為主，尚未導入集中式 schema 驗證——此為規模化前之強化項（詳第八章風險）。
+> 誠實界定：
+> - 應用層多數查詢以服務角色（service role）執行，RLS 作為第二道防線；輸入驗證目前以各端點手寫檢查為主，尚未導入集中式 schema 驗證——此為規模化前之強化項（詳第八章風險）。
+> - **隱私合規**：目前僅具「資料刪除機制」，**尚不足以宣稱「完整 GDPR / 個資法合規」**；完整合規尚需資料盤點、同意管理、資料匯出、保存年限政策等，列為補助期間之強化項。
 
 ---
 
