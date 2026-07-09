@@ -55,6 +55,21 @@ type Notice = {
 
 const PROVIDERS = ["anthropic", "openai", "google", "groq", "openrouter", "cerebras", "nvidia", "github", "mistral", "sambanova", "cloudflare"];
 
+// 每個供應商：怎麼拿 key（含網址）+ 建議填的 model_name。免費者標 free。
+const PROVIDER_INFO: Record<string, { how: string; url: string; models: string; free?: boolean }> = {
+  anthropic: { how: "Anthropic Console → API Keys", url: "https://console.anthropic.com/settings/keys", models: "claude-opus-4-8 / claude-sonnet-5 / claude-haiku-4-5-20251001" },
+  openai: { how: "OpenAI Platform → API keys", url: "https://platform.openai.com/api-keys", models: "gpt-4o / gpt-4o-mini / gpt-4.1-mini" },
+  google: { how: "Google AI Studio → Get API key（免費）", url: "https://aistudio.google.com/apikey", models: "gemini-2.5-flash（low）/ gemini-2.5-pro（high）", free: true },
+  groq: { how: "Groq Console → API Keys（免費·免卡）", url: "https://console.groq.com/keys", models: "llama-3.1-8b-instant（low）/ llama-3.3-70b-versatile（mid）", free: true },
+  openrouter: { how: "OpenRouter → Keys（有免費 :free 模型）", url: "https://openrouter.ai/keys", models: "qwen/qwen3-next-80b-a3b-instruct:free、openai/gpt-oss-120b:free（免費）", free: true },
+  cerebras: { how: "Cerebras Cloud → API Keys（免費·免卡·約 100 萬 tok/天）", url: "https://cloud.cerebras.ai/", models: "llama3.1-8b（low）/ llama-3.3-70b（mid）", free: true },
+  nvidia: { how: "NVIDIA build → Get API Key（免費）", url: "https://build.nvidia.com/", models: "meta/llama-3.1-8b-instruct（low）/ meta/llama-3.1-70b-instruct（mid）", free: true },
+  github: { how: "GitHub → Settings → Developer settings → Personal access tokens（免費·免卡）", url: "https://github.com/settings/personal-access-tokens", models: "gpt-4o-mini（low）/ Llama-3.3-70B-Instruct（mid）/ Phi-3.5-mini-instruct", free: true },
+  mistral: { how: "Mistral Console → API Keys（Experiment 免費）", url: "https://console.mistral.ai/api-keys", models: "open-mistral-nemo（low）/ mistral-small-latest（mid）", free: true },
+  sambanova: { how: "SambaNova Cloud（若無法註冊可略過此家）", url: "https://cloud.sambanova.ai/apis", models: "Meta-Llama-3.3-70B-Instruct", free: true },
+  cloudflare: { how: "Cloudflare → Workers AI（需 Account ID + API Token；另設 CLOUDFLARE_ACCOUNT_ID env）", url: "https://dash.cloudflare.com/", models: "@cf/meta/llama-3.1-8b-instruct" },
+};
+
 function keyHasSecret(key?: ApiKey) {
   if (!key) return false;
   return key.metadata?.has_key !== false;
@@ -87,6 +102,9 @@ export function ModelsManagerClient({
   // 測 key 結果：直接顯示在該 provider 的按鈕旁、不再跑去最上面被擋住
   const [testResults, setTestResults] = useState<Record<string, { ok: boolean; msg: string }>>({});
   const [testingProvider, setTestingProvider] = useState<string | null>(null);
+  // 新增模型表單草稿（每個 provider 一份）
+  const [newModel, setNewModel] = useState<Record<string, { model_name: string; display_name: string; tier: string }>>({});
+  const [addingModel, setAddingModel] = useState<string | null>(null);
 
   const showNotice = (type: Notice["type"], message: string) => {
     setNotice({ type, message });
@@ -278,6 +296,43 @@ export function ModelsManagerClient({
     }
   };
 
+  const addModel = async (provider: string) => {
+    const draft = newModel[provider];
+    if (!draft?.model_name?.trim()) { showNotice("error", "請填 model_name（跟供應商完全一致）"); return; }
+    setAddingModel(provider);
+    try {
+      const data = await requestJson("/api/admin/ai/models", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          provider,
+          model_name: draft.model_name.trim(),
+          display_name: (draft.display_name || draft.model_name).trim(),
+          tier: draft.tier || "mid",
+        }),
+      });
+      if (data.model) setModels((cur) => [...cur, data.model]);
+      setNewModel((cur) => ({ ...cur, [provider]: { model_name: "", display_name: "", tier: "mid" } }));
+      showNotice("success", "模型已新增（記得勾選啟用）");
+    } catch (error) {
+      showNotice("error", error instanceof Error ? error.message : "新增模型失敗");
+    } finally {
+      setAddingModel(null);
+    }
+  };
+
+  const deleteModel = async (id: string) => {
+    const ok = await confirm({ title: "刪除這個模型？", description: "前台將不再顯示 / 使用此模型。", confirmLabel: "刪除", destructive: true });
+    if (!ok) return;
+    try {
+      await requestJson(`/api/admin/ai/models?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+      setModels((cur) => cur.filter((m) => m.id !== id));
+      showNotice("success", "模型已刪除");
+    } catch (error) {
+      showNotice("error", error instanceof Error ? error.message : "刪除模型失敗");
+    }
+  };
+
   return (
     <div className="space-y-8">
       {notice && <NoticeToast notice={notice} onClose={() => setNotice(null)} />}
@@ -309,6 +364,23 @@ export function ModelsManagerClient({
                 </span>
               </div>
             </div>
+
+            {/* 怎麼拿這家的 key + 建議模型 */}
+            {PROVIDER_INFO[provider] && (
+              <div className="mb-3 p-3 rounded-lg border border-dashed border-border bg-bg/50 text-xs space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold">如何取得 key：</span>
+                  <span>{PROVIDER_INFO[provider].how}</span>
+                  {PROVIDER_INFO[provider].free && <span className="chip chip-success">免費</span>}
+                </div>
+                <div>
+                  <a href={PROVIDER_INFO[provider].url} target="_blank" rel="noopener noreferrer" className="text-accent underline break-all">
+                    {PROVIDER_INFO[provider].url}
+                  </a>
+                </div>
+                <div className="text-fg-muted">建議 model_name：{PROVIDER_INFO[provider].models}</div>
+              </div>
+            )}
 
             {/* API key */}
             <div className="mb-4 p-3 bg-bg rounded-lg space-y-3">
@@ -439,8 +511,59 @@ export function ModelsManagerClient({
                       設預設
                     </button>
                   )}
+                  <button
+                    onClick={() => deleteModel(m.id)}
+                    className="text-xs p-1 rounded text-red-500 hover:bg-red-500/10"
+                    title="刪除此模型"
+                  >
+                    <Trash2 size={14} />
+                  </button>
                 </div>
               ))}
+              {providerModels.length === 0 && (
+                <div className="text-xs text-fg-muted px-1">尚無模型——用下方表單新增（model_name 要跟供應商完全一致）。</div>
+              )}
+
+              {/* 新增模型 */}
+              <div className="mt-2 p-3 rounded-lg border border-dashed border-border flex flex-wrap items-end gap-2">
+                <div className="flex-1 min-w-[160px]">
+                  <div className="text-[11px] text-fg-muted mb-0.5">model_name（必填，跟供應商一致）</div>
+                  <input
+                    value={newModel[provider]?.model_name ?? ""}
+                    onChange={(e) => setNewModel((cur) => ({ ...cur, [provider]: { ...(cur[provider] ?? { model_name: "", display_name: "", tier: "mid" }), model_name: e.target.value } }))}
+                    placeholder="例：llama-3.3-70b"
+                    className="w-full bg-bg-elevated border border-border rounded p-1.5 text-sm font-mono"
+                  />
+                </div>
+                <div className="flex-1 min-w-[120px]">
+                  <div className="text-[11px] text-fg-muted mb-0.5">顯示名稱（選填）</div>
+                  <input
+                    value={newModel[provider]?.display_name ?? ""}
+                    onChange={(e) => setNewModel((cur) => ({ ...cur, [provider]: { ...(cur[provider] ?? { model_name: "", display_name: "", tier: "mid" }), display_name: e.target.value } }))}
+                    placeholder="例：Llama 3.3 70B"
+                    className="w-full bg-bg-elevated border border-border rounded p-1.5 text-sm"
+                  />
+                </div>
+                <div>
+                  <div className="text-[11px] text-fg-muted mb-0.5">tier</div>
+                  <select
+                    value={newModel[provider]?.tier ?? "mid"}
+                    onChange={(e) => setNewModel((cur) => ({ ...cur, [provider]: { ...(cur[provider] ?? { model_name: "", display_name: "", tier: "mid" }), tier: e.target.value } }))}
+                    className="bg-bg-elevated border border-border rounded p-1.5 text-sm"
+                  >
+                    <option value="low">low（便宜/免費）</option>
+                    <option value="mid">mid（中階）</option>
+                    <option value="high">high（高階，僅 Pro/特權可選）</option>
+                  </select>
+                </div>
+                <button
+                  onClick={() => addModel(provider)}
+                  disabled={addingModel === provider}
+                  className="px-3 py-1.5 bg-accent text-black text-sm font-semibold rounded disabled:opacity-50"
+                >
+                  {addingModel === provider ? "新增中…" : "＋ 新增模型"}
+                </button>
+              </div>
             </div>
           </div>
         );
