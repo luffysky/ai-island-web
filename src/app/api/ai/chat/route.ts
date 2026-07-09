@@ -67,7 +67,7 @@ async function handlePost(req: NextRequest) {
     if (!data || !data.is_active) return errorResponse("model_unavailable", 400);
     model = data;
   }
-  const effectiveModelId = model.id;
+  let effectiveModelId = model.id;
 
   // 2. 取 API key
   let apiKey = "";
@@ -94,6 +94,17 @@ async function handlePost(req: NextRequest) {
     if (!unlimited) {
       const { data: premiumOk } = await admin.rpc("has_active_subscription", { p_user_id: user.id });
       isPremium = !!premiumOk;
+    }
+    // 成本防護：免費 / 非特權用戶不得「手動指定」高階（昂貴）模型，靜默降級為排除 high 的自動選模。
+    // auto 模式本來就避開 high；特權（ai_unlimited / owner）與 Premium 不受限；
+    // 自帶金鑰（useBYOK）走上面另一分支、成本自負、亦不受此限。
+    if (!unlimited && !isPremium && model.tier === "high") {
+      const { data: actives } = await admin.from("ai_models").select("*").eq("is_active", true);
+      const { classifyDifficulty, pickModelByTier } = await import("@/lib/ai-difficulty");
+      const tier = classifyDifficulty(message ?? "", { hasImages: images.length > 0 });
+      const pool = (actives ?? []).filter((m: any) => m.tier !== "high");
+      const safe = pickModelByTier(pool, tier === "high" ? "mid" : tier) ?? pickModelByTier(pool, "low") ?? pickModelByTier(pool, "mid");
+      if (safe) { model = safe; effectiveModelId = model.id; }
     }
     if (!unlimited && !isPremium) {
       chargeable = true; // 月底要扣 token cap
