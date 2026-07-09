@@ -93,6 +93,7 @@ export default async function DiscordConsole() {
         {((recent ?? []) as any[]).length === 0 ? (
           <p className="text-sm text-fg-muted">還沒有人綁 Discord。叫朋友去 /me/settings 試一輪。</p>
         ) : (
+          <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead className="text-fg-muted">
               <tr>
@@ -111,6 +112,7 @@ export default async function DiscordConsole() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </section>
     </div>

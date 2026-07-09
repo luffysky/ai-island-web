@@ -90,7 +90,7 @@ export function AiHistoryClient({ initial }: { initial: Conv[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-4">
       {/* 對話列表 */}
-      <div className="rounded-xl bg-bg-card border border-border">
+      <div className="rounded-xl bg-bg-card border border-border min-w-0">
         <div className="p-2 border-b border-border">
           <div className="relative">
             <Search size={13} className="absolute left-2 top-1/2 -translate-y-1/2 text-fg-muted" />
@@ -113,7 +113,7 @@ export function AiHistoryClient({ initial }: { initial: Conv[] }) {
       </div>
 
       {/* 對話內容 */}
-      <div className="rounded-xl bg-bg-card border border-border min-h-[400px]">
+      <div className="rounded-xl bg-bg-card border border-border min-h-[400px] min-w-0">
         {!selected ? (
           <div className="text-center py-24 text-fg-muted">
             <MessageSquare size={32} className="mx-auto mb-2 opacity-50" />

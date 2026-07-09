@@ -1366,66 +1366,72 @@ export function AITutorWidget({
                 💰 花 {zcoinPrompt.price} Z幣續用一次
               </button>
             )}
-            <div className="flex gap-2 items-end">
-              {/* 圖片上傳按鈕（手機點開會跳「相簿/拍照/檔案」選單）*/}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={(e) => handleFiles(e.target.files)}
-              />
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={authState !== "in" || sending || images.length >= 5}
-                className="p-2 border border-border rounded-lg hover:border-accent hover:bg-accent/5 transition disabled:opacity-30"
-                title={images.length >= 5 ? "最多 5 張" : "上傳截圖 / 相簿 / 拍照（也可 Ctrl+V 貼上、或直接把圖片拖進視窗）"}
-              >
-                <ImagePlus size={16} />
-              </button>
-              <MicButton
-                onResult={(t) => setInput((prev) => (prev ? prev + " " : "") + t)}
-                onError={(m) => setError(m)}
-                disabled={authState !== "in" || sending}
-                className="p-2 border border-border rounded-lg hover:border-accent hover:bg-accent/5"
-              />
-              <AnimatedEmojiPicker
-                onSelect={(e) => setInput((prev) => prev + e)}
-                buttonClassName="p-2 border border-border rounded-lg hover:border-accent hover:bg-accent/5 transition"
-                align="left"
-              />
-              <GifPicker
-                onSelect={(url) => setInput((prev) => (prev ? prev + " " : "") + url + " ")}
-                align="left"
-              />
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onPaste={handlePaste}
-                onInput={(e) => autoGrow(e.currentTarget, 120)}
-                onKeyDown={(e) => handleEnterSubmit(e, send)}
-                placeholder={
-                  authState === "loading"
-                    ? "載入中..."
-                    : authState !== "in"
-                    ? "請先登入"
-                    : images.length > 0
-                    ? "問圖片相關問題..."
-                    : "問點什麼（可 Ctrl+V 貼截圖）..."
-                }
-                disabled={authState !== "in" || sending}
-                rows={1}
-                className="flex-1 bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
-                style={{ maxHeight: "120px" }}
-              />
-              <button
-                onClick={() => send()}
-                disabled={(!input.trim() && images.length === 0) || sending || authState !== "in"}
-                className="p-2 bg-accent text-black rounded-lg hover:scale-105 transition disabled:opacity-30 disabled:hover:scale-100"
-              >
-                <Send size={16} />
-              </button>
+            {/* 圖片上傳（隱藏 input，手機點開會跳「相簿/拍照/檔案」選單）*/}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={(e) => handleFiles(e.target.files)}
+            />
+            <div className="flex flex-col gap-1.5">
+              {/* 工具列：貼著輸入框上方（讓輸入框吃滿整行寬度、不再被擠窄）*/}
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={authState !== "in" || sending || images.length >= 5}
+                  className="p-2 border border-border rounded-lg hover:border-accent hover:bg-accent/5 transition disabled:opacity-30"
+                  title={images.length >= 5 ? "最多 5 張" : "上傳截圖 / 相簿 / 拍照（也可 Ctrl+V 貼上、或直接把圖片拖進視窗）"}
+                >
+                  <ImagePlus size={16} />
+                </button>
+                <MicButton
+                  onResult={(t) => setInput((prev) => (prev ? prev + " " : "") + t)}
+                  onError={(m) => setError(m)}
+                  disabled={authState !== "in" || sending}
+                  className="p-2 border border-border rounded-lg hover:border-accent hover:bg-accent/5"
+                />
+                <AnimatedEmojiPicker
+                  onSelect={(e) => setInput((prev) => prev + e)}
+                  buttonClassName="p-2 border border-border rounded-lg hover:border-accent hover:bg-accent/5 transition"
+                  align="left"
+                />
+                <GifPicker
+                  onSelect={(url) => setInput((prev) => (prev ? prev + " " : "") + url + " ")}
+                  align="left"
+                />
+              </div>
+              {/* 輸入列：輸入框吃滿寬 + 送出 */}
+              <div className="flex gap-2 items-end">
+                <textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onPaste={handlePaste}
+                  onInput={(e) => autoGrow(e.currentTarget, 120)}
+                  onKeyDown={(e) => handleEnterSubmit(e, send)}
+                  placeholder={
+                    authState === "loading"
+                      ? "載入中..."
+                      : authState !== "in"
+                      ? "請先登入"
+                      : images.length > 0
+                      ? "問圖片相關問題..."
+                      : "問點什麼（可 Ctrl+V 貼截圖）..."
+                  }
+                  disabled={authState !== "in" || sending}
+                  rows={1}
+                  className="flex-1 min-w-0 bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
+                  style={{ maxHeight: "120px" }}
+                />
+                <button
+                  onClick={() => send()}
+                  disabled={(!input.trim() && images.length === 0) || sending || authState !== "in"}
+                  className="p-2 bg-accent text-black rounded-lg hover:scale-105 transition disabled:opacity-30 disabled:hover:scale-100 shrink-0"
+                >
+                  <Send size={16} />
+                </button>
+              </div>
             </div>
           </div>
         </div>

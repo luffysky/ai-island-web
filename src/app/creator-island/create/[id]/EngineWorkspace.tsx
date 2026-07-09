@@ -194,7 +194,7 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
 
       {err && <div className="bg-red-500/10 border border-red-500/30 text-red-700 dark:text-red-300 rounded-xl px-4 py-2 text-sm mb-3 flex justify-between items-center gap-2"><span>{err}</span><button onClick={() => setErr(null)}><X size={14} /></button></div>}
 
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr),340px] gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] gap-4">
         {/* 編輯器 */}
         <div className="min-w-0">
           {collab === null && collabStatus === "connecting" ? (

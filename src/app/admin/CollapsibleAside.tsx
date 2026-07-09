@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useDraggableFab } from "@/lib/use-draggable-fab";
 
 const STORAGE_KEY = "admin-sidebar-collapsed";
 
@@ -27,6 +28,9 @@ export function CollapsibleAside({ children }: { children: React.ReactNode }) {
     });
   };
 
+  // 收合後的浮動小圓鈕：可拖曳移動（手機不擋內容）。位置記 localStorage。
+  const fab = useDraggableFab("admin-sidebar-fab-pos", toggle);
+
   return (
     <aside
       className={`shrink-0 overflow-hidden transition-[width] duration-300 ease-in-out ${
@@ -34,19 +38,27 @@ export function CollapsibleAside({ children }: { children: React.ReactNode }) {
         collapsed ? "w-0 md:w-12" : "w-44 md:w-52"
       }`}
     >
-      <button
-        type="button"
-        onClick={toggle}
-        aria-label={collapsed ? "展開側欄" : "收合側欄"}
-        className={
-          collapsed
-            ? // 收合：手機浮動一顆小圓鈕(不佔位)、桌機留在細軌內
-              "fixed left-1 top-24 z-40 flex items-center justify-center w-9 h-9 rounded-full bg-bg-card border border-border shadow-md text-fg-muted hover:text-accent hover:scale-105 active:scale-95 transition md:static md:top-auto md:left-auto md:w-full md:h-auto md:rounded md:border-0 md:bg-transparent md:shadow-none md:mb-3 md:p-1.5 md:justify-end"
-            : "w-full flex items-center justify-end mb-3 p-1.5 text-fg-muted hover:text-accent transition"
-        }
-      >
-        {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={16} />}
-      </button>
+      {collapsed ? (
+        // 收合：手機浮動一顆小圓鈕(不佔位、可拖曳移動)、桌機留在細軌內
+        <button
+          type="button"
+          {...fab.bind}
+          style={fab.style}
+          aria-label="展開側欄（可拖曳移動）"
+          className="fixed left-1 top-24 z-40 flex items-center justify-center w-9 h-9 rounded-full bg-bg-card border border-border shadow-md text-fg-muted hover:text-accent hover:scale-105 active:scale-95 transition cursor-grab active:cursor-grabbing md:static md:top-auto md:left-auto md:w-full md:h-auto md:rounded md:border-0 md:bg-transparent md:shadow-none md:mb-3 md:p-1.5 md:justify-end"
+        >
+          <ChevronRight size={18} />
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={toggle}
+          aria-label="收合側欄"
+          className="w-full flex items-center justify-end mb-3 p-1.5 text-fg-muted hover:text-accent transition"
+        >
+          <ChevronLeft size={16} />
+        </button>
+      )}
       {/* 固定寬內容：被 aside 的寬度動畫裁切 → 視覺上往左收 / 往右展開（不淡出） */}
       <div className={`w-44 md:w-52 ${collapsed ? "pointer-events-none" : ""}`}>{children}</div>
     </aside>

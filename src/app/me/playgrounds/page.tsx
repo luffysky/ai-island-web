@@ -54,7 +54,7 @@ export default async function MyPlaygroundsPage() {
                     {new Date(p.updated_at).toLocaleDateString('zh-TW')}
                   </div>
                 </div>
-                <pre className="text-xs font-mono bg-bg p-2 rounded overflow-x-hidden line-clamp-3 text-fg-muted">
+                <pre className="text-xs font-mono bg-bg p-2 rounded overflow-x-auto line-clamp-3 text-fg-muted">
                   {p.code.slice(0, 200)}{p.code.length > 200 && "..."}
                 </pre>
               </Link>

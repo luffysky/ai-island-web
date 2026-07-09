@@ -51,7 +51,7 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
       {open && (
         <div
           role="listbox"
-          className="absolute right-0 mt-1.5 w-40 rounded-xl border border-border bg-bg-card shadow-xl ring-1 ring-black/5 overflow-hidden z-[60] py-1 animate-[fadeIn_.12s_ease-out]"
+          className="absolute right-0 mt-1.5 w-max min-w-[9rem] max-w-[calc(100vw-1rem)] rounded-xl border border-border bg-bg-card shadow-xl ring-1 ring-black/5 z-[60] py-1 animate-[fadeIn_.12s_ease-out]"
         >
           {LOCALES.map((l) => {
             const active = l === locale;
@@ -66,8 +66,8 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
                   active ? "bg-accent/10 text-accent font-semibold" : "text-fg hover:bg-bg-elevated"
                 }`}
               >
-                <span className={`w-5 text-center text-xs font-bold ${active ? "text-accent" : "text-fg-muted"}`}>{LOCALE_SHORT[l] ?? l}</span>
-                <span className="flex-1">{LOCALE_NAMES[l]}</span>
+                <span className={`w-5 shrink-0 text-center text-xs font-bold ${active ? "text-accent" : "text-fg-muted"}`}>{LOCALE_SHORT[l] ?? l}</span>
+                <span className="flex-1 whitespace-nowrap">{LOCALE_NAMES[l]}</span>
                 {active && <Check size={15} className="shrink-0" />}
               </button>
             );

@@ -82,6 +82,22 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
 
             {/* 模式入口（經典 / 島嶼 / 創作者島嶼） */}
             <div className={`grid grid-cols-1 ${modeGrid} gap-3`}>
+              {/* 1. 經典模式（快速開始） */}
+              <motion.div whileHover={{ y: -3, scale: 1.01 }} transition={{ duration: 0.18 }}>
+                <Link
+                  href="/chapters"
+                  className="group relative overflow-hidden rounded-2xl border-2 border-border p-5 bg-bg-card hover:border-accent transition-all backdrop-blur block"
+                >
+                  <ClipboardList className="absolute -top-4 -right-4 text-accent opacity-30 group-hover:opacity-60 group-hover:scale-110 transition duration-500" size={56} strokeWidth={1.5} />
+                  <div className="relative">
+                    <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2"><ClipboardList size={22} className="text-accent" /> {t("modeClassicTag")}</div>
+                    <div className="font-bold text-lg mb-1">{t("modeClassicTitle")}</div>
+                    <p className="text-xs text-fg-muted leading-relaxed">{t("modeClassicDesc")}</p>
+                    <span className="text-[10px] text-accent mt-2 inline-block group-hover:translate-x-1 transition">{t("modeClassicCta")}</span>
+                  </div>
+                </Link>
+              </motion.div>
+              {/* 2. 創作者島嶼 */}
               {creatorIslandEnabled && (
                 <motion.div whileHover={{ y: -3, scale: 1.01 }} transition={{ duration: 0.18 }}>
                   <Link
@@ -98,6 +114,7 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
                   </Link>
                 </motion.div>
               )}
+              {/* 3. 程式副本島（玩遊戲學程式） */}
               <motion.div whileHover={{ y: -3, scale: 1.01 }} transition={{ duration: 0.18 }}>
                 <Link
                   href={"/quest" as any}
@@ -112,6 +129,7 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
                   </div>
                 </Link>
               </motion.div>
+              {/* 4. 沉浸式 3D 島嶼（真正一座島；目前可關閉、放最後） */}
               {islandEnabled && (
                 <motion.div whileHover={{ y: -3, scale: 1.01 }} transition={{ duration: 0.18 }}>
                   <Link
@@ -129,20 +147,6 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
                   </Link>
                 </motion.div>
               )}
-              <motion.div whileHover={{ y: -3, scale: 1.01 }} transition={{ duration: 0.18 }}>
-                <Link
-                  href="/chapters"
-                  className="group relative overflow-hidden rounded-2xl border-2 border-border p-5 bg-bg-card hover:border-accent transition-all backdrop-blur block"
-                >
-                  <ClipboardList className="absolute -top-4 -right-4 text-accent opacity-30 group-hover:opacity-60 group-hover:scale-110 transition duration-500" size={56} strokeWidth={1.5} />
-                  <div className="relative">
-                    <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2"><ClipboardList size={22} className="text-accent" /> {t("modeClassicTag")}</div>
-                    <div className="font-bold text-lg mb-1">{t("modeClassicTitle")}</div>
-                    <p className="text-xs text-fg-muted leading-relaxed">{t("modeClassicDesc")}</p>
-                    <span className="text-[10px] text-accent mt-2 inline-block group-hover:translate-x-1 transition">{t("modeClassicCta")}</span>
-                  </div>
-                </Link>
-              </motion.div>
             </div>
 
             {/* 統計 */}

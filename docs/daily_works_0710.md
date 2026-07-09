@@ -33,6 +33,18 @@
 ### 五、定價分層
 - ~~**Plus NT$149 / Pro NT$349（月）+ 年繳**~~ ✅ `config.ts` 4 方案 + tier + PLUS/PRO_PERKS；海外自動換算 USD；store 頁分層顯示。
 
+### 六之二、續場（UI 微調 + 拖曳鈕 + 補助頁目錄 + RWD scroll）
+- ~~**首頁模式卡重排**~~ ✅ 經典→創作者→程式副本→沉浸式3D島嶼（島嶼放最後、目前 flag 關閉）（`Hero.tsx`，169.jpg）。
+- ~~**語言下拉不再被截斷**~~ ✅ `w-max min-w` + 拿掉 overflow-hidden + 名稱 whitespace-nowrap（168.jpg）。
+- ~~**漢堡/大綱浮動鈕可拖曳移動**~~ ✅ 新 `useDraggableFab`（點=原動作、拖=移動、位置記 localStorage、吞掉拖曳後誤觸 click）；套到後台側欄鈕 + 章節大綱鈕。
+- ~~**後台補助頁：手機點文件自動捲到內容**~~ ✅（`openDoc` 手機 scrollIntoView，不用再手動下滑）。
+- ~~**補助頁「完整合併版」目錄要有節點**~~ ✅ 以原始碼行號當 anchor id（h1~h3、跳過標題與手寫「目錄」）；`<details>` 目錄、點了平滑捲到該段、scroll-mt 扣 header。
+- ~~**RWD：overflow 不要 hidden 用 scroll**~~ ✅ playgrounds 程式碼預覽 overflow-x-hidden→auto；ai-history 兩欄補 min-w-0；site-audit 表格 overflow-hidden→overflow-x-auto。
+- ~~**全站表格橫向可捲**~~ ✅ 逐一查 27 個含 `<table>` 元件：多數已有 `overflow-x-auto`；discord / ai-cache 兩支補上 wrapper。
+- ~~**comma-in-grid 唯一確定壞的**~~ ✅ `EngineWorkspace` `grid-cols-[minmax(0,1fr),340px]`→底線；全站已零筆逗號 grid。
+- ~~**SWOT 寫入補助資料夾 + 後台頁**~~ ✅ `docs/grant/swot.md`（S/W 以程式碼實況、O/T 沿用既有可查證來源、不編造數字；含 SO/WO/ST/WT 對策），重打包 grant-content（17 篇）。
+- ~~**AI 聊天輸入排版升級（170/171.jpg）**~~ ✅ 把輸入框左邊功能鍵移到「貼著輸入框上方」的工具列 → 輸入框吃滿整行寬、不再被擠窄（`AITutorWidget`：AI導師/綠寶；`IslandChat`：創作夥伴綠寶）。
+
 ### 六、UI / RWD / 修正
 - ~~**筆記破版真凶 = grid 缺 grid-cols-1**~~ ✅（手機隱式 auto 軌道撐爆）。
 - ~~**全站輸入多行 + 手機 Enter 換行**~~ ✅（`composer.ts`：綠寶/Nami/寵物/島聊/私訊/論壇/部落格/社群）。

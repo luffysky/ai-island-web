@@ -49,6 +49,7 @@ export default async function AdminAiCachePage() {
         {(topHits ?? []).length === 0 ? (
           <EmptyState icon={Database} title="還沒有任何快取資料" desc="第一次有人問問題就會寫進來、第二次起命中" />
         ) : (
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-bg-elevated text-fg-muted text-xs">
               <tr>
@@ -71,6 +72,7 @@ export default async function AdminAiCachePage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </section>
 

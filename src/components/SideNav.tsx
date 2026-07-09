@@ -14,6 +14,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { useOverlayRegister } from "@/lib/overlay-stack";
+import { useDraggableFab } from "@/lib/use-draggable-fab";
 
 type NavLesson = {
   id: string;
@@ -46,6 +47,8 @@ export function SideNav() {
   // 章節大綱 = 左側抽屜（桌機/手機都是 overlay drawer，靠左上角按鈕開；不再常駐佔版面）。
   // 開啟時鎖捲動 + Pet/Todo 讓位；isNav=true → 綠寶/Admin 不因大綱而隱藏（可蓋在大綱上）。
   useOverlayRegister(open, true, true);
+  // 左上角「章節」浮動鈕：可拖曳移動（位置記 localStorage）。
+  const navFab = useDraggableFab("chapter-nav-fab-pos", () => setOpen(true));
   const [tab, setTab] = useState<Tab>("chapters");
   // hover 泡泡：顯示 lesson 完整名稱（側欄會 truncate，hover 看全名）
   const [mounted, setMounted] = useState(false);
@@ -246,10 +249,11 @@ export function SideNav() {
       {/* 左上角切換鈕（桌機＋手機都有；開章節大綱抽屜）*/}
       {!open && (
         <button
-          onClick={() => setOpen(true)}
-          aria-label="開啟章節大綱"
-          title="章節大綱"
-          className="fixed left-3 top-[4.5rem] z-30 inline-flex items-center gap-1.5 py-2 pl-2 pr-3 rounded-full bg-bg-card/90 backdrop-blur border border-border hover:border-accent/50 hover:bg-bg-elevated transition shadow-lg"
+          {...navFab.bind}
+          style={navFab.style}
+          aria-label="開啟章節大綱（可拖曳移動）"
+          title="章節大綱（可拖曳移動）"
+          className="fixed left-3 top-[4.5rem] z-30 inline-flex items-center gap-1.5 py-2 pl-2 pr-3 rounded-full bg-bg-card/90 backdrop-blur border border-border hover:border-accent/50 hover:bg-bg-elevated transition shadow-lg cursor-grab active:cursor-grabbing"
         >
           <PanelLeft size={18} className="text-accent" />
           <span className="hidden sm:inline text-xs font-semibold">章節</span>

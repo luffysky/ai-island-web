@@ -253,13 +253,19 @@ export function IslandChat({ workspaceId, focusFragments = [], onClearFocus }: {
               </div>
             )}
             {img && <div className="px-3 pb-1"><img src={img.preview} className="h-14 rounded inline-block" /><button onClick={() => setImg(null)} className="text-xs text-fg-muted ml-2">{t("chatRemove")}</button></div>}
-            <div className="p-2 border-t border-border flex items-center gap-1.5">
-              <button onClick={voice} title={t("chatVoice")} className="hover:text-accent"><Mic size={18} /></button>
-              <label title={t("chatImage")} className="cursor-pointer hover:text-accent"><Camera size={18} /><input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) pickImage(f); e.currentTarget.value = ""; }} /></label>
-              <label title={t("chatFile")} className="cursor-pointer hover:text-accent"><Paperclip size={18} /><input type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) pickFile(f); e.currentTarget.value = ""; }} /></label>
-              <AnimatedEmojiPicker onSelect={(e) => setText((v) => v + e)} />
-              <textarea rows={1} value={text} onChange={(e) => setText(e.target.value)} onInput={(e) => autoGrow(e.currentTarget, 120)} onKeyDown={(e) => handleEnterSubmit(e, send)} placeholder={t("chatPlaceholder")} className="flex-1 min-w-0 bg-bg-elevated border border-border rounded-2xl px-3 py-2 text-sm outline-none focus:border-emerald-400 transition resize-none" style={{ maxHeight: "120px" }} />
-              <button onClick={send} disabled={busy || (!text.trim() && !img)} title={t("chatSend")} className="shrink-0 w-9 h-9 grid place-items-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-black shadow-sm hover:scale-105 active:scale-95 transition disabled:opacity-40 disabled:hover:scale-100"><Send size={16} /></button>
+            <div className="p-2 border-t border-border flex flex-col gap-1.5">
+              {/* 工具列：貼著輸入框上方（讓輸入框吃滿整行寬度）*/}
+              <div className="flex items-center gap-3 text-fg-muted px-1">
+                <button onClick={voice} title={t("chatVoice")} className="hover:text-accent"><Mic size={18} /></button>
+                <label title={t("chatImage")} className="cursor-pointer hover:text-accent"><Camera size={18} /><input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) pickImage(f); e.currentTarget.value = ""; }} /></label>
+                <label title={t("chatFile")} className="cursor-pointer hover:text-accent"><Paperclip size={18} /><input type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) pickFile(f); e.currentTarget.value = ""; }} /></label>
+                <AnimatedEmojiPicker onSelect={(e) => setText((v) => v + e)} />
+              </div>
+              {/* 輸入列：輸入框吃滿寬 + 送出 */}
+              <div className="flex items-end gap-1.5">
+                <textarea rows={1} value={text} onChange={(e) => setText(e.target.value)} onInput={(e) => autoGrow(e.currentTarget, 120)} onKeyDown={(e) => handleEnterSubmit(e, send)} placeholder={t("chatPlaceholder")} className="flex-1 min-w-0 bg-bg-elevated border border-border rounded-2xl px-3 py-2 text-sm outline-none focus:border-emerald-400 transition resize-none" style={{ maxHeight: "120px" }} />
+                <button onClick={send} disabled={busy || (!text.trim() && !img)} title={t("chatSend")} className="shrink-0 w-9 h-9 grid place-items-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-black shadow-sm hover:scale-105 active:scale-95 transition disabled:opacity-40 disabled:hover:scale-100"><Send size={16} /></button>
+              </div>
             </div>
           </motion.div>
         )}
