@@ -53,19 +53,42 @@ async function handlePost(req: NextRequest) {
 
   const admin = createSupabaseAdmin();
 
-  // 1. 取模型（modelId === "auto" → 依問題難度自動分級選 tier、省成本）
+  // 權限（一次算，給「模型分層」與「額度」共用）：特權(ai_unlimited/owner)視為 pro。
+  const unlimited = await hasAiUnlimited(user.id);
+  const { getUserSubTier } = await import("@/lib/payments/orders");
+  const subTier = unlimited ? "pro" : (useBYOK ? null : await getUserSubTier(user.id)); // "plus" | "pro" | null
+  const canHigh = unlimited || subTier === "pro" || !!useBYOK;   // 可用高階模型（Claude/GPT/Gemini 等）
+  const canPickModel = canHigh || subTier === "plus";            // 可自選模型（免費不行、一律 auto）
+
+  // 1. 取模型：免費強制 auto；auto 依難度分級（特權→最高階、免費/Plus→排除 high）；自選則檢查分層授權
   let model: any;
-  if (modelId === "auto") {
+  if (modelId === "auto" || !canPickModel) {
     const { data: actives } = await admin.from("ai_models").select("*").eq("is_active", true);
     const { classifyDifficulty, pickModelByTier } = await import("@/lib/ai-difficulty");
-    const tier = classifyDifficulty(message ?? "", { hasImages: images.length > 0 });
-    model = pickModelByTier(actives ?? [], tier);
+    let tier = classifyDifficulty(message ?? "", { hasImages: images.length > 0 });
+    let pool = actives ?? [];
+    if (unlimited) {
+      tier = "high";                                       // 特權 auto 直接跑最高階
+    } else if (!canHigh) {
+      pool = (pool as any[]).filter((m) => m.tier !== "high"); // 免費 / Plus 不給高階
+      if (tier === "high") tier = "mid";
+    }
+    model = pickModelByTier(pool, tier);
     if (!model) return errorResponse("model_unavailable", 400, "目前沒有可用模型");
   } else {
+    // Plus / Pro / 特權 / BYOK 可自選模型
     const { data, error: modelError } = await admin.from("ai_models").select("*").eq("id", modelId).single();
     if (modelError) return errorResponse("model_lookup_failed", 500, modelError.message);
     if (!data || !data.is_active) return errorResponse("model_unavailable", 400);
     model = data;
+    // Plus 選了高階 → 降級（高階僅 Pro / 特權 / BYOK）
+    if (model.tier === "high" && !canHigh) {
+      const { data: actives } = await admin.from("ai_models").select("*").eq("is_active", true);
+      const { pickModelByTier } = await import("@/lib/ai-difficulty");
+      const pool = ((actives ?? []) as any[]).filter((m) => m.tier !== "high");
+      const safe = pickModelByTier(pool, "mid") ?? pickModelByTier(pool, "low");
+      if (safe) model = safe;
+    }
   }
   let effectiveModelId = model.id;
 
@@ -88,23 +111,8 @@ async function handlePost(req: NextRequest) {
       return errorResponse("key_decrypt_failed", 500);
     }
   } else {
-    // 特權帳號（ai_unlimited / is_owner）或訂閱中 → 跳過每日免費 quota。
-    // 分層：subTier = plus / pro / null（無訂閱）。unlimited 視為 pro。
-    const unlimited = await hasAiUnlimited(user.id);
-    const { getUserSubTier } = await import("@/lib/payments/orders");
-    const subTier = unlimited ? "pro" : await getUserSubTier(user.id); // "plus" | "pro" | null
+    // 模型分層授權已在步驟 1 處理（免費 auto-only、Plus 不給 high、特權 auto→high）。此處只管額度。
     const isPremium = !!subTier; // 有有效訂閱（Plus 或 Pro）→ 跳過每日免費 quota
-    // 成本防護 + 分層授權：高階（昂貴）模型僅 **Pro / 特權** 可用；
-    // 免費與 **Plus** 手動指定高階 → 靜默降級為排除 high 的自動選模（Plus 給中階、Pro 才給高階）。
-    // auto 模式本來就避開 high；自帶金鑰（useBYOK）走上面另一分支、成本自負、亦不受此限。
-    if (!unlimited && subTier !== "pro" && model.tier === "high") {
-      const { data: actives } = await admin.from("ai_models").select("*").eq("is_active", true);
-      const { classifyDifficulty, pickModelByTier } = await import("@/lib/ai-difficulty");
-      const tier = classifyDifficulty(message ?? "", { hasImages: images.length > 0 });
-      const pool = (actives ?? []).filter((m: any) => m.tier !== "high");
-      const safe = pickModelByTier(pool, tier === "high" ? "mid" : tier) ?? pickModelByTier(pool, "low") ?? pickModelByTier(pool, "mid");
-      if (safe) { model = safe; effectiveModelId = model.id; }
-    }
     if (!unlimited && !isPremium) {
       chargeable = true; // 月底要扣 token cap
       // 扣免費 quota（每天）

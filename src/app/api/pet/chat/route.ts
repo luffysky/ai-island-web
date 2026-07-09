@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 import { streamAI } from "@/lib/ai-providers";
+import { gateHighTierModel } from "@/lib/ai-tier-gate";
 import { decryptKey } from "@/lib/ai-crypto";
 import { getSpecies } from "@/lib/pet-species";
 import { rateLimit } from "@/lib/rate-limit";
@@ -92,6 +93,9 @@ export async function POST(req: NextRequest) {
   if (!model) {
     return NextResponse.json({ error: "no_model_available" }, { status: 503 });
   }
+
+  // 分層授權（與主聊天一致）：高階模型僅 Pro / 特權 / BYOK；免費 / Plus 若把寵物設成高階模型 → 自動降級。
+  model = await gateHighTierModel(admin, user.id, model, { byok: !!pet.use_byok });
 
   // API key 來源：use_byok 用使用者自己的、否則共池系統 key
   let apiKey: string;
