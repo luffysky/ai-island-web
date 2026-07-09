@@ -40,7 +40,7 @@ async function handlePost(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { conversationId, modelId, message, tone, contextChapterId, contextLessonId, useBYOK, personaId } = body;
+  const { conversationId, modelId, message, tone, contextChapterId, contextLessonId, useBYOK, personaId, spendZcoin } = body;
   // 上傳的圖片（base64 + mediaType）— 跟 message 一起送、AI 看圖回答
   const images: Array<{ base64: string; mediaType: string }> = Array.isArray(body.images)
     ? body.images.slice(0, 5).map((img: any) => ({
@@ -94,7 +94,6 @@ async function handlePost(req: NextRequest) {
 
   // 2. 取 API key
   let apiKey = "";
-  let chargeable = false; // 走系統 key + 非特權 + 非 Premium → stream 結束扣 token cap
   if (useBYOK) {
     const { data: userKey } = await admin
       .from("user_api_keys")
@@ -111,31 +110,34 @@ async function handlePost(req: NextRequest) {
       return errorResponse("key_decrypt_failed", 500);
     }
   } else {
-    // 模型分層授權已在步驟 1 處理（免費 auto-only、Plus 不給 high、特權 auto→high）。此處只管額度。
-    const isPremium = !!subTier; // 有有效訂閱（Plus 或 Pro）→ 跳過每日免費 quota
-    if (!unlimited && !isPremium) {
-      chargeable = true; // 月底要扣 token cap
-      // 扣免費 quota（每天）
-      const { data: quotaOk, error: quotaError } = await admin.rpc("consume_ai_quota", { p_user_id: user.id, p_amount: 1 });
-      if (quotaError) {
-        console.error("[AI chat] consume_ai_quota failed:", quotaError);
-        return errorResponse("quota_rpc_failed", 500, "AI 額度系統尚未設定完成，請確認 ai_migration.sql 已執行");
-      }
-      if (quotaOk === false) {
-        return errorResponse("quota_exceeded", 429, "今天的免費額度用完了、可升級 Premium 或自帶 API key（設定 → AI Key）");
-      }
-      // 月 token cap pre-check（防單一 user 一個月燒爆）
-      const { data: prof } = await admin
-        .from("profiles")
-        .select("ai_monthly_token_cap, ai_monthly_token_used")
-        .eq("id", user.id)
-        .maybeSingle();
-      if (prof) {
-        const cap = (prof as any).ai_monthly_token_cap ?? 100000;
-        const used = (prof as any).ai_monthly_token_used ?? 0;
-        if (used >= cap) {
-          return errorResponse("token_cap_exceeded", 429,
-            `本月 AI token 上限 ${cap.toLocaleString()} 已用完（已用 ${used.toLocaleString()}）、可升級 Premium 提高上限或自帶 API key`);
+    // 模型分層授權已在步驟 1 處理。此處管每日額度（v2）：
+    //   免費用戶：免費/中階模型每日 AI_FREE_DAILY 次；超過 → 每次扣 Z幣續用。
+    //   Plus/Pro：免費/中階無限；高階模型每日有限(highDailyFor)；超過 → 每次扣 Z幣加購。
+    //   特權(unlimited)：全部不限。
+    if (!unlimited) {
+      const isHigh = model.tier === "high";
+      const skipQuota = !isHigh && !!subTier; // 訂閱者的免費/中階模型：無限
+      if (!skipQuota) {
+        const { AI_FREE_DAILY, AI_ZCOIN_FREE_OVERFLOW, AI_ZCOIN_HIGH_OVERFLOW, highDailyFor } = await import("@/lib/ai-quota-config");
+        const kind = isHigh ? "high" : "free";
+        const limit = isHigh ? highDailyFor(subTier) : AI_FREE_DAILY;
+        const price = isHigh ? AI_ZCOIN_HIGH_OVERFLOW : AI_ZCOIN_FREE_OVERFLOW;
+        const { data: q, error: qErr } = await admin.rpc("consume_ai_quota_v2", {
+          p_user_id: user.id, p_kind: kind, p_daily_limit: limit, p_zcoin_price: price, p_allow_zcoin: !!spendZcoin,
+        });
+        if (qErr) {
+          console.error("[AI chat] consume_ai_quota_v2 failed:", qErr);
+          return errorResponse("quota_rpc_failed", 500, "AI 額度系統尚未設定完成，請執行 ai_quota_v2_migration.sql");
+        }
+        if (!(q as any)?.ok) {
+          const reason = (q as any)?.reason;
+          if (reason === "need_zcoin") {
+            return errorResponse("need_zcoin", 402, `今天的${isHigh ? "高階模型" : "免費"}額度用完了，花 ${price} Z幣續用一次？`, { price, kind });
+          }
+          if (reason === "insufficient_zcoin") {
+            return errorResponse("insufficient_zcoin", 402, `Z幣不足（需 ${(q as any).price}、你有 ${(q as any).balance}）`, { price: (q as any).price, balance: (q as any).balance });
+          }
+          return errorResponse("quota_exceeded", 429, "額度用完了、明天再來或升級方案");
         }
       }
     }
@@ -474,14 +476,6 @@ async function handlePost(req: NextRequest) {
           } catch {}
         }
 
-        // 月 token cap 累計（特權 / Premium 跳過）
-        if (chargeable && (tokensInput + tokensOutput) > 0) {
-          try {
-            const { consumeAiTokens } = await import("@/lib/ai-gate");
-            await consumeAiTokens(user.id, tokensInput + tokensOutput);
-          } catch {}
-        }
-
         // 送結尾
         controller.enqueue(encoder.encode(`data: ${JSON.stringify({
           type: "done",
@@ -508,8 +502,8 @@ async function handlePost(req: NextRequest) {
   });
 }
 
-function errorResponse(error: string, status: number, message?: string) {
-  return new Response(JSON.stringify({ error, message }), {
+function errorResponse(error: string, status: number, message?: string, extra?: Record<string, any>) {
+  return new Response(JSON.stringify({ error, message, ...(extra ?? {}) }), {
     status,
     headers: { "Content-Type": "application/json" },
   });

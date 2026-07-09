@@ -191,6 +191,8 @@ export function AITutorWidget({
   const [localMode, setLocalMode] = useState(false);
   const [webgpuOk, setWebgpuOk] = useState(false);
   const [localProgress, setLocalProgress] = useState<InitProgress | null>(null);
+  // 額度用完 → 花 Z幣續用的提示（need_zcoin）
+  const [zcoinPrompt, setZcoinPrompt] = useState<{ price: number; question: string } | null>(null);
   useEffect(() => { setWebgpuOk(isWebGPUAvailable()); }, []);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -390,7 +392,8 @@ export function AITutorWidget({
     handleFiles(e.dataTransfer.files);
   };
 
-  const send = async (overrideText?: string) => {
+  const send = async (overrideText?: string, opts?: { spendZcoin?: boolean }) => {
+    if (!opts?.spendZcoin) setZcoinPrompt(null); // 新問題清掉舊的花幣提示
     const baseText = overrideText ?? input;
     if ((!baseText.trim() && images.length === 0) || sending) return;
     if (!isLoggedIn) {
@@ -466,6 +469,7 @@ export function AITutorWidget({
           useBYOK,
           personaId,
           images: sendImages,
+          spendZcoin: opts?.spendZcoin ?? false,
         }),
       });
 
@@ -484,6 +488,17 @@ export function AITutorWidget({
           ? "登入逾時、請重新整理"
           : `伺服器錯誤 (HTTP ${res.status})`;
         const msg = parsed?.message || parsed?.error || (raw && raw.length < 200 ? raw : "") || fallback;
+        // 額度用完 → 顯示「花 Z幣續用」按鈕（不當成錯誤）
+        if (parsed?.error === "need_zcoin" && parsed?.price) {
+          setZcoinPrompt({ price: parsed.price, question: userMsg });
+          setMessages((prev) => {
+            const copy = [...prev];
+            copy[copy.length - 1] = { ...copy[copy.length - 1], role: "assistant", content: `💰 ${msg}` };
+            return copy;
+          });
+          setSending(false);
+          return;
+        }
         setError(msg);
         setMessages((prev) => {
           const copy = [...prev];
@@ -1325,6 +1340,15 @@ export function AITutorWidget({
 
           {/* Input */}
           <div className="p-3 border-t border-border">
+            {zcoinPrompt && (
+              <button
+                onClick={() => { const q = zcoinPrompt.question; setZcoinPrompt(null); send(q, { spendZcoin: true }); }}
+                disabled={sending}
+                className="w-full mb-2 py-2 rounded-lg bg-gradient-to-r from-amber-400 to-yellow-500 text-black text-sm font-bold hover:scale-[1.01] active:scale-95 transition inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
+              >
+                💰 花 {zcoinPrompt.price} Z幣續用一次
+              </button>
+            )}
             <div className="flex gap-2 items-end">
               {/* 圖片上傳按鈕（手機點開會跳「相簿/拍照/檔案」選單）*/}
               <input
