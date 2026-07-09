@@ -68,8 +68,8 @@ export function NavGroup({ title, children }: { title: string; children: React.R
         <span className="flex-1 text-left">{title}</span>
       </button>
       <div
-        className={`space-y-0.5 overflow-hidden transition-all duration-200 ${
-          expanded ? "max-h-[1000px] opacity-100 mt-1" : "max-h-0 opacity-0"
+        className={`space-y-0.5 overflow-hidden transition-[max-height] duration-300 ease-in-out ${
+          expanded ? "max-h-[1000px] mt-1" : "max-h-0"
         }`}
       >
         {children}

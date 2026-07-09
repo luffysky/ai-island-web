@@ -29,8 +29,8 @@ export function CollapsibleAside({ children }: { children: React.ReactNode }) {
 
   return (
     <aside
-      className={`shrink-0 transition-[width] duration-300 ease-in-out ${
-        // 手機收合時 w-0（不佔左邊空間）；桌機保留 w-12 細軌
+      className={`shrink-0 overflow-hidden transition-[width] duration-300 ease-in-out ${
+        // 手機收合時 w-0（不佔左邊空間）；桌機保留 w-12 細軌。overflow-hidden + 固定寬內容 = 往左右滑開
         collapsed ? "w-0 md:w-12" : "w-44 md:w-52"
       }`}
     >
@@ -47,13 +47,8 @@ export function CollapsibleAside({ children }: { children: React.ReactNode }) {
       >
         {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={16} />}
       </button>
-      <div
-        className={`transition-all duration-300 ease-in-out ${
-          collapsed ? "opacity-0 max-h-0 overflow-hidden pointer-events-none" : "opacity-100 max-h-[4000px]"
-        }`}
-      >
-        {children}
-      </div>
+      {/* 固定寬內容：被 aside 的寬度動畫裁切 → 視覺上往左收 / 往右展開（不淡出） */}
+      <div className={`w-44 md:w-52 ${collapsed ? "pointer-events-none" : ""}`}>{children}</div>
     </aside>
   );
 }
