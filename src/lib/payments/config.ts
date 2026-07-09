@@ -36,31 +36,50 @@ export function getZcoinPackage(id: string): ZcoinPackage | undefined {
   return ZCOIN_PACKAGES.find((p) => p.id === id);
 }
 
+export type SubTier = "plus" | "pro";
+
 export type ProPlan = {
   id: string;
   label: string;
-  twd: number;
+  tier: SubTier;        // plus=學習版 / pro=求職版
+  twd: number;          // 台幣定價（海外自動用 twdToUsdCents 換算 USD、不另收美金原價）
   period: "month" | "year";
   months: number;
   perMonth: number;
   popular?: boolean;
 };
 
+// 兩層訂閱 × 月/年。台幣為定價基準；海外(MoR)自動換算 USD（NT$149≈US$4.7、NT$349≈US$10.9）。
 export const PRO_PLANS: ProPlan[] = [
-  { id: "pro_monthly", label: "Pro 月訂閱", twd: 149, period: "month", months: 1, perMonth: 149 },
-  { id: "pro_yearly", label: "Pro 年訂閱", twd: 1490, period: "year", months: 12, perMonth: 124, popular: true },
+  { id: "plus_monthly", label: "學習 Plus・月", tier: "plus", twd: 149, period: "month", months: 1, perMonth: 149 },
+  { id: "plus_yearly", label: "學習 Plus・年", tier: "plus", twd: 1490, period: "year", months: 12, perMonth: 124 },
+  { id: "pro_monthly", label: "求職 Pro・月", tier: "pro", twd: 349, period: "month", months: 1, perMonth: 349, popular: true },
+  { id: "pro_yearly", label: "求職 Pro・年", tier: "pro", twd: 2990, period: "year", months: 12, perMonth: 249 },
 ];
 
 export function getProPlan(id: string): ProPlan | undefined {
   return PRO_PLANS.find((p) => p.id === id);
 }
 
-/** Pro 解鎖項目（顯示用；實際 gate 由各功能查 isPro）。 */
+/** 由方案 id 取訂閱層級（給日後 tier-aware gating 用；目前 isPro 仍為布林）。 */
+export function planTier(id: string): SubTier | undefined {
+  return getProPlan(id)?.tier;
+}
+
+/** 學習 Plus 解鎖項目（顯示用）。 */
+export const PLUS_PERKS = [
+  "AI 導師更多每日次數 + 中階模型",
+  "筆記全功能（3 層知識樹 / 間隔複習 SRS / 多人協作）",
+  "離線閱讀、無廣告、每日測驗加抽",
+];
+
+/** 求職 Pro 解鎖項目（含 Plus 全部；顯示用。實際 gate 由各功能查 isPro / 日後查 tier）。 */
 export const PRO_PERKS = [
-  "無限 AI 對話（綠寶 / 導師 / 創作引擎）",
-  "AI 即時批改作業與程式碼",
+  "【含 學習 Plus 全部】",
+  "AI 高階模型（Opus / GPT-4o 等）高額度",
+  "AI 模擬面試 + 履歷 / 作品集工具",
+  "完課證書優先發放 + 優先客服",
   "進階創作引擎工具 + 多工作室",
-  "成長分析與 AI 學習教練週報",
   "專屬寵物造型 + 每月 Z幣回饋",
 ];
 
