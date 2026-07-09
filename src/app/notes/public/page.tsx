@@ -69,7 +69,7 @@ export default async function PublicNotesPage({ searchParams }: { searchParams: 
           <p className="text-xs mt-1">在 <Link href="/me/notes" className="text-accent hover:underline">我的筆記</Link> 把筆記發佈到這裡吧！</p>
         </div>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {rows.map((n: any) => {
             const p = pm.get(n.user_id);
             const author = p?.display_name || p?.username || "學習者";

@@ -7,6 +7,7 @@ import { Image as ImageIcon, Film, Music, Heart, MessageCircle, FileText, Link2,
 import { uploadMedia } from "@/lib/creator-upload";
 import { useConfirm, usePrompt } from "@/components/ui/ConfirmDialog";
 import { useToast } from "@/components/ui/Toast";
+import { handleEnterSubmit, autoGrow } from "@/lib/composer";
 import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
 import { GifPicker } from "@/components/ui/GifPicker";
 import { EmojiText } from "@/components/ui/EmojiText";
@@ -178,7 +179,7 @@ function PostCard({ p, meId, onDelete }: { p: Post; meId: string; onDelete: () =
           {(comments ?? []).map((c) => <div key={c.id} className="text-xs"><b>{name(c.author)}</b> <EmojiText text={c.body} size={16} /></div>)}
           <div className="flex gap-2 items-center">
             <AnimatedEmojiPicker onSelect={(e) => setCbody((v) => v + e)} buttonClassName="w-7 h-7" />
-            <input value={cbody} onChange={(e) => setCbody(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") addComment(); }} placeholder={t("communityCommentPlaceholder")} className="flex-1 bg-bg-elevated border border-border rounded-full px-3 py-1.5 text-xs outline-none focus:border-accent" />
+            <textarea rows={1} value={cbody} onChange={(e) => setCbody(e.target.value)} onInput={(e) => autoGrow(e.currentTarget, 100)} onKeyDown={(e) => handleEnterSubmit(e, addComment)} placeholder={t("communityCommentPlaceholder")} className="flex-1 bg-bg-elevated border border-border rounded-2xl px-3 py-1.5 text-xs outline-none focus:border-accent resize-none" style={{ maxHeight: "100px" }} />
             <button onClick={addComment} className="text-accent text-xs">{t("communitySend")}</button>
           </div>
         </div>

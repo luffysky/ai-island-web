@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { ArrowLeft, Paperclip } from "lucide-react";
 import { uploadMedia } from "@/lib/creator-upload";
 import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
+import { handleEnterSubmit, autoGrow } from "@/lib/composer";
 import { GifPicker } from "@/components/ui/GifPicker";
 import { EmojiText } from "@/components/ui/EmojiText";
 
@@ -98,7 +99,7 @@ export function MessagesClient({ initialThreads, meId, initialThreadId }: { init
               <label className="cursor-pointer hover:text-accent"><Paperclip size={18} /><input type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) sendMedia(f); e.currentTarget.value = ""; }} /></label>
               <AnimatedEmojiPicker onSelect={(e) => setText((v) => v + e)} />
               <GifPicker onSelect={sendGif} />
-              <input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") send(); }} placeholder={tr("msgPlaceholder")} className="flex-1 bg-bg-elevated border border-border rounded-full px-3 py-2 text-sm outline-none focus:border-accent" />
+              <textarea rows={1} value={text} onChange={(e) => setText(e.target.value)} onInput={(e) => autoGrow(e.currentTarget, 120)} onKeyDown={(e) => handleEnterSubmit(e, send)} placeholder={tr("msgPlaceholder")} className="flex-1 bg-bg-elevated border border-border rounded-2xl px-3 py-2 text-sm outline-none focus:border-accent resize-none" style={{ maxHeight: "120px" }} />
               <button onClick={send} disabled={busy} className="px-4 py-2 rounded-full bg-accent text-black text-sm disabled:opacity-40">{tr("msgSend")}</button>
             </div>
           </>

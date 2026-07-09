@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, X, Loader2, Send, RefreshCw, Copy, Check, ImagePlus } from "lucide-react";
 import { MicButton, SpeakButton } from "@/components/chat";
+import { handleEnterSubmit, autoGrow } from "@/lib/composer";
 
 type UploadedImage = {
   id: string;
@@ -300,14 +301,16 @@ export function AskAI({
                     disabled={loading}
                     className="p-2 rounded-lg border border-border hover:border-purple-400 hover:bg-purple-500/5"
                   />
-                  <input
-                    type="text"
+                  <textarea
+                    rows={1}
                     value={question}
                     onChange={(e) => setQuestion(e.target.value)}
                     onPaste={handlePaste}
-                    placeholder={images.length > 0 ? "問截圖相關問題..." : "自己問問題（可 Ctrl+V 貼截圖）..."}
-                    onKeyDown={(e) => { if (e.key === "Enter" && (question.trim() || images.length > 0)) ask(); }}
-                    className="flex-1 bg-bg border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-purple-400"
+                    onInput={(e) => autoGrow(e.currentTarget, 160)}
+                    placeholder={images.length > 0 ? "問截圖相關問題...（可換行貼程式）" : "自己問問題（可 Ctrl+V 貼截圖、可換行貼程式）..."}
+                    onKeyDown={(e) => { if (question.trim() || images.length > 0) handleEnterSubmit(e, ask); }}
+                    className="flex-1 bg-bg border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-purple-400 resize-none"
+                    style={{ maxHeight: "160px" }}
                     disabled={loading}
                   />
                   <button

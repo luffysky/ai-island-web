@@ -6,6 +6,7 @@ import { chapterDisplayNumberById } from "@/lib/chapter-display";
 import { useEdgeSafe } from "@/lib/use-edge-safe";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { devLog } from "@/lib/dev-log";
+import { handleEnterSubmit, autoGrow } from "@/lib/composer";
 import { trackEvent } from "@/lib/analytics";
 import { getReading, getLastChapterId, hydrateFromServer, formatLessonNumber, type ChapterReading, type Pos } from "@/lib/reading-position";
 
@@ -1309,12 +1310,8 @@ export function AITutorWidget({
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onPaste={handlePaste}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    send();
-                  }
-                }}
+                onInput={(e) => autoGrow(e.currentTarget, 120)}
+                onKeyDown={(e) => handleEnterSubmit(e, send)}
                 placeholder={
                   authState === "loading"
                     ? "載入中..."

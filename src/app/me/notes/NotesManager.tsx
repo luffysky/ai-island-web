@@ -71,7 +71,7 @@ function SortableNoteCard({ id, expanded, children }: { id: string; expanded?: b
     order: expanded ? -1 : undefined,   // 展開時視覺挪到最前（不動排序資料）
   };
   return (
-    <div ref={setNodeRef} style={style} className={`relative ${expanded ? "sm:col-span-2" : ""}`}>
+    <div ref={setNodeRef} style={style} className={`relative min-w-0 ${expanded ? "sm:col-span-2" : ""}`}>
       <button
         type="button"
         {...attributes}
@@ -654,7 +654,7 @@ export function NotesManager({
                 </div>
               )}
               <SortableContext items={shown.map((n) => n.id)} strategy={rectSortingStrategy}>
-                <div className="grid sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {shown.map((n) => {
                 const meta = chapterMap[n.lesson_id ?? ""] ?? chapterMap[`ch${n.chapter_id}`] ?? null;
                 return (
@@ -693,7 +693,7 @@ export function NotesManager({
             />
           </aside>
           <div className="flex-1 min-w-0">
-          <div className="grid sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {shown.map((n) => {
               const meta = chapterMap[n.lesson_id ?? ""] ?? chapterMap[`ch${n.chapter_id}`] ?? null;
               const isExp = n.id === expandedId;

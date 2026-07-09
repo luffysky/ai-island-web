@@ -33,6 +33,13 @@
 
 ---
 
+### 四、晚間追加（bug 163~166 回報）
+- ~~**筆記還是破版（bug 163→164）真正根因**~~ ✅ 之前加 `min-w-0`/`max-w-full` 沒解，因為真凶是 **grid 少了 `grid-cols-1`**：`grid sm:grid-cols-2` 在手機（單欄）沒有明確欄樣板 → 落到「隱式 `auto` 軌道」，會撐到最寬卡片的 max-content（含 code 片段）→ 卡片比視口寬、被 body `overflow-x:hidden` 裁掉（每行右緣切齊螢幕邊）。改成 `grid grid-cols-1 sm:grid-cols-2`（`minmax(0,1fr)` 受視口約束）。`NotesManager` 兩處 grid + `SortableNoteCard` wrapper 補 `min-w-0` + 公開牆 grid 一併修。
+- ~~**所有輸入框可換行 + 原格式貼上（Nami 回報綠寶 AI 無法換行）**~~ ✅ 真凶：**手機鍵盤沒有 Shift 鍵**，沿用「Enter 送出／Shift+Enter 換行」→ 手機永遠無法換行，貼多行程式碼時問句跟程式黏一起。新增 `src/lib/composer.ts`（`handleEnterSubmit`：桌機 Enter 送出、手機 Enter 換行靠送出鈕；**IME 組字中不誤送**；`autoGrow` 自動長高）。套到 **綠寶 AITutorWidget、Nami AskAI、寵物 PetChatPanel、島聊 IslandChat、私訊 MessagesClient、論壇 ThreadReplies、部落格 CommentSection、社群 SocialFeed**（單行 `<input>` → 多行 `<textarea>`，textarea 天生保留貼上原格式）。搜尋框（FriendsClient）維持單行不動。
+- ~~**教學內容占位偽代碼稽核（bug 165→166）**~~ ✅ 寫 `scripts/scan-placeholder-code.mjs` 掃全 60+ 章 code fence。誠實結論：**真正「複製貼上會噴錯又看不懂」的占位符只有 1 種、2 處**（`do_stuff()` / `if condition:`）——其餘 `.bar()`（matplotlib）、`foo<T>`（泛型語法教學）、`Bearer xxx`/`"xxx"` 缺 key 示範、`@types/xxx` 都是**刻意教學寫法非占位**。修 **ch26 (26.5) do-while 模擬** 改成可直接跑的 `while True + print + break` 真範例、**ch07 (7.16) 不要吞錯** 改用 `int("abc")` 真的會 ValueError。已 `import_chapters_to_db.mjs ch26 ch07` 同步進 DB（revalidate=60 即時生效）。
+
+---
+
 ## 🔨 待辦（下次，未完成）
 
 ### 🚨 HIGH：島嶼經濟刷幣漏洞（API 稽核發現、根因＝伺服器信任前端）

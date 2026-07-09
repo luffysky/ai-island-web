@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
+import { handleEnterSubmit, autoGrow } from "@/lib/composer";
 import { Send, Trash2, CornerDownRight, Loader2, Check, BookmarkPlus, FileText } from "lucide-react";
 import type { ForumReply } from "@/lib/forum-types";
 import { LikeButton } from "@/components/blog/LikeButton";
@@ -246,12 +247,15 @@ export function ThreadReplies({
               {/* 回覆框 */}
               {replyTo === r.id && (
                 <div className="ml-10 mt-2 flex gap-2">
-                  <input
+                  <textarea
+                    rows={1}
                     value={replyInput}
                     onChange={(e) => setReplyInput(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter") submit(replyInput, r.id); }}
+                    onInput={(e) => autoGrow(e.currentTarget, 120)}
+                    onKeyDown={(e) => handleEnterSubmit(e, () => submit(replyInput, r.id))}
                     placeholder={t("replyPlaceholder")}
-                    className="flex-1 bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
+                    className="flex-1 bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
+                    style={{ maxHeight: "120px" }}
                   />
                   <button
                     onClick={() => submit(replyInput, r.id)}

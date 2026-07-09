@@ -7,6 +7,7 @@ import { MessageSquare, Send, Trash2, CornerDownRight } from "lucide-react";
 import type { BlogComment } from "@/lib/blog-types";
 import { LikeButton } from "./LikeButton";
 import { useToast } from "@/components/ui/Toast";
+import { handleEnterSubmit, autoGrow } from "@/lib/composer";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 
 export function CommentSection({
@@ -172,12 +173,15 @@ export function CommentSection({
               {/* 回覆框 */}
               {replyTo === c.id && (
                 <div className="ml-8 mt-2 flex gap-2">
-                  <input
+                  <textarea
+                    rows={1}
                     value={replyInput}
                     onChange={(e) => setReplyInput(e.target.value)}
+                    onInput={(e) => autoGrow(e.currentTarget, 120)}
                     placeholder="回覆..."
-                    onKeyDown={(e) => { if (e.key === "Enter") submit(replyInput, c.id); }}
-                    className="flex-1 bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent"
+                    onKeyDown={(e) => handleEnterSubmit(e, () => submit(replyInput, c.id))}
+                    className="flex-1 bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
+                    style={{ maxHeight: "120px" }}
                   />
                   <button
                     onClick={() => submit(replyInput, c.id)}

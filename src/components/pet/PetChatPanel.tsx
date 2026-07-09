@@ -8,6 +8,7 @@ import { getVipTier, pickHonorific } from "@/lib/pet-vip";
 import { pickChatter, type ChatterCtx } from "@/lib/pet-chatter";
 import { useEdgeSafe } from "@/lib/use-edge-safe";
 import { ChatMessageBubble, TypingIndicator, ChatToolbar, ChatContent, MicButton } from "@/components/chat";
+import { handleEnterSubmit, autoGrow } from "@/lib/composer";
 
 type Message = { role: "user" | "pet"; content: string; created_at?: string };
 
@@ -247,18 +248,16 @@ export function PetChatPanel({
           disabled={sending}
           className="p-2 border border-border rounded-lg hover:border-accent hover:bg-accent/5"
         />
-        <input
+        <textarea
+          rows={1}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              send();
-            }
-          }}
+          onInput={(e) => autoGrow(e.currentTarget, 120)}
+          onKeyDown={(e) => handleEnterSubmit(e, send)}
           placeholder={`跟 ${pet.name} 說...`}
           disabled={sending}
-          className="flex-1 bg-bg border border-border rounded-lg px-3 py-1.5 text-sm outline-none focus:border-accent"
+          className="flex-1 bg-bg border border-border rounded-lg px-3 py-1.5 text-sm outline-none focus:border-accent resize-none"
+          style={{ maxHeight: "120px" }}
         />
         <button
           onClick={send}
