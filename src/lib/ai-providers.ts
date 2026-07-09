@@ -93,7 +93,7 @@ function openAiLikeUrl(provider: string): string {
   if (provider === "cerebras") return "https://api.cerebras.ai/v1/chat/completions";      // ~100 萬 tokens/天免費
   if (provider === "nvidia") return "https://integrate.api.nvidia.com/v1/chat/completions"; // NVIDIA NIM 免費
   if (provider === "sambanova") return "https://api.sambanova.ai/v1/chat/completions";     // 免費額度、快
-  if (provider === "github") return "https://models.inference.ai.azure.com/chat/completions"; // GitHub Models：免費 GPT-4o/Llama/Phi（GitHub PAT、免卡）
+  if (provider === "github") return "https://models.github.ai/inference/chat/completions"; // GitHub Models（新端點；⚠️ 2026-07-30 服務退役，建議改用其他免費家）
   if (provider === "mistral") return "https://api.mistral.ai/v1/chat/completions";         // Mistral：Experiment 免費 ~10 億 tokens/月
   if (provider === "cloudflare") {
     // Cloudflare Workers AI 有 OpenAI 相容 endpoint（需 account id）。

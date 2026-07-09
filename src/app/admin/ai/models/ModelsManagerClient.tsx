@@ -64,7 +64,7 @@ const PROVIDER_INFO: Record<string, { how: string; url: string; models: string; 
   openrouter: { how: "OpenRouter → Keys（有免費 :free 模型）", url: "https://openrouter.ai/keys", models: "qwen/qwen3-next-80b-a3b-instruct:free、openai/gpt-oss-120b:free（免費）", free: true },
   cerebras: { how: "Cerebras Cloud → API Keys（免費·免卡·約 100 萬 tok/天）", url: "https://cloud.cerebras.ai/", models: "llama3.1-8b（low）/ llama-3.3-70b（mid）", free: true },
   nvidia: { how: "NVIDIA build → Get API Key（免費）", url: "https://build.nvidia.com/", models: "meta/llama-3.1-8b-instruct（low）/ meta/llama-3.1-70b-instruct（mid）", free: true },
-  github: { how: "GitHub → Settings → Developer settings → Personal access tokens（免費·免卡）", url: "https://github.com/settings/personal-access-tokens", models: "gpt-4o-mini（low）/ Llama-3.3-70B-Instruct（mid）/ Phi-3.5-mini-instruct", free: true },
+  github: { how: "⚠️ 2026-07-30 服務退役、建議跳過改用其他免費家。若仍要：PAT 需 models:read 權限；model_name 用 openai/gpt-4o-mini、meta/llama-3.3-70b-instruct（含 publisher 前綴）", url: "https://github.com/settings/personal-access-tokens", models: "openai/gpt-4o-mini（low）/ meta/llama-3.3-70b-instruct（mid）", free: true },
   mistral: { how: "Mistral Console → API Keys（Experiment 免費）", url: "https://console.mistral.ai/api-keys", models: "open-mistral-nemo（low）/ mistral-small-latest（mid）", free: true },
   sambanova: { how: "SambaNova Cloud（若無法註冊可略過此家）", url: "https://cloud.sambanova.ai/apis", models: "Meta-Llama-3.3-70B-Instruct", free: true },
   cloudflare: { how: "Cloudflare → Workers AI（需 Account ID + API Token；另設 CLOUDFLARE_ACCOUNT_ID env）", url: "https://dash.cloudflare.com/", models: "@cf/meta/llama-3.1-8b-instruct" },

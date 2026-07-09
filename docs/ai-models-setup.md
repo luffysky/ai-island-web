@@ -16,10 +16,12 @@ Key：GitHub → Settings → Developer settings → Personal access tokens → 
 
 ### groq — 最快、免卡
 Key：https://console.groq.com/keys
+> ⚠️ `llama-3.1-8b-instant` / `llama-3.3-70b-versatile` **2026-06-17 已停用**，改用下面 gpt-oss / qwen。
 | model_name | 顯示名 | tier |
 |---|---|---|
-| `llama-3.1-8b-instant` | Llama 3.1 8B (Groq) | low |
-| `llama-3.3-70b-versatile` | Llama 3.3 70B (Groq) | mid |
+| `openai/gpt-oss-20b` | GPT-OSS 20B (Groq) | low |
+| `openai/gpt-oss-120b` | GPT-OSS 120B (Groq) | mid |
+| `qwen/qwen3-32b` | Qwen3 32B (Groq) | mid |
 
 ### google（Gemini）— 免費、多模態
 Key：https://aistudio.google.com/apikey
@@ -30,10 +32,11 @@ Key：https://aistudio.google.com/apikey
 
 ### cerebras — 免卡、約 100 萬 tok/天
 Key：https://cloud.cerebras.ai/
+> ⚠️ llama/qwen 系列正淘汰，優先用 gpt-oss-120b / GLM。
 | model_name | 顯示名 | tier |
 |---|---|---|
-| `llama3.1-8b` | Llama 3.1 8B (Cerebras) | low |
-| `llama-3.3-70b` | Llama 3.3 70B (Cerebras) | mid |
+| `gpt-oss-120b` | GPT-OSS 120B (Cerebras) | mid |
+| `zai-glm-4.7` | GLM 4.7 (Cerebras) | mid |
 
 ### nvidia（NVIDIA NIM）— 免費
 Key：https://build.nvidia.com/
