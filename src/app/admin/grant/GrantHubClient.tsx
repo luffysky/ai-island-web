@@ -25,6 +25,7 @@ function metaFor(slug: string): { group: string; emoji: string; short: string } 
   if (slug === "business-registration-checklist") return { group: "✅ 行動清單", emoji: "🏪", short: "獨資商號登記清單" };
   if (slug === "swot") return { group: "📋 計畫書九章", emoji: "🎯", short: "SWOT 分析" };
   if (slug === "creator-island") return { group: "📋 計畫書九章", emoji: "🎨", short: "創作者島嶼（亮點）" };
+  if (slug === "repositioning") return { group: "📋 計畫書九章", emoji: "🎯", short: "重新定錨四塊（核心）" };
   return { group: "📁 其他", emoji: "📄", short: slug };
 }
 
