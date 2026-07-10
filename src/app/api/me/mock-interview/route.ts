@@ -3,17 +3,12 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { getProviderKey } from "@/lib/ai-crypto";
 import { getModelNameForUsage } from "@/lib/ai-usage-models";
 import { callAI } from "@/lib/ai-providers";
+import { providerFromModel } from "@/lib/resolve-usage-ai";
+import { requireAiAction, gateAiUsage, consumeAiTokens } from "@/lib/ai-gate";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 30;
-
-function providerFromModel(model: string): "anthropic" | "openai" | "google" | "groq" {
-  if (/^claude/i.test(model)) return "anthropic";
-  if (/^gemini/i.test(model)) return "google";
-  if (/^(llama|mixtral)/i.test(model)) return "groq";
-  return "openai";
-}
 
 /**
  * AI 模擬面試
@@ -71,12 +66,24 @@ async function handle(req: Request) {
     return NextResponse.json({ error: "invalid mode or role" }, { status: 400 });
   }
 
-  // 只在 start 動作扣 quota（一場面試只扣 1 次、之後 answer/finish 不扣）
+  // 額度：start 扣 1 次面試（一個月 3 次免費）；answer/finish 不再扣面試，
+  // 但每回合都算進「月 token 上限」→ 保住「一個月 3 場免費」體驗，同時防單場被無限灌 AI。
+  let premiumFree = false;
   if (action === "start") {
-    const { requireAiAction } = await import("@/lib/ai-gate");
     const gate = await requireAiAction(user.id, "interview");
     if (!gate.ok) return NextResponse.json({ error: gate.error, reason: gate.reason }, { status: 429 });
+    premiumFree = !gate.chargeable;
+  } else {
+    const g = await gateAiUsage(user.id);
+    premiumFree = g.unlimited || g.isPremium;
+    if (!premiumFree && !g.allow) {
+      return NextResponse.json({ error: "token_cap_exceeded", reason: g.reason }, { status: 429 });
+    }
   }
+  // 每次 AI 回應後把實際 token 記進月上限（premium/特權免計）
+  const charge = (r: any) => {
+    if (!premiumFree) consumeAiTokens(user.id, (r?.tokensInput ?? 0) + (r?.tokensOutput ?? 0)).catch(() => {});
+  };
 
   const modelName = await getModelNameForUsage("admin_assistant", "claude-haiku-4-5-20251001");
   const provider = providerFromModel(modelName);
@@ -106,6 +113,7 @@ async function handle(req: Request) {
 
 只輸出對白、不要 [系統:] 前綴。`;
     const r = await callAI({ provider, model: modelName, apiKey, messages: [{ role: "user", content: prompt }], temperature: 0.7, maxTokens: 400 });
+    charge(r);
     return NextResponse.json({ question: r.text.trim() });
   }
 
@@ -135,6 +143,7 @@ ${transcript}
   "next_steps": ["3 條具體可執行的下一步、不要空話、各 < 40 字"]
 }`;
     const r = await callAI({ provider, model: modelName, apiKey, messages: [{ role: "user", content: prompt }], temperature: 0.3, maxTokens: 800 });
+    charge(r);
     const text = r.text.trim();
     const m = text.match(/\{[\s\S]*\}/);
     if (!m) return NextResponse.json({ feedback: { raw: text, error: "no_json" } });
@@ -170,5 +179,6 @@ ${transcript}
     temperature: 0.7,
     maxTokens: 300,
   });
+  charge(r);
   return NextResponse.json({ question: r.text.trim() });
 }
