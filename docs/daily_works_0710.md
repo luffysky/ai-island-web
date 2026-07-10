@@ -128,6 +128,33 @@
 
 ---
 
+## 八、超長連續 session（0710 深夜）— AI/翻譯/計畫書/程式辭典大爆發
+
+### ✅ 已完成並上線（~30 個 commit）
+- **AI 聊天/emoji**：送出 emoji 會動、圖片去綠框、Fluent 3D fallback、顔文字(ツ)分頁、自建 12 張動態貼圖(SVG)、綠寶更像島民/多聞對齊「博學多聞」。
+- **種子內容規模化**：7 個 AI 住民/創作者部落格補到布林哥規模（**公開文章 97→~590**）、種子留言 **56→2388**（多數文章 2+ 則）。生成器 `gen-persona-blogs.mjs`、`gen-blog-seed-comments.mjs`（Haiku、冪等、大綱快取）。
+- **AI 升級 P0–P4**：P0 streamAI 三出口補記帳、P1 創作者高階模型分層(堵 money-leak)、P1c 每日軟上限 config、P1b 創作者聊天串流化、P2 語意快取上 assistant、P3 模擬面試補洞(3場/月保留+回合計token)+移除重複 providerFromModel、P4 寵物/學伴共用主聊天免費池。
+- **hearts→streak**：拿掉半成品生命值、留連續學習天數。
+- **島嶼刷幣**：伺服器權威每日賺幣上限 `ISLAND_DAILY_ZCOIN_CAP=500` + 單元測試。
+- **build heap OOM 修復**：ci.yml + Dockerfile 加 `NODE_OPTIONS=--max-old-space-size=4096`（CI #179 起紅的都轉綠）。
+- **「查看翻譯」(FB/IG 式)**：`TranslateButton`（免費 Google、切中英日韓、看原文）接到 部落格留言/論壇/AI導師/社群貼文+留言/寵物AI/綠寶創作。共用 `ChatContent` 升級（動態 emoji+圖片+貼圖）。
+- **選擇器補齊**：emoji/顔文字/貼圖/GIF 補到 社群留言(含顯示升級)/創作碎片/市集描述/導師簡介/部落格簡介/寵物聊天。
+- **計畫書重新定錨**：`repositioning.md`（四塊核心）+ `creator-island.md`（第二支柱亮點）+ ch1/ch3/ch5/ch9 對齊；後台補助頁已更新。`gen-grant-content.mjs` 排除 `待改.md`。
+- **程式辭典（新功能）**：`/dictionary`（搜尋+篩選+詳解+JSON-LD+自建 Lottie hero）、`dictionary_terms` 表、i18n 接翻譯管線、nav 四語。**手寫種子 1022 條**（20 批）。規劃書 `docs/dictionary_plan.md`（含語言島骨架）。
+
+### ⬜ 待辦（下次接力）
+- **辭典續寫**：從 `dictionary-seed-21.json` 接、目標 5000（現 1022/20%）。詳見 CLAUDE.md「程式辭典續寫接力」。→ 使用者說「續辭典」即從第 21 批繼續。
+- **辭典 i18n 續補**：每加幾批跑 `node scripts/translate-sync-all.mjs` 補譯。
+- ⬜ 作品集描述（`PortfoliosClient.tsx`，物件 state）補 emoji picker（audit 剩這一個）。
+- ⬜ P4 **Z 幣續用 UX**：pet/chat、ai/assistant 的 `need_zcoin` 402 → 前端做「花 Z 幣續用」提示（現在只擋）。
+- ⬜ 島嶼刷幣 **phase 2**：釣魚魚種改**伺服器擲骰**、前端顯示伺服器回傳結果；完整 **Playwright E2E** 回歸。
+- ⬜ 計畫書其餘章節對齊 repositioning：ch2/ch6/ch7 + pitch-deck（把「完整閉環/MOOC 3.13% 旗艦/零成本多語核心」語氣收斂，同 `repositioning.md`）。
+- ⬜ **語言島** 實作（`/語言島`，沿用 dictionary 元件 `domain='english'|'japanese'`；`docs/dictionary_plan.md` 有骨架）。
+- ⬜ Lottie 星星 hero 若老闆不喜歡 → 換 LottieFiles 免費動畫（Lottie Simple License 可商用）或調整。
+- ⬜（延續）E2E + Smoke tests；沉浸式 3D 島嶼降耗。
+
+---
+
 ## 🔒 安全紅線（不變）
 - `.env.local` 永遠不 commit；`docs/logerr.md`、`docs/note.md` 保持 untracked。
 - service_role key / DB 密碼整個專案完成後再輪替。

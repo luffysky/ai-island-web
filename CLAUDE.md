@@ -72,3 +72,16 @@ PostgREST 預設一次最多回 **1000 筆**。`lessons` 表已 1258 筆、任�
 ## 每日測驗題庫
 
 - 章節半邊抽 `lesson.miniQuiz`；leetcode 半邊抽 **`leetcode_questions`** 表（**不是** `leetcode_problems`——那只是題目目錄、沒選項/答案）。要更多題：`node scripts/seed-leetcode-questions.mjs --limit N`。
+
+---
+
+## 程式辭典（/dictionary）— 續寫接力
+
+繁中原生、白話＋比喻的「程式術語 × 語法 × 工程師黑話」辭典。規劃書 `docs/dictionary_plan.md`。
+
+- **資料表** `dictionary_terms`（migration `supabase/dictionary_migration.sql` 已跑）。`domain` 欄位預留給未來「語言島」的英/日辭典共用（`domain='english'|'japanese'`）。
+- **種子＝手寫、零 API**：`scripts/_data/dictionary-seed-N.json`（一個物件一條，欄位：slug/term/zh_name/category(syntax|concept|slang|tool|error|reference)/langs/plain/analogy/example/related/difficulty(1-3)）。**由我直接 author，不跑生成器、不花 AI 錢。**
+- **灌 DB**（冪等、依 slug upsert、讀所有 seed 檔）：`node scripts/import-dictionary.mjs`。
+- **目前進度：~1022 條 / 目標 5000。續寫從 `dictionary-seed-21.json` 接下去編號**（別重複既有 slug；批次主題見各 commit 訊息）。**「續辭典」= 從第 21 批繼續 author→import→commit→push。**
+- **i18n**：辭典已接翻譯管線（`content-i18n.ts` + `translate-sync-all.mjs` 的 `dictionary` scope，翻 zh_name/plain/analogy，term/example 不翻）。新增批次後跑 `node scripts/translate-sync-all.mjs`（免費 Google、長跑會斷、冪等重跑即可）補譯。頁面已在地化（切語言看譯文、沒譯 fallback 中文）。
+- **頁面**：`/dictionary`（搜尋+分類/語言篩選，`DictionaryBrowse.tsx`）、`/dictionary/[slug]`（白話+比喻+範例+相關詞、`DefinedTerm` JSON-LD）。nav 已加「程式辭典」（四語 i18n）。Hero 用自建 `public/lotties/dict-sparkle.json`。
