@@ -1,13 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Bot, Send, Loader2, CheckCircle2, XCircle, Wrench, Eye, ShieldAlert, ShieldCheck, History, Cpu, Square } from "lucide-react";
+import { Bot, Send, Loader2, CheckCircle2, XCircle, Wrench, Eye, ShieldAlert, ShieldCheck, History, Cpu, Square, Laptop, Plug, Copy, Trash2, X } from "lucide-react";
 
 type Risk = "read" | "write" | "dangerous";
 interface ToolInfo { name: string; description: string; risk: Risk; needsDevice: boolean; }
 interface StepView { idx: number; kind: "thought" | "step"; thought?: string; toolName?: string; risk?: Risk; args?: any; result?: any; ok?: boolean; }
 interface ApprovalReq { id: string; toolName: string; risk: Risk; summary: Record<string, string>; }
 interface TaskListItem { id: string; goal: string; status: string; step_count: number; created_at: string; }
+interface DeviceItem { id: string; name: string; platform: string; online: boolean; }
 
 const RISK_BADGE: Record<Risk, { label: string; cls: string; Icon: any }> = {
   read: { label: "唯讀", cls: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400", Icon: Eye },
@@ -36,6 +37,10 @@ export function AgentClient() {
   const [taskId, setTaskId] = useState<string>("");
   const [tools, setTools] = useState<ToolInfo[]>([]);
   const [history, setHistory] = useState<TaskListItem[]>([]);
+  const [devices, setDevices] = useState<DeviceItem[]>([]);
+  const [pairOpen, setPairOpen] = useState(false);
+  const [newToken, setNewToken] = useState<{ token: string; name: string } | null>(null);
+  const [copied, setCopied] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -46,10 +51,31 @@ export function AgentClient() {
     } catch { /* ignore */ }
   }, []);
 
+  const loadDevices = useCallback(async () => {
+    try {
+      const r = await fetch("/api/agent/devices");
+      if (r.ok) setDevices((await r.json()).devices ?? []);
+    } catch { /* ignore */ }
+  }, []);
+
   useEffect(() => {
     fetch("/api/agent/tools").then((r) => r.json()).then((d) => setTools(d.tools ?? [])).catch(() => {});
     loadHistory();
-  }, [loadHistory]);
+    loadDevices();
+    const t = setInterval(loadDevices, 10000);        // 每 10s 刷新裝置在線狀態
+    return () => clearInterval(t);
+  }, [loadHistory, loadDevices]);
+
+  const pair = useCallback(async () => {
+    setNewToken(null);
+    const r = await fetch("/api/agent/bridge/pair", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: "我的電腦" }) });
+    if (r.ok) { const d = await r.json(); setNewToken({ token: d.token, name: d.name }); loadDevices(); }
+  }, [loadDevices]);
+
+  const revoke = useCallback(async (id: string) => {
+    await fetch("/api/agent/devices", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "revoke", deviceId: id }) }).catch(() => {});
+    loadDevices();
+  }, [loadDevices]);
 
   useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }); }, [steps, summary, approval]);
 
@@ -216,6 +242,28 @@ export function AgentClient() {
 
         {/* 側欄 */}
         <aside className="space-y-4">
+          {/* 桌面助手 */}
+          <div className="rounded-2xl border border-black/10 dark:border-white/10 p-3.5">
+            <div className="flex items-center gap-1.5 text-sm font-semibold mb-2"><Laptop className="w-4 h-4 text-emerald-500" /> 桌面助手</div>
+            {devices.length === 0 ? (
+              <p className="text-xs text-black/50 dark:text-white/50 mb-2">連接電腦後，Agent 就能（經你確認）在本機讀寫檔案、跑 <code className="text-[10px]">npm test</code> 等指令。</p>
+            ) : (
+              <ul className="space-y-1 mb-2">
+                {devices.map((d) => (
+                  <li key={d.id} className="flex items-center gap-2 text-xs">
+                    <span className={`w-2 h-2 rounded-full shrink-0 ${d.online ? "bg-emerald-500" : "bg-black/20 dark:bg-white/20"}`} />
+                    <span className="min-w-0 truncate">{d.name}</span>
+                    <span className={`shrink-0 ${d.online ? "text-emerald-600 dark:text-emerald-400" : "text-black/40 dark:text-white/40"}`}>{d.online ? "在線" : "離線"}</span>
+                    <button onClick={() => revoke(d.id)} title="解除配對" className="ml-auto shrink-0 text-black/30 hover:text-rose-500 dark:text-white/30"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <button onClick={() => { setPairOpen(true); setNewToken(null); }} className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-500/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 px-3 py-1.5 text-xs font-medium">
+              <Plug className="w-3.5 h-3.5" /> 連接桌面助手
+            </button>
+          </div>
+
           {/* 能力 */}
           <div className="rounded-2xl border border-black/10 dark:border-white/10 p-3.5">
             <div className="flex items-center gap-1.5 text-sm font-semibold mb-2"><Cpu className="w-4 h-4 text-sky-500" /> 目前能力</div>
@@ -254,6 +302,42 @@ export function AgentClient() {
           </div>
         </aside>
       </div>
+
+      {/* 配對彈窗 */}
+      {pairOpen && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" onClick={() => setPairOpen(false)}>
+          <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-[#15161c] border border-black/10 dark:border-white/10 p-5 max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-bold flex items-center gap-2"><Laptop className="w-5 h-5 text-emerald-500" /> 連接桌面助手</h2>
+              <button onClick={() => setPairOpen(false)} className="text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white"><X className="w-5 h-5" /></button>
+            </div>
+            {!newToken ? (
+              <>
+                <p className="text-sm text-black/70 dark:text-white/70 mb-3">桌面助手是在你電腦上執行的小程式，讓 Agent 能（每個寫入/高風險動作都要你確認）操作本機。按下方產生一次性 token。</p>
+                <button onClick={pair} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 text-sm font-medium">
+                  <Plug className="w-4 h-4" /> 產生配對 token
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-amber-600 dark:text-amber-400 mb-2 flex items-center gap-1.5"><ShieldAlert className="w-4 h-4" /> token 只顯示這一次，請立刻複製保存。</p>
+                <div className="flex items-center gap-2 mb-4">
+                  <code className="flex-1 min-w-0 truncate text-xs bg-black/5 dark:bg-black/40 rounded-lg px-3 py-2 font-mono">{newToken.token}</code>
+                  <button onClick={() => { navigator.clipboard?.writeText(newToken.token); setCopied(true); setTimeout(() => setCopied(false), 1500); }} className="shrink-0 inline-flex items-center gap-1 rounded-lg border border-black/15 dark:border-white/20 px-2.5 py-2 text-xs hover:bg-black/5 dark:hover:bg-white/10">
+                    {copied ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}{copied ? "已複製" : "複製"}
+                  </button>
+                </div>
+                <ol className="text-sm space-y-1.5 text-black/75 dark:text-white/75 list-decimal pl-5">
+                  <li>下載 <code className="text-xs">apps/desktop</code> 桌面助手（需 Node 18+）。</li>
+                  <li>複製 <code className="text-xs">bridge.config.example.json</code> 為 <code className="text-xs">bridge.config.json</code>，貼上上面的 token、設定允許的資料夾。</li>
+                  <li>執行 <code className="text-xs bg-black/5 dark:bg-black/40 px-1 rounded">node bridge.mjs</code>（或 <code className="text-xs">npm run gui</code> 開圖形介面）。</li>
+                  <li>看到「等待任務中…」後，回這裡下需要本機的指令即可。</li>
+                </ol>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </main>
   );
 }

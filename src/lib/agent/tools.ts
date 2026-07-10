@@ -78,6 +78,15 @@ export const TOOLS: AgentTool[] = [
     async execute() { return { ok: false, error: "需安裝並連接『AI 島桌面助手』（Phase 1b 尚未接）" }; },
   },
   {
+    name: "filesystem.read",
+    description: "讀取使用者本機某個文字檔的內容（需桌面助手、限白名單資料夾）。",
+    args: { path: "檔案路徑" },
+    risk: "read",
+    platforms: ["windows"],
+    needsDevice: true,
+    async execute() { return { ok: false, error: "需安裝並連接『AI 島桌面助手』（Phase 1b 尚未接）" }; },
+  },
+  {
     name: "filesystem.write",
     description: "在使用者本機建立/修改文字檔（需桌面助手、寫入前需確認）。",
     args: { path: "檔案路徑", content: "內容" },

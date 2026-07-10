@@ -1,0 +1,17 @@
+{
+  "name": "ai-island-desktop-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AI 島桌面助手 — 讓 /agent 的行動代理能在你的電腦上（限白名單）讀寫檔案、跑指令。",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "node bridge.mjs",
+    "gui": "electron ."
+  },
+  "engines": { "node": ">=18" },
+  "optionalDependencies": {
+    "electron": "^32.0.0",
+    "playwright": "^1.47.0"
+  }
+}

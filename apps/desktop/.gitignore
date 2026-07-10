@@ -1,0 +1,4 @@
+# 裝置 token 在這裡、絕不進版控
+bridge.config.json
+node_modules/
+dist/

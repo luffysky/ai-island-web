@@ -296,11 +296,18 @@ Windows UI     ：Python + pywinauto / UI Automation（結構化優先）
 - [x] `/agent` 面板（`page.tsx` + `AgentClient.tsx`）：下令、即時步驟流、💭思考、確認彈窗（動作/影響/可復原）、能力面板、任務歷史回放；RWD + nav 入口（4 語 i18n）。
 - [x] 驗證：tsc / vitest(122) / next build 綠；DB insert smoke 綠；真模型 planner 回合法 JSON + 選對工具。
 
-### Phase 1b — 本機能力（待做）
-- [ ] `desktop-bridge`（Electron）：配對、WS 連線、停止鈕、本機權限；工具 read/write/dangerous 白名單；截圖回傳。
-- [ ] `browser-worker`（Playwright）：獨立 Chromium、DOM/Role/A11y 定位。
-- [ ] 把 `filesystem.*`/`system.run_command` stub 換成經 Bridge 的真實作。
-- [ ] **端到端 Demo**：開 AI 島專案 → `npm test` → 收錯誤 → 分析 → 建議（改檔前必確認）。
+### Phase 1b — 本機能力（進行中 · 2026-07-10）
+> 架構決策：Zeabur 不架長駐 WS，Bridge↔雲端改用 **`agent_device_calls` 佇列 + 輪詢**（同 approval 那招）。WS 之後當優化。
+- [x] DB：`agent_device_calls` 佇列 + `agent_device_bridges` 補 `token_hash/whitelist/revoked`（`supabase/agent_bridge_migration.sql`，已跑）。
+- [x] Bridge API：`/api/agent/bridge/{pair,poll,result}` + `/api/agent/devices`（pair 用登入態發一次性 token；poll/result 用裝置 Bearer token 認證；poll 兼心跳更新在線）。
+- [x] orchestrator：`needsDevice` 工具改走 `dispatchToDevice()`（入列+輪詢等結果）；無在線裝置 → 明確提示去配對。
+- [x] `desktop-bridge`（`apps/desktop/`）：**可實跑的 Node 核心 `bridge.mjs`**（輪詢→領取→執行→回填、零安裝需 Node18+）+ Electron 外殼（系統匣/狀態視窗/啟停鈕）。本機權限：檔案限 `roots`、`run_command` 首詞白名單、寫入/高風險靠雲端逐次確認；token 只存本機（已 gitignore）。
+- [x] 把 `filesystem.*`/`system.run_command` stub 換成經 Bridge 的真實作（`filesystem.list/read/write`、`system.run_command`）。
+- [x] `/agent` UI：桌面助手面板（裝置在線狀態/解除配對）+ 配對彈窗（一次性 token + 設定步驟）。
+- [x] 驗證：tsc / vitest(122) / next build 綠；**Bridge 端到端 smoke 綠**（真的寫檔/跑 echo/列目錄 + 正確擋掉白名單外 `rm -rf /`）。
+- [ ] `browser-worker`（Playwright）：獨立 Chromium、DOM/Role/A11y 定位（`browser.*` 工具預留）。
+- [ ] 截圖回傳（`screen.capture`）。
+- [ ] **端到端 Demo（真跑一次）**：登入 → 配對 → 啟動 bridge → `/agent` 下「跑 npm test 看結果」→ 確認 → 收錯誤分析。
 - [ ] KPI 儀表：成功率 / 步數 / 人工介入率 / 重試 / 成本 / 完成時間 / 誤操作率。
 - [ ] `agent_tools` / `agent_skills` / `agent_credential_refs` 表（registry 目前 code-first，之後要 DB 化再建）。
 

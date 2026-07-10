@@ -5,6 +5,7 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { completeForUsage } from "@/lib/resolve-usage-ai";
 import { getTool, describeTools, needsApproval, approvalSummary, type ToolResult } from "./tools";
+import { getOnlineDevice, dispatchToDevice } from "./bridge";
 
 export type AgentEvent =
   | { type: "status"; status: string }
@@ -135,10 +136,20 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
         }
       }
 
-      // 執行
+      // 執行：需本機的工具走桌面助手 Bridge（佇列+輪詢）；其餘伺服器端直接跑
       let result: ToolResult;
-      try { result = await tool.execute(decision.args ?? {}, { userId, taskId }); }
-      catch (e: any) { result = { ok: false, error: e?.message ?? "工具執行例外" }; }
+      try {
+        if (tool.needsDevice) {
+          const device = await getOnlineDevice(userId);
+          if (!device) {
+            result = { ok: false, error: "沒有連接中的『AI 島桌面助手』。請先在電腦上安裝並啟動、於 /agent 完成配對。" };
+          } else {
+            result = await dispatchToDevice(taskId, userId, device.id, idx, tool.name, decision.args ?? {});
+          }
+        } else {
+          result = await tool.execute(decision.args ?? {}, { userId, taskId });
+        }
+      } catch (e: any) { result = { ok: false, error: e?.message ?? "工具執行例外" }; }
       row.ok = result.ok; row.result = result.ok ? result.data : { error: result.error };
       history.push(row);
       await admin.from("agent_steps").insert({

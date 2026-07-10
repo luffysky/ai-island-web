@@ -163,7 +163,15 @@
   - 前端：`/agent` 面板（下令、即時步驟流、💭思考、確認彈窗含動作/影響/可復原、能力面板、任務歷史回放）+ nav 入口（4 語 i18n）+ RWD。
   - 工具：`web.fetch`、`dictionary.lookup`（伺服器真的能跑）；`filesystem.*`/`system.run_command` 為 device stub（會觸發確認流程、回「需桌面助手」）。
   - 驗證：tsc / vitest(122) / next build 綠；DB insert smoke 綠；真模型 planner 回合法 JSON + 選對工具。**尚未做**：登入態下的整條 HTTP SSE 點擊實測（可下次一起走一次）。
-- ⬜ 下一步 **Phase 1b（本機能力）**：Electron `desktop-bridge`（配對/WS/停止鈕/白名單/截圖）→ Playwright `browser-worker` → 把 device stub 換真實作 → 端到端 Demo（開專案跑測試→分析→建議）→ KPI 儀表。
+- ✅ **Phase 1b 進行中（0710）— 本機能力接通、桌面助手可實跑、已上線**：
+  - 架構決策：Zeabur 不架長駐 WS，Bridge↔雲端用 `agent_device_calls` 佇列 + 輪詢（同 approval 那招）。
+  - DB：`agent_device_calls` 佇列表 + `agent_device_bridges` 補 `token_hash/whitelist/revoked`（`supabase/agent_bridge_migration.sql`，已跑）。
+  - Bridge API：`/api/agent/bridge/{pair,poll,result}` + `/api/agent/devices`（pair 發一次性 token、poll/result 用裝置 Bearer 認證、poll 兼心跳）。
+  - orchestrator：`needsDevice` 工具改走 `dispatchToDevice()`（入列輪詢）；無在線裝置→提示配對。
+  - 桌面助手 `apps/desktop/`：可實跑 Node 核心 `bridge.mjs`（零安裝、Node18+）+ Electron 外殼（系統匣/狀態視窗/啟停）+ README。工具：`filesystem.list/read/write`、`system.run_command`。安全：檔案限 `roots`、指令首詞白名單、寫入/高風險靠雲端逐次確認、token 只存本機（gitignore）。
+  - `/agent` UI：桌面助手面板（在線狀態/解除配對）+ 配對彈窗（一次性 token + 設定步驟）。
+  - 驗證：tsc / vitest(122) / next build 綠；**Bridge 端到端 smoke 綠**——真的寫檔/跑 echo/列目錄，且正確擋掉白名單外 `rm -rf /`。
+- ⬜ 下一步 **Phase 1b 收尾**：Playwright `browser-worker`（`browser.*`）+ 截圖回傳 + **真跑一次端到端 Demo**（登入→配對→啟動 bridge→下「跑 npm test」→確認→收錯誤分析）+ KPI 儀表。之後 Phase 2（手機遙控/Android）。
 - 核心：`Agent Core`（任務規劃迴圈＋最大步數＋重試＋驗證＋中止）、`Tool Registry`（每工具 JSON Schema＋風險等級 read/write/dangerous＋平台限制）、`Device Bridge`（本機助手 Electron→Tauri，WebSocket 連線）、`Browser Worker`（Playwright 走 DOM/Role/Accessibility、不用座標）、`Approval Engine`（L0–L4 權限、寫入/刪除/付款要確認）、`Credential Broker`（Agent 不碰明文密碼）。
 - **MVP 只做 Windows + 瀏覽器 + AI 島開發工作流**（Demo：手機下指令→電腦開 VS Code 跑測試→分析錯誤→回傳，改檔前要確認）。Android 第二階段、iOS 最後（限制大、走 App Intents/Shortcuts）。
 - 差異化敘事（接 AI 島原定位）：**「別人教你怎麼問 AI，AI 島教你怎麼讓 AI 真正做事」**——最透明、可教、可視化、可中止、失敗可回復的 Agent，讓新手敢授權。競賽自評 8/10。
