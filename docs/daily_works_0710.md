@@ -171,7 +171,12 @@
   - 桌面助手 `apps/desktop/`：可實跑 Node 核心 `bridge.mjs`（零安裝、Node18+）+ Electron 外殼（系統匣/狀態視窗/啟停）+ README。工具：`filesystem.list/read/write`、`system.run_command`。安全：檔案限 `roots`、指令首詞白名單、寫入/高風險靠雲端逐次確認、token 只存本機（gitignore）。
   - `/agent` UI：桌面助手面板（在線狀態/解除配對）+ 配對彈窗（一次性 token + 設定步驟）。
   - 驗證：tsc / vitest(122) / next build 綠；**Bridge 端到端 smoke 綠**——真的寫檔/跑 echo/列目錄，且正確擋掉白名單外 `rm -rf /`。
-- ⬜ 下一步 **Phase 1b 收尾**：Playwright `browser-worker`（`browser.*`）+ 截圖回傳 + **真跑一次端到端 Demo**（登入→配對→啟動 bridge→下「跑 npm test」→確認→收錯誤分析）+ KPI 儀表。之後 Phase 2（手機遙控/Android）。
+- ✅ **Phase 2a 完成（0710）— 手機遙控，已上線**：Bridge↔雲端本就裝置無關，手機開 `/agent`（RWD/PWA）即可下令→PC 執行→串回手機。補上遠端感知：
+  - Web Push（需確認/完成/未完成 → 推播全裝置，深連結 `/agent?task=<id>`；VAPID 未設自動 no-op）。
+  - 跨裝置批准（推播點進手機→自動載入任務→直接批准；approval 走 DB、任何裝置都生效）。
+  - 遠端觀看（進行中任務輪詢刷新 + 「遠端觀看中」+ 可遠端停止）。
+  - 語音輸入（Web Speech zh-TW）+ 目標裝置提示。
+- ⬜ 下一步 **Phase 1b 收尾**（Playwright browser-worker + 截圖 + 真跑端到端 Demo + KPI）／**Phase 2b**（任務背景執行、脫離連線照跑）／Android／排程。
 - 核心：`Agent Core`（任務規劃迴圈＋最大步數＋重試＋驗證＋中止）、`Tool Registry`（每工具 JSON Schema＋風險等級 read/write/dangerous＋平台限制）、`Device Bridge`（本機助手 Electron→Tauri，WebSocket 連線）、`Browser Worker`（Playwright 走 DOM/Role/Accessibility、不用座標）、`Approval Engine`（L0–L4 權限、寫入/刪除/付款要確認）、`Credential Broker`（Agent 不碰明文密碼）。
 - **MVP 只做 Windows + 瀏覽器 + AI 島開發工作流**（Demo：手機下指令→電腦開 VS Code 跑測試→分析錯誤→回傳，改檔前要確認）。Android 第二階段、iOS 最後（限制大、走 App Intents/Shortcuts）。
 - 差異化敘事（接 AI 島原定位）：**「別人教你怎麼問 AI，AI 島教你怎麼讓 AI 真正做事」**——最透明、可教、可視化、可中止、失敗可回復的 Agent，讓新手敢授權。競賽自評 8/10。

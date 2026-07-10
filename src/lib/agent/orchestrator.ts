@@ -6,6 +6,12 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { completeForUsage } from "@/lib/resolve-usage-ai";
 import { getTool, describeTools, needsApproval, approvalSummary, type ToolResult } from "./tools";
 import { getOnlineDevice, dispatchToDevice } from "./bridge";
+import { sendPushToUser } from "@/lib/web-push";
+
+// 手機遙控核心：關鍵時刻推播到使用者所有裝置（VAPID 未設會自動 no-op）。fire-and-forget。
+function pushSafe(userId: string, title: string, body: string, taskId: string, tag: string) {
+  sendPushToUser(userId, { title, body: body.slice(0, 90), url: `/agent?task=${taskId}`, tag }).catch(() => {});
+}
 
 export type AgentEvent =
   | { type: "status"; status: string }
@@ -103,6 +109,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
       if (decision.done || !decision.tool) {
         const summary = decision.summary ?? "完成。";
         await setStatus("succeeded", { result: { summary }, step_count: idx, finished_at: new Date().toISOString() });
+        pushSafe(userId, "✅ Agent 完成任務", summary, taskId, `agent-done-${taskId}`);
         yield { type: "done", status: "succeeded", summary };
         return;
       }
@@ -124,6 +131,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
           .insert({ task_id: taskId, user_id: userId, step_idx: idx, tool_name: tool.name, risk: tool.risk, summary })
           .select("id").single();
         await setStatus("awaiting_approval");
+        pushSafe(userId, "🤖 Agent 需要你確認", `${tool.name}：${goal}`, taskId, `agent-appr-${taskId}`);
         yield { type: "approval", approval: { id: appr!.id, toolName: tool.name, risk: tool.risk, summary } };
         const ok = await waitForApproval(appr!.id, taskId);
         await setStatus("running");
@@ -162,6 +170,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
 
     // 用完步數
     await setStatus("failed", { error: "達到最大步數", finished_at: new Date().toISOString() });
+    pushSafe(userId, "⚠️ Agent 任務未完成", `已達最大步數（${maxSteps}）`, taskId, `agent-done-${taskId}`);
     yield { type: "done", status: "failed", summary: `已達最大步數（${maxSteps}）仍未完成。` };
   } catch (e: any) {
     await setStatus("failed", { error: e?.message ?? "未知錯誤", finished_at: new Date().toISOString() });

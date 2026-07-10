@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Bot, Send, Loader2, CheckCircle2, XCircle, Wrench, Eye, ShieldAlert, ShieldCheck, History, Cpu, Square, Laptop, Plug, Copy, Trash2, X } from "lucide-react";
+import { Bot, Send, Loader2, CheckCircle2, XCircle, Wrench, Eye, ShieldAlert, ShieldCheck, History, Cpu, Square, Laptop, Plug, Copy, Trash2, X, Mic } from "lucide-react";
 
 type Risk = "read" | "write" | "dangerous";
 interface ToolInfo { name: string; description: string; risk: Risk; needsDevice: boolean; }
@@ -20,6 +20,15 @@ const STATUS_LABEL: Record<string, string> = {
   planning: "規劃中", running: "執行中", awaiting_approval: "等你確認",
   succeeded: "完成", failed: "失敗", cancelled: "已取消",
 };
+
+const LIVE = ["planning", "running", "awaiting_approval"];
+function mapSteps(st: any[]): StepView[] {
+  return (st ?? []).map((s) => ({ idx: s.idx, kind: "step" as const, thought: s.thought, toolName: s.tool_name, risk: s.risk, args: s.args, result: s.result, ok: s.ok }));
+}
+function pendingApproval(approvals: any[]): ApprovalReq | null {
+  const p = (approvals ?? []).find((a) => a.decision === "pending");
+  return p ? { id: p.id, toolName: p.tool_name, risk: p.risk, summary: p.summary } : null;
+}
 
 const EXAMPLES = [
   "查一下「async」在程式辭典裡是什麼意思，用白話講給我聽",
@@ -41,8 +50,14 @@ export function AgentClient() {
   const [pairOpen, setPairOpen] = useState(false);
   const [newToken, setNewToken] = useState<{ token: string; name: string } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [watching, setWatching] = useState<string>("");   // 遠端觀看中的 taskId（非本機發起、靠輪詢刷新）
+  const [listening, setListening] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const recRef = useRef<any>(null);
+  const deepLinkedRef = useRef(false);
+  const voiceSupported = typeof window !== "undefined" && !!((window as any).webkitSpeechRecognition || (window as any).SpeechRecognition);
+  const onlineDevice = devices.find((d) => d.online);
 
   const loadHistory = useCallback(async () => {
     try {
@@ -100,7 +115,7 @@ export function AgentClient() {
   const run = useCallback(async (g: string) => {
     const text = g.trim();
     if (!text || running) return;
-    setRunning(true); setSteps([]); setSummary(""); setApproval(null); setStatus("planning"); setTaskId("");
+    setRunning(true); setSteps([]); setSummary(""); setApproval(null); setStatus("planning"); setTaskId(""); setWatching("");
     const ac = new AbortController();
     abortRef.current = ac;
     try {
@@ -151,12 +166,52 @@ export function AgentClient() {
     if (running) return;
     const r = await fetch(`/api/agent/tasks/${id}`);
     if (!r.ok) return;
-    const { task, steps: st } = await r.json();
+    const { task, steps: st, approvals } = await r.json();
     setTaskId(id); setGoal(task.goal); setStatus(task.status);
     setSummary(task.result?.summary ?? task.error ?? "");
-    setSteps((st ?? []).map((s: any) => ({ idx: s.idx, kind: "step", thought: s.thought, toolName: s.tool_name, risk: s.risk, args: s.args, result: s.result, ok: s.ok })));
-    setApproval(null);
+    setSteps(mapSteps(st));
+    setApproval(pendingApproval(approvals));
+    setWatching(LIVE.includes(task.status) ? id : "");   // 還在跑 → 開始遠端輪詢刷新
   }, [running]);
+
+  // 遠端觀看：非本機發起（例如手機開推播連結）的進行中任務，靠輪詢刷新狀態/步驟/待確認
+  useEffect(() => {
+    if (!watching || running) return;
+    const iv = setInterval(async () => {
+      try {
+        const r = await fetch(`/api/agent/tasks/${watching}`);
+        if (!r.ok) return;
+        const { task, steps: st, approvals } = await r.json();
+        setStatus(task.status);
+        setSummary(task.result?.summary ?? task.error ?? "");
+        setSteps(mapSteps(st));
+        setApproval(pendingApproval(approvals));
+        if (!LIVE.includes(task.status)) setWatching("");
+      } catch { /* ignore */ }
+    }, 2000);
+    return () => clearInterval(iv);
+  }, [watching, running]);
+
+  // 深連結 /agent?task=<id>（推播點進來）：自動載入該任務、若有待確認就顯示、可直接在手機上批准
+  useEffect(() => {
+    if (deepLinkedRef.current) return;
+    deepLinkedRef.current = true;
+    const id = new URLSearchParams(window.location.search).get("task");
+    if (id) replay(id);
+  }, [replay]);
+
+  const toggleVoice = useCallback(() => {
+    const SR = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    if (!SR) return;
+    if (listening) { recRef.current?.stop?.(); return; }
+    const rec = new SR();
+    rec.lang = "zh-TW"; rec.interimResults = true; rec.continuous = false;
+    rec.onresult = (e: any) => { setGoal(Array.from(e.results).map((r: any) => r[0].transcript).join("")); };
+    rec.onend = () => setListening(false);
+    rec.onerror = () => setListening(false);
+    recRef.current = rec; setListening(true);
+    try { rec.start(); } catch { setListening(false); }
+  }, [listening]);
 
   const busy = running && (status === "planning" || status === "running" || status === "awaiting_approval");
 
@@ -186,6 +241,11 @@ export function AgentClient() {
                 className="flex-1 resize-none bg-transparent outline-none text-sm sm:text-base px-2 py-1.5 min-w-0"
                 disabled={running}
               />
+              {voiceSupported && !busy && (
+                <button onClick={toggleVoice} title="語音輸入" className={`shrink-0 grid place-items-center w-9 h-9 rounded-xl border ${listening ? "bg-rose-500 border-rose-500 text-white animate-pulse" : "border-black/10 dark:border-white/15 text-black/50 dark:text-white/50 hover:bg-black/5 dark:hover:bg-white/10"}`}>
+                  <Mic className="w-4 h-4" />
+                </button>
+              )}
               {busy ? (
                 <button onClick={cancel} className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white px-3.5 py-2 text-sm font-medium">
                   <Square className="w-4 h-4" /> 停止
@@ -196,6 +256,11 @@ export function AgentClient() {
                 </button>
               )}
             </div>
+            {onlineDevice && (
+              <div className="flex items-center gap-1.5 mt-2 px-1 text-xs text-emerald-600 dark:text-emerald-400">
+                <Laptop className="w-3.5 h-3.5" /> 需本機的指令會在「{onlineDevice.name}」上執行
+              </div>
+            )}
             {!steps.length && !running && (
               <div className="flex flex-wrap gap-1.5 mt-2 px-1">
                 {EXAMPLES.map((ex) => (
@@ -215,7 +280,13 @@ export function AgentClient() {
                 status === "cancelled" ? <XCircle className="w-4 h-4 text-black/40 dark:text-white/40" /> :
                 <XCircle className="w-4 h-4 text-rose-500" />}
               <span className="text-black/70 dark:text-white/70">{STATUS_LABEL[status] ?? status}</span>
+              {watching && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400">遠端觀看中</span>}
               {taskId && <span className="text-xs text-black/30 dark:text-white/30 font-mono">#{taskId.slice(0, 8)}</span>}
+              {watching && (
+                <button onClick={cancel} className="ml-auto inline-flex items-center gap-1 text-xs text-rose-500 hover:underline">
+                  <Square className="w-3 h-3" /> 停止任務
+                </button>
+              )}
             </div>
           )}
 

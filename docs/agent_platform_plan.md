@@ -312,9 +312,16 @@ Windows UI     ：Python + pywinauto / UI Automation（結構化優先）
 - [ ] `agent_tools` / `agent_skills` / `agent_credential_refs` 表（registry 目前 code-first，之後要 DB 化再建）。
 
 ### Phase 2 — 手機遙控 + Android
-- [ ] 手機下令 → 雲端 Agent → 已配對電腦 Bridge → 執行 → 串流回手機。
+> 關鍵洞察：Bridge↔雲端本來就走佇列+輪詢＝**裝置無關**，所以手機瀏覽器（RWD/PWA）開 `/agent` 就已能「手機下令→雲端 Agent→已配對電腦 Bridge→執行→串回手機」。Phase 2a 補的是**遠端感知**。
+- [x] **Phase 2a（2026-07-10）**：
+  - Web Push：任務**需確認 / 完成 / 未完成**時推播到使用者所有裝置（`sendPushToUser`，VAPID 未設自動 no-op）、深連結 `/agent?task=<id>`。
+  - **跨裝置批准**：`/agent?task=<id>` 自動載入任務、有待確認就顯示確認卡 → 手機上直接批准（approval 走 DB row，orchestrator 輪詢，任何裝置決定都生效）。
+  - **遠端觀看**：非本機發起的進行中任務靠輪詢刷新狀態/步驟/待確認（「遠端觀看中」標籤 + 可遠端停止）。
+  - **語音輸入**（Web Speech API zh-TW）+ 目標裝置提示（本機指令會在哪台電腦跑）。
+  - 驗證：tsc / vitest(122) / next build 綠。
+- [ ] Phase 2b：任務**背景執行**（脫離 SSE 連線也不中斷，改由 push 通知）＝真正「關掉手機頁面任務照跑」。
 - [ ] Android Agent（Kotlin + AccessibilityService，明確揭露、可視化、可停止；顧 Play 政策）。
-- [ ] 語音指令、排程任務（cron，例：每晚檢查 CI 有無測試失敗才通知）。
+- [ ] 排程任務（cron，例：每晚檢查 CI 有無測試失敗才通知）。
 
 ### Phase 3 — 技能商店 / 使用者自建 Agent
 - [ ] `agent_skills`：Prompt + Tools + Permission Policy + Workflow + Success Criteria（YAML）。
