@@ -9,6 +9,8 @@ import { pickChatter, type ChatterCtx } from "@/lib/pet-chatter";
 import { useEdgeSafe } from "@/lib/use-edge-safe";
 import { ChatMessageBubble, TypingIndicator, ChatToolbar, ChatContent, MicButton } from "@/components/chat";
 import { handleEnterSubmit, autoGrow } from "@/lib/composer";
+import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
+import { GifPicker } from "@/components/ui/GifPicker";
 
 type Message = { role: "user" | "pet"; content: string; created_at?: string };
 
@@ -248,6 +250,8 @@ export function PetChatPanel({
           disabled={sending}
           className="p-2 border border-border rounded-lg hover:border-accent hover:bg-accent/5"
         />
+        <AnimatedEmojiPicker onSelect={(e) => setInput((prev) => prev + e)} />
+        <GifPicker onSelect={(url) => setInput((prev) => (prev ? prev + " " : "") + url + " ")} />
         <textarea
           rows={1}
           value={input}

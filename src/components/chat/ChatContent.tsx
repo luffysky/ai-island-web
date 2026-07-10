@@ -1,6 +1,20 @@
 "use client";
 
 import { CopyButton } from "./CopyButton";
+import { EmojiText } from "@/components/ui/EmojiText";
+
+// 圖片 / GIF / 貼圖(svg) 網址 → <img>；其餘純文字裡的 emoji → 動態 emoji
+const MEDIA_URL_RE = /^https?:\/\/(?:[^\s]+\.(?:gif|png|jpe?g|webp|svg)(?:\?[^\s]*)?|(?:media\d?\.giphy\.com|i\.giphy\.com)\/[^\s]+)$/i;
+function renderRich(text: string) {
+  return text.split(/(https?:\/\/[^\s]+)/g).map((p, i) => {
+    if (!p) return null;
+    if (MEDIA_URL_RE.test(p)) {
+      // eslint-disable-next-line @next/next/no-img-element
+      return <img key={i} src={p} alt="" loading="lazy" className="block max-w-[180px] max-h-[180px] rounded-lg my-1" />;
+    }
+    return <EmojiText key={i} text={p} size={18} />;
+  });
+}
 
 /**
  * 渲染訊息內容、自動把 ```code``` block 包成 code box with 複製按鈕
@@ -34,7 +48,7 @@ export function ChatContent({ text }: { text: string }) {
         }
         return (
           <p key={i} className="whitespace-pre-wrap break-words">
-            {p.text}
+            {renderRich(p.text)}
           </p>
         );
       })}
