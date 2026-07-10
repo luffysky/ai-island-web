@@ -126,12 +126,45 @@ export function IslandChat({ workspaceId, focusFragments = [], onClearFocus }: {
     setMsgs(next); setText(""); const image = img; setImg(null); setBusy(true);
     try {
       const focus = (focusFragments ?? []).slice(0, 8).map((f) => ({ title: f.title, content: (f.content || "").slice(0, 600) }));
-      const r = await fetch("/api/creator-island/ai/chat", {
+      const res = await fetch("/api/creator-island/ai/chat", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: next.map((m) => ({ role: m.role, content: m.content })), image: image ? { data: image.data, mediaType: image.mediaType } : undefined, workspaceId, focusFragments: focus.length ? focus : undefined }),
-      }).then((x) => x.json());
-      const final: Msg[] = [...next, { role: "assistant", content: r.reply || r.message || t("chatNoReply") }];
-      setMsgs(final);
+      });
+      const ct = res.headers.get("content-type") || "";
+      // 額度 / 錯誤：非串流 JSON（如 429 daily_cap）
+      if (!res.ok || !res.body || !ct.includes("text/event-stream")) {
+        const j = await res.json().catch(() => ({} as any));
+        const final: Msg[] = [...next, { role: "assistant", content: j.message || j.error || t("chatNoReply") }];
+        setMsgs(final); saveSession(final);
+        return;
+      }
+      // 串流：逐字更新最後一則 assistant
+      setMsgs([...next, { role: "assistant", content: "" }]);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let acc = "", buf = "";
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        const parts = buf.split("\n\n");
+        buf = parts.pop() ?? "";
+        for (const p of parts) {
+          const line = p.trim();
+          if (!line.startsWith("data:")) continue;
+          try {
+            const payload = JSON.parse(line.slice(5).trim());
+            if (payload.type === "text") {
+              acc += payload.text;
+              setMsgs((m) => { const c = [...m]; c[c.length - 1] = { role: "assistant", content: acc }; return c; });
+            } else if (payload.type === "error" && !acc) {
+              acc = t("chatError", { msg: payload.error });
+              setMsgs((m) => { const c = [...m]; c[c.length - 1] = { role: "assistant", content: acc }; return c; });
+            }
+          } catch { /* 忽略半截 chunk */ }
+        }
+      }
+      const final: Msg[] = [...next, { role: "assistant", content: acc || t("chatNoReply") }];
       saveSession(final);
     } catch (e: any) { setMsgs((m) => [...m, { role: "assistant", content: t("chatError", { msg: e.message }) }]); } finally { setBusy(false); }
   }

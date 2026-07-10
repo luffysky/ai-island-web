@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireCreatorUser, requireWorkspaceRole } from "@/lib/creator-engine/api";
 import { resolveModel } from "@/lib/creator-engine/ai/router";
-import { callAI } from "@/lib/ai-providers";
+import { streamAI } from "@/lib/ai-providers";
 import { estimateCostUsd } from "@/lib/creator-engine/ai/cost";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { loadUserMemory, formatMemoryForPrompt } from "@/lib/user-ai-memory";
@@ -97,19 +97,48 @@ export async function POST(req: NextRequest) {
     }
   });
 
-  try {
-    const res = await callAI({ provider, model, apiKey, messages: msgs, maxTokens: 1500, temperature: 0.8 });
-    // callAI 已自動 logAiUsage（含 cache tokens），這裡不重複
-    // 寫進 ci_agent_runs → 後台「AI 對話」看得到
-    const admin = createSupabaseAdmin();
-    const cost = await estimateCostUsd(provider, model, res.tokensInput, res.tokensOutput).catch(() => 0);
-    await admin.from("ci_agent_runs").insert({
-      workspace_id: workspaceId, user_id: u.userId, agent_type: "chat",
-      input: { last: String(history[history.length - 1]?.content ?? "").slice(0, 500), hasImage: !!b.image }, output: { reply: res.text?.slice(0, 1000) },
-      provider, model, tokens_input: res.tokensInput, tokens_output: res.tokensOutput, cost_usd: cost, status: "succeeded",
-    }).then(() => {}, () => {});
-    return NextResponse.json({ reply: res.text });
-  } catch (e) {
-    return NextResponse.json({ error: "ai", message: (e as Error).message }, { status: 500 });
-  }
+  // 串流回覆（SSE）；收尾補 logAiUsage（streamAI 不自動記）+ 寫 ci_agent_runs。
+  const encoder = new TextEncoder();
+  const admin = createSupabaseAdmin();
+  const stream = new ReadableStream({
+    async start(controller) {
+      let full = "";
+      let usage = { tin: 0, tout: 0, cw: 0, cr: 0 };
+      try {
+        for await (const chunk of streamAI({ provider, model, apiKey, messages: msgs, maxTokens: 1500, temperature: 0.8 })) {
+          const ch = chunk as any;
+          if (ch.type === "text" && ch.text) {
+            full += ch.text;
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "text", text: ch.text })}\n\n`));
+          } else if (ch.type === "done") {
+            usage = { tin: ch.tokensInput ?? 0, tout: ch.tokensOutput ?? 0, cw: ch.cacheWriteTokens ?? 0, cr: ch.cacheReadTokens ?? 0 };
+          } else if (ch.type === "error") {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "error", error: ch.error })}\n\n`));
+          }
+        }
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "done" })}\n\n`));
+      } catch (e: any) {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "error", error: e?.message || "ai" })}\n\n`));
+      } finally {
+        controller.close();
+      }
+      // 記帳（streamAI 不自動記，跟主聊天/寵物一致）
+      if (usage.tin || usage.tout) {
+        const { logAiUsage } = await import("@/lib/ai-usage-log");
+        logAiUsage(provider, model, usage.tin, usage.tout, { write: usage.cw, read: usage.cr }).catch(() => {});
+      }
+      // 寫進 ci_agent_runs → 後台「AI 對話」看得到
+      if (full) {
+        const cost = await estimateCostUsd(provider, model, usage.tin, usage.tout).catch(() => 0);
+        admin.from("ci_agent_runs").insert({
+          workspace_id: workspaceId, user_id: u.userId, agent_type: "chat",
+          input: { last: String(history[history.length - 1]?.content ?? "").slice(0, 500), hasImage: !!b.image }, output: { reply: full.slice(0, 1000) },
+          provider, model, tokens_input: usage.tin, tokens_output: usage.tout, cost_usd: cost, status: "succeeded",
+        }).then(() => {}, () => {});
+      }
+    },
+  });
+  return new Response(stream, {
+    headers: { "Content-Type": "text/event-stream; charset=utf-8", "Cache-Control": "no-cache, no-transform", "Connection": "keep-alive" },
+  });
 }
