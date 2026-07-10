@@ -186,7 +186,36 @@
   - **stale-task reaper**：`/api/cron/agent-reaper`（把 planning/running 逾時>N 分標 failed）+ GH workflow 每 15 分跑（收背景任務重啟孤兒）。
   - **MCP 接外部**：client 改 Streamable HTTP transport（相容 JSON 與 SSE + Mcp-Session-Id + initialized 通知）、MCP 面板加「自訂外部」表單（加入前先驗證連得上）。round-trip 重測綠。
   - **Android 原生規劃書** `docs/agent_android_plan.md`（本 repo 建不了；獨立 Kotlin 專案；沿用佇列+裝置 token；AccessibilityService/MediaProjection + Play 政策雷點 + 分階段）。
-- ⬜ 之後：Android 原生開新 repo 實作／MCP 外部實戰測試／桌面助手打包安裝檔。
+
+### ✅ Phase 3 技能商店 + Phase 4 MCP 骨架（0710/11，已上線）
+- **技能商店（安裝包模式）**：`agent_skill_installs` + `category`；商店列全部、picker 只顯示已安裝、安裝時揭露工具/需本機/高風險；預設不裝。**45 個內建技能** research/write/code/dev/learn + **純建議技能**（空工具集→直接答；allowed_tools 語意 undefined=全部、[]=無工具）+ 自建 Agent 彈窗。
+- **MCP 骨架（先不接外部）→ 再補外部**：自家 `/api/mcp`（JSON-RPC）+ client `mcp.ts`（發現/呼叫/正規化成 AgentTool、readOnlyHint→read）+ 管理 API + orchestrator 背景自動載入 + `/agent` 面板「接上 AI 島 MCP」/「自訂外部」。client 支援 Streamable HTTP（JSON/SSE + session + initialized）。round-trip 測試綠。
+
+### ✅ 桌面助手打包 + 公開下載（0710/11，已上線）
+- bridge 邏輯抽 `bridge-core.mjs`（Electron 主行程內跑、不 spawn）；設定存 `%APPDATA%/…/bridge.config.json` + **GUI 設定畫面**（貼 token、資料夾選擇器、啟停），免編 JSON、免裝 Node。
+- electron-builder：出 **免安裝 zip**（`dist/win-unpacked` + zip）；NSIS 安裝檔需 Windows 開發人員模式（winCodeSign symlink 權限）——README 記了。
+- **自訂機器人圖示**（`build/icon.svg`→`gen-icon.mjs` 用 Playwright 出多尺寸 .ico；執行時視窗/工作列/系統匣套用）。
+- 修 **exe 啟動崩潰**（app package.json `type:module` 讓 Electron 把 CJS main.js 當 ESM → 移除）。
+- **公開下載**：發到公開 repo `luffysky/ai-island-bridge` release `v0.1.0`（匿名可下載，驗證 302→200/107.5MB）；`scripts/publish-bridge-release.mjs` 可重跑（讀本機 `.env.local` 的 `GITHUB_RELEASE_TOKEN`，token 不進版控、runtime 不需要）。`/agent` 配對彈窗「⬇ 下載桌面助手」按鈕上線。
+
+### ⬜ Agent 平台剩餘待辦
+- ⬜ **真人跑一次完整 Demo**（登入→下載/配對桌面助手→啟動→下「跑 npm test」→確認→收結果分析），確認整條 UX。
+- ⬜ **Playwright 瀏覽器工具啟用說明**：桌面助手預設不含 Playwright（保持精簡），要 `browser.*` 需 `npm install playwright && npx playwright install chromium`（README 已寫，之後可做「一鍵啟用」）。
+- ⬜ **MCP 外部實戰測試**：接一個真的外部 MCP server 驗 SSE/session（目前只自家 JSON server 測過）。
+- ⬜ **stale-task reaper 上線確認**：GH workflow `agent-reaper.yml` 需 repo secret `SITE_URL`/`CRON_SECRET`（其他 cron 已用、應已設）。
+- ⬜ **出新版一鍵化**：把「build → 打包 zip → publish release → 更新 `DESKTOP_DOWNLOAD_URL`」串成一支腳本。
+- ⬜ **Android 原生**：開新 repo 照 `docs/agent_android_plan.md` 實作（需 Android 環境）。
+- ⬜ **NSIS 安裝檔**（選配）：老闆若要雙擊安裝檔 → 開發人員模式開 → `npm run dist`。
+
+### ⬜ 其他既有待辦（延續、未動）
+- ⬜ AI 成本全面記帳（每個 `callAI`/`streamAI` 入口記真實 token→成本）。
+- ⬜ E2E 補齊 + Smoke test；沉浸式 3D 島嶼降耗（手機切 2D / 進度存 DB）。
+- ⬜ `PortfoliosClient.tsx` 補 emoji picker（audit 剩這一個）。
+- ⬜ P4 Z 幣續用 UX（`need_zcoin` 402 → 前端「花 Z 幣續用」提示）。
+- ⬜ 島嶼刷幣 phase 2（釣魚伺服器擲骰 + Playwright E2E）。
+- ⬜ 計畫書 ch2/ch6/ch7 + pitch-deck 對齊 `repositioning.md`。
+- ⬜ 語言島 `/語言島` 實作（沿用 dictionary `domain`）。
+- ⬜ 程式辭典續寫到 5000（從 `dictionary-seed-21.json` 接、~1022/20%）。
 
 ### ✅ 順手補（0710）
 - **3D 表情可見化**：Fluent 3D 之前只是 Noto 動畫的 fallback（幾乎不會顯示）→ AnimatedEmojiPicker 加**「3D」分頁**，40 顆常用立體 emoji 可選、點了以 `.png` 圖片網址插入（走媒體渲染 = 訊息裡真的看到 3D）。顔文字(ツ)＋動態貼圖分頁本就在（12 處輸入點都有）。
@@ -205,4 +234,4 @@
 - 金流商特約商店需**企業會員 + 統編**（獨資商號登記後開通）——目前正式收款尚未開通。
 
 ## 📌 一句話交辦
-**補助/競賽企劃全套 + 後台作戰室頁完成；全站 AI 分層(免費auto-only/Plus/Pro/特權) + 免費三招(供應商輪替/瀏覽器模型/語意快取) + Z幣扣點經濟 + 分層定價 全上；UI(筆記破版/多行輸入/側欄方向滑動) 修完。下次最該做：AI 成本全面記帳 + E2E/Smoke + 沉浸式島嶼降耗規劃。**
+**AI 島行動代理系統（`/agent`）Phase 1a–4 全上線：Agent loop + 桌面助手（可下載安裝、GUI 貼 token）+ 手機遙控(Web Push/跨裝置批准) + 背景執行 + 技能商店(45 內建+自建) + MCP 骨架 + Playwright/截圖/KPI/reaper；桌面助手打包成 zip 發到公開 GitHub release、`/agent` 下載鈕上線。下次最該做：真人跑一次完整 Demo 驗 UX + MCP 外部實戰 + 出新版一鍵化；舊帳未清：AI 成本全面記帳、E2E/Smoke、辭典續寫到 5000、語言島。**
