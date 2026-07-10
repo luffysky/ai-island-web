@@ -7,11 +7,38 @@
   "main": "electron/main.js",
   "scripts": {
     "start": "node bridge.mjs",
-    "gui": "electron ."
+    "gui": "electron .",
+    "dist": "electron-builder --win",
+    "dist:dir": "electron-builder --win --dir"
   },
   "engines": { "node": ">=18" },
-  "optionalDependencies": {
+  "devDependencies": {
     "electron": "^32.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "optionalDependencies": {
     "playwright": "^1.47.0"
+  },
+  "build": {
+    "appId": "pet.snowrealm.aiisland.bridge",
+    "productName": "AI島桌面助手",
+    "asar": false,
+    "directories": { "output": "dist" },
+    "files": [
+      "electron/**/*",
+      "bridge-core.mjs",
+      "bridge.mjs",
+      "package.json"
+    ],
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "AI島桌面助手"
+    }
   }
 }

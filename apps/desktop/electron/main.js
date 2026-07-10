@@ -1,28 +1,36 @@
-// AI 島桌面助手 — Electron 外殼：系統匣 + 狀態視窗 + 啟動/停止。
-// 功能核心沿用 bridge.mjs（以子行程執行、串流輸出到視窗），GUI 只管開關與可視化。
-const { app, BrowserWindow, Tray, Menu, ipcMain, nativeImage } = require("electron");
-const { spawn } = require("node:child_process");
+// AI 島桌面助手 — Electron 外殼（打包版）。
+// bridge 邏輯在主行程內跑（動態 import ESM 的 bridge-core.mjs）；設定存 userData、GUI 可編輯。
+const { app, BrowserWindow, Tray, Menu, ipcMain, dialog, nativeImage } = require("electron");
 const path = require("node:path");
+const fs = require("node:fs");
 
-let win = null, tray = null, child = null;
-const BRIDGE = path.join(__dirname, "..", "bridge.mjs");
+let win = null, tray = null, bridge = null;
+const CFG_PATH = () => path.join(app.getPath("userData"), "bridge.config.json");
+const CORE = path.join(__dirname, "..", "bridge-core.mjs");
 
-function send(line) { if (win && !win.isDestroyed()) win.webContents.send("log", line); }
-function setState(running) { if (win && !win.isDestroyed()) win.webContents.send("state", running); tray?.setToolTip(running ? "AI 島桌面助手 · 執行中" : "AI 島桌面助手 · 已停止"); }
-
-function startBridge() {
-  if (child) return;
-  child = spawn(process.execPath, [BRIDGE], { cwd: path.join(__dirname, ".."), env: { ...process.env, ELECTRON_RUN_AS_NODE: "1" } });
-  child.stdout.on("data", (d) => send(String(d)));
-  child.stderr.on("data", (d) => send("⚠ " + String(d)));
-  child.on("close", (code) => { send(`\n■ 已停止（code ${code}）`); child = null; setState(false); });
-  setState(true);
+function loadCfg() {
+  try { return JSON.parse(fs.readFileSync(CFG_PATH(), "utf8")); }
+  catch { return { apiBase: "https://ai-island-web.snowrealm.pet", token: "", roots: [], commands: ["npm", "npx", "pnpm", "yarn", "node", "git", "python", "python3", "pytest", "echo", "ls", "dir", "type", "cat"] }; }
 }
-function stopBridge() { if (child) { child.kill(); child = null; } setState(false); }
+function saveCfg(cfg) { fs.writeFileSync(CFG_PATH(), JSON.stringify(cfg, null, 2), "utf8"); }
+
+function send(ch, v) { if (win && !win.isDestroyed()) win.webContents.send(ch, v); }
+function setState(on) { send("state", on); tray?.setToolTip(on ? "AI 島桌面助手 · 執行中" : "AI 島桌面助手 · 已停止"); }
+
+async function startBridge() {
+  if (bridge) return;
+  const cfg = loadCfg();
+  if (!cfg.token) { send("log", "⚠ 尚未填裝置 token，請到設定貼上。\n"); return; }
+  const { createBridge } = await import(`file://${CORE.replace(/\\/g, "/")}`);
+  bridge = createBridge({ config: cfg, onLog: (s) => send("log", s + "\n") });
+  try { bridge.start(); setState(true); }
+  catch (e) { send("log", "⚠ " + (e?.message ?? e) + "\n"); bridge = null; }
+}
+async function stopBridge() { if (bridge) { await bridge.stop(); bridge = null; } setState(false); }
 
 function createWindow() {
   win = new BrowserWindow({
-    width: 560, height: 620, title: "AI 島桌面助手",
+    width: 620, height: 720, title: "AI 島桌面助手",
     webPreferences: { preload: path.join(__dirname, "preload.js"), contextIsolation: true },
   });
   win.loadFile(path.join(__dirname, "renderer", "index.html"));
@@ -31,18 +39,23 @@ function createWindow() {
 
 app.whenReady().then(() => {
   createWindow();
-  const icon = nativeImage.createEmpty();
-  tray = new Tray(icon);
+  tray = new Tray(nativeImage.createEmpty());
   tray.setContextMenu(Menu.buildFromTemplate([
     { label: "顯示視窗", click: () => win.show() },
     { label: "啟動", click: startBridge },
     { label: "停止", click: stopBridge },
     { type: "separator" },
-    { label: "結束", click: () => { app.isQuiting = true; stopBridge(); app.quit(); } },
+    { label: "結束", click: async () => { app.isQuiting = true; await stopBridge(); app.quit(); } },
   ]));
   tray.setToolTip("AI 島桌面助手 · 已停止");
 });
 
-ipcMain.handle("start", () => { startBridge(); return true; });
-ipcMain.handle("stop", () => { stopBridge(); return true; });
-app.on("window-all-closed", () => { /* 常駐系統匣、不退出 */ });
+ipcMain.handle("get-config", () => loadCfg());
+ipcMain.handle("save-config", (_e, cfg) => { saveCfg(cfg); return true; });
+ipcMain.handle("pick-folder", async () => {
+  const r = await dialog.showOpenDialog(win, { properties: ["openDirectory"] });
+  return r.canceled ? null : r.filePaths[0];
+});
+ipcMain.handle("start", startBridge);
+ipcMain.handle("stop", stopBridge);
+app.on("window-all-closed", () => { /* 常駐系統匣 */ });

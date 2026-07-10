@@ -28,11 +28,23 @@
 
 也可用環境變數取代設定檔：`ISLAND_TOKEN`、`ISLAND_API_BASE`、`ISLAND_CONFIG`。
 
-## 圖形介面（選用）
+## 圖形介面（開發時預覽）
 ```bash
-npm install          # 裝 electron（optional dep）
-npm run gui          # 系統匣 + 狀態視窗 + 大顆停止鈕
+npm install          # 裝 electron
+npm run gui          # 系統匣 + 設定畫面（貼 token / 選資料夾）+ 啟停
 ```
+
+## 打包成 Windows 安裝檔（給一般使用者，免裝 Node）
+```bash
+cd apps/desktop
+npm install                 # 含 electron + electron-builder（devDependencies）
+npm run dist                # 產出 NSIS 安裝檔到 apps/desktop/dist/
+# 產物：dist/AI島桌面助手 Setup 0.1.0.exe  → 雙擊安裝、桌面捷徑、開啟即設定
+```
+- 安裝版**免裝 Node**：bridge 邏輯（`bridge-core.mjs`）在 Electron 主行程內跑。
+- 設定存在使用者資料夾（`%APPDATA%/AI島桌面助手/bridge.config.json`），**在 GUI 填 token、用「新增資料夾」選允許目錄**，不用手改 JSON。
+- 圖示：預設用 Electron 圖示；要自訂放 `build/icon.ico` 後重打包。
+- 瀏覽器工具（Playwright）不含在安裝檔裡（保持精簡）；需要再用開發者 CLI 版另裝。
 
 ## 支援的本機工具
 | 工具 | 風險 | 說明 |

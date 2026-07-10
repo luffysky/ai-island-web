@@ -5,45 +5,90 @@
 <title>AI 島桌面助手</title>
 <style>
   :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
   body { margin: 0; font-family: system-ui, "Microsoft JhengHei", sans-serif; background: #0e0f13; color: #e6e6ea; }
-  header { padding: 16px 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #23252d; }
-  .dot { width: 12px; height: 12px; border-radius: 50%; background: #555; box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+  header { padding: 14px 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #23252d; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; background: #555; }
   .dot.on { background: #34d399; box-shadow: 0 0 10px #34d39988; }
   h1 { font-size: 15px; margin: 0; font-weight: 700; }
   .sub { font-size: 12px; color: #8b8d98; }
-  .bar { padding: 12px 18px; display: flex; gap: 8px; }
-  button { border: 0; border-radius: 10px; padding: 9px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
-  .start { background: #7c5cff; color: #fff; }
-  .stop { background: #f43f5e; color: #fff; }
+  main { padding: 16px 18px; }
+  label { display: block; font-size: 12px; color: #a5a7b3; margin: 12px 0 4px; }
+  input { width: 100%; padding: 9px 11px; border-radius: 9px; border: 1px solid #2b2e38; background: #16171d; color: #e6e6ea; font-size: 13px; }
+  .row { display: flex; gap: 8px; align-items: center; }
+  .folder { display: flex; gap: 8px; align-items: center; background: #16171d; border: 1px solid #2b2e38; border-radius: 9px; padding: 7px 10px; font-size: 12px; margin-top: 6px; }
+  .folder span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  button { border: 0; border-radius: 9px; padding: 9px 15px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .primary { background: #7c5cff; color: #fff; } .ghost { background: #22242c; color: #cfd0d8; }
+  .start { background: #34d399; color: #06281d; } .stop { background: #f43f5e; color: #fff; }
   button:disabled { opacity: .4; cursor: default; }
-  pre { margin: 0; padding: 12px 18px; font-size: 11.5px; line-height: 1.5; height: calc(100vh - 132px);
-        overflow: auto; white-space: pre-wrap; word-break: break-all; background: #0b0c10; }
+  .bar { display: flex; gap: 8px; margin-top: 16px; }
+  pre { margin: 14px 0 0; padding: 11px 13px; font-size: 11.5px; line-height: 1.5; height: 190px; overflow: auto;
+        white-space: pre-wrap; word-break: break-all; background: #0b0c10; border-radius: 9px; border: 1px solid #1c1e26; }
+  .hint { font-size: 11px; color: #6b6d78; margin-top: 4px; }
 </style>
 </head>
 <body>
   <header>
     <span class="dot" id="dot"></span>
-    <div>
-      <h1>AI 島桌面助手</h1>
-      <div class="sub" id="status">已停止 — 按「啟動」開始接受 /agent 任務</div>
-    </div>
+    <div><h1>AI 島桌面助手</h1><div class="sub" id="status">已停止</div></div>
   </header>
-  <div class="bar">
-    <button class="start" id="startBtn">▶ 啟動</button>
-    <button class="stop" id="stopBtn" disabled>■ 停止</button>
-  </div>
-  <pre id="log">設定：編輯本資料夾的 bridge.config.json（貼上 token、設定允許資料夾）。\n</pre>
+  <main>
+    <label>裝置 token（到 AI 島 /agent →「連接桌面助手」複製）</label>
+    <input id="token" type="password" placeholder="isb_..." />
+
+    <label>雲端網址</label>
+    <input id="apiBase" placeholder="https://ai-island-web.snowrealm.pet" />
+
+    <label>允許 Agent 存取的資料夾</label>
+    <div id="folders"></div>
+    <div class="row" style="margin-top:8px"><button class="ghost" id="addFolder">＋ 新增資料夾</button></div>
+    <div class="hint">Agent 只能讀寫 / 在這些資料夾裡跑指令；沒設就不能碰檔案。</div>
+
+    <div class="bar">
+      <button class="primary" id="save">儲存設定</button>
+      <button class="start" id="startBtn">▶ 啟動</button>
+      <button class="stop" id="stopBtn" disabled>■ 停止</button>
+    </div>
+    <pre id="log">填入 token、選好資料夾 → 儲存設定 → 啟動。\n</pre>
+  </main>
 <script>
-  const dot = document.getElementById("dot"), status = document.getElementById("status");
-  const startBtn = document.getElementById("startBtn"), stopBtn = document.getElementById("stopBtn"), log = document.getElementById("log");
-  window.bridge.onLog((line) => { log.textContent += line; log.scrollTop = log.scrollHeight; });
-  window.bridge.onState((running) => {
-    dot.classList.toggle("on", running);
-    status.textContent = running ? "執行中 — 正在等待 /agent 的任務" : "已停止";
-    startBtn.disabled = running; stopBtn.disabled = !running;
+  const $ = (id) => document.getElementById(id);
+  let cfg = { apiBase: "", token: "", roots: [], commands: [] };
+
+  function renderFolders() {
+    $("folders").innerHTML = "";
+    (cfg.roots || []).forEach((p, i) => {
+      const d = document.createElement("div"); d.className = "folder";
+      d.innerHTML = `<span title="${p}">${p}</span>`;
+      const b = document.createElement("button"); b.className = "ghost"; b.textContent = "移除";
+      b.onclick = () => { cfg.roots.splice(i, 1); renderFolders(); };
+      d.appendChild(b); $("folders").appendChild(d);
+    });
+  }
+
+  (async () => {
+    cfg = await window.bridge.getConfig();
+    $("token").value = cfg.token || "";
+    $("apiBase").value = cfg.apiBase || "https://ai-island-web.snowrealm.pet";
+    cfg.roots = cfg.roots || []; renderFolders();
+  })();
+
+  $("addFolder").onclick = async () => { const p = await window.bridge.pickFolder(); if (p && !cfg.roots.includes(p)) { cfg.roots.push(p); renderFolders(); } };
+  $("save").onclick = async () => {
+    cfg.token = $("token").value.trim(); cfg.apiBase = $("apiBase").value.trim();
+    await window.bridge.saveConfig(cfg);
+    $("log").textContent += "✔ 設定已儲存。\n"; $("log").scrollTop = $("log").scrollHeight;
+  };
+  $("startBtn").onclick = () => window.bridge.start();
+  $("stopBtn").onclick = () => window.bridge.stop();
+
+  window.bridge.onLog((line) => { $("log").textContent += line; $("log").scrollTop = $("log").scrollHeight; });
+  window.bridge.onState((on) => {
+    $("dot").classList.toggle("on", on);
+    $("status").textContent = on ? "執行中 — 等待 /agent 任務" : "已停止";
+    $("startBtn").disabled = on; $("stopBtn").disabled = !on;
   });
-  startBtn.onclick = () => window.bridge.start();
-  stopBtn.onclick = () => window.bridge.stop();
 </script>
 </body>
 </html>
