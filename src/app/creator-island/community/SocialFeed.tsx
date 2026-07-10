@@ -11,6 +11,7 @@ import { handleEnterSubmit, autoGrow } from "@/lib/composer";
 import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
 import { GifPicker } from "@/components/ui/GifPicker";
 import { EmojiText } from "@/components/ui/EmojiText";
+import { TranslateButton } from "@/components/ui/TranslateButton";
 
 const _IMG = /^https?:\/\/[^\s]+\.(gif|png|jpe?g|webp)(\?[^\s]*)?$/i;
 const _GIPHY = /^https?:\/\/(media\d?\.giphy\.com|i\.giphy\.com)\/[^\s]+/i;
@@ -164,6 +165,7 @@ function PostCard({ p, meId, onDelete }: { p: Post; meId: string; onDelete: () =
         {p.user_id === meId && <button onClick={del} className="text-fg-muted hover:text-red-400 text-xs">{t("communityDeleteShort")}</button>}
       </div>
       {p.content && <div className="text-sm whitespace-pre-wrap">{renderBody(p.content)}</div>}
+      {p.content && <TranslateButton text={p.content} />}
       {p.images?.length > 0 && <div className={`grid gap-1 ${p.images.length > 1 ? "grid-cols-2" : ""}`}>{p.images.map((im, i) => <img key={i} src={im.url} className="rounded-lg w-full object-cover max-h-80" />)}</div>}
       {p.video_url && <video src={p.video_url} controls className="w-full rounded-lg max-h-96" />}
       {p.audio_url && <audio src={p.audio_url} controls className="w-full" />}
@@ -176,7 +178,7 @@ function PostCard({ p, meId, onDelete }: { p: Post; meId: string; onDelete: () =
       </div>
       {showC && (
         <div className="border-t border-border pt-2 space-y-2">
-          {(comments ?? []).map((c) => <div key={c.id} className="text-xs"><b>{name(c.author)}</b> <EmojiText text={c.body} size={16} /></div>)}
+          {(comments ?? []).map((c) => <div key={c.id} className="text-xs"><div><b>{name(c.author)}</b> <EmojiText text={c.body} size={16} /></div><TranslateButton text={c.body} /></div>)}
           <div className="flex gap-2 items-center">
             <AnimatedEmojiPicker onSelect={(e) => setCbody((v) => v + e)} buttonClassName="w-7 h-7" />
             <textarea rows={1} value={cbody} onChange={(e) => setCbody(e.target.value)} onInput={(e) => autoGrow(e.currentTarget, 100)} onKeyDown={(e) => handleEnterSubmit(e, addComment)} placeholder={t("communityCommentPlaceholder")} className="flex-1 bg-bg-elevated border border-border rounded-2xl px-3 py-1.5 text-xs outline-none focus:border-accent resize-none" style={{ maxHeight: "100px" }} />

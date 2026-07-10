@@ -10,6 +10,7 @@ import { handleEnterSubmit, autoGrow } from "@/lib/composer";
 import { useTranslations } from "next-intl";
 import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
 import { EmojiText } from "@/components/ui/EmojiText";
+import { TranslateButton } from "@/components/ui/TranslateButton";
 
 type Msg = { role: "user" | "assistant"; content: string };
 type FocusFrag = { id: string; title: string; content: string };
@@ -248,7 +249,8 @@ export function IslandChat({ workspaceId, focusFragments = [], onClearFocus }: {
                   <div key={i} className="flex items-end gap-2">
                     <span className="shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 text-black grid place-items-center shadow-sm"><Sparkles size={14} /></span>
                     <div className="max-w-[82%] min-w-0">
-                      <div className="rounded-2xl rounded-bl-md px-3.5 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words bg-bg-elevated border border-border text-fg shadow-sm">{m.content}</div>
+                      <div className="rounded-2xl rounded-bl-md px-3.5 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words bg-bg-elevated border border-border text-fg shadow-sm"><EmojiText text={m.content} size={18} /></div>
+                      {i > 0 && m.content && <TranslateButton text={m.content} className="mt-0.5 pl-1" />}
                       {i > 0 && (
                         <div className="mt-1 flex items-center gap-1 pl-1">
                           <button onClick={() => copyMsg(i, m.content)} title={t("chatCopy")} className="text-[11px] text-fg-muted hover:text-accent inline-flex items-center gap-0.5">

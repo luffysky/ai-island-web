@@ -11,6 +11,7 @@ import { ChatMessageBubble, TypingIndicator, ChatToolbar, ChatContent, MicButton
 import { handleEnterSubmit, autoGrow } from "@/lib/composer";
 import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
 import { GifPicker } from "@/components/ui/GifPicker";
+import { TranslateButton } from "@/components/ui/TranslateButton";
 
 type Message = { role: "user" | "pet"; content: string; created_at?: string };
 
@@ -228,7 +229,10 @@ export function PetChatPanel({
               }
             >
               {m.content ? (
-                <ChatContent text={m.content} />
+                <>
+                  <ChatContent text={m.content} />
+                  {m.role === "pet" && <TranslateButton text={m.content} />}
+                </>
               ) : sending && m._i === messages.length - 1 ? (
                 <TypingIndicator label={`${pet.name} 正在輸入`} />
               ) : null}
