@@ -104,6 +104,43 @@ export const TOOLS: AgentTool[] = [
     needsDevice: true,
     async execute() { return { ok: false, error: "需安裝並連接『AI 島桌面助手』（Phase 1b 尚未接）" }; },
   },
+  // ── 瀏覽器工具（需桌面助手 + Playwright；獨立 Chromium 走 DOM/文字，不靠座標）──
+  {
+    name: "browser.open",
+    description: "用瀏覽器打開一個網址，回傳標題與頁面文字（需桌面助手）。用來讀動態網頁/需登入或 JS 的頁面。",
+    args: { url: "完整網址（https://...）" },
+    risk: "read",
+    platforms: ["windows"],
+    needsDevice: true,
+    async execute() { return { ok: false, error: "需安裝並連接『AI 島桌面助手』並安裝 Playwright" }; },
+  },
+  {
+    name: "browser.click",
+    description: "點擊目前頁面上含指定文字的連結/按鈕，回傳點擊後的頁面（需桌面助手、會操作頁面、需確認）。",
+    args: { text: "要點的元素文字" },
+    risk: "write",
+    platforms: ["windows"],
+    needsDevice: true,
+    async execute() { return { ok: false, error: "需安裝並連接『AI 島桌面助手』並安裝 Playwright" }; },
+  },
+  {
+    name: "browser.type",
+    description: "在指定欄位輸入文字（需桌面助手、會操作頁面、需確認）。",
+    args: { selector: "CSS selector 或欄位 placeholder/label", text: "要輸入的文字" },
+    risk: "write",
+    platforms: ["windows"],
+    needsDevice: true,
+    async execute() { return { ok: false, error: "需安裝並連接『AI 島桌面助手』並安裝 Playwright" }; },
+  },
+  {
+    name: "browser.screenshot",
+    description: "把目前瀏覽器頁面截圖回傳（需桌面助手）。讓 Agent/你看見畫面。",
+    args: {},
+    risk: "read",
+    platforms: ["windows"],
+    needsDevice: true,
+    async execute() { return { ok: false, error: "需安裝並連接『AI 島桌面助手』並安裝 Playwright" }; },
+  },
 ];
 
 export function getTool(name: string): AgentTool | undefined {

@@ -180,7 +180,13 @@
 - ✅ **Phase 2b 任務背景執行（0710，已上線）**：POST 建任務後 `runAgentTaskDetached()` 伺服器背景開跑、立刻回 taskId；前端改輪詢觀看（取代 SSE）→ **關掉頁面/手機任務照跑**、需確認/完成推播、回來接續。驗證：整合測試 detached runner 讓任務無連線自己跑到 succeeded + tsc/vitest(122)/build 綠。⚠ 限制：process 重啟會孤兒化進行中任務（待補 stale-task reaper）。
 - ✅ **Phase 3 技能商店 + 自建 Agent（0710，已上線）**：安裝包模式（agent_skill_installs；商店列全部、picker 只顯示已安裝、安裝時揭露會用到的工具/需本機/高風險；預設不裝）+ **45 個內建技能**（research/write/code/dev/learn）+ 純建議技能（空工具集→直接答，語意 undefined=全部、[]=無工具）。自建 Agent 彈窗（名稱/emoji/指示/勾工具）。驗證：純建議技能測試 succeeded 且 0 工具步。
 - ✅ **Phase 4 MCP 骨架（0710，已上線）**：自家 MCP server `/api/mcp`（JSON-RPC：initialize/tools/list/tools/call，揭露 dictionary_lookup/island_info）+ client `src/lib/agent/mcp.ts`（發現/呼叫/正規化成 AgentTool，readOnlyHint→read 否則 write 要確認）+ 管理 API `/api/agent/mcp`（新增驗證連線/列出/移除）+ orchestrator 自動載入啟用 server 的工具（背景、best-effort）+ `/agent` MCP 面板（接上 AI 島 MCP/移除）。驗證：round-trip 測試 client↔我們 server↔正規化↔execute 綠。**先不接外部**。
-- ⬜ 下一步：**Phase 1b 收尾**（Playwright browser-worker + 截圖 + KPI）／stale-task reaper（背景任務重啟孤兒化）／MCP 接外部 server／Android 原生（獨立大工程）。
+- ✅ **Phase 1b 收尾 + 一批收官（0710/11，已上線）**：
+  - **Playwright 瀏覽器工具**：`browser.open/click/type/screenshot`（tools.ts + bridge.mjs 用非 headless Chromium、重用分頁；Playwright 選用相依 lazy 載入）。截圖以 data URL 回傳、`/agent` StepCard 直接顯示圖片。
+  - **KPI 儀表**：`/api/agent/kpi`（成功率/平均步數/人工介入率/平均耗時/確認同意拒絕）+ `/agent` 側欄「成效」卡。
+  - **stale-task reaper**：`/api/cron/agent-reaper`（把 planning/running 逾時>N 分標 failed）+ GH workflow 每 15 分跑（收背景任務重啟孤兒）。
+  - **MCP 接外部**：client 改 Streamable HTTP transport（相容 JSON 與 SSE + Mcp-Session-Id + initialized 通知）、MCP 面板加「自訂外部」表單（加入前先驗證連得上）。round-trip 重測綠。
+  - **Android 原生規劃書** `docs/agent_android_plan.md`（本 repo 建不了；獨立 Kotlin 專案；沿用佇列+裝置 token；AccessibilityService/MediaProjection + Play 政策雷點 + 分階段）。
+- ⬜ 之後：Android 原生開新 repo 實作／MCP 外部實戰測試／桌面助手打包安裝檔。
 
 ### ✅ 順手補（0710）
 - **3D 表情可見化**：Fluent 3D 之前只是 Noto 動畫的 fallback（幾乎不會顯示）→ AnimatedEmojiPicker 加**「3D」分頁**，40 顆常用立體 emoji 可選、點了以 `.png` 圖片網址插入（走媒體渲染 = 訊息裡真的看到 3D）。顔文字(ツ)＋動態貼圖分頁本就在（12 處輸入點都有）。

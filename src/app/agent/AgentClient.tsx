@@ -61,6 +61,12 @@ export function AgentClient() {
   const [storeOpen, setStoreOpen] = useState(false);
   const [mcpServers, setMcpServers] = useState<{ id: string; name: string; tools: { name: string }[] }[]>([]);
   const [mcpBusy, setMcpBusy] = useState(false);
+  const [mcpForm, setMcpForm] = useState(false);
+  const [mcpName, setMcpName] = useState("");
+  const [mcpUrl, setMcpUrl] = useState("");
+  const [mcpAuth, setMcpAuth] = useState("");
+  const [mcpErr, setMcpErr] = useState("");
+  const [kpi, setKpi] = useState<any>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const recRef = useRef<any>(null);
   const deepLinkedRef = useRef(false);
@@ -72,6 +78,8 @@ export function AgentClient() {
     try {
       const r = await fetch("/api/agent/tasks");
       if (r.ok) setHistory((await r.json()).tasks ?? []);
+      const k = await fetch("/api/agent/kpi");
+      if (k.ok) setKpi(await k.json());
     } catch { /* ignore */ }
   }, []);
 
@@ -103,6 +111,17 @@ export function AgentClient() {
     await fetch(`/api/agent/mcp?id=${id}`, { method: "DELETE" }).catch(() => {});
     loadMcp();
   }, [loadMcp]);
+
+  const addCustomMcp = useCallback(async () => {
+    if (!mcpName.trim() || !mcpUrl.trim()) { setMcpErr("需要名稱與網址"); return; }
+    setMcpBusy(true); setMcpErr("");
+    try {
+      const r = await fetch("/api/agent/mcp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: mcpName, url: mcpUrl, auth_header: mcpAuth || undefined }) });
+      const d = await r.json();
+      if (!r.ok) { setMcpErr(d.error ?? "加入失敗"); return; }
+      setMcpForm(false); setMcpName(""); setMcpUrl(""); setMcpAuth(""); loadMcp();
+    } catch { setMcpErr("加入失敗"); } finally { setMcpBusy(false); }
+  }, [mcpName, mcpUrl, mcpAuth, loadMcp]);
 
   const installSkill = useCallback(async (id: string, install: boolean) => {
     await fetch("/api/agent/skills", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ skillId: id, install }) }).catch(() => {});
@@ -189,11 +208,11 @@ export function AgentClient() {
         setSummary(task.result?.summary ?? task.error ?? "");
         setSteps(mapSteps(st));
         setApproval(pendingApproval(approvals));
-        if (!LIVE.includes(task.status)) setWatching("");
+        if (!LIVE.includes(task.status)) { setWatching(""); loadHistory(); }
       } catch { /* ignore */ }
     }, 2000);
     return () => clearInterval(iv);
-  }, [watching]);
+  }, [watching, loadHistory]);
 
   // 深連結 /agent?task=<id>（推播點進來）：自動載入該任務、若有待確認就顯示、可直接在手機上批准
   useEffect(() => {
@@ -377,6 +396,34 @@ export function AgentClient() {
             </ul>
           </div>
 
+          {/* 成效 KPI */}
+          {kpi && kpi.total > 0 && (
+            <div className="rounded-2xl border border-black/10 dark:border-white/10 p-3.5">
+              <div className="flex items-center gap-1.5 text-sm font-semibold mb-2"><Cpu className="w-4 h-4 text-emerald-500" /> 成效</div>
+              <div className="grid grid-cols-2 gap-2 text-center">
+                <div className="rounded-lg bg-black/5 dark:bg-white/5 py-1.5">
+                  <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">{kpi.successRate ?? "—"}{kpi.successRate != null && "%"}</div>
+                  <div className="text-[10px] text-black/50 dark:text-white/50">成功率</div>
+                </div>
+                <div className="rounded-lg bg-black/5 dark:bg-white/5 py-1.5">
+                  <div className="text-lg font-bold">{kpi.total}</div>
+                  <div className="text-[10px] text-black/50 dark:text-white/50">總任務</div>
+                </div>
+                <div className="rounded-lg bg-black/5 dark:bg-white/5 py-1.5">
+                  <div className="text-lg font-bold">{kpi.avgSteps}</div>
+                  <div className="text-[10px] text-black/50 dark:text-white/50">平均步數</div>
+                </div>
+                <div className="rounded-lg bg-black/5 dark:bg-white/5 py-1.5">
+                  <div className="text-lg font-bold">{kpi.interventionRate}%</div>
+                  <div className="text-[10px] text-black/50 dark:text-white/50">人工介入</div>
+                </div>
+              </div>
+              <div className="text-[10px] text-black/40 dark:text-white/40 mt-2 text-center">
+                平均耗時 {kpi.avgDurationSec}s · 確認 同意{kpi.approvals.approved}/拒{kpi.approvals.denied}
+              </div>
+            </div>
+          )}
+
           {/* MCP 伺服器（Phase 4 骨架） */}
           <div className="rounded-2xl border border-black/10 dark:border-white/10 p-3.5">
             <div className="flex items-center gap-1.5 text-sm font-semibold mb-2"><Plug className="w-4 h-4 text-fuchsia-500" /> MCP 伺服器</div>
@@ -396,10 +443,24 @@ export function AgentClient() {
                 ))}
               </ul>
             )}
-            {!mcpServers.some((m) => m.name === "AI 島") && (
-              <button onClick={addOurMcp} disabled={mcpBusy} className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl border border-fuchsia-500/40 text-fuchsia-600 dark:text-fuchsia-400 hover:bg-fuchsia-500/10 px-3 py-1.5 text-xs font-medium disabled:opacity-50">
-                {mcpBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plug className="w-3.5 h-3.5" />} 接上 AI 島 MCP
+            <div className="flex gap-1.5">
+              {!mcpServers.some((m) => m.name === "AI 島") && (
+                <button onClick={addOurMcp} disabled={mcpBusy} className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-fuchsia-500/40 text-fuchsia-600 dark:text-fuchsia-400 hover:bg-fuchsia-500/10 px-2 py-1.5 text-xs font-medium disabled:opacity-50">
+                  {mcpBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plug className="w-3.5 h-3.5" />} AI 島 MCP
+                </button>
+              )}
+              <button onClick={() => { setMcpForm((v) => !v); setMcpErr(""); }} className="flex-1 rounded-xl border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-white/10 px-2 py-1.5 text-xs">
+                ＋ 自訂外部
               </button>
+            </div>
+            {mcpForm && (
+              <div className="mt-2 space-y-1.5">
+                <input value={mcpName} onChange={(e) => setMcpName(e.target.value)} placeholder="名稱" className="w-full text-xs rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2 py-1.5" />
+                <input value={mcpUrl} onChange={(e) => setMcpUrl(e.target.value)} placeholder="MCP 端點網址 https://…" className="w-full text-xs rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2 py-1.5" />
+                <input value={mcpAuth} onChange={(e) => setMcpAuth(e.target.value)} placeholder="Authorization（選填，如 Bearer xxx）" className="w-full text-xs rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2 py-1.5" />
+                {mcpErr && <div className="text-[10px] text-rose-500">{mcpErr}</div>}
+                <button onClick={addCustomMcp} disabled={mcpBusy} className="w-full rounded-lg bg-fuchsia-600 hover:bg-fuchsia-700 text-white px-2 py-1.5 text-xs disabled:opacity-50">{mcpBusy ? "驗證連線中…" : "加入（會先驗證連得上）"}</button>
+              </div>
             )}
           </div>
 
@@ -609,6 +670,7 @@ function SkillCreator({ tools, onClose, onCreated }: { tools: ToolInfo[]; onClos
 function StepCard({ step }: { step: StepView }) {
   const b = step.risk ? RISK_BADGE[step.risk] : null;
   const err = step.result && typeof step.result === "object" && "error" in step.result ? String((step.result as any).error) : null;
+  const image = step.result && typeof step.result === "object" && "image" in step.result ? String((step.result as any).image) : null;
   return (
     <div className="rounded-xl border border-black/10 dark:border-white/10 bg-white/50 dark:bg-white/5 p-3">
       <div className="flex items-center gap-2 text-sm">
@@ -621,6 +683,9 @@ function StepCard({ step }: { step: StepView }) {
       )}
       {err ? (
         <div className="mt-1.5 text-xs text-rose-600 dark:text-rose-400">{err}</div>
+      ) : image ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={image} alt="screenshot" className="mt-1.5 rounded-lg border border-black/10 dark:border-white/10 max-h-64 w-auto" />
       ) : step.result != null ? (
         <pre className="mt-1.5 text-[11px] bg-black/5 dark:bg-black/30 rounded-lg p-2 overflow-x-auto max-h-40 overflow-y-auto text-black/70 dark:text-white/70">{typeof step.result === "string" ? step.result : JSON.stringify(step.result, null, 2)}</pre>
       ) : null}

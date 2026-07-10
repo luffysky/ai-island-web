@@ -41,5 +41,14 @@ npm run gui          # 系統匣 + 狀態視窗 + 大顆停止鈕
 | `filesystem.read` | read | 讀文字檔（限 roots、≤512KB） |
 | `filesystem.write` | write | 寫檔（限 roots、雲端需確認） |
 | `system.run_command` | dangerous | 跑白名單指令（雲端強制確認） |
+| `browser.open` | read | 用瀏覽器開網址、回標題+文字（需 Playwright） |
+| `browser.click` / `browser.type` | write | 點擊/輸入頁面元素（需確認） |
+| `browser.screenshot` | read | 截目前頁面回傳圖片 |
 
-> `browser.*`（Playwright）預留給後續：裝了 `playwright` 後補上獨立 Chromium 的 DOM/Role 定位。
+**啟用瀏覽器工具**（Playwright 是選用相依）：
+```bash
+cd apps/desktop
+npm install playwright
+npx playwright install chromium
+```
+之後 `browser.*` 就會用一個非 headless 的 Chromium 執行（看得到它在動）。

@@ -52,6 +52,18 @@ function resolveInRoots(p) {
 
 function clip(s) { s = String(s ?? ""); return s.length > CFG.maxOutput ? s.slice(0, CFG.maxOutput) + `\n…（已截斷，共 ${s.length} 字）` : s; }
 
+// ── 瀏覽器（Playwright，選用相依；第一次用到才啟動、之後重用同一個分頁）──
+let _pw = null, _browser = null, _page = null;
+async function getPage() {
+  if (_page) return _page;
+  try { _pw = (await import("playwright")).chromium; }
+  catch { throw new Error("桌面助手未安裝 Playwright。請到 apps/desktop 執行：npm install playwright && npx playwright install chromium"); }
+  _browser = await _pw.launch({ headless: false });   // 非 headless 讓你看得到它在做什麼
+  _page = await _browser.newPage();
+  return _page;
+}
+async function closeBrowser() { try { await _browser?.close(); } catch { /* ignore */ } _browser = _page = null; }
+
 // ── 本機工具實作 ──
 const HANDLERS = {
   "filesystem.list": async ({ path: p }) => {
@@ -71,6 +83,33 @@ const HANDLERS = {
     fs.mkdirSync(path.dirname(abs), { recursive: true });
     fs.writeFileSync(abs, String(content ?? ""), "utf8");
     return { path: abs, bytes: Buffer.byteLength(String(content ?? "")) };
+  },
+  "browser.open": async ({ url }) => {
+    if (!/^https?:\/\//.test(String(url ?? ""))) throw new Error("url 必須是 http(s)://");
+    const page = await getPage();
+    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
+    const title = await page.title();
+    const text = clip(await page.evaluate(() => document.body?.innerText ?? ""));
+    return { url: page.url(), title, text };
+  },
+  "browser.click": async ({ text }) => {
+    const page = await getPage();
+    if (!text) throw new Error("缺 text");
+    await page.getByText(String(text), { exact: false }).first().click({ timeout: 15000 });
+    await page.waitForLoadState("domcontentloaded").catch(() => {});
+    return { url: page.url(), title: await page.title(), text: clip(await page.evaluate(() => document.body?.innerText ?? "")) };
+  },
+  "browser.type": async ({ selector, text }) => {
+    const page = await getPage();
+    const loc = String(selector ?? "").startsWith("#") || String(selector ?? "").includes(" ") || String(selector ?? "").match(/[.[]/)
+      ? page.locator(selector) : page.getByPlaceholder(String(selector)).or(page.getByLabel(String(selector)));
+    await loc.first().fill(String(text ?? ""), { timeout: 15000 });
+    return { url: page.url(), filled: true };
+  },
+  "browser.screenshot": async () => {
+    const page = await getPage();
+    const buf = await page.screenshot({ type: "png", fullPage: false });
+    return { image: "data:image/png;base64," + buf.toString("base64"), url: page.url() };
   },
   "system.run_command": async ({ command, cwd }) => {
     const cmd = String(command ?? "").trim();
@@ -113,7 +152,7 @@ async function handleCall(c) {
 }
 
 let running = true;
-process.on("SIGINT", () => { console.log("\n■ 停止桌面助手。"); running = false; process.exit(0); });
+process.on("SIGINT", async () => { console.log("\n■ 停止桌面助手。"); running = false; await closeBrowser(); process.exit(0); });
 
 console.log(`● AI 島桌面助手已啟動 · ${os.hostname()}`);
 console.log(`  雲端：${CFG.apiBase}`);

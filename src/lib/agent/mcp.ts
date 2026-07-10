@@ -6,30 +6,64 @@ import type { AgentTool, RiskLevel } from "./tools";
 export interface McpServer { id: string; name: string; url: string; auth_header?: string | null; }
 interface McpToolDef { name: string; description?: string; inputSchema?: any; annotations?: { readOnlyHint?: boolean } }
 
+// MCP Streamable HTTP transport：支援 JSON 或 SSE 回應 + Mcp-Session-Id + initialized 通知。
+// 相容我們自家（純 JSON、無 session）與外部 server（SSE + session）。
 let idc = 1;
-async function rpc(server: McpServer, method: string, params?: any): Promise<any> {
+const CLIENT_INFO = { name: "ai-island-agent", version: "0.1.0" };
+
+async function rpcRaw(server: McpServer, body: any, sessionId?: string): Promise<{ json: any; sid?: string; ok: boolean; status: number }> {
   const res = await fetch(server.url, {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...(server.auth_header ? { Authorization: server.auth_header } : {}) },
-    body: JSON.stringify({ jsonrpc: "2.0", id: idc++, method, params }),
-    signal: AbortSignal.timeout(15000),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json, text/event-stream",
+      ...(server.auth_header ? { Authorization: server.auth_header } : {}),
+      ...(sessionId ? { "Mcp-Session-Id": sessionId } : {}),
+    },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(20000),
   });
-  if (!res.ok) throw new Error(`MCP ${method} → ${res.status}`);
-  const j = await res.json();
-  if (j?.error) throw new Error(`MCP ${method}: ${j.error.message}`);
-  return j?.result;
+  const sid = res.headers.get("mcp-session-id") ?? sessionId;
+  const ct = res.headers.get("content-type") ?? "";
+  let json: any = null;
+  if (ct.includes("text/event-stream")) {
+    const text = await res.text();
+    for (const line of text.split("\n")) {
+      if (!line.startsWith("data:")) continue;
+      try { const p = JSON.parse(line.slice(5).trim()); if (p?.id === body.id) { json = p; break; } if (!json) json = p; } catch { /* skip */ }
+    }
+  } else {
+    json = await res.json().catch(() => null);
+  }
+  return { json, sid, ok: res.ok, status: res.status };
 }
 
-/** 連線 + 列出工具（先 initialize 再 tools/list）。 */
+async function openSession(server: McpServer): Promise<string | undefined> {
+  const init = await rpcRaw(server, { jsonrpc: "2.0", id: idc++, method: "initialize", params: { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: CLIENT_INFO } });
+  if (!init.ok) throw new Error(`initialize → ${init.status}`);
+  if (init.json?.error) throw new Error(`initialize: ${init.json.error.message}`);
+  await rpcRaw(server, { jsonrpc: "2.0", method: "notifications/initialized" }, init.sid).catch(() => {});   // 通知、無回應
+  return init.sid;
+}
+
+async function callMethod(server: McpServer, method: string, params: any, sid?: string): Promise<any> {
+  const r = await rpcRaw(server, { jsonrpc: "2.0", id: idc++, method, params }, sid);
+  if (!r.ok) throw new Error(`${method} → ${r.status}`);
+  if (r.json?.error) throw new Error(`${method}: ${r.json.error.message}`);
+  return r.json?.result;
+}
+
+/** 連線（initialize + initialized）+ 列出工具。 */
 export async function listMcpTools(server: McpServer): Promise<McpToolDef[]> {
-  await rpc(server, "initialize", { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "ai-island-agent", version: "0.1.0" } });
-  const r = await rpc(server, "tools/list", {});
+  const sid = await openSession(server);
+  const r = await callMethod(server, "tools/list", {}, sid);
   return (r?.tools ?? []) as McpToolDef[];
 }
 
 /** 呼叫一個 MCP 工具，回文字結果。 */
 export async function callMcpTool(server: McpServer, name: string, args: any): Promise<{ ok: boolean; text: string }> {
-  const r = await rpc(server, "tools/call", { name, arguments: args ?? {} });
+  const sid = await openSession(server);
+  const r = await callMethod(server, "tools/call", { name, arguments: args ?? {} }, sid);
   const text = (r?.content ?? []).map((c: any) => (c?.type === "text" ? c.text : "")).join("\n");
   return { ok: !r?.isError, text };
 }
