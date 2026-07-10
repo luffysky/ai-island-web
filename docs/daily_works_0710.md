@@ -176,7 +176,9 @@
   - 跨裝置批准（推播點進手機→自動載入任務→直接批准；approval 走 DB、任何裝置都生效）。
   - 遠端觀看（進行中任務輪詢刷新 + 「遠端觀看中」+ 可遠端停止）。
   - 語音輸入（Web Speech zh-TW）+ 目標裝置提示。
-- ⬜ 下一步 **Phase 1b 收尾**（Playwright browser-worker + 截圖 + 真跑端到端 Demo + KPI）／**Phase 2b**（任務背景執行、脫離連線照跑）／Android／排程。
+- ✅ **Phase 1b 端到端對 production 實跑驗證（0710）**：桌面助手輪詢正式站→本機執行 filesystem.list（讀到 43 項）+ system.run_command（git 分支 main）→結果寫回；白名單擋掉 rm -rf。範例 config 順手改正斜線（單反斜線會壞 JSON）。
+- ✅ **Phase 2b 任務背景執行（0710，已上線）**：POST 建任務後 `runAgentTaskDetached()` 伺服器背景開跑、立刻回 taskId；前端改輪詢觀看（取代 SSE）→ **關掉頁面/手機任務照跑**、需確認/完成推播、回來接續。驗證：整合測試 detached runner 讓任務無連線自己跑到 succeeded + tsc/vitest(122)/build 綠。⚠ 限制：process 重啟會孤兒化進行中任務（待補 stale-task reaper）。
+- ⬜ 下一步：**Phase 1b 收尾**（Playwright browser-worker + 截圖 + KPI）／**Phase 3**（技能商店/自建 Agent）／Android 原生（獨立大工程）／stale-task reaper。
 
 ### ✅ 順手補（0710）
 - **3D 表情可見化**：Fluent 3D 之前只是 Noto 動畫的 fallback（幾乎不會顯示）→ AnimatedEmojiPicker 加**「3D」分頁**，40 顆常用立體 emoji 可選、點了以 `.png` 圖片網址插入（走媒體渲染 = 訊息裡真的看到 3D）。顔文字(ツ)＋動態貼圖分頁本就在（12 處輸入點都有）。

@@ -80,7 +80,21 @@ async function waitForApproval(approvalId: string, taskId: string, timeoutMs = 3
   return false;
 }
 
-/** 跑一個任務，吐事件流。API route 消費它轉 SSE。 */
+// Phase 2b：背景執行——任務不綁 HTTP 連線，關掉頁面也照跑。
+// Zeabur 是長駐 node server，detached promise 會續跑；步驟寫進 DB、關鍵時刻推播、前端靠輪詢觀看。
+const RUNNING = new Set<string>();
+export function runAgentTaskDetached(taskId: string, userId: string, goal: string, maxSteps = 20): void {
+  if (RUNNING.has(taskId)) return;
+  RUNNING.add(taskId);
+  (async () => {
+    // 事件在 runAgentTask 內就已落 DB + 推播；這裡只需把 generator 跑到底、不需消費事件。
+    try { for await (const _ev of runAgentTask(taskId, userId, goal, maxSteps)) { void _ev; } }
+    catch { /* runAgentTask 自身的 try/catch 已把任務標成 failed */ }
+    finally { RUNNING.delete(taskId); }
+  })();
+}
+
+/** 跑一個任務，吐事件流。背景 runner（runAgentTaskDetached）驅動它；步驟/狀態/推播都在內部落地。 */
 export async function* runAgentTask(taskId: string, userId: string, goal: string, maxSteps = 20): AsyncGenerator<AgentEvent> {
   const admin = createSupabaseAdmin();
   const history: StepRow[] = [];

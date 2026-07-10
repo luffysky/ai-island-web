@@ -319,7 +319,8 @@ Windows UI     ：Python + pywinauto / UI Automation（結構化優先）
   - **遠端觀看**：非本機發起的進行中任務靠輪詢刷新狀態/步驟/待確認（「遠端觀看中」標籤 + 可遠端停止）。
   - **語音輸入**（Web Speech API zh-TW）+ 目標裝置提示（本機指令會在哪台電腦跑）。
   - 驗證：tsc / vitest(122) / next build 綠。
-- [ ] Phase 2b：任務**背景執行**（脫離 SSE 連線也不中斷，改由 push 通知）＝真正「關掉手機頁面任務照跑」。
+- [x] **Phase 2b（2026-07-10）任務背景執行**：`POST /api/agent/tasks` 改成建任務後 `runAgentTaskDetached()` 在伺服器背景開跑、立刻回 `taskId`；前端改輪詢 `GET tasks/[id]` 觀看（取代 SSE）。**關掉頁面/手機任務照跑**，步驟落 DB、需確認/完成時推播、回來輪詢接續。驗證：一次性整合測試——detached runner 讓任務自己跑到 `succeeded`（無任何連線）＋ tsc/vitest(122)/build 綠。
+  - ⚠ 已知限制：fire-and-forget 靠長駐 node process；**process 重啟會孤兒化進行中任務**（卡在 running）。待補：stale-task reaper（cron 把逾時 running 標 failed）+ 選配真正的 job queue。
 - [ ] Android Agent（Kotlin + AccessibilityService，明確揭露、可視化、可停止；顧 Play 政策）。
 - [ ] 排程任務（cron，例：每晚檢查 CI 有無測試失敗才通知）。
 

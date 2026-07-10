@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
-import { runAgentTask } from "@/lib/agent/orchestrator";
+import { runAgentTaskDetached } from "@/lib/agent/orchestrator";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -19,7 +19,8 @@ export async function GET() {
   return NextResponse.json({ tasks: data ?? [] });
 }
 
-// POST /api/agent/tasks { goal } — 建任務並用 SSE 串回執行過程
+// POST /api/agent/tasks { goal } — 建任務、在伺服器背景開跑（Phase 2b），立刻回 taskId。
+// 前端靠輪詢 GET /api/agent/tasks/[id] 觀看；關掉頁面任務照跑、完成/需確認時推播。
 export async function POST(req: Request) {
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
@@ -36,26 +37,6 @@ export async function POST(req: Request) {
     .select("id").single();
   if (error || !task) return NextResponse.json({ error: error?.message ?? "建任務失敗" }, { status: 500 });
 
-  const encoder = new TextEncoder();
-  const send = (obj: unknown) => encoder.encode(`data: ${JSON.stringify(obj)}\n\n`);
-
-  const stream = new ReadableStream({
-    async start(controller) {
-      controller.enqueue(send({ type: "task", taskId: task.id, goal }));
-      try {
-        for await (const ev of runAgentTask(task.id, user.id, goal, maxSteps)) {
-          controller.enqueue(send(ev));
-        }
-      } catch (e: any) {
-        controller.enqueue(send({ type: "error", error: e?.message ?? "stream 例外" }));
-      } finally {
-        controller.enqueue(send({ type: "end" }));
-        controller.close();
-      }
-    },
-  });
-
-  return new Response(stream, {
-    headers: { "Content-Type": "text/event-stream; charset=utf-8", "Cache-Control": "no-cache, no-transform", Connection: "keep-alive" },
-  });
+  runAgentTaskDetached(task.id, user.id, goal, maxSteps);  // 背景跑、不綁這個連線
+  return NextResponse.json({ taskId: task.id, goal });
 }

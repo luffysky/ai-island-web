@@ -38,7 +38,7 @@ const EXAMPLES = [
 
 export function AgentClient() {
   const [goal, setGoal] = useState("");
-  const [running, setRunning] = useState(false);
+  const [starting, setStarting] = useState(false);
   const [status, setStatus] = useState<string>("");
   const [steps, setSteps] = useState<StepView[]>([]);
   const [summary, setSummary] = useState<string>("");
@@ -50,14 +50,14 @@ export function AgentClient() {
   const [pairOpen, setPairOpen] = useState(false);
   const [newToken, setNewToken] = useState<{ token: string; name: string } | null>(null);
   const [copied, setCopied] = useState(false);
-  const [watching, setWatching] = useState<string>("");   // 遠端觀看中的 taskId（非本機發起、靠輪詢刷新）
+  const [watching, setWatching] = useState<string>("");   // 目前輪詢觀看的 taskId（背景任務進行中就刷新）
   const [listening, setListening] = useState(false);
-  const abortRef = useRef<AbortController | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const recRef = useRef<any>(null);
   const deepLinkedRef = useRef(false);
   const voiceSupported = typeof window !== "undefined" && !!((window as any).webkitSpeechRecognition || (window as any).SpeechRecognition);
   const onlineDevice = devices.find((d) => d.online);
+  const busy = starting || (!!taskId && LIVE.includes(status));   // 任務進行中（背景執行 + 輪詢觀看）
 
   const loadHistory = useCallback(async () => {
     try {
@@ -107,63 +107,27 @@ export function AgentClient() {
     if (taskId) await fetch(`/api/agent/tasks/${taskId}`, {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "cancel" }),
     }).catch(() => {});
-    abortRef.current?.abort();
-    setRunning(false);
-    setApproval(null);
+    setApproval(null);   // 背景任務下輪迴圈會讀到 cancelled 而停；輪詢會反映狀態
   }, [taskId]);
 
   const run = useCallback(async (g: string) => {
     const text = g.trim();
-    if (!text || running) return;
-    setRunning(true); setSteps([]); setSummary(""); setApproval(null); setStatus("planning"); setTaskId(""); setWatching("");
-    const ac = new AbortController();
-    abortRef.current = ac;
+    if (!text || busy) return;
+    setStarting(true); setSteps([]); setSummary(""); setApproval(null); setStatus("planning"); setTaskId(""); setWatching("");
     try {
       const res = await fetch("/api/agent/tasks", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ goal: text }), signal: ac.signal,
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ goal: text }),
       });
-      if (!res.ok || !res.body) { setStatus("failed"); setSummary("無法啟動任務（請先登入或稍後再試）。"); setRunning(false); return; }
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buf = "";
-      for (;;) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buf += decoder.decode(value, { stream: true });
-        const parts = buf.split("\n\n");
-        buf = parts.pop() ?? "";
-        for (const part of parts) {
-          const line = part.split("\n").find((l) => l.startsWith("data: "));
-          if (!line) continue;
-          let ev: any;
-          try { ev = JSON.parse(line.slice(6)); } catch { continue; }
-          handleEvent(ev);
-        }
-      }
-    } catch (e: any) {
-      if (e?.name !== "AbortError") { setStatus("failed"); setSummary("連線中斷。"); }
-    } finally {
-      setRunning(false);
+      if (!res.ok) { setStatus("failed"); setSummary("無法啟動任務（請先登入或稍後再試）。"); return; }
+      const { taskId: id } = await res.json();
+      setTaskId(id); setWatching(id);   // 背景已開跑 → 輪詢觀看（關掉頁面任務照跑）
       loadHistory();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [running, loadHistory]);
-
-  function handleEvent(ev: any) {
-    switch (ev.type) {
-      case "task": setTaskId(ev.taskId); break;
-      case "status": setStatus(ev.status); break;
-      case "thought": setSteps((s) => [...s, { idx: ev.idx, kind: "thought", thought: ev.thought }]); break;
-      case "step": setSteps((s) => [...s, { ...ev.step, kind: "step" }]); break;
-      case "approval": setStatus("awaiting_approval"); setApproval(ev.approval); break;
-      case "done": setStatus(ev.status); setSummary(ev.summary ?? ""); setApproval(null); break;
-      case "error": setSteps((s) => [...s, { idx: -1, kind: "step", toolName: "⚠️ 錯誤", ok: false, result: { error: ev.error } }]); break;
-    }
-  }
+    } catch { setStatus("failed"); setSummary("連線失敗。"); }
+    finally { setStarting(false); }
+  }, [busy, loadHistory]);
 
   const replay = useCallback(async (id: string) => {
-    if (running) return;
+    if (busy) return;
     const r = await fetch(`/api/agent/tasks/${id}`);
     if (!r.ok) return;
     const { task, steps: st, approvals } = await r.json();
@@ -171,12 +135,12 @@ export function AgentClient() {
     setSummary(task.result?.summary ?? task.error ?? "");
     setSteps(mapSteps(st));
     setApproval(pendingApproval(approvals));
-    setWatching(LIVE.includes(task.status) ? id : "");   // 還在跑 → 開始遠端輪詢刷新
-  }, [running]);
+    setWatching(LIVE.includes(task.status) ? id : "");   // 還在跑 → 開始輪詢刷新
+  }, [busy]);
 
   // 遠端觀看：非本機發起（例如手機開推播連結）的進行中任務，靠輪詢刷新狀態/步驟/待確認
   useEffect(() => {
-    if (!watching || running) return;
+    if (!watching) return;
     const iv = setInterval(async () => {
       try {
         const r = await fetch(`/api/agent/tasks/${watching}`);
@@ -190,7 +154,7 @@ export function AgentClient() {
       } catch { /* ignore */ }
     }, 2000);
     return () => clearInterval(iv);
-  }, [watching, running]);
+  }, [watching]);
 
   // 深連結 /agent?task=<id>（推播點進來）：自動載入該任務、若有待確認就顯示、可直接在手機上批准
   useEffect(() => {
@@ -212,8 +176,6 @@ export function AgentClient() {
     recRef.current = rec; setListening(true);
     try { rec.start(); } catch { setListening(false); }
   }, [listening]);
-
-  const busy = running && (status === "planning" || status === "running" || status === "awaiting_approval");
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
@@ -239,7 +201,7 @@ export function AgentClient() {
                 onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) run(goal); }}
                 rows={2} placeholder="想讓 Agent 幫你做什麼？（Ctrl/⌘ + Enter 執行）"
                 className="flex-1 resize-none bg-transparent outline-none text-sm sm:text-base px-2 py-1.5 min-w-0"
-                disabled={running}
+                disabled={busy}
               />
               {voiceSupported && !busy && (
                 <button onClick={toggleVoice} title="語音輸入" className={`shrink-0 grid place-items-center w-9 h-9 rounded-xl border ${listening ? "bg-rose-500 border-rose-500 text-white animate-pulse" : "border-black/10 dark:border-white/15 text-black/50 dark:text-white/50 hover:bg-black/5 dark:hover:bg-white/10"}`}>
@@ -261,7 +223,7 @@ export function AgentClient() {
                 <Laptop className="w-3.5 h-3.5" /> 需本機的指令會在「{onlineDevice.name}」上執行
               </div>
             )}
-            {!steps.length && !running && (
+            {!steps.length && !busy && (
               <div className="flex flex-wrap gap-1.5 mt-2 px-1">
                 {EXAMPLES.map((ex) => (
                   <button key={ex} onClick={() => { setGoal(ex); run(ex); }} className="text-xs rounded-full border border-black/10 dark:border-white/15 px-2.5 py-1 text-black/60 dark:text-white/60 hover:bg-black/5 dark:hover:bg-white/10">
@@ -273,20 +235,15 @@ export function AgentClient() {
           </div>
 
           {/* 狀態列 */}
-          {(running || status) && (
+          {(busy || status) && (
             <div className="flex items-center gap-2 mt-3 px-1 text-sm">
               {busy ? <Loader2 className="w-4 h-4 animate-spin text-violet-500" /> :
                 status === "succeeded" ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> :
                 status === "cancelled" ? <XCircle className="w-4 h-4 text-black/40 dark:text-white/40" /> :
                 <XCircle className="w-4 h-4 text-rose-500" />}
               <span className="text-black/70 dark:text-white/70">{STATUS_LABEL[status] ?? status}</span>
-              {watching && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400">遠端觀看中</span>}
+              {busy && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-500/15 text-violet-600 dark:text-violet-400" title="任務在伺服器背景執行，關掉頁面也不會中斷">背景執行中</span>}
               {taskId && <span className="text-xs text-black/30 dark:text-white/30 font-mono">#{taskId.slice(0, 8)}</span>}
-              {watching && (
-                <button onClick={cancel} className="ml-auto inline-flex items-center gap-1 text-xs text-rose-500 hover:underline">
-                  <Square className="w-3 h-3" /> 停止任務
-                </button>
-              )}
             </div>
           )}
 
@@ -362,7 +319,7 @@ export function AgentClient() {
               <ul className="space-y-1">
                 {history.map((h) => (
                   <li key={h.id}>
-                    <button onClick={() => replay(h.id)} disabled={running} className="w-full text-left rounded-lg px-2 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-50">
+                    <button onClick={() => replay(h.id)} disabled={busy} className="w-full text-left rounded-lg px-2 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-50">
                       <div className="text-xs line-clamp-1">{h.goal}</div>
                       <div className="text-[10px] text-black/40 dark:text-white/40">{STATUS_LABEL[h.status] ?? h.status} · {h.step_count} 步</div>
                     </button>
