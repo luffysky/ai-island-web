@@ -24,6 +24,7 @@ function metaFor(slug: string): { group: string; emoji: string; short: string } 
   if (slug === "competition-onepager") return { group: "🏆 競賽", emoji: "📃", short: "一頁式報名摘要" };
   if (slug === "business-registration-checklist") return { group: "✅ 行動清單", emoji: "🏪", short: "獨資商號登記清單" };
   if (slug === "swot") return { group: "📋 計畫書九章", emoji: "🎯", short: "SWOT 分析" };
+  if (slug === "creator-island") return { group: "📋 計畫書九章", emoji: "🎨", short: "創作者島嶼（亮點）" };
   return { group: "📁 其他", emoji: "📄", short: slug };
 }
 

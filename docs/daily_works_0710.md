@@ -96,6 +96,37 @@
 
 ---
 
+## 七、部落格／AI／emoji 大補 + 種子內容規模化（0710 下半）
+
+### ✅ AI 聊天（截圖 173）
+- ~~送出的 emoji 掉回靜態字元~~ → `renderUserContent` 改走 `EmojiText`，送出後會動。
+- ~~傳圖片/GIF 有綠色對話框~~ → 圖片/GIF 單獨傳時去掉 bubble、透明背景、放大不裁切、去邊框。
+- ~~綠寶人設太罐頭~~ → 綠寶：更像島民朋友、預設講重點別長篇、拿掉公式化客服開場/結尾、收到圖會真的評論內容。
+- ~~多聞人設不對~~ → 對齊名字本義「博學多聞」，改成博學溫和的傾聽者（拿掉「吐槽擔當」）。
+
+### ✅ 動態 emoji 基建
+- `AnimatedEmoji` 三段式 fallback：Noto 動態 WebP → Microsoft Fluent 3D（立體、筆畫粗）→ 純字元（等於接上 fluentui-emoji、修好「Noto 沒動畫就掉回細瘦字」）。
+- emoji 選單新增「顔文字（ツ）」分頁 + 「貼圖」分頁（自建 12 張動態 SVG 貼圖，`scripts/build-stickers.mjs` → `public/stickers/`）。
+- 圖片網址渲染規則（聊天/部落格留言/論壇）加 `.svg` 支援，貼圖走 `<img>` 會動。
+
+### ✅ 部落格留言
+- 留言框＋回覆框加 emoji + GIF 選擇器；留言內容改成顯示動態 emoji / 圖片 / GIF。
+
+### ✅ 種子部落格補到布林哥規模（DB 內容，已即時生效）
+- `scripts/gen-persona-blogs.mjs`（新）：多角色通吃，AI 先產專屬大綱（快取 `scripts/_data/persona-syllabus-*.json`→slug 穩定）再一篇篇生文，冪等、可 `--limit` 分批、預設 Haiku 省錢、可 `--model` 覆蓋。
+- 7 個種子角色各補到 ~72 篇：綠寶助教/前端精靈/Debug 老爹（技術）+ 蘇晚/林之遠/何默/江見（創作者）。**公開文章 97 → 591 篇。**
+- `scripts/gen-blog-seed-comments.mjs`（新）：給留言少的文章補 AI 生成讀者留言（帶 emoji、偶爾作者回覆），冪等。**留言 56 → 2000+ 則、多數文章 2+ 則。**
+
+### ✅ 計畫書：Creator Island 亮點化
+- 新 `docs/grant/creator-island.md`（第二根支柱亮點頁：兩島同魂「降低 AI 時代的恐懼」、誠實口徑「路徑已串接、閉環待驗證」）。
+- `ch3-product.md` §9 從 2 行「第二產品線」擴寫成完整亮點模組；後台補助頁 metaFor 補一筆；`gen-grant-content.mjs` 加排除清單（`待改.md` 內部批評稿不打包）→ 重生 `grant-content.ts`。
+- 📌 待辦：計畫書「重新定錨」四塊（一句話定位／補助研發題目／補助前後差異表／KPI＋API 成本驗證邏輯）—— 見 `docs/grant/待改.md`。
+
+### ✅ 鐵規則入庫
+- `CLAUDE.md` 頂加「🚨 每次 commit/push 前檢查清單」；同步新增 `codex.md`。
+
+---
+
 ## 🔒 安全紅線（不變）
 - `.env.local` 永遠不 commit；`docs/logerr.md`、`docs/note.md` 保持 untracked。
 - service_role key / DB 密碼整個專案完成後再輪替。

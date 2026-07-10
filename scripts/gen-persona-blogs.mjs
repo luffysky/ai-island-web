@@ -58,28 +58,28 @@ const PERSONAS = {
     voice: "你是「Debug 老爹」，沉穩老練、有耐心、不嘲笑新手。像醫生問診：先鎖定最可能的、給一個具體檢查動作。口頭禪『紅字不可怕，貼上來我陪你看』『先看最後一行 Traceback』。",
   },
   suwan: {
-    username: "suwan", display: "蘇晚", prefix: "sw", target: 48, kind: "essay", cat: "生活",
+    username: "suwan", display: "蘇晚", prefix: "sw", target: 72, kind: "essay", cat: "生活",
     blogSlug: "suwan", blogTitle: "蘇晚的日子", blogDesc: "寫日常與微光。",
     bio: "寫字的人｜日常與微光",
     domain: "日常散文與微光小品：生活觀察、習慣養成、情緒、人際、微小而溫柔的片刻、季節、食物、獨處、城市與夜晚。第一人稱、溫柔、誠實、不說教，像寫給自己也寫給讀者的私筆記。",
     voice: "你是「蘇晚」，寫日常散文的創作者。溫柔、誠實、觀察細膩，句子乾淨不濫情，會從一件小事收束到一個柔軟的體會。第一人稱。不是教學、不列步驟。",
   },
   zhiyuan: {
-    username: "zhiyuan", display: "林之遠", prefix: "zy", target: 48, kind: "essay", cat: "技術隨筆",
+    username: "zhiyuan", display: "林之遠", prefix: "zy", target: 72, kind: "essay", cat: "技術隨筆",
     blogSlug: "zhiyuan", blogTitle: "林之遠的技術隨筆", blogDesc: "把難的東西講成人話。",
     bio: "工程師｜把難的東西講成人話",
     domain: "技術隨筆：把難懂的工程/技術觀念用比喻講成人話的短文、除錯與思考心法、工程師的日常與選擇、技術與生活的交界、學習與成長的體悟。不是教科書、是有觀點的隨筆。",
     voice: "你是「林之遠」，工程師出身的隨筆作者。擅長用一個生活比喻把抽象技術講清楚，語氣沉穩、有觀點、偶爾自嘲，不炫技、不掉書袋。第一人稱隨筆。",
   },
   "hemo.ink": {
-    username: "hemo.ink", display: "何默", prefix: "hm", target: 48, kind: "essay", cat: "散文",
+    username: "hemo.ink", display: "何默", prefix: "hm", target: 72, kind: "essay", cat: "散文",
     blogSlug: "hemo", blogTitle: "何默的深夜信", blogDesc: "寫給那些覺得自己不夠好的人。",
     bio: "寫字的人｜深夜的溫柔",
     domain: "深夜療癒散文與短詩：寫給覺得自己不夠好、疲憊、迷惘、自我懷疑的人。溫柔、療癒、誠實、有陪伴感，像深夜寫給讀者的一封信。偶爾是散文、偶爾是短詩。",
     voice: "你是「何默」，寫深夜療癒散文與短詩的創作者。文字溫柔有重量、意象乾淨、不灑狗血、不廉價安慰，像在黑暗裡輕輕陪著人。第一人稱。",
   },
   riverseen: {
-    username: "riverseen", display: "江見", prefix: "rs", target: 48, kind: "essay", cat: "獨立開發",
+    username: "riverseen", display: "江見", prefix: "rs", target: 72, kind: "essay", cat: "獨立開發",
     blogSlug: "riverseen", blogTitle: "江見的做東西筆記", blogDesc: "用一個週末，做出解決自己麻煩的小東西。",
     bio: "獨立開發者｜做點解決自己麻煩的小東西",
     domain: "獨立開發 / 做小工具的隨筆：用週末做出解決自己麻煩的小專案的故事、從想法到做完的過程、遇到的坑、上線與被使用的心情、獨立開發的取捨與心態、生活裡值得自動化的麻煩事。有故事感、務實、不吹噓。",
@@ -111,16 +111,21 @@ async function ensureAuthor(p) {
 const DATA_DIR = "scripts/_data";
 async function ensureSyllabus(p) {
   const file = `${DATA_DIR}/persona-syllabus-${p.username}.json`;
+  let existing = [];
   if (existsSync(file)) {
     const cached = JSON.parse(readFileSync(file, "utf8"));
-    if (Array.isArray(cached) && cached.length) return cached;
+    if (Array.isArray(cached)) existing = cached;
   }
-  console.log(`   · 產生 ${p.display} 的大綱（${p.target} 篇）…`);
+  // 已達標就直接用；不足就「補生」缺的量（保留舊的、只加新的 → slug 穩定）
+  if (existing.length >= p.target) return existing;
+  const need = p.target - existing.length;
+  console.log(`   · ${existing.length ? `補` : `產生`} ${p.display} 大綱 ${need} 篇（目標 ${p.target}）…`);
   const isTut = p.kind === "tutorial";
   const sys = `你在替一個部落格規劃「文章大綱」。只輸出 JSON、不要多餘文字。`;
+  const avoid = existing.length ? `\n以下標題已經有了、請完全避免重複或太相似：\n${existing.map((t) => "・" + t.title).join("\n")}\n` : "";
   const user = `部落格作者：${p.display}
 主題領域：${p.domain}
-請規劃 ${p.target} 篇文章的大綱，${isTut ? "由淺入深、循序漸進（前面最基礎、後面較進階），涵蓋整個領域" : "題材多元、不重複、有變化（避免每篇都同一種調性）"}。
+請再規劃 ${need} 篇文章的大綱，${isTut ? "由淺入深、涵蓋整個領域（可含較進階、實戰、專題）" : "題材多元、不重複、有變化（避免每篇同一種調性）"}。${avoid}
 輸出格式：一個 JSON 陣列，每個元素 {"title": "文章標題（繁體中文，不要編號、不要引號內再放引號）", "tags": ["1~3個中文短標籤"]}。
 標題要具體吸引人、像真的部落格標題。只輸出 JSON 陣列本身。`;
   const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -134,10 +139,23 @@ async function ensureSyllabus(p) {
   const raw = (data.content ?? []).filter((b) => b.type === "text").map((b) => b.text).join("");
   const s = raw.indexOf("["), e = raw.lastIndexOf("]");
   if (s < 0 || e < 0) throw new Error("大綱解析失敗：找不到 JSON 陣列");
-  let list = JSON.parse(raw.slice(s, e + 1));
+  let jsonStr = raw.slice(s, e + 1).replace(/,\s*([\]}])/g, "$1"); // 去掉尾逗號
+  let list;
+  try { list = JSON.parse(jsonStr); }
+  catch {
+    // 寬鬆退路：逐一抓 {"title":..,"tags":[..]} 物件（避免整批因一顆壞掉全毀）
+    list = [];
+    for (const m of jsonStr.matchAll(/\{[^{}]*"title"[^{}]*\}/g)) {
+      try { list.push(JSON.parse(m[0].replace(/,\s*}/g, "}"))); } catch { /* skip */ }
+    }
+    if (!list.length) throw new Error("大綱 JSON 解析失敗");
+  }
   list = list.filter((t) => t && t.title).map((t) => ({ title: String(t.title).slice(0, 120), tags: Array.isArray(t.tags) ? t.tags.slice(0, 3).map(String) : [] }));
-  if (!DRY) { mkdirSync(DATA_DIR, { recursive: true }); writeFileSync(file, JSON.stringify(list, null, 2) + "\n"); }
-  return list;
+  // 合併：舊的在前（slug 穩定）、去掉與舊標題重複的新項
+  const seen = new Set(existing.map((t) => t.title));
+  const merged = existing.concat(list.filter((t) => !seen.has(t.title)));
+  if (!DRY) { mkdirSync(DATA_DIR, { recursive: true }); writeFileSync(file, JSON.stringify(merged, null, 2) + "\n"); }
+  return merged;
 }
 
 // md → HTML（同 pygoblin）
@@ -149,8 +167,8 @@ function mdToHtml(md) {
   const inline = (t) => esc(t).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
   while (i < lines.length) {
     const line = lines[i];
-    const fence = line.match(/^```(\w*)/);
-    if (fence) { closeUl(); i++; const buf = []; while (i < lines.length && !/^```/.test(lines[i])) buf.push(lines[i++]); i++; html += `<pre><code>${esc(buf.join("\n"))}</code></pre>`; continue; }
+    const fence = line.match(/^\s*```(\w*)/);
+    if (fence) { closeUl(); i++; const buf = []; while (i < lines.length && !/^\s*```/.test(lines[i])) buf.push(lines[i++]); i++; html += `<pre><code>${esc(buf.join("\n"))}</code></pre>`; continue; }
     let m;
     if ((m = line.match(/^###\s+(.+)/))) { closeUl(); html += `<h3>${inline(m[1])}</h3>`; i++; continue; }
     if ((m = line.match(/^##\s+(.+)/))) { closeUl(); html += `<h2>${inline(m[1])}</h2>`; i++; continue; }

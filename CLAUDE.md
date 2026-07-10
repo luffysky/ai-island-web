@@ -4,6 +4,26 @@
 
 ---
 
+## 🚨 鐵規則：每次 commit / push 前一定要跑完這張檢查清單
+
+**不准跳過。任何一項沒過就不 commit、不 push。** 全部綠燈後「先更新工作日誌」再 commit / push。
+
+1. **API / 資料庫 / 資料表**：這次改動有沒有需要**跑腳本 / 建表 / 改欄位**？
+   - 新增或改欄位/表 → migration 有沒有跑？（`supabase/*.sql`）
+   - 內容有沒有需要跑 seed / import / 生成腳本才會生效？（章節要 `import_chapters_to_db.mjs`；部落格/留言等寫 DB 的內容跑對應 script）
+   - **API ↔ 前後端 ↔ 欄位有沒有接對**：前端打的 API 真的存在、回傳欄位名跟前端用的一致、DB 欄位真的有這欄（可用 `node scripts/audit-db-columns.mjs` 驗證），沒有「有 UI / 有表但沒真接」的假功能。
+2. **UI 有沒有接對**：畫面上的每個按鈕 / 表單 / 資料，背後的 API 跟資料流真的通，不是空殼。
+3. **RWD（手機版）不要破版**：所有動到的介面在窄螢幕都不能溢出/跑版；超出的用 scroll、不要 hidden 硬切。
+4. **桌面版也不要破版**：不是只顧手機——**所有介面、桌面寬螢幕一樣要檢查**，版面、對齊、間距都正常。
+5. **PWA**：有沒有影響 PWA（manifest / service worker / 離線 / 安裝）？動到相關的就驗一下。
+6. **建置驗證**：`npx tsc --noEmit`、`npx vitest run`、`npx next build` 都要綠（push = 自動上線，build 壞了會害 CI 失敗、可能推出壞版）。
+7. **全部沒問題 → 先更新工作日誌（`docs/daily_works_*.md`）→ 再 commit / push。** 完成的 todo 用刪除線標記、不要刪。
+8. **機密**：`.env.local` / 真金鑰永不 commit；`docs/logerr.md`、`docs/note.md` 保持 untracked。
+
+> 排查心法：介面怪 → 先確認「資料有沒有真的接到」（API/欄位/腳本）而不是只改前端樣式。
+
+---
+
 ## ⚠️ 最重要的雷：章節內容是從「資料庫」讀的，不是 JSON 檔
 
 **改了 `src/data/chapters/*.json` 之後、線上不會變——因為前台是讀 Supabase 的 `chapters` / `lessons` 表、JSON 只是「DB 掛掉時的 fallback」。**

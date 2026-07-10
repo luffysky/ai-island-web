@@ -7,7 +7,9 @@ import path from "node:path";
 const DIR = path.join("docs", "grant");
 const OUT = path.join("src", "data", "grant-content.ts");
 
-const files = fs.readdirSync(DIR).filter((f) => f.endsWith(".md")).sort();
+// 內部工作/批評稿不打包進 bundle（不進後台頁、不進 build）
+const EXCLUDE = new Set(["待改.md"]);
+const files = fs.readdirSync(DIR).filter((f) => f.endsWith(".md") && !EXCLUDE.has(f)).sort();
 const docs = files.map((f) => {
   const md = fs.readFileSync(path.join(DIR, f), "utf8");
   const m = md.match(/^#\s+(.+)$/m);

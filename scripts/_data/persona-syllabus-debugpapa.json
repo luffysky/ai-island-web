@@ -1,0 +1,492 @@
+[
+  {
+    "title": "為什麼你的程式總是壞掉？從讀懂錯誤訊息開始",
+    "tags": [
+      "基礎",
+      "心態"
+    ]
+  },
+  {
+    "title": "Traceback 不是天書：一行一行讀給你看",
+    "tags": [
+      "基礎",
+      "Python"
+    ]
+  },
+  {
+    "title": "紅色警告別怕，這才是電腦在幫你",
+    "tags": [
+      "基礎",
+      "心態"
+    ]
+  },
+  {
+    "title": "第一次除錯就上手：用 print() 看清楚發生了什麼",
+    "tags": [
+      "基礎",
+      "Python"
+    ]
+  },
+  {
+    "title": "JavaScript 的 undefined 和 null：為什麼傻傻分不清",
+    "tags": [
+      "基礎",
+      "JavaScript"
+    ]
+  },
+  {
+    "title": "NameError：變數憑空消失的真相",
+    "tags": [
+      "常見錯誤",
+      "Python"
+    ]
+  },
+  {
+    "title": "TypeError：型別不對勁時該怎麼辦",
+    "tags": [
+      "常見錯誤",
+      "Python"
+    ]
+  },
+  {
+    "title": "IndexError：陣列超出範圍前的預警",
+    "tags": [
+      "常見錯誤",
+      "Python"
+    ]
+  },
+  {
+    "title": "KeyError：字典找不到鑰匙的三種救法",
+    "tags": [
+      "常見錯誤",
+      "Python"
+    ]
+  },
+  {
+    "title": "縮排錯誤：Python 最愛整人的隱形怪物",
+    "tags": [
+      "常見錯誤",
+      "Python"
+    ]
+  },
+  {
+    "title": "AttributeError：物件沒有你想要的屬性",
+    "tags": [
+      "常見錯誤",
+      "Python"
+    ]
+  },
+  {
+    "title": "SyntaxError vs IndentationError：傻傻分不清就看這篇",
+    "tags": [
+      "常見錯誤",
+      "Python"
+    ]
+  },
+  {
+    "title": "JSON 解析失敗？從 JSON 語法檢查開始",
+    "tags": [
+      "常見錯誤",
+      "格式問題"
+    ]
+  },
+  {
+    "title": "JavaScript 中的 'this' 為什麼總是指錯人",
+    "tags": [
+      "常見錯誤",
+      "JavaScript"
+    ]
+  },
+  {
+    "title": "非同步地獄：callback、Promise、async/await 除錯術",
+    "tags": [
+      "進階",
+      "JavaScript"
+    ]
+  },
+  {
+    "title": "ModuleNotFoundError：套件裝了但還是找不到",
+    "tags": [
+      "環境問題",
+      "Python"
+    ]
+  },
+  {
+    "title": "pip install 失敗的五大常見原因與解法",
+    "tags": [
+      "環境問題",
+      "Python"
+    ]
+  },
+  {
+    "title": "npm install 卡住？package-lock.json 的秘密",
+    "tags": [
+      "環境問題",
+      "JavaScript"
+    ]
+  },
+  {
+    "title": "版本衝突戰爭：requirements.txt 和 pipenv 怎麼選",
+    "tags": [
+      "環境問題",
+      "Python"
+    ]
+  },
+  {
+    "title": "虛擬環境救星：venv 五分鐘快速上手",
+    "tags": [
+      "環境問題",
+      "Python"
+    ]
+  },
+  {
+    "title": "編碼亂碼解決方案：UTF-8、GBK、UnicodeDecodeError 完全指南",
+    "tags": [
+      "進階",
+      "編碼"
+    ]
+  },
+  {
+    "title": "CSV 檔案中文亂碼？開檔時就要選對編碼",
+    "tags": [
+      "實務",
+      "編碼"
+    ]
+  },
+  {
+    "title": "為什麼檔案讀不到？相對路徑 vs 絕對路徑除錯法",
+    "tags": [
+      "實務",
+      "檔案"
+    ]
+  },
+  {
+    "title": "HTTP 404、500、502：網路狀態碼速查表",
+    "tags": [
+      "網路",
+      "HTTP"
+    ]
+  },
+  {
+    "title": "請求超時 Timeout：該怪伺服器還是你的網路",
+    "tags": [
+      "網路",
+      "診斷"
+    ]
+  },
+  {
+    "title": "SSL 證書錯誤：HTTPS 連線失敗時的救命丸",
+    "tags": [
+      "網路",
+      "進階"
+    ]
+  },
+  {
+    "title": "API 回傳奇怪的資料？用 requests.json() 除錯",
+    "tags": [
+      "實務",
+      "API"
+    ]
+  },
+  {
+    "title": "CORS 跨域錯誤：前端最常見的網路陷阱",
+    "tags": [
+      "網路",
+      "JavaScript"
+    ]
+  },
+  {
+    "title": "DNS 查詢失敗：怎麼知道是網路還是程式的問題",
+    "tags": [
+      "網路",
+      "診斷"
+    ]
+  },
+  {
+    "title": "二分法定位 bug：每次砍掉一半的疑點",
+    "tags": [
+      "方法論",
+      "技巧"
+    ]
+  },
+  {
+    "title": "注釋大法：臨時封鎖程式碼找出兇手",
+    "tags": [
+      "方法論",
+      "技巧"
+    ]
+  },
+  {
+    "title": "git log 和 git bisect：用版本控制找出何時出包",
+    "tags": [
+      "Git",
+      "進階"
+    ]
+  },
+  {
+    "title": "git reset 三劍客：--soft、--mixed、--hard 怎麼用",
+    "tags": [
+      "Git",
+      "救援"
+    ]
+  },
+  {
+    "title": "git reflog：已刪除的 commit 起死回生術",
+    "tags": [
+      "Git",
+      "救援"
+    ]
+  },
+  {
+    "title": "merge 衝突不用怕：衝突標記怎麼讀和怎麼解",
+    "tags": [
+      "Git",
+      "合作"
+    ]
+  },
+  {
+    "title": "git stash 暫存絕技：切分支前先把改動藏起來",
+    "tags": [
+      "Git",
+      "技巧"
+    ]
+  },
+  {
+    "title": "logging 比 print 聰明在哪裡",
+    "tags": [
+      "進階",
+      "Python"
+    ]
+  },
+  {
+    "title": "用 logging 設定不同等級：DEBUG、INFO、WARNING、ERROR",
+    "tags": [
+      "進階",
+      "Python"
+    ]
+  },
+  {
+    "title": "Python 內建 debugger pdb：邊執行邊檢查變數",
+    "tags": [
+      "工具",
+      "Python"
+    ]
+  },
+  {
+    "title": "pdb 常用指令：step、next、continue 快速上手",
+    "tags": [
+      "工具",
+      "Python"
+    ]
+  },
+  {
+    "title": "VS Code 除錯器設定：一鍵開啟斷點檢查",
+    "tags": [
+      "工具",
+      "配置"
+    ]
+  },
+  {
+    "title": "Chrome DevTools 除錯 JavaScript：Console 和 Sources 面板操略",
+    "tags": [
+      "工具",
+      "JavaScript"
+    ]
+  },
+  {
+    "title": "Network 面板看請求：API 有沒有真的被呼叫",
+    "tags": [
+      "工具",
+      "JavaScript"
+    ]
+  },
+  {
+    "title": "Memory leak 初判：怎麼知道你的程式在吃記憶體",
+    "tags": [
+      "效能",
+      "進階"
+    ]
+  },
+  {
+    "title": "無限迴圈的痛：為什麼程式卡住了",
+    "tags": [
+      "常見陷阱",
+      "Python"
+    ]
+  },
+  {
+    "title": "遞迴深度超限：RecursionError 的三種解法",
+    "tags": [
+      "進階",
+      "Python"
+    ]
+  },
+  {
+    "title": "大物件複製效能問題：淺拷貝 vs 深拷貝",
+    "tags": [
+      "效能",
+      "Python"
+    ]
+  },
+  {
+    "title": "為什麼同一段程式在別人電腦就能跑",
+    "tags": [
+      "診斷",
+      "環境"
+    ]
+  },
+  {
+    "title": "Windows vs Linux vs Mac：換系統後程式掛了怎麼辦",
+    "tags": [
+      "跨平台",
+      "環境"
+    ]
+  },
+  {
+    "title": "提問的藝術：怎麼問 bug 才能得到有用的答案",
+    "tags": [
+      "軟技能",
+      "提問"
+    ]
+  },
+  {
+    "title": "MCVE 最小可重現例子：用五行程式碼說清楚",
+    "tags": [
+      "軟技能",
+      "提問"
+    ]
+  },
+  {
+    "title": "提問時該附上什麼：完整錯誤訊息、OS、版本號",
+    "tags": [
+      "軟技能",
+      "提問"
+    ]
+  },
+  {
+    "title": "ChatGPT 除錯技巧：怎麼問 AI 才能得到好答案",
+    "tags": [
+      "AI",
+      "技巧"
+    ]
+  },
+  {
+    "title": "AI 給的程式有 bug？怎麼找出問題並要求修正",
+    "tags": [
+      "AI",
+      "批判思考"
+    ]
+  },
+  {
+    "title": "測試寫在前面：TDD 預防 bug 的威力",
+    "tags": [
+      "測試",
+      "預防"
+    ]
+  },
+  {
+    "title": "unittest 入門：Python 最基礎的測試框架",
+    "tags": [
+      "測試",
+      "Python"
+    ]
+  },
+  {
+    "title": "用 assert 寫簡單的測試：三行程式碼就能驗證",
+    "tags": [
+      "測試",
+      "基礎"
+    ]
+  },
+  {
+    "title": "pytest 比 unittest 簡潔的原因",
+    "tags": [
+      "測試",
+      "Python"
+    ]
+  },
+  {
+    "title": "Jest 測試 JavaScript：從零開始寫測試",
+    "tags": [
+      "測試",
+      "JavaScript"
+    ]
+  },
+  {
+    "title": "邊界條件測試：為什麼 0、-1、空字串最容易翻車",
+    "tags": [
+      "測試",
+      "技巧"
+    ]
+  },
+  {
+    "title": "Mock 和 Patch：隔離相依套件的測試大法",
+    "tags": [
+      "進階",
+      "測試"
+    ]
+  },
+  {
+    "title": "測試覆蓋率迷思：100% 覆蓋不等於沒有 bug",
+    "tags": [
+      "測試",
+      "哲學"
+    ]
+  },
+  {
+    "title": "CI/CD 自動測試：每次推送程式碼就跑測試",
+    "tags": [
+      "進階",
+      "工程"
+    ]
+  },
+  {
+    "title": "Linter 和 Formatter：在 bug 出現前就抓住它",
+    "tags": [
+      "預防",
+      "工具"
+    ]
+  },
+  {
+    "title": "pylint、flake8、black：Python 程式碼品質三劍客",
+    "tags": [
+      "Python",
+      "工具"
+    ]
+  },
+  {
+    "title": "ESLint 管理 JavaScript 程式碼品質",
+    "tags": [
+      "JavaScript",
+      "工具"
+    ]
+  },
+  {
+    "title": "型別檢查救星：mypy for Python、TypeScript for JavaScript",
+    "tags": [
+      "進階",
+      "型別安全"
+    ]
+  },
+  {
+    "title": "除錯日誌該記什麼：適度記錄不會拖累效能",
+    "tags": [
+      "實務",
+      "最佳實踐"
+    ]
+  },
+  {
+    "title": "生產環境除錯秘訣：線上系統出問題如何快速定位",
+    "tags": [
+      "進階",
+      "實務"
+    ]
+  },
+  {
+    "title": "團隊除錯文化：怎麼幫隊友快速除錯不傷感情",
+    "tags": [
+      "軟技能",
+      "合作"
+    ]
+  }
+]
