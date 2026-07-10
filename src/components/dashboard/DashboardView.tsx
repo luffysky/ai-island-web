@@ -2,7 +2,7 @@
 import { useTranslations } from "next-intl";
 import { xpForNextLevel, CAREER_PATHS } from "@/lib/types";
 import { chapterDisplayNumberById } from "@/lib/chapter-display";
-import { Flame, Coins, Heart, Trophy, Calendar, Award, TrendingUp } from "lucide-react";
+import { Flame, Coins, Trophy, Calendar, Award, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { DailyCheckin } from "@/components/gamification/DailyCheckin";
 import { LearningCoachCard } from "@/components/dashboard/LearningCoachCard";
@@ -49,10 +49,10 @@ export function DashboardView({ profile, progress, achievements, quests }: any) 
       </div>
 
       {/* Stats grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      {/* 生命值(hearts)是半成品裝飾、已移除；連續學習天數才是真實指標 */}
+      <div className="grid grid-cols-3 gap-4 mb-6">
         <StatCard icon={<Flame className="text-orange-400" />} label={t("statStreak")} value={profile.streak_days} unit={t("unitDays")} />
         <StatCard icon={<Coins className="text-yellow-400" />} label="Z-coin" value={profile.z_coin} />
-        <StatCard icon={<Heart className="text-red-400" />} label={t("statHearts")} value={`${profile.hearts}/5`} />
         <StatCard icon={<Trophy className="text-purple-400" />} label={t("statAchievements")} value={achievements.length} />
       </div>
 

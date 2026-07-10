@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
-import { Flame, Coins, Heart, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, Palmtree, Crown, BarChart3, Key, BookOpen, Swords, MessagesSquare, Newspaper, Route, Palette, Brain, Compass, Gamepad2, NotebookPen, Images, Languages } from "lucide-react";
+import { Flame, Coins, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, Palmtree, Crown, BarChart3, Key, BookOpen, Swords, MessagesSquare, Newspaper, Route, Palette, Brain, Compass, Gamepad2, NotebookPen, Images, Languages } from "lucide-react";
 import { TodoDropdownButton } from "@/components/todo/TodoDropdown";
 import { CountUp } from "@/components/ui/CountUp";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -136,10 +136,7 @@ export function TopNav() {
                   <Coins size={14} className="text-yellow-400" />
                   <CountUp value={displayProfile.z_coin ?? 0} />
                 </Link>
-                <span className="flex items-center gap-1" title="生命">
-                  <Heart size={14} className="text-red-400" />
-                  <CountUp value={displayProfile.hearts ?? 5} />
-                </span>
+                {/* 生命值(hearts)是半成品裝飾、已移除；連續學習天數 🔥 streak 才是真實指標（上方已顯示） */}
               </div>
 
               {/* 主題切換 — 桌面三段、手機單顆 on/off（在大頭貼那排 nav） */}
