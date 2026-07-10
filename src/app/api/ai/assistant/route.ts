@@ -30,6 +30,24 @@ export async function POST(req: NextRequest) {
 
   const admin = createSupabaseAdmin();
 
+  // 語意快取：只快取「無個人化」的 hint / recommend（grade_draft/companion、或帶最近錯題的個人化查詢不快取）。
+  // 命中直接回 → 不查模型、不扣額度、不燒 token。全程 fail-soft。
+  const cacheable = (mode === "hint" || mode === "recommend") && !(Array.isArray(body.context?.recentErrors) && body.context.recentErrors.length);
+  const cacheKey = {
+    tone: null as string | null,
+    personaId: `asst:${mode}`,
+    contextChapterId: typeof body.context?.chapterId === "number" ? body.context.chapterId : null,
+    contextLessonId: (body.context?.lessonId ?? null) as string | null,
+  };
+  if (cacheable) {
+    const { lookupCache, lookupSemanticCache, bumpHit } = await import("@/lib/ai-cache");
+    const hit = (await lookupCache(userMessage, cacheKey)) ?? (await lookupSemanticCache(userMessage, cacheKey));
+    if (hit) {
+      bumpHit(hit.id).catch(() => {});
+      return NextResponse.json({ ok: true, text: hit.answer, mode, cached: true });
+    }
+  }
+
   // 找一個 active model（用 mid tier、或 default）
   const { data: models } = await admin
     .from("ai_models")
@@ -81,6 +99,11 @@ export async function POST(req: NextRequest) {
       temperature: 0.7,
       maxTokens: 600,
     });
+    // 寫語意快取（下次同課同題不燒 token）
+    if (cacheable && resp.text) {
+      const { writeCache } = await import("@/lib/ai-cache");
+      writeCache(userMessage, resp.text, `${model.provider}/${model.model_name}`, cacheKey).catch(() => {});
+    }
     return NextResponse.json({ ok: true, text: resp.text, mode, tokens: resp.tokensInput + resp.tokensOutput });
   } catch (e: any) {
     return NextResponse.json({ error: "ai_call_failed", message: e?.message }, { status: 500 });

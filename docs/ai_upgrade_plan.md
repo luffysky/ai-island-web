@@ -71,8 +71,9 @@
 - [x] 成本記帳：creator chat 走 `callAI`（已自動 `logAiUsage`）→ 本來就有記，無需補。
 
 ### P2 — 語意快取推廣（省 token）
-- [ ] `chapter/pop-quiz`（同課同題最明顯）、`learning-plan/generate`、`blog/ai-write`、`ai/assistant` 接 `lookupSemanticCache`/`writeCache`。
-- [ ] 驗收：後台快取命中率（`admin/ai/cache`）上升。
+- [x] `ai/assistant`：`hint` / `recommend` 兩個「無個人化」模式接 `lookupCache`＋`lookupSemanticCache`／`writeCache`（key 用 `asst:{mode}`＋章/節 context）；命中在扣額度前直接回、不燒 token。
+- [x] **刻意不接** `pop-quiz`（快取會讓同課出一樣的題、殺掉出題變化）、`grade_draft`/`companion`（每次輸入都不同、命中率 0 還可能回錯）、`blog/ai-write`（prompt 幾乎都獨特、命中率低）。
+- [ ] 驗收：後台快取命中率（`admin/ai/cache`）上升（需上線後觀察）。
 
 ### P3 — 路由統一 + 補洞
 - [ ] 裸 `callAI` 的 `mock-interview`/`challenge`/`resume`/多數 admin 生成器 → 改 `completeForUsage`（候選鏈＋熔斷＋升級＋記帳一次到位）。
