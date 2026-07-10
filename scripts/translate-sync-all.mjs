@@ -18,6 +18,7 @@ const SCOPES = [
   { scope: "lesson", table: "lessons", fields: ["title", "content"], where: "" },
   { scope: "blog", table: "user_blog_articles", fields: ["title", "summary", "content"], where: "is_public = true" },
   { scope: "forum", table: "forum_threads", fields: ["title", "content"], where: "" },
+  { scope: "dictionary", table: "dictionary_terms", fields: ["zh_name", "plain", "analogy"], where: "" },
 ];
 
 const env = loadEnv();

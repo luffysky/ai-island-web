@@ -11,7 +11,7 @@ import { decryptKey } from "@/lib/ai-crypto";
 import { pickModelForUsage } from "@/lib/ai-usage-models";
 import { guessLocale } from "@/lib/gtranslate";
 
-export type ContentSourceType = "lesson" | "chapter" | "blog" | "forum";
+export type ContentSourceType = "lesson" | "chapter" | "blog" | "forum" | "dictionary";
 
 export function contentHash(text: string): string {
   return crypto.createHash("sha256").update(text).digest("hex").slice(0, 32);
@@ -254,6 +254,8 @@ export const TRANSLATE_FIELDS: Record<ContentSourceType, { table: string; id: st
   lesson: { table: "lessons", id: "id", fields: ["title", "content"] },
   chapter: { table: "chapters", id: "id", fields: ["title", "subtitle"] },
   forum: { table: "forum_threads", id: "id", fields: ["title", "content"] },
+  // 辭典：term 是英文原文、example 是程式碼 → 都不翻；只翻中文的 zh_name / plain / analogy
+  dictionary: { table: "dictionary_terms", id: "id", fields: ["zh_name", "plain", "analogy"] },
 };
 
 /**

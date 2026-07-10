@@ -12,13 +12,14 @@ export async function GET(req: NextRequest) {
   const category = (sp.get("category") || "").replace(/[^a-z]/gi, "").slice(0, 20);
   const difficulty = parseInt(sp.get("difficulty") || "", 10);
   const domain = (sp.get("domain") || "programming").replace(/[^a-z]/gi, "").slice(0, 20) || "programming";
+  const locale = (sp.get("locale") || "").replace(/[^a-z]/gi, "").slice(0, 5);
   const offset = Math.max(0, parseInt(sp.get("offset") || "0", 10) || 0);
   const LIMIT = 40;
 
   const admin = createSupabaseAdmin();
   let query = admin
     .from("dictionary_terms")
-    .select("slug, term, zh_name, category, langs, plain, difficulty", { count: "exact" })
+    .select("id, slug, term, zh_name, category, langs, plain, difficulty", { count: "exact" })
     .eq("domain", domain);
   if (q) query = query.or(`term.ilike.%${q}%,zh_name.ilike.%${q}%,plain.ilike.%${q}%`);
   if (lang) query = query.contains("langs", [lang]);
@@ -28,5 +29,13 @@ export async function GET(req: NextRequest) {
 
   const { data, count, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ items: data ?? [], total: count ?? 0, offset, limit: LIMIT });
+  let items = (data ?? []) as any[];
+  // 依語言在地化 zh_name / plain（中文以外；沒譯到 fallback 中文）
+  if (locale && locale !== "zh") {
+    try {
+      const { localizeList } = await import("@/lib/content-i18n");
+      items = await localizeList("dictionary", items, locale, ["zh_name", "plain"]);
+    } catch { /* fallback 原文 */ }
+  }
+  return NextResponse.json({ items, total: count ?? 0, offset, limit: LIMIT });
 }

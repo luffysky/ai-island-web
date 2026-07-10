@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import { Search, X, Loader2, BookA } from "lucide-react";
 
@@ -34,6 +35,7 @@ const CAT_LABEL: Record<string, string> = { syntax: "語法", concept: "概念",
 const DIFF = ["", "新手", "一般", "進階"];
 
 export function DictionaryBrowse() {
+  const locale = useLocale();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("");
   const [lang, setLang] = useState("");
@@ -50,6 +52,7 @@ export function DictionaryBrowse() {
     if (q.trim()) p.set("q", q.trim());
     if (cat) p.set("category", cat);
     if (lang) p.set("lang", lang);
+    if (locale && locale !== "zh") p.set("locale", locale);
     p.set("offset", String(off));
     try {
       const r = await fetch(`/api/dictionary?${p.toString()}`).then((x) => x.json());

@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { getLocale } from "next-intl/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { getCachedTranslations } from "@/lib/content-i18n";
 
 export const dynamic = "force-dynamic";
 
 type Term = {
-  slug: string; term: string; zh_name: string | null; category: string; langs: string[];
+  id: string; slug: string; term: string; zh_name: string | null; category: string; langs: string[];
   plain: string; analogy: string | null; example: string | null; related: string[]; difficulty: number;
 };
 
@@ -21,7 +23,7 @@ const DIFF = ["", "新手", "一般", "進階"];
 async function getTerm(slug: string): Promise<Term | null> {
   const admin = createSupabaseAdmin();
   const { data } = await admin.from("dictionary_terms")
-    .select("slug, term, zh_name, category, langs, plain, analogy, example, related, difficulty")
+    .select("id, slug, term, zh_name, category, langs, plain, analogy, example, related, difficulty")
     .eq("slug", slug).maybeSingle();
   return (data as Term) ?? null;
 }
@@ -36,8 +38,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function TermPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const t = await getTerm(slug);
+  let t = await getTerm(slug);
   if (!t) notFound();
+
+  // 依語言在地化（中文以外用譯文；沒譯到 fallback 中文）
+  const locale = await getLocale();
+  if (locale !== "zh") {
+    const tr = await getCachedTranslations("dictionary", t.id, locale, { zh_name: t.zh_name ?? "", plain: t.plain, analogy: t.analogy ?? "" });
+    t = { ...t, zh_name: tr.zh_name ?? t.zh_name, plain: tr.plain ?? t.plain, analogy: tr.analogy ?? t.analogy };
+  }
 
   // 熱度 +1（fire-and-forget）
   createSupabaseAdmin().rpc("bump_dictionary_view", { p_slug: t.slug }).then(() => {}, () => {});
