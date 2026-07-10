@@ -7,6 +7,7 @@ const fs = require("node:fs");
 let win = null, tray = null, bridge = null;
 const CFG_PATH = () => path.join(app.getPath("userData"), "bridge.config.json");
 const CORE = path.join(__dirname, "..", "bridge-core.mjs");
+const ICON = path.join(__dirname, "..", "build", "icon.png");   // 執行時的視窗/工作列/系統匣圖示
 
 function loadCfg() {
   try { return JSON.parse(fs.readFileSync(CFG_PATH(), "utf8")); }
@@ -31,6 +32,7 @@ async function stopBridge() { if (bridge) { await bridge.stop(); bridge = null; 
 function createWindow() {
   win = new BrowserWindow({
     width: 620, height: 720, title: "AI 島桌面助手",
+    icon: ICON,
     webPreferences: { preload: path.join(__dirname, "preload.js"), contextIsolation: true },
   });
   win.loadFile(path.join(__dirname, "renderer", "index.html"));
@@ -39,7 +41,10 @@ function createWindow() {
 
 app.whenReady().then(() => {
   createWindow();
-  tray = new Tray(nativeImage.createEmpty());
+  let trayImg = nativeImage.createFromPath(ICON);
+  if (!trayImg.isEmpty()) trayImg = trayImg.resize({ width: 16, height: 16 });
+  else trayImg = nativeImage.createEmpty();
+  tray = new Tray(trayImg);
   tray.setContextMenu(Menu.buildFromTemplate([
     { label: "顯示視窗", click: () => win.show() },
     { label: "啟動", click: startBridge },

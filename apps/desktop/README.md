@@ -59,7 +59,9 @@ npm run dist                # 產出 dist/AI島桌面助手 Setup 0.1.0.exe
 共通：
 - **免裝 Node**：bridge 邏輯（`bridge-core.mjs`）在 Electron 主行程內跑。
 - 設定存 `%APPDATA%/AI島桌面助手/bridge.config.json`，**GUI 填 token、按「新增資料夾」選允許目錄**，不用手改 JSON。
-- 圖示：預設 Electron 圖示；自訂放 `build/icon.ico` 重打包。
+- 圖示：已內建 `build/icon.ico`/`icon.png`（機器人 App 圖示）。App **執行時**的視窗/工作列/系統匣圖示一定是它；
+  但 **.exe 檔本身的圖示**（Explorer 縮圖）＋NSIS 安裝檔圖示需 `rcedit`＝要開開發人員模式才會套用。
+  改圖示：編 `build/icon.svg` → `node build/gen-icon.mjs`（用 Playwright/Chromium 出多尺寸 .ico）→ 重打包。
 - 瀏覽器工具（Playwright）不含在包裡（保持精簡）；需要再用開發者 CLI 版另裝。
 
 ## 支援的本機工具
