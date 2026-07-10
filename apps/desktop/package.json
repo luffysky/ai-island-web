@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "description": "AI 島桌面助手 — 讓 /agent 的行動代理能在你的電腦上（限白名單）讀寫檔案、跑指令。",
+  "author": "SnowRealm (AI 島)",
   "main": "electron/main.js",
   "scripts": {
     "start": "node bridge.mjs",
