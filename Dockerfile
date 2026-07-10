@@ -46,6 +46,8 @@ ENV SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# 專案已大（80 章 JSON + 補助文全文 bundle + 四語 messages…）→ 預設 2GB heap 會 OOM(exit 134)。
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm run build
 
 # ============ 3. runtime ============

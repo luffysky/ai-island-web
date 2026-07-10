@@ -53,6 +53,8 @@ jobs:
       - name: Build
         run: npm run build
         env:
+          # 專案已大（80 章 JSON + 補助文全文 bundle + 四語 messages…）→ 預設 2GB heap 會 OOM(exit 134)。
+          NODE_OPTIONS: --max-old-space-size=4096
           NEXT_PUBLIC_SITE_URL: https://ai-island-web.snowrealm.pet
           NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
