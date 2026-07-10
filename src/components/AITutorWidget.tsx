@@ -120,6 +120,7 @@ import { CopyButton, TypingIndicator, ChatToolbar, formatChatTime, MicButton, Sp
 import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
 import { GifPicker } from "@/components/ui/GifPicker";
 import { EmojiText } from "@/components/ui/EmojiText";
+import { TranslateButton } from "@/components/ui/TranslateButton";
 
 // 使用者訊息內的 GIF / 圖片網址 → 顯示成 <img>；其餘純文字裡的 emoji 用動態 emoji 渲染
 const MEDIA_URL_RE = /^https?:\/\/(?:[^\s]+\.(?:gif|png|jpe?g|webp|svg)(?:\?[^\s]*)?|(?:media\d?\.giphy\.com|i\.giphy\.com)\/[^\s]+)$/i;
@@ -1259,6 +1260,7 @@ export function AITutorWidget({
                     : "rounded-2xl px-3.5 py-2 shadow-sm hover:shadow-md bg-gradient-to-br from-bg-elevated to-bg-card border border-border/50 text-fg backdrop-blur-sm"
                 }`}>
                   {m.role === "assistant" ? (
+                    <>
                     <div className="prose-custom prose-sm min-w-0">
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
@@ -1296,6 +1298,8 @@ export function AITutorWidget({
                         <span className="inline-block w-2 h-4 bg-accent animate-pulse ml-0.5"></span>
                       )}
                     </div>
+                    {m.content && !sending && <TranslateButton text={m.content} className="not-prose px-0.5" />}
+                    </>
                   ) : (
                     <>
                       {m.images && m.images.length > 0 && (

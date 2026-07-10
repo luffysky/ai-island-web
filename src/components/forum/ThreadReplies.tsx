@@ -10,6 +10,7 @@ import { handleEnterSubmit, autoGrow } from "@/lib/composer";
 import { Send, Trash2, CornerDownRight, Loader2, Check, BookmarkPlus, FileText } from "lucide-react";
 import type { ForumReply } from "@/lib/forum-types";
 import { LikeButton } from "@/components/blog/LikeButton";
+import { TranslateButton } from "@/components/ui/TranslateButton";
 import { useToast } from "@/components/ui/Toast";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { ReportButton } from "@/components/ui/ReportButton";
@@ -422,6 +423,7 @@ function ReplyItem({
             )}
           </div>
           <p className="text-sm mt-1 whitespace-pre-wrap break-words">{renderContent(reply.content)}</p>
+          <TranslateButton text={reply.content} />
           <div className="flex items-center gap-3 mt-1.5 flex-wrap">
             <LikeButton kind="forum" targetId={reply.id} />
             {onSaveNote && !reply._pending && (

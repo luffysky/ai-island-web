@@ -12,6 +12,7 @@ import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
 import { GifPicker } from "@/components/ui/GifPicker";
 import { EmojiText } from "@/components/ui/EmojiText";
+import { TranslateButton } from "@/components/ui/TranslateButton";
 
 // 留言內文渲染：圖片/GIF 網址 → <img>；其餘網址 → 連結；純文字 → 動態 emoji
 const IMG_URL_RE = /^https?:\/\/[^\s]+\.(gif|png|jpe?g|webp|svg)(\?[^\s]*)?$/i;
@@ -280,6 +281,7 @@ function CommentItem({
             </span>
           </div>
           <p className="text-sm mt-0.5 whitespace-pre-wrap break-words">{renderCommentContent(comment.content)}</p>
+          <TranslateButton text={comment.content} />
           <div className="flex items-center gap-3 mt-1">
             <LikeButton kind="blog" targetId={comment.id} />
             {!isReply && onReply && (
