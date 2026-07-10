@@ -8,3 +8,7 @@ export const AI_ZCOIN_HIGH_OVERFLOW = 20;  // 高階額度用完後、每次加�
 export function highDailyFor(subTier: string | null | undefined): number {
   return subTier === "pro" ? AI_HIGH_DAILY_PRO : AI_HIGH_DAILY_PLUS;
 }
+
+// 創作者島嶼「綠寶」每日軟上限（防濫用）：決策＝聊天保持免費、只擋高階模型。
+// 預設 0 = 關閉（不限次數）。濫用出現再把它設成正整數（如 200）即生效；正式收費前不動。
+export const CREATOR_DAILY_SOFT_CAP = 0;

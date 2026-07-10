@@ -7,6 +7,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { loadUserMemory, formatMemoryForPrompt } from "@/lib/user-ai-memory";
 import { gateHighTierModel } from "@/lib/ai-tier-gate";
 import { decryptKey } from "@/lib/ai-crypto";
+import { CREATOR_DAILY_SOFT_CAP } from "@/lib/ai-quota-config";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -29,6 +30,20 @@ export async function POST(req: NextRequest) {
   if (workspaceId) {
     const gate = await requireWorkspaceRole(workspaceId, u.userId, "viewer");
     if (gate instanceof NextResponse) workspaceId = null;
+  }
+
+  // 每日軟上限（預設 0=關；濫用時把 CREATOR_DAILY_SOFT_CAP 設正整數即生效）。防禦：統計失敗放行、不擋聊天。
+  if (CREATOR_DAILY_SOFT_CAP > 0) {
+    try {
+      const admin0 = createSupabaseAdmin();
+      const since = new Date(); since.setHours(0, 0, 0, 0);
+      const { count } = await admin0.from("ci_agent_runs")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", u.userId).eq("agent_type", "chat").gte("created_at", since.toISOString());
+      if ((count ?? 0) >= CREATOR_DAILY_SOFT_CAP) {
+        return NextResponse.json({ error: "daily_cap", message: "今天跟綠寶聊很多囉，明天再來 ☕" }, { status: 429 });
+      }
+    } catch { /* 統計失敗 → 放行 */ }
   }
 
   const resolved = await resolveModel("chat");
