@@ -24,6 +24,8 @@ const SCOPES = [
 const env = loadEnv();
 const c = new pg.Client({ connectionString: env.SUPABASE_DB_URL });
 await c.connect();
+// 長時間跑時 Supabase 連線偶爾會被切斷 → 別讓未處理的 'error' 事件把整個 process 炸掉（idempotent、重跑即續）
+c.on("error", (e) => console.warn("[pg] 連線錯誤（將結束本輪、重跑可續）:", e.message));
 
 let grandNew = 0, grandChanged = 0;
 for (const S of SCOPES) {
