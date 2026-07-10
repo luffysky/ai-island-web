@@ -286,16 +286,23 @@ Windows UI     ：Python + pywinauto / UI Automation（結構化優先）
 - [x] 架構 / 資料流 / 資料表 / API / WS / Tool 介面 / 權限 / 目錄 / task list。
 - [ ] 老闆 review、凍結 MVP 範圍與資料表。
 
-### Phase 1 — MVP（Windows + 瀏覽器 + AI 島開發工作流）
-- [ ] `packages/tool-sdk`：`AgentTool` 介面 + registry + JSON Schema 驗證。
-- [ ] `permission-engine`：L0–L3 判級 + 確認流程（L4 直接擋）。
-- [ ] Supabase migration：§3 六張表 + RLS。
-- [ ] `agent-core`：Agent Loop（planner→router→permission→execute→verify）、最大步數、重試、中止、狀態機、Observation Normalizer；模型接 `completeForUsage`（記帳/配額）。
+### Phase 1a — AI 島側垂直切片（已完成 · 2026-07-10）
+> 先在現有 Next.js + Supabase 內把「下令→規劃→用工具→關鍵動作確認→回放」整條接通、UI 一起接。本機 Electron Bridge 留給 1b。
+- [x] `src/lib/agent/tools.ts`：`AgentTool` 介面 + registry + 風險等級 + 確認摘要（`web.fetch`/`dictionary.lookup` 伺服器真的能跑；`filesystem.*`/`system.run_command` 為 device stub）。
+- [x] permission：`needsApproval()`（read 自動 / write,dangerous 要確認）+ `approvalSummary()`（動作/位置/影響/可復原）。
+- [x] Supabase migration：`agent_tasks` / `agent_steps` / `agent_approvals` / `agent_device_bridges` 四張核心表 + RLS + index（`supabase/agent_platform_migration.sql`，已跑）。
+- [x] `src/lib/agent/orchestrator.ts`：Agent Loop（planner→permission→execute→記步→回饋）、最大步數、中止、狀態機；模型接 `completeForUsage("agent_core")`（記帳/配額/自動備援）；approval 用「寫 pending row + 輪詢」等前端。
+- [x] `/api/agent/*`：`tasks`（POST 建任務+SSE 串執行、GET 清單）、`tasks/[id]`（GET 詳情+步驟回放、POST 取消）、`approvals/[id]`（同意/拒絕）、`tools`（能力清單）。
+- [x] `/agent` 面板（`page.tsx` + `AgentClient.tsx`）：下令、即時步驟流、💭思考、確認彈窗（動作/影響/可復原）、能力面板、任務歷史回放；RWD + nav 入口（4 語 i18n）。
+- [x] 驗證：tsc / vitest(122) / next build 綠；DB insert smoke 綠；真模型 planner 回合法 JSON + 選對工具。
+
+### Phase 1b — 本機能力（待做）
 - [ ] `desktop-bridge`（Electron）：配對、WS 連線、停止鈕、本機權限；工具 read/write/dangerous 白名單；截圖回傳。
 - [ ] `browser-worker`（Playwright）：獨立 Chromium、DOM/Role/A11y 定位。
-- [ ] `apps/web`：`/agent` 面板（下令、即時步驟、確認彈窗含動作/影響/可復原、任務回放）+ `/api/agent/*`。
+- [ ] 把 `filesystem.*`/`system.run_command` stub 換成經 Bridge 的真實作。
 - [ ] **端到端 Demo**：開 AI 島專案 → `npm test` → 收錯誤 → 分析 → 建議（改檔前必確認）。
 - [ ] KPI 儀表：成功率 / 步數 / 人工介入率 / 重試 / 成本 / 完成時間 / 誤操作率。
+- [ ] `agent_tools` / `agent_skills` / `agent_credential_refs` 表（registry 目前 code-first，之後要 DB 化再建）。
 
 ### Phase 2 — 手機遙控 + Android
 - [ ] 手機下令 → 雲端 Agent → 已配對電腦 Bridge → 執行 → 串流回手機。
