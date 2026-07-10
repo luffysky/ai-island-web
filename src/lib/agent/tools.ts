@@ -110,13 +110,23 @@ export function getTool(name: string): AgentTool | undefined {
   return TOOLS.find((t) => t.name === name);
 }
 
-/** 給 LLM 的工具清單描述（含風險、參數）。
- *  allowed 語意：undefined = 全部工具（自由模式）；[] = 不給工具（純建議技能）；非空 = 只給該子集。 */
-export function describeTools(allowed?: string[]): string {
-  const list = allowed === undefined ? TOOLS : TOOLS.filter((t) => allowed.includes(t.name));
+/** 描述任一組工具（給 LLM 讀）。 */
+export function describeToolList(list: AgentTool[]): string {
   return list.map((t) =>
     `- ${t.name}（${t.risk}${t.needsDevice ? "、需桌面助手" : ""}）：${t.description} 參數：${JSON.stringify(t.args)}`
   ).join("\n");
+}
+
+/** 依技能 allowed 過濾（含動態 extra 工具，如 MCP）。
+ *  allowed 語意：undefined = 全部；[] = 不給工具；非空 = 只給該子集。 */
+export function effectiveTools(allowed?: string[], extra: AgentTool[] = []): AgentTool[] {
+  const all = [...TOOLS, ...extra];
+  return allowed === undefined ? all : all.filter((t) => allowed.includes(t.name));
+}
+
+/** 給 LLM 的工具清單描述（靜態註冊表；相容舊呼叫）。 */
+export function describeTools(allowed?: string[]): string {
+  return describeToolList(effectiveTools(allowed));
 }
 
 /** 工具是否允許：undefined = 全部；否則須在白名單內（[] = 全不允許）。 */

@@ -4,9 +4,10 @@
 // 以 async generator 吐事件，讓 API route 轉成 SSE。approval 用「寫 DB pending row + 輪詢」等前端決定。
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { completeForUsage } from "@/lib/resolve-usage-ai";
-import { getTool, describeTools, needsApproval, approvalSummary, toolAllowed, type ToolResult } from "./tools";
+import { getTool, describeToolList, effectiveTools, needsApproval, approvalSummary, toolAllowed, type ToolResult, type AgentTool } from "./tools";
 import { getOnlineDevice, dispatchToDevice } from "./bridge";
 import { sendPushToUser } from "@/lib/web-push";
+import { loadUserMcpTools } from "./mcp";
 
 // 手機遙控核心：關鍵時刻推播到使用者所有裝置（VAPID 未設會自動 no-op）。fire-and-forget。
 function pushSafe(userId: string, title: string, body: string, taskId: string, tag: string) {
@@ -51,12 +52,12 @@ const PLANNER_SYSTEM = `你是 AI 島的行動代理（Agent）核心。你會�
 - 若某工具回「需桌面助手（Phase 1b 尚未接）」，代表本機能力還沒接上，請據此收尾說明、不要硬試同一個。
 - 盡量少步數完成；拿到足夠資訊就 done。`;
 
-async function planNext(goal: string, history: StepRow[], skill?: SkillCtx): Promise<Decision | null> {
+async function planNext(goal: string, history: StepRow[], skill?: SkillCtx, extraTools: AgentTool[] = []): Promise<Decision | null> {
   const hist = history.map((s) =>
     `#${s.idx} ${s.toolName ?? "?"}(${JSON.stringify(s.args ?? {})}) → ${s.ok ? "ok" : "fail"}: ${JSON.stringify(s.result ?? {}).slice(0, 400)}`
   ).join("\n") || "（尚無步驟）";
   const system = skill?.prompt ? `${PLANNER_SYSTEM}\n\n【本次技能設定】${skill.prompt}` : PLANNER_SYSTEM;
-  const toolsDesc = describeTools(skill?.allowedTools);
+  const toolsDesc = describeToolList(effectiveTools(skill?.allowedTools, extraTools));
   const toolsBlock = toolsDesc || "（本技能不使用任何工具。請直接依『目標』與技能設定，用一則 {\"done\":true,\"summary\":\"...\"} 回覆完整答案。）";
   const user = `目標：${goal}
 
@@ -89,19 +90,21 @@ async function waitForApproval(approvalId: string, taskId: string, timeoutMs = 3
 // Phase 2b：背景執行——任務不綁 HTTP 連線，關掉頁面也照跑。
 // Zeabur 是長駐 node server，detached promise 會續跑；步驟寫進 DB、關鍵時刻推播、前端靠輪詢觀看。
 const RUNNING = new Set<string>();
-export function runAgentTaskDetached(taskId: string, userId: string, goal: string, maxSteps = 20, skill?: SkillCtx): void {
+export function runAgentTaskDetached(taskId: string, userId: string, goal: string, maxSteps = 20, skill?: SkillCtx, extraTools?: AgentTool[]): void {
   if (RUNNING.has(taskId)) return;
   RUNNING.add(taskId);
   (async () => {
+    // 動態工具：沒帶就自動載入使用者啟用的 MCP server 工具（背景進行、不擋 POST 回應）
+    const dyn = extraTools ?? await loadUserMcpTools(userId).catch(() => []);
     // 事件在 runAgentTask 內就已落 DB + 推播；這裡只需把 generator 跑到底、不需消費事件。
-    try { for await (const _ev of runAgentTask(taskId, userId, goal, maxSteps, skill)) { void _ev; } }
+    try { for await (const _ev of runAgentTask(taskId, userId, goal, maxSteps, skill, dyn)) { void _ev; } }
     catch { /* runAgentTask 自身的 try/catch 已把任務標成 failed */ }
     finally { RUNNING.delete(taskId); }
   })();
 }
 
-/** 跑一個任務，吐事件流。背景 runner（runAgentTaskDetached）驅動它；步驟/狀態/推播都在內部落地。 */
-export async function* runAgentTask(taskId: string, userId: string, goal: string, maxSteps = 20, skill?: SkillCtx): AsyncGenerator<AgentEvent> {
+/** 跑一個任務，吐事件流。extraTools = 動態工具（如 MCP）。背景 runner 驅動它；步驟/狀態/推播都在內部落地。 */
+export async function* runAgentTask(taskId: string, userId: string, goal: string, maxSteps = 20, skill?: SkillCtx, extraTools: AgentTool[] = []): AsyncGenerator<AgentEvent> {
   const admin = createSupabaseAdmin();
   const history: StepRow[] = [];
   const setStatus = async (status: string, patch: Record<string, unknown> = {}) => {
@@ -117,7 +120,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
       const { data: cur } = await admin.from("agent_tasks").select("status").eq("id", taskId).single();
       if (cur?.status === "cancelled") { yield { type: "done", status: "cancelled", summary: "任務已取消" }; return; }
 
-      const decision = await planNext(goal, history, skill);
+      const decision = await planNext(goal, history, skill, extraTools);
       if (!decision) {
         await setStatus("failed", { error: "規劃失敗（模型未回有效 JSON）", finished_at: new Date().toISOString() });
         yield { type: "error", error: "規劃失敗：模型未回有效指令" };
@@ -134,7 +137,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
         return;
       }
 
-      const tool = getTool(decision.tool);
+      const tool = getTool(decision.tool) ?? extraTools.find((t) => t.name === decision.tool);
       const row: StepRow = { idx, thought: decision.thought, toolName: decision.tool, risk: tool?.risk, args: decision.args };
       if (tool && !toolAllowed(tool.name, skill?.allowedTools)) {
         row.ok = false; row.result = { error: `此技能不允許使用工具 ${tool.name}` };

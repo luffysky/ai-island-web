@@ -59,6 +59,8 @@ export function AgentClient() {
   const [skillId, setSkillId] = useState<string>("");     // 選用的技能
   const [skillModal, setSkillModal] = useState(false);
   const [storeOpen, setStoreOpen] = useState(false);
+  const [mcpServers, setMcpServers] = useState<{ id: string; name: string; tools: { name: string }[] }[]>([]);
+  const [mcpBusy, setMcpBusy] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const recRef = useRef<any>(null);
   const deepLinkedRef = useRef(false);
@@ -87,6 +89,21 @@ export function AgentClient() {
     } catch { /* ignore */ }
   }, []);
 
+  const loadMcp = useCallback(async () => {
+    try { const r = await fetch("/api/agent/mcp"); if (r.ok) setMcpServers((await r.json()).servers ?? []); } catch { /* ignore */ }
+  }, []);
+
+  const addOurMcp = useCallback(async () => {
+    setMcpBusy(true);
+    await fetch("/api/agent/mcp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: "AI 島", url: `${window.location.origin}/api/mcp` }) }).catch(() => {});
+    setMcpBusy(false); loadMcp();
+  }, [loadMcp]);
+
+  const removeMcp = useCallback(async (id: string) => {
+    await fetch(`/api/agent/mcp?id=${id}`, { method: "DELETE" }).catch(() => {});
+    loadMcp();
+  }, [loadMcp]);
+
   const installSkill = useCallback(async (id: string, install: boolean) => {
     await fetch("/api/agent/skills", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ skillId: id, install }) }).catch(() => {});
     setSkills((prev) => prev.map((s) => (s.id === id ? { ...s, installed: install } : s)));
@@ -98,9 +115,10 @@ export function AgentClient() {
     loadHistory();
     loadDevices();
     loadSkills();
+    loadMcp();
     const t = setInterval(loadDevices, 10000);        // 每 10s 刷新裝置在線狀態
     return () => clearInterval(t);
-  }, [loadHistory, loadDevices, loadSkills]);
+  }, [loadHistory, loadDevices, loadSkills, loadMcp]);
 
   const pair = useCallback(async () => {
     setNewToken(null);
@@ -357,6 +375,32 @@ export function AgentClient() {
                 );
               })}
             </ul>
+          </div>
+
+          {/* MCP 伺服器（Phase 4 骨架） */}
+          <div className="rounded-2xl border border-black/10 dark:border-white/10 p-3.5">
+            <div className="flex items-center gap-1.5 text-sm font-semibold mb-2"><Plug className="w-4 h-4 text-fuchsia-500" /> MCP 伺服器</div>
+            {mcpServers.length === 0 ? (
+              <p className="text-xs text-black/50 dark:text-white/50 mb-2">接 MCP 伺服器可讓 Agent 用更多外掛工具（走同一套確認）。</p>
+            ) : (
+              <ul className="space-y-1.5 mb-2">
+                {mcpServers.map((m) => (
+                  <li key={m.id} className="text-xs">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full shrink-0 bg-fuchsia-500" />
+                      <span className="min-w-0 truncate font-medium">{m.name}</span>
+                      <span className="text-black/40 dark:text-white/40">· {m.tools.length} 工具</span>
+                      <button onClick={() => removeMcp(m.id)} title="移除" className="ml-auto shrink-0 text-black/30 hover:text-rose-500 dark:text-white/30"><Trash2 className="w-3.5 h-3.5" /></button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {!mcpServers.some((m) => m.name === "AI 島") && (
+              <button onClick={addOurMcp} disabled={mcpBusy} className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl border border-fuchsia-500/40 text-fuchsia-600 dark:text-fuchsia-400 hover:bg-fuchsia-500/10 px-3 py-1.5 text-xs font-medium disabled:opacity-50">
+                {mcpBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plug className="w-3.5 h-3.5" />} 接上 AI 島 MCP
+              </button>
+            )}
           </div>
 
           {/* 歷史 */}

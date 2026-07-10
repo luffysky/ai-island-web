@@ -178,7 +178,9 @@
   - 語音輸入（Web Speech zh-TW）+ 目標裝置提示。
 - ✅ **Phase 1b 端到端對 production 實跑驗證（0710）**：桌面助手輪詢正式站→本機執行 filesystem.list（讀到 43 項）+ system.run_command（git 分支 main）→結果寫回；白名單擋掉 rm -rf。範例 config 順手改正斜線（單反斜線會壞 JSON）。
 - ✅ **Phase 2b 任務背景執行（0710，已上線）**：POST 建任務後 `runAgentTaskDetached()` 伺服器背景開跑、立刻回 taskId；前端改輪詢觀看（取代 SSE）→ **關掉頁面/手機任務照跑**、需確認/完成推播、回來接續。驗證：整合測試 detached runner 讓任務無連線自己跑到 succeeded + tsc/vitest(122)/build 綠。⚠ 限制：process 重啟會孤兒化進行中任務（待補 stale-task reaper）。
-- ⬜ 下一步：**Phase 1b 收尾**（Playwright browser-worker + 截圖 + KPI）／**Phase 3**（技能商店/自建 Agent）／Android 原生（獨立大工程）／stale-task reaper。
+- ✅ **Phase 3 技能商店 + 自建 Agent（0710，已上線）**：安裝包模式（agent_skill_installs；商店列全部、picker 只顯示已安裝、安裝時揭露會用到的工具/需本機/高風險；預設不裝）+ **45 個內建技能**（research/write/code/dev/learn）+ 純建議技能（空工具集→直接答，語意 undefined=全部、[]=無工具）。自建 Agent 彈窗（名稱/emoji/指示/勾工具）。驗證：純建議技能測試 succeeded 且 0 工具步。
+- ✅ **Phase 4 MCP 骨架（0710，已上線）**：自家 MCP server `/api/mcp`（JSON-RPC：initialize/tools/list/tools/call，揭露 dictionary_lookup/island_info）+ client `src/lib/agent/mcp.ts`（發現/呼叫/正規化成 AgentTool，readOnlyHint→read 否則 write 要確認）+ 管理 API `/api/agent/mcp`（新增驗證連線/列出/移除）+ orchestrator 自動載入啟用 server 的工具（背景、best-effort）+ `/agent` MCP 面板（接上 AI 島 MCP/移除）。驗證：round-trip 測試 client↔我們 server↔正規化↔execute 綠。**先不接外部**。
+- ⬜ 下一步：**Phase 1b 收尾**（Playwright browser-worker + 截圖 + KPI）／stale-task reaper（背景任務重啟孤兒化）／MCP 接外部 server／Android 原生（獨立大工程）。
 
 ### ✅ 順手補（0710）
 - **3D 表情可見化**：Fluent 3D 之前只是 Noto 動畫的 fallback（幾乎不會顯示）→ AnimatedEmojiPicker 加**「3D」分頁**，40 顆常用立體 emoji 可選、點了以 `.png` 圖片網址插入（走媒體渲染 = 訊息裡真的看到 3D）。顔文字(ツ)＋動態貼圖分頁本就在（12 處輸入點都有）。
