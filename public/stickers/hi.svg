@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+<style>
+  .body{transform-origin:50px 60px}
+  .bounce{animation:bounce 1s ease-in-out infinite}
+  .wiggle{animation:wiggle 1.1s ease-in-out infinite}
+  .pop{animation:pop 1.2s ease-in-out infinite}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  @keyframes wiggle{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+  @keyframes pop{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
+  .tear{animation:tear 1.4s ease-in infinite}
+  @keyframes tear{0%{opacity:0;transform:translateY(-4px)}30%{opacity:1}100%{opacity:0;transform:translateY(10px)}}
+  .zzz{animation:zzz 1.8s ease-in-out infinite}
+  @keyframes zzz{0%{opacity:0;transform:translate(0,4px)}40%{opacity:1}100%{opacity:0;transform:translate(6px,-8px)}}
+  .steam{animation:steam .7s ease-in-out infinite}
+  @keyframes steam{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+  .spark{animation:pop 1s ease-in-out infinite}
+  .wave{transform-origin:80px 60px;animation:wave .5s ease-in-out infinite}
+  @keyframes wave{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(14deg)}}
+  .blush{animation:steam 1.5s ease-in-out infinite}
+</style>
+<g class="body wiggle"><circle cx="50" cy="52" r="34" fill="#fff9c4" stroke="#f9a825" stroke-width="6"/><circle cx="38" cy="50" r="4" fill="#5d4037"/><circle cx="62" cy="50" r="4" fill="#5d4037"/>
+<path d="M40 62 q10 8 20 0" fill="none" stroke="#f9a825" stroke-width="5" stroke-linecap="round"/>
+<g class="wave"><path d="M78 60 q10 -6 8 -18" fill="none" stroke="#f9a825" stroke-width="5" stroke-linecap="round"/></g></g>
+</svg>

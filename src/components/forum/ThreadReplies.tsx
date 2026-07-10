@@ -330,7 +330,7 @@ export function ThreadReplies({
 }
 
 // 回覆內文渲染：引用筆記 token [[note:id|title]] → 可點連結；圖片/GIF 網址 → <img>；其餘網址 → 連結；純文字 → 動態 emoji
-const IMG_URL_RE = /^https?:\/\/[^\s]+\.(gif|png|jpe?g|webp)(\?[^\s]*)?$/i;
+const IMG_URL_RE = /^https?:\/\/[^\s]+\.(gif|png|jpe?g|webp|svg)(\?[^\s]*)?$/i;
 const GIPHY_URL_RE = /^https?:\/\/(media\d?\.giphy\.com|i\.giphy\.com)\/[^\s]+/i;
 // 同時抓 note token 與 URL；note id 是 uuid
 const CONTENT_RE = /\[\[note:([0-9a-fA-F-]{36})\|([^\]]*)\]\]|(https?:\/\/[^\s]+)/g;

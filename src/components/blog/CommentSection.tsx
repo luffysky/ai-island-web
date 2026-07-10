@@ -14,7 +14,7 @@ import { GifPicker } from "@/components/ui/GifPicker";
 import { EmojiText } from "@/components/ui/EmojiText";
 
 // 留言內文渲染：圖片/GIF 網址 → <img>；其餘網址 → 連結；純文字 → 動態 emoji
-const IMG_URL_RE = /^https?:\/\/[^\s]+\.(gif|png|jpe?g|webp)(\?[^\s]*)?$/i;
+const IMG_URL_RE = /^https?:\/\/[^\s]+\.(gif|png|jpe?g|webp|svg)(\?[^\s]*)?$/i;
 const GIPHY_URL_RE = /^https?:\/\/(media\d?\.giphy\.com|i\.giphy\.com)\/[^\s]+/i;
 function renderCommentContent(text: string) {
   const out: React.ReactNode[] = [];

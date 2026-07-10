@@ -122,7 +122,7 @@ import { GifPicker } from "@/components/ui/GifPicker";
 import { EmojiText } from "@/components/ui/EmojiText";
 
 // 使用者訊息內的 GIF / 圖片網址 → 顯示成 <img>；其餘純文字裡的 emoji 用動態 emoji 渲染
-const MEDIA_URL_RE = /^https?:\/\/(?:[^\s]+\.(?:gif|png|jpe?g|webp)(?:\?[^\s]*)?|(?:media\d?\.giphy\.com|i\.giphy\.com)\/[^\s]+)$/i;
+const MEDIA_URL_RE = /^https?:\/\/(?:[^\s]+\.(?:gif|png|jpe?g|webp|svg)(?:\?[^\s]*)?|(?:media\d?\.giphy\.com|i\.giphy\.com)\/[^\s]+)$/i;
 function renderUserContent(text: string) {
   return text.split(/(https?:\/\/[^\s]+)/g).map((p, i) => {
     if (MEDIA_URL_RE.test(p)) {

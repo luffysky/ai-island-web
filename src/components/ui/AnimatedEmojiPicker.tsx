@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
 import { Smile, Search, X } from "lucide-react";
 import { AnimatedEmoji } from "./AnimatedEmoji";
+import { STICKERS, stickerPath, stickerInsertUrl } from "@/lib/stickers";
 
 /** Emoji 分類（動態 Noto 版）。 */
 const CATEGORIES: { id: string; name: string; icon: string; emojis: string[] }[] = [
@@ -92,7 +93,10 @@ export function AnimatedEmojiPicker({
   }, [open]);
 
   const pick = (e: string) => { onSelect(e); setOpen(false); setQ(""); };
+  // 貼圖：插入「絕對網址 + 前後空格」→ 走圖片網址渲染成 <img>（會動）
+  const pickSticker = (id: string) => { onSelect(` ${stickerInsertUrl(id)} `); setOpen(false); setQ(""); };
   const isKao = cat === "kaomoji" && !q.trim();
+  const isSticker = cat === "sticker" && !q.trim();
   const list = q.trim()
     ? CATEGORIES.flatMap((c) => c.emojis).filter((e, i, a) => a.indexOf(e) === i) // 搜尋只找 emoji，不含顔文字
     : isKao
@@ -141,11 +145,36 @@ export function AnimatedEmojiPicker({
           >
             ツ
           </button>
+          {/* 動態貼圖分頁 */}
+          <button
+            type="button"
+            onClick={() => setCat("sticker")}
+            title="貼圖"
+            className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition ${cat === "sticker" ? "bg-accent/15 ring-1 ring-accent/40" : "hover:bg-bg-elevated"}`}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={stickerPath("happy")} alt="貼圖" width={22} height={22} />
+          </button>
         </div>
       )}
 
       <div className="p-2 max-h-[220px] overflow-y-auto">
-        {isKao ? (
+        {isSticker ? (
+          <div className="grid grid-cols-4 gap-1">
+            {STICKERS.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => pickSticker(s.id)}
+                title={s.label}
+                className="aspect-square rounded-lg flex items-center justify-center hover:bg-bg-elevated hover:scale-110 transition-transform"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={stickerPath(s.id)} alt={s.label} width={44} height={44} />
+              </button>
+            ))}
+          </div>
+        ) : isKao ? (
           <div className="grid grid-cols-2 gap-1">
             {KAOMOJI.map((k, i) => (
               <button
