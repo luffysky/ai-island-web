@@ -207,6 +207,14 @@
 - ⬜ **Android 原生**：開新 repo 照 `docs/agent_android_plan.md` 實作（需 Android 環境）。
 - ⬜ **NSIS 安裝檔**（選配）：老闆若要雙擊安裝檔 → 開發人員模式開 → `npm run dist`。
 
+### ✅ 全 session Agent 功能鐵規則補驗（0711）
+- **1 API/DB/欄位**：`audit-db-columns` 對 agent 全綠（無欄位錯、無 fetch 對不到 route、每 route 有 export method）；逐表比對 8 張 agent 表實際欄位 vs 程式 SELECT/INSERT 全對得上；前端讀的欄位名 vs 各 route 回傳全一致（kpi/skills/devices/mcp/tasks/pair…）。
+- **2 UI 接對**：`/agent` 9 個端點都對到真 route+method；每顆按鈕（執行/停止/技能安裝/自建/商店/配對/解除/MCP/批准/下載/回放）都接真 API、非空殼。
+- **3 RWD**：修 StepCard 截圖 `<img>` 缺 `max-w-full`（寬截圖手機會橫向溢出）→ 補上；狀態列加 `flex-wrap`。彈窗 `w-full max-w-*`＋`max-h+overflow`、chips `flex-wrap`、結果 `overflow-x-auto`。
+- **4 桌面**：grid `lg:grid-cols-[1fr_280px]`、對齊間距正常。
+- **5 PWA**：manifest/sw 本 session 未動（無影響）。
+- **6 建置**：tsc / vitest(122) / next build 全綠。
+
 ### ⬜ 其他既有待辦（延續、未動）
 - ⬜ AI 成本全面記帳（每個 `callAI`/`streamAI` 入口記真實 token→成本）。
 - ⬜ E2E 補齊 + Smoke test；沉浸式 3D 島嶼降耗（手機切 2D / 進度存 DB）。

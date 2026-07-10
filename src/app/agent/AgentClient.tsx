@@ -323,7 +323,7 @@ export function AgentClient() {
 
           {/* 狀態列 */}
           {(busy || status) && (
-            <div className="flex items-center gap-2 mt-3 px-1 text-sm">
+            <div className="flex flex-wrap items-center gap-2 mt-3 px-1 text-sm">
               {busy ? <Loader2 className="w-4 h-4 animate-spin text-violet-500" /> :
                 status === "succeeded" ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> :
                 status === "cancelled" ? <XCircle className="w-4 h-4 text-black/40 dark:text-white/40" /> :
@@ -699,7 +699,7 @@ function StepCard({ step }: { step: StepView }) {
         <div className="mt-1.5 text-xs text-rose-600 dark:text-rose-400">{err}</div>
       ) : image ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={image} alt="screenshot" className="mt-1.5 rounded-lg border border-black/10 dark:border-white/10 max-h-64 w-auto" />
+        <img src={image} alt="screenshot" className="mt-1.5 rounded-lg border border-black/10 dark:border-white/10 max-h-64 max-w-full w-auto" />
       ) : step.result != null ? (
         <pre className="mt-1.5 text-[11px] bg-black/5 dark:bg-black/30 rounded-lg p-2 overflow-x-auto max-h-40 overflow-y-auto text-black/70 dark:text-white/70">{typeof step.result === "string" ? step.result : JSON.stringify(step.result, null, 2)}</pre>
       ) : null}
