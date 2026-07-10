@@ -153,8 +153,10 @@
 - ⬜ Lottie 星星 hero 若老闆不喜歡 → 換 LottieFiles 免費動畫（Lottie Simple License 可商用）或調整。
 - ⬜（延續）E2E + Smoke tests；沉浸式 3D 島嶼降耗。
 
-### 🔮 未來大方向：AI 島行動代理系統（Agent 平台）
-- 來源規劃：`docs/待閱/Agent.md`（完整架構＋競賽策略＋一句話定位）。**這是把 AI 島從「有 AI 的網站」推成「人類學會駕馭 Agent 的訓練場」的大題目、獨立多專案級別，非現階段實作。**
+### 🚀 已立項：AI 島行動代理系統（Agent 平台）
+- **已立項（0710）。架構規劃書 `docs/agent_platform_plan.md` 已出**（架構/資料流/6 張資料表/API contract/WebSocket 事件/Tool 介面/L0–L4 權限/目錄/分階段 task list/風險 KPI），待老闆 review 凍結 MVP 範圍與資料表後進 Phase 1。
+- 來源分析：`docs/待閱/Agent.md`。**把 AI 島從「有 AI 的網站」推成「人類學會駕馭 Agent 的訓練場」，第三座島（學習/創作/行動）。**
+- ⬜ 下一步：老闆 review 規劃書 → 凍結 → Phase 1 開工（tool-sdk → permission-engine → 資料表 migration → agent-core loop → Electron Bridge → Playwright worker → /agent 面板 → 端到端 Demo）。
 - 核心：`Agent Core`（任務規劃迴圈＋最大步數＋重試＋驗證＋中止）、`Tool Registry`（每工具 JSON Schema＋風險等級 read/write/dangerous＋平台限制）、`Device Bridge`（本機助手 Electron→Tauri，WebSocket 連線）、`Browser Worker`（Playwright 走 DOM/Role/Accessibility、不用座標）、`Approval Engine`（L0–L4 權限、寫入/刪除/付款要確認）、`Credential Broker`（Agent 不碰明文密碼）。
 - **MVP 只做 Windows + 瀏覽器 + AI 島開發工作流**（Demo：手機下指令→電腦開 VS Code 跑測試→分析錯誤→回傳，改檔前要確認）。Android 第二階段、iOS 最後（限制大、走 App Intents/Shortcuts）。
 - 差異化敘事（接 AI 島原定位）：**「別人教你怎麼問 AI，AI 島教你怎麼讓 AI 真正做事」**——最透明、可教、可視化、可中止、失敗可回復的 Agent，讓新手敢授權。競賽自評 8/10。
