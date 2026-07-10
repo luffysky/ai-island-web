@@ -9,7 +9,9 @@ interface StepView { idx: number; kind: "thought" | "step"; thought?: string; to
 interface ApprovalReq { id: string; toolName: string; risk: Risk; summary: Record<string, string>; }
 interface TaskListItem { id: string; goal: string; status: string; step_count: number; created_at: string; }
 interface DeviceItem { id: string; name: string; platform: string; online: boolean; }
-interface SkillItem { id: string; name: string; description?: string; emoji: string; goal_template: string; allowed_tools: string[]; max_steps: number; is_builtin: boolean; }
+interface SkillItem { id: string; name: string; description?: string; emoji: string; category: string; goal_template: string; allowed_tools: string[]; max_steps: number; is_builtin: boolean; installed: boolean; }
+
+const CAT_LABEL: Record<string, string> = { research: "網頁 · 研究", write: "寫作 · 建議", code: "程式碼", dev: "開發者本機", learn: "站內 · 學習", other: "其他" };
 
 const RISK_BADGE: Record<Risk, { label: string; cls: string; Icon: any }> = {
   read: { label: "唯讀", cls: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400", Icon: Eye },
@@ -56,6 +58,7 @@ export function AgentClient() {
   const [skills, setSkills] = useState<SkillItem[]>([]);
   const [skillId, setSkillId] = useState<string>("");     // 選用的技能
   const [skillModal, setSkillModal] = useState(false);
+  const [storeOpen, setStoreOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const recRef = useRef<any>(null);
   const deepLinkedRef = useRef(false);
@@ -82,6 +85,12 @@ export function AgentClient() {
       const r = await fetch("/api/agent/skills");
       if (r.ok) setSkills((await r.json()).skills ?? []);
     } catch { /* ignore */ }
+  }, []);
+
+  const installSkill = useCallback(async (id: string, install: boolean) => {
+    await fetch("/api/agent/skills", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ skillId: id, install }) }).catch(() => {});
+    setSkills((prev) => prev.map((s) => (s.id === id ? { ...s, installed: install } : s)));
+    if (!install) setSkillId((cur) => (cur === id ? "" : cur));
   }, []);
 
   useEffect(() => {
@@ -246,11 +255,11 @@ export function AgentClient() {
             )}
           </div>
 
-          {/* 技能（內建 + 自建 Agent）—— 選一個會限制工具集並套用它的任務框架 */}
+          {/* 技能（已安裝）—— 選一個會限制工具集並套用它的任務框架 */}
           {!busy && (
             <div className="flex flex-wrap items-center gap-1.5 mt-3">
               <span className="text-xs text-black/40 dark:text-white/40 mr-0.5">技能</span>
-              {skills.map((s) => {
+              {skills.filter((s) => s.installed).map((s) => {
                 const on = skillId === s.id;
                 return (
                   <button
@@ -263,6 +272,9 @@ export function AgentClient() {
                   </button>
                 );
               })}
+              <button onClick={() => setStoreOpen(true)} className="text-xs rounded-full px-2.5 py-1 border border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">
+                🛒 技能商店
+              </button>
               <button onClick={() => setSkillModal(true)} className="text-xs rounded-full px-2.5 py-1 border border-dashed border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">
                 ＋ 自建 Agent
               </button>
@@ -409,11 +421,82 @@ export function AgentClient() {
         </div>
       )}
 
+      {/* 技能商店 */}
+      {storeOpen && (
+        <SkillStore skills={skills} tools={tools} onToggle={installSkill} onClose={() => setStoreOpen(false)} onDeleted={loadSkills} />
+      )}
+
       {/* 自建 Agent（技能）彈窗 */}
       {skillModal && (
         <SkillCreator tools={tools} onClose={() => setSkillModal(false)} onCreated={(id) => { loadSkills(); setSkillId(id); setSkillModal(false); }} />
       )}
     </main>
+  );
+}
+
+function SkillStore({ skills, tools, onToggle, onClose, onDeleted }: {
+  skills: SkillItem[]; tools: ToolInfo[];
+  onToggle: (id: string, install: boolean) => void; onClose: () => void; onDeleted: () => void;
+}) {
+  const toolMap = new Map(tools.map((t) => [t.name, t]));
+  const perm = (s: SkillItem) => {
+    if (!s.allowed_tools || s.allowed_tools.length === 0) return { text: "純建議 · 不用任何工具", device: false, danger: false };
+    const infos = s.allowed_tools.map((n) => toolMap.get(n)).filter(Boolean) as ToolInfo[];
+    return { text: s.allowed_tools.join(" · "), device: infos.some((t) => t.needsDevice), danger: infos.some((t) => t.risk === "dangerous") };
+  };
+  const cats = ["research", "write", "code", "dev", "learn", "other"];
+  const del = async (id: string) => { await fetch(`/api/agent/skills?id=${id}`, { method: "DELETE" }).catch(() => {}); onDeleted(); };
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" onClick={onClose}>
+      <div className="w-full max-w-2xl rounded-2xl bg-white dark:bg-[#15161c] border border-black/10 dark:border-white/10 p-5 max-h-[88vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="font-bold flex items-center gap-2">🛒 技能商店</h2>
+          <button onClick={onClose} className="text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white"><X className="w-5 h-5" /></button>
+        </div>
+        <p className="text-xs text-black/50 dark:text-white/50 mb-4">安裝你需要的技能，安裝後才會出現在下令列。安裝＝同意它使用下列工具。</p>
+        {cats.map((cat) => {
+          const list = skills.filter((s) => s.category === cat);
+          if (!list.length) return null;
+          return (
+            <div key={cat} className="mb-4">
+              <div className="text-xs font-semibold text-black/50 dark:text-white/50 mb-2">{CAT_LABEL[cat] ?? cat}</div>
+              <div className="grid sm:grid-cols-2 gap-2">
+                {list.map((s) => {
+                  const p = perm(s);
+                  return (
+                    <div key={s.id} className="rounded-xl border border-black/10 dark:border-white/10 p-3 flex flex-col">
+                      <div className="flex items-start gap-2">
+                        <span className="text-xl leading-none">{s.emoji}</span>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-sm font-medium flex items-center gap-1.5">{s.name}{!s.is_builtin && <span className="text-[10px] text-violet-500">我的</span>}</div>
+                          <div className="text-xs text-black/55 dark:text-white/55 line-clamp-2">{s.description}</div>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-1 mt-2 text-[10px]">
+                        <span className="text-black/40 dark:text-white/40 truncate max-w-full">{p.text}</span>
+                        {p.device && <span className="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-600 dark:text-amber-400">需本機</span>}
+                        {p.danger && <span className="px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-600 dark:text-rose-400">高風險</span>}
+                      </div>
+                      <div className="mt-2.5 flex gap-2">
+                        {s.installed ? (
+                          <button onClick={() => onToggle(s.id, false)} disabled={!s.is_builtin} className="flex-1 text-xs rounded-lg border border-black/15 dark:border-white/20 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-40">
+                            {s.is_builtin ? "已安裝 · 移除" : "已內建"}
+                          </button>
+                        ) : (
+                          <button onClick={() => onToggle(s.id, true)} className="flex-1 text-xs rounded-lg bg-violet-600 hover:bg-violet-700 text-white py-1.5">安裝</button>
+                        )}
+                        {!s.is_builtin && <button onClick={() => del(s.id)} title="刪除" className="shrink-0 rounded-lg border border-black/15 dark:border-white/20 px-2 hover:text-rose-500"><Trash2 className="w-3.5 h-3.5" /></button>}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 

@@ -8,17 +8,38 @@ export const runtime = "nodejs";
 
 const VALID_TOOLS = new Set(TOOLS.map((t) => t.name));
 
-// GET /api/agent/skills — 內建 + 我自建的技能
+// GET /api/agent/skills — 內建 + 我自建的技能，附 installed 旗標（安裝包模式）
 export async function GET() {
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const admin = createSupabaseAdmin();
   const { data } = await admin.from("agent_skills")
-    .select("id, name, description, emoji, goal_template, allowed_tools, max_steps, is_builtin, user_id")
+    .select("id, name, description, emoji, category, goal_template, allowed_tools, max_steps, is_builtin, user_id")
     .or(`is_builtin.eq.true,user_id.eq.${user.id}`)
-    .order("is_builtin", { ascending: false }).order("created_at", { ascending: true });
-  return NextResponse.json({ skills: data ?? [] });
+    .order("is_builtin", { ascending: false }).order("category", { ascending: true }).order("created_at", { ascending: true });
+  const { data: installs } = await admin.from("agent_skill_installs").select("skill_id").eq("user_id", user.id);
+  const installed = new Set((installs ?? []).map((i) => i.skill_id));
+  // 自建技能永遠算已安裝；內建看有沒有裝
+  const skills = (data ?? []).map((s) => ({ ...s, installed: s.is_builtin ? installed.has(s.id) : true }));
+  return NextResponse.json({ skills });
+}
+
+// PUT /api/agent/skills { skillId, install } — 安裝/移除內建技能
+export async function PUT(req: Request) {
+  const supabase = await createSupabaseServer();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const b = await req.json().catch(() => ({} as any));
+  const skillId = String(b.skillId ?? "");
+  if (!skillId) return NextResponse.json({ error: "缺 skillId" }, { status: 400 });
+  const admin = createSupabaseAdmin();
+  if (b.install === false) {
+    await admin.from("agent_skill_installs").delete().eq("user_id", user.id).eq("skill_id", skillId);
+  } else {
+    await admin.from("agent_skill_installs").upsert({ user_id: user.id, skill_id: skillId }, { onConflict: "user_id,skill_id" });
+  }
+  return NextResponse.json({ ok: true });
 }
 
 // POST /api/agent/skills — 自建技能

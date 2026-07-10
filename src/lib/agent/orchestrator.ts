@@ -56,10 +56,12 @@ async function planNext(goal: string, history: StepRow[], skill?: SkillCtx): Pro
     `#${s.idx} ${s.toolName ?? "?"}(${JSON.stringify(s.args ?? {})}) → ${s.ok ? "ok" : "fail"}: ${JSON.stringify(s.result ?? {}).slice(0, 400)}`
   ).join("\n") || "（尚無步驟）";
   const system = skill?.prompt ? `${PLANNER_SYSTEM}\n\n【本次技能設定】${skill.prompt}` : PLANNER_SYSTEM;
+  const toolsDesc = describeTools(skill?.allowedTools);
+  const toolsBlock = toolsDesc || "（本技能不使用任何工具。請直接依『目標』與技能設定，用一則 {\"done\":true,\"summary\":\"...\"} 回覆完整答案。）";
   const user = `目標：${goal}
 
 可用工具：
-${describeTools(skill?.allowedTools)}
+${toolsBlock}
 
 目前進度：
 ${hist}

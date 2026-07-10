@@ -110,17 +110,18 @@ export function getTool(name: string): AgentTool | undefined {
   return TOOLS.find((t) => t.name === name);
 }
 
-/** 給 LLM 的工具清單描述（含風險、參數）。allowed 非空時只列該子集（技能限制工具用）。 */
+/** 給 LLM 的工具清單描述（含風險、參數）。
+ *  allowed 語意：undefined = 全部工具（自由模式）；[] = 不給工具（純建議技能）；非空 = 只給該子集。 */
 export function describeTools(allowed?: string[]): string {
-  const list = allowed && allowed.length ? TOOLS.filter((t) => allowed.includes(t.name)) : TOOLS;
+  const list = allowed === undefined ? TOOLS : TOOLS.filter((t) => allowed.includes(t.name));
   return list.map((t) =>
     `- ${t.name}（${t.risk}${t.needsDevice ? "、需桌面助手" : ""}）：${t.description} 參數：${JSON.stringify(t.args)}`
   ).join("\n");
 }
 
-/** 工具是否在技能允許集內（allowed 空 = 全部允許）。 */
+/** 工具是否允許：undefined = 全部；否則須在白名單內（[] = 全不允許）。 */
 export function toolAllowed(name: string, allowed?: string[]): boolean {
-  return !allowed || allowed.length === 0 || allowed.includes(name);
+  return allowed === undefined || allowed.includes(name);
 }
 
 /** 風險 → 是否需要人工確認（L0 read 自動；write/dangerous 要確認）。 */
