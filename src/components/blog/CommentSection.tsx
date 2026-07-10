@@ -9,6 +9,29 @@ import { LikeButton } from "./LikeButton";
 import { useToast } from "@/components/ui/Toast";
 import { handleEnterSubmit, autoGrow } from "@/lib/composer";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
+import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
+import { GifPicker } from "@/components/ui/GifPicker";
+import { EmojiText } from "@/components/ui/EmojiText";
+
+// 留言內文渲染：圖片/GIF 網址 → <img>；其餘網址 → 連結；純文字 → 動態 emoji
+const IMG_URL_RE = /^https?:\/\/[^\s]+\.(gif|png|jpe?g|webp)(\?[^\s]*)?$/i;
+const GIPHY_URL_RE = /^https?:\/\/(media\d?\.giphy\.com|i\.giphy\.com)\/[^\s]+/i;
+function renderCommentContent(text: string) {
+  const out: React.ReactNode[] = [];
+  let key = 0;
+  text.split(/(https?:\/\/[^\s]+)/g).forEach((p) => {
+    if (!p) return;
+    if (IMG_URL_RE.test(p) || GIPHY_URL_RE.test(p)) {
+      // eslint-disable-next-line @next/next/no-img-element
+      out.push(<img key={key++} src={p} alt="gif" loading="lazy" className="block max-w-[200px] max-h-[200px] rounded-lg my-1" />);
+    } else if (/^https?:\/\//.test(p)) {
+      out.push(<a key={key++} href={p} target="_blank" rel="noreferrer" className="text-accent underline break-all">{p}</a>);
+    } else {
+      out.push(<EmojiText key={key++} text={p} size={18} />);
+    }
+  });
+  return out;
+}
 
 export function CommentSection({
   userSlug,
@@ -145,15 +168,19 @@ export function CommentSection({
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="留個言吧..."
+          placeholder="留個言吧...（可加表情、GIF）"
           rows={3}
           className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
         />
-        <div className="flex justify-end mt-2">
+        <div className="flex items-center justify-between mt-2 gap-2">
+          <div className="flex items-center gap-1">
+            <AnimatedEmojiPicker onSelect={(e) => setInput((v) => v + e)} />
+            <GifPicker onSelect={(url) => setInput((v) => (v ? v + " " : "") + url + " ")} />
+          </div>
           <button
             onClick={() => submit(input, null)}
             disabled={!input.trim() || sending}
-            className="px-4 py-1.5 rounded-lg bg-accent text-black text-sm font-semibold disabled:opacity-40 flex items-center gap-1"
+            className="px-4 py-1.5 rounded-lg bg-accent text-black text-sm font-semibold disabled:opacity-40 flex items-center gap-1 shrink-0"
           >
             <Send size={14} /> 送出
           </button>
@@ -172,24 +199,30 @@ export function CommentSection({
               <CommentItem comment={c} currentUserId={currentUserId} onDelete={remove} onReply={() => setReplyTo(replyTo === c.id ? null : c.id)} />
               {/* 回覆框 */}
               {replyTo === c.id && (
-                <div className="ml-8 mt-2 flex gap-2">
+                <div className="ml-8 mt-2">
                   <textarea
                     rows={1}
                     value={replyInput}
                     onChange={(e) => setReplyInput(e.target.value)}
                     onInput={(e) => autoGrow(e.currentTarget, 120)}
-                    placeholder="回覆..."
+                    placeholder="回覆...（可加表情、GIF）"
                     onKeyDown={(e) => handleEnterSubmit(e, () => submit(replyInput, c.id))}
-                    className="flex-1 bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
+                    className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
                     style={{ maxHeight: "120px" }}
                   />
-                  <button
-                    onClick={() => submit(replyInput, c.id)}
-                    disabled={!replyInput.trim() || sending}
-                    className="px-3 py-1.5 rounded-lg bg-accent text-black text-sm font-semibold disabled:opacity-40"
-                  >
-                    送出
-                  </button>
+                  <div className="flex items-center justify-between mt-1.5 gap-2">
+                    <div className="flex items-center gap-1">
+                      <AnimatedEmojiPicker onSelect={(e) => setReplyInput((v) => v + e)} />
+                      <GifPicker onSelect={(url) => setReplyInput((v) => (v ? v + " " : "") + url + " ")} />
+                    </div>
+                    <button
+                      onClick={() => submit(replyInput, c.id)}
+                      disabled={!replyInput.trim() || sending}
+                      className="px-3 py-1.5 rounded-lg bg-accent text-black text-sm font-semibold disabled:opacity-40 shrink-0"
+                    >
+                      送出
+                    </button>
+                  </div>
                 </div>
               )}
               {/* 巢狀回覆 */}
@@ -246,7 +279,7 @@ function CommentItem({
               {new Date(comment.created_at).toLocaleDateString("zh-TW")}
             </span>
           </div>
-          <p className="text-sm mt-0.5 whitespace-pre-wrap break-words">{comment.content}</p>
+          <p className="text-sm mt-0.5 whitespace-pre-wrap break-words">{renderCommentContent(comment.content)}</p>
           <div className="flex items-center gap-3 mt-1">
             <LikeButton kind="blog" targetId={comment.id} />
             {!isReply && onReply && (

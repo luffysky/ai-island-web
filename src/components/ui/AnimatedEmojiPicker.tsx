@@ -18,6 +18,15 @@ const CATEGORIES: { id: string; name: string; icon: string; emojis: string[] }[]
   { id: "nature", name: "自然", icon: "🌸", emojis: ["🌸","🌺","🌻","🌹","🌷","🌼","💐","🌿","🍀","🌱","🌳","🌲","🌴","🌵","🎋","🎍","🍁","🍂","🍃","🌾","🌊","🔥","💧","🌈","☀️","🌤️","⛅","☁️","🌧️","⛈️","🌩️","❄️","⛄","🌬️","🌪️","🌙","🌝","🌛","⭐","🌟","💫","🌍","🌎","🌏","🪐","🌋","🏔️","🏝️","🏜️","🌅","🌄"] },
 ];
 
+/** 顔文字（純文字、貼上就是文字；挑可愛、表情豐富的）。 */
+const KAOMOJI: string[] = [
+  "(｡・ω・｡)","(≧▽≦)","(´｡• ᵕ •｡`)","(๑˃ᴗ˂)ﻭ","(*≧ω≦*)","ヽ(・∀・)ﾉ","(＾▽＾)","(◕‿◕)","(✿◕‿◕)","(｡♥‿♥｡)",
+  "(♡˙︶˙♡)","(*´꒳`*)","(っ˘ω˘ς)","૮₍ ˶•⤙•˶ ₎ა","(ᵔ◡ᵔ)","ʕ•ᴥ•ʔ","ʕ￫ᴥ￩ʔ","(=^･ω･^=)","(｡•́︿•̀｡)","(╥﹏╥)",
+  "(っ˶´ ˘ `˶)っ","(´•̥ ̯ •̥`)","(ㆆ_ㆆ)","(¬‿¬)","(⊙_⊙)","(*^▽^*)","(๑>◡<๑)","o(≧□≦)o","٩(◕‿◕)۶","(づ￣ ³￣)づ",
+  "(๑•̀ㅂ•́)و✧","ヽ(´▽`)/","(*/ω＼*)","(´；ω；`)","(°ロ°)","(＞﹏＜)","(ノ°益°)ノ","┬─┬ノ( º _ ºノ)","(╯°□°）╯︵ ┻━┻","¯\\_(ツ)_/¯",
+  "(｡ŏ﹏ŏ)","(◍•ᴗ•◍)","(⁀ᗢ⁀)","(｡•̀ᴗ-)✧","(灬º‿º灬)","(๑´ㅂ`๑)","(´ ▽ ` )ﾉ","(*´∀`)~♥","(σ`∀´)σ","(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧",
+];
+
 const PANEL_W = 300;
 
 /**
@@ -83,9 +92,12 @@ export function AnimatedEmojiPicker({
   }, [open]);
 
   const pick = (e: string) => { onSelect(e); setOpen(false); setQ(""); };
+  const isKao = cat === "kaomoji" && !q.trim();
   const list = q.trim()
-    ? CATEGORIES.flatMap((c) => c.emojis).filter((e, i, a) => a.indexOf(e) === i)
-    : CATEGORIES.find((c) => c.id === cat)?.emojis ?? [];
+    ? CATEGORIES.flatMap((c) => c.emojis).filter((e, i, a) => a.indexOf(e) === i) // 搜尋只找 emoji，不含顔文字
+    : isKao
+      ? KAOMOJI
+      : CATEGORIES.find((c) => c.id === cat)?.emojis ?? [];
 
   const panel = open && pos && (
     <div
@@ -120,23 +132,48 @@ export function AnimatedEmojiPicker({
               {c.icon}
             </button>
           ))}
+          {/* 顔文字（純文字表情）分頁 */}
+          <button
+            type="button"
+            onClick={() => setCat("kaomoji")}
+            title="顔文字"
+            className={`shrink-0 w-8 h-8 rounded-lg text-base font-bold flex items-center justify-center transition ${cat === "kaomoji" ? "bg-accent/15 ring-1 ring-accent/40" : "hover:bg-bg-elevated"}`}
+          >
+            ツ
+          </button>
         </div>
       )}
 
       <div className="p-2 max-h-[220px] overflow-y-auto">
-        <div className="grid grid-cols-7 gap-0.5">
-          {list.map((e, i) => (
-            <button
-              key={`${e}-${i}`}
-              type="button"
-              onClick={() => pick(e)}
-              title={e}
-              className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-bg-elevated hover:scale-110 transition-transform"
-            >
-              <AnimatedEmoji emoji={e} size={24} />
-            </button>
-          ))}
-        </div>
+        {isKao ? (
+          <div className="grid grid-cols-2 gap-1">
+            {KAOMOJI.map((k, i) => (
+              <button
+                key={`${k}-${i}`}
+                type="button"
+                onClick={() => pick(k)}
+                title={k}
+                className="h-9 px-1.5 rounded-lg flex items-center justify-center text-[13px] text-fg hover:bg-bg-elevated hover:text-accent transition truncate"
+              >
+                {k}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-7 gap-0.5">
+            {list.map((e, i) => (
+              <button
+                key={`${e}-${i}`}
+                type="button"
+                onClick={() => pick(e)}
+                title={e}
+                className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-bg-elevated hover:scale-110 transition-transform"
+              >
+                <AnimatedEmoji emoji={e} size={24} />
+              </button>
+            ))}
+          </div>
+        )}
         {q && list.length === 0 && <div className="text-center text-xs text-fg-muted py-4">沒有結果</div>}
       </div>
       <style>{`.no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}`}</style>

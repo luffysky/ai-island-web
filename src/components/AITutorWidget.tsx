@@ -119,8 +119,9 @@ import { CodeBlock } from "@/components/chapter/CodeBlock";
 import { CopyButton, TypingIndicator, ChatToolbar, formatChatTime, MicButton, SpeakButton } from "@/components/chat";
 import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
 import { GifPicker } from "@/components/ui/GifPicker";
+import { EmojiText } from "@/components/ui/EmojiText";
 
-// 使用者訊息內的 GIF / 圖片網址 → 顯示成 <img>；其餘純文字
+// 使用者訊息內的 GIF / 圖片網址 → 顯示成 <img>；其餘純文字裡的 emoji 用動態 emoji 渲染
 const MEDIA_URL_RE = /^https?:\/\/(?:[^\s]+\.(?:gif|png|jpe?g|webp)(?:\?[^\s]*)?|(?:media\d?\.giphy\.com|i\.giphy\.com)\/[^\s]+)$/i;
 function renderUserContent(text: string) {
   return text.split(/(https?:\/\/[^\s]+)/g).map((p, i) => {
@@ -128,7 +129,8 @@ function renderUserContent(text: string) {
       // eslint-disable-next-line @next/next/no-img-element
       return <img key={i} src={p} alt="gif" loading="lazy" className="block max-w-[200px] max-h-[200px] rounded-lg my-1" />;
     }
-    return <span key={i}>{p}</span>;
+    // 純文字段：走 EmojiText → 送出的 emoji 也會動（以前這裡是純 <span>、emoji 掉回靜態字元）
+    return <EmojiText key={i} text={p} size={18} />;
   });
 }
 
@@ -1248,10 +1250,13 @@ export function AITutorWidget({
                     )}
                   </div>
                 )}
-                <div className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-sm shadow-sm transition-all hover:shadow-md animate-chat-bubble-in ${
+                <div className={`max-w-[85%] text-sm transition-all animate-chat-bubble-in ${
                   m.role === "user"
-                    ? "bg-gradient-to-br from-accent to-accent-2 text-black shadow-accent/20"
-                    : "bg-gradient-to-br from-bg-elevated to-bg-card border border-border/50 text-fg backdrop-blur-sm"
+                    // 圖片／GIF 單獨傳（沒配文字）→ 去掉綠色對話框、背景透明、只留圖
+                    ? ((((m.images?.length ?? 0) > 0 && !(m.content ?? "").trim()) || MEDIA_URL_RE.test((m.content ?? "").trim()))
+                        ? ""
+                        : "rounded-2xl px-3.5 py-2 shadow-sm hover:shadow-md bg-gradient-to-br from-accent to-accent-2 text-black shadow-accent/20")
+                    : "rounded-2xl px-3.5 py-2 shadow-sm hover:shadow-md bg-gradient-to-br from-bg-elevated to-bg-card border border-border/50 text-fg backdrop-blur-sm"
                 }`}>
                   {m.role === "assistant" ? (
                     <div className="prose-custom prose-sm min-w-0">
@@ -1301,7 +1306,7 @@ export function AITutorWidget({
                               key={j}
                               src={img.previewUrl}
                               alt=""
-                              className="w-24 h-24 object-cover rounded-lg border border-black/20"
+                              className="max-w-[200px] max-h-[200px] rounded-xl object-contain"
                             />
                           ))}
                         </div>

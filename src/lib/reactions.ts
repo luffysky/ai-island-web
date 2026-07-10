@@ -12,20 +12,40 @@
 /** Noto animated emoji 素材來源。要自架就改成 "/noto"（把 webp 放 public/noto/{code}/512.webp）。 */
 export const NOTO_BASE = "https://fonts.gstatic.com/s/e/notoemoji/latest";
 
+/**
+ * Microsoft Fluent Emoji 3D（靜態、但立體可愛、筆畫粗）當「Noto 沒動畫」時的第二層 fallback。
+ * 來源用 bignutty/fluent-emoji（unicode 檔名、jsDelivr 可直供；官方 fluentui-emoji-animated 走 Git LFS、CDN 拉不到）。
+ * 只用 `/static`（~44KB）不用 `/animated`（APNG 動輒 0.7–1.3MB、太肥不適合大量渲染）。
+ * → 於是渲染順序：Noto 動態 WebP → Fluent 3D 立體 → 純字元。比起以前直接掉回作業系統細瘦字元好看很多。
+ */
+export const FLUENT_BASE = "https://cdn.jsdelivr.net/gh/bignutty/fluent-emoji@main/static";
+
 /** 由 Noto code 組出動態 WebP 網址。 */
 export function notoWebp(code: string): string {
   return `${NOTO_BASE}/${code}/512.webp`;
 }
 
+/** 由 emoji 組出 Fluent 3D PNG 網址（Fluent 檔名：小寫 hex、用 "-" 接、保留 fe0f）。 */
+export function fluentPng(emoji: string): string {
+  return `${FLUENT_BASE}/${emojiToFluentCode(emoji)}.png`;
+}
+
 /**
  * 從 emoji 字元自動算出 Noto 路徑 code（各 codepoint 的 16 進位、用 "_" 接）。
  * 例：😂→"1f602"、❤️→"2764_fe0f"、👍→"1f44d"、🙌→"1f64c"。
- * Noto 沒有動畫的 emoji → AnimatedEmoji 會 onError fallback 回純 emoji，所以直接算即可。
+ * Noto 沒有動畫的 emoji → AnimatedEmoji 會 onError fallback，所以直接算即可。
  */
 export function emojiToNotoCode(emoji: string): string {
   return Array.from(emoji)
     .map((ch) => (ch.codePointAt(0) ?? 0).toString(16))
     .join("_");
+}
+
+/** Fluent 版 code（同 codepoints、但用 "-" 接）。例：❤️→"2764-fe0f"、😵‍💫→"1f635-200d-1f4ab"。 */
+export function emojiToFluentCode(emoji: string): string {
+  return Array.from(emoji)
+    .map((ch) => (ch.codePointAt(0) ?? 0).toString(16))
+    .join("-");
 }
 
 export interface Reaction {
