@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
 import { ArrowLeft, Check, Loader2, Store, Search } from "lucide-react";
 
 type MyNote = { id: string; title: string };
@@ -58,6 +59,7 @@ export default function NewNoteProductPage() {
       <div className="space-y-4">
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("productTitlePlaceholder")} className="w-full bg-bg-card border border-border rounded-lg p-2.5 text-lg font-bold outline-none focus:border-accent" />
         <textarea value={desc} onChange={(e) => setDesc(e.target.value)} placeholder={t("productDescPlaceholder")} rows={2} className="w-full bg-bg-card border border-border rounded-lg p-2.5 text-sm outline-none focus:border-accent" />
+        <div className="-mt-2"><AnimatedEmojiPicker onSelect={(e) => setDesc((v) => v + e)} /></div>
         <label className="flex items-center gap-2 text-sm">{t("price")}
           <input type="number" min={0} max={100000} value={price} onChange={(e) => setPrice(Math.max(0, Math.min(100000, Number(e.target.value) || 0)))} className="w-24 bg-bg-card border border-border rounded-lg px-2 py-1.5 text-sm" /> {t("coinsZeroFree")}
         </label>

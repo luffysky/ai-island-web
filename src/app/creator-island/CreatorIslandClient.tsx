@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useConfirm, usePrompt } from "@/components/ui/ConfirmDialog";
+import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
 import { EggHatch } from "./EggHatch";
 import { IslandTour } from "./IslandTour";
 import { IslandChat } from "./IslandChat";
@@ -705,6 +706,7 @@ function FragmentEditModal({ frag, onClose, onSave, onDelete }: { frag: Fragment
           <input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} placeholder={t("hubSubtitlePlaceholder")} className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm text-fg outline-none focus:border-accent" /></label>
         <label className="block text-xs text-fg-muted">{t("hubContentLabel")}
           <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={6} className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm text-fg outline-none focus:border-accent resize-y" /></label>
+        <div><AnimatedEmojiPicker onSelect={(e) => setContent((v) => v + e)} /></div>
         <div className="grid grid-cols-2 gap-3">
           <label className="block text-xs text-fg-muted">{t("hubCategoryLabel")}
             <input value={category} onChange={(e) => setCategory(e.target.value)} placeholder={t("hubCategoryPlaceholder")} className="mt-1 w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm text-fg outline-none focus:border-accent" /></label>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { ArrowLeft, Loader2, Save } from "lucide-react";
+import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
 
 export default function BlogSettingsPage() {
   const t = useTranslations("me");
@@ -79,6 +80,7 @@ export default function BlogSettingsPage() {
             placeholder={t("blogSettingsDescPlaceholder")}
             className="w-full bg-bg-card border border-border rounded-lg p-2.5 text-sm outline-none focus:border-accent resize-none"
           />
+          <div className="mt-0.5"><AnimatedEmojiPicker onSelect={(e) => set("blog_desc", (settings?.blog_desc ?? "") + e)} /></div>
         </div>
 
         <div>

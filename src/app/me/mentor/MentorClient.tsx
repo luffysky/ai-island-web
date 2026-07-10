@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Loader2, Save, LogOut, Users, GraduationCap, Handshake } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
+import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { useTranslations } from "next-intl";
 
@@ -100,7 +101,8 @@ export function MentorClient() {
         <label className="text-xs text-fg-muted">{t("mentorBioLabel")}</label>
         <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3} maxLength={500}
           placeholder={t("mentorBioPlaceholder")}
-          className="w-full bg-bg-elevated border border-border rounded p-2 text-sm mb-3" />
+          className="w-full bg-bg-elevated border border-border rounded p-2 text-sm" />
+        <div className="mb-3 mt-0.5"><AnimatedEmojiPicker onSelect={(e) => setBio((v) => v + e)} /></div>
 
         <label className="text-xs text-fg-muted">{t("mentorTopicsLabel", { list: TOPIC_SUGGEST.slice(0, 6).join(" / ") })}</label>
         <input value={topicsRaw} onChange={(e) => setTopicsRaw(e.target.value)}
