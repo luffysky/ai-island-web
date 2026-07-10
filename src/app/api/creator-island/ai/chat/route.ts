@@ -5,6 +5,8 @@ import { callAI } from "@/lib/ai-providers";
 import { estimateCostUsd } from "@/lib/creator-engine/ai/cost";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { loadUserMemory, formatMemoryForPrompt } from "@/lib/user-ai-memory";
+import { gateHighTierModel } from "@/lib/ai-tier-gate";
+import { decryptKey } from "@/lib/ai-crypto";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -31,7 +33,28 @@ export async function POST(req: NextRequest) {
 
   const resolved = await resolveModel("chat");
   if (!resolved.ok) return NextResponse.json({ error: resolved.error, message: resolved.message }, { status: resolved.status });
-  const { provider, model, apiKey } = resolved.model;
+  let { provider, model, apiKey } = resolved.model;
+
+  // 高階模型分層授權：免費 / Plus 不給高階模型（堵住「免費用戶無限跑高階燒錢」的洞）。
+  // 全程防禦：任何一步失敗都保持原模型、不影響聊天。
+  try {
+    const adminG = createSupabaseAdmin();
+    const { data: row } = await adminG.from("ai_models")
+      .select("id, provider, model_name, tier").eq("provider", provider).eq("model_name", model).maybeSingle();
+    if (row && (row as any).tier === "high") {
+      const gated = await gateHighTierModel(adminG, u.userId, row);
+      if (gated && (gated.provider !== provider || gated.model_name !== model)) {
+        const { data: k } = await adminG.from("ai_api_keys")
+          .select("api_key_encrypted, enabled").eq("provider", gated.provider).maybeSingle();
+        if (k && (k as any).enabled) {
+          try {
+            const key = decryptKey((k as any).api_key_encrypted);
+            provider = gated.provider; model = gated.model_name; apiKey = key;
+          } catch { /* 解密失敗 → 保持原模型 */ }
+        }
+      }
+    }
+  } catch { /* 分層檢查失敗 → 保持原模型 */ }
 
   // 聚焦碎片：使用者在島上選了碎片、綠寶要針對這些碎片回答
   const focus = Array.isArray(b.focusFragments) ? b.focusFragments.slice(0, 8) : [];

@@ -64,11 +64,11 @@
 - [ ] 驗收：後台 `ai-cost` / `admin/ai/usage` 能看到這幾個來源的 token/成本（需上線後觀察）。
 
 ### P1 — 創作者綠寶補漏（省錢/防爆）　【決策：只擋高階、保持免費，軟上限預埋預設關】
-- [ ] `creator-island/ai/chat` 套 `gateHighTierModel`（免費用戶自動降中低階、堵住高階燒錢）。
-- [ ] 改 `callAI` → `streamAI`（＋前端 IslandChat 接串流）。
+- [x] `creator-island/ai/chat` 套 `gateHighTierModel`（高階模型免費/Plus 自動降 mid/low、防禦式：失敗保持原模型；money-leak 已堵）。
+- [ ] 改 `callAI` → `streamAI`（＋前端 IslandChat 接串流）。← 較大、需同步改前端
 - [ ] 接語意快取 `lookupSemanticCache`/`writeCache`。
 - [ ] 加「每日軟上限」config（`ai-quota-config.ts` 新增 `CREATOR_DAILY_SOFT_CAP`，**預設關/很大**；濫用再開，可選接 `consume_ai_quota_v2`）。
-- [ ] 成本記帳補完（同 P0）。
+- [x] 成本記帳：creator chat 走 `callAI`（已自動 `logAiUsage`）→ 本來就有記，無需補。
 
 ### P2 — 語意快取推廣（省 token）
 - [ ] `chapter/pop-quiz`（同課同題最明顯）、`learning-plan/generate`、`blog/ai-write`、`ai/assistant` 接 `lookupSemanticCache`/`writeCache`。
