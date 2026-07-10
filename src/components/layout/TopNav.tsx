@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
-import { Flame, Coins, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, Palmtree, Crown, BarChart3, Key, BookOpen, BookA, Swords, MessagesSquare, Newspaper, Route, Palette, Brain, Compass, Gamepad2, NotebookPen, Images, Languages, Bot } from "lucide-react";
+import { Flame, Coins, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, Palmtree, Crown, BarChart3, Key, BookOpen, BookA, Swords, MessagesSquare, Newspaper, Route, Palette, Brain, Compass, Gamepad2, NotebookPen, Images, Languages, Bot, Heart } from "lucide-react";
 import { TodoDropdownButton } from "@/components/todo/TodoDropdown";
 import { CountUp } from "@/components/ui/CountUp";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -39,7 +39,20 @@ export function TopNav() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [navDrawer, setNavDrawer] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  // 每日免費 AI 額度 → 愛心視覺化（滿血=今天還很多次可用）
+  const [aiQuota, setAiQuota] = useState<{ remaining: number; cap: number; unlimited: boolean } | null>(null);
   const supabase = createSupabaseBrowser();
+
+  useEffect(() => {
+    if (!user) { setAiQuota(null); return; }
+    let alive = true;
+    const load = () => fetch("/api/me/ai-quota").then((r) => (r.ok ? r.json() : null)).then((d) => { if (alive && d) setAiQuota(d); }).catch(() => {});
+    load();
+    // 回到分頁時刷新（用了 AI 後愛心會少）
+    const onFocus = () => load();
+    window.addEventListener("focus", onFocus);
+    return () => { alive = false; window.removeEventListener("focus", onFocus); };
+  }, [user]);
 
   const displayProfile = profile ?? {
     username: user?.email?.split("@")[0] ?? "AI 島民",
@@ -130,6 +143,27 @@ export function TopNav() {
           {user ? (
             <>
               <div className="hidden md:flex items-center gap-3 text-xs">
+                {/* 愛心＝今日免費 AI 額度視覺化（滿血＝還很多次可用；用了會少、隔天回滿） */}
+                {aiQuota && (
+                  <span
+                    className="flex items-center gap-0.5"
+                    title={aiQuota.unlimited ? "AI 額度：無限（訂閱／特權）" : `今日免費 AI 額度 ${aiQuota.remaining}/${aiQuota.cap}`}
+                  >
+                    {aiQuota.unlimited ? (
+                      <>
+                        <Heart size={13} className="text-rose-500 fill-rose-500" />
+                        <span className="text-rose-400 font-semibold">∞</span>
+                      </>
+                    ) : (
+                      (() => {
+                        const filled = aiQuota.remaining <= 0 ? 0 : Math.min(5, Math.max(1, Math.round((aiQuota.remaining / aiQuota.cap) * 5)));
+                        return Array.from({ length: 5 }).map((_, i) => (
+                          <Heart key={i} size={12} className={i < filled ? "text-rose-500 fill-rose-500" : "text-black/15 dark:text-white/15"} />
+                        ));
+                      })()
+                    )}
+                  </span>
+                )}
                 <span className="flex items-center gap-1" title="連勝">
                   <Flame size={14} className="text-orange-400" />
                   <CountUp value={displayProfile.streak_days ?? 0} />
@@ -138,7 +172,6 @@ export function TopNav() {
                   <Coins size={14} className="text-yellow-400" />
                   <CountUp value={displayProfile.z_coin ?? 0} />
                 </Link>
-                {/* 生命值(hearts)是半成品裝飾、已移除；連續學習天數 🔥 streak 才是真實指標（上方已顯示） */}
               </div>
 
               {/* 主題切換 — 桌面三段、手機單顆 on/off（在大頭貼那排 nav） */}

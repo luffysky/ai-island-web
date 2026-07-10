@@ -5,6 +5,14 @@ import { createPortal } from "react-dom";
 import { Smile, Search, X } from "lucide-react";
 import { AnimatedEmoji } from "./AnimatedEmoji";
 import { STICKERS, stickerPath, stickerInsertUrl } from "@/lib/stickers";
+import { fluentPng } from "@/lib/reactions";
+
+/** 3D 立體 emoji（Microsoft Fluent 3D）——挑最常用、最有戲的，點了會以 3D 圖片插入訊息。 */
+const EMOJI_3D: string[] = [
+  "😀","😂","🤣","🥰","😍","😎","🤩","🥳","😊","😇","🙃","😉","😌","😋","😜","🤪","🤔","🫡","🤗","🤭",
+  "😴","🥱","😭","😅","😳","🥺","😤","😱","🤯","🥶","🥵","😈","🤡","👻","💀","🤖","😷","🥸","🫠","😵‍💫",
+  "👍","👎","👌","🙏","👏","💪","🤝","✌️","🤞","🫶","🤙","👀","❤️","🔥","✨","🎉","💯","⭐","💩","🎂",
+];
 
 /** Emoji 分類（動態 Noto 版）。 */
 const CATEGORIES: { id: string; name: string; icon: string; emojis: string[] }[] = [
@@ -95,8 +103,11 @@ export function AnimatedEmojiPicker({
   const pick = (e: string) => { onSelect(e); setOpen(false); setQ(""); };
   // 貼圖：插入「絕對網址 + 前後空格」→ 走圖片網址渲染成 <img>（會動）
   const pickSticker = (id: string) => { onSelect(` ${stickerInsertUrl(id)} `); setOpen(false); setQ(""); };
+  // 3D emoji：插入 Fluent 3D 圖片絕對網址（.png，走媒體網址渲染成立體圖）
+  const pick3D = (e: string) => { onSelect(` ${fluentPng(e)} `); setOpen(false); setQ(""); };
   const isKao = cat === "kaomoji" && !q.trim();
   const isSticker = cat === "sticker" && !q.trim();
+  const is3D = cat === "3d" && !q.trim();
   const list = q.trim()
     ? CATEGORIES.flatMap((c) => c.emojis).filter((e, i, a) => a.indexOf(e) === i) // 搜尋只找 emoji，不含顔文字
     : isKao
@@ -136,6 +147,16 @@ export function AnimatedEmojiPicker({
               {c.icon}
             </button>
           ))}
+          {/* 3D 立體 emoji 分頁 */}
+          <button
+            type="button"
+            onClick={() => setCat("3d")}
+            title="3D 立體"
+            className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition ${cat === "3d" ? "bg-accent/15 ring-1 ring-accent/40" : "hover:bg-bg-elevated"}`}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={fluentPng("😎")} alt="3D" width={22} height={22} />
+          </button>
           {/* 顔文字（純文字表情）分頁 */}
           <button
             type="button"
@@ -159,7 +180,22 @@ export function AnimatedEmojiPicker({
       )}
 
       <div className="p-2 max-h-[220px] overflow-y-auto">
-        {isSticker ? (
+        {is3D ? (
+          <div className="grid grid-cols-6 gap-1">
+            {EMOJI_3D.map((e, i) => (
+              <button
+                key={`${e}-${i}`}
+                type="button"
+                onClick={() => pick3D(e)}
+                title={e}
+                className="aspect-square rounded-lg flex items-center justify-center hover:bg-bg-elevated hover:scale-110 transition-transform"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={fluentPng(e)} alt={e} width={32} height={32} loading="lazy" />
+              </button>
+            ))}
+          </div>
+        ) : isSticker ? (
           <div className="grid grid-cols-4 gap-1">
             {STICKERS.map((s) => (
               <button

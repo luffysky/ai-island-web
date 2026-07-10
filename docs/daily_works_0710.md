@@ -177,6 +177,10 @@
   - 遠端觀看（進行中任務輪詢刷新 + 「遠端觀看中」+ 可遠端停止）。
   - 語音輸入（Web Speech zh-TW）+ 目標裝置提示。
 - ⬜ 下一步 **Phase 1b 收尾**（Playwright browser-worker + 截圖 + 真跑端到端 Demo + KPI）／**Phase 2b**（任務背景執行、脫離連線照跑）／Android／排程。
+
+### ✅ 順手補（0710）
+- **3D 表情可見化**：Fluent 3D 之前只是 Noto 動畫的 fallback（幾乎不會顯示）→ AnimatedEmojiPicker 加**「3D」分頁**，40 顆常用立體 emoji 可選、點了以 `.png` 圖片網址插入（走媒體渲染 = 訊息裡真的看到 3D）。顔文字(ツ)＋動態貼圖分頁本就在（12 處輸入點都有）。
+- **愛心回歸＝每日免費 AI 額度視覺化**：header 5 顆愛心＝今日 `AI_FREE_DAILY` 剩餘比例（用了會少、隔天回滿；訂閱/特權顯示 ❤️∞）。新 `GET /api/me/ai-quota`（純讀 `ai_daily_quota.free_used`、不消耗）。取代先前「半成品裝飾」的移除。
 - 核心：`Agent Core`（任務規劃迴圈＋最大步數＋重試＋驗證＋中止）、`Tool Registry`（每工具 JSON Schema＋風險等級 read/write/dangerous＋平台限制）、`Device Bridge`（本機助手 Electron→Tauri，WebSocket 連線）、`Browser Worker`（Playwright 走 DOM/Role/Accessibility、不用座標）、`Approval Engine`（L0–L4 權限、寫入/刪除/付款要確認）、`Credential Broker`（Agent 不碰明文密碼）。
 - **MVP 只做 Windows + 瀏覽器 + AI 島開發工作流**（Demo：手機下指令→電腦開 VS Code 跑測試→分析錯誤→回傳，改檔前要確認）。Android 第二階段、iOS 最後（限制大、走 App Intents/Shortcuts）。
 - 差異化敘事（接 AI 島原定位）：**「別人教你怎麼問 AI，AI 島教你怎麼讓 AI 真正做事」**——最透明、可教、可視化、可中止、失敗可回復的 Agent，讓新手敢授權。競賽自評 8/10。
