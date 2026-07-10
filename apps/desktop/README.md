@@ -18,6 +18,7 @@
    ```bash
    cp bridge.config.example.json bridge.config.json
    # 編輯 bridge.config.json：貼上 token、把 roots 改成你要開放的專案資料夾
+   # ⚠ Windows 路徑用正斜線（D:/foo/bar）或雙反斜線（D:\\foo\\bar）；單反斜線會讓 JSON 壞掉
    ```
 3. 啟動：
    ```bash
