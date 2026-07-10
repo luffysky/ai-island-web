@@ -135,7 +135,7 @@ export function AnimatedEmojiPicker({
       </div>
 
       {!q && (
-        <div className="flex gap-0.5 px-1.5 pt-1.5 overflow-x-auto no-scrollbar">
+        <div className="flex flex-wrap gap-0.5 px-1.5 pt-1.5">
           {CATEGORIES.map((c) => (
             <button
               key={c.id}

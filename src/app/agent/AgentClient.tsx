@@ -9,6 +9,7 @@ interface StepView { idx: number; kind: "thought" | "step"; thought?: string; to
 interface ApprovalReq { id: string; toolName: string; risk: Risk; summary: Record<string, string>; }
 interface TaskListItem { id: string; goal: string; status: string; step_count: number; created_at: string; }
 interface DeviceItem { id: string; name: string; platform: string; online: boolean; }
+interface SkillItem { id: string; name: string; description?: string; emoji: string; goal_template: string; allowed_tools: string[]; max_steps: number; is_builtin: boolean; }
 
 const RISK_BADGE: Record<Risk, { label: string; cls: string; Icon: any }> = {
   read: { label: "唯讀", cls: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400", Icon: Eye },
@@ -52,6 +53,9 @@ export function AgentClient() {
   const [copied, setCopied] = useState(false);
   const [watching, setWatching] = useState<string>("");   // 目前輪詢觀看的 taskId（背景任務進行中就刷新）
   const [listening, setListening] = useState(false);
+  const [skills, setSkills] = useState<SkillItem[]>([]);
+  const [skillId, setSkillId] = useState<string>("");     // 選用的技能
+  const [skillModal, setSkillModal] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const recRef = useRef<any>(null);
   const deepLinkedRef = useRef(false);
@@ -73,13 +77,21 @@ export function AgentClient() {
     } catch { /* ignore */ }
   }, []);
 
+  const loadSkills = useCallback(async () => {
+    try {
+      const r = await fetch("/api/agent/skills");
+      if (r.ok) setSkills((await r.json()).skills ?? []);
+    } catch { /* ignore */ }
+  }, []);
+
   useEffect(() => {
     fetch("/api/agent/tools").then((r) => r.json()).then((d) => setTools(d.tools ?? [])).catch(() => {});
     loadHistory();
     loadDevices();
+    loadSkills();
     const t = setInterval(loadDevices, 10000);        // 每 10s 刷新裝置在線狀態
     return () => clearInterval(t);
-  }, [loadHistory, loadDevices]);
+  }, [loadHistory, loadDevices, loadSkills]);
 
   const pair = useCallback(async () => {
     setNewToken(null);
@@ -116,7 +128,7 @@ export function AgentClient() {
     setStarting(true); setSteps([]); setSummary(""); setApproval(null); setStatus("planning"); setTaskId(""); setWatching("");
     try {
       const res = await fetch("/api/agent/tasks", {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ goal: text }),
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ goal: text, skillId: skillId || undefined }),
       });
       if (!res.ok) { setStatus("failed"); setSummary("無法啟動任務（請先登入或稍後再試）。"); return; }
       const { taskId: id } = await res.json();
@@ -124,7 +136,7 @@ export function AgentClient() {
       loadHistory();
     } catch { setStatus("failed"); setSummary("連線失敗。"); }
     finally { setStarting(false); }
-  }, [busy, loadHistory]);
+  }, [busy, loadHistory, skillId]);
 
   const replay = useCallback(async (id: string) => {
     if (busy) return;
@@ -233,6 +245,29 @@ export function AgentClient() {
               </div>
             )}
           </div>
+
+          {/* 技能（內建 + 自建 Agent）—— 選一個會限制工具集並套用它的任務框架 */}
+          {!busy && (
+            <div className="flex flex-wrap items-center gap-1.5 mt-3">
+              <span className="text-xs text-black/40 dark:text-white/40 mr-0.5">技能</span>
+              {skills.map((s) => {
+                const on = skillId === s.id;
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => setSkillId(on ? "" : s.id)}
+                    title={s.description}
+                    className={`text-xs rounded-full px-2.5 py-1 border transition ${on ? "bg-violet-600 border-violet-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70 hover:bg-black/5 dark:hover:bg-white/10"}`}
+                  >
+                    {s.emoji} {s.name}{!s.is_builtin && <span className="opacity-60"> ·我的</span>}
+                  </button>
+                );
+              })}
+              <button onClick={() => setSkillModal(true)} className="text-xs rounded-full px-2.5 py-1 border border-dashed border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">
+                ＋ 自建 Agent
+              </button>
+            </div>
+          )}
 
           {/* 狀態列 */}
           {(busy || status) && (
@@ -355,18 +390,92 @@ export function AgentClient() {
                     {copied ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}{copied ? "已複製" : "複製"}
                   </button>
                 </div>
-                <ol className="text-sm space-y-1.5 text-black/75 dark:text-white/75 list-decimal pl-5">
-                  <li>下載 <code className="text-xs">apps/desktop</code> 桌面助手（需 Node 18+）。</li>
-                  <li>複製 <code className="text-xs">bridge.config.example.json</code> 為 <code className="text-xs">bridge.config.json</code>，貼上上面的 token、設定允許的資料夾。</li>
-                  <li>執行 <code className="text-xs bg-black/5 dark:bg-black/40 px-1 rounded">node bridge.mjs</code>（或 <code className="text-xs">npm run gui</code> 開圖形介面）。</li>
-                  <li>看到「等待任務中…」後，回這裡下需要本機的指令即可。</li>
+                <p className="text-sm font-medium mb-1.5">在電腦上開終端機、照這 3 步（需 Node 18+）：</p>
+                <ol className="text-sm space-y-2 text-black/75 dark:text-white/75 list-decimal pl-5">
+                  <li>
+                    進桌面助手資料夾、建設定檔：
+                    <pre className="mt-1 text-[11px] bg-black/5 dark:bg-black/40 rounded-lg p-2 overflow-x-auto">cd apps/desktop{"\n"}cp bridge.config.example.json bridge.config.json</pre>
+                  </li>
+                  <li>編輯 <code className="text-xs">bridge.config.json</code>：把 <code className="text-xs">token</code> 換成上面複製的，<code className="text-xs">roots</code> 改成你要開放的資料夾（<b>Windows 路徑用正斜線</b> <code className="text-xs">D:/專案</code>）。</li>
+                  <li>
+                    啟動（看到「等待任務中…」就成功）：
+                    <pre className="mt-1 text-[11px] bg-black/5 dark:bg-black/40 rounded-lg p-2 overflow-x-auto">node bridge.mjs</pre>
+                  </li>
                 </ol>
+                <p className="text-xs text-black/45 dark:text-white/45 mt-2">回這頁下需要本機的指令即可（例：「在專案跑 npm test 看結果」）。目前為開發者版本、需專案原始碼；打包安裝檔為後續。</p>
               </>
             )}
           </div>
         </div>
       )}
+
+      {/* 自建 Agent（技能）彈窗 */}
+      {skillModal && (
+        <SkillCreator tools={tools} onClose={() => setSkillModal(false)} onCreated={(id) => { loadSkills(); setSkillId(id); setSkillModal(false); }} />
+      )}
     </main>
+  );
+}
+
+function SkillCreator({ tools, onClose, onCreated }: { tools: ToolInfo[]; onClose: () => void; onCreated: (id: string) => void }) {
+  const [name, setName] = useState("");
+  const [emoji, setEmoji] = useState("🤖");
+  const [desc, setDesc] = useState("");
+  const [prompt, setPrompt] = useState("");
+  const [picked, setPicked] = useState<string[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState("");
+
+  const toggle = (n: string) => setPicked((p) => (p.includes(n) ? p.filter((x) => x !== n) : [...p, n]));
+
+  const save = async () => {
+    if (!name.trim()) { setErr("請填技能名稱"); return; }
+    setSaving(true); setErr("");
+    try {
+      const r = await fetch("/api/agent/skills", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, emoji, description: desc, goal_template: prompt, allowed_tools: picked, max_steps: 12 }),
+      });
+      const d = await r.json();
+      if (!r.ok) { setErr(d.error ?? "建立失敗"); return; }
+      onCreated(d.id);
+    } catch { setErr("建立失敗"); } finally { setSaving(false); }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" onClick={onClose}>
+      <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-[#15161c] border border-black/10 dark:border-white/10 p-5 max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-bold flex items-center gap-2"><Bot className="w-5 h-5 text-violet-500" /> 自建 Agent（技能）</h2>
+          <button onClick={onClose} className="text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white"><X className="w-5 h-5" /></button>
+        </div>
+        <div className="space-y-3">
+          <div className="flex gap-2">
+            <input value={emoji} onChange={(e) => setEmoji(e.target.value)} maxLength={2} className="w-14 text-center text-xl rounded-xl border border-black/10 dark:border-white/15 bg-transparent py-2" />
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="技能名稱（如：我的部落格助手）" className="flex-1 rounded-xl border border-black/10 dark:border-white/15 bg-transparent px-3 py-2 text-sm" />
+          </div>
+          <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="一句話說明這個 Agent 做什麼" className="w-full rounded-xl border border-black/10 dark:border-white/15 bg-transparent px-3 py-2 text-sm" />
+          <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} rows={3} placeholder="給 Agent 的指示／守則（例：你是我的專案健檢助手，先看 git 狀態再跑測試，動任何東西前先問我）" className="w-full resize-none rounded-xl border border-black/10 dark:border-white/15 bg-transparent px-3 py-2 text-sm" />
+          <div>
+            <div className="text-xs text-black/50 dark:text-white/50 mb-1.5">允許的工具（不選＝全部可用）</div>
+            <div className="flex flex-wrap gap-1.5">
+              {tools.map((t) => {
+                const on = picked.includes(t.name);
+                return (
+                  <button key={t.name} onClick={() => toggle(t.name)} className={`text-xs rounded-full px-2.5 py-1 border transition ${on ? "bg-violet-600 border-violet-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70 hover:bg-black/5 dark:hover:bg-white/10"}`}>
+                    {t.name}{t.needsDevice ? " 🖥" : ""}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          {err && <div className="text-xs text-rose-500">{err}</div>}
+          <button onClick={save} disabled={saving} className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white px-4 py-2.5 text-sm font-medium">
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />} 建立技能
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

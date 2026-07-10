@@ -29,14 +29,28 @@ export async function POST(req: Request) {
   const body = await req.json().catch(() => ({} as any));
   const goal = String(body.goal ?? "").trim().slice(0, 500);
   if (!goal) return NextResponse.json({ error: "缺 goal" }, { status: 400 });
-  const maxSteps = Math.min(Math.max(Number(body.maxSteps) || 20, 1), 30);
-
   const admin = createSupabaseAdmin();
+
+  // 選用技能：限制工具集 + 附加任務框架 + 決定 max_steps
+  let skill: { allowedTools?: string[]; prompt?: string } | undefined;
+  let skillId: string | null = null;
+  let maxSteps = Math.min(Math.max(Number(body.maxSteps) || 20, 1), 30);
+  if (body.skillId) {
+    const { data: sk } = await admin.from("agent_skills")
+      .select("id, goal_template, allowed_tools, max_steps, is_builtin, user_id")
+      .eq("id", body.skillId).or(`is_builtin.eq.true,user_id.eq.${user.id}`).single();
+    if (sk) {
+      skillId = sk.id;
+      skill = { allowedTools: (sk.allowed_tools as string[]) ?? [], prompt: sk.goal_template || undefined };
+      maxSteps = Math.min(Math.max(Number(sk.max_steps) || maxSteps, 1), 30);
+    }
+  }
+
   const { data: task, error } = await admin.from("agent_tasks")
-    .insert({ user_id: user.id, goal, max_steps: maxSteps, status: "planning" })
+    .insert({ user_id: user.id, goal, max_steps: maxSteps, status: "planning", skill_id: skillId })
     .select("id").single();
   if (error || !task) return NextResponse.json({ error: error?.message ?? "建任務失敗" }, { status: 500 });
 
-  runAgentTaskDetached(task.id, user.id, goal, maxSteps);  // 背景跑、不綁這個連線
+  runAgentTaskDetached(task.id, user.id, goal, maxSteps, skill);  // 背景跑、不綁這個連線
   return NextResponse.json({ taskId: task.id, goal });
 }

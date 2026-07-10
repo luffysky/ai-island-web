@@ -140,7 +140,7 @@ export function GifPicker({ onSelect, align = "left" }: { onSelect: (gifUrl: str
             </div>
           </div>
           {/* 分類快捷 */}
-          <div className="flex gap-1 px-3 pt-2 overflow-x-auto no-scrollbar-gif">
+          <div className="flex flex-wrap gap-1 px-3 pt-2">
             {CATS.map((c, i) => (
               <button key={c.label} type="button" onClick={() => pickCat(i)}
                 className={`shrink-0 px-2 py-1 rounded-full text-[11px] whitespace-nowrap transition ${activeCat === i ? "bg-accent text-black font-semibold" : "bg-bg-elevated text-fg-muted hover:text-fg"}`}>

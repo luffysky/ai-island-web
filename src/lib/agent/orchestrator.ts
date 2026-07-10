@@ -4,7 +4,7 @@
 // 以 async generator 吐事件，讓 API route 轉成 SSE。approval 用「寫 DB pending row + 輪詢」等前端決定。
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { completeForUsage } from "@/lib/resolve-usage-ai";
-import { getTool, describeTools, needsApproval, approvalSummary, type ToolResult } from "./tools";
+import { getTool, describeTools, needsApproval, approvalSummary, toolAllowed, type ToolResult } from "./tools";
 import { getOnlineDevice, dispatchToDevice } from "./bridge";
 import { sendPushToUser } from "@/lib/web-push";
 
@@ -28,6 +28,9 @@ interface StepRow {
 
 interface Decision { thought?: string; tool?: string; args?: any; done?: boolean; summary?: string; }
 
+// 技能：限制可用工具 + 附加任務框架/守則（Phase 3）
+export interface SkillCtx { allowedTools?: string[]; prompt?: string; }
+
 function parseDecision(text: string): Decision | null {
   let t = (text ?? "").trim();
   // 去 code fence
@@ -48,20 +51,21 @@ const PLANNER_SYSTEM = `你是 AI 島的行動代理（Agent）核心。你會�
 - 若某工具回「需桌面助手（Phase 1b 尚未接）」，代表本機能力還沒接上，請據此收尾說明、不要硬試同一個。
 - 盡量少步數完成；拿到足夠資訊就 done。`;
 
-async function planNext(goal: string, history: StepRow[]): Promise<Decision | null> {
+async function planNext(goal: string, history: StepRow[], skill?: SkillCtx): Promise<Decision | null> {
   const hist = history.map((s) =>
     `#${s.idx} ${s.toolName ?? "?"}(${JSON.stringify(s.args ?? {})}) → ${s.ok ? "ok" : "fail"}: ${JSON.stringify(s.result ?? {}).slice(0, 400)}`
   ).join("\n") || "（尚無步驟）";
+  const system = skill?.prompt ? `${PLANNER_SYSTEM}\n\n【本次技能設定】${skill.prompt}` : PLANNER_SYSTEM;
   const user = `目標：${goal}
 
 可用工具：
-${describeTools()}
+${describeTools(skill?.allowedTools)}
 
 目前進度：
 ${hist}
 
 請只回下一步的 JSON。`;
-  const res = await completeForUsage("agent_core", { system: PLANNER_SYSTEM, user, maxTokens: 700, defaultModel: "claude-haiku-4-5-20251001" });
+  const res = await completeForUsage("agent_core", { system, user, maxTokens: 700, defaultModel: "claude-haiku-4-5-20251001" });
   return parseDecision(res.text);
 }
 
@@ -83,19 +87,19 @@ async function waitForApproval(approvalId: string, taskId: string, timeoutMs = 3
 // Phase 2b：背景執行——任務不綁 HTTP 連線，關掉頁面也照跑。
 // Zeabur 是長駐 node server，detached promise 會續跑；步驟寫進 DB、關鍵時刻推播、前端靠輪詢觀看。
 const RUNNING = new Set<string>();
-export function runAgentTaskDetached(taskId: string, userId: string, goal: string, maxSteps = 20): void {
+export function runAgentTaskDetached(taskId: string, userId: string, goal: string, maxSteps = 20, skill?: SkillCtx): void {
   if (RUNNING.has(taskId)) return;
   RUNNING.add(taskId);
   (async () => {
     // 事件在 runAgentTask 內就已落 DB + 推播；這裡只需把 generator 跑到底、不需消費事件。
-    try { for await (const _ev of runAgentTask(taskId, userId, goal, maxSteps)) { void _ev; } }
+    try { for await (const _ev of runAgentTask(taskId, userId, goal, maxSteps, skill)) { void _ev; } }
     catch { /* runAgentTask 自身的 try/catch 已把任務標成 failed */ }
     finally { RUNNING.delete(taskId); }
   })();
 }
 
 /** 跑一個任務，吐事件流。背景 runner（runAgentTaskDetached）驅動它；步驟/狀態/推播都在內部落地。 */
-export async function* runAgentTask(taskId: string, userId: string, goal: string, maxSteps = 20): AsyncGenerator<AgentEvent> {
+export async function* runAgentTask(taskId: string, userId: string, goal: string, maxSteps = 20, skill?: SkillCtx): AsyncGenerator<AgentEvent> {
   const admin = createSupabaseAdmin();
   const history: StepRow[] = [];
   const setStatus = async (status: string, patch: Record<string, unknown> = {}) => {
@@ -111,7 +115,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
       const { data: cur } = await admin.from("agent_tasks").select("status").eq("id", taskId).single();
       if (cur?.status === "cancelled") { yield { type: "done", status: "cancelled", summary: "任務已取消" }; return; }
 
-      const decision = await planNext(goal, history);
+      const decision = await planNext(goal, history, skill);
       if (!decision) {
         await setStatus("failed", { error: "規劃失敗（模型未回有效 JSON）", finished_at: new Date().toISOString() });
         yield { type: "error", error: "規劃失敗：模型未回有效指令" };
@@ -130,6 +134,13 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
 
       const tool = getTool(decision.tool);
       const row: StepRow = { idx, thought: decision.thought, toolName: decision.tool, risk: tool?.risk, args: decision.args };
+      if (tool && !toolAllowed(tool.name, skill?.allowedTools)) {
+        row.ok = false; row.result = { error: `此技能不允許使用工具 ${tool.name}` };
+        history.push(row);
+        await admin.from("agent_steps").insert({ task_id: taskId, idx, thought: row.thought, tool_name: tool.name, args: decision.args ?? {}, result: row.result, ok: false });
+        yield { type: "step", step: row };
+        continue;
+      }
       if (!tool) {
         row.ok = false; row.result = { error: `未知工具 ${decision.tool}` };
         history.push(row);
