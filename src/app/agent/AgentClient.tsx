@@ -13,6 +13,9 @@ interface SkillItem { id: string; name: string; description?: string; emoji: str
 
 const CAT_LABEL: Record<string, string> = { research: "網頁 · 研究", write: "寫作 · 建議", code: "程式碼", dev: "開發者本機", learn: "站內 · 學習", other: "其他" };
 
+// 桌面助手安裝檔下載連結（放到公開可下載處後填這裡；空字串＝暫不顯示下載鈕、只給 CLI 說明）
+const DESKTOP_DOWNLOAD_URL = "";
+
 const RISK_BADGE: Record<Risk, { label: string; cls: string; Icon: any }> = {
   read: { label: "唯讀", cls: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400", Icon: Eye },
   write: { label: "會寫入", cls: "bg-amber-500/15 text-amber-600 dark:text-amber-400", Icon: ShieldAlert },
@@ -507,6 +510,15 @@ export function AgentClient() {
                     {copied ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}{copied ? "已複製" : "複製"}
                   </button>
                 </div>
+                {DESKTOP_DOWNLOAD_URL && (
+                  <a href={DESKTOP_DOWNLOAD_URL} className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 text-sm font-medium mb-3" download>
+                    ⬇ 下載桌面助手（Windows，免裝 Node）
+                  </a>
+                )}
+                {DESKTOP_DOWNLOAD_URL ? (
+                  <p className="text-sm font-medium mb-1.5">解壓後執行「AI島桌面助手.exe」→ 在設定畫面貼上上面的 token、選允許資料夾 → 啟動即可。</p>
+                ) : (
+                <>
                 <p className="text-sm font-medium mb-1.5">在電腦上開終端機、照這 3 步（需 Node 18+）：</p>
                 <ol className="text-sm space-y-2 text-black/75 dark:text-white/75 list-decimal pl-5">
                   <li>
@@ -520,6 +532,8 @@ export function AgentClient() {
                   </li>
                 </ol>
                 <p className="text-xs text-black/45 dark:text-white/45 mt-2">回這頁下需要本機的指令即可（例：「在專案跑 npm test 看結果」）。目前為開發者版本、需專案原始碼；打包安裝檔為後續。</p>
+                </>
+                )}
               </>
             )}
           </div>

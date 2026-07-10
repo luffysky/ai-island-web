@@ -2,8 +2,7 @@
   "name": "ai-island-desktop-bridge",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
-  "description": "AI 島桌面助手 — 讓 /agent 的行動代理能在你的電腦上（限白名單）讀寫檔案、跑指令。",
+  "description": "AI 島桌面助手 — 讓 /agent 的行動代理能在你的電腦上（限白名單）讀寫檔案、跑指令。（.js=CommonJS、.mjs=ESM；不設 type:module 讓 Electron main/preload 走 CJS）",
   "author": "SnowRealm (AI 島)",
   "main": "electron/main.js",
   "scripts": {
