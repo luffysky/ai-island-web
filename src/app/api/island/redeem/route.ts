@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { rateLimit } from "@/lib/rate-limit";
+import { capIslandReward } from "@/lib/island-economy";
 
 export const dynamic = "force-dynamic";
 
@@ -32,20 +33,26 @@ export async function POST(req: NextRequest) {
 
   const admin = createSupabaseAdmin();
 
+  // 伺服器權威每日上限：資源存前端無法逐筆驗證，用每日賺幣上限鎖住可提取金額。
+  const grant = await capIslandReward(admin, user.id, coins);
+  if (grant <= 0) {
+    return NextResponse.json({ ok: true, coins: 0, capped: true, message: "今天島上賺的 Z 幣已達上限，明天再來兌換 🌙" });
+  }
+
   // 加 z 幣 — 優先用 grant_zcoin RPC、若無就 fallback profiles.update
   try {
     const { error } = await admin.rpc("grant_zcoin", {
       p_user_id: user.id,
-      p_amount: coins,
+      p_amount: grant,
       p_reason: `island_harvest_wood${wood}_crystal${crystal}_shell${shell}`,
     });
     if (error) throw error;
   } catch {
     // fallback：直接 update profiles.z_coin
     const { data: prof } = await admin.from("profiles").select("z_coin").eq("id", user.id).single();
-    const newCoin = (prof?.z_coin ?? 0) + coins;
+    const newCoin = (prof?.z_coin ?? 0) + grant;
     await admin.from("profiles").update({ z_coin: newCoin }).eq("id", user.id);
   }
 
-  return NextResponse.json({ ok: true, coins });
+  return NextResponse.json({ ok: true, coins: grant, capped: grant < coins });
 }

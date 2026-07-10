@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { rateLimit } from "@/lib/rate-limit";
+import { capIslandReward } from "@/lib/island-economy";
 
 export const dynamic = "force-dynamic";
 
@@ -20,10 +21,17 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json().catch(() => ({} as any));
   const fish = String(body.fish ?? "");
-  const reward = FISH_REWARD[fish];
-  if (!reward) return NextResponse.json({ error: "invalid_fish" }, { status: 400 });
+  const baseReward = FISH_REWARD[fish];
+  if (!baseReward) return NextResponse.json({ error: "invalid_fish" }, { status: 400 });
 
   const admin = createSupabaseAdmin();
+
+  // 伺服器權威每日上限：就算前端一直謊報「龍魚」，一天最多也只能拿 ISLAND_DAILY_ZCOIN_CAP。
+  const reward = await capIslandReward(admin, user.id, baseReward);
+  if (reward <= 0) {
+    return NextResponse.json({ ok: true, reward: 0, capped: true, message: "今天島上賺的 Z 幣已達上限，明天再來釣 🎣" });
+  }
+
   try {
     const { error } = await admin.rpc("grant_zcoin", {
       p_user_id: user.id,
@@ -36,5 +44,5 @@ export async function POST(req: NextRequest) {
     await admin.from("profiles").update({ z_coin: (prof?.z_coin ?? 0) + reward }).eq("id", user.id);
   }
 
-  return NextResponse.json({ ok: true, reward });
+  return NextResponse.json({ ok: true, reward, capped: reward < baseReward });
 }

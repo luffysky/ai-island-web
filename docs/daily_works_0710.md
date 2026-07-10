@@ -88,7 +88,8 @@
 - ⬜ header 的「生命」目前是**裝飾/半成品**（預設 5、只有島嶼睡覺 +1、無消耗端、完課不加）。三選一：(1) 做成體力機制（探索/挑戰消耗、完課/睡覺回）、(2) **改成「連續學習天數 🔥」streak（建議、已有打卡資料）**、(3) 先從 header 拿掉。
 
 ### 🚨 島嶼經濟刷幣漏洞（延續 0709）
-- ⬜ `catch-fish` / `redeem` 信任前端申報、無去重 → 伺服器權威事件驗證（配 E2E 回歸）。
+- ~~`catch-fish` / `redeem` 信任前端申報 → 無限刷幣~~ → ✅ 伺服器權威**每日賺幣上限** `ISLAND_DAILY_ZCOIN_CAP=500`（`src/lib/island-economy.ts`）：即使前端謊報龍魚/200水晶，一天最多只能拿 500；加總來自 `coin_transactions`（island_fish*/island_harvest*）。含 vitest 單元測試。
+- ⬜ phase 2（需同步改前端）：釣魚魚種改**伺服器擲骰**、前端顯示伺服器回傳結果 → 連單筆 outcome 也權威化；完整 E2E（Playwright）回歸另立。
 
 ### 其他（低）
 - ⬜ Plus/Pro tier 的高階 gating UI 顯示（目前後端已限，前端可標示剩餘高階額度）。
