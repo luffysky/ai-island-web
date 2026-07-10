@@ -83,7 +83,7 @@
 ### P4 — 能力擴充
 - [ ] RAG：`ai/assistant`（hint/recommend）、`mock-interview`、創作者綠寶 加 `vectorSearchLessons` 接地。
 - [ ] 視覺：`mock-interview`（白板/設計截圖）、`ai/assistant` `grade_draft`（手寫作業拍照）。
-- [ ] 配額統一：舊 `consume_ai_quota`（pet/assistant）→ `consume_ai_quota_v2`，讓它們也有 Z幣 overflow UX。
+- [x] 配額統一：`pet/chat`、`ai/assistant` 舊 `consume_ai_quota` → `consume_ai_quota_v2`（kind=free、**與主聊天共用同一每日免費池**、`allow_zcoin:false`）。`pet/tick` 保留舊 RPC（背景 tick 不吃使用者聊天池）。Z 幣續用 UX 需前端、屬後續。
 - [ ] 評估後台重複生成器（blog/forum/notes/quest seed）接快取。
 
 ---

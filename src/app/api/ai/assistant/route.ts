@@ -53,8 +53,12 @@ export async function POST(req: NextRequest) {
   if (!unlimited) {
     const { data: premiumOk } = await admin.rpc("has_active_subscription", { p_user_id: user.id });
     if (!premiumOk) {
-      const { data: quotaOk } = await admin.rpc("consume_ai_quota", { p_user_id: user.id, p_amount: 1 });
-      if (quotaOk === false) return NextResponse.json({ error: "quota_exceeded" }, { status: 429 });
+      // 跟主聊天共用同一個每日免費池（consume_ai_quota_v2 kind=free）；用完即擋（不接 Z 幣續用 UX 屬前端後續）
+      const { AI_FREE_DAILY, AI_ZCOIN_FREE_OVERFLOW } = await import("@/lib/ai-quota-config");
+      const { data: q } = await admin.rpc("consume_ai_quota_v2", {
+        p_user_id: user.id, p_kind: "free", p_daily_limit: AI_FREE_DAILY, p_zcoin_price: AI_ZCOIN_FREE_OVERFLOW, p_allow_zcoin: false,
+      });
+      if (!(q as any)?.ok) return NextResponse.json({ error: "quota_exceeded" }, { status: 429 });
     }
   }
 
