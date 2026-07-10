@@ -89,6 +89,7 @@ ${lessonsCompact}
 
   try {
     let raw = "";
+    let u = { tin: 0, tout: 0, cw: 0, cr: 0 };
     for await (const chunk of streamAI({
       provider: model.provider,
       model: model.model_name,
@@ -99,7 +100,14 @@ ${lessonsCompact}
       ],
       maxTokens: 8000,
     })) {
-      if ((chunk as any).type === "text") raw += (chunk as any).text;
+      const ch = chunk as any;
+      if (ch.type === "text") raw += ch.text;
+      else if (ch.type === "done") u = { tin: ch.tokensInput ?? 0, tout: ch.tokensOutput ?? 0, cw: ch.cacheWriteTokens ?? 0, cr: ch.cacheReadTokens ?? 0 };
+    }
+    // 成本記帳（streamAI 不自動記；這是 maxTokens 8000 的最大單筆黑洞）
+    if (u.tin || u.tout) {
+      const { logAiUsage } = await import("@/lib/ai-usage-log");
+      logAiUsage(model.provider, model.model_name, u.tin, u.tout, { write: u.cw, read: u.cr }).catch(() => {});
     }
 
     // 嘗試解析 JSON（容錯：去 code fence、找第一個 {）

@@ -118,6 +118,7 @@ export async function POST(req: NextRequest) {
 
   try {
     let text = "";
+    let u = { tin: 0, tout: 0, cw: 0, cr: 0 };
     for await (const chunk of streamAI({
       provider: model.provider,
       model: model.model_name,
@@ -128,7 +129,14 @@ export async function POST(req: NextRequest) {
       ],
       maxTokens: 60,
     })) {
-      if ((chunk as any).type === "text") text += (chunk as any).text;
+      const ch = chunk as any;
+      if (ch.type === "text") text += ch.text;
+      else if (ch.type === "done") u = { tin: ch.tokensInput ?? 0, tout: ch.tokensOutput ?? 0, cw: ch.cacheWriteTokens ?? 0, cr: ch.cacheReadTokens ?? 0 };
+    }
+    // 成本記帳（背景 tick 量可能大、streamAI 不自動記）
+    if (u.tin || u.tout) {
+      const { logAiUsage } = await import("@/lib/ai-usage-log");
+      logAiUsage(model.provider, model.model_name, u.tin, u.tout, { write: u.cw, read: u.cr }).catch(() => {});
     }
     text = text.trim().slice(0, 80);
     if (!text) return NextResponse.json({ mood });

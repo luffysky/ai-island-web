@@ -474,6 +474,18 @@ async function handlePost(req: NextRequest) {
           try {
             await admin.rpc("inc_system_key_usage", { p_provider: model.provider, p_cost: cost });
           } catch {}
+          // per-model 月聚合（ai_model_usage）——全站最大宗的主聊天用量以前漏記進 per-model 儀表板。
+          // 用實際回答的模型（Auto/退備援時可能非原選）；tokensInput 此處已含 cache。不重複計 inc_system_key_usage。
+          try {
+            await admin.rpc("inc_model_usage", {
+              p_month: new Date().toISOString().slice(0, 7),
+              p_provider: usedProvider || model.provider,
+              p_model: usedModel || model.model_name,
+              p_tin: tokensInput,
+              p_tout: tokensOutput,
+              p_cost: cost,
+            });
+          } catch {}
         }
 
         // 送結尾

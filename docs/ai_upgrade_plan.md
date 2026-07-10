@@ -57,11 +57,11 @@
 
 ## 3. 分階段計畫（P0–P4）
 
-### P0 — 成本記帳補完（低風險、純加記帳不改行為）
-- [ ] `admin/quiz/generate`、`pet/tick` 串流收尾補 `logAiUsage`。
-- [ ] 主聊天 `ai/chat` 補 `inc_model_usage`（與現有 `upsert_ai_usage`/`inc_system_key_usage` 對齊、不重複計）。
-- [ ] 抽共用 `streamAndLog` helper；掃全站 `streamAI` 呼叫點確保都經過它。
-- [ ] 驗收：後台 `ai-cost` / `admin/ai/usage` 能看到這幾個來源的 token/成本。
+### P0 — 成本記帳補完（低風險、純加記帳不改行為）✅ 已做
+- [x] `admin/quiz/generate`、`pet/tick` 串流收尾補 `logAiUsage`（capture done chunk usage → logAiUsage）。
+- [x] 主聊天 `ai/chat` 補 `inc_model_usage`（放在既有 `!useBYOK` 區塊內、用實際回答模型 `usedProvider/usedModel`、不重複計 `inc_system_key_usage`）。
+- [ ] （選配）抽共用 `streamAndLog` helper；目前三個出口已直接補齊、暫不重構。
+- [ ] 驗收：後台 `ai-cost` / `admin/ai/usage` 能看到這幾個來源的 token/成本（需上線後觀察）。
 
 ### P1 — 創作者綠寶補漏（省錢/防爆）　【決策：只擋高階、保持免費，軟上限預埋預設關】
 - [ ] `creator-island/ai/chat` 套 `gateHighTierModel`（免費用戶自動降中低階、堵住高階燒錢）。
