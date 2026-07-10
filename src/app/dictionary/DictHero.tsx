@@ -9,10 +9,11 @@ const DICT_LOTTIE = "";
 export function DictHero() {
   return (
     <header className="relative mb-6 overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-accent/10 via-emerald-500/[0.06] to-sky-500/10 p-6 sm:p-8">
-      {/* 漂浮小裝飾 */}
-      <span className="pointer-events-none absolute right-6 top-4 text-2xl opacity-40 dict-float">✨</span>
-      <span className="pointer-events-none absolute right-16 bottom-5 text-xl opacity-30 dict-float2">💡</span>
-      <span className="pointer-events-none absolute right-28 top-9 text-lg opacity-30 dict-float">⭐</span>
+      {/* 漂浮小裝飾：Lottie 自建雙星閃爍（自 host、可商用），載不出來退回 ✨ emoji */}
+      <span className="pointer-events-none absolute right-3 top-2 opacity-90">
+        <LottieIcon src="/lotties/dict-sparkle.json" size={56} fallback={<span className="text-2xl dict-float">✨</span>} />
+      </span>
+      <span className="pointer-events-none absolute right-20 bottom-5 text-xl opacity-30 dict-float2">💡</span>
 
       <div className="relative flex items-center gap-3 sm:gap-4">
         <div className="shrink-0">
