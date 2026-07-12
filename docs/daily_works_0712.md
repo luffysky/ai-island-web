@@ -71,9 +71,32 @@
 ### ~~Phase F｜第一方護城河工具~~ ✅
 - `island.myProfile`（讀你的等級/經驗/連續天數/Z幣）、`island.searchLessons`（站內課程搜尋）→ 分身「懂你、導你到對的教材」，通用 claw agent 拿不到。皆雲端唯讀、手機也能跑。
 
-### Phase D / E（狀態）
-- **D 本機 Agent 加強**：本機執行鏈（filesystem/system/browser handlers）Phase 1b 已具備；「本機自主規劃迴圈 + 更多 Skills」為後續增強，需重新打包桌面 App 才生效。
-- **E 雲端沙盒**：需外部容器/沙盒基礎設施，屬較大 infra，先規劃（見 agent_island_plan.md §1-B/§7），不在本輪實作。
+### ~~Phase D｜桌面助手＝完整 Agent~~ ✅（需重打包桌面 App 才到使用者）
+- 桌面 App 內建「開啟完整 Agent（分身島）」：直接載入雲端 /agent 全功能（對話/記憶/技能/機會島），本機工具由同 App 的 Bridge 執行 → 桌面助手不再只是「被遙控的手」。
+- **E 雲端沙盒**：需外部容器基礎設施，屬較大 infra，先規劃（agent_island_plan.md §1-B、§9-L2）。
+
+### ~~Agent 引擎修正（林董實測回饋）~~ ✅
+- 拿掉懲罰性步數限制（20→40、上限 100）；**達上限改合成最終答案、不再直接失敗**（「找美食 20 步失敗」不再發生）。
+- 規劃器免費模型先跑、沒回有效 JSON 才升級強模型；全走系統金鑰、不分特權。
+
+### 📐 引擎設計文件 ✅
+- `docs/agent_island_plan.md §9`：「什麼任務都能完成的引擎」完整回答（六支柱＋L1–L5 分級路線＋再升級方向）。先做 **L1 拆解引擎 + L2 真瀏覽器/沙盒** 投報最高。
+
+---
+
+## 🏝️ 機會島（開新島、V1→V2 已上線）
+### ~~V1 競賽雷達最小閉環~~ ✅（migration 已上線）
+- schema `opportunities`（泛化十層 type）+ `opportunity_routes`（我的航線）。
+- 8 個競賽種子（只取機會島.md 明確資料、全標 **unverified 待核實**、不捏造）。
+- `/opportunities` 瀏覽＋搜尋＋類別/免費/開放篩選；`/opportunities/[id]` 詳情；`/opportunities/routes` 我的航線（收藏＋投件進度＋截止倒數）。
+- nav「機會島」入口（四語）；agent `opportunity.search` 工具 → 分身↔機會島閉環。
+- RWD 390/1440 皆 0 溢出。
+
+### ~~V2 AI 推薦~~ ✅
+- `/api/opportunities/recommend`：描述你的狀況 → AI 從開放機會挑 3-5 個、附符合率＋原因（免費模型優先、不耗使用者額度）。
+
+### 機會島 V3–V5（規劃見 opportunity_island_spec.md §10）
+- V3 陪跑（作品分析 GitHub/PDF/PitchDeck、成熟度、模擬評審、AI 生成）、V4 多聞雷達爬蟲、V5 擴十層＋Team/Enterprise —— 屬大工程、需真實資料來源與人工覆核鏈，下階段做。
 
 ## 🚧 Agent 後續（規劃見 docs/agent_island_plan.md、agent_memory_plan.md）
 - 林董定調：agent「像玩具都不如」，核心缺口＝**對話延續＋跨對話記憶**，且要做到**別的 claw agent 做不到的事**。
