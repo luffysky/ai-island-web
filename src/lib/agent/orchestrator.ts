@@ -32,6 +32,26 @@ interface Decision { thought?: string; tool?: string; args?: any; done?: boolean
 // 技能：限制可用工具 + 附加任務框架/守則（Phase 3）
 export interface SkillCtx { allowedTools?: string[]; prompt?: string; }
 
+// 判斷一段開頭是不是「模型的思考過程/後設說明」（reasoning 模型常把草稿當答案吐出來）。
+function looksLikeReasoning(head: string): boolean {
+  const h = (head ?? "").toLowerCase();
+  return /the user (wants|asked|is)|i (need|must|will|should) |let's (scan|check|see|look)|let me |based only on the|i must not invent|source \d|category \d|i will (organize|categorize|include)|我需要|我先|首先，?我|讓我來?|接下來我|使用者(想要|要求)|我會把/.test(h);
+}
+
+// 把模型可能夾帶的「思考過程/前言/code fence」清掉，只留真正的答案。防止 reasoning 草稿被當成最終回覆。
+function sanitizeAnswer(text: string): string {
+  let t = (text ?? "").trim();
+  t = t.replace(/<think(?:ing)?>[\s\S]*?<\/think(?:ing)?>/gi, "").trim();  // 成對 think 區塊
+  t = t.replace(/<think(?:ing)?>[\s\S]*$/i, "").trim();                     // 未閉合的 think
+  t = t.replace(/^```(?:markdown|md|json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+  // 開頭是一段思考、但後面有真正的 Markdown 標題 → 從第一個標題開始取
+  const m = t.match(/^#{1,4}\s+\S/m);
+  if (m && typeof m.index === "number" && m.index > 0 && looksLikeReasoning(t.slice(0, m.index))) {
+    t = t.slice(m.index).trim();
+  }
+  return t;
+}
+
 function parseDecision(text: string): Decision | null {
   let t = (text ?? "").trim();
   // 去 code fence
@@ -107,10 +127,11 @@ ${hist}
     res = await completeForUsage("agent_core", { system, user, maxTokens: 1200, defaultModel: strong });
     d = parseDecision(res.text);
   }
-  // 還是沒 JSON、但模型直接寫了像樣的答案 → 別因格式整個失敗，把它當最終回覆
+  // 還是沒 JSON、但模型直接寫了像樣的答案 → 別因格式整個失敗，把它當最終回覆。
+  // 但若它吐的是「思考草稿」就別採用 → 回 null，讓外層用乾淨的 finalizeFromHistory 重新合成。
   if (!d) {
-    const t = (res.text ?? "").replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
-    if (t.length > 40) d = { done: true, summary: t };
+    const t = sanitizeAnswer(res.text);
+    if (t.length > 40 && !looksLikeReasoning(t.slice(0, 200))) d = { done: true, summary: t };
   }
   return d;
 }
@@ -197,23 +218,27 @@ function stepEvidence(s: StepRow): string {
 }
 
 // 用目前進度合成「最好的最終答案」（步數用盡 / 規劃卡住 / 蒐集夠了）。把具體資料完整帶進去、禁止編造。
-async function finalizeFromHistory(goal: string, history: StepRow[]): Promise<string> {
-  try {
-    const evidence = history.map(stepEvidence).filter(Boolean).join("\n\n").slice(0, 14000)
-      || "（沒有可用資料）";
-    const best = await pickStrongModel();  // 最終答案用最強模型、品質優先
-    const res = await completeForUsage("agent_core", {
-      system: `你是 AI 島的行動代理。根據下面「已蒐集的資料」，直接給使用者最完整、最具體的繁體中文最終答案。
+const FINALIZE_SYSTEM = `你是 AI 島的行動代理。根據下面「已蒐集的資料」，直接給使用者最完整、最具體的繁體中文最終答案。
 規則：
+- **直接輸出答案本身**：第一行就是答案的 Markdown 內容。**嚴禁**任何思考過程、分析、前言或後設說明——絕對不要出現「The user wants」「I need to」「Let's scan」「Source 1」「我需要」「首先我」這類字句。
 - 把資料裡出現的**每一個**具體項目（店名/地址/營業時間/價格/評價/數字/來源連結）都整理進答案，不要只給空泛清單。
 - **只能用資料裡真的出現的內容**，絕對不要自己編造店名、地址或價格；資料沒有就別寫、寧可少列也別亂編。
 - 被擋頁/驗證頁/與目標無關的內容一律忽略。
 - 用清楚的 Markdown（標題 + 表格或清單 + 粗體），分類清楚、附上來源連結。
-- 不要回 JSON、不要再要求用工具、不要說「建議你自己去查」。`,
-      user: `目標：${goal}\n\n已蒐集的資料：\n${evidence}\n\n請直接給最終答案：`,
-      maxTokens: 2600, defaultModel: best,
-    });
-    return (res.text ?? "").trim();
+- 不要回 JSON、不要再要求用工具、不要說「建議你自己去查」。`;
+
+async function finalizeFromHistory(goal: string, history: StepRow[]): Promise<string> {
+  try {
+    const evidence = history.map(stepEvidence).filter(Boolean).join("\n\n").slice(0, 14000)
+      || "（沒有可用資料）";
+    const user = `目標：${goal}\n\n已蒐集的資料：\n${evidence}\n\n請直接給最終答案（第一行就是 Markdown、不要任何思考過程）：`;
+    const best = await pickStrongModel();  // 先用最強模型、品質優先
+    let out = sanitizeAnswer((await completeForUsage("agent_core", { system: FINALIZE_SYSTEM, user, maxTokens: 2600, defaultModel: best })).text);
+    // 若強模型把「思考草稿」當答案吐出來（reasoning 模型常見）或幾乎沒內容 → 用穩定、聽話的 Haiku 乾淨重產一次
+    if (!out || out.length < 40 || looksLikeReasoning(out.slice(0, 200))) {
+      out = sanitizeAnswer((await completeForUsage("agent_core", { system: FINALIZE_SYSTEM, user, maxTokens: 2600, defaultModel: PLANNER_STRONG })).text);
+    }
+    return out;
   } catch { return ""; }
 }
 
@@ -357,7 +382,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
       if (decision.thought) yield { type: "thought", idx, thought: decision.thought };
 
       if (decision.done || !decision.tool) {
-        const summary = decision.summary ?? "完成。";
+        const summary = sanitizeAnswer(decision.summary ?? "") || "完成。";
         // L3 反思：多步計畫在 done 前驗收；沒達標就回饋、繼續做（最多 2 次，避免無限/燒錢）
         if (plan.length > 1 && critiques < 2) {
           const v = await critique(goal, plan, history, summary, freeModel);

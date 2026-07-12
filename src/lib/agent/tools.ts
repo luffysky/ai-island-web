@@ -123,14 +123,47 @@ async function ddgSearch(query: string, limit: number): Promise<SearchHit[]> {
   } catch { return []; }
 }
 
-// 統一搜尋：**先用免費的 DDG（省 Brave 額度）**，DDG 被擋/太少（<3 筆）才動用 Brave（穩、可 BYOK、有月額度）。
-// 這樣 Brave 只在「免費爬蟲失敗」時才花——2000 次/月能撐更久。
+// Google Programmable Search JSON API（每日 100 次免費、穩定、品質好）。需要 GOOGLE_CSE_KEY + GOOGLE_CSE_CX。可 BYOK。
+async function googleSearch(query: string, count: number, userId?: string): Promise<SearchHit[]> {
+  let key = "", cx = process.env.GOOGLE_CSE_CX ?? "";
+  if (userId) {
+    try {
+      const admin = createSupabaseAdmin();
+      const { data } = await admin.from("user_api_keys")
+        .select("api_key_encrypted, metadata").eq("user_id", userId).eq("provider", "google_cse").eq("is_active", true).limit(1).maybeSingle();
+      if (data?.api_key_encrypted) {
+        const { decryptKey } = await import("@/lib/ai-crypto");
+        key = decryptKey(data.api_key_encrypted);
+        const cxMeta = (data as any).metadata?.cx;
+        if (cxMeta) cx = String(cxMeta);
+      }
+    } catch { /* 用系統 key */ }
+  }
+  if (!key) key = process.env.GOOGLE_CSE_KEY ?? "";
+  if (!key || !cx) return [];
+  try {
+    const r = await fetch(`https://www.googleapis.com/customsearch/v1?key=${encodeURIComponent(key)}&cx=${encodeURIComponent(cx)}&q=${encodeURIComponent(query)}&num=${Math.min(Math.max(count, 1), 10)}&hl=zh-TW&gl=tw`, { signal: AbortSignal.timeout(10000) });
+    if (!r.ok) return [];
+    const j = await r.json();
+    return ((j?.items ?? []) as any[])
+      .map((x) => ({ title: stripTags(String(x.title ?? "")), url: String(x.link ?? ""), snippet: stripTags(String(x.snippet ?? "")).slice(0, 220) }))
+      .filter((x) => /^https?:/.test(x.url));
+  } catch { return []; }
+}
+
+// 統一搜尋（免費優先，逐級升級，省額度）：
+//   1) DDG 免費爬蟲（無上限、但偶爾被擋）→ 夠 4 筆就用
+//   2) Google Programmable Search（每日 100 次免費、品質好）
+//   3) Brave（穩、可 BYOK、2000 次/月）
+// 付費/有額度的來源只在「前一級失敗」時才動用 → 額度撐更久。
 async function searchLinks(query: string, limit: number, userId?: string): Promise<SearchHit[]> {
   const ddg = await ddgSearch(query, limit);
-  if (ddg.length >= 3) return ddg;
+  if (ddg.length >= 4) return ddg;
+  const google = await googleSearch(query, limit, userId);
+  if (google.length) return google;
   const brave = await braveSearch(query, limit, userId);
   if (brave.length) return brave;
-  return ddg;  // Brave 也沒有（沒 key/額度用完）→ 至少回 DDG 撈到的那一兩筆
+  return ddg;  // 全部沒有 → 至少回 DDG 撈到的那一兩筆
 }
 
 export const TOOLS: AgentTool[] = [

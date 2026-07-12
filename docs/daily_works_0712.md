@@ -123,3 +123,9 @@
 
 ### L2 真瀏覽器 `browser.render`（server Playwright，優雅降級）
 - 加了用真瀏覽器（headless Chromium）打開會擋 bot / 需跑 JS 的頁；`import("playwright")` 在無 Chromium 的 standalone Docker 會 throw→catch→回清楚錯誤（prod 目前降級為「尚未就緒」，不會壞部署）。實測 tripadvisor 仍回空頁（企業級反爬連真瀏覽器都擋，需 stealth+代理，屬鑽牛角尖、不追）。Docker 裝 Chromium 屬高風險改動、待林董確認後再小心弄。
+
+### 🐛 修「結果好亂」（reasoning 草稿被當答案）+ 加 Google 搜尋
+- 上一版把合成 maxTokens 拉高後，強模型（reasoning 型）把**思考過程**（"The user wants..."/"Source 1"/"Category 1"…）當最終答案吐出、還吃光 token 沒寫完清單 → 畫面一團亂。
+- `orchestrator.ts`：新 `looksLikeReasoning()` + `sanitizeAnswer()`（去 `<think>`、去 code fence、思考開頭有真標題就從標題起取）。`finalizeFromHistory` 系統詞明令「第一行就是答案、嚴禁思考過程」，並在強模型吐草稿/太短時**自動改用聽話的 Haiku 乾淨重產一次**。planNext 的 prose fallback 也改成：像思考草稿就回 null → 交給乾淨的 finalize。done 的 summary 也過 sanitize。
+- `tools.ts`：加 `googleSearch()`（Google Programmable Search JSON API，每日 100 次免費、可 BYOK：env `GOOGLE_CSE_KEY`+`GOOGLE_CSE_CX`，或使用者 `user_api_keys` provider=`google_cse`、cx 放 metadata）。`searchLinks` 升級三級免費優先：**DDG(免費爬蟲)→Google(100/日)→Brave(2000/月)**，付費/有額度來源只在前一級失敗才用。
+- 驗證：tsc 0、vitest 122 綠、next build 0。
