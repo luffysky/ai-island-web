@@ -4,7 +4,7 @@ const { app, BrowserWindow, Tray, Menu, ipcMain, dialog, nativeImage } = require
 const path = require("node:path");
 const fs = require("node:fs");
 
-let win = null, tray = null, bridge = null;
+let win = null, tray = null, bridge = null, agentWin = null;
 const CFG_PATH = () => path.join(app.getPath("userData"), "bridge.config.json");
 const CORE = path.join(__dirname, "..", "bridge-core.mjs");
 const ICON = path.join(__dirname, "..", "build", "icon.png");   // 執行時的視窗/工作列/系統匣圖示
@@ -29,6 +29,21 @@ async function startBridge() {
 }
 async function stopBridge() { if (bridge) { await bridge.stop(); bridge = null; } setState(false); }
 
+// 開啟「完整 Agent（分身島）」— 直接在桌面 App 裡載入雲端 /agent 全功能介面
+// （對話延續 / 記憶 / 技能 / MCP 全都有）；本機工具由同一個 App 的 Bridge 執行。
+function openAgent() {
+  const cfg = loadCfg();
+  const base = (cfg.apiBase || "https://ai-island-web.snowrealm.pet").replace(/\/+$/, "");
+  if (agentWin && !agentWin.isDestroyed()) { agentWin.show(); agentWin.focus(); return; }
+  agentWin = new BrowserWindow({
+    width: 1120, height: 840, title: "分身島 · 完整 Agent",
+    icon: ICON,
+    webPreferences: { contextIsolation: true },
+  });
+  agentWin.loadURL(base + "/agent");
+  agentWin.on("closed", () => { agentWin = null; });
+}
+
 function createWindow() {
   win = new BrowserWindow({
     width: 620, height: 720, title: "AI 島桌面助手",
@@ -46,9 +61,11 @@ app.whenReady().then(() => {
   else trayImg = nativeImage.createEmpty();
   tray = new Tray(trayImg);
   tray.setContextMenu(Menu.buildFromTemplate([
-    { label: "顯示視窗", click: () => win.show() },
-    { label: "啟動", click: startBridge },
-    { label: "停止", click: stopBridge },
+    { label: "🤖 開啟完整 Agent（分身島）", click: openAgent },
+    { type: "separator" },
+    { label: "設定視窗", click: () => win.show() },
+    { label: "啟動連線", click: startBridge },
+    { label: "停止連線", click: stopBridge },
     { type: "separator" },
     { label: "結束", click: async () => { app.isQuiting = true; await stopBridge(); app.quit(); } },
   ]));
@@ -63,4 +80,5 @@ ipcMain.handle("pick-folder", async () => {
 });
 ipcMain.handle("start", startBridge);
 ipcMain.handle("stop", stopBridge);
+ipcMain.handle("open-agent", openAgent);
 app.on("window-all-closed", () => { /* 常駐系統匣 */ });

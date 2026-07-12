@@ -34,6 +34,9 @@
     <div><h1>AI 島桌面助手</h1><div class="sub" id="status">已停止</div></div>
   </header>
   <main>
+    <button class="primary" id="openAgent" style="width:100%;padding:12px;font-size:14px;margin-bottom:6px">🤖 開啟完整 Agent（分身島）</button>
+    <div class="hint" style="margin-bottom:10px">完整功能都在這裡：連續對話、記憶、技能、機會島。本機檔案/指令由下方連線負責執行。</div>
+
     <label>裝置 token（到 AI 島 /agent →「連接桌面助手」複製）</label>
     <input id="token" type="password" placeholder="isb_..." />
 
@@ -80,6 +83,7 @@
     await window.bridge.saveConfig(cfg);
     $("log").textContent += "✔ 設定已儲存。\n"; $("log").scrollTop = $("log").scrollHeight;
   };
+  $("openAgent").onclick = () => window.bridge.openAgent();
   $("startBtn").onclick = () => window.bridge.start();
   $("stopBtn").onclick = () => window.bridge.stop();
 
