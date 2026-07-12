@@ -356,10 +356,10 @@ export function AgentClient() {
                 );
               })}
               <button onClick={() => setStoreOpen(true)} className="text-xs rounded-full px-2.5 py-1 border border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">
-                🛒 技能商店
+                🏢 員工 / 技能商店
               </button>
               <button onClick={() => setSkillModal(true)} className="text-xs rounded-full px-2.5 py-1 border border-dashed border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">
-                ＋ 自建 Agent
+                ＋ 建員工
               </button>
             </div>
           )}
@@ -655,7 +655,7 @@ function SkillStore({ skills, tools, onToggle, onClose, onDeleted }: {
     const infos = s.allowed_tools.map((n) => toolMap.get(n)).filter(Boolean) as ToolInfo[];
     return { text: s.allowed_tools.join(" · "), device: infos.some((t) => t.needsDevice), danger: infos.some((t) => t.risk === "dangerous") };
   };
-  const cats = ["research", "write", "code", "dev", "learn", "other"];
+  const cats = ["employee", "research", "write", "code", "dev", "learn", "other"];
   const del = async (id: string) => { await fetch(`/api/agent/skills?id=${id}`, { method: "DELETE" }).catch(() => {}); onDeleted(); };
 
   return (
@@ -723,12 +723,12 @@ function SkillCreator({ tools, onClose, onCreated }: { tools: ToolInfo[]; onClos
   const toggle = (n: string) => setPicked((p) => (p.includes(n) ? p.filter((x) => x !== n) : [...p, n]));
 
   const save = async () => {
-    if (!name.trim()) { setErr("請填技能名稱"); return; }
+    if (!name.trim()) { setErr("請填員工名字"); return; }
     setSaving(true); setErr("");
     try {
       const r = await fetch("/api/agent/skills", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, emoji, description: desc, goal_template: prompt, allowed_tools: picked, max_steps: 12 }),
+        body: JSON.stringify({ name, emoji, description: desc, goal_template: prompt, allowed_tools: picked, max_steps: 12, category: "employee" }),
       });
       const d = await r.json();
       if (!r.ok) { setErr(d.error ?? "建立失敗"); return; }
@@ -740,16 +740,17 @@ function SkillCreator({ tools, onClose, onCreated }: { tools: ToolInfo[]; onClos
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" onClick={onClose}>
       <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-[#15161c] border border-black/10 dark:border-white/10 p-5 max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-bold flex items-center gap-2"><Bot className="w-5 h-5 text-violet-500" /> 自建 Agent（技能）</h2>
+          <h2 className="font-bold flex items-center gap-2"><Bot className="w-5 h-5 text-violet-500" /> 建一位 AI 員工</h2>
           <button onClick={onClose} className="text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white"><X className="w-5 h-5" /></button>
         </div>
+        <p className="text-xs text-black/50 dark:text-white/50 mb-3">幫他取名、給職務、寫職能（要他怎麼做事）、選能用的工具。最多可建 20 位。</p>
         <div className="space-y-3">
           <div className="flex gap-2">
             <input value={emoji} onChange={(e) => setEmoji(e.target.value)} maxLength={2} className="w-14 text-center text-xl rounded-xl border border-black/10 dark:border-white/15 bg-transparent py-2" />
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="技能名稱（如：我的部落格助手）" className="flex-1 rounded-xl border border-black/10 dark:border-white/15 bg-transparent px-3 py-2 text-sm" />
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="員工名字（如：小美 / 阿明）" className="flex-1 rounded-xl border border-black/10 dark:border-white/15 bg-transparent px-3 py-2 text-sm" />
           </div>
-          <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="一句話說明這個 Agent 做什麼" className="w-full rounded-xl border border-black/10 dark:border-white/15 bg-transparent px-3 py-2 text-sm" />
-          <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} rows={3} placeholder="給 Agent 的指示／守則（例：你是我的專案健檢助手，先看 git 狀態再跑測試，動任何東西前先問我）" className="w-full resize-none rounded-xl border border-black/10 dark:border-white/15 bg-transparent px-3 py-2 text-sm" />
+          <input value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="職務／職位（如：社群小編、機會獵人、資料分析師）" className="w-full rounded-xl border border-black/10 dark:border-white/15 bg-transparent px-3 py-2 text-sm" />
+          <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} rows={3} placeholder="職能／工作守則（例：你是我的機會獵人，每天用 web.search 找適合的免費競賽、列出截止日與來源，動任何對外的事都先問我）" className="w-full resize-none rounded-xl border border-black/10 dark:border-white/15 bg-transparent px-3 py-2 text-sm" />
           <div>
             <div className="text-xs text-black/50 dark:text-white/50 mb-1.5">允許的工具（不選＝全部可用）</div>
             <div className="flex flex-wrap gap-1.5">
@@ -765,7 +766,7 @@ function SkillCreator({ tools, onClose, onCreated }: { tools: ToolInfo[]; onClos
           </div>
           {err && <div className="text-xs text-rose-500">{err}</div>}
           <button onClick={save} disabled={saving} className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white px-4 py-2.5 text-sm font-medium">
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />} 建立技能
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />} 錄取這位員工
           </button>
         </div>
       </div>

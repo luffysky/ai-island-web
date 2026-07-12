@@ -49,20 +49,23 @@ export async function POST(req: Request) {
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const b = await req.json().catch(() => ({} as any));
   const name = String(b.name ?? "").trim().slice(0, 40);
-  if (!name) return NextResponse.json({ error: "缺技能名稱" }, { status: 400 });
+  if (!name) return NextResponse.json({ error: "缺員工名稱" }, { status: 400 });
   const allowed = Array.isArray(b.allowed_tools) ? b.allowed_tools.filter((t: string) => VALID_TOOLS.has(t)).slice(0, 20) : [];
+  const CATS = new Set(["employee", "research", "write", "code", "dev", "learn", "other"]);
+  const category = CATS.has(b.category) ? b.category : "employee";  // 預設「員工」
   const admin = createSupabaseAdmin();
 
-  // 每人自建上限，避免濫用
+  // 每人自建員工上限 20 位（6 位內建預設不算）
   const { count } = await admin.from("agent_skills").select("id", { count: "exact", head: true }).eq("user_id", user.id);
-  if ((count ?? 0) >= 30) return NextResponse.json({ error: "自建技能已達上限（30）" }, { status: 400 });
+  if ((count ?? 0) >= 20) return NextResponse.json({ error: "自建 AI 員工已達上限（20 位）" }, { status: 400 });
 
   const { data, error } = await admin.from("agent_skills").insert({
     user_id: user.id,
     name,
-    description: String(b.description ?? "").slice(0, 200),
-    emoji: String(b.emoji ?? "🤖").slice(0, 8),
-    goal_template: String(b.goal_template ?? "").slice(0, 1000),
+    description: String(b.description ?? "").slice(0, 200),      // 職務/職位
+    emoji: String(b.emoji ?? "🧑‍💼").slice(0, 8),
+    category,
+    goal_template: String(b.goal_template ?? "").slice(0, 1000), // 職能/指令
     allowed_tools: allowed,
     max_steps: Math.min(Math.max(Number(b.max_steps) || 12, 1), 30),
     is_builtin: false,
