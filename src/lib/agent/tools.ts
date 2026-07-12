@@ -65,7 +65,50 @@ function safeMath(input: string): number {
   return r;
 }
 
+// DuckDuckGo html 結果連結是 //duckduckgo.com/l/?uddg=<encoded> 轉址 → 還原真實網址
+function decodeDdgUrl(href: string): string {
+  try {
+    const m = href.match(/[?&]uddg=([^&]+)/);
+    if (m) return decodeURIComponent(m[1]);
+    return href.startsWith("//") ? "https:" + href : href;
+  } catch { return href; }
+}
+function stripTags(s: string): string {
+  return s.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&#x27;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/\s+/g, " ").trim();
+}
+
 export const TOOLS: AgentTool[] = [
+  {
+    name: "web.search",
+    description: "用關鍵字搜尋網路、回傳前幾筆結果（標題＋摘要＋連結，唯讀）。**找資料/店家/新聞先用這個**，比直接猜網址或抓 Google 可靠（Google 會擋機器人）。拿到連結再用 web.fetch 讀內文。",
+    args: { query: "搜尋關鍵字（如：台北車站 美食 推薦）" },
+    risk: "read",
+    platforms: ["server"],
+    async execute(args) {
+      const q = String(args?.query ?? "").trim().slice(0, 200);
+      if (!q) return { ok: false, error: "缺 query" };
+      try {
+        const r = await fetch(`https://html.duckduckgo.com/html/?q=${encodeURIComponent(q)}`, {
+          headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36", "Accept-Language": "zh-TW,zh;q=0.9,en;q=0.8" },
+          signal: AbortSignal.timeout(12000),
+        });
+        const html = await r.text();
+        const results: { title: string; url: string; snippet: string }[] = [];
+        const re = /<a[^>]*class="result__a"[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>([\s\S]*?)(?=<a[^>]*class="result__a"|$)/g;
+        let m: RegExpExecArray | null;
+        while ((m = re.exec(html)) !== null && results.length < 6) {
+          const url = decodeDdgUrl(m[1]);
+          const title = stripTags(m[2]);
+          const snipMatch = m[3].match(/class="result__snippet"[^>]*>([\s\S]*?)<\/a>/);
+          const snippet = snipMatch ? stripTags(snipMatch[1]).slice(0, 220) : "";
+          // 跳過廣告（DDG 的 y.js 轉址）
+          if (title && /^https?:/.test(url) && !/duckduckgo\.com\/y\.js|ad_domain=/.test(url)) results.push({ title, url, snippet });
+        }
+        if (!results.length) return { ok: true, data: { results: [], note: "沒搜到結果（或來源暫時擋住），換個關鍵字再試" } };
+        return { ok: true, data: { results } };
+      } catch (e: any) { return { ok: false, error: e?.message ?? "搜尋失敗" }; }
+    },
+  },
   {
     name: "web.fetch",
     description: "抓一個網址、回傳它的標題與主要文字內容（唯讀、安全）。用來查資料、讀網頁。",
