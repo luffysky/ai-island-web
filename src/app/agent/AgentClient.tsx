@@ -76,6 +76,9 @@ export function AgentClient() {
   const [mcpErr, setMcpErr] = useState("");
   const [kpi, setKpi] = useState<any>(null);
   const [memory, setMemory] = useState<{ id: string; kind: string; key: string; value: string }[]>([]); // Phase C：分身長期記得你
+  const [braveKey, setBraveKey] = useState<{ id: string; masked?: string } | null | undefined>(undefined); // 搜尋金鑰（Brave BYOK）；undefined=載入中
+  const [braveInput, setBraveInput] = useState("");
+  const [braveBusy, setBraveBusy] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const recRef = useRef<any>(null);
   const deepLinkedRef = useRef(false);
@@ -119,6 +122,32 @@ export function AgentClient() {
     await fetch(`/api/agent/memory?id=${id}`, { method: "DELETE" }).catch(() => {});
   }, []);
 
+  const loadBraveKey = useCallback(async () => {
+    try {
+      const r = await fetch("/api/user/ai-keys");
+      if (!r.ok) { setBraveKey(null); return; }
+      const { keys } = await r.json();
+      const b = (keys ?? []).find((k: any) => k.provider === "brave");
+      setBraveKey(b ? { id: b.id, masked: b.metadata?.masked } : null);
+    } catch { setBraveKey(null); }
+  }, []);
+
+  const saveBraveKey = useCallback(async () => {
+    if (!braveInput.trim() || braveBusy) return;
+    setBraveBusy(true);
+    try {
+      const r = await fetch("/api/user/ai-keys", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ provider: "brave", apiKey: braveInput.trim(), label: "Brave 搜尋" }) });
+      if (r.ok) { setBraveInput(""); loadBraveKey(); }
+      else { const d = await r.json().catch(() => ({})); alert(d.error ?? "儲存失敗"); }
+    } catch { /* ignore */ } finally { setBraveBusy(false); }
+  }, [braveInput, braveBusy, loadBraveKey]);
+
+  const removeBraveKey = useCallback(async () => {
+    if (!braveKey?.id) return;
+    await fetch(`/api/user/ai-keys?id=${braveKey.id}`, { method: "DELETE" }).catch(() => {});
+    setBraveKey(null);
+  }, [braveKey]);
+
   const addOurMcp = useCallback(async () => {
     setMcpBusy(true);
     await fetch("/api/agent/mcp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: "AI 島", url: `${window.location.origin}/api/mcp` }) }).catch(() => {});
@@ -154,9 +183,10 @@ export function AgentClient() {
     loadSkills();
     loadMcp();
     loadMemory();
+    loadBraveKey();
     const t = setInterval(loadDevices, 10000);        // 每 10s 刷新裝置在線狀態
     return () => clearInterval(t);
-  }, [loadHistory, loadDevices, loadSkills, loadMcp, loadMemory]);
+  }, [loadHistory, loadDevices, loadSkills, loadMcp, loadMemory, loadBraveKey]);
 
   const pair = useCallback(async () => {
     setNewToken(null);
@@ -461,6 +491,26 @@ export function AgentClient() {
             <button onClick={() => { setPairOpen(true); setNewToken(null); }} className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-500/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 px-3 py-1.5 text-xs font-medium">
               <Plug className="w-3.5 h-3.5" /> 連接桌面助手
             </button>
+          </div>
+
+          {/* 搜尋金鑰（Brave BYOK）—— 貼自己的 key，搜尋更穩、不佔平台額度 */}
+          <div className="rounded-2xl border border-black/10 dark:border-white/10 p-3.5">
+            <div className="flex items-center gap-1.5 text-sm font-semibold mb-2"><Cpu className="w-4 h-4 text-sky-500" /> 搜尋金鑰（Brave）</div>
+            {braveKey ? (
+              <div className="flex items-center gap-2 text-xs">
+                <span className="px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">已設定</span>
+                <span className="text-black/40 dark:text-white/40 font-mono truncate">{braveKey.masked ?? "••••"}</span>
+                <button onClick={removeBraveKey} className="ml-auto shrink-0 text-black/30 dark:text-white/30 hover:text-rose-500" title="移除"><Trash2 className="w-3.5 h-3.5" /></button>
+              </div>
+            ) : (
+              <>
+                <p className="text-xs text-black/50 dark:text-white/50 mb-2">貼上你自己的 Brave Search API key，搜尋更穩定、不佔平台額度。免費申請：<a href="https://brave.com/search/api/" target="_blank" rel="noreferrer" className="text-sky-500 underline">brave.com/search/api</a></p>
+                <div className="flex gap-1.5">
+                  <input value={braveInput} onChange={(e) => setBraveInput(e.target.value)} type="password" placeholder="BSA..." className="flex-1 min-w-0 rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2.5 py-1.5 text-xs outline-none focus:border-sky-500" />
+                  <button onClick={saveBraveKey} disabled={!braveInput.trim() || braveBusy} className="shrink-0 rounded-lg bg-sky-600 hover:bg-sky-700 disabled:opacity-40 text-white px-3 py-1.5 text-xs font-medium">{braveBusy ? "…" : "儲存"}</button>
+                </div>
+              </>
+            )}
           </div>
 
           {/* 分身記憶（Phase C）—— 跨對話記得你，透明可刪 */}

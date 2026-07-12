@@ -80,9 +80,18 @@ function stripTags(s: string): string {
 const SEARCH_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36";
 type SearchHit = { title: string; url: string; snippet: string };
 
-// Brave Search API（穩定、專門給程式用；需 BRAVE_API_KEY）。沒 key 或失敗 → 回 []（呼叫端退回 DDG）。
-async function braveSearch(query: string, count: number): Promise<SearchHit[]> {
-  const key = process.env.BRAVE_API_KEY;
+// Brave Search API（穩定、專門給程式用）。優先用「使用者自己的 key」(BYOK)、否則用系統 BRAVE_API_KEY。都沒有 → 回 []（退回 DDG）。
+async function braveSearch(query: string, count: number, userId?: string): Promise<SearchHit[]> {
+  let key = "";
+  if (userId) {
+    try {
+      const admin = createSupabaseAdmin();
+      const { data } = await admin.from("user_api_keys")
+        .select("api_key_encrypted").eq("user_id", userId).eq("provider", "brave").eq("is_active", true).limit(1).maybeSingle();
+      if (data?.api_key_encrypted) { const { decryptKey } = await import("@/lib/ai-crypto"); key = decryptKey(data.api_key_encrypted); }
+    } catch { /* 用系統 key */ }
+  }
+  if (!key) key = process.env.BRAVE_API_KEY ?? "";
   if (!key) return [];
   try {
     const r = await fetch(`https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=${Math.min(Math.max(count, 1), 20)}&country=tw&search_lang=zh-hant`, {
@@ -114,9 +123,9 @@ async function ddgSearch(query: string, limit: number): Promise<SearchHit[]> {
   } catch { return []; }
 }
 
-// 統一搜尋：Brave 優先（穩），沒結果退回 DDG。
-async function searchLinks(query: string, limit: number): Promise<SearchHit[]> {
-  const brave = await braveSearch(query, limit);
+// 統一搜尋：Brave 優先（穩、可 BYOK），沒結果退回 DDG。
+async function searchLinks(query: string, limit: number, userId?: string): Promise<SearchHit[]> {
+  const brave = await braveSearch(query, limit, userId);
   if (brave.length) return brave;
   return ddgSearch(query, limit);
 }
@@ -128,10 +137,10 @@ export const TOOLS: AgentTool[] = [
     args: { query: "搜尋關鍵字（如：台北車站 美食 推薦）" },
     risk: "read",
     platforms: ["server"],
-    async execute(args) {
+    async execute(args, ctx) {
       const q = String(args?.query ?? "").trim().slice(0, 200);
       if (!q) return { ok: false, error: "缺 query" };
-      const results = await searchLinks(q, 6);
+      const results = await searchLinks(q, 6, ctx?.userId);
       if (!results.length) return { ok: true, data: { results: [], note: "沒搜到結果（或來源暫時擋住），換個關鍵字再試" } };
       return { ok: true, data: { results } };
     },
@@ -142,12 +151,12 @@ export const TOOLS: AgentTool[] = [
     args: { query: "研究主題／關鍵字", max: "最多抓幾個來源（預設 5、上限 8，可省略）" },
     risk: "read",
     platforms: ["server"],
-    async execute(args) {
+    async execute(args, ctx) {
       const q = String(args?.query ?? "").trim().slice(0, 200);
       if (!q) return { ok: false, error: "缺 query" };
       const max = Math.min(Math.max(Number(args?.max) || 5, 1), 8);
       try {
-        const hits = await searchLinks(q, max * 2);
+        const hits = await searchLinks(q, max * 2, ctx?.userId);
         const seen = new Set<string>();
         const pick = hits.map((h) => h.url).filter((u) => !seen.has(u) && seen.add(u)).slice(0, max);
         if (!pick.length) return { ok: true, data: { sources: [], note: "沒搜到來源（或來源暫時擋住），換個關鍵字再試" } };
