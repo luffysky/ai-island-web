@@ -97,7 +97,10 @@ export function OpportunityBrowse() {
       <div className="mb-6">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2"><Compass className="w-7 h-7 text-violet-500" /> 機會島</h1>
-          <Link href="/opportunities/routes" className="text-sm rounded-full px-3 py-1.5 border border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">🧭 我的航線</Link>
+          <div className="flex items-center gap-1.5">
+            <Link href="/opportunities/mock-judge" className="text-sm rounded-full px-3 py-1.5 border border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">🧑‍⚖️ 模擬評審</Link>
+            <Link href="/opportunities/routes" className="text-sm rounded-full px-3 py-1.5 border border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">🧭 我的航線</Link>
+          </div>
         </div>
         <p className="text-sm text-black/60 dark:text-white/60 mt-1">競賽 · 補助 · 創投 · 徵件 —— 找到適合你的機會，加入「我的航線」追蹤截止日。</p>
         <p className="text-[11px] text-amber-600/90 dark:text-amber-400/80 mt-1 inline-flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> 目前為初始資料、部分欄位「待人工核實」，實際以官網為準。</p>
