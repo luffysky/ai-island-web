@@ -285,7 +285,7 @@ export function AgentClient() {
         <div className="flex items-center gap-3">
           <div className="grid place-items-center w-11 h-11 rounded-xl bg-violet-500/15 text-violet-600 dark:text-violet-300"><Bot className="w-6 h-6" /></div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">行動代理 · Agent <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-600 dark:text-violet-300 align-middle">Phase 1 · Beta</span></h1>
+            <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">分身島 · Agent <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-600 dark:text-violet-300 align-middle">Beta</span></h1>
             <p className="text-sm text-black/60 dark:text-white/60 mt-0.5">交給它一個目標，它會一步步規劃、用工具完成。動到會寫入/高風險的動作，一定先問過你。</p>
           </div>
         </div>
