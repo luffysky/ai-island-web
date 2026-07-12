@@ -136,3 +136,9 @@
 - `AgentClient.tsx`：新增「搜尋金鑰（Tavily）」BYOK 卡（跟 Brave 卡同款，綠色）——使用者可自貼 key、AES-256-GCM 加密存 `user_api_keys`、可移除。
 - `.env.local` 的 `GOOGLE_CSE_*` 已無用（可留可刪）；要 Tavily 就加 `TAVILY_API_KEY`（可選，不加也能靠 DDG+Brave 全網搜）。
 - 驗證：tsc 0、vitest 122 綠、next build 0。
+
+### 🧪 Tavily 實測：對中文幾乎 0 結果 → 中文查詢自動跳過 + 申請教學
+- 用林董的 key 實測：英文查詢正常回 5 筆；**中文查詢（含「台積電」）一律 0 筆** → Tavily 索引英文為主、對 zh-TW 幾乎沒用。
+- `tools.ts` `searchLinks`：查詢含中日韓字元 → **跳過 Tavily**（免中文查詢空跑白吃 credit + 拖時間），直接 DDG→Brave；非中文才 DDG→Tavily→Brave。
+- `AgentClient.tsx`：Brave/Tavily 兩張 BYOK 卡各加「▸ 如何免費申請」步驟教學（帶使用者註冊）。Brave 標「中文好、推薦先辦」；Tavily 標「英文/國際為主」。
+- 驗證：tsc 0、next build 0。

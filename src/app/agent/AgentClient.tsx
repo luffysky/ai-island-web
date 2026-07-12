@@ -534,7 +534,17 @@ export function AgentClient() {
               </div>
             ) : (
               <>
-                <p className="text-xs text-black/50 dark:text-white/50 mb-2">貼上你自己的 Brave Search API key，搜尋更穩定、不佔平台額度。免費申請：<a href="https://brave.com/search/api/" target="_blank" rel="noreferrer" className="text-sky-500 underline">brave.com/search/api</a></p>
+                <p className="text-xs text-black/50 dark:text-white/50 mb-2">貼上你自己的 Brave Search API key，搜尋更穩、更快、不佔平台額度。<span className="text-sky-600 dark:text-sky-400">中文結果好，推薦先辦這個。</span></p>
+                <details className="mb-2 text-xs">
+                  <summary className="cursor-pointer text-sky-500 select-none">▸ 如何免費申請（約 2 分鐘）</summary>
+                  <ol className="list-decimal ml-4 mt-1.5 space-y-1 text-black/55 dark:text-white/55">
+                    <li>開 <a href="https://brave.com/search/api/" target="_blank" rel="noreferrer" className="text-sky-500 underline">brave.com/search/api</a>，點「Get started / Sign up」。</li>
+                    <li>用 Email 註冊並登入。</li>
+                    <li>方案選「<b>Free</b>」（每月 2000 次、免費、免綁卡）。</li>
+                    <li>進 Dashboard →「API Keys」→ 複製那把 key（<code>BSA</code> 開頭）。</li>
+                    <li>貼回下面欄位 → 按「儲存」。</li>
+                  </ol>
+                </details>
                 <div className="flex gap-1.5">
                   <input value={braveInput} onChange={(e) => setBraveInput(e.target.value)} type="password" placeholder="BSA..." className="flex-1 min-w-0 rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2.5 py-1.5 text-xs outline-none focus:border-sky-500" />
                   <button onClick={saveBraveKey} disabled={!braveInput.trim() || braveBusy} className="shrink-0 rounded-lg bg-sky-600 hover:bg-sky-700 disabled:opacity-40 text-white px-3 py-1.5 text-xs font-medium">{braveBusy ? "…" : "儲存"}</button>
@@ -554,7 +564,15 @@ export function AgentClient() {
               </div>
             ) : (
               <>
-                <p className="text-xs text-black/50 dark:text-white/50 mb-2">貼上你自己的 Tavily API key（AI 專用全網搜尋、回乾淨內容），每月 1000 次免費。免費申請：<a href="https://tavily.com" target="_blank" rel="noreferrer" className="text-emerald-500 underline">tavily.com</a></p>
+                <p className="text-xs text-black/50 dark:text-white/50 mb-2">AI 專用全網搜尋、回乾淨內容，每月 1000 次免費。<span className="text-amber-600 dark:text-amber-400">主要適合英文/國際查詢（中文結果較少）。</span></p>
+                <details className="mb-2 text-xs">
+                  <summary className="cursor-pointer text-emerald-500 select-none">▸ 如何免費申請（約 1 分鐘）</summary>
+                  <ol className="list-decimal ml-4 mt-1.5 space-y-1 text-black/55 dark:text-white/55">
+                    <li>開 <a href="https://tavily.com" target="_blank" rel="noreferrer" className="text-emerald-500 underline">tavily.com</a>，點「Sign up」（可用 Google 一鍵註冊）。</li>
+                    <li>登入後首頁 Dashboard 就會顯示你的 API Key（<code>tvly-</code> 開頭）。</li>
+                    <li>複製 → 貼回下面欄位 → 按「儲存」。</li>
+                  </ol>
+                </details>
                 <div className="flex gap-1.5">
                   <input value={tavilyInput} onChange={(e) => setTavilyInput(e.target.value)} type="password" placeholder="tvly-..." className="flex-1 min-w-0 rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2.5 py-1.5 text-xs outline-none focus:border-emerald-500" />
                   <button onClick={saveTavilyKey} disabled={!tavilyInput.trim() || tavilyBusy} className="shrink-0 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white px-3 py-1.5 text-xs font-medium">{tavilyBusy ? "…" : "儲存"}</button>

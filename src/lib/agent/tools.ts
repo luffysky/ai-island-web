@@ -153,15 +153,19 @@ async function tavilySearch(query: string, count: number, userId?: string): Prom
 }
 
 // 統一搜尋（免費優先，逐級升級，省額度）：
-//   1) DDG 免費爬蟲（無上限、但偶爾被擋）→ 夠 4 筆就用
-//   2) Tavily（AI 專用、全網、1000 次/月免費）— 只在有設 key 時才啟用
-//   3) Brave（穩、可 BYOK、2000 次/月）
+//   1) DDG 免費爬蟲（無上限、但偶爾被擋、中英都行）→ 夠 4 筆就用
+//   2) Tavily（AI 專用、1000 次/月免費）——**實測對中文幾乎 0 結果**，故只在「非中文查詢」才用，
+//      免得中文查詢空跑白白吃掉 credit + 拖時間。
+//   3) Brave（穩、可 BYOK、zh-hant 中文好、2000 次/月）
 // 有額度的來源只在「前一級失敗」時才動用 → 額度撐更久。
 async function searchLinks(query: string, limit: number, userId?: string): Promise<SearchHit[]> {
   const ddg = await ddgSearch(query, limit);
   if (ddg.length >= 4) return ddg;
-  const tavily = await tavilySearch(query, limit, userId);
-  if (tavily.length) return tavily;
+  const hasCJK = /[㐀-鿿぀-ヿ가-힯]/.test(query);  // 中日韓字 → 跳過 Tavily
+  if (!hasCJK) {
+    const tavily = await tavilySearch(query, limit, userId);
+    if (tavily.length) return tavily;
+  }
   const brave = await braveSearch(query, limit, userId);
   if (brave.length) return brave;
   return ddg;  // 全部沒有 → 至少回 DDG 撈到的那一兩筆
