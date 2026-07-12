@@ -77,6 +77,50 @@ function stripTags(s: string): string {
   return s.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&#x27;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/\s+/g, " ").trim();
 }
 
+const SEARCH_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36";
+type SearchHit = { title: string; url: string; snippet: string };
+
+// Brave Search API（穩定、專門給程式用；需 BRAVE_API_KEY）。沒 key 或失敗 → 回 []（呼叫端退回 DDG）。
+async function braveSearch(query: string, count: number): Promise<SearchHit[]> {
+  const key = process.env.BRAVE_API_KEY;
+  if (!key) return [];
+  try {
+    const r = await fetch(`https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=${Math.min(Math.max(count, 1), 20)}&country=tw&search_lang=zh-hant`, {
+      headers: { Accept: "application/json", "X-Subscription-Token": key }, signal: AbortSignal.timeout(10000),
+    });
+    if (!r.ok) return [];
+    const j = await r.json();
+    return ((j?.web?.results ?? []) as any[])
+      .map((x) => ({ title: stripTags(String(x.title ?? "")), url: String(x.url ?? ""), snippet: stripTags(String(x.description ?? "")).slice(0, 220) }))
+      .filter((x) => /^https?:/.test(x.url));
+  } catch { return []; }
+}
+
+// DuckDuckGo（免 key、備援；會被 rate limit）。
+async function ddgSearch(query: string, limit: number): Promise<SearchHit[]> {
+  try {
+    const r = await fetch(`https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`, { headers: { "User-Agent": SEARCH_UA, "Accept-Language": "zh-TW,zh;q=0.9,en;q=0.8" }, signal: AbortSignal.timeout(12000) });
+    const html = await r.text();
+    const out: SearchHit[] = [];
+    const re = /<a[^>]*class="result__a"[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>([\s\S]*?)(?=<a[^>]*class="result__a"|$)/g;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(html)) !== null && out.length < limit) {
+      const url = decodeDdgUrl(m[1]);
+      const title = stripTags(m[2]);
+      const snip = m[3].match(/class="result__snippet"[^>]*>([\s\S]*?)<\/a>/);
+      if (title && /^https?:/.test(url) && !/duckduckgo\.com\/y\.js|ad_domain=/.test(url)) out.push({ title, url, snippet: snip ? stripTags(snip[1]).slice(0, 220) : "" });
+    }
+    return out;
+  } catch { return []; }
+}
+
+// 統一搜尋：Brave 優先（穩），沒結果退回 DDG。
+async function searchLinks(query: string, limit: number): Promise<SearchHit[]> {
+  const brave = await braveSearch(query, limit);
+  if (brave.length) return brave;
+  return ddgSearch(query, limit);
+}
+
 export const TOOLS: AgentTool[] = [
   {
     name: "web.search",
@@ -87,26 +131,9 @@ export const TOOLS: AgentTool[] = [
     async execute(args) {
       const q = String(args?.query ?? "").trim().slice(0, 200);
       if (!q) return { ok: false, error: "缺 query" };
-      try {
-        const r = await fetch(`https://html.duckduckgo.com/html/?q=${encodeURIComponent(q)}`, {
-          headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36", "Accept-Language": "zh-TW,zh;q=0.9,en;q=0.8" },
-          signal: AbortSignal.timeout(12000),
-        });
-        const html = await r.text();
-        const results: { title: string; url: string; snippet: string }[] = [];
-        const re = /<a[^>]*class="result__a"[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>([\s\S]*?)(?=<a[^>]*class="result__a"|$)/g;
-        let m: RegExpExecArray | null;
-        while ((m = re.exec(html)) !== null && results.length < 6) {
-          const url = decodeDdgUrl(m[1]);
-          const title = stripTags(m[2]);
-          const snipMatch = m[3].match(/class="result__snippet"[^>]*>([\s\S]*?)<\/a>/);
-          const snippet = snipMatch ? stripTags(snipMatch[1]).slice(0, 220) : "";
-          // 跳過廣告（DDG 的 y.js 轉址）
-          if (title && /^https?:/.test(url) && !/duckduckgo\.com\/y\.js|ad_domain=/.test(url)) results.push({ title, url, snippet });
-        }
-        if (!results.length) return { ok: true, data: { results: [], note: "沒搜到結果（或來源暫時擋住），換個關鍵字再試" } };
-        return { ok: true, data: { results } };
-      } catch (e: any) { return { ok: false, error: e?.message ?? "搜尋失敗" }; }
+      const results = await searchLinks(q, 6);
+      if (!results.length) return { ok: true, data: { results: [], note: "沒搜到結果（或來源暫時擋住），換個關鍵字再試" } };
+      return { ok: true, data: { results } };
     },
   },
   {
@@ -119,23 +146,15 @@ export const TOOLS: AgentTool[] = [
       const q = String(args?.query ?? "").trim().slice(0, 200);
       if (!q) return { ok: false, error: "缺 query" };
       const max = Math.min(Math.max(Number(args?.max) || 5, 1), 8);
-      const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36";
       try {
-        const sr = await fetch(`https://html.duckduckgo.com/html/?q=${encodeURIComponent(q)}`, { headers: { "User-Agent": UA, "Accept-Language": "zh-TW,zh;q=0.9,en;q=0.8" }, signal: AbortSignal.timeout(12000) });
-        const shtml = await sr.text();
-        const urls: string[] = [];
-        const re = /class="result__a"[^>]*href="([^"]+)"/g;
-        let m: RegExpExecArray | null;
-        while ((m = re.exec(shtml)) !== null && urls.length < max * 2) {
-          const u = decodeDdgUrl(m[1]);
-          if (/^https?:/.test(u) && !/duckduckgo\.com\/y\.js|ad_domain=/.test(u) && !urls.some((x) => x === u)) urls.push(u);
-        }
-        const pick = urls.slice(0, max);
-        if (!pick.length) return { ok: true, data: { sources: [], note: "沒搜到來源，換個關鍵字再試" } };
+        const hits = await searchLinks(q, max * 2);
+        const seen = new Set<string>();
+        const pick = hits.map((h) => h.url).filter((u) => !seen.has(u) && seen.add(u)).slice(0, max);
+        if (!pick.length) return { ok: true, data: { sources: [], note: "沒搜到來源（或來源暫時擋住），換個關鍵字再試" } };
         // 平行抓取多個來源（互不阻塞）
         const sources = await Promise.all(pick.map(async (url) => {
           try {
-            const r = await fetch(url, { headers: { "User-Agent": UA, "Accept-Language": "zh-TW,zh;q=0.9" }, signal: AbortSignal.timeout(10000) });
+            const r = await fetch(url, { headers: { "User-Agent": SEARCH_UA, "Accept-Language": "zh-TW,zh;q=0.9" }, signal: AbortSignal.timeout(10000) });
             const { title, text } = htmlToText(await r.text());
             return { url, title, text: text.slice(0, 1400) };
           } catch { return { url, title: "", text: "", error: "抓取失敗" }; }
