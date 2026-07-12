@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, Compass, ExternalLink, Bookmark, BookmarkCheck, AlertTriangle, CalendarClock, Trophy } from "lucide-react";
+import { Search, Compass, ExternalLink, Bookmark, BookmarkCheck, AlertTriangle, CalendarClock, Trophy, Sparkles, Loader2 } from "lucide-react";
 
 interface Opp {
   id: string; type: string; name: string; organizer?: string; country?: string; category?: string;
@@ -32,6 +32,22 @@ export function OpportunityBrowse() {
   const [cat, setCat] = useState("");
   const [freeOnly, setFreeOnly] = useState(false);
   const [status, setStatus] = useState("");
+  // AI 幫我挑（V2）
+  const [recOpen, setRecOpen] = useState(false);
+  const [about, setAbout] = useState("");
+  const [recLoading, setRecLoading] = useState(false);
+  const [recResults, setRecResults] = useState<(Opp & { fit: number; reason: string })[] | null>(null);
+
+  const recommend = async () => {
+    if (!about.trim() || recLoading) return;
+    setRecLoading(true); setRecResults(null);
+    try {
+      const r = await fetch("/api/opportunities/recommend", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ about: about.trim() }) });
+      const d = await r.json();
+      setRecResults(d.results ?? []);
+    } catch { setRecResults([]); }
+    setRecLoading(false);
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -81,6 +97,44 @@ export function OpportunityBrowse() {
         </div>
         <p className="text-sm text-black/60 dark:text-white/60 mt-1">競賽 · 補助 · 創投 · 徵件 —— 找到適合你的機會，加入「我的航線」追蹤截止日。</p>
         <p className="text-[11px] text-amber-600/90 dark:text-amber-400/80 mt-1 inline-flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> 目前為初始資料、部分欄位「待人工核實」，實際以官網為準。</p>
+      </div>
+
+      {/* AI 幫我挑（V2） */}
+      <div className="rounded-2xl border border-violet-500/25 bg-violet-500/[0.04] p-3 mb-4">
+        <button onClick={() => setRecOpen((v) => !v)} className="w-full flex items-center gap-2 text-sm font-semibold text-violet-600 dark:text-violet-400">
+          <Sparkles className="w-4 h-4" /> AI 幫我挑機會
+          <span className="ml-auto text-xs text-black/40 dark:text-white/40">{recOpen ? "收起" : "展開"}</span>
+        </button>
+        {recOpen && (
+          <div className="mt-3">
+            <textarea value={about} onChange={(e) => setAbout(e.target.value)} rows={3}
+              placeholder="用一兩句描述你：有什麼作品/身分/目標？例：我做了一個 AI 學習網站，有 Demo，想找免費、獎金高的比賽。"
+              className="w-full bg-white/60 dark:bg-white/5 border border-black/10 dark:border-white/15 rounded-xl p-2.5 text-sm outline-none focus:border-violet-500 resize-none" />
+            <div className="flex justify-end mt-2">
+              <button onClick={recommend} disabled={!about.trim() || recLoading}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-40 text-white px-3.5 py-1.5 text-sm font-medium">
+                {recLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} 幫我挑
+              </button>
+            </div>
+            {recResults && (
+              recResults.length === 0 ? (
+                <p className="text-xs text-black/50 dark:text-white/50 mt-2">目前沒有特別適合的開放機會，直接看下面清單吧。</p>
+              ) : (
+                <ul className="space-y-2 mt-2">
+                  {recResults.map((o) => (
+                    <li key={o.id} className="rounded-xl border border-black/10 dark:border-white/10 bg-white/50 dark:bg-white/5 p-3">
+                      <div className="flex items-center gap-2">
+                        <Link href={`/opportunities/${o.id}`} className="font-semibold text-sm hover:text-violet-600 dark:hover:text-violet-400 min-w-0">{o.name}</Link>
+                        <span className="ml-auto shrink-0 text-xs font-bold text-violet-600 dark:text-violet-400">符合 {o.fit}%</span>
+                      </div>
+                      {o.reason && <p className="text-xs text-black/60 dark:text-white/60 mt-1">{o.reason}</p>}
+                    </li>
+                  ))}
+                </ul>
+              )
+            )}
+          </div>
+        )}
       </div>
 
       {/* 搜尋 + 篩選 */}
