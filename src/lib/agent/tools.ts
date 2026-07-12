@@ -188,6 +188,22 @@ export const TOOLS: AgentTool[] = [
       } catch (e: any) { return { ok: false, error: e?.message ?? "JSON 解析失敗" }; }
     },
   },
+  {
+    name: "ai.ask",
+    description: "把一個子問題交給 AI 島的 AI 直接回答/生成（摘要、翻譯、寫段落、分類、判斷）。當你需要語言生成而非查資料時用；查資料請先用 web.search。",
+    args: { prompt: "要問或要生成的內容（含必要脈絡）" },
+    risk: "read",
+    platforms: ["server"],
+    async execute(args) {
+      const prompt = String(args?.prompt ?? "").slice(0, 4000);
+      if (!prompt) return { ok: false, error: "缺 prompt" };
+      try {
+        const { completeForUsage } = await import("@/lib/resolve-usage-ai");
+        const res = await completeForUsage("agent_core", { user: prompt, maxTokens: 800, defaultModel: "claude-haiku-4-5-20251001" });
+        return { ok: true, data: { answer: (res.text ?? "").trim() } };
+      } catch (e: any) { return { ok: false, error: e?.message ?? "AI 生成失敗" }; }
+    },
+  },
   // ── Phase F：第一方（AI 島生態）工具 — 分身懂「你」，通用 claw agent 拿不到。皆雲端唯讀、手機也能跑 ──
   {
     name: "island.myProfile",
