@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { BackgroundBeams } from "@/components/ui/BackgroundBeams";
 import { Sparkles } from "@/components/ui/Sparkles";
 import { NumberTicker } from "@/components/ui/NumberTicker";
-import { Sparkles as SparkleIcon, Palette, Palmtree, ClipboardList, Sword, Ruler } from "lucide-react";
+import { Sparkles as SparkleIcon, Palette, Palmtree, ClipboardList, Sword, Ruler, Compass, Bot } from "lucide-react";
 
 type HeroProps = {
   totalChapters: number;
@@ -129,7 +129,37 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
                   </div>
                 </Link>
               </motion.div>
-              {/* 4. 沉浸式 3D 島嶼（真正一座島；目前可關閉、放最後） */}
+              {/* 4. 分身島（行動代理 Agent） */}
+              <motion.div whileHover={{ y: -3, scale: 1.01 }} transition={{ duration: 0.18 }}>
+                <Link
+                  href={"/agent" as any}
+                  className="group relative overflow-hidden rounded-2xl border-2 border-violet-400/40 p-5 bg-gradient-to-br from-violet-500/15 via-purple-500/8 to-fuchsia-500/10 hover:border-violet-400 transition-all backdrop-blur block"
+                >
+                  <Bot className="absolute -top-4 -right-4 text-violet-400 opacity-30 group-hover:opacity-60 group-hover:scale-110 transition duration-500" size={56} strokeWidth={1.5} />
+                  <div className="relative">
+                    <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2"><Bot size={22} className="text-violet-400" /> 分身島</div>
+                    <div className="font-bold text-lg mb-1">你的 AI 分身，替你動手</div>
+                    <p className="text-xs text-fg-muted leading-relaxed">交代目標，分身一步步規劃、查資料、操作，還記得你、跨裝置延續。</p>
+                    <span className="text-[10px] text-violet-400 mt-2 inline-block group-hover:translate-x-1 transition">開始使喚 →</span>
+                  </div>
+                </Link>
+              </motion.div>
+              {/* 5. 機會島（競賽/補助雷達） */}
+              <motion.div whileHover={{ y: -3, scale: 1.01 }} transition={{ duration: 0.18 }}>
+                <Link
+                  href={"/opportunities" as any}
+                  className="group relative overflow-hidden rounded-2xl border-2 border-sky-400/40 p-5 bg-gradient-to-br from-sky-500/15 via-cyan-500/8 to-blue-500/10 hover:border-sky-400 transition-all backdrop-blur block"
+                >
+                  <Compass className="absolute -top-4 -right-4 text-sky-400 opacity-30 group-hover:opacity-60 group-hover:scale-110 transition duration-500" size={56} strokeWidth={1.5} />
+                  <div className="relative">
+                    <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2"><Compass size={22} className="text-sky-400" /> 機會島</div>
+                    <div className="font-bold text-lg mb-1">競賽 · 補助 · 創投雷達</div>
+                    <p className="text-xs text-fg-muted leading-relaxed">找到適合你的機會、加入航線追蹤截止日，AI 幫你挑、還能模擬評審練膽。</p>
+                    <span className="text-[10px] text-sky-400 mt-2 inline-block group-hover:translate-x-1 transition">探索機會 →</span>
+                  </div>
+                </Link>
+              </motion.div>
+              {/* 6. 沉浸式 3D 島嶼（真正一座島；目前可關閉、放最後） */}
               {islandEnabled && (
                 <motion.div whileHover={{ y: -3, scale: 1.01 }} transition={{ duration: 0.18 }}>
                   <Link
