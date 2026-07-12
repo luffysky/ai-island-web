@@ -151,3 +151,8 @@
   - 新增 11 支「會自己搜尋」技能：找店找地方🍜、主題深研員🔬、市場調查員📊、比價找優惠🏷️、旅遊行程規劃🧳、每日簡報員📰、競賽獵人🏆(接機會島)、我的學習教練🧭(接 island.myProfile)、站內找課🔖、計算小幫手🧮、動態頁擷取員🕸️(browser.render)。
   - 升級 12 支舊研究技能（rival-scan/fact-check/news-brief/trend-watch/interview-prep/pkg-scout/doc-finder/tech-compare/study-planner/term-tutor/career-coach/web-digest）：從「只吃使用者貼的網址」→ 加 web.search+web.research 自己找來源。
 - 驗證：tsc 0、vitest 122 綠、next build 0、migration ✅。
+
+### 🧬 L4 技能合成（任務 → 存成可重用技能）✅
+- 完成的任務結果卡新增「存成技能」鈕 → `POST /api/agent/skills/synthesize`：讀該任務 goal/plan/實際用過的工具/結果摘要，用 AI 蒸餾成**一般化**的技能草稿（把「找台北車站美食」抽象成「找某地點附近美食並整理地址/價格/來源」），allowed_tools = 實際用過的工具。
+- 回草稿 → 開「建 AI 員工」視窗**預填**、使用者確認/微調後存下（沿用既有 POST /api/agent/skills 建立流程）。Agent 越用越強、把好用的做法留下來。
+- 驗證：tsc 0、next build 0。

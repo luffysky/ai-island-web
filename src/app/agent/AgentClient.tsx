@@ -66,6 +66,8 @@ export function AgentClient() {
   const [skills, setSkills] = useState<SkillItem[]>([]);
   const [skillId, setSkillId] = useState<string>("");     // 選用的技能
   const [skillModal, setSkillModal] = useState(false);
+  const [skillDraft, setSkillDraft] = useState<SkillDraft | null>(null);  // L4：從任務蒸餾出的技能草稿
+  const [synthBusy, setSynthBusy] = useState(false);
   const [storeOpen, setStoreOpen] = useState(false);
   const [mcpServers, setMcpServers] = useState<{ id: string; name: string; tools: { name: string }[] }[]>([]);
   const [mcpBusy, setMcpBusy] = useState(false);
@@ -176,6 +178,18 @@ export function AgentClient() {
     await fetch(`/api/user/ai-keys?id=${tavilyKey.id}`, { method: "DELETE" }).catch(() => {});
     setTavilyKey(null);
   }, [tavilyKey]);
+
+  // L4 技能合成：把這次完成的任務蒸餾成技能草稿 → 開建立視窗預填、讓使用者確認/微調
+  const synthFromTask = useCallback(async () => {
+    if (!taskId || synthBusy) return;
+    setSynthBusy(true);
+    try {
+      const r = await fetch("/api/agent/skills/synthesize", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ taskId }) });
+      const d = await r.json();
+      if (r.ok && d.draft) { setSkillDraft(d.draft); setSkillModal(true); }
+      else alert(d.error ?? "合成失敗");
+    } catch { alert("合成失敗"); } finally { setSynthBusy(false); }
+  }, [taskId, synthBusy]);
 
   const addOurMcp = useCallback(async () => {
     setMcpBusy(true);
@@ -489,7 +503,14 @@ export function AgentClient() {
               <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-3.5 sm:p-4">
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400"><CheckCircle2 className="w-4 h-4" /> 結果</div>
-                  <button onClick={() => { navigator.clipboard?.writeText(summary).catch(() => {}); }} title="複製" className="text-black/30 dark:text-white/30 hover:text-black/60 dark:hover:text-white/60"><Copy className="w-3.5 h-3.5" /></button>
+                  <div className="flex items-center gap-1.5">
+                    {taskId && status === "succeeded" && (
+                      <button onClick={synthFromTask} disabled={synthBusy} title="把這次的做法存成可重複使用的技能" className="inline-flex items-center gap-1 text-xs rounded-full px-2 py-1 border border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10 disabled:opacity-50">
+                        {synthBusy ? <Loader2 className="w-3 h-3 animate-spin" /> : <Bot className="w-3 h-3" />} 存成技能
+                      </button>
+                    )}
+                    <button onClick={() => { navigator.clipboard?.writeText(summary).catch(() => {}); }} title="複製" className="text-black/30 dark:text-white/30 hover:text-black/60 dark:hover:text-white/60"><Copy className="w-3.5 h-3.5" /></button>
+                  </div>
                 </div>
                 <div className="prose-custom prose-sm max-w-none text-sm leading-relaxed">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
@@ -764,7 +785,7 @@ export function AgentClient() {
 
       {/* 自建 Agent（技能）彈窗 */}
       {skillModal && (
-        <SkillCreator tools={tools} onClose={() => setSkillModal(false)} onCreated={(id) => { loadSkills(); setSkillId(id); setSkillModal(false); }} />
+        <SkillCreator tools={tools} initial={skillDraft} onClose={() => { setSkillModal(false); setSkillDraft(null); }} onCreated={(id) => { loadSkills(); setSkillId(id); setSkillModal(false); setSkillDraft(null); }} />
       )}
     </main>
   );
@@ -836,12 +857,13 @@ function SkillStore({ skills, tools, onToggle, onClose, onDeleted }: {
   );
 }
 
-function SkillCreator({ tools, onClose, onCreated }: { tools: ToolInfo[]; onClose: () => void; onCreated: (id: string) => void }) {
-  const [name, setName] = useState("");
-  const [emoji, setEmoji] = useState("🤖");
-  const [desc, setDesc] = useState("");
-  const [prompt, setPrompt] = useState("");
-  const [picked, setPicked] = useState<string[]>([]);
+interface SkillDraft { name: string; emoji: string; description: string; goal_template: string; allowed_tools: string[]; }
+function SkillCreator({ tools, onClose, onCreated, initial }: { tools: ToolInfo[]; onClose: () => void; onCreated: (id: string) => void; initial?: SkillDraft | null }) {
+  const [name, setName] = useState(initial?.name ?? "");
+  const [emoji, setEmoji] = useState(initial?.emoji ?? "🤖");
+  const [desc, setDesc] = useState(initial?.description ?? "");
+  const [prompt, setPrompt] = useState(initial?.goal_template ?? "");
+  const [picked, setPicked] = useState<string[]>(initial?.allowed_tools ?? []);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
 
