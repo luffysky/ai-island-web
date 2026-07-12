@@ -95,12 +95,18 @@ ${toolsBlock}
 ${hist}
 
 請只回下一步的 JSON。`;
-  // 免費模型先跑（成本≈0）；沒回出有效 JSON → 自動升級到較強模型再試一次（自己判斷何時需要高級）
+  // 免費模型先跑（成本≈0）；沒回有效 JSON → 找外援：升級到較強模型再試一次
   let res = await completeForUsage("agent_core", { system, user, maxTokens: 900, defaultModel: freeModel });
   let d = parseDecision(res.text);
-  if (!d && freeModel !== PLANNER_STRONG) {
-    res = await completeForUsage("agent_core", { system, user, maxTokens: 900, defaultModel: PLANNER_STRONG });
+  if (!d) {
+    const strong = await pickStrongModel();
+    res = await completeForUsage("agent_core", { system, user, maxTokens: 1200, defaultModel: strong });
     d = parseDecision(res.text);
+  }
+  // 還是沒 JSON、但模型直接寫了像樣的答案 → 別因格式整個失敗，把它當最終回覆
+  if (!d) {
+    const t = (res.text ?? "").replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+    if (t.length > 40) d = { done: true, summary: t };
   }
   return d;
 }
@@ -116,6 +122,18 @@ async function pickFreeModel(): Promise<string> {
     const { data } = await admin.from("ai_models")
       .select("model_name, cost_output_per_1m")
       .eq("is_active", true).in("tier", ["low", "mid"])
+      .order("cost_output_per_1m", { ascending: true }).limit(1);
+    return data?.[0]?.model_name || PLANNER_STRONG;
+  } catch { return PLANNER_STRONG; }
+}
+
+// 找外援：出問題/要品質時，挑「還活著的最強模型」（high tier；被下架的已由 model-health 停用；沒有就退 Haiku）。
+async function pickStrongModel(): Promise<string> {
+  try {
+    const admin = createSupabaseAdmin();
+    const { data } = await admin.from("ai_models")
+      .select("model_name, cost_output_per_1m")
+      .eq("is_active", true).eq("tier", "high")
       .order("cost_output_per_1m", { ascending: true }).limit(1);
     return data?.[0]?.model_name || PLANNER_STRONG;
   } catch { return PLANNER_STRONG; }
@@ -142,10 +160,11 @@ async function finalizeFromHistory(goal: string, history: StepRow[]): Promise<st
     const hist = history.map((s) =>
       `#${s.idx} ${s.toolName ?? "?"} → ${s.ok ? "ok" : "fail"}: ${JSON.stringify(s.result ?? {}).slice(0, 500)}`
     ).join("\n") || "（沒有可用進度）";
+    const best = await pickStrongModel();  // 最終答案用最強模型、品質優先
     const res = await completeForUsage("agent_core", {
-      system: "你是 AI 島的行動代理。根據以下已完成步驟與觀察，直接給使用者最好、最完整的『最終中文答案』。不要再要求用工具、不要回 JSON，就是自然語言結論（可條列）。",
+      system: "你是 AI 島的行動代理。根據以下已完成步驟與觀察，直接給使用者最好、最完整、最具體的『最終中文答案』（把查到的地址/時間/價格/數字/來源都整理進去、用 Markdown）。不要再要求用工具、不要回 JSON。",
       user: `目標：${goal}\n\n目前進度：\n${hist}\n\n請直接給最終答案：`,
-      maxTokens: 900, defaultModel: PLANNER_STRONG,
+      maxTokens: 1200, defaultModel: best,
     });
     return (res.text ?? "").trim();
   } catch { return ""; }
@@ -260,9 +279,18 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
 
       const decision = await planNext(goal, history, skill, extraTools, priorContext, plan, freeModel);
       if (!decision) {
+        // 規劃卡住 → 別直接失敗；用目前已查到的東西合成最終答案（找外援用強模型）
+        const salvage = history.length ? await finalizeFromHistory(goal, history) : "";
+        if (salvage) {
+          await setStatus("succeeded", { result: { summary: salvage }, step_count: idx, finished_at: new Date().toISOString() });
+          await bumpThread(salvage);
+          extractMemory(userId, goal, salvage).catch(() => {});
+          pushSafe(userId, "✅ Agent 完成任務", salvage, taskId, `agent-done-${taskId}`);
+          yield { type: "done", status: "succeeded", summary: salvage };
+          return;
+        }
         await setStatus("failed", { error: "規劃失敗（模型未回有效 JSON）", finished_at: new Date().toISOString() });
-        yield { type: "error", error: "規劃失敗：模型未回有效指令" };
-        yield { type: "done", status: "failed", summary: "抱歉，我沒能規劃出下一步。" };
+        yield { type: "done", status: "failed", summary: "抱歉，我沒能規劃出下一步。可以把目標講得更具體一點再試。" };
         return;
       }
       if (decision.thought) yield { type: "thought", idx, thought: decision.thought };
