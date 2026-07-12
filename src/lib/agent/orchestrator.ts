@@ -53,11 +53,11 @@ const PLANNER_SYSTEM = `你是 AI 島的行動代理（Agent）核心。你會�
 - 盡量少步數完成；拿到足夠資訊就 done。`;
 
 // L1 拆解引擎：把目標拆成 1-6 個有明確產出的子任務（簡單目標→單一項）。免費模型即可。
-async function decompose(goal: string, priorContext = ""): Promise<string[]> {
+async function decompose(goal: string, priorContext = "", freeModel = PLANNER_STRONG): Promise<string[]> {
   try {
     const system = "你是任務規劃師。把使用者目標拆成 1-6 個可獨立完成、有明確產出的子任務（越少越好；簡單目標就回單一項、別硬拆）。只回 JSON 字串陣列、繁體中文、每項一句。";
     const user = `${priorContext ? priorContext + "\n\n" : ""}目標：${goal}\n\n只回 JSON 陣列。`;
-    const res = await completeForUsage("agent_core", { system, user, maxTokens: 400, defaultModel: PLANNER_FREE });
+    const res = await completeForUsage("agent_core", { system, user, maxTokens: 400, defaultModel: freeModel });
     const t = (res.text ?? "").trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
     const s = t.indexOf("["), e = t.lastIndexOf("]");
     if (s === -1 || e === -1) return [goal];
@@ -67,7 +67,7 @@ async function decompose(goal: string, priorContext = ""): Promise<string[]> {
   } catch { return [goal]; }
 }
 
-async function planNext(goal: string, history: StepRow[], skill?: SkillCtx, extraTools: AgentTool[] = [], priorContext = "", plan: string[] = []): Promise<Decision | null> {
+async function planNext(goal: string, history: StepRow[], skill?: SkillCtx, extraTools: AgentTool[] = [], priorContext = "", plan: string[] = [], freeModel = PLANNER_STRONG): Promise<Decision | null> {
   const hist = history.map((s) =>
     `#${s.idx} ${s.toolName ?? "?"}(${JSON.stringify(s.args ?? {})}) → ${s.ok ? "ok" : "fail"}: ${JSON.stringify(s.result ?? {}).slice(0, 400)}`
   ).join("\n") || "（尚無步驟）";
@@ -90,27 +90,38 @@ ${hist}
 
 請只回下一步的 JSON。`;
   // 免費模型先跑（成本≈0）；沒回出有效 JSON → 自動升級到較強模型再試一次（自己判斷何時需要高級）
-  let res = await completeForUsage("agent_core", { system, user, maxTokens: 900, defaultModel: PLANNER_FREE });
+  let res = await completeForUsage("agent_core", { system, user, maxTokens: 900, defaultModel: freeModel });
   let d = parseDecision(res.text);
-  if (!d) {
+  if (!d && freeModel !== PLANNER_STRONG) {
     res = await completeForUsage("agent_core", { system, user, maxTokens: 900, defaultModel: PLANNER_STRONG });
     d = parseDecision(res.text);
   }
   return d;
 }
 
-// 規劃模型：預設用可靠又便宜的 Haiku（gemini-2.5-flash 已被 Google 下架、會 404）。
-// 真正的「免費優先」由 completeForUsage 的 agent_core 候選鏈（admin 可設）處理；這裡只是可靠的 fallback。
-const PLANNER_FREE = "claude-haiku-4-5-20251001";
+// 需要升級時用的可靠強模型（Haiku 確定活著）。免費優先由 pickFreeModel 動態挑「還活著的最便宜模型」。
 const PLANNER_STRONG = "claude-haiku-4-5-20251001";
 
+// 免費優先：從 active 模型挑最便宜的 low/mid（被下架的已被 model-health 自動停用 → 挑到的都活著）。
+// 挑不到就退回 Haiku。每個任務解析一次即可。
+async function pickFreeModel(): Promise<string> {
+  try {
+    const admin = createSupabaseAdmin();
+    const { data } = await admin.from("ai_models")
+      .select("model_name, cost_output_per_1m")
+      .eq("is_active", true).in("tier", ["low", "mid"])
+      .order("cost_output_per_1m", { ascending: true }).limit(1);
+    return data?.[0]?.model_name || PLANNER_STRONG;
+  } catch { return PLANNER_STRONG; }
+}
+
 // L3 反思：done 前的驗收員——判斷目標/計畫是否真達標。寬鬆（核心達成就 ok），免費模型即可。
-async function critique(goal: string, plan: string[], history: StepRow[], summary: string): Promise<{ ok: boolean; missing?: string } | null> {
+async function critique(goal: string, plan: string[], history: StepRow[], summary: string, freeModel = PLANNER_STRONG): Promise<{ ok: boolean; missing?: string } | null> {
   try {
     const hist = history.map((s) => `#${s.idx} ${s.toolName ?? "?"} → ${s.ok ? "ok" : "fail"}`).join("\n") || "（無）";
     const system = "你是嚴格但務實的驗收員。判斷『目標與計畫是否真的完成、最終答案是否達標』。寬鬆一點：只要核心目標達成就算 ok、別吹毛求疵。只回 JSON：{\"ok\":true} 或 {\"ok\":false,\"missing\":\"還缺什麼、下一步該做什麼（一句、繁中）\"}。";
     const user = `目標：${goal}\n計畫：\n${plan.map((p, i) => `${i + 1}. ${p}`).join("\n")}\n\n進度：\n${hist}\n\n最終答案：${summary}\n\n只回 JSON。`;
-    const res = await completeForUsage("agent_core", { system, user, maxTokens: 200, defaultModel: PLANNER_FREE });
+    const res = await completeForUsage("agent_core", { system, user, maxTokens: 200, defaultModel: freeModel });
     const t = (res.text ?? "").trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
     const s = t.indexOf("{"), e = t.lastIndexOf("}");
     if (s === -1 || e === -1) return null;
@@ -227,8 +238,10 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
   yield { type: "status", status: "planning" };
   await setStatus("running");
 
+  // 免費優先：本任務用「最便宜的活模型」規劃，需要時才升級（planNext 沒回有效 JSON 就升級）
+  const freeModel = await pickFreeModel();
   // L1 拆解引擎：先把目標拆成計畫（存 DB 給 UI 顯示），再逐項執行
-  const plan = await decompose(goal, priorContext);
+  const plan = await decompose(goal, priorContext, freeModel);
   await admin.from("agent_tasks").update({ plan, plan_done: [] }).eq("id", taskId);
   let critiques = 0;  // L3：done 前反思次數上限（避免無限/燒錢）
 
@@ -238,7 +251,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
       const { data: cur } = await admin.from("agent_tasks").select("status").eq("id", taskId).single();
       if (cur?.status === "cancelled") { yield { type: "done", status: "cancelled", summary: "任務已取消" }; return; }
 
-      const decision = await planNext(goal, history, skill, extraTools, priorContext, plan);
+      const decision = await planNext(goal, history, skill, extraTools, priorContext, plan, freeModel);
       if (!decision) {
         await setStatus("failed", { error: "規劃失敗（模型未回有效 JSON）", finished_at: new Date().toISOString() });
         yield { type: "error", error: "規劃失敗：模型未回有效指令" };
@@ -251,7 +264,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
         const summary = decision.summary ?? "完成。";
         // L3 反思：多步計畫在 done 前驗收；沒達標就回饋、繼續做（最多 2 次，避免無限/燒錢）
         if (plan.length > 1 && critiques < 2) {
-          const v = await critique(goal, plan, history, summary);
+          const v = await critique(goal, plan, history, summary, freeModel);
           if (v && v.ok === false && v.missing) {
             critiques++;
             const row: StepRow = { idx, thought: `自我檢查：還沒達標 — ${v.missing}`, toolName: "reflect", ok: true, result: { missing: v.missing } };
