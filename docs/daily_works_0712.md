@@ -129,3 +129,10 @@
 - `orchestrator.ts`：新 `looksLikeReasoning()` + `sanitizeAnswer()`（去 `<think>`、去 code fence、思考開頭有真標題就從標題起取）。`finalizeFromHistory` 系統詞明令「第一行就是答案、嚴禁思考過程」，並在強模型吐草稿/太短時**自動改用聽話的 Haiku 乾淨重產一次**。planNext 的 prose fallback 也改成：像思考草稿就回 null → 交給乾淨的 finalize。done 的 summary 也過 sanitize。
 - `tools.ts`：加 `googleSearch()`（Google Programmable Search JSON API，每日 100 次免費、可 BYOK：env `GOOGLE_CSE_KEY`+`GOOGLE_CSE_CX`，或使用者 `user_api_keys` provider=`google_cse`、cx 放 metadata）。`searchLinks` 升級三級免費優先：**DDG(免費爬蟲)→Google(100/日)→Brave(2000/月)**，付費/有額度來源只在前一級失敗才用。
 - 驗證：tsc 0、vitest 122 綠、next build 0。
+
+### 🔁 Google CSE 全網搜尋被 Google 淘汰 → 改接 Tavily + BYOK UI
+- 林董去建 Programmable Search Engine，設定頁「搜尋整個網路」開關顯示「這項功能即將淘汰，無法再啟用」→ 新建的 CSE **只能搜自己列的網站、無法當全網搜尋用**。原本接的 googleSearch 會用林董自己站的少量結果**蓋掉 Brave**（污染）→ 移除。
+- 改接 **Tavily**（AI agent 專用全網搜尋 API、1000 次/月免費、回乾淨內容）：`tools.ts` `tavilySearch()`（env `TAVILY_API_KEY` 或 `user_api_keys` provider=`tavily`；沒 key 就跳過）。`searchLinks` 三級免費優先改為 **DDG→Tavily→Brave**。
+- `AgentClient.tsx`：新增「搜尋金鑰（Tavily）」BYOK 卡（跟 Brave 卡同款，綠色）——使用者可自貼 key、AES-256-GCM 加密存 `user_api_keys`、可移除。
+- `.env.local` 的 `GOOGLE_CSE_*` 已無用（可留可刪）；要 Tavily 就加 `TAVILY_API_KEY`（可選，不加也能靠 DDG+Brave 全網搜）。
+- 驗證：tsc 0、vitest 122 綠、next build 0。

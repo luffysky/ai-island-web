@@ -123,44 +123,45 @@ async function ddgSearch(query: string, limit: number): Promise<SearchHit[]> {
   } catch { return []; }
 }
 
-// Google Programmable Search JSON API（每日 100 次免費、穩定、品質好）。需要 GOOGLE_CSE_KEY + GOOGLE_CSE_CX。可 BYOK。
-async function googleSearch(query: string, count: number, userId?: string): Promise<SearchHit[]> {
-  let key = "", cx = process.env.GOOGLE_CSE_CX ?? "";
+// Tavily Search API（專為 AI agent 設計、每月 1000 次免費、全網、回乾淨內容）。可 BYOK。
+// 需要 TAVILY_API_KEY（或使用者 user_api_keys provider=tavily）。沒 key → 回 []（跳過）。
+async function tavilySearch(query: string, count: number, userId?: string): Promise<SearchHit[]> {
+  let key = "";
   if (userId) {
     try {
       const admin = createSupabaseAdmin();
       const { data } = await admin.from("user_api_keys")
-        .select("api_key_encrypted, metadata").eq("user_id", userId).eq("provider", "google_cse").eq("is_active", true).limit(1).maybeSingle();
-      if (data?.api_key_encrypted) {
-        const { decryptKey } = await import("@/lib/ai-crypto");
-        key = decryptKey(data.api_key_encrypted);
-        const cxMeta = (data as any).metadata?.cx;
-        if (cxMeta) cx = String(cxMeta);
-      }
+        .select("api_key_encrypted").eq("user_id", userId).eq("provider", "tavily").eq("is_active", true).limit(1).maybeSingle();
+      if (data?.api_key_encrypted) { const { decryptKey } = await import("@/lib/ai-crypto"); key = decryptKey(data.api_key_encrypted); }
     } catch { /* 用系統 key */ }
   }
-  if (!key) key = process.env.GOOGLE_CSE_KEY ?? "";
-  if (!key || !cx) return [];
+  if (!key) key = process.env.TAVILY_API_KEY ?? "";
+  if (!key) return [];
   try {
-    const r = await fetch(`https://www.googleapis.com/customsearch/v1?key=${encodeURIComponent(key)}&cx=${encodeURIComponent(cx)}&q=${encodeURIComponent(query)}&num=${Math.min(Math.max(count, 1), 10)}&hl=zh-TW&gl=tw`, { signal: AbortSignal.timeout(10000) });
+    const r = await fetch("https://api.tavily.com/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+      body: JSON.stringify({ query, max_results: Math.min(Math.max(count, 1), 10), search_depth: "basic" }),
+      signal: AbortSignal.timeout(12000),
+    });
     if (!r.ok) return [];
     const j = await r.json();
-    return ((j?.items ?? []) as any[])
-      .map((x) => ({ title: stripTags(String(x.title ?? "")), url: String(x.link ?? ""), snippet: stripTags(String(x.snippet ?? "")).slice(0, 220) }))
+    return ((j?.results ?? []) as any[])
+      .map((x) => ({ title: stripTags(String(x.title ?? "")), url: String(x.url ?? ""), snippet: stripTags(String(x.content ?? "")).slice(0, 220) }))
       .filter((x) => /^https?:/.test(x.url));
   } catch { return []; }
 }
 
 // 統一搜尋（免費優先，逐級升級，省額度）：
 //   1) DDG 免費爬蟲（無上限、但偶爾被擋）→ 夠 4 筆就用
-//   2) Google Programmable Search（每日 100 次免費、品質好）
+//   2) Tavily（AI 專用、全網、1000 次/月免費）— 只在有設 key 時才啟用
 //   3) Brave（穩、可 BYOK、2000 次/月）
-// 付費/有額度的來源只在「前一級失敗」時才動用 → 額度撐更久。
+// 有額度的來源只在「前一級失敗」時才動用 → 額度撐更久。
 async function searchLinks(query: string, limit: number, userId?: string): Promise<SearchHit[]> {
   const ddg = await ddgSearch(query, limit);
   if (ddg.length >= 4) return ddg;
-  const google = await googleSearch(query, limit, userId);
-  if (google.length) return google;
+  const tavily = await tavilySearch(query, limit, userId);
+  if (tavily.length) return tavily;
   const brave = await braveSearch(query, limit, userId);
   if (brave.length) return brave;
   return ddg;  // 全部沒有 → 至少回 DDG 撈到的那一兩筆

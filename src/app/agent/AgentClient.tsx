@@ -79,6 +79,9 @@ export function AgentClient() {
   const [braveKey, setBraveKey] = useState<{ id: string; masked?: string } | null | undefined>(undefined); // 搜尋金鑰（Brave BYOK）；undefined=載入中
   const [braveInput, setBraveInput] = useState("");
   const [braveBusy, setBraveBusy] = useState(false);
+  const [tavilyKey, setTavilyKey] = useState<{ id: string; masked?: string } | null | undefined>(undefined); // 搜尋金鑰（Tavily BYOK）
+  const [tavilyInput, setTavilyInput] = useState("");
+  const [tavilyBusy, setTavilyBusy] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const recRef = useRef<any>(null);
   const deepLinkedRef = useRef(false);
@@ -148,6 +151,32 @@ export function AgentClient() {
     setBraveKey(null);
   }, [braveKey]);
 
+  const loadTavilyKey = useCallback(async () => {
+    try {
+      const r = await fetch("/api/user/ai-keys");
+      if (!r.ok) { setTavilyKey(null); return; }
+      const { keys } = await r.json();
+      const t = (keys ?? []).find((k: any) => k.provider === "tavily");
+      setTavilyKey(t ? { id: t.id, masked: t.metadata?.masked } : null);
+    } catch { setTavilyKey(null); }
+  }, []);
+
+  const saveTavilyKey = useCallback(async () => {
+    if (!tavilyInput.trim() || tavilyBusy) return;
+    setTavilyBusy(true);
+    try {
+      const r = await fetch("/api/user/ai-keys", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ provider: "tavily", apiKey: tavilyInput.trim(), label: "Tavily 搜尋" }) });
+      if (r.ok) { setTavilyInput(""); loadTavilyKey(); }
+      else { const d = await r.json().catch(() => ({})); alert(d.error ?? "儲存失敗"); }
+    } catch { /* ignore */ } finally { setTavilyBusy(false); }
+  }, [tavilyInput, tavilyBusy, loadTavilyKey]);
+
+  const removeTavilyKey = useCallback(async () => {
+    if (!tavilyKey?.id) return;
+    await fetch(`/api/user/ai-keys?id=${tavilyKey.id}`, { method: "DELETE" }).catch(() => {});
+    setTavilyKey(null);
+  }, [tavilyKey]);
+
   const addOurMcp = useCallback(async () => {
     setMcpBusy(true);
     await fetch("/api/agent/mcp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: "AI 島", url: `${window.location.origin}/api/mcp` }) }).catch(() => {});
@@ -184,9 +213,10 @@ export function AgentClient() {
     loadMcp();
     loadMemory();
     loadBraveKey();
+    loadTavilyKey();
     const t = setInterval(loadDevices, 10000);        // 每 10s 刷新裝置在線狀態
     return () => clearInterval(t);
-  }, [loadHistory, loadDevices, loadSkills, loadMcp, loadMemory, loadBraveKey]);
+  }, [loadHistory, loadDevices, loadSkills, loadMcp, loadMemory, loadBraveKey, loadTavilyKey]);
 
   const pair = useCallback(async () => {
     setNewToken(null);
@@ -508,6 +538,26 @@ export function AgentClient() {
                 <div className="flex gap-1.5">
                   <input value={braveInput} onChange={(e) => setBraveInput(e.target.value)} type="password" placeholder="BSA..." className="flex-1 min-w-0 rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2.5 py-1.5 text-xs outline-none focus:border-sky-500" />
                   <button onClick={saveBraveKey} disabled={!braveInput.trim() || braveBusy} className="shrink-0 rounded-lg bg-sky-600 hover:bg-sky-700 disabled:opacity-40 text-white px-3 py-1.5 text-xs font-medium">{braveBusy ? "…" : "儲存"}</button>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* 搜尋金鑰（Tavily BYOK）—— AI 專用全網搜尋，免費 1000 次/月 */}
+          <div className="rounded-2xl border border-black/10 dark:border-white/10 p-3.5">
+            <div className="flex items-center gap-1.5 text-sm font-semibold mb-2"><Cpu className="w-4 h-4 text-emerald-500" /> 搜尋金鑰（Tavily）</div>
+            {tavilyKey ? (
+              <div className="flex items-center gap-2 text-xs">
+                <span className="px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">已設定</span>
+                <span className="text-black/40 dark:text-white/40 font-mono truncate">{tavilyKey.masked ?? "••••"}</span>
+                <button onClick={removeTavilyKey} className="ml-auto shrink-0 text-black/30 dark:text-white/30 hover:text-rose-500" title="移除"><Trash2 className="w-3.5 h-3.5" /></button>
+              </div>
+            ) : (
+              <>
+                <p className="text-xs text-black/50 dark:text-white/50 mb-2">貼上你自己的 Tavily API key（AI 專用全網搜尋、回乾淨內容），每月 1000 次免費。免費申請：<a href="https://tavily.com" target="_blank" rel="noreferrer" className="text-emerald-500 underline">tavily.com</a></p>
+                <div className="flex gap-1.5">
+                  <input value={tavilyInput} onChange={(e) => setTavilyInput(e.target.value)} type="password" placeholder="tvly-..." className="flex-1 min-w-0 rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2.5 py-1.5 text-xs outline-none focus:border-emerald-500" />
+                  <button onClick={saveTavilyKey} disabled={!tavilyInput.trim() || tavilyBusy} className="shrink-0 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white px-3 py-1.5 text-xs font-medium">{tavilyBusy ? "…" : "儲存"}</button>
                 </div>
               </>
             )}
