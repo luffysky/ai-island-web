@@ -52,7 +52,22 @@ const PLANNER_SYSTEM = `你是 AI 島的行動代理（Agent）核心。你會�
 - 若某工具回「需桌面助手（Phase 1b 尚未接）」，代表本機能力還沒接上，請據此收尾說明、不要硬試同一個。
 - 盡量少步數完成；拿到足夠資訊就 done。`;
 
-async function planNext(goal: string, history: StepRow[], skill?: SkillCtx, extraTools: AgentTool[] = [], priorContext = ""): Promise<Decision | null> {
+// L1 拆解引擎：把目標拆成 1-6 個有明確產出的子任務（簡單目標→單一項）。免費模型即可。
+async function decompose(goal: string, priorContext = ""): Promise<string[]> {
+  try {
+    const system = "你是任務規劃師。把使用者目標拆成 1-6 個可獨立完成、有明確產出的子任務（越少越好；簡單目標就回單一項、別硬拆）。只回 JSON 字串陣列、繁體中文、每項一句。";
+    const user = `${priorContext ? priorContext + "\n\n" : ""}目標：${goal}\n\n只回 JSON 陣列。`;
+    const res = await completeForUsage("agent_core", { system, user, maxTokens: 400, defaultModel: PLANNER_FREE });
+    const t = (res.text ?? "").trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+    const s = t.indexOf("["), e = t.lastIndexOf("]");
+    if (s === -1 || e === -1) return [goal];
+    const arr = JSON.parse(t.slice(s, e + 1));
+    const items = Array.isArray(arr) ? arr.map((x) => String(x).slice(0, 120)).filter(Boolean).slice(0, 6) : [];
+    return items.length ? items : [goal];
+  } catch { return [goal]; }
+}
+
+async function planNext(goal: string, history: StepRow[], skill?: SkillCtx, extraTools: AgentTool[] = [], priorContext = "", plan: string[] = []): Promise<Decision | null> {
   const hist = history.map((s) =>
     `#${s.idx} ${s.toolName ?? "?"}(${JSON.stringify(s.args ?? {})}) → ${s.ok ? "ok" : "fail"}: ${JSON.stringify(s.result ?? {}).slice(0, 400)}`
   ).join("\n") || "（尚無步驟）";
@@ -61,7 +76,11 @@ async function planNext(goal: string, history: StepRow[], skill?: SkillCtx, extr
   const toolsBlock = toolsDesc || "（本技能不使用任何工具。請直接依『目標』與技能設定，用一則 {\"done\":true,\"summary\":\"...\"} 回覆完整答案。）";
   // Phase A/C：延續脈絡（長期記憶 + 本串先前回合）由 API 端組好、這裡原樣注入
   const priorBlock = priorContext ? `${priorContext}\n\n` : "";
-  const user = `${priorBlock}這次目標：${goal}
+  // L1：任務計畫（子任務 checklist）。逐項完成、全部完成才 done。
+  const planBlock = plan.length > 1
+    ? `【任務計畫】請依序完成下列每一項，全部做完才回 done（還有沒完成的項就繼續、別提早 done）：\n${plan.map((p, i) => `${i + 1}. ${p}`).join("\n")}\n\n`
+    : "";
+  const user = `${priorBlock}${planBlock}這次目標：${goal}
 
 可用工具：
 ${toolsBlock}
@@ -192,13 +211,17 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
   yield { type: "status", status: "planning" };
   await setStatus("running");
 
+  // L1 拆解引擎：先把目標拆成計畫（存 DB 給 UI 顯示），再逐項執行
+  const plan = await decompose(goal, priorContext);
+  await admin.from("agent_tasks").update({ plan, plan_done: [] }).eq("id", taskId);
+
   try {
     for (let idx = 0; idx < maxSteps; idx++) {
       // 取消？
       const { data: cur } = await admin.from("agent_tasks").select("status").eq("id", taskId).single();
       if (cur?.status === "cancelled") { yield { type: "done", status: "cancelled", summary: "任務已取消" }; return; }
 
-      const decision = await planNext(goal, history, skill, extraTools, priorContext);
+      const decision = await planNext(goal, history, skill, extraTools, priorContext, plan);
       if (!decision) {
         await setStatus("failed", { error: "規劃失敗（模型未回有效 JSON）", finished_at: new Date().toISOString() });
         yield { type: "error", error: "規劃失敗：模型未回有效指令" };

@@ -59,6 +59,7 @@ export function AgentClient() {
   const [watching, setWatching] = useState<string>("");   // 目前輪詢觀看的 taskId（背景任務進行中就刷新）
   const [threadId, setThreadId] = useState<string>("");    // Phase A：目前對話串（延續脈絡）
   const [threadTurns, setThreadTurns] = useState<{ id: string; goal: string; summary: string }[]>([]); // 本串先前回合
+  const [plan, setPlan] = useState<string[]>([]);          // L1：目前任務的計畫（子任務 checklist）
   const [listening, setListening] = useState(false);
   const [skills, setSkills] = useState<SkillItem[]>([]);
   const [skillId, setSkillId] = useState<string>("");     // 選用的技能
@@ -207,7 +208,7 @@ export function AgentClient() {
   const run = useCallback(async (g: string) => {
     const text = g.trim();
     if (!text || busy) return;
-    setStarting(true); setSteps([]); setSummary(""); setApproval(null); setStatus("planning"); setTaskId(""); setWatching("");
+    setStarting(true); setSteps([]); setSummary(""); setApproval(null); setStatus("planning"); setTaskId(""); setWatching(""); setPlan([]);
     try {
       const res = await fetch("/api/agent/tasks", {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ goal: text, skillId: skillId || undefined, threadId: threadId || undefined }),
@@ -231,6 +232,7 @@ export function AgentClient() {
     setSteps(mapSteps(st));
     setApproval(pendingApproval(approvals));
     setThreadId(task.thread_id ?? "");                    // 延續脈絡：回到該對話串
+    setPlan(task.plan ?? []);
     loadThreadTurns(task.thread_id ?? "", id);
     setWatching(LIVE.includes(task.status) ? id : "");   // 還在跑 → 開始輪詢刷新
   }, [busy, loadThreadTurns]);
@@ -247,6 +249,7 @@ export function AgentClient() {
         setSummary(task.result?.summary ?? task.error ?? "");
         setSteps(mapSteps(st));
         setApproval(pendingApproval(approvals));
+        setPlan(task.plan ?? []);
         if (!LIVE.includes(task.status)) {
           setWatching(""); loadHistory();
           if (task.thread_id) loadThreadTurns(task.thread_id, watching);  // 完成 → 刷新本串前文
@@ -391,6 +394,20 @@ export function AgentClient() {
               <span className="text-black/70 dark:text-white/70">{STATUS_LABEL[status] ?? status}</span>
               {busy && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-500/15 text-violet-600 dark:text-violet-400" title="任務在伺服器背景執行，關掉頁面也不會中斷">背景執行中</span>}
               {taskId && <span className="text-xs text-black/30 dark:text-white/30 font-mono">#{taskId.slice(0, 8)}</span>}
+            </div>
+          )}
+
+          {/* L1 計畫（子任務 checklist） */}
+          {plan.length > 1 && (
+            <div className="mt-3 rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] p-3">
+              <div className="text-xs font-semibold text-violet-600 dark:text-violet-400 mb-1.5">📋 分身的計畫（{plan.length} 步）</div>
+              <ol className="space-y-1">
+                {plan.map((p, i) => (
+                  <li key={i} className="text-xs text-black/70 dark:text-white/70 flex gap-1.5">
+                    <span className="shrink-0 text-violet-500 font-semibold">{i + 1}.</span><span className="min-w-0">{p}</span>
+                  </li>
+                ))}
+              </ol>
             </div>
           )}
 
