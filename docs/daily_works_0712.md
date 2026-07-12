@@ -156,3 +156,8 @@
 - 完成的任務結果卡新增「存成技能」鈕 → `POST /api/agent/skills/synthesize`：讀該任務 goal/plan/實際用過的工具/結果摘要，用 AI 蒸餾成**一般化**的技能草稿（把「找台北車站美食」抽象成「找某地點附近美食並整理地址/價格/來源」），allowed_tools = 實際用過的工具。
 - 回草稿 → 開「建 AI 員工」視窗**預填**、使用者確認/微調後存下（沿用既有 POST /api/agent/skills 建立流程）。Agent 越用越強、把好用的做法留下來。
 - 驗證：tsc 0、next build 0。
+
+### 🤖 L5 平行多代理（子任務並行 → 彙整）✅
+- `orchestrator.ts`：夠大的純研究任務（decompose 出 ≥3 個可獨立子任務、非技能限定、無外掛工具）→ 派多個 `runSubAgent` **同時**去查（唯讀工具白名單、無審批、無裝置、各自 ≤4 web 呼叫），再 `mergeSubResults` 用強模型合併成完整、去重的最終答案。比一步步序列跑快很多。
+- 安全：子代理只給 READONLY_TOOLS（risk=read 且非裝置）；彙整失敗會清掉平行 step、落回原序列流程。
+- 驗證：tsc 0、vitest 122 綠、next build 0。

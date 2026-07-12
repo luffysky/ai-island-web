@@ -4,7 +4,7 @@
 // 以 async generator 吐事件，讓 API route 轉成 SSE。approval 用「寫 DB pending row + 輪詢」等前端決定。
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { completeForUsage } from "@/lib/resolve-usage-ai";
-import { getTool, describeToolList, effectiveTools, needsApproval, approvalSummary, toolAllowed, type ToolResult, type AgentTool } from "./tools";
+import { getTool, describeToolList, effectiveTools, needsApproval, approvalSummary, toolAllowed, TOOLS, type ToolResult, type AgentTool } from "./tools";
 import { getOnlineDevice, dispatchToDevice } from "./bridge";
 import { sendPushToUser } from "@/lib/web-push";
 import { loadUserMcpTools } from "./mcp";
@@ -242,6 +242,58 @@ async function finalizeFromHistory(goal: string, history: StepRow[]): Promise<st
   } catch { return ""; }
 }
 
+// ===== L5 平行多代理 =====
+// 唯讀工具白名單：子代理只查、不寫、不動裝置 → 平行跑很安全（不需審批）。
+const READONLY_TOOLS = TOOLS.filter((t) => t.risk === "read" && !t.needsDevice).map((t) => t.name);
+
+// 跑一個「子代理」：對單一子任務做有上限的唯讀研究，回它的小結。無審批、無裝置。
+async function runSubAgent(subGoal: string, userId: string, freeModel: string, taskId: string, maxSteps = 5): Promise<{ goal: string; summary: string }> {
+  const history: StepRow[] = [];
+  const doneCalls = new Map<string, ToolResult>();
+  const subSkill: SkillCtx = { allowedTools: READONLY_TOOLS };  // 只給唯讀工具
+  for (let i = 0; i < maxSteps; i++) {
+    const webCalls = history.filter((s) => WEB_TOOLS.has(s.toolName ?? "")).length;
+    if (webCalls >= 4) break;  // 子任務更省 API
+    const decision = await planNext(subGoal, history, subSkill, [], "", [], freeModel, webCalls);
+    if (!decision) break;
+    if (decision.done || !decision.tool) {
+      const s = sanitizeAnswer(decision.summary ?? "");
+      if (s && !looksLikeReasoning(s.slice(0, 200))) return { goal: subGoal, summary: s };
+      break;
+    }
+    const tool = getTool(decision.tool);
+    if (!tool || tool.needsDevice || tool.risk !== "read" || !READONLY_TOOLS.includes(tool.name)) {
+      history.push({ idx: i, toolName: decision.tool, ok: false, result: { error: "子代理只能用唯讀工具，換一個或收尾" } });
+      continue;
+    }
+    const callKey = `${tool.name}:${JSON.stringify(decision.args ?? {})}`;
+    let result: ToolResult;
+    if (doneCalls.has(callKey)) {
+      const c = doneCalls.get(callKey)!;
+      result = { ok: c.ok, data: { repeated: true, note: "重複、已沿用上次", previous: c.data }, error: c.error };
+    } else {
+      try { result = await tool.execute(decision.args ?? {}, { userId, taskId }); }
+      catch (e: any) { result = { ok: false, error: e?.message ?? "工具例外" }; }
+      doneCalls.set(callKey, result);
+    }
+    history.push({ idx: i, toolName: tool.name, args: decision.args, ok: result.ok, result: result.ok ? result.data : { error: result.error } });
+  }
+  const summary = await finalizeFromHistory(subGoal, history);
+  return { goal: subGoal, summary };
+}
+
+// 把多個子代理的小結合併成一份完整、去重、有條理的最終答案。
+async function mergeSubResults(goal: string, results: { goal: string; summary: string }[]): Promise<string> {
+  const parts = results.filter((r) => r.summary).map((r) => `## ${r.goal}\n${r.summary}`).join("\n\n").slice(0, 14000);
+  if (!parts) return "";
+  const best = await pickStrongModel();
+  return sanitizeAnswer((await completeForUsage("agent_core", {
+    system: "你是總彙整員。下面是幾個子任務各自的研究結果。合併成一份給使用者的完整、有條理、不重複的繁體中文最終答案（Markdown）。保留所有具體資訊與來源連結、去掉重覆、第一行就是答案本身、不要任何思考過程。",
+    user: `總目標：${goal}\n\n各子任務結果：\n${parts}\n\n請合併成最終答案：`,
+    maxTokens: 2600, defaultModel: best,
+  })).text);
+}
+
 // Phase B：本機步驟遇到「電腦沒開」→ 輪詢等桌面助手上線（雲端步驟不受影響、早已能跑）。
 // 回上線的 device，或 null（逾時/取消）。
 async function waitForDevice(userId: string, taskId: string, timeoutMs = 300_000) {
@@ -342,6 +394,40 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
   const plan = await decompose(goal, priorContext, freeModel);
   await admin.from("agent_tasks").update({ plan, plan_done: [] }).eq("id", taskId);
   let critiques = 0;  // L3：done 前反思次數上限（避免無限/燒錢）
+
+  // L5 平行多代理：夠大的純研究任務（計畫 >=3 項、非技能限定、無外掛工具）→ 派多個子代理同時查、再彙整。
+  // decompose 產的是「可獨立完成」的子任務，故適合平行；比一步步跑快很多。彙整失敗才落回序列流程。
+  const canParallel = plan.length >= 3 && !skill && extraTools.length === 0;
+  if (canParallel) {
+    try {
+      yield { type: "thought", idx: 0, thought: `這任務較大，派 ${plan.length} 個子代理同時去查，再幫你彙整。` };
+      const results = await Promise.all(plan.map((sub) => runSubAgent(sub, userId, freeModel, taskId).catch(() => ({ goal: sub, summary: "" }))));
+      let pIdx = 0;
+      for (const r of results) {
+        const row: StepRow = { idx: pIdx, thought: `子代理：${r.goal}`, toolName: "subagent", ok: !!r.summary, result: { goal: r.goal, summary: r.summary.slice(0, 600) } };
+        history.push(row);
+        await admin.from("agent_steps").insert({ task_id: taskId, idx: pIdx, thought: row.thought, tool_name: "subagent", args: { goal: r.goal }, result: row.result, ok: !!r.summary });
+        yield { type: "step", step: row };
+        pIdx++;
+      }
+      await admin.from("agent_tasks").update({ step_count: pIdx, plan_done: plan }).eq("id", taskId);
+      const merged = await mergeSubResults(goal, results);
+      if (merged) {
+        await setStatus("succeeded", { result: { summary: merged }, step_count: pIdx, finished_at: new Date().toISOString() });
+        await bumpThread(merged);
+        extractMemory(userId, goal, merged).catch(() => {});
+        pushSafe(userId, "✅ Agent 完成任務", merged, taskId, `agent-done-${taskId}`);
+        yield { type: "done", status: "succeeded", summary: merged };
+        return;
+      }
+      // 彙整不出東西 → 清掉平行的 step（避免與序列流程 idx 撞）＋記憶體，落回下面的序列流程重跑
+      await admin.from("agent_steps").delete().eq("task_id", taskId);
+      history.length = 0;
+    } catch {
+      await admin.from("agent_steps").delete().eq("task_id", taskId).then(() => {}, () => {});
+      history.length = 0;  // 平行失敗 → 落回序列流程
+    }
+  }
 
   try {
     for (let idx = 0; idx < maxSteps; idx++) {
