@@ -52,7 +52,16 @@
 - ~~`docs/opportunity_island_spec.md`~~ ✅ 把 `機會島.md` 前後 GPT 提到的**所有功能**提煉分類：十層機會、AI 功能全集、多聞雷達四層、能力圖譜/組隊、資料模型、規則引擎適合度公式、分層收費、**重排 V1–V5**、風險但書。
 - ~~`docs/agent_island_plan.md`~~ ✅ Agent 全面重規劃：命名提案（**分身島** ⭐/代理島/助手島）、**三種執行面（雲端/雲端沙盒/本機 Bridge）**、解「電腦沒開手機就沒用」（能力分流+離線排隊+雲端沙盒）、桌面助手升級成本機自主 Agent、桌機/平板/手機響應式、Phase A–F。
 
-## 🚧 開新大工程：Agent 對話延續 + 記憶（規劃）
+## 🦾 Agent 島大工程（開始實作，Phase A→F 連續做）
+### ~~Phase A｜對話延續~~ ✅（migration 已上線）
+- `agent_threads` 表 + `agent_tasks.thread_id`/`turn_summary`（`supabase/agent_threads_migration.sql`，已上線）。
+- orchestrator：`planNext` 帶 `priorContext`（本串先前回合注入 prompt）；完成寫 `turn_summary` + bump thread。
+- API：`/api/agent/tasks` POST 建/續 thread + 組前文；GET 支援 `?threadId`；新增 `/api/agent/threads`（列表/刪除）。
+- UI：`AgentClient` threadId 續聊 + 「🔗 延續對話中」+ 本串先前回合顯示 + 「＋ 新對話」；replay/完成都會刷新前文。
+- 效果：同一串問「幫我寫貼文」→ 分身記得上輪受眾/平台，不再每次重問。
+- 命名：島名定為 **分身島**（nav/頁面全面改名待 Phase A polish）。
+
+## 🚧 Agent 後續（規劃見 docs/agent_island_plan.md、agent_memory_plan.md）
 - 林董定調：agent「像玩具都不如」，核心缺口＝**對話延續＋跨對話記憶**，且要做到**別的 claw agent 做不到的事**。
 - 已寫規格 `docs/agent_memory_plan.md`（thread 分組、跨對話長期記憶、能力圖譜、差異化護城河）。**另開場次實作**，不併進本次 bug 修復。
 

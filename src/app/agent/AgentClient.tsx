@@ -57,6 +57,8 @@ export function AgentClient() {
   const [newToken, setNewToken] = useState<{ token: string; name: string } | null>(null);
   const [copied, setCopied] = useState(false);
   const [watching, setWatching] = useState<string>("");   // 目前輪詢觀看的 taskId（背景任務進行中就刷新）
+  const [threadId, setThreadId] = useState<string>("");    // Phase A：目前對話串（延續脈絡）
+  const [threadTurns, setThreadTurns] = useState<{ id: string; goal: string; summary: string }[]>([]); // 本串先前回合
   const [listening, setListening] = useState(false);
   const [skills, setSkills] = useState<SkillItem[]>([]);
   const [skillId, setSkillId] = useState<string>("");     // 選用的技能
@@ -171,21 +173,42 @@ export function AgentClient() {
     setApproval(null);   // 背景任務下輪迴圈會讀到 cancelled 而停；輪詢會反映狀態
   }, [taskId]);
 
+  // 載入某對話串「先前回合」（成功的 goal → 摘要），排除目前這一則
+  const loadThreadTurns = useCallback(async (tid: string, excludeId: string) => {
+    if (!tid) { setThreadTurns([]); return; }
+    try {
+      const r = await fetch(`/api/agent/tasks?threadId=${tid}`);
+      if (!r.ok) return;
+      const { tasks } = await r.json();
+      setThreadTurns((tasks ?? [])
+        .filter((t: any) => t.id !== excludeId && t.status === "succeeded")
+        .map((t: any) => ({ id: t.id, goal: t.goal, summary: t.turn_summary || t.result?.summary || "" })));
+    } catch { /* ignore */ }
+  }, []);
+
+  // 開新對話（清掉延續脈絡）
+  const newConversation = useCallback(() => {
+    if (busy) return;
+    setThreadId(""); setThreadTurns([]); setSteps([]); setSummary("");
+    setApproval(null); setStatus(""); setTaskId(""); setWatching(""); setGoal("");
+  }, [busy]);
+
   const run = useCallback(async (g: string) => {
     const text = g.trim();
     if (!text || busy) return;
     setStarting(true); setSteps([]); setSummary(""); setApproval(null); setStatus("planning"); setTaskId(""); setWatching("");
     try {
       const res = await fetch("/api/agent/tasks", {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ goal: text, skillId: skillId || undefined }),
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ goal: text, skillId: skillId || undefined, threadId: threadId || undefined }),
       });
       if (!res.ok) { setStatus("failed"); setSummary("無法啟動任務（請先登入或稍後再試）。"); return; }
-      const { taskId: id } = await res.json();
+      const { taskId: id, threadId: tid } = await res.json();
       setTaskId(id); setWatching(id);   // 背景已開跑 → 輪詢觀看（關掉頁面任務照跑）
+      if (tid) { setThreadId(tid); loadThreadTurns(tid, id); }
       loadHistory();
     } catch { setStatus("failed"); setSummary("連線失敗。"); }
     finally { setStarting(false); }
-  }, [busy, loadHistory, skillId]);
+  }, [busy, loadHistory, skillId, threadId, loadThreadTurns]);
 
   const replay = useCallback(async (id: string) => {
     if (busy) return;
@@ -196,8 +219,10 @@ export function AgentClient() {
     setSummary(task.result?.summary ?? task.error ?? "");
     setSteps(mapSteps(st));
     setApproval(pendingApproval(approvals));
+    setThreadId(task.thread_id ?? "");                    // 延續脈絡：回到該對話串
+    loadThreadTurns(task.thread_id ?? "", id);
     setWatching(LIVE.includes(task.status) ? id : "");   // 還在跑 → 開始輪詢刷新
-  }, [busy]);
+  }, [busy, loadThreadTurns]);
 
   // 遠端觀看：非本機發起（例如手機開推播連結）的進行中任務，靠輪詢刷新狀態/步驟/待確認
   useEffect(() => {
@@ -211,11 +236,14 @@ export function AgentClient() {
         setSummary(task.result?.summary ?? task.error ?? "");
         setSteps(mapSteps(st));
         setApproval(pendingApproval(approvals));
-        if (!LIVE.includes(task.status)) { setWatching(""); loadHistory(); }
+        if (!LIVE.includes(task.status)) {
+          setWatching(""); loadHistory();
+          if (task.thread_id) loadThreadTurns(task.thread_id, watching);  // 完成 → 刷新本串前文
+        }
       } catch { /* ignore */ }
     }, 2000);
     return () => clearInterval(iv);
-  }, [watching, loadHistory]);
+  }, [watching, loadHistory, loadThreadTurns]);
 
   // 深連結 /agent?task=<id>（推播點進來）：自動載入該任務、若有待確認就顯示、可直接在手機上批准
   useEffect(() => {
@@ -318,6 +346,26 @@ export function AgentClient() {
               <button onClick={() => setSkillModal(true)} className="text-xs rounded-full px-2.5 py-1 border border-dashed border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">
                 ＋ 自建 Agent
               </button>
+            </div>
+          )}
+
+          {/* 對話延續：本串先前回合 + 新對話 */}
+          {threadId && (threadTurns.length > 0 || !!taskId) && (
+            <div className="mt-3">
+              <div className="flex items-center justify-between px-1 mb-1.5">
+                <span className="text-xs text-violet-600 dark:text-violet-400 inline-flex items-center gap-1" title="分身記得這串對話講過的內容，這次可以省略主詞接著問">🔗 延續對話中</span>
+                <button onClick={newConversation} disabled={busy} className="text-xs text-black/50 dark:text-white/50 hover:text-violet-600 dark:hover:text-violet-400 disabled:opacity-40">＋ 新對話</button>
+              </div>
+              {threadTurns.length > 0 && (
+                <div className="space-y-2">
+                  {threadTurns.map((t) => (
+                    <div key={t.id} className="rounded-xl border border-black/5 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.03] p-3">
+                      <div className="text-xs text-black/45 dark:text-white/45 mb-1">你：{t.goal}</div>
+                      {t.summary && <div className="text-sm whitespace-pre-wrap leading-relaxed text-black/65 dark:text-white/65 line-clamp-4">{t.summary}</div>}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

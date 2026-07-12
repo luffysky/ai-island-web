@@ -52,14 +52,18 @@ const PLANNER_SYSTEM = `你是 AI 島的行動代理（Agent）核心。你會�
 - 若某工具回「需桌面助手（Phase 1b 尚未接）」，代表本機能力還沒接上，請據此收尾說明、不要硬試同一個。
 - 盡量少步數完成；拿到足夠資訊就 done。`;
 
-async function planNext(goal: string, history: StepRow[], skill?: SkillCtx, extraTools: AgentTool[] = []): Promise<Decision | null> {
+async function planNext(goal: string, history: StepRow[], skill?: SkillCtx, extraTools: AgentTool[] = [], priorContext = ""): Promise<Decision | null> {
   const hist = history.map((s) =>
     `#${s.idx} ${s.toolName ?? "?"}(${JSON.stringify(s.args ?? {})}) → ${s.ok ? "ok" : "fail"}: ${JSON.stringify(s.result ?? {}).slice(0, 400)}`
   ).join("\n") || "（尚無步驟）";
   const system = skill?.prompt ? `${PLANNER_SYSTEM}\n\n【本次技能設定】${skill.prompt}` : PLANNER_SYSTEM;
   const toolsDesc = describeToolList(effectiveTools(skill?.allowedTools, extraTools));
   const toolsBlock = toolsDesc || "（本技能不使用任何工具。請直接依『目標』與技能設定，用一則 {\"done\":true,\"summary\":\"...\"} 回覆完整答案。）";
-  const user = `目標：${goal}
+  // Phase A：對話延續 — 把本串先前回合帶進來，使用者可能省略主詞/沿用上一輪的設定
+  const priorBlock = priorContext
+    ? `本串先前對話（延續脈絡；若這次目標省略了主詞/條件，沿用這裡講過的）：\n${priorContext}\n\n`
+    : "";
+  const user = `${priorBlock}這次目標：${goal}
 
 可用工具：
 ${toolsBlock}
@@ -90,23 +94,29 @@ async function waitForApproval(approvalId: string, taskId: string, timeoutMs = 3
 // Phase 2b：背景執行——任務不綁 HTTP 連線，關掉頁面也照跑。
 // Zeabur 是長駐 node server，detached promise 會續跑；步驟寫進 DB、關鍵時刻推播、前端靠輪詢觀看。
 const RUNNING = new Set<string>();
-export function runAgentTaskDetached(taskId: string, userId: string, goal: string, maxSteps = 20, skill?: SkillCtx, extraTools?: AgentTool[]): void {
+export function runAgentTaskDetached(taskId: string, userId: string, goal: string, maxSteps = 20, skill?: SkillCtx, extraTools?: AgentTool[], priorContext = ""): void {
   if (RUNNING.has(taskId)) return;
   RUNNING.add(taskId);
   (async () => {
     // 動態工具：沒帶就自動載入使用者啟用的 MCP server 工具（背景進行、不擋 POST 回應）
     const dyn = extraTools ?? await loadUserMcpTools(userId).catch(() => []);
     // 事件在 runAgentTask 內就已落 DB + 推播；這裡只需把 generator 跑到底、不需消費事件。
-    try { for await (const _ev of runAgentTask(taskId, userId, goal, maxSteps, skill, dyn)) { void _ev; } }
+    try { for await (const _ev of runAgentTask(taskId, userId, goal, maxSteps, skill, dyn, priorContext)) { void _ev; } }
     catch { /* runAgentTask 自身的 try/catch 已把任務標成 failed */ }
     finally { RUNNING.delete(taskId); }
   })();
 }
 
-/** 跑一個任務，吐事件流。extraTools = 動態工具（如 MCP）。背景 runner 驅動它；步驟/狀態/推播都在內部落地。 */
-export async function* runAgentTask(taskId: string, userId: string, goal: string, maxSteps = 20, skill?: SkillCtx, extraTools: AgentTool[] = []): AsyncGenerator<AgentEvent> {
+/** 跑一個任務，吐事件流。extraTools = 動態工具（如 MCP）；priorContext = 本串先前對話（Phase A 對話延續）。 */
+export async function* runAgentTask(taskId: string, userId: string, goal: string, maxSteps = 20, skill?: SkillCtx, extraTools: AgentTool[] = [], priorContext = ""): AsyncGenerator<AgentEvent> {
   const admin = createSupabaseAdmin();
   const history: StepRow[] = [];
+  // 本回合結束時要更新對話串 last_message_at + 寫 turn_summary
+  const bumpThread = async (summary: string) => {
+    await admin.from("agent_tasks").update({ turn_summary: summary.slice(0, 600) }).eq("id", taskId);
+    const { data: t } = await admin.from("agent_tasks").select("thread_id").eq("id", taskId).maybeSingle();
+    if (t?.thread_id) await admin.from("agent_threads").update({ last_message_at: new Date().toISOString() }).eq("id", t.thread_id);
+  };
   const setStatus = async (status: string, patch: Record<string, unknown> = {}) => {
     await admin.from("agent_tasks").update({ status, ...patch }).eq("id", taskId);
   };
@@ -120,7 +130,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
       const { data: cur } = await admin.from("agent_tasks").select("status").eq("id", taskId).single();
       if (cur?.status === "cancelled") { yield { type: "done", status: "cancelled", summary: "任務已取消" }; return; }
 
-      const decision = await planNext(goal, history, skill, extraTools);
+      const decision = await planNext(goal, history, skill, extraTools, priorContext);
       if (!decision) {
         await setStatus("failed", { error: "規劃失敗（模型未回有效 JSON）", finished_at: new Date().toISOString() });
         yield { type: "error", error: "規劃失敗：模型未回有效指令" };
@@ -132,6 +142,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
       if (decision.done || !decision.tool) {
         const summary = decision.summary ?? "完成。";
         await setStatus("succeeded", { result: { summary }, step_count: idx, finished_at: new Date().toISOString() });
+        await bumpThread(summary);   // Phase A：把本回合結果留給後續對話當前文
         pushSafe(userId, "✅ Agent 完成任務", summary, taskId, `agent-done-${taskId}`);
         yield { type: "done", status: "succeeded", summary };
         return;

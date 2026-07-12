@@ -7,15 +7,20 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
-// GET /api/agent/tasks — 我的任務清單（最近 30 筆）
-export async function GET() {
+// GET /api/agent/tasks — 我的任務清單（最近 30 筆）；?threadId=xxx 則回該對話串的回合（時間正序）
+export async function GET(req: Request) {
   const supabase = await createSupabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const admin = createSupabaseAdmin();
-  const { data } = await admin.from("agent_tasks")
-    .select("id, goal, status, step_count, result, error, created_at, finished_at")
-    .eq("user_id", user.id).order("created_at", { ascending: false }).limit(30);
+  const threadId = new URL(req.url).searchParams.get("threadId");
+  let q = admin.from("agent_tasks")
+    .select("id, goal, status, step_count, result, error, created_at, finished_at, thread_id, turn_summary")
+    .eq("user_id", user.id);
+  q = threadId
+    ? q.eq("thread_id", threadId).order("created_at", { ascending: true })
+    : q.order("created_at", { ascending: false }).limit(30);
+  const { data } = await q;
   return NextResponse.json({ tasks: data ?? [] });
 }
 
@@ -46,11 +51,40 @@ export async function POST(req: Request) {
     }
   }
 
+  // Phase A：對話延續 — 沿用既有 thread（帶前文）或開新 thread
+  let threadId: string | null = null;
+  if (body.threadId) {
+    const { data: th } = await admin.from("agent_threads")
+      .select("id").eq("id", String(body.threadId)).eq("user_id", user.id).maybeSingle();
+    if (th) threadId = th.id;
+  }
+  if (!threadId) {
+    const { data: th } = await admin.from("agent_threads")
+      .insert({ user_id: user.id, title: goal.slice(0, 80), skill_id: skillId })
+      .select("id").single();
+    threadId = th?.id ?? null;
+  }
+
+  // 帶入本串先前回合（goal → 結果摘要），讓這次目標可省略主詞/沿用上輪設定
+  let priorContext = "";
+  if (threadId) {
+    const { data: prev } = await admin.from("agent_tasks")
+      .select("goal, turn_summary, result, created_at")
+      .eq("thread_id", threadId).eq("user_id", user.id)
+      .order("created_at", { ascending: true }).limit(8);
+    priorContext = (prev ?? [])
+      .map((t: any) => {
+        const ans = t.turn_summary || t.result?.summary || "";
+        return ans ? `你：${t.goal}\n分身：${String(ans).slice(0, 400)}` : `你：${t.goal}`;
+      })
+      .join("\n\n");
+  }
+
   const { data: task, error } = await admin.from("agent_tasks")
-    .insert({ user_id: user.id, goal, max_steps: maxSteps, status: "planning", skill_id: skillId })
+    .insert({ user_id: user.id, goal, max_steps: maxSteps, status: "planning", skill_id: skillId, thread_id: threadId })
     .select("id").single();
   if (error || !task) return NextResponse.json({ error: error?.message ?? "建任務失敗" }, { status: 500 });
 
-  runAgentTaskDetached(task.id, user.id, goal, maxSteps, skill);  // 背景跑、不綁這個連線
-  return NextResponse.json({ taskId: task.id, goal });
+  runAgentTaskDetached(task.id, user.id, goal, maxSteps, skill, undefined, priorContext);  // 背景跑、帶前文
+  return NextResponse.json({ taskId: task.id, threadId, goal });
 }
