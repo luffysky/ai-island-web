@@ -90,6 +90,28 @@ async function handlePost(req: NextRequest) {
       if (safe) model = safe;
     }
   }
+
+  // 1.5 圖片訊息：確保最終模型「看得懂圖」。免費池只有 Gemini 能讀圖；Groq 會默默丟圖、其餘純文字模型會報錯。
+  //     → 自動改挑一個視覺模型；真的沒有可用視覺模型才明確告知使用者（而不是默默給錯答案）。
+  if (images.length > 0) {
+    const { isVisionModel, pickModelByTier } = await import("@/lib/ai-difficulty");
+    if (!isVisionModel(model)) {
+      const { data: visActives } = await admin.from("ai_models").select("*").eq("is_active", true);
+      let vpool = ((visActives ?? []) as any[]).filter(isVisionModel);
+      if (!canHigh) vpool = vpool.filter((m) => m.tier !== "high"); // 免費/Plus 不給高階
+      const vmodel = pickModelByTier(vpool, canHigh ? "high" : "mid");
+      if (vmodel) {
+        model = vmodel;
+      } else {
+        return errorResponse(
+          "no_vision_model",
+          400,
+          "目前可用的模型看不到圖片。免費／中階模型多半是純文字，請改用付費雲端模型（Pro）能讀圖的選項，或先把圖片內容用文字描述再問我。",
+        );
+      }
+    }
+  }
+
   const effectiveModelId = model.id;
 
   // 2. 取 API key
@@ -168,6 +190,17 @@ async function handlePost(req: NextRequest) {
     }
     if (!gotKey) {
       return errorResponse("ai_busy", 503, "AI 現在有點忙，請稍後再試 🙏");
+    }
+    // 圖片訊息：若 fallback 換到看不懂圖的模型（原視覺模型沒 key/超預算），寧可明講也別默默答錯
+    if (images.length > 0) {
+      const { isVisionModel } = await import("@/lib/ai-difficulty");
+      if (!isVisionModel(model)) {
+        return errorResponse(
+          "no_vision_model",
+          400,
+          "目前能讀圖的模型暫時無法使用（金鑰未設定或額度用盡）。請稍後再試、改用付費雲端模型，或把圖片內容用文字描述再問我。",
+        );
+      }
     }
   }
 

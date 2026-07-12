@@ -55,6 +55,7 @@ export interface BlogComment {
   content: string;
   is_approved: boolean;
   created_at: string;
+  updated_at?: string | null;
   replies?: BlogComment[];
 }
 

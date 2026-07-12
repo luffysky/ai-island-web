@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { StickyNote, Save, Check, X, GripHorizontal } from "lucide-react";
 import { useLessonNote } from "@/lib/use-lesson-note";
-import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { useAuth } from "@/lib/auth-context";
 
 const BlogEditor = dynamic(
   () => import("@/components/blog/BlogEditor").then((m) => m.BlogEditor),
@@ -26,9 +26,9 @@ export function FloatingNoteButton({
   const [open, setOpen] = useState(false);
   const [drag, setDrag] = useState({ x: 0, y: 0 });
   const dragStart = useRef<{ x: number; y: number; startX: number; startY: number } | null>(null);
-  // 觸發鈕本身可自由拖曳、位置記到 localStorage（預設右下、不擋教材）
+  // 觸發鈕本身可自由拖曳、位置記到 localStorage（預設左下、不跟右下角綠寶助教重疊）
   const [btnPos, setBtnPos] = useState({ x: 0, y: 0 });
-  const supabase = createSupabaseBrowser();
+  const { user, status } = useAuth();
 
   useEffect(() => {
     try {
@@ -96,8 +96,8 @@ export function FloatingNoteButton({
     window.addEventListener("mouseup", up);
   };
 
-  const handleOpen = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+  const handleOpen = () => {
+    if (status === "loading") return; // auth 還沒好、先別動作
     if (!user) {
       if (typeof window !== "undefined") {
         window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}`;
@@ -140,7 +140,7 @@ export function FloatingNoteButton({
         <button
           onPointerDown={onBtnPointerDown}
           style={{ transform: `translate(${btnPos.x}px, ${btnPos.y}px)` }}
-          className="fixed bottom-24 right-4 z-40 flex items-center gap-2 px-3 py-2 bg-accent text-black rounded-full shadow-lg hover:scale-105 active:scale-95 transition touch-none cursor-grab active:cursor-grabbing"
+          className="fixed bottom-24 left-4 z-40 flex items-center gap-2 px-3 py-2 bg-accent text-black rounded-full shadow-lg hover:scale-105 active:scale-95 transition touch-none cursor-grab active:cursor-grabbing"
           title={`對 LESSON ${activeLesson.number ?? activeLesson.id} 做筆記（可拖曳移動）`}
           aria-label="新增筆記"
         >
@@ -154,7 +154,7 @@ export function FloatingNoteButton({
       {/* Modal 視窗：可拖曳、不擋住整個畫面 */}
       {open && (
         <div
-          className="fixed bottom-24 right-4 z-50 w-80 max-w-[calc(100vw-2rem)] bg-bg-card border border-border rounded-xl shadow-2xl overflow-hidden"
+          className="fixed bottom-24 left-4 z-50 w-80 max-w-[calc(100vw-2rem)] bg-bg-card border border-border rounded-xl shadow-2xl overflow-hidden"
           style={{ transform: `translate(${drag.x}px, ${drag.y}px)` }}
         >
           <div className="p-3">

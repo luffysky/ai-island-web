@@ -2,7 +2,7 @@
 import { useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { StickyNote, Save, Check, GripHorizontal } from "lucide-react";
-import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { useAuth } from "@/lib/auth-context";
 import { useToast } from "@/components/ui/Toast";
 import { usePopover, PopoverPanel } from "@/components/ui/Popover";
 import { useLessonNote } from "@/lib/use-lesson-note";
@@ -24,7 +24,7 @@ export function NotePanel({
   const toast = useToast();
   const popover = usePopover({ placement: "bottom-end", maxWidth: 440 });
   const { open, setOpen } = popover;
-  const supabase = createSupabaseBrowser();
+  const { user, status } = useAuth();
   const { note, setNote, saving, saved, error, save } = useLessonNote(
     lessonId,
     chapterId,
@@ -63,10 +63,10 @@ export function NotePanel({
       <button
         ref={popover.refs.setReference}
         {...popover.getReferenceProps({
-          onClick: async (e) => {
+          onClick: (e) => {
             if (open) return;
             e.preventDefault();
-            const { data: { user } } = await supabase.auth.getUser();
+            if (status === "loading") return; // auth 還沒好、先別動作
             if (!user) {
               if (typeof window !== "undefined") {
                 window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}`;

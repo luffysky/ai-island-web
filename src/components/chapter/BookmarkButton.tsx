@@ -2,27 +2,28 @@
 import { useEffect, useState } from "react";
 import { Bookmark, BookmarkCheck } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { useAuth } from "@/lib/auth-context";
 import { useToast } from "@/components/ui/Toast";
 
 export function BookmarkButton({
   lessonId,
   chapterId,
   lessonTitle,
-  isLoggedIn,
 }: {
   lessonId: string;
   chapterId: number;
   lessonTitle: string;
-  isLoggedIn: boolean;
+  isLoggedIn?: boolean;
 }) {
   const toast = useToast();
   const [bookmarked, setBookmarked] = useState(false);
   const supabase = createSupabaseBrowser();
+  // 用全站 AuthContext（getSession cookie cache）— getUser() 在靜態章節頁會 hydration race 回 null、造成「按了沒反應」
+  const { user, status } = useAuth();
 
   useEffect(() => {
+    if (status !== "in" || !user) return;
     (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
       const { data } = await supabase
         .from("bookmarks")
         .select("id")
@@ -31,10 +32,10 @@ export function BookmarkButton({
         .maybeSingle();
       setBookmarked(!!data);
     })();
-  }, [lessonId]);
+  }, [lessonId, status, user?.id]);
 
   const toggle = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    if (status === "loading") return; // auth 還沒好、先別動作
     if (!user) {
       if (typeof window !== "undefined") {
         window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}`;

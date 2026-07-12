@@ -72,7 +72,9 @@ export async function POST(
   return NextResponse.json({ reply: { ...data, replies: [] } });
 }
 
-// PATCH /api/forum/threads/[id]/replies?reply=xxx — 採納/取消採納解答（限串主）
+// PATCH /api/forum/threads/[id]/replies?reply=xxx
+//   - body.content → 編輯回覆內文（限本人）
+//   - body.is_answer → 採納/取消採納解答（限串主）
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -86,7 +88,34 @@ export async function PATCH(
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const admin = createSupabaseAdmin();
+  const body = await req.json();
 
+  // ── 編輯內文（限本人）───────────────────────────────
+  if (typeof body.content === "string") {
+    const content = body.content.trim();
+    if (!content || content.length > 5000) {
+      return NextResponse.json({ error: "invalid_content" }, { status: 400 });
+    }
+    const { data: reply } = await admin
+      .from("forum_replies")
+      .select("user_id")
+      .eq("id", replyId)
+      .eq("thread_id", threadId)
+      .maybeSingle();
+    if (!reply) return NextResponse.json({ error: "not_found" }, { status: 404 });
+    if (reply.user_id !== user.id) {
+      return NextResponse.json({ error: "forbidden", message: "只能編輯自己的回覆" }, { status: 403 });
+    }
+    const updated_at = new Date().toISOString();
+    const { error } = await admin
+      .from("forum_replies")
+      .update({ content, updated_at })
+      .eq("id", replyId);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ ok: true, content, updated_at });
+  }
+
+  // ── 採納解答（限串主）───────────────────────────────
   // 只有串主能採納解答
   const { data: thread } = await admin
     .from("forum_threads")
@@ -98,7 +127,6 @@ export async function PATCH(
     return NextResponse.json({ error: "forbidden", message: "只有發問者能採納解答" }, { status: 403 });
   }
 
-  const body = await req.json();
   const isAnswer = !!body.is_answer;
 
   // 一個串只能有一個解答 → 先清掉舊的

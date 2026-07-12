@@ -17,6 +17,19 @@ export function classifyDifficulty(message: string, opts?: { hasImages?: boolean
   return m.length > 120 ? "mid" : "low";
 }
 
+// 哪些模型「看得懂圖片」。ai_models 沒有 supports_vision 欄位 → 用 provider + model_name 推斷。
+// 免費池目前只有 Google Gemini 真的能讀圖；Groq 會默默把圖丟掉、其餘純文字模型會直接報錯。
+export function isVisionModel(m: any): boolean {
+  const p = String(m?.provider ?? "").toLowerCase();
+  const id = String(m?.model_name ?? m?.model_id ?? "").toLowerCase();
+  if (p === "groq") return false;                        // Groq 會忽略圖片、當作沒看到
+  if (p === "anthropic" || p === "google") return true;  // Claude / Gemini 皆多模態
+  if (p === "openai") return !/3\.5/.test(id);           // gpt-4o / 4.1 / 5 / o 系列皆視覺
+  // 跨 provider 用 model id 命名判斷（OpenRouter / NVIDIA / Mistral 等的視覺型號）
+  if (/gpt-4o|gpt-4\.1|gpt-5|gemini|claude|vision|pixtral|llava|internvl|[-/]vl(-|\b)|qwen[\d.]*-?vl|llama-3\.2-(11b|90b)/.test(id)) return true;
+  return false;
+}
+
 // tier 欄位沒設時、用成本推回 tier（cost_input_per_1m）
 export function tierFromCost(cost: number): AiTier {
   if (cost < 0.5) return "low";

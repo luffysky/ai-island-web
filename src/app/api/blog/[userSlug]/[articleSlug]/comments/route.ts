@@ -98,6 +98,41 @@ export async function POST(
   return NextResponse.json({ comment: { ...data, replies: [] } });
 }
 
+// PATCH — 編輯自己的留言（?id=xxx，body.content）
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ userSlug: string; articleSlug: string }> }
+) {
+  await params;
+  const commentId = req.nextUrl.searchParams.get("id");
+  if (!commentId) return NextResponse.json({ error: "missing_id" }, { status: 400 });
+
+  const supabase = await createSupabaseServer();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+
+  const body = await req.json().catch(() => ({}));
+  const content = String(body?.content ?? "").trim();
+  if (!content || content.length > 1000) {
+    return NextResponse.json({ error: "invalid_content" }, { status: 400 });
+  }
+
+  const updated_at = new Date().toISOString();
+  // 只能編輯自己的：service role 繞過 RLS、用 user_id 過濾強制本人限定
+  const admin = createSupabaseAdmin();
+  const { data, error } = await admin
+    .from("blog_comments")
+    .update({ content, updated_at })
+    .eq("id", commentId)
+    .eq("user_id", user.id)
+    .select("id")
+    .maybeSingle();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (!data) return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  return NextResponse.json({ ok: true, content, updated_at });
+}
+
 // DELETE — 刪自己的留言（?id=xxx）
 export async function DELETE(
   req: NextRequest,

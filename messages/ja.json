@@ -357,7 +357,12 @@
     "saveNote": "ノートに保存",
     "saveNoteTitle": "自分のナレッジベースに保存",
     "markAnswer": "回答として採用",
-    "unmarkAnswer": "採用を取り消す"
+    "unmarkAnswer": "採用を取り消す",
+    "editButton": "編集",
+    "edited": "返信を更新しました",
+    "editedTag": "編集済み",
+    "saveEdit": "保存",
+    "cancelEdit": "キャンセル"
   },
   "notes": {
     "market": "ノートマーケット",

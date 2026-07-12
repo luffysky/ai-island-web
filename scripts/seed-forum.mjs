@@ -627,7 +627,8 @@ for (const t of THREADS) {
   const { rows } = await c.query(
     `insert into public.forum_threads (board_id, user_id, title, content, tags, is_pinned, is_featured, view_count, created_at, updated_at, last_reply_at)
      values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$9,$9) returning id`,
-    [board[t.board], t.author, t.title, t.html, t.tags ?? [], !!t.pinned, !!t.featured, t.views ?? 0, t.created]
+    // view_count 一律 0：不灌假觀看數，之後靠真實流量累加（數據誠實化）
+    [board[t.board], t.author, t.title, t.html, t.tags ?? [], !!t.pinned, !!t.featured, 0, t.created]
   );
   const threadId = rows[0].id;
   for (const r of t.replies ?? [])

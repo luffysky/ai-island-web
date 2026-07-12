@@ -41,6 +41,7 @@ export interface ForumReply {
   content: string;
   is_answer: boolean;
   created_at: string;
+  updated_at?: string | null;
   author?: { username: string; display_name: string | null; avatar_url: string | null; level: number };
   replies?: ForumReply[];
 }

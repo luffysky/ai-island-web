@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
-import { MessageSquare, Send, Trash2, CornerDownRight } from "lucide-react";
+import { MessageSquare, Send, Trash2, CornerDownRight, Pencil } from "lucide-react";
 import type { BlogComment } from "@/lib/blog-types";
 import { LikeButton } from "./LikeButton";
 import { useToast } from "@/components/ui/Toast";
@@ -150,6 +150,35 @@ export function CommentSection({
     }
   };
 
+  // 編輯自己的留言 — optimistic 更新巢狀樹、失敗退回
+  const edit = async (id: string, newContent: string) => {
+    const trimmed = newContent.trim();
+    if (!trimmed) return { ok: false };
+    let snapshot: BlogComment[] = [];
+    const apply = (c: BlogComment): BlogComment =>
+      c.id === id
+        ? { ...c, content: trimmed, updated_at: new Date().toISOString() }
+        : { ...c, replies: c.replies?.map(apply) };
+    setComments((list) => { snapshot = list; return list.map(apply); });
+    try {
+      const res = await fetch(`${apiBase}?id=${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: trimmed }),
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j.error || "編輯失敗");
+      }
+      toast.success("已更新留言");
+      return { ok: true };
+    } catch (e: any) {
+      setComments(snapshot);
+      toast.error("編輯失敗：" + (e?.message || ""));
+      return { ok: false };
+    }
+  };
+
   return (
     <section className="mt-10 pt-8 border-t border-border">
       <h2 className="text-xl font-bold mb-5 flex items-center gap-2">
@@ -197,7 +226,7 @@ export function CommentSection({
         <div className="space-y-4">
           {comments.map((c) => (
             <div key={c.id}>
-              <CommentItem comment={c} currentUserId={currentUserId} onDelete={remove} onReply={() => setReplyTo(replyTo === c.id ? null : c.id)} />
+              <CommentItem comment={c} currentUserId={currentUserId} onDelete={remove} onEdit={edit} onReply={() => setReplyTo(replyTo === c.id ? null : c.id)} />
               {/* 回覆框 */}
               {replyTo === c.id && (
                 <div className="ml-8 mt-2">
@@ -230,7 +259,7 @@ export function CommentSection({
               {c.replies && c.replies.length > 0 && (
                 <div className="ml-8 mt-2 space-y-2 border-l-2 border-border pl-3">
                   {c.replies.map((r) => (
-                    <CommentItem key={r.id} comment={r} currentUserId={currentUserId} onDelete={remove} isReply />
+                    <CommentItem key={r.id} comment={r} currentUserId={currentUserId} onDelete={remove} onEdit={edit} isReply />
                   ))}
                 </div>
               )}
@@ -246,16 +275,30 @@ function CommentItem({
   comment,
   currentUserId,
   onDelete,
+  onEdit,
   onReply,
   isReply,
 }: {
   comment: BlogComment;
   currentUserId: string | null;
   onDelete: (id: string) => void;
+  onEdit?: (id: string, content: string) => Promise<{ ok: boolean }>;
   onReply?: () => void;
   isReply?: boolean;
 }) {
   const isOwn = currentUserId && comment.user_id === currentUserId;
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(comment.content);
+  const [savingEdit, setSavingEdit] = useState(false);
+
+  const submitEdit = async () => {
+    if (!onEdit || !draft.trim() || savingEdit) return;
+    setSavingEdit(true);
+    const r = await onEdit(comment.id, draft);
+    setSavingEdit(false);
+    if (r.ok) setEditing(false);
+  };
+
   return (
     <div className="rounded-lg bg-bg-card border border-border p-3">
       <div className="flex items-start gap-2">
@@ -280,13 +323,52 @@ function CommentItem({
               {new Date(comment.created_at).toLocaleDateString("zh-TW")}
             </span>
           </div>
-          <p className="text-sm mt-0.5 whitespace-pre-wrap break-words">{renderCommentContent(comment.content)}</p>
+          {editing ? (
+            <div className="mt-0.5">
+              <textarea
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                onInput={(e) => autoGrow(e.currentTarget, 240)}
+                rows={2}
+                autoFocus
+                className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
+                style={{ maxHeight: "240px" }}
+              />
+              <div className="flex items-center gap-2 mt-1.5">
+                <button
+                  onClick={submitEdit}
+                  disabled={!draft.trim() || savingEdit}
+                  className="px-3 py-1 rounded-lg bg-accent text-black text-xs font-semibold disabled:opacity-40 active:scale-95 transition-transform"
+                >
+                  {savingEdit ? "儲存中…" : "儲存"}
+                </button>
+                <button
+                  onClick={() => { setDraft(comment.content); setEditing(false); }}
+                  className="px-3 py-1 rounded-lg text-xs text-fg-muted hover:text-fg"
+                >
+                  取消
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm mt-0.5 whitespace-pre-wrap break-words">
+              {renderCommentContent(comment.content)}
+              {comment.updated_at && (
+                <span className="text-[10px] text-fg-muted ml-1.5">（已編輯）</span>
+              )}
+            </p>
+          )}
           <TranslateButton text={comment.content} />
           <div className="flex items-center gap-3 mt-1">
             <LikeButton kind="blog" targetId={comment.id} />
             {!isReply && onReply && (
               <button onClick={onReply} className="text-xs text-fg-muted hover:text-accent flex items-center gap-0.5">
                 <CornerDownRight size={11} /> 回覆
+              </button>
+            )}
+            {isOwn && onEdit && !editing && (
+              <button onClick={() => { setDraft(comment.content); setEditing(true); }} className="text-xs text-fg-muted hover:text-accent flex items-center gap-0.5">
+                <Pencil size={11} /> 編輯
               </button>
             )}
             {isOwn && (

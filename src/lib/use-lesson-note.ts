@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
+import { useAuth } from "@/lib/auth-context";
 import { devLog } from "@/lib/dev-log";
 
 export function useLessonNote(
@@ -14,13 +15,14 @@ export function useLessonNote(
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const supabase = createSupabaseBrowser();
+  // 用全站 AuthContext（getSession cookie cache）— getUser() 在靜態章節頁會 race 回 null
+  const { user } = useAuth();
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || !user) return;
     let cancelled = false;
     (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user || cancelled) return;
+      if (cancelled) return;
       const { data, error: loadErr } = await supabase
         .from("notes")
         .select("id, content")
@@ -44,7 +46,7 @@ export function useLessonNote(
       }
     })();
     return () => { cancelled = true; };
-  }, [enabled, lessonId]);
+  }, [enabled, lessonId, user?.id]);
 
   const save = async (): Promise<{ ok: boolean }> => {
     const trimmed = note.trim();
@@ -54,7 +56,6 @@ export function useLessonNote(
     }
     setError(null);
 
-    const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       if (typeof window !== "undefined") {
         window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}`;

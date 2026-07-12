@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
 import { handleEnterSubmit, autoGrow } from "@/lib/composer";
-import { Send, Trash2, CornerDownRight, Loader2, Check, BookmarkPlus, FileText } from "lucide-react";
+import { Send, Trash2, CornerDownRight, Loader2, Check, BookmarkPlus, FileText, Pencil } from "lucide-react";
 import type { ForumReply } from "@/lib/forum-types";
 import { LikeButton } from "@/components/blog/LikeButton";
 import { TranslateButton } from "@/components/ui/TranslateButton";
@@ -233,6 +233,39 @@ export function ThreadReplies({
     }
   };
 
+  // 編輯回覆內文（限本人）— optimistic 更新巢狀樹、失敗退回
+  const edit = async (replyId: string, newContent: string) => {
+    const trimmed = newContent.trim();
+    if (!trimmed) return { ok: false };
+    let snapshot: ForumReply[] = [];
+    const apply = (r: ForumReply): ForumReply =>
+      r.id === replyId
+        ? { ...r, content: trimmed, updated_at: new Date().toISOString() }
+        : { ...r, replies: r.replies?.map(apply) };
+    setReplies((list) => { snapshot = list; return list.map(apply); });
+    try {
+      const res = await fetch(
+        `/api/forum/threads/${threadId}/replies?reply=${replyId}`,
+        {
+          credentials: "include",
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: trimmed }),
+        },
+      );
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j.message || j.error || t("actionFailed"));
+      }
+      toast.success(t("edited"));
+      return { ok: true };
+    } catch (e: any) {
+      setReplies(snapshot);
+      toast.error(e?.message || t("actionFailed"));
+      return { ok: false };
+    }
+  };
+
   return (
     <section className="mt-8">
       <h2 className="text-lg font-bold mb-4">
@@ -244,7 +277,7 @@ export function ThreadReplies({
         <div className="space-y-3 mb-6">
           {replies.map((r) => (
             <div key={r.id}>
-              <ReplyItem reply={r} currentUserId={currentUserId} onDelete={remove} onReply={() => setReplyTo(replyTo === r.id ? null : r.id)} canMarkAnswer={isThreadOwner} onMarkAnswer={markAnswer} onSaveNote={isLoggedIn ? () => saveAsNote(r) : undefined} />
+              <ReplyItem reply={r} currentUserId={currentUserId} onDelete={remove} onEdit={edit} onReply={() => setReplyTo(replyTo === r.id ? null : r.id)} canMarkAnswer={isThreadOwner} onMarkAnswer={markAnswer} onSaveNote={isLoggedIn ? () => saveAsNote(r) : undefined} />
               {/* 回覆框 */}
               {replyTo === r.id && (
                 <div className="ml-10 mt-2 flex gap-2">
@@ -271,7 +304,7 @@ export function ThreadReplies({
               {r.replies && r.replies.length > 0 && (
                 <div className="ml-10 mt-2 space-y-2 border-l-2 border-border pl-3">
                   {r.replies.map((sub) => (
-                    <ReplyItem key={sub.id} reply={sub} currentUserId={currentUserId} onDelete={remove} isReply onSaveNote={isLoggedIn ? () => saveAsNote(sub) : undefined} />
+                    <ReplyItem key={sub.id} reply={sub} currentUserId={currentUserId} onDelete={remove} onEdit={edit} isReply onSaveNote={isLoggedIn ? () => saveAsNote(sub) : undefined} />
                   ))}
                 </div>
               )}
@@ -369,6 +402,7 @@ function ReplyItem({
   reply,
   currentUserId,
   onDelete,
+  onEdit,
   onReply,
   isReply,
   canMarkAnswer,
@@ -378,6 +412,7 @@ function ReplyItem({
   reply: ForumReply & { _pending?: boolean };
   currentUserId: string | null;
   onDelete: (id: string) => void;
+  onEdit?: (id: string, content: string) => Promise<{ ok: boolean }>;
   onReply?: () => void;
   isReply?: boolean;
   canMarkAnswer?: boolean;
@@ -386,6 +421,17 @@ function ReplyItem({
 }) {
   const t = useTranslations("forum");
   const isOwn = currentUserId && reply.user_id === currentUserId;
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(reply.content);
+  const [savingEdit, setSavingEdit] = useState(false);
+
+  const submitEdit = async () => {
+    if (!onEdit || !draft.trim() || savingEdit) return;
+    setSavingEdit(true);
+    const r = await onEdit(reply.id, draft);
+    setSavingEdit(false);
+    if (r.ok) setEditing(false);
+  };
   const name = reply.author?.display_name || reply.author?.username || t("defaultUser");
   return (
     <div
@@ -422,7 +468,41 @@ function ReplyItem({
               <span className="text-[10px] text-fg-muted italic">{t("sending")}</span>
             )}
           </div>
-          <p className="text-sm mt-1 whitespace-pre-wrap break-words">{renderContent(reply.content)}</p>
+          {editing ? (
+            <div className="mt-1">
+              <textarea
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                onInput={(e) => autoGrow(e.currentTarget, 240)}
+                rows={2}
+                autoFocus
+                className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
+                style={{ maxHeight: "240px" }}
+              />
+              <div className="flex items-center gap-2 mt-1.5">
+                <button
+                  onClick={submitEdit}
+                  disabled={!draft.trim() || savingEdit}
+                  className="px-3 py-1 rounded-lg bg-accent text-black text-xs font-semibold disabled:opacity-40 active:scale-95 transition-transform"
+                >
+                  {savingEdit ? t("sending") : t("saveEdit")}
+                </button>
+                <button
+                  onClick={() => { setDraft(reply.content); setEditing(false); }}
+                  className="px-3 py-1 rounded-lg text-xs text-fg-muted hover:text-fg"
+                >
+                  {t("cancelEdit")}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm mt-1 whitespace-pre-wrap break-words">
+              {renderContent(reply.content)}
+              {reply.updated_at && (
+                <span className="text-[10px] text-fg-muted ml-1.5">（{t("editedTag")}）</span>
+              )}
+            </p>
+          )}
           <TranslateButton text={reply.content} />
           <div className="flex items-center gap-3 mt-1.5 flex-wrap">
             <LikeButton kind="forum" targetId={reply.id} />
@@ -446,6 +526,11 @@ function ReplyItem({
                 }`}
               >
                 <Check size={11} /> {reply.is_answer ? t("unmarkAnswer") : t("markAnswer")}
+              </button>
+            )}
+            {isOwn && !reply._pending && onEdit && !editing && (
+              <button onClick={() => { setDraft(reply.content); setEditing(true); }} className="text-xs text-fg-muted hover:text-accent flex items-center gap-0.5">
+                <Pencil size={11} /> {t("editButton")}
               </button>
             )}
             {isOwn && !reply._pending && (

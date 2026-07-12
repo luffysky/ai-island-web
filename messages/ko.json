@@ -357,7 +357,12 @@
     "saveNote": "노트로 저장",
     "saveNoteTitle": "내 지식 베이스에 저장",
     "markAnswer": "답변으로 채택",
-    "unmarkAnswer": "채택 취소"
+    "unmarkAnswer": "채택 취소",
+    "editButton": "수정",
+    "edited": "댓글을 수정했습니다",
+    "editedTag": "수정됨",
+    "saveEdit": "저장",
+    "cancelEdit": "취소"
   },
   "notes": {
     "market": "노트 마켓",

@@ -17,7 +17,6 @@ export async function POST(req: NextRequest) {
   const title = String(b.title ?? "").trim().slice(0, 200);
   const content = sanitizeRichHtmlStrict(String(b.content ?? ""));
   const tags: string[] = Array.isArray(b.tags) ? b.tags.map((t: any) => String(t).slice(0, 50)).slice(0, 8) : [];
-  const views = Math.max(0, Math.min(999, Number(b.views) || 0));
   if (!boardId || !personaId || !title) return NextResponse.json({ error: "missing", message: "缺 版塊 / 作者 / 標題" }, { status: 422 });
 
   const admin = createSupabaseAdmin();
@@ -30,7 +29,7 @@ export async function POST(req: NextRequest) {
   if (!persona) return NextResponse.json({ error: "persona_not_found" }, { status: 404 });
 
   const { data: thread, error } = await admin.from("forum_threads").insert({
-    board_id: boardId, user_id: personaId, title, content, tags, view_count: views,
+    board_id: boardId, user_id: personaId, title, content, tags, view_count: 0, // 不灌假觀看數
   }).select("id").single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

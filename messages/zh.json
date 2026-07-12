@@ -357,7 +357,12 @@
     "saveNote": "存成筆記",
     "saveNoteTitle": "存進我的知識庫",
     "markAnswer": "採納為解答",
-    "unmarkAnswer": "取消採納"
+    "unmarkAnswer": "取消採納",
+    "editButton": "編輯",
+    "edited": "已更新回覆",
+    "editedTag": "已編輯",
+    "saveEdit": "儲存",
+    "cancelEdit": "取消"
   },
   "notes": {
     "market": "筆記市集",

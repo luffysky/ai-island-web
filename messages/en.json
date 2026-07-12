@@ -357,7 +357,12 @@
     "saveNote": "Save as note",
     "saveNoteTitle": "Save to my knowledge base",
     "markAnswer": "Mark as answer",
-    "unmarkAnswer": "Unmark answer"
+    "unmarkAnswer": "Unmark answer",
+    "editButton": "Edit",
+    "edited": "Reply updated",
+    "editedTag": "edited",
+    "saveEdit": "Save",
+    "cancelEdit": "Cancel"
   },
   "notes": {
     "market": "Note market",
