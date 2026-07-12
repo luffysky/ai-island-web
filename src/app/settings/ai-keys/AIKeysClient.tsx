@@ -244,7 +244,9 @@ export function AIKeysClient({ initialKeys }: { initialKeys: UserKey[] }) {
               <span className="block mt-0.5">
                 {isCustom
                   ? t("customModelsNote")
-                  : t("unlockedModels", { models: meta?.models.join("、") ?? "" })}
+                  : meta?.kind === "search"
+                    ? "這把金鑰供「分身島」Agent 上網搜尋使用（不影響 AI 對話模型）。"
+                    : t("unlockedModels", { models: meta?.models.join("、") ?? "" })}
               </span>
               <span className="block mt-0.5">{t("byokUsageNote")}</span>
             </div>

@@ -142,3 +142,12 @@
 - `tools.ts` `searchLinks`：查詢含中日韓字元 → **跳過 Tavily**（免中文查詢空跑白吃 credit + 拖時間），直接 DDG→Brave；非中文才 DDG→Tavily→Brave。
 - `AgentClient.tsx`：Brave/Tavily 兩張 BYOK 卡各加「▸ 如何免費申請」步驟教學（帶使用者註冊）。Brave 標「中文好、推薦先辦」；Tavily 標「英文/國際為主」。
 - 驗證：tsc 0、next build 0。
+
+### 🗝️ 統一使用者 API 金鑰到 /settings/ai-keys + 分身島技能商店 v2
+- 林董定調：整個 AI 島（分身島搜尋 key、創作者島、機會島、AI 模型 key）所有使用者 API **匯集到 `/settings/ai-keys` 統一管理**。查證：本來就同一張表 `user_api_keys`＋同一支 `/api/user/ai-keys`，分身島貼的 Brave/Tavily 早已存進同處、也會列在該頁。缺口＝`brave/tavily` 不是註冊 provider（顯示原始名、無法從該頁新增）。
+  - `ai-key-test.ts`：`BYOK_PROVIDERS` 加 `brave`/`tavily`（標 `kind:"search"`，附申請連結/格式提示），既有 6 家標 `kind:"llm"`；`testProviderKey` 加 Brave/Tavily 測 key。
+  - `AIKeysClient.tsx`：搜尋類 key 顯示「供分身島 Agent 上網搜尋」而非「解鎖模型」。→ 現在該頁可**新增/測試/開關/刪除**搜尋 key，與 AI 模型 key 並列。
+- **技能商店 v2**（`agent_skills_catalog_v2_migration.sql`，已上 prod、內建 45→62）：
+  - 新增 11 支「會自己搜尋」技能：找店找地方🍜、主題深研員🔬、市場調查員📊、比價找優惠🏷️、旅遊行程規劃🧳、每日簡報員📰、競賽獵人🏆(接機會島)、我的學習教練🧭(接 island.myProfile)、站內找課🔖、計算小幫手🧮、動態頁擷取員🕸️(browser.render)。
+  - 升級 12 支舊研究技能（rival-scan/fact-check/news-brief/trend-watch/interview-prep/pkg-scout/doc-finder/tech-compare/study-planner/term-tutor/career-coach/web-digest）：從「只吃使用者貼的網址」→ 加 web.search+web.research 自己找來源。
+- 驗證：tsc 0、vitest 122 綠、next build 0、migration ✅。
