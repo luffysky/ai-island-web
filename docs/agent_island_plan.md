@@ -102,6 +102,33 @@
 
 > 一句話：**先做 L1（拆解）＋ L2（真瀏覽器/沙盒）**，這兩步就能把「像玩具」變「能交付專案」；L3–L5 再把可靠度往上推。我們的差異化仍是第一方生態（懂你、機會島閉環），別家 claw 有再強的引擎也沒有你的資料。
 
+## 10. Agent2.md 追加：數位員工 + 省 token 引擎（核心競爭力）
+
+### A. 演化路線（產品藍圖，別一次塞同一版）
+`LLM → RAG → Tool Calling → Single Agent → Multi-Agent → Agent Team → Agent Organization → Agent Marketplace → Digital Employees（數位員工）→ Digital Twin（數位分身）`。
+終局不是「每天打 prompt」，而是**每個人都有一個懂你目標/作品/專案/偏好、主動幫你找機會完成任務的 AI 分身**。
+
+### B. 數位員工 / AI 公司（分身島的世界觀升級，對應引擎 L5）
+登入不是聊天框，而是**「你有一家 AI 公司」**：CEO(你) + 多聞(PM)/Hunter(機會獵人)/Coder/Writer/Designer/Teacher/Analyst/QA/Lawyer/Accountant…全是 AI、都可派工。
+- **能力非職位**：員工是「能力向量」（Browser★★★★★/Coding★★★/Writing★★★…），工作只是今天派出去的任務——別把 Hunter 綁死只能找競賽。
+- 遊戲化：升級/裝技能/招募(商城)/培訓(去學習島)/KPI/成本 Dashboard/AI 開會(每天 09:00 報告)/AI 辦公室(看員工在工作)。**但務必真做事**（真的掃網站/分析作品/建待辦），動畫只是把真實工作可視化——不要為遊戲化而遊戲化。
+- 三種員工：①通用（什麼都做、都不最強）②專業（資安/前端/法務/SEO…特定最強）③**你訓練的**（讀你的文件/流程/專案、越來越像你的資深員工）——第三種才是護城河。
+
+### C. Snow Orchestrator——省 token 引擎（「用最少 token 做同樣價值」＝比別人強的核心競爭力）
+不是讓 Agent 亂 call LLM，而是一個 AI 任務調度引擎，優化的是 **Cost per Task**（不只 token：工具次數/API/瀏覽器時間/等待）：
+1. **Tool First**：算數/日期/JSON/regex/排序/SQL 用**程式**不用 LLM（呼應引擎 L2 安全沙盒）。
+2. **Smart Model Router**：免費先跑、按需升級（**已做**）；搜尋用 Gemini Flash、coding 用 Claude、整理用小模型——每個模型只做它擅長的。
+3. **Rule-filter before LLM**：Hunter 找到 20 個，用規則過濾，只把值得的 2 個丟 LLM，18 個走規則。
+4. **Context Cache / Memory**：讀過的 PDF/文件別重讀（**記憶已做**）；prompt 從 5000→800 token。
+5. **Diff / Embedding**：網站只讀變動（呼應多聞雷達三層 hash）；先向量檢索再 LLM。
+6. **Event-driven + Sleep + Budget**：別 24/7 跑，用 cron/事件觸發；每 Agent 每日預算，超過就睡；**ROI/成本 Dashboard**（Hunter 花 2 元找到 100 萬競賽）。
+> 對外別賣「省 token」（一般人不懂）——賣「AI 島自動選最適合的 AI 和流程、用最低成本完成任務，比直接用 ChatGPT/Claude 更省更快」。數字要**實測 benchmark** 後才公開宣稱。可做成 AI COO（不做事、只負責拆任務/派工/選模型/控預算/重用快取）。
+
+### D. 定位守則（別變成另一個 OpenAI）
+分身島只做**「幫人成長」**：學習/創作/創業/找機會/生活管理。不做叫車/外送這些非核心。
+- **經濟**：BYOK 為核心（使用者綁自己的 key、成本≈0）＋ AI 島點數代管（不懂 API 的人）＋ 混合；包裝成「🔋 AI 能源中心」而非一串 key。**已有** BYOK＋Z幣 overflow＋免費每日額度＋免費優先路由。
+- **通路**：接 Line/Telegram/Discord/Slack/Email/Calendar/GitHub/Notion/Drive（多有官方 API）；社群發文/互動須遵守各平台條款、對外動作一律使用者確認。
+
 ## 8. 驗收
 - 手機、電腦關機：仍能叫代理做 web 研究 + 生成 Pitch + 查機會島（cloud/sandbox 全綠）。
 - 需要動我電腦的步驟：離線排隊，PC 一開自動續跑並推播。
