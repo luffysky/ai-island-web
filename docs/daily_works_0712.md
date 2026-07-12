@@ -161,3 +161,10 @@
 - `orchestrator.ts`：夠大的純研究任務（decompose 出 ≥3 個可獨立子任務、非技能限定、無外掛工具）→ 派多個 `runSubAgent` **同時**去查（唯讀工具白名單、無審批、無裝置、各自 ≤4 web 呼叫），再 `mergeSubResults` 用強模型合併成完整、去重的最終答案。比一步步序列跑快很多。
 - 安全：子代理只給 READONLY_TOOLS（risk=read 且非裝置）；彙整失敗會清掉平行 step、落回原序列流程。
 - 驗證：tsc 0、vitest 122 綠、next build 0。
+
+### 🧭 L2 伺服器瀏覽器 Docker（選配、預設關、零風險）✅（程式面）
+- `browser.render` 加 `ENABLE_SERVER_BROWSER` 開關：沒設就明講「未啟用、改用 web.research/web.fetch 或桌面助手」，不讓 agent 卡住。
+- `Dockerfile` 加**選配** build arg `INSTALL_SERVER_BROWSER`：**預設不設＝整段跳過、image 與部署跟以前一模一樣、零風險**。要開才裝 Chromium（playwright@1.58.2 對齊本機 + `--with-deps` + `PLAYWRIGHT_BROWSERS_PATH=/ms-playwright`，root 裝好 chown 給 nextjs 唯讀取用）。
+- **啟用步驟（要盯部署）**：Zeabur 服務設 build arg `INSTALL_SERVER_BROWSER=1` + runtime env `ENABLE_SERVER_BROWSER=1` → 重新 build 觀察 log 成功再用。要關就移除兩者。
+- 誠實提醒：企業級反爬（tripadvisor/yelp）連真 headless 都擋；桌面助手 browser.* 已能在使用者電腦上開瀏覽器，server 版屬補充。
+- 驗證：tsc 0、next build 0（預設路徑）。

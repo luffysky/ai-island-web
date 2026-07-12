@@ -75,6 +75,19 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # 章節 / 副本資料：content.ts 在 runtime 用 fs 從 process.cwd()/src/data 讀（DB 失敗時的 fallback）
 COPY --from=builder --chown=nextjs:nodejs /app/src/data ./src/data
 
+# ---- 分身島 L2 伺服器瀏覽器（選配，預設關）----
+# 預設不裝 → 這段完全跳過、image 與部署跟以前一模一樣、零風險。
+# 要開：Zeabur build arg 設 INSTALL_SERVER_BROWSER=1（裝 Chromium + 系統相依）＋ runtime env ENABLE_SERVER_BROWSER=1。
+# 版本對齊本機 @playwright/test（1.58.2）；裝在 root 階段、runtime 由 nextjs 唯讀取用。
+ARG INSTALL_SERVER_BROWSER=
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+RUN if [ -n "$INSTALL_SERVER_BROWSER" ]; then \
+      set -e; \
+      npm i playwright@1.58.2 --no-save --no-audit --no-fund && \
+      npx playwright install --with-deps chromium && \
+      chown -R nextjs:nodejs /app/node_modules /ms-playwright; \
+    else echo "skip server browser (INSTALL_SERVER_BROWSER unset)"; fi
+
 USER nextjs
 EXPOSE 3000
 

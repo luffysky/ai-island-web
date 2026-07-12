@@ -240,6 +240,11 @@ export const TOOLS: AgentTool[] = [
     async execute(args) {
       const url = String(args?.url ?? "");
       if (!/^https?:\/\//.test(url)) return { ok: false, error: "url 必須是 http(s):// 開頭" };
+      // 伺服器瀏覽器預設關（正式站要在 Dockerfile build arg 裝 Chromium + 設 ENABLE_SERVER_BROWSER=1 才開）。
+      // 沒開就明講、改走 web.research/web.fetch，別讓 agent 卡在這。
+      if (!process.env.ENABLE_SERVER_BROWSER) {
+        return { ok: false, error: "伺服器瀏覽器未啟用（本站未裝 Chromium）。請改用 web.research / web.fetch，或用桌面助手的 browser.* 在你電腦上開。" };
+      }
       let browser: any = null;
       try {
         const { chromium } = await import("playwright");
