@@ -39,7 +39,8 @@ export async function POST(req: Request) {
   // 選用技能：限制工具集 + 附加任務框架 + 決定 max_steps
   let skill: { allowedTools?: string[]; prompt?: string } | undefined;
   let skillId: string | null = null;
-  let maxSteps = Math.min(Math.max(Number(body.maxSteps) || 20, 1), 30);
+  // 步數上限拉高（預設 40、安全上限 100 防跑飛）；達上限時會用目前進度合成最終答案、不再直接失敗。
+  let maxSteps = Math.min(Math.max(Number(body.maxSteps) || 40, 1), 100);
   if (body.skillId) {
     const { data: sk } = await admin.from("agent_skills")
       .select("id, goal_template, allowed_tools, max_steps, is_builtin, user_id")
@@ -47,7 +48,7 @@ export async function POST(req: Request) {
     if (sk) {
       skillId = sk.id;
       skill = { allowedTools: (sk.allowed_tools as string[]) ?? [], prompt: sk.goal_template || undefined };
-      maxSteps = Math.min(Math.max(Number(sk.max_steps) || maxSteps, 1), 30);
+      maxSteps = Math.min(Math.max(Number(sk.max_steps) || maxSteps, 1), 100);
     }
   }
 

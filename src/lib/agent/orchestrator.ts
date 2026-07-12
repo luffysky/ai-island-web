@@ -70,8 +70,33 @@ ${toolsBlock}
 ${hist}
 
 請只回下一步的 JSON。`;
-  const res = await completeForUsage("agent_core", { system, user, maxTokens: 700, defaultModel: "claude-haiku-4-5-20251001" });
-  return parseDecision(res.text);
+  // 免費模型先跑（成本≈0）；沒回出有效 JSON → 自動升級到較強模型再試一次（自己判斷何時需要高級）
+  let res = await completeForUsage("agent_core", { system, user, maxTokens: 900, defaultModel: PLANNER_FREE });
+  let d = parseDecision(res.text);
+  if (!d) {
+    res = await completeForUsage("agent_core", { system, user, maxTokens: 900, defaultModel: PLANNER_STRONG });
+    d = parseDecision(res.text);
+  }
+  return d;
+}
+
+// 規劃模型：免費先用（Gemini Flash 免費、擅長結構化輸出）；需要時升級到較強、可靠的 JSON 模型。
+const PLANNER_FREE = "gemini-2.5-flash";
+const PLANNER_STRONG = "claude-haiku-4-5-20251001";
+
+// 達到步數上限時：不要直接失敗，用目前進度合成「最好的最終答案」給使用者（例如已查到的美食清單）。
+async function finalizeFromHistory(goal: string, history: StepRow[]): Promise<string> {
+  try {
+    const hist = history.map((s) =>
+      `#${s.idx} ${s.toolName ?? "?"} → ${s.ok ? "ok" : "fail"}: ${JSON.stringify(s.result ?? {}).slice(0, 500)}`
+    ).join("\n") || "（沒有可用進度）";
+    const res = await completeForUsage("agent_core", {
+      system: "你是 AI 島的行動代理。根據以下已完成步驟與觀察，直接給使用者最好、最完整的『最終中文答案』。不要再要求用工具、不要回 JSON，就是自然語言結論（可條列）。",
+      user: `目標：${goal}\n\n目前進度：\n${hist}\n\n請直接給最終答案：`,
+      maxTokens: 900, defaultModel: PLANNER_STRONG,
+    });
+    return (res.text ?? "").trim();
+  } catch { return ""; }
 }
 
 // Phase B：本機步驟遇到「電腦沒開」→ 輪詢等桌面助手上線（雲端步驟不受影響、早已能跑）。
@@ -137,7 +162,7 @@ async function waitForApproval(approvalId: string, taskId: string, timeoutMs = 3
 // Phase 2b：背景執行——任務不綁 HTTP 連線，關掉頁面也照跑。
 // Zeabur 是長駐 node server，detached promise 會續跑；步驟寫進 DB、關鍵時刻推播、前端靠輪詢觀看。
 const RUNNING = new Set<string>();
-export function runAgentTaskDetached(taskId: string, userId: string, goal: string, maxSteps = 20, skill?: SkillCtx, extraTools?: AgentTool[], priorContext = ""): void {
+export function runAgentTaskDetached(taskId: string, userId: string, goal: string, maxSteps = 40, skill?: SkillCtx, extraTools?: AgentTool[], priorContext = ""): void {
   if (RUNNING.has(taskId)) return;
   RUNNING.add(taskId);
   (async () => {
@@ -151,7 +176,7 @@ export function runAgentTaskDetached(taskId: string, userId: string, goal: strin
 }
 
 /** 跑一個任務，吐事件流。extraTools = 動態工具（如 MCP）；priorContext = 本串先前對話（Phase A 對話延續）。 */
-export async function* runAgentTask(taskId: string, userId: string, goal: string, maxSteps = 20, skill?: SkillCtx, extraTools: AgentTool[] = [], priorContext = ""): AsyncGenerator<AgentEvent> {
+export async function* runAgentTask(taskId: string, userId: string, goal: string, maxSteps = 40, skill?: SkillCtx, extraTools: AgentTool[] = [], priorContext = ""): AsyncGenerator<AgentEvent> {
   const admin = createSupabaseAdmin();
   const history: StepRow[] = [];
   // 本回合結束時要更新對話串 last_message_at + 寫 turn_summary
@@ -261,10 +286,18 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
       yield { type: "step", step: row };
     }
 
-    // 用完步數
-    await setStatus("failed", { error: "達到最大步數", finished_at: new Date().toISOString() });
-    pushSafe(userId, "⚠️ Agent 任務未完成", `已達最大步數（${maxSteps}）`, taskId, `agent-done-${taskId}`);
-    yield { type: "done", status: "failed", summary: `已達最大步數（${maxSteps}）仍未完成。` };
+    // 達到步數上限 → 不要直接失敗，用目前進度合成「最好的最終答案」給使用者（例如已查到的美食清單）
+    const finalAns = await finalizeFromHistory(goal, history);
+    if (finalAns) {
+      await setStatus("succeeded", { result: { summary: finalAns }, step_count: maxSteps, finished_at: new Date().toISOString() });
+      await bumpThread(finalAns);
+      extractMemory(userId, goal, finalAns).catch(() => {});
+      pushSafe(userId, "✅ Agent 完成任務", finalAns, taskId, `agent-done-${taskId}`);
+      yield { type: "done", status: "succeeded", summary: finalAns };
+      return;
+    }
+    await setStatus("failed", { error: "步數用盡且無可用結果", finished_at: new Date().toISOString() });
+    yield { type: "done", status: "failed", summary: "這個任務比較複雜、我還沒完成。可以把目標拆小一點再試。" };
   } catch (e: any) {
     await setStatus("failed", { error: e?.message ?? "未知錯誤", finished_at: new Date().toISOString() });
     yield { type: "error", error: e?.message ?? "未知錯誤" };
