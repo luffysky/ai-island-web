@@ -76,6 +76,21 @@ ${hist}
   return parseDecision(res.text);
 }
 
+// Phase B：本機步驟遇到「電腦沒開」→ 輪詢等桌面助手上線（雲端步驟不受影響、早已能跑）。
+// 回上線的 device，或 null（逾時/取消）。
+async function waitForDevice(userId: string, taskId: string, timeoutMs = 300_000) {
+  const admin = createSupabaseAdmin();
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, 3000));
+    const { data: t } = await admin.from("agent_tasks").select("status").eq("id", taskId).single();
+    if (t?.status === "cancelled") return null;
+    const device = await getOnlineDevice(userId);
+    if (device) return device;
+  }
+  return null;
+}
+
 // 等前端決定 approval（輪詢 DB）；回 true=approved / false=denied 或逾時/取消。
 async function waitForApproval(approvalId: string, taskId: string, timeoutMs = 300_000): Promise<boolean> {
   const admin = createSupabaseAdmin();
@@ -189,9 +204,17 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
       let result: ToolResult;
       try {
         if (tool.needsDevice) {
-          const device = await getOnlineDevice(userId);
+          let device = await getOnlineDevice(userId);
           if (!device) {
-            result = { ok: false, error: "沒有連接中的『AI 島桌面助手』。請先在電腦上安裝並啟動、於 /agent 完成配對。" };
+            // Phase B：電腦沒開 → 標記等待、推播、輪詢等它上線（雲端步驟早已完成、不受影響）
+            await setStatus("awaiting_device");
+            pushSafe(userId, "🖥️ 分身在等你的電腦上線", `這步需要桌面助手：${tool.name}`, taskId, `agent-dev-${taskId}`);
+            yield { type: "status", status: "awaiting_device" };
+            device = await waitForDevice(userId, taskId);
+            await setStatus("running");
+          }
+          if (!device) {
+            result = { ok: false, error: "這步需要你的電腦（桌面助手），但它一直沒上線。能在雲端做的部分我已先完成；等電腦上線後可重跑這步。" };
           } else {
             result = await dispatchToDevice(taskId, userId, device.id, idx, tool.name, decision.args ?? {});
           }

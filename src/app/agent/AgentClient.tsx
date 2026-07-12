@@ -24,10 +24,10 @@ const RISK_BADGE: Record<Risk, { label: string; cls: string; Icon: any }> = {
 
 const STATUS_LABEL: Record<string, string> = {
   planning: "規劃中", running: "執行中", awaiting_approval: "等你確認",
-  succeeded: "完成", failed: "失敗", cancelled: "已取消",
+  awaiting_device: "等你的電腦上線", succeeded: "完成", failed: "失敗", cancelled: "已取消",
 };
 
-const LIVE = ["planning", "running", "awaiting_approval"];
+const LIVE = ["planning", "running", "awaiting_approval", "awaiting_device"];
 function mapSteps(st: any[]): StepView[] {
   return (st ?? []).map((s) => ({ idx: s.idx, kind: "step" as const, thought: s.thought, toolName: s.tool_name, risk: s.risk, args: s.args, result: s.result, ok: s.ok }));
 }
