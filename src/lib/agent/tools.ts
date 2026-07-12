@@ -110,8 +110,44 @@ export const TOOLS: AgentTool[] = [
     },
   },
   {
+    name: "web.research",
+    description: "**深入研究一個主題**：一次搜尋 + 平行抓取多個來源的內文、自動去重、彙整回傳（唯讀）。需要多來源、要詳細/交叉比對時用這個——比一個個 web.fetch 快很多、也更完整。拿到後直接整理成含具體資訊（地址/時間/價格/數字）＋來源連結的答案。",
+    args: { query: "研究主題／關鍵字", max: "最多抓幾個來源（預設 5、上限 8，可省略）" },
+    risk: "read",
+    platforms: ["server"],
+    async execute(args) {
+      const q = String(args?.query ?? "").trim().slice(0, 200);
+      if (!q) return { ok: false, error: "缺 query" };
+      const max = Math.min(Math.max(Number(args?.max) || 5, 1), 8);
+      const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36";
+      try {
+        const sr = await fetch(`https://html.duckduckgo.com/html/?q=${encodeURIComponent(q)}`, { headers: { "User-Agent": UA, "Accept-Language": "zh-TW,zh;q=0.9,en;q=0.8" }, signal: AbortSignal.timeout(12000) });
+        const shtml = await sr.text();
+        const urls: string[] = [];
+        const re = /class="result__a"[^>]*href="([^"]+)"/g;
+        let m: RegExpExecArray | null;
+        while ((m = re.exec(shtml)) !== null && urls.length < max * 2) {
+          const u = decodeDdgUrl(m[1]);
+          if (/^https?:/.test(u) && !/duckduckgo\.com\/y\.js|ad_domain=/.test(u) && !urls.some((x) => x === u)) urls.push(u);
+        }
+        const pick = urls.slice(0, max);
+        if (!pick.length) return { ok: true, data: { sources: [], note: "沒搜到來源，換個關鍵字再試" } };
+        // 平行抓取多個來源（互不阻塞）
+        const sources = await Promise.all(pick.map(async (url) => {
+          try {
+            const r = await fetch(url, { headers: { "User-Agent": UA, "Accept-Language": "zh-TW,zh;q=0.9" }, signal: AbortSignal.timeout(10000) });
+            const { title, text } = htmlToText(await r.text());
+            return { url, title, text: text.slice(0, 1400) };
+          } catch { return { url, title: "", text: "", error: "抓取失敗" }; }
+        }));
+        const good = sources.filter((s) => s.text || s.title);
+        return { ok: true, data: { query: q, count: good.length, sources: good } };
+      } catch (e: any) { return { ok: false, error: e?.message ?? "研究失敗" }; }
+    },
+  },
+  {
     name: "web.fetch",
-    description: "抓一個網址、回傳它的標題與主要文字內容（唯讀、安全）。用來查資料、讀網頁。",
+    description: "抓一個網址、回傳它的標題與主要文字內容（唯讀、安全）。讀特定一頁用；要多來源研究請用 web.research。",
     args: { url: "要抓的完整網址（https://...）" },
     risk: "read",
     platforms: ["server"],
