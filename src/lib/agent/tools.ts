@@ -32,6 +32,39 @@ function htmlToText(html: string): { title: string; text: string } {
   return { title, text: body.slice(0, 1500) };
 }
 
+// 安全數學運算式解析（遞迴下降、零 eval、零 RCE）：只支援數字/+-*/%、括號、常數 pi/e、白名單函式。
+function safeMath(input: string): number {
+  const s = input.replace(/\s+/g, "");
+  if (!/^[0-9.+\-*/%(),a-zA-Z]*$/.test(s)) throw new Error("含非法字元");
+  const FUNCS: Record<string, (...a: number[]) => number> = {
+    sqrt: Math.sqrt, abs: Math.abs, round: Math.round, floor: Math.floor, ceil: Math.ceil,
+    min: Math.min, max: Math.max, pow: Math.pow, log: Math.log, exp: Math.exp,
+  };
+  const CONST: Record<string, number> = { pi: Math.PI, e: Math.E };
+  let i = 0;
+  const peek = () => s[i];
+  function expr(): number { let v = term(); while (peek() === "+" || peek() === "-") { const op = s[i++]; const t = term(); v = op === "+" ? v + t : v - t; } return v; }
+  function term(): number { let v = unary(); while (peek() === "*" || peek() === "/" || peek() === "%") { const op = s[i++]; const u = unary(); v = op === "*" ? v * u : op === "/" ? v / u : v % u; } return v; }
+  function unary(): number { if (peek() === "+") { i++; return unary(); } if (peek() === "-") { i++; return -unary(); } return primary(); }
+  function primary(): number {
+    if (peek() === "(") { i++; const v = expr(); if (s[i] !== ")") throw new Error("缺 )"); i++; return v; }
+    const num = s.slice(i).match(/^\d+(\.\d+)?([eE][-+]?\d+)?/);
+    if (num) { i += num[0].length; return parseFloat(num[0]); }
+    const id = s.slice(i).match(/^[a-zA-Z]+/);
+    if (id) {
+      const name = id[0].toLowerCase(); i += id[0].length;
+      if (peek() === "(") { i++; const args = [expr()]; while (peek() === ",") { i++; args.push(expr()); } if (s[i] !== ")") throw new Error("缺 )"); i++; const fn = FUNCS[name]; if (!fn) throw new Error("未知函式 " + name); return fn(...args); }
+      if (name in CONST) return CONST[name];
+      throw new Error("未知符號 " + name);
+    }
+    throw new Error("解析失敗");
+  }
+  const r = expr();
+  if (i < s.length) throw new Error("多餘字元");
+  if (!isFinite(r)) throw new Error("結果非有限數");
+  return r;
+}
+
 export const TOOLS: AgentTool[] = [
   {
     name: "web.fetch",
@@ -65,6 +98,51 @@ export const TOOLS: AgentTool[] = [
         .or(`term.ilike.%${term}%,zh_name.ilike.%${term}%`).limit(3);
       if (!data || !data.length) return { ok: true, data: { found: false, note: "辭典裡沒有這個詞" } };
       return { ok: true, data: { found: true, results: data } };
+    },
+  },
+  // ── 省 token「Tool First」工具（Snow Orchestrator）：算數/日期/JSON 用程式、不燒大模型。安全、零 eval ──
+  {
+    name: "datetime.now",
+    description: "取得現在的日期時間與星期幾（台灣時區），可加減天數。算截止倒數、排程用。**別叫大模型算日期、這個又快又免費。**",
+    args: { offsetDays: "要往後(正)/往前(負)幾天，可省略（例：7 = 一週後）" },
+    risk: "read",
+    platforms: ["server"],
+    async execute(args) {
+      const off = Number(args?.offsetDays) || 0;
+      const d = new Date(Date.now() + off * 86400000);
+      const parts = Object.fromEntries(
+        new Intl.DateTimeFormat("zh-TW", { timeZone: "Asia/Taipei", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", weekday: "long", hour12: false })
+          .formatToParts(d).map((p) => [p.type, p.value]),
+      );
+      return { ok: true, data: { date: `${parts.year}-${parts.month}-${parts.day}`, time: `${parts.hour}:${parts.minute}`, weekday: parts.weekday, iso: d.toISOString() } };
+    },
+  },
+  {
+    name: "math.eval",
+    description: "安全計算一個數學運算式（+ - * / % 括號、pi/e、sqrt/abs/round/min/max/pow/log 等）。**算數別叫大模型、這個精準又免費。**",
+    args: { expr: "運算式，如 (1234*0.3)+56 或 sqrt(2)*100" },
+    risk: "read",
+    platforms: ["server"],
+    async execute(args) {
+      try { return { ok: true, data: { result: safeMath(String(args?.expr ?? "")) } }; }
+      catch (e: any) { return { ok: false, error: e?.message ?? "無法計算" }; }
+    },
+  },
+  {
+    name: "json.query",
+    description: "解析 JSON 字串、可用點路徑取值（如 data.items.0.name）。整理/取欄位別叫大模型。",
+    args: { json: "JSON 字串或物件", path: "點路徑（可省略＝回整包）" },
+    risk: "read",
+    platforms: ["server"],
+    async execute(args) {
+      try {
+        const obj = typeof args?.json === "string" ? JSON.parse(args.json) : args?.json;
+        const path = String(args?.path ?? "").trim();
+        if (!path) return { ok: true, data: { value: obj } };
+        let cur: any = obj;
+        for (const key of path.split(".")) { if (cur == null) break; cur = cur[key]; }
+        return { ok: true, data: { value: cur ?? null } };
+      } catch (e: any) { return { ok: false, error: e?.message ?? "JSON 解析失敗" }; }
     },
   },
   // ── Phase F：第一方（AI 島生態）工具 — 分身懂「你」，通用 claw agent 拿不到。皆雲端唯讀、手機也能跑 ──
