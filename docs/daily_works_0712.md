@@ -106,3 +106,20 @@
 - [ ] Agent 對話延續大工程（依 `docs/agent_memory_plan.md`）。
 - [ ] 機會島（Opportunity Island）產品規劃：先出 V1 spec（找到適合的免費競賽 + 我的航線 + 截止提醒），爬蟲/全自動雷達留後段。
 - [ ] 留言編輯目前涵蓋「回覆/留言」；討論串**主文**與其他區塊（如創作島社群貼文）編輯之後視需要再補。
+
+---
+
+## 🔧 Agent 搜尋效率大修（「爬一堆結果只出一條 + 浪費 API」）
+林董實測「找台北車站美食」：跑 ~20 個工具呼叫（8× web.search、6× web.fetch、4× web.research）、一半撞 captcha/cloudflare、**Brave 一個任務就吃掉 12 次額度**，最後只吐一張很薄的表。根因不是「爬不夠」，是**蒐集到的好資料（ifoodie 店名+地址+均價、隱家拉麵、PopDaily 地址價位、台鐵便當 60/80/100）在最終合成時被丟掉**（finalize 每步截 500 字 + maxTokens 1200 + ai.ask 被截斷）。
+
+### 三個精準修（`orchestrator.ts`）
+- **合成不再丟資料**：新 `stepEvidence()` 依工具型別抽「具體證據」——web.search 保留每筆 title+snippet、web.research 保留每個來源正文、web.fetch 保留正文；`isBlockedText()` 濾掉 captcha/cloudflare/驗證頁；重複沿用(repeated)不重複計。`finalizeFromHistory` 改吃這份證據（上限 14000 字）、maxTokens 1200→2600、系統詞強制「把每個具體店名/地址/價格帶進來、**只能用資料裡真有的、禁止編造**」。
+- **查夠就收尾**：web 類工具（search/research/fetch/render）滿 **7 次硬上限** → 直接用手上資料合成、不再燒 API；planner 在查 ≥4 次時收到「資料夠了、這步直接 done 並整理完整答案、別再重複搜」的強提示。
+- **這兩項一起**把單任務 web 呼叫從 ~18 壓到 ≤7，Brave 額度消耗直接砍一半以上。
+
+### 省 Brave 額度：改「DDG 優先、Brave 備援」（`tools.ts`）
+- 林董提醒 Brave 免費 2000 次/月「一下就沒」。原本 `searchLinks` **Brave 優先** → 每次搜尋都吃額度。改成**先用免費 DDG 爬蟲，DDG 被擋/太少(<3 筆)才動用 Brave**。Brave 只在免費爬蟲失敗時才花 → 2000 次能撐更久。web.fetch / web.research 抓內文本來就是**直接爬網頁、不吃搜尋額度**（只有初始找連結那步才用到搜尋）。
+- 驗證：tsc 0、vitest 122 綠、next build 0。
+
+### L2 真瀏覽器 `browser.render`（server Playwright，優雅降級）
+- 加了用真瀏覽器（headless Chromium）打開會擋 bot / 需跑 JS 的頁；`import("playwright")` 在無 Chromium 的 standalone Docker 會 throw→catch→回清楚錯誤（prod 目前降級為「尚未就緒」，不會壞部署）。實測 tripadvisor 仍回空頁（企業級反爬連真瀏覽器都擋，需 stealth+代理，屬鑽牛角尖、不追）。Docker 裝 Chromium 屬高風險改動、待林董確認後再小心弄。

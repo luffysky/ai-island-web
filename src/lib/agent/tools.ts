@@ -123,11 +123,14 @@ async function ddgSearch(query: string, limit: number): Promise<SearchHit[]> {
   } catch { return []; }
 }
 
-// 統一搜尋：Brave 優先（穩、可 BYOK），沒結果退回 DDG。
+// 統一搜尋：**先用免費的 DDG（省 Brave 額度）**，DDG 被擋/太少（<3 筆）才動用 Brave（穩、可 BYOK、有月額度）。
+// 這樣 Brave 只在「免費爬蟲失敗」時才花——2000 次/月能撐更久。
 async function searchLinks(query: string, limit: number, userId?: string): Promise<SearchHit[]> {
+  const ddg = await ddgSearch(query, limit);
+  if (ddg.length >= 3) return ddg;
   const brave = await braveSearch(query, limit, userId);
   if (brave.length) return brave;
-  return ddgSearch(query, limit);
+  return ddg;  // Brave 也沒有（沒 key/額度用完）→ 至少回 DDG 撈到的那一兩筆
 }
 
 export const TOOLS: AgentTool[] = [
@@ -188,6 +191,31 @@ export const TOOLS: AgentTool[] = [
         const { title, text } = htmlToText(html);
         return { ok: true, data: { status: r.status, title, text } };
       } catch (e: any) { return { ok: false, error: e?.message ?? "fetch 失敗" }; }
+    },
+  },
+  {
+    name: "browser.render",
+    description: "用真正的瀏覽器打開網址（會跑 JS、能讀動態頁 / 擋 bot 的站），回傳標題與主要文字（唯讀）。**web.fetch 讀不到（403 / 需 JS / 空白）的頁面才用這個**——它較慢、能不用就用 web.research/web.fetch。",
+    args: { url: "完整網址（https://...）" },
+    risk: "read",
+    platforms: ["server"],
+    async execute(args) {
+      const url = String(args?.url ?? "");
+      if (!/^https?:\/\//.test(url)) return { ok: false, error: "url 必須是 http(s):// 開頭" };
+      let browser: any = null;
+      try {
+        const { chromium } = await import("playwright");
+        browser = await chromium.launch({ headless: true, args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"] });
+        const ctx = await browser.newContext({ userAgent: SEARCH_UA, locale: "zh-TW", viewport: { width: 1280, height: 900 } });
+        const page = await ctx.newPage();
+        await page.goto(url, { waitUntil: "domcontentloaded", timeout: 20000 });
+        await page.waitForTimeout(1200);
+        const title = await page.title();
+        const text = String(await page.evaluate(() => (document.body as any)?.innerText || "")).replace(/\s+/g, " ").trim().slice(0, 2800);
+        return { ok: true, data: { title, text } };
+      } catch (e: any) {
+        return { ok: false, error: "伺服器瀏覽器尚未就緒或載入失敗（可改用 web.research / web.fetch）：" + String(e?.message ?? "").slice(0, 120) };
+      } finally { try { await browser?.close(); } catch { /* ignore */ } }
     },
   },
   {

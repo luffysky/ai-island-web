@@ -73,7 +73,7 @@ async function decompose(goal: string, priorContext = "", freeModel = PLANNER_ST
   } catch { return [goal]; }
 }
 
-async function planNext(goal: string, history: StepRow[], skill?: SkillCtx, extraTools: AgentTool[] = [], priorContext = "", plan: string[] = [], freeModel = PLANNER_STRONG): Promise<Decision | null> {
+async function planNext(goal: string, history: StepRow[], skill?: SkillCtx, extraTools: AgentTool[] = [], priorContext = "", plan: string[] = [], freeModel = PLANNER_STRONG, webCalls = 0): Promise<Decision | null> {
   const hist = history.map((s) =>
     `#${s.idx} ${s.toolName ?? "?"}(${JSON.stringify(s.args ?? {})}) → ${s.ok ? "ok" : "fail"}: ${JSON.stringify(s.result ?? {}).slice(0, 400)}`
   ).join("\n") || "（尚無步驟）";
@@ -86,8 +86,12 @@ async function planNext(goal: string, history: StepRow[], skill?: SkillCtx, extr
   const planBlock = plan.length > 1
     ? `【任務計畫】請依序完成下列每一項，全部做完才回 done（還有沒完成的項就繼續、別提早 done）：\n${plan.map((p, i) => `${i + 1}. ${p}`).join("\n")}\n\n`
     : "";
+  // 蒐集夠了就別再查（省 API、避免「爬一堆結果只出一條」）：查越多、越該收尾。
+  const enoughBlock = webCalls >= 4
+    ? `\n【重要】你已經上網查了 ${webCalls} 次、資料已經很多了。除非還缺**某個關鍵的具體數字**（否則答不了），這一步請直接回 {"done":true,"summary":"..."}，並把上面查到的**所有具體店名/地址/營業時間/價格/來源連結**整理成一份完整、分類清楚的 Markdown 答案。不要再重複搜尋類似的關鍵字。\n`
+    : "";
   const user = `${priorBlock}${planBlock}這次目標：${goal}
-
+${enoughBlock}
 可用工具：
 ${toolsBlock}
 
@@ -113,6 +117,10 @@ ${hist}
 
 // 需要升級時用的可靠強模型（Haiku 確定活著）。免費優先由 pickFreeModel 動態挑「還活著的最便宜模型」。
 const PLANNER_STRONG = "claude-haiku-4-5-20251001";
+
+// 上網類工具（會吃搜尋額度/時間）。查滿 WEB_HARD_CAP 次就強制用手上資料收尾、不再燒 API。
+const WEB_TOOLS = new Set(["web.search", "web.research", "web.fetch", "browser.render"]);
+const WEB_HARD_CAP = 7;
 
 // 免費優先：從 active 模型挑最便宜的 low/mid（被下架的已被 model-health 自動停用 → 挑到的都活著）。
 // 挑不到就退回 Haiku。每個任務解析一次即可。
@@ -154,17 +162,56 @@ async function critique(goal: string, plan: string[], history: StepRow[], summar
   } catch { return null; }
 }
 
-// 達到步數上限時：不要直接失敗，用目前進度合成「最好的最終答案」給使用者（例如已查到的美食清單）。
+// 判斷網頁內容是不是被擋（captcha / cloudflare / 驗證頁）→ 不算有效來源，別餵給合成、也別重試。
+function isBlockedText(s: string): boolean {
+  const t = (s || "").toLowerCase();
+  return /just a moment|enable javascript|human verification|solving a captcha|captcha puzzle|attention required|performance & security by cloudflare|too many req|unable to access|not a robot|whaleguard|wikimedia error/.test(t);
+}
+
+// 把一個步驟的觀察轉成「給最終合成用的具體證據」：保留店名/地址/價格/來源，丟掉被擋頁與重複沿用。
+function stepEvidence(s: StepRow): string {
+  if (!s.ok || !s.result) return "";
+  const r: any = s.result;
+  if (r.repeated) return "";  // 去重沿用的、原始那筆已在別處
+  // web.search → 每筆 title+snippet（店名/價格/地址常在 snippet）
+  if (Array.isArray(r.results)) {
+    const items = r.results
+      .filter((x: any) => !isBlockedText(`${x?.title} ${x?.snippet}`))
+      .map((x: any) => `- ${x.title}｜${x.snippet}｜${x.url}`).join("\n");
+    return items ? `【搜尋：${r.query ?? ""}】\n${items}` : "";
+  }
+  // web.research → 每個來源的正文（截長）
+  if (Array.isArray(r.sources)) {
+    const items = r.sources
+      .filter((x: any) => !isBlockedText(`${x?.title} ${x?.text}`))
+      .map((x: any) => `- ${x.title}（${x.url}）\n  ${String(x.text ?? "").slice(0, 900)}`).join("\n");
+    return items ? `【研究：${r.query ?? ""}】\n${items}` : "";
+  }
+  // web.fetch / browser.render → 正文
+  if (typeof r.text === "string") {
+    if (isBlockedText(r.text)) return "";
+    return `【網頁：${r.title ?? ""}】\n${String(r.text).slice(0, 1200)}`;
+  }
+  if (typeof r.answer === "string") return `【AI 整理】\n${String(r.answer).slice(0, 800)}`;
+  return `【${s.toolName ?? "?"}】${JSON.stringify(r).slice(0, 300)}`;
+}
+
+// 用目前進度合成「最好的最終答案」（步數用盡 / 規劃卡住 / 蒐集夠了）。把具體資料完整帶進去、禁止編造。
 async function finalizeFromHistory(goal: string, history: StepRow[]): Promise<string> {
   try {
-    const hist = history.map((s) =>
-      `#${s.idx} ${s.toolName ?? "?"} → ${s.ok ? "ok" : "fail"}: ${JSON.stringify(s.result ?? {}).slice(0, 500)}`
-    ).join("\n") || "（沒有可用進度）";
+    const evidence = history.map(stepEvidence).filter(Boolean).join("\n\n").slice(0, 14000)
+      || "（沒有可用資料）";
     const best = await pickStrongModel();  // 最終答案用最強模型、品質優先
     const res = await completeForUsage("agent_core", {
-      system: "你是 AI 島的行動代理。根據以下已完成步驟與觀察，直接給使用者最好、最完整、最具體的『最終中文答案』（把查到的地址/時間/價格/數字/來源都整理進去、用 Markdown）。不要再要求用工具、不要回 JSON。",
-      user: `目標：${goal}\n\n目前進度：\n${hist}\n\n請直接給最終答案：`,
-      maxTokens: 1200, defaultModel: best,
+      system: `你是 AI 島的行動代理。根據下面「已蒐集的資料」，直接給使用者最完整、最具體的繁體中文最終答案。
+規則：
+- 把資料裡出現的**每一個**具體項目（店名/地址/營業時間/價格/評價/數字/來源連結）都整理進答案，不要只給空泛清單。
+- **只能用資料裡真的出現的內容**，絕對不要自己編造店名、地址或價格；資料沒有就別寫、寧可少列也別亂編。
+- 被擋頁/驗證頁/與目標無關的內容一律忽略。
+- 用清楚的 Markdown（標題 + 表格或清單 + 粗體），分類清楚、附上來源連結。
+- 不要回 JSON、不要再要求用工具、不要說「建議你自己去查」。`,
+      user: `目標：${goal}\n\n已蒐集的資料：\n${evidence}\n\n請直接給最終答案：`,
+      maxTokens: 2600, defaultModel: best,
     });
     return (res.text ?? "").trim();
   } catch { return ""; }
@@ -277,7 +324,21 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
       const { data: cur } = await admin.from("agent_tasks").select("status").eq("id", taskId).single();
       if (cur?.status === "cancelled") { yield { type: "done", status: "cancelled", summary: "任務已取消" }; return; }
 
-      const decision = await planNext(goal, history, skill, extraTools, priorContext, plan, freeModel);
+      // 蒐集夠了就強制收尾：查越多越浪費 API（尤其 Brave 有月額度）。web 類工具用滿硬上限 → 直接用手上資料合成。
+      const webCalls = history.filter((s) => WEB_TOOLS.has(s.toolName ?? "")).length;
+      if (webCalls >= WEB_HARD_CAP) {
+        const finalAns = await finalizeFromHistory(goal, history);
+        if (finalAns) {
+          await setStatus("succeeded", { result: { summary: finalAns }, step_count: idx, finished_at: new Date().toISOString() });
+          await bumpThread(finalAns);
+          extractMemory(userId, goal, finalAns).catch(() => {});
+          pushSafe(userId, "✅ Agent 完成任務", finalAns, taskId, `agent-done-${taskId}`);
+          yield { type: "done", status: "succeeded", summary: finalAns };
+          return;
+        }
+      }
+
+      const decision = await planNext(goal, history, skill, extraTools, priorContext, plan, freeModel, webCalls);
       if (!decision) {
         // 規劃卡住 → 別直接失敗；用目前已查到的東西合成最終答案（找外援用強模型）
         const salvage = history.length ? await finalizeFromHistory(goal, history) : "";
