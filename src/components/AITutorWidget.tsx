@@ -7,7 +7,6 @@ import { useEdgeSafe } from "@/lib/use-edge-safe";
 import { useConfirm } from "@/components/ui/ConfirmDialog";
 import { devLog } from "@/lib/dev-log";
 import { handleEnterSubmit, autoGrow } from "@/lib/composer";
-import { isWebGPUAvailable, type InitProgress } from "@/lib/webllm";
 import { trackEvent } from "@/lib/analytics";
 import { getReading, getLastChapterId, hydrateFromServer, formatLessonNumber, type ChapterReading, type Pos } from "@/lib/reading-position";
 
@@ -191,13 +190,8 @@ export function AITutorWidget({
   const [personaId, setPersonaId] = useState<PersonaId>("green");
   const persona = getPersona(personaId);
   const [useBYOK, setUseBYOK] = useState(false);
-  // 本地模型（WebGPU，免費·無限·在裝置跑）：只在支援 WebGPU 的裝置顯示；預設關
-  const [localMode, setLocalMode] = useState(false);
-  const [webgpuOk, setWebgpuOk] = useState(false);
-  const [localProgress, setLocalProgress] = useState<InitProgress | null>(null);
   // 額度用完 → 花 Z幣續用的提示（need_zcoin）
   const [zcoinPrompt, setZcoinPrompt] = useState<{ price: number; question: string } | null>(null);
-  useEffect(() => { setWebgpuOk(isWebGPUAvailable()); }, []);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -436,34 +430,6 @@ export function AITutorWidget({
     ]);
     setSending(true);
     trackEvent("ai_chat_send", { persona: personaId, model: selectedModelId, has_image: images.length > 0 });
-
-    // 本地模型（WebGPU）：不打伺服器、在使用者裝置跑，免費無限。僅純文字、無 RAG / 記憶。
-    if (localMode && webgpuOk && images.length === 0) {
-      try {
-        const { streamLocalReply } = await import("@/lib/webllm");
-        const history = messages
-          .filter((m) => m.content)
-          .slice(-6)
-          .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
-        const localMsgs = [
-          { role: "system" as const, content: "你是 AI 島的程式學習助教「綠寶」，用繁體中文、簡潔友善、口語地回答程式與 AI 學習問題。" },
-          ...history,
-          { role: "user" as const, content: userMsg },
-        ];
-        let acc = "";
-        const full = await streamLocalReply(localMsgs, (delta) => {
-          acc += delta;
-          setMessages((prev) => { const c = [...prev]; c[c.length - 1] = { ...c[c.length - 1], role: "assistant", content: acc }; return c; });
-        }, { onProgress: setLocalProgress });
-        if (full == null) {
-          setMessages((prev) => { const c = [...prev]; c[c.length - 1] = { ...c[c.length - 1], role: "assistant", content: "❌ 本地模型無法啟動（裝置不支援 WebGPU 或載入失敗）。請關閉「本地模型」改用雲端。" }; return c; });
-        }
-      } finally {
-        setLocalProgress(null);
-        setSending(false);
-      }
-      return;
-    }
 
     try {
       // 島嶼每日學習任務（client-only）
@@ -1053,24 +1019,6 @@ export function AITutorWidget({
                   用我自己的 API key（無限額度、先到設定建立）
                 </label>
               </div>
-
-              {webgpuOk && (
-                <div>
-                  <label className="flex items-center gap-2 text-xs cursor-pointer">
-                    <input type="checkbox" checked={localMode} onChange={(e) => setLocalMode(e.target.checked)} />
-                    ⚡ 本地模型（免費·無限，在你裝置上跑）
-                  </label>
-                  <div className="text-[10px] text-fg-muted mt-0.5 ml-6">首次啟用會下載模型（約 1GB）；純文字、不看圖、品質較雲端低</div>
-                  {localProgress && localProgress.progress < 1 && (
-                    <div className="ml-6 mt-1">
-                      <div className="text-[10px] text-fg-muted">載入本地模型… {Math.round(localProgress.progress * 100)}%</div>
-                      <div className="h-1 bg-bg-card rounded-full mt-0.5 overflow-hidden">
-                        <div className="h-full bg-accent" style={{ width: `${localProgress.progress * 100}%` }} />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
 
               {!useBYOK && quotaUsed && (
                 <div className="text-xs text-fg-muted">

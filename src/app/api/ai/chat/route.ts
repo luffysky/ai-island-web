@@ -60,8 +60,10 @@ async function handlePost(req: NextRequest) {
   const canHigh = unlimited || subTier === "pro" || !!useBYOK;   // 可用高階模型（Claude/GPT/Gemini 等）
   const canPickModel = canHigh || subTier === "plus";            // 可自選模型（免費不行、一律 auto）
 
-  // 1. 取模型：免費強制 auto；auto 依難度分級（特權→最高階、免費/Plus→排除 high）；自選則檢查分層授權
+  // 1. 取模型：免費強制 auto；auto 依難度分級；自選則檢查分層授權
+  //    免費/Plus 每日給少量「高階額度」（Free 3 / Plus 20）：auto 判為 high（含看圖 / 難題）時自動升級到高階模型；用完當天自動降級。
   let model: any;
+  let highGranted = false; // 這回合已用掉 1 次每日高階額度（step-2 跳過重複計費）
   if (modelId === "auto" || !canPickModel) {
     const { data: actives } = await admin.from("ai_models").select("*").eq("is_active", true);
     const { classifyDifficulty, pickModelByTier } = await import("@/lib/ai-difficulty");
@@ -69,9 +71,21 @@ async function handlePost(req: NextRequest) {
     let pool = actives ?? [];
     if (unlimited) {
       tier = "high";                                       // 特權 auto 直接跑最高階
+    } else if (tier === "high" && !canHigh) {
+      // 免費/Plus：auto 判為 high → 先試每日高階額度（傳圖片 / 難題自動升級到高階視覺/強模型）
+      const { highDailyFor, AI_ZCOIN_HIGH_OVERFLOW } = await import("@/lib/ai-quota-config");
+      const { data: hq } = await admin.rpc("consume_ai_quota_v2", {
+        p_user_id: user.id, p_kind: "high", p_daily_limit: highDailyFor(subTier),
+        p_zcoin_price: AI_ZCOIN_HIGH_OVERFLOW, p_allow_zcoin: false,
+      });
+      if ((hq as any)?.ok) {
+        highGranted = true;                                // 允許高階、已計 1 次
+      } else {
+        pool = (pool as any[]).filter((m) => m.tier !== "high"); // 額度用完 → 當天降級
+        tier = "mid";
+      }
     } else if (!canHigh) {
-      pool = (pool as any[]).filter((m) => m.tier !== "high"); // 免費 / Plus 不給高階
-      if (tier === "high") tier = "mid";
+      pool = (pool as any[]).filter((m) => m.tier !== "high"); // 非 high 的免費/Plus：照舊排除高階
     }
     model = pickModelByTier(pool, tier);
     if (!model) return errorResponse("model_unavailable", 400, "目前沒有可用模型");
@@ -93,13 +107,14 @@ async function handlePost(req: NextRequest) {
 
   // 1.5 圖片訊息：確保最終模型「看得懂圖」。免費池只有 Gemini 能讀圖；Groq 會默默丟圖、其餘純文字模型會報錯。
   //     → 自動改挑一個視覺模型；真的沒有可用視覺模型才明確告知使用者（而不是默默給錯答案）。
+  const effectiveCanHigh = canHigh || highGranted; // 這回合是否可用高階（含免費每日高階額度）
   if (images.length > 0) {
     const { isVisionModel, pickModelByTier } = await import("@/lib/ai-difficulty");
     if (!isVisionModel(model)) {
       const { data: visActives } = await admin.from("ai_models").select("*").eq("is_active", true);
       let vpool = ((visActives ?? []) as any[]).filter(isVisionModel);
-      if (!canHigh) vpool = vpool.filter((m) => m.tier !== "high"); // 免費/Plus 不給高階
-      const vmodel = pickModelByTier(vpool, canHigh ? "high" : "mid");
+      if (!effectiveCanHigh) vpool = vpool.filter((m) => m.tier !== "high"); // 沒有高階額度 → 只給免費視覺（Gemini）
+      const vmodel = pickModelByTier(vpool, effectiveCanHigh ? "high" : "mid");
       if (vmodel) {
         model = vmodel;
       } else {
@@ -138,7 +153,7 @@ async function handlePost(req: NextRequest) {
     //   特權(unlimited)：全部不限。
     if (!unlimited) {
       const isHigh = model.tier === "high";
-      const skipQuota = !isHigh && !!subTier; // 訂閱者的免費/中階模型：無限
+      const skipQuota = (!isHigh && !!subTier) || highGranted; // 訂閱者的免費/中階模型：無限；highGranted：step-1 已計過高階、別重複扣
       if (!skipQuota) {
         const { AI_FREE_DAILY, AI_ZCOIN_FREE_OVERFLOW, AI_ZCOIN_HIGH_OVERFLOW, highDailyFor } = await import("@/lib/ai-quota-config");
         const kind = isHigh ? "high" : "free";
