@@ -99,8 +99,9 @@ ${hist}
   return d;
 }
 
-// 規劃模型：免費先用（Gemini Flash 免費、擅長結構化輸出）；需要時升級到較強、可靠的 JSON 模型。
-const PLANNER_FREE = "gemini-2.5-flash";
+// 規劃模型：預設用可靠又便宜的 Haiku（gemini-2.5-flash 已被 Google 下架、會 404）。
+// 真正的「免費優先」由 completeForUsage 的 agent_core 候選鏈（admin 可設）處理；這裡只是可靠的 fallback。
+const PLANNER_FREE = "claude-haiku-4-5-20251001";
 const PLANNER_STRONG = "claude-haiku-4-5-20251001";
 
 // L3 反思：done 前的驗收員——判斷目標/計畫是否真達標。寬鬆（核心達成就 ok），免費模型即可。

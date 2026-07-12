@@ -30,7 +30,7 @@ export async function POST(req: Request) {
 
   let items: any[] = [];
   try {
-    const res = await completeForUsage("agent_core", { system, user, maxTokens: 600, defaultModel: "gemini-2.5-flash" });
+    const res = await completeForUsage("agent_core", { system, user, maxTokens: 600, defaultModel: "claude-haiku-4-5-20251001" });
     const t = (res.text ?? "").trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
     const s = t.indexOf("["), e = t.lastIndexOf("]");
     if (s !== -1 && e !== -1) items = JSON.parse(t.slice(s, e + 1));

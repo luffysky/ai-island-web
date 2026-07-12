@@ -57,11 +57,12 @@ export async function resolveUsageAI(usageKey: AiUsageKey, defaultModel: string)
   return { ok: true, model, provider, apiKey };
 }
 
-// 額度用完 / 限流 / 暫時性錯誤 → 值得換模型重試（壞 prompt 之類的真錯不退、直接丟出）。
+// 額度用完 / 限流 / 暫時性錯誤 / 模型被下架(404) → 值得換模型重試（壞 prompt 之類的真錯不退、直接丟出）。
+// 404 / not found / no longer available：模型被 provider 下架（如 Google 停 gemini-2.5-flash）→ 換一家、別整個死。
 function isQuotaOrTransient(e: any): boolean {
   const s = String(e?.message ?? e ?? "").toLowerCase();
-  return /\b(402|403|429|500|502|503|529)\b/.test(s)
-    || /(quota|rate.?limit|overloaded|insufficient|exceeded|payment|credit|too many requests|capacity|unavailable|timeout|aborted)/.test(s);
+  return /\b(402|403|404|429|500|502|503|529)\b/.test(s)
+    || /(quota|rate.?limit|overloaded|insufficient|exceeded|payment|credit|too many requests|capacity|unavailable|timeout|aborted|not.?found|no longer available|does not exist|deprecated|decommission)/.test(s);
 }
 
 /** 額度滿/限流/掛掉的錯誤訊息 → 值得換模型重試。對外給聊天串流路由判斷用。 */

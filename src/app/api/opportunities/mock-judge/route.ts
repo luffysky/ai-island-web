@@ -40,7 +40,7 @@ export async function POST(req: Request) {
   const user = `作品/簡報：\n${about}\n\n目前 Q&A：\n${transcript}\n\n只回 JSON。`;
 
   try {
-    const res = await completeForUsage("agent_core", { system, user, maxTokens: 500, defaultModel: "gemini-2.5-flash" });
+    const res = await completeForUsage("agent_core", { system, user, maxTokens: 500, defaultModel: "claude-haiku-4-5-20251001" });
     const t = (res.text ?? "").trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
     const s = t.indexOf("{"), e = t.lastIndexOf("}");
     const obj = s !== -1 && e !== -1 ? JSON.parse(t.slice(s, e + 1)) : null;
