@@ -50,7 +50,11 @@ const PLANNER_SYSTEM = `你是 AI 島的行動代理（Agent）核心。你會�
 - 只能用下面清單裡的工具。args 要符合該工具的參數。
 - 唯讀(read)工具會自動執行；write/dangerous 工具會先請使用者確認，被拒就換做法或收尾。
 - 若某工具回「需桌面助手（Phase 1b 尚未接）」，代表本機能力還沒接上，請據此收尾說明、不要硬試同一個。
-- 盡量少步數完成；拿到足夠資訊就 done。`;
+- **效率優先（重要）**：
+  - **絕不重複**已做過的搜尋或抓取（同關鍵字/同網址）；看到 result 標「repeated/沿用上次」就換做法或直接 done。
+  - 查資料 **2–3 個來源就夠**，不要為了湊每一家的電話/地址/營業時間無止盡查——用已讀到的內容整理即可。
+  - 搜尋連續回空（被擋）就**別再搜**，用手上資料收尾。
+  - 拿到足夠資訊就 done；能 5 步做完別用 15 步。done 的 summary 要用清楚的 Markdown（標題/清單/粗體）整理好。`;
 
 // L1 拆解引擎：把目標拆成 1-6 個有明確產出的子任務（簡單目標→單一項）。免費模型即可。
 async function decompose(goal: string, priorContext = "", freeModel = PLANNER_STRONG): Promise<string[]> {
@@ -225,6 +229,7 @@ export function runAgentTaskDetached(taskId: string, userId: string, goal: strin
 export async function* runAgentTask(taskId: string, userId: string, goal: string, maxSteps = 40, skill?: SkillCtx, extraTools: AgentTool[] = [], priorContext = ""): AsyncGenerator<AgentEvent> {
   const admin = createSupabaseAdmin();
   const history: StepRow[] = [];
+  const doneCalls = new Map<string, ToolResult>();  // 去重：同一個 (工具+參數) 只真的做一次
   // 本回合結束時要更新對話串 last_message_at + 寫 turn_summary
   const bumpThread = async (summary: string) => {
     await admin.from("agent_tasks").update({ turn_summary: summary.slice(0, 600) }).eq("id", taskId);
@@ -321,8 +326,13 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
       }
 
       // 執行：需本機的工具走桌面助手 Bridge（佇列+輪詢）；其餘伺服器端直接跑
+      // 去重：同一個 (工具+參數) 已做過 → 直接沿用上次結果、不重打網路（省時間/token、避免被來源擋）
+      const callKey = `${tool.name}:${JSON.stringify(decision.args ?? {})}`;
       let result: ToolResult;
-      try {
+      if (doneCalls.has(callKey)) {
+        const cached = doneCalls.get(callKey)!;
+        result = { ok: cached.ok, data: { repeated: true, note: "這個呼叫和先前重複、已沿用上次結果。請換關鍵字/換工具，或資訊夠了就 done。", previous: cached.data }, error: cached.error };
+      } else try {
         if (tool.needsDevice) {
           let device = await getOnlineDevice(userId);
           if (!device) {
@@ -342,6 +352,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
           result = await tool.execute(decision.args ?? {}, { userId, taskId });
         }
       } catch (e: any) { result = { ok: false, error: e?.message ?? "工具執行例外" }; }
+      if (!doneCalls.has(callKey)) doneCalls.set(callKey, result);  // 記起來、下次同呼叫直接沿用
       row.ok = result.ok; row.result = result.ok ? result.data : { error: result.error };
       history.push(row);
       await admin.from("agent_steps").insert({

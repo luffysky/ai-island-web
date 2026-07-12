@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Bot, Send, Loader2, CheckCircle2, XCircle, Wrench, Eye, ShieldAlert, ShieldCheck, History, Cpu, Square, Laptop, Plug, Copy, Trash2, X, Mic } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 type Risk = "read" | "write" | "dangerous";
 interface ToolInfo { name: string; description: string; risk: Risk; needsDevice: boolean; }
@@ -425,8 +427,13 @@ export function AgentClient() {
 
             {summary && !approval && (
               <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-3.5 sm:p-4">
-                <div className="flex items-center gap-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400 mb-1"><CheckCircle2 className="w-4 h-4" /> 結果</div>
-                <div className="text-sm whitespace-pre-wrap leading-relaxed">{summary}</div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400"><CheckCircle2 className="w-4 h-4" /> 結果</div>
+                  <button onClick={() => { navigator.clipboard?.writeText(summary).catch(() => {}); }} title="複製" className="text-black/30 dark:text-white/30 hover:text-black/60 dark:hover:text-white/60"><Copy className="w-3.5 h-3.5" /></button>
+                </div>
+                <div className="prose-custom prose-sm max-w-none text-sm leading-relaxed">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
+                </div>
               </div>
             )}
           </div>
