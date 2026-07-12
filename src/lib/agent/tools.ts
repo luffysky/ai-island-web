@@ -99,6 +99,25 @@ export const TOOLS: AgentTool[] = [
       return { ok: true, data: { found: true, results: data } };
     },
   },
+  {
+    name: "opportunity.search",
+    description: "在 AI 島『機會島』搜尋開放中的競賽/補助/創投等機會（唯讀）。用來幫使用者找適合投的比賽、查截止日與獎金。",
+    args: { keyword: "關鍵字（如 AI、創業、設計）", freeOnly: "只看免報名費（true/false，可省略）" },
+    risk: "read",
+    platforms: ["server"],
+    async execute(args) {
+      const kw = String(args?.keyword ?? "").replace(/[%,()*]/g, " ").trim().slice(0, 60);
+      const admin = createSupabaseAdmin();
+      let q = admin.from("opportunities")
+        .select("name, category, prize_text, application_deadline, status, official_url")
+        .eq("status", "open").limit(8);
+      if (kw) q = q.or(`name.ilike.%${kw}%,category.ilike.%${kw}%,organizer.ilike.%${kw}%`);
+      if (String(args?.freeOnly) === "true") q = q.eq("is_free", true);
+      const { data } = await q;
+      if (!data || !data.length) return { ok: true, data: { found: false, note: "機會島目前沒有符合的開放機會" } };
+      return { ok: true, data: { found: true, results: data } };
+    },
+  },
   // ── 以下 device.* 為 Phase 1b stub：需本機桌面助手；現在會觸發權限流程、但回「尚未連接」 ──
   {
     name: "filesystem.list",

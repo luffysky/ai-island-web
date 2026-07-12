@@ -26,6 +26,7 @@ const NAV_LINKS = [
   { href: "/leaderboard", key: "leaderboard", icon: Trophy },
   { href: "/career", key: "career", icon: Route },
   { href: "/creator-island", key: "creatorIsland", icon: Palette },
+  { href: "/opportunities", key: "opportunities", icon: Compass },
   { href: "/agent", key: "agent", icon: Bot },
   { href: "/translate", key: "translate", icon: Languages },
 ];
