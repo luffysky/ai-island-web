@@ -7,7 +7,7 @@ import { Search, Compass, ExternalLink, Bookmark, BookmarkCheck, AlertTriangle, 
 interface Opp {
   id: string; type: string; name: string; organizer?: string; country?: string; category?: string;
   official_url?: string; prize_text?: string; application_deadline?: string | null;
-  is_free?: boolean; requires_demo?: boolean; requires_pitch?: boolean; tags?: string[];
+  is_free?: boolean; requires_demo?: boolean; requires_pitch?: boolean; is_online?: boolean; requires_qa?: boolean; requires_team?: boolean; tags?: string[];
   status: string; source_confidence?: string; ai_island_fit_score?: number | null;
 }
 
@@ -32,6 +32,8 @@ export function OpportunityBrowse() {
   const [cat, setCat] = useState("");
   const [freeOnly, setFreeOnly] = useState(false);
   const [status, setStatus] = useState("");
+  const [noPitch, setNoPitch] = useState(false);   // 免上台
+  const [online, setOnline] = useState(false);      // 全程線上
   // AI 幫我挑（V2）
   const [recOpen, setRecOpen] = useState(false);
   const [about, setAbout] = useState("");
@@ -56,13 +58,15 @@ export function OpportunityBrowse() {
     if (cat) p.set("category", cat);
     if (freeOnly) p.set("free", "1");
     if (status) p.set("status", status);
+    if (noPitch) p.set("noPitch", "1");
+    if (online) p.set("online", "1");
     try {
       const r = await fetch(`/api/opportunities?${p.toString()}`);
       const d = await r.json();
       setOpps(d.opportunities ?? []);
     } catch { /* ignore */ }
     setLoading(false);
-  }, [q, cat, freeOnly, status]);
+  }, [q, cat, freeOnly, status, noPitch, online]);
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => {
@@ -151,6 +155,8 @@ export function OpportunityBrowse() {
           ))}
           <span className="w-px h-4 bg-black/10 dark:bg-white/10 mx-1" />
           <button onClick={() => setFreeOnly((v) => !v)} className={`text-xs rounded-full px-2.5 py-1 border ${freeOnly ? "bg-emerald-600 border-emerald-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>免報名費</button>
+          <button onClick={() => setNoPitch((v) => !v)} title="初賽不用上台簡報" className={`text-xs rounded-full px-2.5 py-1 border ${noPitch ? "bg-emerald-600 border-emerald-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>🎤 免上台</button>
+          <button onClick={() => setOnline((v) => !v)} title="全程線上、不用到現場" className={`text-xs rounded-full px-2.5 py-1 border ${online ? "bg-emerald-600 border-emerald-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>🌐 線上</button>
           <button onClick={() => setStatus(status === "open" ? "" : "open")} className={`text-xs rounded-full px-2.5 py-1 border ${status === "open" ? "bg-emerald-600 border-emerald-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>開放中</button>
         </div>
       </div>
@@ -174,6 +180,8 @@ export function OpportunityBrowse() {
                       <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${st.cls}`}>{st.label}</span>
                       {o.category && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-500/10 text-violet-600 dark:text-violet-400">{o.category}</span>}
                       {o.is_free && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">免報名費</span>}
+                      {!o.requires_pitch && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400">🎤 免上台</span>}
+                      {o.is_online && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400">🌐 線上</span>}
                       {o.source_confidence !== "verified" && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">待核實</span>}
                     </div>
                     <Link href={`/opportunities/${o.id}`} className="font-bold text-base leading-snug hover:text-violet-600 dark:hover:text-violet-400">{o.name}</Link>

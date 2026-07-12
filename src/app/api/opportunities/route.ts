@@ -13,10 +13,12 @@ export async function GET(req: Request) {
   const country = sp.get("country") ?? "";
   const free = sp.get("free");            // "1" = 只看免報名費
   const status = sp.get("status") ?? "";  // open|upcoming|closed
+  const noPitch = sp.get("noPitch");      // "1" = 不用上台（初賽免 pitch）
+  const online = sp.get("online");        // "1" = 全程線上
 
   const admin = createSupabaseAdmin();
   let query = admin.from("opportunities")
-    .select("id, type, name, organizer, country, category, official_url, prize_amount, prize_text, currency, application_deadline, is_free, requires_demo, requires_pitch, tags, status, source_confidence, ai_island_fit_score")
+    .select("id, type, name, organizer, country, category, official_url, prize_amount, prize_text, currency, application_deadline, is_free, requires_demo, requires_pitch, is_online, requires_qa, requires_team, tags, status, source_confidence, ai_island_fit_score")
     .limit(200);
 
   if (q) query = query.or(`name.ilike.%${q}%,organizer.ilike.%${q}%,category.ilike.%${q}%`);
@@ -25,6 +27,8 @@ export async function GET(req: Request) {
   if (country) query = query.eq("country", country);
   if (free === "1") query = query.eq("is_free", true);
   if (status) query = query.eq("status", status);
+  if (noPitch === "1") query = query.eq("requires_pitch", false);
+  if (online === "1") query = query.eq("is_online", true);
 
   const { data, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
