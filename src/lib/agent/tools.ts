@@ -67,6 +67,38 @@ export const TOOLS: AgentTool[] = [
       return { ok: true, data: { found: true, results: data } };
     },
   },
+  // ── Phase F：第一方（AI 島生態）工具 — 分身懂「你」，通用 claw agent 拿不到。皆雲端唯讀、手機也能跑 ──
+  {
+    name: "island.myProfile",
+    description: "讀取『目前這位使用者』在 AI 島的檔案：等級、經驗、連續學習天數、Z幣、暱稱（唯讀）。用來依使用者程度/狀況客製回覆。",
+    args: {},
+    risk: "read",
+    platforms: ["server"],
+    async execute(_args, ctx) {
+      const admin = createSupabaseAdmin();
+      const { data } = await admin.from("profiles")
+        .select("display_name, username, level, xp, streak_days, z_coin")
+        .eq("id", ctx.userId).maybeSingle();
+      if (!data) return { ok: true, data: { note: "找不到使用者檔案" } };
+      return { ok: true, data };
+    },
+  },
+  {
+    name: "island.searchLessons",
+    description: "在 AI 島課程（章節/小節）裡用關鍵字找相關教學小節（唯讀）。用來把使用者導到站內對的教材。",
+    args: { keyword: "關鍵字（如 HTML、遞迴、Supabase）" },
+    risk: "read",
+    platforms: ["server"],
+    async execute(args) {
+      const q = String(args?.keyword ?? "").replace(/[%,()*]/g, " ").trim().slice(0, 60);
+      if (!q) return { ok: false, error: "缺 keyword" };
+      const admin = createSupabaseAdmin();
+      const { data } = await admin.from("lessons")
+        .select("title, chapter_id").ilike("title", `%${q}%`).limit(8);
+      if (!data || !data.length) return { ok: true, data: { found: false, note: "課程裡沒找到相關小節" } };
+      return { ok: true, data: { found: true, results: data } };
+    },
+  },
   // ── 以下 device.* 為 Phase 1b stub：需本機桌面助手；現在會觸發權限流程、但回「尚未連接」 ──
   {
     name: "filesystem.list",

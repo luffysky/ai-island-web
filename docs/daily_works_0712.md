@@ -61,6 +61,20 @@
 - 效果：同一串問「幫我寫貼文」→ 分身記得上輪受眾/平台，不再每次重問。
 - 命名：島名定為 **分身島**（nav/頁面全面改名待 Phase A polish）。
 
+### ~~Phase B｜跨裝置執行~~ ✅
+- 雲端工具本就 server-side、手機單獨可用；本機工具遇電腦沒開 → `awaiting_device` + 推播 + 輪詢等上線（最多5分）自動續跑，逾時優雅收尾。UI 納入 LIVE 狀態。
+
+### ~~Phase C｜長期記憶（跨對話）~~ ✅（migration 已上線）
+- `agent_memory` 表；完成後 haiku 抽取持久事實 upsert；API 帶入「我長期記得的」block；`/api/agent/memory` GET/DELETE；側欄「分身記得你」面板可逐條忘記。
+- 效果：換一串新對話仍記得「我的受眾是 X」。
+
+### ~~Phase F｜第一方護城河工具~~ ✅
+- `island.myProfile`（讀你的等級/經驗/連續天數/Z幣）、`island.searchLessons`（站內課程搜尋）→ 分身「懂你、導你到對的教材」，通用 claw agent 拿不到。皆雲端唯讀、手機也能跑。
+
+### Phase D / E（狀態）
+- **D 本機 Agent 加強**：本機執行鏈（filesystem/system/browser handlers）Phase 1b 已具備；「本機自主規劃迴圈 + 更多 Skills」為後續增強，需重新打包桌面 App 才生效。
+- **E 雲端沙盒**：需外部容器/沙盒基礎設施，屬較大 infra，先規劃（見 agent_island_plan.md §1-B/§7），不在本輪實作。
+
 ## 🚧 Agent 後續（規劃見 docs/agent_island_plan.md、agent_memory_plan.md）
 - 林董定調：agent「像玩具都不如」，核心缺口＝**對話延續＋跨對話記憶**，且要做到**別的 claw agent 做不到的事**。
 - 已寫規格 `docs/agent_memory_plan.md`（thread 分組、跨對話長期記憶、能力圖譜、差異化護城河）。**另開場次實作**，不併進本次 bug 修復。
