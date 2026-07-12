@@ -72,6 +72,7 @@ export function AgentClient() {
   const [mcpAuth, setMcpAuth] = useState("");
   const [mcpErr, setMcpErr] = useState("");
   const [kpi, setKpi] = useState<any>(null);
+  const [memory, setMemory] = useState<{ id: string; kind: string; key: string; value: string }[]>([]); // Phase C：分身長期記得你
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const recRef = useRef<any>(null);
   const deepLinkedRef = useRef(false);
@@ -104,6 +105,15 @@ export function AgentClient() {
 
   const loadMcp = useCallback(async () => {
     try { const r = await fetch("/api/agent/mcp"); if (r.ok) setMcpServers((await r.json()).servers ?? []); } catch { /* ignore */ }
+  }, []);
+
+  const loadMemory = useCallback(async () => {
+    try { const r = await fetch("/api/agent/memory"); if (r.ok) setMemory((await r.json()).memory ?? []); } catch { /* ignore */ }
+  }, []);
+
+  const forgetMemory = useCallback(async (id: string) => {
+    setMemory((p) => p.filter((m) => m.id !== id));
+    await fetch(`/api/agent/memory?id=${id}`, { method: "DELETE" }).catch(() => {});
   }, []);
 
   const addOurMcp = useCallback(async () => {
@@ -140,9 +150,10 @@ export function AgentClient() {
     loadDevices();
     loadSkills();
     loadMcp();
+    loadMemory();
     const t = setInterval(loadDevices, 10000);        // 每 10s 刷新裝置在線狀態
     return () => clearInterval(t);
-  }, [loadHistory, loadDevices, loadSkills, loadMcp]);
+  }, [loadHistory, loadDevices, loadSkills, loadMcp, loadMemory]);
 
   const pair = useCallback(async () => {
     setNewToken(null);
@@ -239,11 +250,12 @@ export function AgentClient() {
         if (!LIVE.includes(task.status)) {
           setWatching(""); loadHistory();
           if (task.thread_id) loadThreadTurns(task.thread_id, watching);  // 完成 → 刷新本串前文
+          if (task.status === "succeeded") setTimeout(loadMemory, 1500);  // 完成 → 刷新分身記憶（抽取是背景進行）
         }
       } catch { /* ignore */ }
     }, 2000);
     return () => clearInterval(iv);
-  }, [watching, loadHistory, loadThreadTurns]);
+  }, [watching, loadHistory, loadThreadTurns, loadMemory]);
 
   // 深連結 /agent?task=<id>（推播點進來）：自動載入該任務、若有待確認就顯示、可直接在手機上批准
   useEffect(() => {
@@ -426,6 +438,21 @@ export function AgentClient() {
               <Plug className="w-3.5 h-3.5" /> 連接桌面助手
             </button>
           </div>
+
+          {/* 分身記憶（Phase C）—— 跨對話記得你，透明可刪 */}
+          {memory.length > 0 && (
+            <div className="rounded-2xl border border-black/10 dark:border-white/10 p-3.5">
+              <div className="flex items-center gap-1.5 text-sm font-semibold mb-2"><Bot className="w-4 h-4 text-violet-500" /> 分身記得你</div>
+              <ul className="space-y-1.5">
+                {memory.slice(0, 12).map((m) => (
+                  <li key={m.id} className="flex items-start gap-1.5 text-xs group">
+                    <span className="min-w-0"><span className="text-black/50 dark:text-white/50">{m.key}：</span><span className="text-black/75 dark:text-white/75 break-words">{m.value}</span></span>
+                    <button onClick={() => forgetMemory(m.id)} title="忘記這條" className="ml-auto shrink-0 opacity-60 group-hover:opacity-100 text-black/30 hover:text-rose-500 dark:text-white/30"><X className="w-3 h-3" /></button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* 能力 */}
           <div className="rounded-2xl border border-black/10 dark:border-white/10 p-3.5">

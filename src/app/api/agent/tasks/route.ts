@@ -65,20 +65,34 @@ export async function POST(req: Request) {
     threadId = th?.id ?? null;
   }
 
-  // 帶入本串先前回合（goal → 結果摘要），讓這次目標可省略主詞/沿用上輪設定
-  let priorContext = "";
+  // Phase C：長期記憶（跨對話）— 這位使用者、分身長期記得的事實/偏好/技能/專案/目標
+  let memoryBlock = "";
+  {
+    const { data: mem } = await admin.from("agent_memory")
+      .select("key, value").eq("user_id", user.id)
+      .order("updated_at", { ascending: false }).limit(30);
+    if (mem && mem.length) {
+      memoryBlock = "關於你（我長期記得的）：\n" + mem.map((m: any) => `- ${m.key}：${m.value}`).join("\n");
+    }
+  }
+
+  // Phase A：本串先前回合（goal → 結果摘要），讓這次目標可省略主詞/沿用上輪設定
+  let turnsBlock = "";
   if (threadId) {
     const { data: prev } = await admin.from("agent_tasks")
       .select("goal, turn_summary, result, created_at")
       .eq("thread_id", threadId).eq("user_id", user.id)
       .order("created_at", { ascending: true }).limit(8);
-    priorContext = (prev ?? [])
+    const lines = (prev ?? [])
       .map((t: any) => {
         const ans = t.turn_summary || t.result?.summary || "";
         return ans ? `你：${t.goal}\n分身：${String(ans).slice(0, 400)}` : `你：${t.goal}`;
       })
       .join("\n\n");
+    if (lines) turnsBlock = `本串先前對話（延續脈絡；若這次省略主詞/條件，沿用這裡講過的）：\n${lines}`;
   }
+
+  const priorContext = [memoryBlock, turnsBlock].filter(Boolean).join("\n\n");
 
   const { data: task, error } = await admin.from("agent_tasks")
     .insert({ user_id: user.id, goal, max_steps: maxSteps, status: "planning", skill_id: skillId, thread_id: threadId })

@@ -59,10 +59,8 @@ async function planNext(goal: string, history: StepRow[], skill?: SkillCtx, extr
   const system = skill?.prompt ? `${PLANNER_SYSTEM}\n\n【本次技能設定】${skill.prompt}` : PLANNER_SYSTEM;
   const toolsDesc = describeToolList(effectiveTools(skill?.allowedTools, extraTools));
   const toolsBlock = toolsDesc || "（本技能不使用任何工具。請直接依『目標』與技能設定，用一則 {\"done\":true,\"summary\":\"...\"} 回覆完整答案。）";
-  // Phase A：對話延續 — 把本串先前回合帶進來，使用者可能省略主詞/沿用上一輪的設定
-  const priorBlock = priorContext
-    ? `本串先前對話（延續脈絡；若這次目標省略了主詞/條件，沿用這裡講過的）：\n${priorContext}\n\n`
-    : "";
+  // Phase A/C：延續脈絡（長期記憶 + 本串先前回合）由 API 端組好、這裡原樣注入
+  const priorBlock = priorContext ? `${priorContext}\n\n` : "";
   const user = `${priorBlock}這次目標：${goal}
 
 可用工具：
@@ -89,6 +87,36 @@ async function waitForDevice(userId: string, taskId: string, timeoutMs = 300_000
     if (device) return device;
   }
   return null;
+}
+
+// Phase C：從完成的回合抽取「關於使用者的持久事實」，upsert 進 agent_memory（跨對話記得你）。
+// 便宜 haiku 一次；抽不到就跳過。fire-and-forget、不擋主流程。
+async function extractMemory(userId: string, goal: string, summary: string, threadId?: string | null) {
+  try {
+    const system = `你是記憶抽取器。從一段「使用者目標 + 分身回覆」中，抽出關於**使用者本人**的持久事實（之後別的對話也用得到的），例如受眾、常用平台、語氣偏好、擁有的作品/專案、技能、長期目標。
+只回 JSON 陣列，每項 {"kind":"fact|preference|skill|project|goal","key":"短鍵(如 受眾/常用平台/語氣)","value":"值"}。
+規則：只抽「跨對話仍成立」的穩定事實；一次性任務內容不要抽。沒有就回 []。最多 4 條。`;
+    const user = `使用者目標：${goal}\n分身回覆：${summary.slice(0, 800)}\n\n只回 JSON 陣列。`;
+    const res = await completeForUsage("agent_core", { system, user, maxTokens: 300, defaultModel: "claude-haiku-4-5-20251001" });
+    const t = (res.text ?? "").trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+    const s = t.indexOf("["), e = t.lastIndexOf("]");
+    if (s === -1 || e === -1) return;
+    const items = JSON.parse(t.slice(s, e + 1));
+    if (!Array.isArray(items) || items.length === 0) return;
+    const admin = createSupabaseAdmin();
+    const rows = items
+      .filter((i: any) => i && i.key && i.value)
+      .slice(0, 4)
+      .map((i: any) => ({
+        user_id: userId,
+        kind: ["fact", "preference", "skill", "project", "goal"].includes(i.kind) ? i.kind : "fact",
+        key: String(i.key).slice(0, 60),
+        value: String(i.value).slice(0, 400),
+        source_thread_id: threadId ?? null,
+        updated_at: new Date().toISOString(),
+      }));
+    if (rows.length) await admin.from("agent_memory").upsert(rows, { onConflict: "user_id,kind,key" });
+  } catch { /* 記憶抽取失敗不影響任務 */ }
 }
 
 // 等前端決定 approval（輪詢 DB）；回 true=approved / false=denied 或逾時/取消。
@@ -158,6 +186,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
         const summary = decision.summary ?? "完成。";
         await setStatus("succeeded", { result: { summary }, step_count: idx, finished_at: new Date().toISOString() });
         await bumpThread(summary);   // Phase A：把本回合結果留給後續對話當前文
+        extractMemory(userId, goal, summary).catch(() => {});   // Phase C：抽取持久事實、跨對話記得你（fire-and-forget）
         pushSafe(userId, "✅ Agent 完成任務", summary, taskId, `agent-done-${taskId}`);
         yield { type: "done", status: "succeeded", summary };
         return;
