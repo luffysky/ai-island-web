@@ -119,13 +119,39 @@
 - 🚧 **教育原生**（用你程度做事 + 每步用你學過的語彙解釋）：有 myProfile，待深化。
 - 🚧 **Z幣/遊戲化綁 Agent 動作**（Z幣沿用，agent 扣/賺 Z幣動機系統待接）。
 - ⬜ **點數代管方案**（不懂 API 的人買 AI 島點數）+ 混合模式；不同 Agent 用不同模型/key。
-- ⬜ **外部服務通路/工具**：Line/Telegram/Discord/Slack 當 Agent 對話通路；Email/Google Calendar/GitHub/Notion/Drive 工具。
-- ⬜ **社群發文/排程/留言整理**（YouTube/IG/FB/Threads/X，守條款、對外一律確認）。
+- ⬜ **外部工具**：Email/Google Calendar/GitHub/Notion/Drive 當 Agent 工具（讀/寫，寫入需確認）。
+- 詳細通路整合見下方 §13。
 - ⬜ **生活助理 Agent**（天氣帶傘/股票/Email 摘要/行程）。
 - ＊ 定位守則：只做「幫人成長」（學習/創作/創業/找機會/生活），不做叫車/外送。
 - ⬜ **完整商業流程自動化**（接機會島閉環）：補助/比賽自動備件、接案自動化、找投資、BD 全流程；三階段自動化（準備 100% / 填 80% 你按送出 / 授權後全自動守條款有回溯）。
 
-## 13. 附屬構想（Agent2.md，多 aspirational）
+## 13. 🆕 通路整合 / 深度整合（LINE / Telegram / Discord / 社群）
+> 林董要：分身島 Agent 聊天能接各大軟體、機會島加自動排程 + LINE 通知。分兩向：**Inbound**（從各平台對 Agent 下令/回覆）＋**Outbound**（Agent 起草內容發到社群）。**紅線不變**：對外發布/報名一律「AI 起草 → 你一鍵批准」。
+
+### 14-1 Inbound：把聊天平台當 Agent 入口
+- ⬜ **LINE**：LINE Bot（Messaging API）當入口——打字下令 → Agent 執行 → 回訊息；Rich Menu 快捷（找機會/看員工/今日待辦）；LIFF 內嵌分身島/機會島頁。（已有 `user_line_bind`、`NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID`）
+- ⬜ **Telegram**：Telegram Bot 當入口，群組 `@bot` 下令，inline keyboard 互動。
+- ⬜ **Discord**：Discord Bot slash commands（`/agent`、`/opportunity`）、DM 下令、伺服器頻道貼每日機會/員工報告。（已有 `discord_binding`）
+- ⬜ **統一 Bridge**：三平台共用一套「訊息 → 建 agent task → 回填結果」轉接層（沿用現有 task/thread 架構）。
+
+### 14-2 批准流程搬到聊天平台（安全核心）
+- ⬜ **在 LINE/TG/Discord 內按鈕批准**：需確認的動作（發文/報名/寄信）直接在聊天平台用按鈕「允許/取消」，不必回網站——最順的授權體驗，且守紅線。
+- ⬜ **統一通知中心**：截止提醒 / 任務完成 / 需批准 統一推到使用者選的平台。
+
+### 14-3 Outbound：Agent 起草 → 批准 → 發布（社群發文）
+- ⬜ **YouTube**（community 貼文 / 影片描述 / 留言回覆，Data API）
+- ⬜ **Instagram**（貼文 / 限動，Graph API，需商業帳號）
+- ⬜ **Threads**（Threads API 發文）
+- ⬜ **抖音 / TikTok**（Content Posting API，權限審核嚴、受限）
+- ⬜ **FB 粉專 / X(Twitter)**（Graph API / X API）
+- ⬜ **共通**：AI 生成貼文/文案 → 進「待批准佇列」→ 你按一下才發；排程發布；留言/私訊整理摘要。**每個平台守其開發者條款**。
+
+### 14-4 機會島 × 通知/排程（本段對應機會島 V3/V4 的輕量前置）
+- ⬜ **機會島自動排程掃描**（cron，先輕量：每日跑「機會獵人」員工 `web.search`+`opportunity.search` 掃新機會，早於 V4 全自動雷達）。
+- ⬜ **LINE 截止通知**（剩 30/14/7/3/1 天推播；新符合你條件的機會推播）＋ Email/Discord 同機制。
+- ⬜ **在 LINE 內「幫我準備這場」**：收到截止通知 → 按鈕直接丟給分身島員工團隊備件（回 §一.10 辦公室）。
+
+## 14. 附屬構想（Agent2.md，多 aspirational）
 - ⬜ **AI 模擬競賽/評審**（技術/商業/投資人/使用者/酸民多人格逼問 + 追問 + 評分：語速/自信/口頭禪/眼神/超時）。
 - ⬜ **上台簡報練習**（30 秒電梯簡報→1/3/5/10 分鐘；角色扮演國中生/阿嬤/投資人/工程師都聽懂）。
 - ⬜ **Digital Twin 數位分身**（懂你目標/作品/偏好，主動幫你找機會完成任務）。
@@ -223,7 +249,7 @@
 - ⬜ **P2 語意快取推廣**：pop-quiz/learning-plan/blog-write/ai-assistant 接 `lookupSemanticCache`。
 - ⬜ **P3 路由統一**：面試/challenge/resume/admin 生成器→`completeForUsage`；模擬面試每回合計；移除重複 `providerFromModel`。
 - ⬜ **P4 能力擴充**：RAG 加到 assistant/面試/創作；vision 加到面試/grade_draft；`consume_ai_quota`→`_v2`。
-- 詳規劃 `docs/ai_upgrade_plan.md`。
+- 詳規劃 `docs/product/ai_upgrade_plan.md`。
 
 ## 內容 / 辭典 / 其他
 - ⬜ 程式辭典續寫到 5000（現 ~1022/20%，從 `dictionary-seed-21.json` 接）+ i18n 續補。

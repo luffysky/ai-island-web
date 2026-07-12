@@ -17,7 +17,7 @@
 4. **桌面版也不要破版**：不是只顧手機——**所有介面、桌面寬螢幕一樣要檢查**，版面、對齊、間距都正常。
 5. **PWA**：有沒有影響 PWA（manifest / service worker / 離線 / 安裝）？動到相關的就驗一下。
 6. **建置驗證**：`npx tsc --noEmit`、`npx vitest run`、`npx next build` 都要綠（push = 自動上線，build 壞了會害 CI 失敗、可能推出壞版）。
-7. **全部沒問題 → 先更新工作日誌（`docs/daily_works_*.md`）→ 再 commit / push。** 完成的 todo 用刪除線標記、不要刪。
+7. **全部沒問題 → 先更新工作日誌（`docs/worklog/daily_works_*.md`）→ 再 commit / push。** 完成的 todo 用刪除線標記、不要刪。（待辦統一寫 `docs/todo/todo_list_0713.md`）
 8. **機密**：`.env.local` / 真金鑰永不 commit；`docs/logerr.md`、`docs/note.md` 保持 untracked。
 
 > 排查心法：介面怪 → 先確認「資料有沒有真的接到」（API/欄位/腳本）而不是只改前端樣式。
@@ -64,7 +64,7 @@ PostgREST 預設一次最多回 **1000 筆**。`lessons` 表已 1258 筆、任�
 
 - **編輯既有 chapter JSON 用 Python**（`json.dump(ensure_ascii=False, indent=2)+"\n"` 與既有檔逐字一致；JS `JSON.stringify` 格式不一致、會產生整檔 diff）。
 - 可重跑的 AI 草稿生成器（憑證靠 `scripts/_lib/print-ai-creds.mjs` 注入 `AI_MODEL`/`AI_API_KEY`）：`gen-chapter-metadata.py`、`gen-lesson-miniquiz.py`、`gen-enrich-thin-lessons.py`、`gen-stub-lesson-content.py`、`seed-leetcode-questions.mjs`。長 markdown 不要包進 JSON（Haiku 會吐 raw 換行壞掉）、用純 markdown / 分隔線回傳。
-- 內容規格：`docs/ch26_beginner_friendly_spec_v0`（術語英中對照 + 四種區塊標籤 📄🖥️⌨️💬 + 預設讀者零基礎 + ☕用人話講）。不跟學員掛保證（接案/面試/收入）。
+- 內容規格：`docs/content/ch26_beginner_friendly_spec_v0.md`（術語英中對照 + 四種區塊標籤 📄🖥️⌨️💬 + 預設讀者零基礎 + ☕用人話講）。不跟學員掛保證（接案/面試/收入）。
 - commit 訊息結尾加：`Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`。
 
 ---
@@ -77,7 +77,7 @@ PostgREST 預設一次最多回 **1000 筆**。`lessons` 表已 1258 筆、任�
 
 ## 程式辭典（/dictionary）— 續寫接力
 
-繁中原生、白話＋比喻的「程式術語 × 語法 × 工程師黑話」辭典。規劃書 `docs/dictionary_plan.md`。
+繁中原生、白話＋比喻的「程式術語 × 語法 × 工程師黑話」辭典。規劃書 `docs/content/dictionary_plan.md`。
 
 - **資料表** `dictionary_terms`（migration `supabase/dictionary_migration.sql` 已跑）。`domain` 欄位預留給未來「語言島」的英/日辭典共用（`domain='english'|'japanese'`）。
 - **種子＝手寫、零 API**：`scripts/_data/dictionary-seed-N.json`（一個物件一條，欄位：slug/term/zh_name/category(syntax|concept|slang|tool|error|reference)/langs/plain/analogy/example/related/difficulty(1-3)）。**由我直接 author，不跑生成器、不花 AI 錢。**

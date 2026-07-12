@@ -123,7 +123,7 @@ export function PaymentsStatusClient({ live, site, usdRate, providers }: { live:
         })}
       </div>
 
-      <p className="text-[11px] text-fg-muted">完整逐步說明見 <code className="px-1 rounded bg-bg-elevated">docs/payments_setup.md</code>。改完 env 要重部署（Zeabur runtime env）才生效。</p>
+      <p className="text-[11px] text-fg-muted">完整逐步說明見 <code className="px-1 rounded bg-bg-elevated">docs/setup/payments_setup.md</code>。改完 env 要重部署（Zeabur runtime env）才生效。</p>
     </div>
   );
 }

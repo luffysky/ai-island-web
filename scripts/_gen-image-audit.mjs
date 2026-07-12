@@ -1,4 +1,4 @@
-// 產生完整 docs/lesson_image_audit.md：每個需要配圖的 lesson 都給檔名 + GPT prompt。
+// 產生完整 docs/content/lesson_image_audit.md：每個需要配圖的 lesson 都給檔名 + GPT prompt。
 // A/B/C 分類沿用 _oneshot-pic-audit.mjs 的關鍵字。GPT 也能做 A 類（截圖式教學）。
 import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -108,5 +108,5 @@ ${table(C, promptC)}
 建議先做 A 類（新手最卡）+ B 類前端核心（ch02/04/05/07），看效果再往下。
 `;
 
-writeFileSync("docs/lesson_image_audit.md", out, "utf8");
-console.log(`A=${A.length} B=${B.length} C=${C.length} total=${A.length + B.length + C.length} → docs/lesson_image_audit.md`);
+writeFileSync("docs/content/lesson_image_audit.md", out, "utf8");
+console.log(`A=${A.length} B=${B.length} C=${C.length} total=${A.length + B.length + C.length} → docs/content/lesson_image_audit.md`);
