@@ -103,6 +103,21 @@ ${hist}
 const PLANNER_FREE = "gemini-2.5-flash";
 const PLANNER_STRONG = "claude-haiku-4-5-20251001";
 
+// L3 反思：done 前的驗收員——判斷目標/計畫是否真達標。寬鬆（核心達成就 ok），免費模型即可。
+async function critique(goal: string, plan: string[], history: StepRow[], summary: string): Promise<{ ok: boolean; missing?: string } | null> {
+  try {
+    const hist = history.map((s) => `#${s.idx} ${s.toolName ?? "?"} → ${s.ok ? "ok" : "fail"}`).join("\n") || "（無）";
+    const system = "你是嚴格但務實的驗收員。判斷『目標與計畫是否真的完成、最終答案是否達標』。寬鬆一點：只要核心目標達成就算 ok、別吹毛求疵。只回 JSON：{\"ok\":true} 或 {\"ok\":false,\"missing\":\"還缺什麼、下一步該做什麼（一句、繁中）\"}。";
+    const user = `目標：${goal}\n計畫：\n${plan.map((p, i) => `${i + 1}. ${p}`).join("\n")}\n\n進度：\n${hist}\n\n最終答案：${summary}\n\n只回 JSON。`;
+    const res = await completeForUsage("agent_core", { system, user, maxTokens: 200, defaultModel: PLANNER_FREE });
+    const t = (res.text ?? "").trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+    const s = t.indexOf("{"), e = t.lastIndexOf("}");
+    if (s === -1 || e === -1) return null;
+    const o = JSON.parse(t.slice(s, e + 1));
+    return { ok: o.ok !== false, missing: o.missing ? String(o.missing).slice(0, 200) : undefined };
+  } catch { return null; }
+}
+
 // 達到步數上限時：不要直接失敗，用目前進度合成「最好的最終答案」給使用者（例如已查到的美食清單）。
 async function finalizeFromHistory(goal: string, history: StepRow[]): Promise<string> {
   try {
@@ -214,6 +229,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
   // L1 拆解引擎：先把目標拆成計畫（存 DB 給 UI 顯示），再逐項執行
   const plan = await decompose(goal, priorContext);
   await admin.from("agent_tasks").update({ plan, plan_done: [] }).eq("id", taskId);
+  let critiques = 0;  // L3：done 前反思次數上限（避免無限/燒錢）
 
   try {
     for (let idx = 0; idx < maxSteps; idx++) {
@@ -232,6 +248,19 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
 
       if (decision.done || !decision.tool) {
         const summary = decision.summary ?? "完成。";
+        // L3 反思：多步計畫在 done 前驗收；沒達標就回饋、繼續做（最多 2 次，避免無限/燒錢）
+        if (plan.length > 1 && critiques < 2) {
+          const v = await critique(goal, plan, history, summary);
+          if (v && v.ok === false && v.missing) {
+            critiques++;
+            const row: StepRow = { idx, thought: `自我檢查：還沒達標 — ${v.missing}`, toolName: "reflect", ok: true, result: { missing: v.missing } };
+            history.push(row);
+            await admin.from("agent_steps").insert({ task_id: taskId, idx, thought: row.thought, tool_name: "reflect", args: {}, result: row.result, ok: true });
+            await admin.from("agent_tasks").update({ step_count: idx + 1 }).eq("id", taskId);
+            yield { type: "step", step: row };
+            continue;
+          }
+        }
         await setStatus("succeeded", { result: { summary }, step_count: idx, finished_at: new Date().toISOString() });
         await bumpThread(summary);   // Phase A：把本回合結果留給後續對話當前文
         extractMemory(userId, goal, summary).catch(() => {});   // Phase C：抽取持久事實、跨對話記得你（fire-and-forget）
