@@ -6,9 +6,9 @@ import remarkGfm from "remark-gfm";
 import { Target, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 
 // AI 缺件／適合度分析：使用者描述自己 → AI 對照活動需求，講適不適合、缺什麼、怎麼補。
-export function FitAnalysis({ id }: { id: string }) {
+export function FitAnalysis({ id, defaultAbout = "" }: { id: string; defaultAbout?: string }) {
   const [open, setOpen] = useState(false);
-  const [about, setAbout] = useState("");
+  const [about, setAbout] = useState(defaultAbout);
   const [loading, setLoading] = useState(false);
   const [analysis, setAnalysis] = useState("");
   const [err, setErr] = useState("");

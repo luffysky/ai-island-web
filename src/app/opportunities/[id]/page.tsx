@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { createSupabaseServer } from "@/lib/supabase-server";
 import { ExternalLink, ArrowLeft, Trophy, CalendarClock, AlertTriangle, Building2, Globe, Bot } from "lucide-react";
 import { RulesSummary } from "./RulesSummary";
 import { FitAnalysis } from "./FitAnalysis";
@@ -31,10 +32,22 @@ const REQS: { key: string; label: string }[] = [
   { key: "requires_student", label: "限學生" },
 ];
 
+async function getMyAbout(): Promise<string> {
+  try {
+    const sb = await createSupabaseServer();
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) return "";
+    const admin = createSupabaseAdmin();
+    const { data } = await admin.from("opportunity_profiles").select("about").eq("user_id", user.id).maybeSingle();
+    return (data?.about ?? "").trim();
+  } catch { return ""; }
+}
+
 export default async function OpportunityDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const o = await getOpp(id);
   if (!o) notFound();
+  const myAbout = await getMyAbout();
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 sm:py-8">
@@ -95,8 +108,8 @@ export default async function OpportunityDetail({ params }: { params: Promise<{ 
 
       {/* AI 工具（V3）：讀規則 + 適合度/缺件分析 + 生成報名素材 */}
       <RulesSummary id={o.id} hasOwnData={!!(o.description || o.eligibility || o.prize_text)} />
-      <FitAnalysis id={o.id} />
-      <GenerateMaterials id={o.id} />
+      <FitAnalysis id={o.id} defaultAbout={myAbout} />
+      <GenerateMaterials id={o.id} defaultAbout={myAbout} />
 
       {/* 丟給分身島幫我準備（預填指令到下令列、你看過再送；對外動作仍待批准）*/}
       {(() => {

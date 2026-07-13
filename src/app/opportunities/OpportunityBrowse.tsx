@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, Compass, ExternalLink, Bookmark, BookmarkCheck, AlertTriangle, CalendarClock, Trophy, Sparkles, Loader2 } from "lucide-react";
+import { Search, Compass, ExternalLink, Bookmark, BookmarkCheck, AlertTriangle, CalendarClock, Trophy, Sparkles, Loader2, UserCog, ChevronDown, ChevronUp, Check } from "lucide-react";
 
 interface Opp {
   id: string; type: string; name: string; organizer?: string; country?: string; category?: string;
@@ -39,6 +39,50 @@ export function OpportunityBrowse() {
   const [about, setAbout] = useState("");
   const [recLoading, setRecLoading] = useState(false);
   const [recResults, setRecResults] = useState<(Opp & { fit: number; reason: string })[] | null>(null);
+  // 我的機會檔案（V2）：存一次、AI 工具自動帶入
+  const [profOpen, setProfOpen] = useState(false);
+  const [pIdentity, setPIdentity] = useState("");
+  const [pAssets, setPAssets] = useState("");
+  const [pStage, setPStage] = useState("");
+  const [pInterests, setPInterests] = useState<Set<string>>(new Set());
+  const [profSaving, setProfSaving] = useState(false);
+  const [profSaved, setProfSaved] = useState(false);
+  const [hasProfile, setHasProfile] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const r = await fetch("/api/opportunities/profile");
+        if (!r.ok) return;
+        const { profile } = await r.json();
+        if (!profile) return;
+        setHasProfile(true);
+        setPIdentity(profile.identity ?? "");
+        setPAssets(profile.assets ?? "");
+        setPStage(profile.stage ?? "");
+        setPInterests(new Set(profile.interests ?? []));
+        if (profile.about) setAbout(profile.about);  // 預填 AI 幫我挑
+      } catch { /* ignore */ }
+    })();
+  }, []);
+
+  const saveProfile = async () => {
+    if (profSaving) return;
+    setProfSaving(true); setProfSaved(false);
+    try {
+      const r = await fetch("/api/opportunities/profile", {
+        method: "PUT", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identity: pIdentity, assets: pAssets, stage: pStage, interests: [...pInterests] }),
+      });
+      if (r.status === 401) { window.location.href = "/login?next=/opportunities"; return; }
+      if (r.ok) {
+        const { profile } = await r.json();
+        setHasProfile(true); setProfSaved(true);
+        if (profile?.about) setAbout(profile.about);
+        setTimeout(() => setProfSaved(false), 2000);
+      }
+    } catch { /* ignore */ } finally { setProfSaving(false); }
+  };
 
   const recommend = async () => {
     if (!about.trim() || recLoading) return;
@@ -104,6 +148,36 @@ export function OpportunityBrowse() {
         </div>
         <p className="text-sm text-black/60 dark:text-white/60 mt-1">競賽 · 補助 · 創投 · 徵件 —— 找到適合你的機會，加入「我的航線」追蹤截止日。</p>
         <p className="text-[11px] text-amber-600/90 dark:text-amber-400/80 mt-1 inline-flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> 目前為初始資料、部分欄位「待人工核實」，實際以官網為準。</p>
+      </div>
+
+      {/* 我的機會檔案（V2）：存一次、所有 AI 工具自動帶入 */}
+      <div className="rounded-2xl border border-black/10 dark:border-white/10 p-3 mb-3">
+        <button onClick={() => setProfOpen((v) => !v)} className="w-full flex items-center gap-2 text-sm font-semibold">
+          <UserCog className="w-4 h-4 text-violet-500" /> 我的機會檔案
+          <span className="text-[11px] font-normal text-black/40 dark:text-white/40">{hasProfile ? "· 已填、AI 工具會自動帶入" : "· 填一次，AI 幫我挑/讀規則/分析就不用重打"}</span>
+          <span className="ml-auto text-xs text-black/40 dark:text-white/40">{profOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}</span>
+        </button>
+        {profOpen && (
+          <div className="mt-3 space-y-2">
+            <input value={pIdentity} onChange={(e) => setPIdentity(e.target.value)} placeholder="身分（例：大二學生／獨立開發者／早期創業者）" className="w-full bg-white/60 dark:bg-white/5 border border-black/10 dark:border-white/15 rounded-xl px-3 py-2 text-sm outline-none focus:border-violet-500" />
+            <textarea value={pAssets} onChange={(e) => setPAssets(e.target.value)} rows={2} placeholder="你有什麼（作品／Demo／技能／團隊／資源，例：一個 AI 學習網站，有 Demo 和 200 用戶）" className="w-full bg-white/60 dark:bg-white/5 border border-black/10 dark:border-white/15 rounded-xl px-3 py-2 text-sm outline-none focus:border-violet-500 resize-none" />
+            <input value={pStage} onChange={(e) => setPStage(e.target.value)} placeholder="完成度（例：只有點子／有雛形／有 Demo／已上線／有營收）" className="w-full bg-white/60 dark:bg-white/5 border border-black/10 dark:border-white/15 rounded-xl px-3 py-2 text-sm outline-none focus:border-violet-500" />
+            <div>
+              <div className="text-[11px] text-black/50 dark:text-white/50 mb-1">想參加的類型</div>
+              <div className="flex flex-wrap gap-1.5">
+                {CATS.map((c) => {
+                  const on = pInterests.has(c);
+                  return <button key={c} onClick={() => setPInterests((prev) => { const n = new Set(prev); if (n.has(c)) n.delete(c); else n.add(c); return n; })} className={`text-xs rounded-full px-2.5 py-1 border ${on ? "bg-violet-600 border-violet-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70 hover:bg-black/5 dark:hover:bg-white/10"}`}>{on ? "✓ " : ""}{c}</button>;
+                })}
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <button onClick={saveProfile} disabled={profSaving} className="inline-flex items-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-40 text-white px-3.5 py-1.5 text-sm font-medium">
+                {profSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : profSaved ? <Check className="w-4 h-4" /> : null} {profSaved ? "已儲存" : "儲存檔案"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* AI 幫我挑（V2） */}

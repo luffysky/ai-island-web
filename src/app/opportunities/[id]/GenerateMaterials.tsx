@@ -13,10 +13,10 @@ const KINDS = [
 ];
 
 // AI 生成報名素材：選類型 + 描述作品 → 產出可編輯草稿。
-export function GenerateMaterials({ id }: { id: string }) {
+export function GenerateMaterials({ id, defaultAbout = "" }: { id: string; defaultAbout?: string }) {
   const [open, setOpen] = useState(false);
   const [kind, setKind] = useState("elevator");
-  const [about, setAbout] = useState("");
+  const [about, setAbout] = useState(defaultAbout);
   const [loading, setLoading] = useState(false);
   const [draft, setDraft] = useState("");
   const [err, setErr] = useState("");
