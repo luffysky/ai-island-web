@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Bot, Laptop, LaptopMinimal, ArrowRight, Store, ChevronLeft, Sparkles, CheckCircle2, Loader2, Clock, XCircle, CalendarClock, Plus, Trash2, Power } from "lucide-react";
+import { Bot, Laptop, LaptopMinimal, ArrowRight, Store, ChevronLeft, Sparkles, CheckCircle2, Loader2, Clock, XCircle, CalendarClock, Plus, Trash2, Power, ShieldAlert, Check, X } from "lucide-react";
 import { describeSchedule, type Frequency } from "@/lib/agent/schedule";
 
 interface SkillItem { id: string; name: string; description?: string; emoji: string; category: string; is_builtin: boolean; installed: boolean; }
 interface DeviceItem { id: string; name: string; platform: string; online: boolean; last_seen_at?: string | null; }
 interface TaskItem { id: string; goal: string; status: string; step_count: number; created_at: string; }
 interface Schedule { id: string; skill_id: string | null; title: string; goal: string; frequency: Frequency; hour: number; weekday: number | null; enabled: boolean; last_run_at?: string | null; last_task_id?: string | null; next_run_at: string; run_count: number; }
+interface Approval { id: string; task_id: string; step_idx: number; tool_name: string; risk: string; summary: Record<string, string>; created_at: string; goal: string; }
 
 const STATUS: Record<string, { label: string; cls: string; Icon: any }> = {
   planning: { label: "規劃中", cls: "text-sky-500", Icon: Loader2 },
@@ -42,6 +43,8 @@ export function OfficeClient() {
   const [devices, setDevices] = useState<DeviceItem[]>([]);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [approvals, setApprovals] = useState<Approval[]>([]);
+  const [decidingId, setDecidingId] = useState<string>("");
   const [loading, setLoading] = useState(true);
   // 新增排程表單
   const [schedOpen, setSchedOpen] = useState(false);
@@ -53,24 +56,45 @@ export function OfficeClient() {
   const [sBusy, setSBusy] = useState(false);
   const [sErr, setSErr] = useState("");
 
+  const loadApprovals = async () => {
+    const d = await fetch("/api/agent/approvals").then((r) => (r.ok ? r.json() : { approvals: [] })).catch(() => ({ approvals: [] }));
+    setApprovals(d.approvals ?? []);
+  };
+
   useEffect(() => {
     let alive = true;
     (async () => {
-      const [sk, dv, tk, sc] = await Promise.all([
+      const [sk, dv, tk, sc, ap] = await Promise.all([
         fetch("/api/agent/skills").then((r) => (r.ok ? r.json() : { skills: [] })).catch(() => ({ skills: [] })),
         fetch("/api/agent/devices").then((r) => (r.ok ? r.json() : { devices: [] })).catch(() => ({ devices: [] })),
         fetch("/api/agent/tasks").then((r) => (r.ok ? r.json() : { tasks: [] })).catch(() => ({ tasks: [] })),
         fetch("/api/agent/schedules").then((r) => (r.ok ? r.json() : { schedules: [] })).catch(() => ({ schedules: [] })),
+        fetch("/api/agent/approvals").then((r) => (r.ok ? r.json() : { approvals: [] })).catch(() => ({ approvals: [] })),
       ]);
       if (!alive) return;
       setSkills(sk.skills ?? []);
       setDevices(dv.devices ?? []);
       setTasks(tk.tasks ?? []);
       setSchedules(sc.schedules ?? []);
+      setApprovals(ap.approvals ?? []);
       setLoading(false);
     })();
-    return () => { alive = false; };
+    // 待批准佇列每 20 秒刷新（排程/背景任務可能隨時冒出需批准的動作）
+    const iv = setInterval(() => { if (alive) loadApprovals(); }, 20000);
+    return () => { alive = false; clearInterval(iv); };
   }, []);
+
+  const decideApproval = async (id: string, decision: "approved" | "denied") => {
+    if (decidingId) return;
+    setDecidingId(id);
+    const prev = approvals;
+    setApprovals((cur) => cur.filter((a) => a.id !== id)); // 樂觀移除
+    const r = await fetch(`/api/agent/approvals/${id}`, {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ decision }),
+    }).catch(() => null);
+    if (!r?.ok) setApprovals(prev); // 失敗回復
+    setDecidingId("");
+  };
 
   const addSchedule = async () => {
     const goal = sGoal.trim();
@@ -167,6 +191,44 @@ export function OfficeClient() {
           </div>
         </div>
       </div>
+
+      {/* 待批准佇列（有才顯示；對外/寫入動作在這裡一鍵放行）*/}
+      {approvals.length > 0 && (
+        <section className="mb-6">
+          <div className="rounded-2xl border border-amber-500/40 bg-amber-500/[0.06] p-4">
+            <h2 className="text-sm font-semibold mb-2.5 flex items-center gap-1.5 text-amber-700 dark:text-amber-300">
+              <ShieldAlert className="w-4 h-4" /> 等你確認 <span className="text-[11px] font-normal">· {approvals.length} 個動作要你放行才做</span>
+            </h2>
+            <div className="space-y-1.5">
+              {approvals.map((a) => (
+                <div key={a.id} className="rounded-xl border border-black/10 dark:border-white/10 bg-bg-card/60 dark:bg-white/[0.02] px-3 py-2.5">
+                  <div className="flex items-start gap-2.5">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[11px] text-black/40 dark:text-white/40 truncate">任務：{a.goal || a.task_id}</div>
+                      <div className="text-sm font-medium flex items-center gap-1.5 mt-0.5">
+                        <span className="font-mono text-xs px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10">{a.tool_name}</span>
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${a.risk === "dangerous" ? "bg-rose-500/15 text-rose-600 dark:text-rose-400" : "bg-amber-500/15 text-amber-600 dark:text-amber-400"}`}>{a.risk === "dangerous" ? "高風險" : "會寫入"}</span>
+                      </div>
+                      {a.summary && Object.keys(a.summary).length > 0 && (
+                        <div className="mt-1 text-[11px] text-black/55 dark:text-white/55 space-y-0.5">
+                          {Object.entries(a.summary).slice(0, 4).map(([k, v]) => (
+                            <div key={k} className="break-words"><span className="text-black/40 dark:text-white/40">{k}：</span>{String(v)}</div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <Link href={`/agent?task=${a.task_id}` as any} className="text-[11px] text-violet-500 hover:underline px-1">看任務</Link>
+                      <button onClick={() => decideApproval(a.id, "denied")} disabled={!!decidingId} className="inline-flex items-center gap-1 text-xs rounded-lg border border-black/15 dark:border-white/20 px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-50"><X className="w-3.5 h-3.5" /> 取消</button>
+                      <button onClick={() => decideApproval(a.id, "approved")} disabled={!!decidingId} className="inline-flex items-center gap-1 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 disabled:opacity-50"><Check className="w-3.5 h-3.5" /> 允許</button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* 熱門任務 */}
       <section className="mb-7">
