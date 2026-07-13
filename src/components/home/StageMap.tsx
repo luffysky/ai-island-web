@@ -5,14 +5,14 @@ import { BookOpen, Sparkles, Map } from "lucide-react";
 import { Reveal } from "./parallax";
 import { WorldMap, type MapNode } from "./world";
 
-/** 關卡定義（節點位置 % 與圖片解耦；狀態預留由使用者進度資料驅動）*/
-const STAGES: Array<{ stage: number; chapters: string; iconKey: MapNode["iconKey"]; x: number; y: number }> = [
-  { stage: 1, chapters: "Ch01-08", iconKey: "landmark", x: 16, y: 86 },
-  { stage: 2, chapters: "Ch09-15", iconKey: "castle", x: 40, y: 70 },
-  { stage: 3, chapters: "Ch16-25", iconKey: "settings", x: 60, y: 78 },
-  { stage: 4, chapters: "Ch26-38", iconKey: "globe", x: 78, y: 56 },
-  { stage: 5, chapters: "Ch39-50", iconKey: "briefcase", x: 54, y: 38 },
-  { stage: 6, chapters: "Ch51-60", iconKey: "bot", x: 30, y: 20 },
+/** 關卡定義（節點座標 % 對齊 stage-path 底圖的 6 個發光路點；章數改由真實資料算、不寫死）*/
+const STAGES: Array<{ stage: number; iconKey: MapNode["iconKey"]; x: number; y: number }> = [
+  { stage: 1, iconKey: "landmark", x: 14, y: 79 },
+  { stage: 2, iconKey: "castle", x: 29, y: 64 },
+  { stage: 3, iconKey: "settings", x: 40, y: 50 },
+  { stage: 4, iconKey: "globe", x: 58, y: 50 },
+  { stage: 5, iconKey: "briefcase", x: 64, y: 34 },
+  { stage: 6, iconKey: "bot", x: 87, y: 18 },
 ];
 
 /**
@@ -25,14 +25,25 @@ function stateFor(stage: number, currentStage = 1): MapNode["state"] {
   return "unlocked";
 }
 
-export async function StageMap() {
+export async function StageMap({ chapters = [] }: { chapters?: Array<{ stage: number | string }> }) {
   const t = await getTranslations("home");
+
+  // 每個 stage 的章數 = 從真實章節資料算（不寫死；DB 現有 80 章）
+  const countByStage: Record<string, number> = {};
+  for (const c of chapters) {
+    const k = String(c.stage);
+    countByStage[k] = (countByStage[k] ?? 0) + 1;
+  }
+  const countFor = (stage: number) => countByStage[String(stage)] ?? 0;
+  const totalChapters = chapters.length;
+  const mainTotal = STAGES.reduce((sum, s) => sum + countFor(s.stage), 0);
+  const refTotal = Math.max(0, totalChapters - mainTotal);
 
   const nodes: MapNode[] = STAGES.map((s) => ({
     id: s.stage,
     name: STAGE_COLORS[s.stage].name,
     sub: t(`stage${s.stage}Subtitle`),
-    chapters: s.chapters,
+    chapters: `${countFor(s.stage)} 章`,
     href: `/chapters#stage-${s.stage}`,
     x: s.x,
     y: s.y,
@@ -51,9 +62,9 @@ export async function StageMap() {
           <p className="text-white/70">{t("stageMapSubtitle")}</p>
         </Reveal>
 
-        {/* 互動關卡地圖：節點＝資料驅動、可點進該關；底圖可之後抽換成 GPT 生的 text-free 地圖 */}
+        {/* 互動關卡地圖：底圖＝GPT 的 stage-path 發光路徑層(alpha)，節點＝資料驅動疊在路點上、可點進該關 */}
         <Reveal delay={0.05} className="mb-12">
-          <WorldMap nodes={nodes} />
+          <WorldMap nodes={nodes} image="/home/stage-path.png" aspect="aspect-[3/2]" imageObjectFit="contain" className="max-w-4xl mx-auto" />
         </Reveal>
 
         {/* 六大關卡詳情（保留文字＝SEO / 無障礙 / 手機好讀；玻璃卡一致化）*/}
@@ -77,7 +88,7 @@ export async function StageMap() {
                   <div className="text-sm font-medium mb-2">{t(`stage${item.stage}Subtitle`)}</div>
                   <p className="text-xs text-fg-muted leading-relaxed mb-3">{t(`stage${item.stage}Desc`)}</p>
                   <div className="text-xs font-mono text-accent inline-flex items-center gap-1">
-                    <BookOpen size={14} /> {item.chapters}
+                    <BookOpen size={14} /> {countFor(item.stage)} 章
                   </div>
                 </Link>
               </Reveal>
@@ -88,6 +99,11 @@ export async function StageMap() {
         <div className="mt-8 text-sm text-white/60 inline-flex w-full items-center justify-center gap-1.5">
           <Sparkles size={14} /> {t("stageMapFooter")} <Sparkles size={14} />
         </div>
+        {totalChapters > 0 && (
+          <div className="mt-2 text-center text-xs text-white/45">
+            六大關卡共 {mainTotal} 章{refTotal > 0 ? ` · 另有速查附錄 ${refTotal} 章` : ""} · 全站 {totalChapters} 章
+          </div>
+        )}
       </div>
     </section>
   );

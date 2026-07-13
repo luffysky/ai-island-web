@@ -111,7 +111,7 @@ export function TopNav() {
   }
 
   return (
-    <nav data-tour="topnav" className="sticky top-0 z-40 bg-bg/90 backdrop-blur border-b border-border">
+    <nav data-tour="topnav" className="sticky top-0 z-40 bg-bg/60 supports-[backdrop-filter]:bg-bg/45 backdrop-blur-xl backdrop-saturate-150 border-b border-border/70">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <button
@@ -363,7 +363,7 @@ export function TopNav() {
       {navDrawer && (
         <div className="hidden md:block">
           <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setNavDrawer(false)} />
-          <aside className="fixed top-0 right-0 h-screen w-72 z-50 bg-bg-card border-l border-border flex flex-col shadow-2xl animate-[slideInRight_.25s_ease-out]">
+          <aside className="fixed top-0 right-0 h-screen w-72 z-50 bg-bg-card/80 supports-[backdrop-filter]:bg-bg-card/65 backdrop-blur-xl backdrop-saturate-150 border-l border-border flex flex-col shadow-2xl animate-[slideInRight_.25s_ease-out]">
             <div className="flex shrink-0 items-center justify-between p-3 border-b border-border">
               <div className="font-bold flex items-center gap-2">
                 <Compass size={18} className="text-accent" /> <span>{t("nav.exploreIsland")}</span>

@@ -49,7 +49,7 @@ export default async function HomePage() {
           islandEnabled={islandEnabled}
           creatorIslandEnabled={creatorIslandEnabled}
         />
-        <StageMap />
+        <StageMap chapters={chapters} />
       </WorldZone>
       <MascotIntro />
       <section className="max-w-7xl mx-auto px-6 py-16 border-b border-border">

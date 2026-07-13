@@ -96,6 +96,39 @@ Anchor to the hero island's shape and palette (same world, night version).
 
 ---
 
+# 🧩 Stage Map 五層 2.5D 素材規格（正式 · 取代舊版單張 `stage-map.png`）
+
+> **決策**：Stage Map 不再生「一張全部畫死的地圖」（那種魔獸觀光地圖**先封印、別放出來嚇島民**）。
+> 改成 **5 層 2.5D 素材**：**圖負責景深、程式(HTML+資料)負責節點/進度/互動**。
+> 檔名一律 **`stage-layer-*`**（這是 Stage Map 素材、不是 Hero；別再叫 `hero-layer-*`、免得目錄變檔名考古遺址）。
+
+## 鐵則
+- 除 **L1 天空**外，**其餘每層都是透明背景 PNG-32（含 alpha）**，**不可把天空重畫進去**。
+- **五層同畫布尺寸、同構圖對齊**（例如都 1672×941），疊起來才對得準。
+- 圖裡**不要**畫關卡圓圈 / 編號 / 島名 / 任何文字 → 節點與進度**全由 HTML 疊**。
+
+## 五層規格
+1. **`stage-layer-01-sky.png`** — 完整背景、**不透明**。天空、銀河、雙月、遠方雲海。**不含**島嶼/道路/建築。
+2. **`stage-layer-02-far.png`** — **透明 PNG**。只有遠方小型浮島、遠方尖塔、薄霧。**不含天空**。
+3. **`stage-layer-03-main.png`** — **透明 PNG**。只有主要六座關卡島嶼、瀑布、建築。**不含**文字/節點/道路/天空。
+4. **`stage-layer-04-path.png`** — **透明 PNG**。只有發光道路與能量流。**不畫關卡圓圈**（互動節點由 HTML 疊）。
+5. **`stage-layer-05-foreground.png`** — **透明 PNG**。只有畫面底部與左右邊緣的岩石/植物/水晶/薄霧。**中央保持通透**、不遮主島。
+
+## 目前首批素材實測（alpha 通道檢查 · 僅供視覺參考、未達可疊加標準）
+| 檔（現名） | 狀態 | 問題 / 處置 |
+|---|---|---|
+| `hero-layer-01-sky` | ✅ 可當背景 | 改名 `stage-layer-01-sky` |
+| `hero-layer-02-far` | ❌ 不透明 | 把天空重畫了 → **重生透明版**（只含遠景浮島、不重畫天空）**← 下一張先做這個** |
+| `hero-layer-03-main` | ❌ 不透明 | 仍是完整場景 → 重生透明版（只含主島） |
+| `hero-layer-04-path` | ⚠️ 勉強 | 透明但路徑歪、含節點圈；**已暫接 Stage Map 當 placeholder**（`stage-path.png`） |
+| `hero-layer-05-foreground` | ❌ 半透明 | 頂部灰色漸層 → 重生乾淨透明版（中央通透） |
+> 硬疊會像「五張桌布互相壓」＝千層糕、不是視差。
+
+## 接入方式（程式端已就緒）
+`ParallaxScene` 依序疊這 5 層、各給不同 `speed`（遠慢近快）；`WorldMap` 的 HTML 節點疊在最上層（對齊 L4 的路點）。**GPT 每交一層、我換一個 `src` 即可接入**、不必等整套。
+
+---
+
 # 各張分鏡提示詞（內容仍有效；**順序以上面 World-first 為準，角色排最後**）
 
 # Tier 1 — 角色去背（給「夥伴介紹」區＋寵物，World-first 中排第 5 才生）
@@ -204,18 +237,9 @@ minimal iconic, mint-green to cyan gradient glow. Isolated on transparent backgr
 
 # Tier 3 — 敘事區塊橫幅（text-free，HTML 疊字）
 
-### 10. `stage-map.png` — 關卡地圖（StageMap）
-- **位置**：關卡地圖區背景（我在上面疊 LEVEL 1–6 節點與文字）
-- **尺寸**：1600 × 900（16:9 橫式），深色背景可
-- **提示詞**：
-```
-[STYLE BLOCK]
-A winding glowing path connecting six empty circular node platforms, snaking across a chain of
-small floating islands in a digital sea, left-to-right journey layout, gentle depth,
-soft green-cyan-purple lights marking the nodes. Leave the node circles empty (no numbers).
-Wide clean composition with room for labels.
-[NEGATIVE]
-```
+### 10.（已改）關卡地圖（StageMap）→ 改用「五層 2.5D 素材」
+> ⛔ 舊版單張 `stage-map.png`（一條路+六圈）**作廢**。改看上面 **🧩 Stage Map 五層 2.5D 素材規格**
+> （`stage-layer-01-sky` … `05-foreground`，除天空外全透明 PNG、節點由 HTML 疊）。
 
 ### 11. `dungeon-banner.png` — 任務副本（MissionDungeons）
 - **尺寸**：1600 × 700，深色背景可

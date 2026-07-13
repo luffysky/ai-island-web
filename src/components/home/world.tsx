@@ -141,49 +141,57 @@ export function WorldMap({
   nodes,
   image,
   imageSpeed = 12,
+  /** 底圖若已畫好路徑（例如 hero path 層），就別再畫 HTML 連線、避免雙線 */
+  drawConnections,
+  aspect = "aspect-[4/3] sm:aspect-[16/10]",
+  imageObjectFit = "cover",
   className = "",
 }: {
   nodes: MapNode[];
   /** 可抽換的地圖底圖（text-free）；沒給＝用內建 SVG 地形降級 */
   image?: string;
   imageSpeed?: number;
+  drawConnections?: boolean;
+  aspect?: string;
+  imageObjectFit?: "cover" | "contain";
   className?: string;
 }) {
   const reduce = useReducedMotion();
+  const showConnections = drawConnections ?? !image; // 有底圖預設不畫線（底圖自帶路徑）
   return (
-    <div
-      className={`relative w-full overflow-hidden rounded-3xl border border-white/10 surface-glass aspect-[4/3] sm:aspect-[16/10] ${className}`}
-    >
+    <div className={`relative w-full overflow-hidden rounded-3xl border border-white/10 surface-glass ${aspect} ${className}`}>
       {/* 底圖層（可抽換）；沒圖時用漸層 + SVG 地形降級 */}
       {image ? (
         <ParallaxLayer speed={imageSpeed} className="absolute inset-0 overflow-hidden pointer-events-none">
-          <Image src={image} alt="" fill sizes="(max-width:768px) 100vw, 900px" className="object-cover" />
+          <Image src={image} alt="" fill sizes="(max-width:768px) 100vw, 1000px" className={imageObjectFit === "contain" ? "object-contain" : "object-cover"} />
         </ParallaxLayer>
       ) : (
         <FallbackTerrain />
       )}
 
       {/* 連線（資料驅動：依序連接節點）*/}
-      <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full pointer-events-none" aria-hidden>
-        {nodes.slice(1).map((n, i) => {
-          const p = nodes[i];
-          const dim = n.state === "locked";
-          return (
-            <line
-              key={n.id}
-              x1={p.x}
-              y1={p.y}
-              x2={n.x}
-              y2={n.y}
-              stroke={dim ? "rgba(255,255,255,0.14)" : "rgba(139,233,253,0.5)"}
-              strokeWidth={2}
-              strokeDasharray="1.5 2.5"
-              strokeLinecap="round"
-              vectorEffect="non-scaling-stroke"
-            />
-          );
-        })}
-      </svg>
+      {showConnections && (
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full pointer-events-none" aria-hidden>
+          {nodes.slice(1).map((n, i) => {
+            const p = nodes[i];
+            const dim = n.state === "locked";
+            return (
+              <line
+                key={n.id}
+                x1={p.x}
+                y1={p.y}
+                x2={n.x}
+                y2={n.y}
+                stroke={dim ? "rgba(255,255,255,0.14)" : "rgba(139,233,253,0.5)"}
+                strokeWidth={2}
+                strokeDasharray="1.5 2.5"
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+              />
+            );
+          })}
+        </svg>
+      )}
 
       {/* 節點（資料驅動、可點、狀態化）*/}
       {nodes.map((n) => (
