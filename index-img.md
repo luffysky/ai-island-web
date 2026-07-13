@@ -123,6 +123,11 @@ Anchor to the hero island's shape and palette (same world, night version).
 | `hero-layer-04-path` | ⚠️ 勉強 | 透明但路徑歪、含節點圈；**已暫接 Stage Map 當 placeholder**（`stage-path.png`） |
 | `hero-layer-05-foreground` | ❌ 半透明 | 頂部灰色漸層 → 重生乾淨透明版（中央通透） |
 > 硬疊會像「五張桌布互相壓」＝千層糕、不是視差。
+>
+> **⚠️ 第二批更新（0714）**：02-far / 03-main 已改成**真透明 alpha**（讚）。但**尺寸沒對齊**：
+> `sky` 是 1672×941(16:9)、`02~05` 是 1536×1024(3:2) → **疊起來會歪**。請把**五層統一同一畫布尺寸+同構圖**（建議都 1672×941 16:9）再交。
+>
+> **✅ Hero 日/夜雙圖已交並上線**：`hero-island-dark.png`(夜) / `hero-island-light.png`(日)、同構圖 16:9 → 已接成「**暗色主題=夜景、亮色主題=白天**」自動切。淺色模式 Hero 不再是黑的。
 
 ## 接入方式（程式端已就緒）
 `ParallaxScene` 依序疊這 5 層、各給不同 `speed`（遠慢近快）；`WorldMap` 的 HTML 節點疊在最上層（對齊 L4 的路點）。**GPT 每交一層、我換一個 `src` 即可接入**、不必等整套。

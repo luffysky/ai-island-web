@@ -53,15 +53,22 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
     <section className="relative">
       {/* ===== 上：情境 Hero（島為背景、暗色遮罩、白字；亮暗都維持這個電影感暗帶）===== */}
       <div className="relative overflow-hidden">
-        {/* 背景主視覺 */}
+        {/* 背景主視覺（日/夜雙圖：暗色夜景、亮色白天，隨主題切）*/}
         <div className="absolute inset-0">
           <Image
-            src="/home/hero-island.png"
+            src="/home/hero-island-dark.png"
             alt=""
             fill
             priority
             sizes="100vw"
-            className="object-cover object-[68%_center]"
+            className="img-night object-cover object-[68%_center]"
+          />
+          <Image
+            src="/home/hero-island-light.png"
+            alt=""
+            fill
+            sizes="100vw"
+            className="img-day object-cover object-[68%_center]"
           />
           {/* 左重右輕的暗色遮罩 → 左側白字對比足、右側露出島 */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-black/10" />

@@ -821,6 +821,11 @@ html[data-theme="light"] .world-zone-bg { background: linear-gradient(to bottom,
 html[data-theme="light"] .hero-bottom-seam { background: linear-gradient(to bottom, transparent, #d7e5ff); }
 html[data-theme="light"] .starfield, html[data-theme="light"] .starfield-2 { display: none; }
 
+/* 主視覺日/夜雙圖：暗色顯示夜晚版、亮色顯示白天版（同構圖、無縫切）*/
+.img-day { display: none; }
+html[data-theme="light"] .img-night { display: none; }
+html[data-theme="light"] .img-day { display: block; }
+
 /* Chat 訊息進場（共用：所有 AI 對話介面） */
 @keyframes chat-bubble-in {
   from { opacity: 0; transform: translateY(6px) scale(0.98); }
