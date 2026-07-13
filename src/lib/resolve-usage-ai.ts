@@ -57,12 +57,15 @@ export async function resolveUsageAI(usageKey: AiUsageKey, defaultModel: string)
   return { ok: true, model, provider, apiKey };
 }
 
-// 額度用完 / 限流 / 暫時性錯誤 / 模型被下架(404) → 值得換模型重試（壞 prompt 之類的真錯不退、直接丟出）。
-// 404 / not found / no longer available：模型被 provider 下架（如 Google 停 gemini-2.5-flash）→ 換一家、別整個死。
+// 額度用完 / 限流 / 暫時性錯誤 / 模型被下架(404) / 該家金鑰壞掉(401/認證) → 值得換模型重試
+// （壞 prompt 之類的真錯不退、直接丟出）。
+// 401 / authentication / cloudflare error 401：某 provider 的 key/account 失效（如 Cloudflare Workers AI
+//   token 過期）→ 換下一家有效的免費模型、別讓一個壞金鑰弄死整個任務。
+// 404 / not found：模型被 provider 下架（如 Google 停 gemini-2.5-flash）→ 換一家。
 function isQuotaOrTransient(e: any): boolean {
   const s = String(e?.message ?? e ?? "").toLowerCase();
-  return /\b(402|403|404|429|500|502|503|529)\b/.test(s)
-    || /(quota|rate.?limit|overloaded|insufficient|exceeded|payment|credit|too many requests|capacity|unavailable|timeout|aborted|not.?found|no longer available|does not exist|deprecated|decommission)/.test(s);
+  return /\b(401|402|403|404|429|500|502|503|529)\b/.test(s)
+    || /(quota|rate.?limit|overloaded|insufficient|exceeded|payment|credit|too many requests|capacity|unavailable|timeout|aborted|not.?found|no longer available|does not exist|deprecated|decommission|authentication|unauthorized|invalid.?(api.?)?key|invalid token|forbidden)/.test(s);
 }
 
 /** 額度滿/限流/掛掉的錯誤訊息 → 值得換模型重試。對外給聊天串流路由判斷用。 */

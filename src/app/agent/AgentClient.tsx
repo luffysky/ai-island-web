@@ -381,28 +381,31 @@ export function AgentClient() {
         <section className="min-w-0">
           {/* 輸入 */}
           <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 p-3 sm:p-4">
-            <div className="flex items-end gap-2">
+            {/* 輸入框整整一欄；語音＋執行放下面 */}
+            <div className="flex flex-col gap-2">
               <textarea
                 value={goal} onChange={(e) => setGoal(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) run(goal); }}
-                rows={2} placeholder="想讓 Agent 幫你做什麼？（Ctrl/⌘ + Enter 執行）"
-                className="flex-1 resize-none bg-transparent outline-none text-sm sm:text-base px-2 py-1.5 min-w-0"
+                rows={3} placeholder="想讓 Agent 幫你做什麼？（Ctrl/⌘ + Enter 執行）"
+                className="w-full resize-none bg-transparent outline-none text-sm sm:text-base px-2 py-1.5"
                 disabled={busy}
               />
-              {voiceSupported && !busy && (
-                <button onClick={toggleVoice} title="語音輸入" className={`shrink-0 grid place-items-center w-9 h-9 rounded-xl border ${listening ? "bg-rose-500 border-rose-500 text-white animate-pulse" : "border-black/10 dark:border-white/15 text-black/50 dark:text-white/50 hover:bg-black/5 dark:hover:bg-white/10"}`}>
-                  <Mic className="w-4 h-4" />
-                </button>
-              )}
-              {busy ? (
-                <button onClick={cancel} className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white px-3.5 py-2 text-sm font-medium">
-                  <Square className="w-4 h-4" /> 停止
-                </button>
-              ) : (
-                <button onClick={() => run(goal)} disabled={!goal.trim()} className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-40 text-white px-3.5 py-2 text-sm font-medium">
-                  <Send className="w-4 h-4" /> 執行
-                </button>
-              )}
+              <div className="flex items-center justify-end gap-2">
+                {voiceSupported && !busy && (
+                  <button onClick={toggleVoice} title="語音輸入" className={`shrink-0 grid place-items-center w-10 h-10 rounded-xl border ${listening ? "bg-rose-500 border-rose-500 text-white animate-pulse" : "border-black/10 dark:border-white/15 text-black/50 dark:text-white/50 hover:bg-black/5 dark:hover:bg-white/10"}`}>
+                    <Mic className="w-4 h-4" />
+                  </button>
+                )}
+                {busy ? (
+                  <button onClick={cancel} className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white px-4 py-2.5 text-sm font-medium">
+                    <Square className="w-4 h-4" /> 停止
+                  </button>
+                ) : (
+                  <button onClick={() => run(goal)} disabled={!goal.trim()} className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-40 text-white px-5 py-2.5 text-sm font-medium">
+                    <Send className="w-4 h-4" /> 執行
+                  </button>
+                )}
+              </div>
             </div>
             {onlineDevice && (
               <div className="flex items-center gap-1.5 mt-2 px-1 text-xs text-emerald-600 dark:text-emerald-400">

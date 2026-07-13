@@ -38,7 +38,7 @@ const TYPE_META: Record<ResourceType, { icon: any; label: string; color: string 
   site:       { icon: Globe,          label: "網站",   color: "text-cyan-400 bg-cyan-500/10 border-cyan-500/30" },
   app:        { icon: Smartphone,     label: "App",   color: "text-purple-400 bg-purple-500/10 border-purple-500/30" },
   podcast:    { icon: Mic,            label: "播客",   color: "text-pink-400 bg-pink-500/10 border-pink-500/30" },
-  github:     { icon: Github,         label: "Repo",   color: "text-gray-300 bg-gray-500/10 border-gray-500/30" },
+  github:     { icon: Github,         label: "Repo",   color: "text-gray-500 dark:text-gray-300 bg-gray-500/10 border-gray-500/30" },
   course:     { icon: GraduationCap,  label: "課程",   color: "text-blue-400 bg-blue-500/10 border-blue-500/30" },
   playground: { icon: Code2,          label: "Playground", color: "text-green-400 bg-green-500/10 border-green-500/30" },
   blog:       { icon: Newspaper,      label: "部落格", color: "text-orange-400 bg-orange-500/10 border-orange-500/30" },

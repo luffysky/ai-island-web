@@ -27,7 +27,9 @@
 - ✅ **圖層規格文件**：`index-img.md` 正式化 Stage Map 五層 2.5D 素材規格（`stage-layer-*`、除天空全透明 PNG、五層需同尺寸對齊）、封印舊單張地圖。
 - ⬜ 續做：**同尺寸五層** → ParallaxScene 完整 2.5D 場景；副本+魔王；夜景 CTA；吉祥物三角色卡；WorldMap 接真實進度；玻璃外溢其他頁。
 - ✅ **手機底部 nav 擋住法律連結修正**：footer 加 `pb-[calc(2rem+3.5rem+env(safe-area-inset-bottom))] md:pb-8` → 隱私權/使用條款/Cookie 在手機不再被 `MobileBottomNav`(h-14 fixed) 蓋住；桌面不變。法律路由 /privacy /terms /cookies build 通過。
-- 🚧 **全站深/淺色切換稽核（進行中）**：林董回報 `/quest`(卡片標題白字在淺色看不到)、`/me`(hero banner 深底+側欄字淡)。修寫死色(text-white/深底)改主題 token。
+- ✅ **全站深/淺色切換稽核 + 修**：subagent 掃全站，實際 offender 6 處（其餘 text-white/black 多在 accent 按鈕/暗圖上＝刻意）。已修：`/quest`(補 root 暗底、arcade 固定暗)、`EloProgress`(萌新/熟手段位字改 `text-gray/slate-500 dark:300`)、`SkillRadar`(PolarGrid 改 `var(--color-border)`)、`LearningDashboard`(Recharts tooltip/grid/axis 硬色改 token)、`ResourceCard`(github chip)、`leaderboard`(銀牌 icon)。MeHero/MeSidebar 本來就 token 化＝OK。
+- ✅ **`/agent` 輸入框重排**：textarea 改整整一欄、語音＋執行移到輸入框下面（手機不再擠）。
+- ✅ **Agent 任務 cloudflare 401 失敗修**：`resolve-usage-ai.ts` 的 `isQuotaOrTransient` 補 **401/authentication/invalid key** → 某免費 provider(如 Cloudflare Workers AI)金鑰失效時**自動換下一家**、不再一個壞金鑰弄死整個任務。（林董另需去 `/admin/ai/models` 修/停用壞掉的 Cloudflare 金鑰）
 - 🚨 收尾檢查：本批多次 `tsc --noEmit`✓ / `vitest` 137✓ / `next build` exit0✓；純前端無 migration；未動 .env.local。
 
 ## 🚨 收尾檢查清單（鐵規則）

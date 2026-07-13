@@ -1,9 +1,9 @@
 import { Trophy } from "lucide-react";
 
 const ELO_TIERS = [
-  { min: 0,    max: 1199, label: "萌新",   emoji: "🌱", color: "from-gray-500 to-gray-400",       text: "text-gray-300" },
-  { min: 1200, max: 1399, label: "新手",   emoji: "🥉", color: "from-amber-700 to-amber-600",     text: "text-amber-400" },
-  { min: 1400, max: 1599, label: "熟手",   emoji: "🥈", color: "from-slate-400 to-slate-300",     text: "text-slate-300" },
+  { min: 0,    max: 1199, label: "萌新",   emoji: "🌱", color: "from-gray-500 to-gray-400",       text: "text-gray-500 dark:text-gray-300" },
+  { min: 1200, max: 1399, label: "新手",   emoji: "🥉", color: "from-amber-700 to-amber-600",     text: "text-amber-500 dark:text-amber-400" },
+  { min: 1400, max: 1599, label: "熟手",   emoji: "🥈", color: "from-slate-400 to-slate-300",     text: "text-slate-500 dark:text-slate-300" },
   { min: 1600, max: 1799, label: "高手",   emoji: "🥇", color: "from-yellow-500 to-yellow-400",   text: "text-yellow-400" },
   { min: 1800, max: 1999, label: "大師",   emoji: "💎", color: "from-cyan-400 to-blue-400",       text: "text-cyan-300" },
   { min: 2000, max: 2199, label: "宗師",   emoji: "👑", color: "from-purple-500 to-pink-500",     text: "text-purple-300" },

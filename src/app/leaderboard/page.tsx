@@ -226,7 +226,7 @@ function PodiumCard({ user, rank, board, t }: { user: LbUser; rank: 1 | 2 | 3; b
       gradient: "from-slate-300 via-zinc-300 to-slate-400",
       ring: "ring-slate-300/40",
       shadow: "shadow-slate-400/20",
-      icon: <Award size={24} className="text-slate-300" />,
+      icon: <Award size={24} className="text-slate-400 dark:text-slate-300" />,
       label: "🥈",
       bg: "bg-gradient-to-b from-slate-500/10 to-zinc-500/5",
       order: "order-1",

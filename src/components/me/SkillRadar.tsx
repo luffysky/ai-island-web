@@ -48,7 +48,7 @@ export function SkillRadar({ completedSet }: { completedSet: Set<string> }) {
       <h2 className="font-bold mb-3 flex items-center gap-2">📡 技能雷達</h2>
       <ResponsiveContainer width="100%" height={300}>
         <RadarChart data={data}>
-          <PolarGrid stroke="rgba(255,255,255,0.15)" />
+          <PolarGrid stroke="var(--color-border)" />
           <PolarAngleAxis dataKey="subject" tick={{ fontSize: 11, fill: "currentColor" }} />
           <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 9 }} />
           <Radar

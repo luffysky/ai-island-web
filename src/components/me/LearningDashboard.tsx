@@ -56,7 +56,7 @@ export function LearningDashboard({ data }: { data: Data }) {
                   <Pie data={masteryPie} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={45} outerRadius={75} paddingAngle={2}>
                     {masteryPie.map((_, i) => <Cell key={i} fill={MASTERY_COLORS[i]} />)}
                   </Pie>
-                  <Tooltip contentStyle={{ background: "#1b1d23", border: "1px solid #333", borderRadius: 8, fontSize: 12 }} />
+                  <Tooltip contentStyle={{ background: "var(--color-bg-elevated)", border: "1px solid var(--color-border)", borderRadius: 8, fontSize: 12, color: "var(--color-fg)" }} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="space-y-2 text-sm">
@@ -80,10 +80,10 @@ export function LearningDashboard({ data }: { data: Data }) {
           ) : (
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={data.quizTrend} margin={{ top: 5, right: 10, bottom: 5, left: -20 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2a2d35" />
-                <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#9ca3af" }} />
-                <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: "#9ca3af" }} />
-                <Tooltip contentStyle={{ background: "#1b1d23", border: "1px solid #333", borderRadius: 8, fontSize: 12 }} formatter={(v: any) => [`${v}%`, "準確率"]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+                <XAxis dataKey="date" tick={{ fontSize: 11, fill: "var(--color-fg-muted)" }} />
+                <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: "var(--color-fg-muted)" }} />
+                <Tooltip contentStyle={{ background: "var(--color-bg-elevated)", border: "1px solid var(--color-border)", borderRadius: 8, fontSize: 12, color: "var(--color-fg)" }} formatter={(v: any) => [`${v}%`, "準確率"]} />
                 <Line type="monotone" dataKey="acc" stroke="#facc15" strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>

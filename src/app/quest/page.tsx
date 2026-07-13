@@ -48,7 +48,7 @@ export default async function QuestPage() {
   const pct = Math.round((totalDone / totalLevels) * 100);
 
   return (
-    <div className="relative min-h-screen overflow-hidden text-slate-100">
+    <div className="relative min-h-screen overflow-hidden text-slate-100 bg-[#0b1020]">
       {/* 街機背景 */}
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-[#0a1226] via-[#0b1020] to-black" />
       <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.25]" style={{ backgroundImage: "linear-gradient(rgba(80,250,123,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(80,250,123,0.14) 1px, transparent 1px)", backgroundSize: "34px 34px", maskImage: "radial-gradient(ellipse at 50% 0%, #000 40%, transparent 85%)" }} />
