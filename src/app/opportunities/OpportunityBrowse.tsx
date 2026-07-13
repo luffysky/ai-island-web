@@ -29,7 +29,7 @@ export function OpportunityBrowse() {
   const [saved, setSaved] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
-  const [cat, setCat] = useState("");
+  const [cats, setCats] = useState<Set<string>>(new Set());   // 分類多選（OR）
   const [freeOnly, setFreeOnly] = useState(false);
   const [status, setStatus] = useState("");
   const [noPitch, setNoPitch] = useState(false);   // 免上台
@@ -55,7 +55,7 @@ export function OpportunityBrowse() {
     setLoading(true);
     const p = new URLSearchParams();
     if (q.trim()) p.set("q", q.trim());
-    if (cat) p.set("category", cat);
+    if (cats.size) p.set("category", [...cats].join(","));
     if (freeOnly) p.set("free", "1");
     if (status) p.set("status", status);
     if (noPitch) p.set("noPitch", "1");
@@ -66,7 +66,7 @@ export function OpportunityBrowse() {
       setOpps(d.opportunities ?? []);
     } catch { /* ignore */ }
     setLoading(false);
-  }, [q, cat, freeOnly, status, noPitch, online]);
+  }, [q, cats, freeOnly, status, noPitch, online]);
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => {
@@ -152,10 +152,13 @@ export function OpportunityBrowse() {
             className="flex-1 bg-transparent outline-none text-sm min-w-0" />
         </div>
         <div className="flex flex-wrap items-center gap-1.5 mt-3">
-          <button onClick={() => setCat("")} className={`text-xs rounded-full px-2.5 py-1 border ${!cat ? "bg-violet-600 border-violet-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>全部</button>
-          {CATS.map((cName) => (
-            <button key={cName} onClick={() => setCat(cName === cat ? "" : cName)} className={`text-xs rounded-full px-2.5 py-1 border ${cat === cName ? "bg-violet-600 border-violet-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70 hover:bg-black/5 dark:hover:bg-white/10"}`}>{cName}</button>
-          ))}
+          <button onClick={() => setCats(new Set())} className={`text-xs rounded-full px-2.5 py-1 border ${cats.size === 0 ? "bg-violet-600 border-violet-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>全部</button>
+          {CATS.map((cName) => {
+            const on = cats.has(cName);
+            return (
+              <button key={cName} onClick={() => setCats((prev) => { const n = new Set(prev); if (n.has(cName)) n.delete(cName); else n.add(cName); return n; })} className={`text-xs rounded-full px-2.5 py-1 border ${on ? "bg-violet-600 border-violet-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70 hover:bg-black/5 dark:hover:bg-white/10"}`}>{on ? "✓ " : ""}{cName}</button>
+            );
+          })}
           <span className="w-px h-4 bg-black/10 dark:bg-white/10 mx-1" />
           <button onClick={() => setFreeOnly((v) => !v)} className={`text-xs rounded-full px-2.5 py-1 border ${freeOnly ? "bg-emerald-600 border-emerald-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>免報名費</button>
           <button onClick={() => setNoPitch((v) => !v)} title="初賽不用上台簡報" className={`text-xs rounded-full px-2.5 py-1 border ${noPitch ? "bg-emerald-600 border-emerald-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>🎤 免上台</button>

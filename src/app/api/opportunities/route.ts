@@ -9,7 +9,8 @@ export async function GET(req: Request) {
   const sp = new URL(req.url).searchParams;
   const q = (sp.get("q") ?? "").trim().slice(0, 60);
   const type = sp.get("type") ?? "";
-  const category = sp.get("category") ?? "";
+  // category 支援多選（逗號分隔）→ OR；成本/狀態等其他條件維持 AND。
+  const categories = (sp.get("category") ?? "").split(",").map((s) => s.trim()).filter(Boolean).slice(0, 12);
   const country = sp.get("country") ?? "";
   const free = sp.get("free");            // "1" = 只看免報名費
   const status = sp.get("status") ?? "";  // open|upcoming|closed
@@ -23,7 +24,8 @@ export async function GET(req: Request) {
 
   if (q) query = query.or(`name.ilike.%${q}%,organizer.ilike.%${q}%,category.ilike.%${q}%`);
   if (type) query = query.eq("type", type);
-  if (category) query = query.ilike("category", `%${category}%`);
+  // 多選分類 = OR（符合任一即可）；逗號會破壞 PostgREST or() 語法，先濾掉
+  if (categories.length) query = query.or(categories.map((c) => `category.ilike.%${c.replace(/[,()]/g, "")}%`).join(","));
   if (country) query = query.eq("country", country);
   if (free === "1") query = query.eq("is_free", true);
   if (status) query = query.eq("status", status);
