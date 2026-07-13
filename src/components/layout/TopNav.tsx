@@ -334,7 +334,7 @@ export function TopNav() {
       </div>
 
       {mobileMenu && (
-        <div className="md:hidden animate-slide-in-left origin-left border-t border-border/50 bg-gradient-to-b from-bg/55 to-bg/25 supports-[backdrop-filter]:from-bg/45 supports-[backdrop-filter]:to-bg/12 backdrop-blur-2xl backdrop-saturate-150 px-3 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))] max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain">
+        <div className="md:hidden animate-slide-in-left origin-left absolute left-0 right-0 top-full z-40 shadow-2xl border-t border-border/50 bg-gradient-to-b from-bg/55 to-bg/25 supports-[backdrop-filter]:from-bg/40 supports-[backdrop-filter]:to-bg/10 backdrop-blur-2xl backdrop-saturate-150 px-3 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))] max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain">
           <div className="px-2 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-fg-muted">
             {t("nav.explore")}
           </div>
