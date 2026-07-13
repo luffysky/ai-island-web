@@ -1,0 +1,866 @@
+[
+  {
+    "slug": "doubly-linked-list",
+    "term": "doubly linked list",
+    "zh_name": "雙向鏈結串列",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "每個節點同時記著前一個和後一個，能雙向走。插入/刪除快，但比陣列多花記憶體存指標。",
+    "analogy": "像一列人手牽手，每人左右手都牽著人，往前往後都走得動。",
+    "example": "瀏覽器上一頁/下一頁、LRU 快取常用",
+    "related": [
+      "linked-list",
+      "array-vs-list",
+      "deque"
+    ]
+  },
+  {
+    "slug": "array-vs-list",
+    "term": "array vs linked list",
+    "zh_name": "陣列 vs 鏈結串列",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "陣列連續存放、依索引『瞬間取值』但中間插刪要搬移；鏈結串列插刪快、但找第 n 個要一路走。",
+    "analogy": "陣列像有座號的教室(直接點名)、鏈表像手牽手排隊(要一個個往下數)。",
+    "example": "常查用陣列、常在中間插刪用鏈表",
+    "related": [
+      "linked-list",
+      "doubly-linked-list",
+      "time-complexity"
+    ]
+  },
+  {
+    "slug": "stack-ds",
+    "term": "stack",
+    "zh_name": "堆疊",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "後進先出(LIFO)的資料結構：最後放進去的最先拿出來。push 放、pop 取。",
+    "analogy": "像一疊盤子：只能從最上面拿、往最上面疊。",
+    "example": "瀏覽器上一頁、函式呼叫堆疊、括號配對",
+    "related": [
+      "queue-ds",
+      "call-stack",
+      "recursion"
+    ]
+  },
+  {
+    "slug": "queue-ds",
+    "term": "queue",
+    "zh_name": "佇列",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "先進先出(FIFO)：先排的先處理。enqueue 排進、dequeue 取出。",
+    "analogy": "像排隊買票：先到先服務。",
+    "example": "任務佇列、訊息佇列、BFS 都用佇列",
+    "related": [
+      "stack-ds",
+      "deque",
+      "priority-queue"
+    ]
+  },
+  {
+    "slug": "priority-queue",
+    "term": "priority queue",
+    "zh_name": "優先佇列",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "取出時不看誰先來、看『誰優先級最高』。常用堆積(heap)實作。",
+    "analogy": "像急診室：不是先到先看，重症先。",
+    "example": "Dijkstra、任務排程、合併多個排序流",
+    "related": [
+      "heap-ds",
+      "queue-ds",
+      "dijkstra"
+    ]
+  },
+  {
+    "slug": "deque",
+    "term": "deque",
+    "zh_name": "雙端佇列",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "兩端都能加/取的佇列，可當堆疊也可當佇列用，很萬用。",
+    "analogy": "像兩頭都能上下車的車廂。",
+    "example": "滑動視窗最大值、undo/redo 緩衝",
+    "related": [
+      "queue-ds",
+      "stack-ds",
+      "sliding-window"
+    ]
+  },
+  {
+    "slug": "heap-ds",
+    "term": "heap",
+    "zh_name": "堆積",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一種完全二元樹，父節點總是比子節點大(或小)，能 O(log n) 取出最大/最小值。優先佇列的底層。",
+    "analogy": "像公司組織圖：上司(父)總比下屬(子)『級別高』，最高的永遠在頂點。",
+    "example": "取前 K 大、排程；heapsort 靠它",
+    "related": [
+      "priority-queue",
+      "heapsort",
+      "binary-tree"
+    ]
+  },
+  {
+    "slug": "binary-tree",
+    "term": "binary tree",
+    "zh_name": "二元樹",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "每個節點最多兩個子節點(左、右)的樹狀結構，是很多進階結構的基礎。",
+    "analogy": "像家族樹每人最多生兩個小孩。",
+    "example": "運算式樹、二元搜尋樹、堆積都是二元樹變體",
+    "related": [
+      "bst-tree",
+      "heap-ds",
+      "dfs"
+    ]
+  },
+  {
+    "slug": "bst-tree",
+    "term": "binary search tree (BST)",
+    "zh_name": "二元搜尋樹",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "有序的二元樹：左子樹都比自己小、右子樹都比自己大，查找/插入平均 O(log n)。歪掉會退化成鏈表。",
+    "analogy": "像會自動分左右的猜數字：比我小往左、比我大往右，很快夾到。",
+    "example": "查找有序資料；不平衡時要用 AVL/紅黑樹平衡",
+    "related": [
+      "binary-tree",
+      "balanced-tree",
+      "binary-search"
+    ]
+  },
+  {
+    "slug": "balanced-tree",
+    "term": "balanced tree",
+    "zh_name": "平衡樹",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "會自動保持左右高度差不多的樹(AVL、紅黑樹)，避免退化成鏈表，保證查找穩定 O(log n)。",
+    "analogy": "像天平自動配重，不讓一邊垂到底。",
+    "example": "資料庫索引、有序 Map 常用紅黑樹",
+    "related": [
+      "bst-tree",
+      "index-sql",
+      "time-complexity"
+    ]
+  },
+  {
+    "slug": "trie",
+    "term": "trie",
+    "zh_name": "字典樹",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "按字元一層層分岔的樹，共用前綴，很適合『自動補全』『前綴搜尋』。",
+    "analogy": "像字典按字母分層翻，打了前幾個字就能列出所有可能的詞。",
+    "example": "搜尋框自動補全、IP 路由",
+    "related": [
+      "binary-tree",
+      "hash-table",
+      "full-text-search"
+    ]
+  },
+  {
+    "slug": "graph-ds",
+    "term": "graph",
+    "zh_name": "圖",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "由節點和連線組成、能表示任意關係的結構(社交網、地圖、相依關係)。可有向/無向、可加權。",
+    "analogy": "像捷運路網：站是節點、路線是邊。",
+    "example": "好友關係、最短路徑、任務相依",
+    "related": [
+      "adjacency-list",
+      "dfs",
+      "bfs"
+    ]
+  },
+  {
+    "slug": "adjacency-list",
+    "term": "adjacency list",
+    "zh_name": "鄰接串列",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "存圖的常見方式：每個節點記著『它連到哪些節點』的清單。比鄰接矩陣省空間(邊少時)。",
+    "analogy": "像每個人的好友名單，只列真的有連的。",
+    "example": "稀疏圖用鄰接串列跑 BFS/DFS 較省",
+    "related": [
+      "graph-ds",
+      "dfs",
+      "bfs"
+    ]
+  },
+  {
+    "slug": "dfs",
+    "term": "depth-first search (DFS)",
+    "zh_name": "深度優先搜尋",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "走圖/樹時一路往深處鑽到底，走不通再回頭換路。用遞迴或堆疊實作。",
+    "analogy": "像走迷宮一直往前走，撞牆才退回上個岔路換方向。",
+    "example": "找連通區塊、拓撲排序、回溯",
+    "related": [
+      "bfs",
+      "stack-ds",
+      "backtracking"
+    ]
+  },
+  {
+    "slug": "bfs",
+    "term": "breadth-first search (BFS)",
+    "zh_name": "廣度優先搜尋",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "走圖/樹時一層層向外擴，先看近的再看遠的。用佇列實作，能找『最少步數』。",
+    "analogy": "像水波紋一圈圈往外擴散。",
+    "example": "無權圖最短路徑、社群『幾度人脈』",
+    "related": [
+      "dfs",
+      "queue-ds",
+      "dijkstra"
+    ]
+  },
+  {
+    "slug": "dijkstra",
+    "term": "Dijkstra's algorithm",
+    "zh_name": "Dijkstra 最短路徑",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "在『邊有正權重』的圖裡找兩點間最短(最省)路徑的經典演算法，用優先佇列一步步擴最近的點。",
+    "analogy": "像導航算最短車程：每次先確定目前最近的點，再往外更新。",
+    "example": "地圖導航、網路路由",
+    "related": [
+      "priority-queue",
+      "bfs",
+      "graph-ds"
+    ]
+  },
+  {
+    "slug": "greedy-algo",
+    "term": "greedy algorithm",
+    "zh_name": "貪婪演算法",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "每一步都選『當下看起來最好』的，希望累積成整體最佳。有些問題行(找零)、有些會出錯，要證明。",
+    "analogy": "像每個路口都挑最順的走，不一定全程最快。",
+    "example": "找零錢、霍夫曼編碼；但不是所有問題都適用",
+    "related": [
+      "dynamic-programming",
+      "divide-conquer",
+      "greedy-decoding"
+    ]
+  },
+  {
+    "slug": "two-pointer",
+    "term": "two-pointer technique",
+    "zh_name": "雙指標",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用兩個索引在陣列上移動(一頭一尾或快慢)，把很多 O(n²) 的暴力解降到 O(n)。",
+    "analogy": "像兩人從兩端往中間夾，或一快一慢追。",
+    "example": "有序陣列找兩數和、判斷回文、去重",
+    "related": [
+      "sliding-window",
+      "binary-search",
+      "time-complexity"
+    ]
+  },
+  {
+    "slug": "bubble-sort",
+    "term": "bubble sort",
+    "zh_name": "氣泡排序",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "相鄰兩個比大小、不對就交換，一輪輪把大的往後『冒』。好懂但很慢 O(n²)，教學用。",
+    "analogy": "像氣泡從水底一路往上浮，大的慢慢浮到最後。",
+    "example": "教學示範用；實務用內建的快排/Timsort",
+    "related": [
+      "quicksort",
+      "mergesort",
+      "time-complexity"
+    ]
+  },
+  {
+    "slug": "mergesort",
+    "term": "merge sort",
+    "zh_name": "合併排序",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把陣列對半拆到不能拆，再兩兩『合併成有序』一路併回來。穩定、保證 O(n log n)，但要額外空間。",
+    "analogy": "像分組各自排好、再兩兩合併成大的排好隊。",
+    "example": "需要穩定排序、外部排序(資料超大)常用",
+    "related": [
+      "quicksort",
+      "divide-conquer",
+      "heapsort"
+    ]
+  },
+  {
+    "slug": "heapsort",
+    "term": "heap sort",
+    "zh_name": "堆積排序",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把資料建成堆積，反覆取出最大值放到尾端。O(n log n)、原地排序不需額外空間，但不穩定。",
+    "analogy": "像每次從一堆人挑出最高的排到隊尾，挑完就排好了。",
+    "example": "記憶體吃緊又要 O(n log n) 時",
+    "related": [
+      "heap-ds",
+      "mergesort",
+      "quicksort"
+    ]
+  },
+  {
+    "slug": "time-complexity",
+    "term": "time complexity",
+    "zh_name": "時間複雜度",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "描述『資料變大時，執行時間怎麼成長』的量級(用 Big-O)。看的是趨勢不是實際秒數。",
+    "analogy": "像評估食譜『人數翻倍要多花多少工』，而不是實際幾分鐘。",
+    "example": "O(1) 常數、O(n) 線性、O(n²) 平方、O(log n) 對數",
+    "related": [
+      "big-o",
+      "space-complexity",
+      "amortized"
+    ]
+  },
+  {
+    "slug": "npm-vs-yarn",
+    "term": "npm / yarn / pnpm",
+    "zh_name": "套件管理器",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "管理 JS 專案相依套件的工具，負責安裝、鎖版本、跑腳本。pnpm 用硬連結最省空間、yarn/npm 各有特色。",
+    "analogy": "像叫料助手：照清單把食材(套件)備齊、記好牌子(版本)。",
+    "example": "npm install / yarn / pnpm i 都在讀 package.json 裝相依",
+    "related": [
+      "package-json",
+      "lockfile",
+      "node-modules"
+    ]
+  },
+  {
+    "slug": "package-json",
+    "term": "package.json",
+    "zh_name": "專案清單檔",
+    "category": "reference",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "JS 專案的核心設定檔：專案名、版本、相依套件、可跑的 scripts 都寫在這。",
+    "analogy": "像專案的身分證＋採買清單＋常用指令表。",
+    "example": "\"scripts\":{\"dev\":\"next dev\"} → npm run dev",
+    "related": [
+      "npm-vs-yarn",
+      "lockfile",
+      "dev-dependency"
+    ]
+  },
+  {
+    "slug": "dev-dependency",
+    "term": "devDependency",
+    "zh_name": "開發相依",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "只在『開發/建置』時要用的套件(測試、linter、型別)，正式上線的產品不需要，不會裝進生產環境。",
+    "analogy": "像蓋房子的鷹架：施工要、完工就拆，不算房子的一部分。",
+    "example": "eslint、vitest 放 devDependencies；react 放 dependencies",
+    "related": [
+      "package-json",
+      "peer-dependency",
+      "transitive-dependency"
+    ]
+  },
+  {
+    "slug": "peer-dependency",
+    "term": "peerDependency",
+    "zh_name": "同儕相依",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "套件要求『宿主專案自己要裝某個共用套件』(如外掛要求你已裝 React)，避免裝到多份互相打架。",
+    "analogy": "像配件註明『需自備某型號主機』，不附贈以免重複。",
+    "example": "React 元件庫把 react 設成 peerDependency",
+    "related": [
+      "dev-dependency",
+      "transitive-dependency",
+      "breaking-change"
+    ]
+  },
+  {
+    "slug": "transitive-dependency",
+    "term": "transitive dependency",
+    "zh_name": "間接相依",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "你裝的套件『自己又依賴的套件』，你沒直接寫但也被裝進來。供應鏈風險常藏在這。",
+    "analogy": "像你請的廠商又外包給下游，出事你也受影響。",
+    "example": "node_modules 裡一堆你沒指定的套件都是間接相依",
+    "related": [
+      "dev-dependency",
+      "peer-dependency",
+      "lockfile"
+    ]
+  },
+  {
+    "slug": "shebang",
+    "term": "shebang (#!)",
+    "zh_name": "直譯器指定行",
+    "category": "syntax",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 2,
+    "plain": "腳本第一行的 #!/usr/bin/env node，告訴系統『用哪個程式來跑這個檔』。",
+    "analogy": "像文件開頭註明『請用 Word 開啟』。",
+    "example": "#!/bin/bash 開頭 + chmod +x → 可直接 ./script.sh 執行",
+    "related": [
+      "chmod",
+      "shell-vs-bash",
+      "path-variable"
+    ]
+  },
+  {
+    "slug": "pipe-shell",
+    "term": "pipe (|)",
+    "zh_name": "管線",
+    "category": "syntax",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 2,
+    "plain": "把前一個指令的輸出，直接『接』成後一個指令的輸入，串成一條處理流水線。",
+    "analogy": "像工廠輸送帶：上一站產出直接送下一站加工。",
+    "example": "cat log | grep error | wc -l  // 數 error 有幾行",
+    "related": [
+      "grep-cmd",
+      "stdin-stdout",
+      "shell-vs-bash"
+    ]
+  },
+  {
+    "slug": "grep-cmd",
+    "term": "grep",
+    "zh_name": "grep（文字搜尋）",
+    "category": "tool",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 2,
+    "plain": "在文字/檔案裡搜尋符合樣式(可用正規表示式)的行，是命令列找東西的神器。",
+    "analogy": "像用螢光筆把含關鍵字的每一行畫出來。",
+    "example": "grep -r 'TODO' src/  // 遞迴找所有 TODO",
+    "related": [
+      "pipe-shell",
+      "regex",
+      "linter"
+    ]
+  },
+  {
+    "slug": "cron-syntax",
+    "term": "cron syntax",
+    "zh_name": "cron 排程語法",
+    "category": "reference",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 2,
+    "plain": "用五個欄位(分 時 日 月 週)排定期任務的格式。* 代表每一、*/n 代表每 n。",
+    "analogy": "像鬧鐘的重複設定：幾點幾分、星期幾響。",
+    "example": "*/15 * * * * 每 15 分；0 9 * * 1 每週一早上 9 點",
+    "related": [
+      "cron",
+      "background-job",
+      "keep-warm"
+    ]
+  },
+  {
+    "slug": "shell-vs-bash",
+    "term": "shell / bash / zsh",
+    "zh_name": "shell 與 bash",
+    "category": "reference",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 2,
+    "plain": "shell 是『命令列直譯器』的統稱，bash/zsh 是具體的實作。腳本要注意寫給哪一種、語法有小差異。",
+    "analogy": "shell 像『語言』這個概念，bash/zsh 是具體的方言。",
+    "example": "macOS 現在預設 zsh、很多伺服器用 bash",
+    "related": [
+      "shebang",
+      "pipe-shell",
+      "alias-shell"
+    ]
+  },
+  {
+    "slug": "path-variable",
+    "term": "PATH",
+    "zh_name": "PATH 環境變數",
+    "category": "reference",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 2,
+    "plain": "一串資料夾清單，你在命令列打指令時系統會依序去這些資料夾找同名程式。『command not found』常是它沒設對。",
+    "analogy": "像找店家先查的幾條街，不在名單上的街就找不到。",
+    "example": "把工具裝好卻叫不出來 → 加進 PATH",
+    "related": [
+      "env-var",
+      "alias-shell",
+      "shell-vs-bash"
+    ]
+  },
+  {
+    "slug": "alias-shell",
+    "term": "alias",
+    "zh_name": "指令別名",
+    "category": "syntax",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 1,
+    "plain": "給常打的長指令取個短名，之後打短名就等於跑長指令。",
+    "analogy": "像通訊錄設快捷鍵，一鍵撥常撥的號碼。",
+    "example": "alias gs='git status'  // 之後打 gs 就好",
+    "related": [
+      "path-variable",
+      "shell-vs-bash",
+      "shebang"
+    ]
+  },
+  {
+    "slug": "chmod",
+    "term": "chmod",
+    "zh_name": "改權限",
+    "category": "tool",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 2,
+    "plain": "改檔案/資料夾的『讀寫執行』權限。腳本要能執行、或限制別人不能改，都靠它。",
+    "analogy": "像設門禁：誰能看(讀)、能改(寫)、能進(執行)。",
+    "example": "chmod +x deploy.sh  // 讓腳本可執行；777 是全開(危險)",
+    "related": [
+      "sudo",
+      "least-privilege",
+      "shebang"
+    ]
+  },
+  {
+    "slug": "sudo",
+    "term": "sudo",
+    "zh_name": "以管理員身分執行",
+    "category": "tool",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 1,
+    "plain": "臨時用管理員(root)權限跑一道指令，做需要高權限的事(裝系統套件)。危險指令加 sudo 要格外小心。",
+    "analogy": "像借出總經理的印章蓋這一次，蓋完收回。",
+    "example": "sudo apt install nginx；別亂 sudo rm -rf",
+    "related": [
+      "chmod",
+      "least-privilege",
+      "process-id"
+    ]
+  },
+  {
+    "slug": "process-id",
+    "term": "process ID (PID)",
+    "zh_name": "行程編號",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "作業系統給每個執行中程式的唯一編號，用來查狀態或結束它。",
+    "analogy": "像每位在場員工的識別證號碼。",
+    "example": "ps 找到某程式的 PID → kill <PID> 結束它",
+    "related": [
+      "signal-kill",
+      "background-job",
+      "sudo"
+    ]
+  },
+  {
+    "slug": "signal-kill",
+    "term": "signal / kill",
+    "zh_name": "訊號與終止",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "作業系統用『訊號』通知程式該做什麼。kill 送訊號給程式：SIGTERM 請它好好收尾、SIGKILL 直接斃掉。",
+    "analogy": "SIGTERM 像『請下班收東西』；SIGKILL 像直接拉電閘。",
+    "example": "kill <pid> 先禮貌；kill -9 <pid> 才強斃",
+    "related": [
+      "process-id",
+      "graceful-shutdown",
+      "background-job"
+    ]
+  },
+  {
+    "slug": "floating-point",
+    "term": "floating point",
+    "zh_name": "浮點數",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "電腦表示小數的方式，因為用二進位近似，有些十進位小數存不精確，會有微小誤差。",
+    "analogy": "像用有限位數記 1/3=0.333…，永遠差一點點。",
+    "example": "0.1 + 0.2 !== 0.3(是 0.30000000000000004)；金額別用浮點、用整數分",
+    "related": [
+      "integer-overflow",
+      "two-complement",
+      "big-o"
+    ]
+  },
+  {
+    "slug": "integer-overflow",
+    "term": "integer overflow",
+    "zh_name": "整數溢位",
+    "category": "error",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "數字超過該型別能存的最大值，會『繞回』變成很小或負數，釀成怪 bug 或漏洞。",
+    "analogy": "像里程表跑到 999999 再加 1 變 000000。",
+    "example": "32 位有號整數超過 21 億會變負；JS 用 BigInt 處理大數",
+    "related": [
+      "floating-point",
+      "two-complement",
+      "bit-manipulation"
+    ]
+  },
+  {
+    "slug": "two-complement",
+    "term": "two's complement",
+    "zh_name": "二補數",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "電腦表示『負整數』的標準做法，讓加減法用同一套電路就能算，不用特別處理正負號。",
+    "analogy": "像時鐘的『倒退 3 小時＝前進 9 小時』，用繞圈統一表示。",
+    "example": "8 位裡 -1 存成 11111111；最高位是符號位",
+    "related": [
+      "integer-overflow",
+      "bit-manipulation",
+      "endianess"
+    ]
+  },
+  {
+    "slug": "bit-manipulation",
+    "term": "bit manipulation",
+    "zh_name": "位元運算",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "直接對數字的二進位位元做 AND/OR/XOR/位移操作，又快又省，常用於旗標、遮罩、效能技巧。",
+    "analogy": "像一排開關直接撥，而不是用大段邏輯判斷。",
+    "example": "權限用 bitmask：可讀=1、可寫=2、可讀寫=3",
+    "related": [
+      "xor-trick",
+      "two-complement",
+      "hex-color"
+    ]
+  },
+  {
+    "slug": "xor-trick",
+    "term": "XOR trick",
+    "zh_name": "XOR 技巧",
+    "category": "slang",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "利用 a^a=0、a^0=a 的特性做出漂亮解法：找出唯一沒成對的數、不用額外變數交換值。",
+    "analogy": "像成對抵消：一樣的兩兩消掉，剩下的就是落單那個。",
+    "example": "陣列中每個數都出現兩次、只一個一次 → 全部 XOR 起來就是它",
+    "related": [
+      "bit-manipulation",
+      "hash-table",
+      "two-pointer"
+    ]
+  },
+  {
+    "slug": "hex-color",
+    "term": "hex color",
+    "zh_name": "十六進位色碼",
+    "category": "reference",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 1,
+    "plain": "用 #RRGGBB 六位十六進位表示顏色，兩位一組代表紅綠藍各 0–255 的強度。",
+    "analogy": "像調色配方：紅多少、綠多少、藍多少，混出一個色。",
+    "example": "#50fa7b 是綠、#000000 黑、#ffffff 白；#RGB 是簡寫",
+    "related": [
+      "bit-manipulation",
+      "base-n",
+      "css-variable"
+    ]
+  },
+  {
+    "slug": "uuid",
+    "term": "UUID",
+    "zh_name": "通用唯一識別碼",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "一組幾乎不可能重複的 128 位識別碼(長得像 550e8400-…)，各系統各自產生也不會撞，用來當主鍵/追蹤碼。",
+    "analogy": "像全球唯一的超長身分證號，隨機到幾乎不可能兩人相同。",
+    "example": "資料庫主鍵用 UUID，前後端各自生也不衝突",
+    "related": [
+      "nanoid",
+      "primary-key",
+      "slug-url"
+    ]
+  },
+  {
+    "slug": "nanoid",
+    "term": "nanoid",
+    "zh_name": "nanoid",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "產生短、網址安全、夠唯一的隨機 id 的小工具，比 UUID 短、適合放網址或分享碼。",
+    "analogy": "像縮短版的唯一序號，好貼在網址上又不易撞。",
+    "example": "分享短碼、暫時 token 用 nanoid(10)",
+    "related": [
+      "uuid",
+      "slug-url",
+      "base-n"
+    ]
+  },
+  {
+    "slug": "camel-case",
+    "term": "camelCase",
+    "zh_name": "駝峰命名",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "第一個字小寫、後面每個單字字首大寫的命名法(userName)。JS 變數/函式的慣例。",
+    "analogy": "像駝峰起伏：小寫起頭，接著一個個峰(大寫)。",
+    "example": "getUserName、isActive、maxCount",
+    "related": [
+      "pascal-case",
+      "snake-case",
+      "kebab-case"
+    ]
+  },
+  {
+    "slug": "pascal-case",
+    "term": "PascalCase",
+    "zh_name": "帕斯卡命名",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "每個單字字首都大寫、含第一個(UserName)。常用於類別名、React 元件名。",
+    "analogy": "像每個字都『站起來』大寫開頭。",
+    "example": "class UserProfile、React 元件 <NavBar/>",
+    "related": [
+      "camel-case",
+      "snake-case",
+      "kebab-case"
+    ]
+  }
+]
