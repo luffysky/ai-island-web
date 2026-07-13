@@ -155,7 +155,7 @@
 
 ### 14-4 機會島 × 通知/排程（本段對應機會島 V3/V4 的輕量前置）
 - ⬜ **機會島自動排程掃描**（cron，先輕量：每日跑「機會獵人」員工 `web.search`+`opportunity.search` 掃新機會，早於 V4 全自動雷達）。
-- ⬜ **LINE 截止通知**（剩 30/14/7/3/1 天推播；新符合你條件的機會推播）＋ Email/Discord 同機制。
+- 🚧 **LINE 截止通知**（~~剩 30/14/7/3/1 天推播已做（cron opportunity-deadlines，in-app 鈴鐺 + LINE 綁定才送）~~；「新符合你條件的機會」推播＝需先做機會訂閱；Email/Discord 同機制待補）。
 - ⬜ **在 LINE 內「幫我準備這場」**：收到截止通知 → 按鈕直接丟給分身島員工團隊備件（回 §一.10 辦公室）。
 
 ## 14. 附屬構想（Agent2.md，多 aspirational）
@@ -173,7 +173,7 @@
 - ~~8 筆競賽種子（全標 unverified、不捏造）。~~
 - ~~/opportunities 瀏覽 + 搜尋 + 類別/免費/狀態篩選；/opportunities/[id] 詳情；/opportunities/routes 我的航線（收藏+投件進度+截止倒數）。~~
 - ~~nav + 首頁卡片 + agent `opportunity.search` 閉環 + 參賽成本篩選（🎤免上台/🌐線上）。~~
-- 🚧 **主動「截止提醒」推播**（卡片有倒數、推播未做）。
+- ~~**主動「截止提醒」推播**：cron `/api/cron/opportunity-deadlines` 掃「我的航線」收藏機會，距截止 30/14/7/3/1 天發 in-app 鈴鐺 + LINE（綁定才送），同機會 20h 只發一次。（0713，需 cron-job.org 加 job #8）~~
 - ~~**AI 規則摘要**：機會詳情頁「AI 讀規則」（`RulesSummary` + `/api/opportunities/[id]/rules-summary`）→ 讀本頁資料或貼上官網全文 → 結構化重點（一句話/資格/文件/日期/獎金/評分/該注意的坑），禁編造、需登入。（0713）~~ PDF 解析待補。
 
 ## 2. V2 找得準 🚧
@@ -283,8 +283,9 @@
 
 > Claude 自動做程式＋push＋跑 migration，但以下是**要你本人動手**的（外部服務設定、金鑰、審核）。做完可劃線。
 
-## 立即（不做這個，剛做好的排程不會自動跑）
+## 立即（這兩個 cron 不加，剛做好的排程/截止提醒不會自動跑）
 - ⬜ **cron-job.org 加 job #7「agent-schedules」**：`GET https://ai-island-web.snowrealm.pet/api/cron/agent-schedules?secret=<CRON_SECRET>`、排程 `*/15 * * * *`（每 15 分）。設定照 `docs/setup/cron-setup.md`。**沒加這個 → 辦公室排程只是存著、不會到點自動執行。**
+- ⬜ **cron-job.org 加 job #8「opportunity-deadlines」**：`GET https://ai-island-web.snowrealm.pet/api/cron/opportunity-deadlines?secret=<CRON_SECRET>`、排程 `0 1 * * *`（每天台灣 09:00）。**沒加這個 → 機會截止提醒不會發。**
 
 ## 部署後驗一下（GHCR 重建約幾分鐘）
 - ⬜ 開 `https://ai-island-web.snowrealm.pet/agent/office` 確認：狀態列、熱門任務、排程、待批准佇列都正常顯示（手機 + 桌面各看一次）。

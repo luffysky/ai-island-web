@@ -15,7 +15,7 @@
 
 ---
 
-## 7 個 cron job 完整清單
+## 8 個 cron job 完整清單
 
 ### 1. keep-warm（**最重要**、防 Discord interaction 冷啟動）
 
@@ -82,6 +82,16 @@
 | 紅線 | 排程只「發起任務」；任務內若要對外（發文/報名）仍走 `awaiting_approval` 待使用者批准，**不會自動對外**。 |
 | Timeout | 60–90 秒（一次最多處理 15 條、每條只是啟動背景任務） |
 
+### 8. opportunity-deadlines（機會島截止提醒）
+
+| | |
+|---|---|
+| URL | `<SITE>/api/cron/opportunity-deadlines?secret=<SECRET>` |
+| Method | GET |
+| Schedule | **每天一次**（建議台灣 09:00 → UTC `0 1 * * *`） |
+| 說明 | 掃使用者「我的航線」收藏的機會，距報名截止 30/14/7/3/1 天時發 in-app 鈴鐺 + LINE（綁定才送）。同機會 20h 內只通知一次。 |
+| Timeout | 90 秒 |
+
 ---
 
 ## cron-job.org 自動停用設定
@@ -115,4 +125,4 @@
 | `Authorization` | `Bearer <SECRET>` |
 | 或 `x-cron-secret` | `<SECRET>` |
 
-7 個 endpoint 全部都同時支援這三種認證方式（query / Bearer / x-cron-secret）、選一種用即可。
+8 個 endpoint 全部都同時支援這三種認證方式（query / Bearer / x-cron-secret）、選一種用即可。
