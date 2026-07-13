@@ -6,6 +6,7 @@ import { getSeoForPath } from "@/lib/seo-render";
 import { isIslandEnabled, isCreatorIslandEnabled } from "@/lib/app-settings";
 import { ChapterMap } from "@/components/home/ChapterMap";
 import { Hero } from "@/components/home/Hero";
+import { WorldZone } from "@/components/home/world";
 import { CareerPathSection } from "@/components/home/CareerPathSection";
 import { MascotIntro } from "@/components/home/MascotIntro";
 import { StageMap } from "@/components/home/StageMap";
@@ -39,15 +40,18 @@ export default async function HomePage() {
 
   return (
     <div>
-      <Hero
-        totalChapters={totalChapters}
-        totalLessons={totalLessons}
-        stageCount={stats.stageCount}
-        islandEnabled={islandEnabled}
-        creatorIslandEnabled={creatorIslandEnabled}
-      />
+      {/* 連續世界：Hero（黃昏）→ Stage Map（入夜）無縫銜接、日→夜背景 + 星空景深 */}
+      <WorldZone>
+        <Hero
+          totalChapters={totalChapters}
+          totalLessons={totalLessons}
+          stageCount={stats.stageCount}
+          islandEnabled={islandEnabled}
+          creatorIslandEnabled={creatorIslandEnabled}
+        />
+        <StageMap />
+      </WorldZone>
       <MascotIntro />
-      <StageMap />
       <section className="max-w-7xl mx-auto px-6 py-16 border-b border-border">
         <h2 className="text-3xl font-bold mb-2 inline-flex w-full items-center justify-center gap-2"><Map size={28} className="text-accent" /> {t("chapterMapHeading")}</h2>
         <p className="text-center text-fg-muted mb-8">{t("chapterMapSubtitle", { chapters: totalChapters, lessons: totalLessons })}</p>
