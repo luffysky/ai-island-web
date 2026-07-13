@@ -13,10 +13,20 @@ import { createSupabaseAdmin } from "./supabase-admin";
 
 const ENDPOINT = "https://api.line.me/v2/bot";
 
+// 通知分類 → 對應 profiles 的偏好欄（統一通知中心）。不給 category = 一律送（如綁定成功等系統訊息）。
+export type NotifCategory = "deadlines" | "subscriptions" | "agent" | "learning";
+const PREF_COL: Record<NotifCategory, string> = {
+  deadlines: "line_pref_deadlines",
+  subscriptions: "line_pref_subscriptions",
+  agent: "line_pref_agent",
+  learning: "line_pref_learning",
+};
+
 export type UserLineNotify = {
   userId: string;     // AI 島 user uuid（profiles.id）
   text: string;       // fallback 純文字（給 push)
   flex?: any;         // 可選 LINE Flex Message
+  category?: NotifCategory;  // 有給就查使用者該分類的 LINE 偏好、關了就不送
 };
 
 export async function notifyUserLine(opts: UserLineNotify): Promise<{ ok: boolean; reason?: string }> {
@@ -25,15 +35,17 @@ export async function notifyUserLine(opts: UserLineNotify): Promise<{ ok: boolea
   if (!token) return { ok: false, reason: "no_channel_token" };
 
   const admin = createSupabaseAdmin();
+  const prefCol = opts.category ? PREF_COL[opts.category] : null;
   const { data: profile } = await admin
     .from("profiles")
-    .select("line_user_id, line_notify_enabled")
+    .select(`line_user_id, line_notify_enabled${prefCol ? `, ${prefCol}` : ""}`)
     .eq("id", opts.userId)
     .maybeSingle();
 
   if (!profile) return { ok: false, reason: "user_not_found" };
   if (!(profile as any).line_user_id) return { ok: false, reason: "not_bound" };
   if ((profile as any).line_notify_enabled === false) return { ok: false, reason: "user_disabled" };
+  if (prefCol && (profile as any)[prefCol] === false) return { ok: false, reason: "category_disabled" };
 
   const lineUserId = (profile as any).line_user_id as string;
 

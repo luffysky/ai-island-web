@@ -6,6 +6,7 @@ import { BackgroundSection } from "./BackgroundSection";
 import { PreciseLocationToggle } from "@/components/PreciseLocationToggle";
 import { GdprSection } from "./GdprSection";
 import { LineBindSection } from "./LineBindSection";
+import { NotificationPrefs } from "./NotificationPrefs";
 import { DiscordBindSection } from "./DiscordBindSection";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { getTranslations } from "next-intl/server";
@@ -58,6 +59,7 @@ export default async function SettingsPage() {
         initialBound={!!profile.line_user_id}
         initialNotifyEnabled={profile.line_notify_enabled !== false}
       />
+      <NotificationPrefs />
       <DiscordBindSection initialBind={dcBind as any} />
       <PreciseLocationToggle />
       <GdprSection initialDeletedAt={profile.deleted_at ?? null} />

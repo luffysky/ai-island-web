@@ -143,7 +143,7 @@
 
 ### 14-2 批准流程搬到聊天平台（安全核心）
 - 🚧 **在 LINE/TG/Discord 內按鈕批准**：~~LINE 已做——LINE 發起的分身島任務要批准時，推一張帶「✅允許/❌取消」postback 按鈕的卡，按下即更新 `agent_approvals.decision`、分身島 waitForApproval 接手繼續（orchestrator `notifyApprovalToLine` + webhook `agent_approve` postback）（0713）~~；TG/Discord 待補（複用同模式）。
-- ⬜ **統一通知中心**：截止提醒 / 任務完成 / 需批准 統一推到使用者選的平台。
+- 🚧 **統一通知中心**：~~設定頁「LINE 通知偏好」——總開關 + 分類（截止提醒/機會訂閱/分身島任務/學習）逐項開關；`notifyUserLine` 加 `category` 統一查偏好、關了不送；profiles 加 4 欄（migration 已跑）。（0713）~~；Email/多平台選擇待補（目前 in-app 一律送、LINE 可分類控）。
 
 ### 14-3 Outbound：Agent 起草 → 批准 → 發布（社群發文）
 - ⬜ **YouTube**（community 貼文 / 影片描述 / 留言回覆，Data API）

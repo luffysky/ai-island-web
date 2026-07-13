@@ -371,7 +371,7 @@ async function notifyLineIfFromLine(taskId: string, userId: string): Promise<voi
     : `任務未完成：${task.error ?? "失敗"}`;
   const head = task.status === "succeeded" ? "🤖 分身島完成任務" : "🤖 分身島任務結束";
   const { notifyUserLine } = await import("@/lib/notify-user-line");
-  await notifyUserLine({ userId, text: `${head}\n\n${summary.slice(0, 1500)}\n\n看完整：${site}/agent?task=${taskId}` });
+  await notifyUserLine({ userId, category: "agent", text: `${head}\n\n${summary.slice(0, 1500)}\n\n看完整：${site}/agent?task=${taskId}` });
 }
 
 // LINE 發起的任務需要批准時→推 LINE 一張帶「允許/取消」postback 按鈕的卡（守紅線：對外動作在 LINE 也能一鍵放行）。
@@ -392,7 +392,7 @@ async function notifyApprovalToLine(userId: string, taskId: string, approvalId: 
       { label: "❌ 取消", postback: `action=agent_approve&id=${approvalId}&d=denied`, displayText: "已取消 ❌" },
     ],
   });
-  await notifyUserLine({ userId, text: `🔐 分身島需要你確認：${toolName}（在 LINE 按鈕或網站放行）`, flex });
+  await notifyUserLine({ userId, category: "agent", text: `🔐 分身島需要你確認：${toolName}（在 LINE 按鈕或網站放行）`, flex });
 }
 
 export function runAgentTaskDetached(taskId: string, userId: string, goal: string, maxSteps = 40, skill?: SkillCtx, extraTools?: AgentTool[], priorContext = ""): void {

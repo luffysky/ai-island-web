@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
     const title = dl === 1 ? `⏰ 明天截止：${o.name}` : `⏰ 剩 ${dl} 天截止：${o.name}`;
     const body = `你收藏的機會「${o.name}」報名截止 ${o.application_deadline}，剩 ${dl} 天。要不要現在準備？`;
     await pushUserNotif({ userId: r.user_id, kind: "system", title, body, link });
-    notifyUserLine({ userId: r.user_id, text: `${title}\n報名截止 ${o.application_deadline}（剩 ${dl} 天）\n${process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet"}${link}` }).catch(() => {});
+    notifyUserLine({ userId: r.user_id, category: "deadlines", text: `${title}\n報名截止 ${o.application_deadline}（剩 ${dl} 天）\n${process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet"}${link}` }).catch(() => {});
     sent++;
     results.push({ user: r.user_id.slice(0, 8), opp: o.name, days: dl });
   }
@@ -98,7 +98,7 @@ export async function GET(req: NextRequest) {
       const title = `🔔 ${matched.length} 個新機會符合你的訂閱`;
       const body = `符合「${s.label}」：\n${names}${matched.length > 5 ? `\n…等 ${matched.length} 個` : ""}`;
       await pushUserNotif({ userId: s.user_id, kind: "system", title, body, link: "/opportunities" });
-      notifyUserLine({ userId: s.user_id, text: `${title}\n${body}\n${site}/opportunities` }).catch(() => {});
+      notifyUserLine({ userId: s.user_id, category: "subscriptions", text: `${title}\n${body}\n${site}/opportunities` }).catch(() => {});
       subSent++;
     }
   }
