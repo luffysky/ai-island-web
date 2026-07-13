@@ -181,7 +181,7 @@
 - ~~**首次登入 5 分鐘問卷**（身分/擁有什麼/完成度/想參加類型）：機會島「我的機會檔案」(`opportunity_profiles` 表 + `/api/opportunities/profile` GET/PUT)，存一次→AI 幫我挑/適合度/生成素材全部自動帶入（詳情頁 server 端帶 `defaultAbout`）。（0713）~~
 - ⬜ **AI 聊天追問**理解使用者（文件標「最推」）。
 - ⬜ **能力圖譜**（你有什麼 vs 競賽需要什麼）。
-- ⬜ **機會訂閱**（追蹤條件「AI+台灣+免費+10萬+」，符合就推播）。
+- ~~**機會訂閱**（追蹤條件「關鍵字/分類/免費/最低獎金」，符合就推播）：`opportunity_subscriptions` 表 + `/api/opportunities/subscriptions` + `/opportunities` 訂閱 UI；比對併入 `opportunity-deadlines` cron（有新符合機會→in-app 鈴鐺 + LINE）。（0713）~~
 - ⬜ **AI 島專屬頁**（內部作品檔案自動對照所有競賽資格→新符合/倒數/缺件）。
 - ⬜ **推薦透明化**（附「不推薦+原因」）。
 

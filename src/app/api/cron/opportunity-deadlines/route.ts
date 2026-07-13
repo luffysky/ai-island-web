@@ -64,5 +64,44 @@ export async function GET(req: NextRequest) {
     results.push({ user: r.user_id.slice(0, 8), opp: o.name, days: dl });
   }
 
-  return NextResponse.json({ ok: true, routes: routes.length, sent, results });
+  // === 機會訂閱：有「新符合條件」的機會就推播（in-app + LINE）===
+  let subSent = 0;
+  const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
+  const { data: subs } = await admin.from("opportunity_subscriptions")
+    .select("id, user_id, label, keywords, categories, free_only, min_prize, last_checked_at").eq("enabled", true).limit(500);
+  if (subs && subs.length) {
+    // 一次撈近 30 天新增的 open/upcoming 機會，各訂閱在記憶體比對（省查詢）
+    const since = new Date(Date.now() - 30 * 86400_000).toISOString();
+    const { data: fresh } = await admin.from("opportunities")
+      .select("id, name, category, organizer, is_free, prize_amount, created_at")
+      .in("status", ["open", "upcoming"]).gte("created_at", since);
+    const pool = (fresh ?? []) as any[];
+    const nowIso = new Date().toISOString();
+    for (const s of subs) {
+      const cats = (s.categories as string[]) ?? [];
+      const kw = String(s.keywords ?? "").toLowerCase();
+      const matched = pool.filter((o) => {
+        if (o.created_at <= s.last_checked_at) return false;                 // 只算比上次檢查更新的
+        if (s.free_only && !o.is_free) return false;
+        if (s.min_prize != null && (o.prize_amount ?? 0) < Number(s.min_prize)) return false;
+        if (cats.length && !cats.some((c) => String(o.category ?? "").includes(c))) return false;
+        if (kw) {
+          const hay = `${o.name ?? ""} ${o.category ?? ""} ${o.organizer ?? ""}`.toLowerCase();
+          if (!hay.includes(kw)) return false;
+        }
+        return true;
+      });
+      // 不管有沒有中，都把 last_checked_at 往前推（避免下次重算舊的）
+      await admin.from("opportunity_subscriptions").update({ last_checked_at: nowIso }).eq("id", s.id);
+      if (!matched.length) continue;
+      const names = matched.slice(0, 5).map((o) => `• ${o.name}`).join("\n");
+      const title = `🔔 ${matched.length} 個新機會符合你的訂閱`;
+      const body = `符合「${s.label}」：\n${names}${matched.length > 5 ? `\n…等 ${matched.length} 個` : ""}`;
+      await pushUserNotif({ userId: s.user_id, kind: "system", title, body, link: "/opportunities" });
+      notifyUserLine({ userId: s.user_id, text: `${title}\n${body}\n${site}/opportunities` }).catch(() => {});
+      subSent++;
+    }
+  }
+
+  return NextResponse.json({ ok: true, routes: routes.length, sent, subscriptionsNotified: subSent, results });
 }

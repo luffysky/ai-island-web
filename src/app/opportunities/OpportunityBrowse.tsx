@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, Compass, ExternalLink, Bookmark, BookmarkCheck, AlertTriangle, CalendarClock, Trophy, Sparkles, Loader2, UserCog, ChevronDown, ChevronUp, Check } from "lucide-react";
+import { Search, Compass, ExternalLink, Bookmark, BookmarkCheck, AlertTriangle, CalendarClock, Trophy, Sparkles, Loader2, UserCog, ChevronDown, ChevronUp, Check, Bell, X } from "lucide-react";
 
 interface Opp {
   id: string; type: string; name: string; organizer?: string; country?: string; category?: string;
@@ -48,6 +48,33 @@ export function OpportunityBrowse() {
   const [profSaving, setProfSaving] = useState(false);
   const [profSaved, setProfSaved] = useState(false);
   const [hasProfile, setHasProfile] = useState(false);
+  // 機會訂閱（V2）
+  const [subs, setSubs] = useState<{ id: string; label: string }[]>([]);
+  const [subBusy, setSubBusy] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try { const r = await fetch("/api/opportunities/subscriptions"); if (r.ok) setSubs((await r.json()).subscriptions ?? []); } catch { /* ignore */ }
+    })();
+  }, []);
+
+  const subscribeCurrent = async () => {
+    if (subBusy) return;
+    setSubBusy(true);
+    try {
+      const r = await fetch("/api/opportunities/subscriptions", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ keywords: q.trim() || undefined, categories: [...cats], free_only: freeOnly }),
+      });
+      if (r.status === 401) { window.location.href = "/login?next=/opportunities"; return; }
+      const d = await r.json();
+      if (r.ok && d.subscription) setSubs((cur) => [{ id: d.subscription.id, label: d.subscription.label }, ...cur]);
+    } catch { /* ignore */ } finally { setSubBusy(false); }
+  };
+  const deleteSub = async (id: string) => {
+    setSubs((cur) => cur.filter((s) => s.id !== id));
+    await fetch(`/api/opportunities/subscriptions?id=${id}`, { method: "DELETE" }).catch(() => {});
+  };
 
   useEffect(() => {
     (async () => {
@@ -239,6 +266,20 @@ export function OpportunityBrowse() {
           <button onClick={() => setOnline((v) => !v)} title="全程線上、不用到現場" className={`text-xs rounded-full px-2.5 py-1 border ${online ? "bg-emerald-600 border-emerald-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>🌐 線上</button>
           <button onClick={() => setStatus(status === "open" ? "" : "open")} className={`text-xs rounded-full px-2.5 py-1 border ${status === "open" ? "bg-emerald-600 border-emerald-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>開放中</button>
         </div>
+      </div>
+
+      {/* 機會訂閱（V2）：把目前篩選條件存成訂閱、有新符合的機會就推播 */}
+      <div className="flex flex-wrap items-center gap-2 mb-5 -mt-2">
+        <button onClick={subscribeCurrent} disabled={subBusy} title="用目前的搜尋+分類+免費條件建立訂閱"
+          className="inline-flex items-center gap-1.5 text-xs rounded-full border border-violet-500/40 text-violet-600 dark:text-violet-400 px-3 py-1.5 hover:bg-violet-500/10 disabled:opacity-50">
+          {subBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Bell className="w-3.5 h-3.5" />} 訂閱目前條件（有新機會就通知我）
+        </button>
+        {subs.map((s) => (
+          <span key={s.id} className="inline-flex items-center gap-1 text-[11px] rounded-full bg-black/[0.04] dark:bg-white/[0.06] px-2.5 py-1 text-black/60 dark:text-white/60">
+            🔔 {s.label}
+            <button onClick={() => deleteSub(s.id)} className="hover:text-rose-500" title="取消訂閱"><X className="w-3 h-3" /></button>
+          </span>
+        ))}
       </div>
 
       {/* 清單 */}
