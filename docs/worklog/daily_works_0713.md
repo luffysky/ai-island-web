@@ -59,7 +59,23 @@
 - **RWD**：排程表單 `flex flex-wrap` + select 響應式；清單 row `flex` 右側動作鈕 shrink-0，手機不破版。
 - **安全**：cron 走 `verifyCronAuth`（三種認證）；排程 API 全 `user_id` 過濾 + RLS；對外動作 0。
 
+## 今日續（0713 深夜）— 連續推進 todo（林董離開、自動做）
+14. **辦公室待批准佇列聚合**：`/api/agent/approvals` GET 跨任務列所有 pending；辦公室「等你確認」區一鍵允許/取消、樂觀更新。
+15. **辦公室即時刷新**：前景分頁 + 有任務在跑/有待批准時每 10 秒刷新任務狀態與待批准（看員工在工作）。→ 辦公室 §10 儀表板 MVP+進階完成。
+16. **機會島篩選 chips 改多選**：分類 chips 由單選改 Set 多選＝OR；成本/狀態維持獨立 toggle＝AND。API `category` 收逗號分隔→`.or(ilike)`，對真 DB 驗證（AI+創業 7 筆）。（191.jpg）
+17. **機會島 V3「幫你贏」AI 三件套**（詳情頁，皆 `completeForUsage("agent_core")`、禁編造、需登入）：
+    - **AI 讀規則** `RulesSummary` + `/api/opportunities/[id]/rules-summary`：讀本頁或貼官網全文→一句話/資格/文件/日期/獎金/評分/該注意的坑。
+    - **AI 適合度/缺件分析** `FitAnalysis` + `/fit-analysis`：描述自己→高/中/低適合度 + 你符合的 + 缺件 + 建議補強 + 老實說。
+    - **AI 生成報名素材** `GenerateMaterials` + `/generate`：30秒電梯簡報/Pitch大綱/一頁商業計畫/報名自我介紹，可複製。
+18. **機會島↔分身島串接**：詳情頁「丟給分身島幫我準備」→ 預填指令到 `/agent`（列文件清單/日期待辦/下一步，對外先問）。重用 `?goal=` 深連結、零新後端。
+19. **機會截止提醒 cron** `/api/cron/opportunity-deadlines`：掃「我的航線」收藏機會，距截止 30/14/7/3/1 天發 in-app 鈴鐺 + LINE（綁定才送），同機會 20h 去重。登記 cron job #8。
+
+### 收尾檢查（第四輪）
+- 每個功能都 tsc 0 + next build 0 過才 commit；vitest 維持 128 綠（無新測試邏輯）。
+- 全部**純加法**：新增 6 個 API route + 4 個 client 元件 + 1 cron，**無改既有寫入邏輯**（唯一重構是 launch.ts 已於前一批驗過）。
+- 安全：詳情頁 AI 工具全需登入；截止提醒只發 in-app/LINE（LINE 綁定才送）；對外動作 0。
+
 ## 待辦
-👉 **全部見 `docs/todo/todo_list_0713.md`**（分身島 L1–L5✅/桌面/手機/Android/安全/MCP/AI 員工辦公室 MVP+排程🚧/省 token；機會島 V1✅/V2–V3 部分/V4–V5⬜/後台複刻⬜；全站 AI 記帳 P0–P4/辭典/語言島）。
-建議下一步（同檔第四節）：① 辦公室再進階（產出佇列一鍵批准聚合 + 排程完成 LINE 通知 + 看員工工作動畫）② 機會島 V2/V3 主幹 ③ 後台複刻 AI 島專屬機會雷達。
-⚠️ **部署後手動一步**：到 cron-job.org 依 `docs/setup/cron-setup.md` job #7 加 `agent-schedules` 排程（每 15 分），排程才會真的自動跑。
+👉 **全部見 `docs/todo/todo_list_0713.md`**（含最末 §五「需要林董自己操作」清單）。
+建議下一步：機會島 V2（首次問卷→profile→recommend、機會訂閱）、後台複刻機會雷達、全站 AI 記帳 P0（P0 建議林董在線時做、要驗證）。
+⚠️ **部署後手動**：cron-job.org 加 job #7（agent-schedules 每 15 分）+ job #8（opportunity-deadlines 每天 09:00）。詳見 `docs/todo/todo_list_0713.md` §五 與 `docs/setup/cron-setup.md`。
