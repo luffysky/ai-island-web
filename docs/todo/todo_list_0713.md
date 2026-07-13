@@ -198,11 +198,12 @@
 - ⬜ **練習階梯**（電梯簡報 30 秒→1/3/5/10 分鐘；角色扮演）+ 語速/自信/口頭禪/超時偵測。
 - ⬜ **AI 學習閉環**（一直輸→分析原因→推薦 AI 島課程）+ **AI 路線圖/生涯**（三年創業逐年規劃）。
 
-## 4. V4 智慧雷達 ⬜（需真實來源 + 人工覆核，最後做）
-- ⬜ 全自動爬蟲（政府/獎金獵人/大學/新創基地/國際/企業活動頁；先 API/RSS/sitemap/Email、爬蟲當最後手段守 robots）。
+## 4. V4 智慧雷達 🚧（安全基礎已建，0713）
+- ~~**安全版雷達基礎**：`opportunity_sources`（curated RSS/API 來源）+ `opportunity_candidates`（待審佇列）表（RLS 後台專用，migration 已跑）；後台 `/admin/opportunities/sources`（加/開關/刪來源 + 待審佇列核准/拒絕）；cron `/api/cron/opportunity-radar`（抓 enabled RSS/Atom → 進 pending、同 URL 去重、**不自動上線**）；RSS 解析 `src/lib/rss-parse.ts`（無相依、4 單元測試）。核准＝insert opportunities 標 unverified。~~
+- ⬜ 只做了 RSS/Atom；**API/sitemap/爬蟲來源類型**待補（爬蟲守 robots、當最後手段）。
 - ⬜ 三層 hash 變動偵測（raw_html/normalized_text/structured_fields，只結構化欄位變才通知）。
-- ⬜ AI 結構化抽取（名稱/主辦/起訖/獎金/報名費/資格/文件/連結）+ 每欄存原文證據 + 信心分數 + 人工確認。
-- ⬜ PDF 解析 + 版本比較；來源信心分數 / 人工覆核佇列。
+- ⬜ AI 結構化抽取（名稱/主辦/起訖/獎金/報名費/資格/文件/連結）+ 每欄存原文證據 + 信心分數（`candidates.parsed`/`confidence` 欄已預留）。
+- ⬜ PDF 解析 + 版本比較；來源信心分數自動化。
 - ⬜ Cron 分頻（官方 6h/已開放 3h/距截止 14 天內 1h…）+ 通知任務層（新競賽/異動/剩 30·14·7·3·1 天/缺件/自動建投件任務）。
 - ⬜ 監控（Sentry + crawl_logs）。
 
@@ -223,7 +224,7 @@
 
 ## 7. 資料表 / 適合度引擎
 - ~~opportunities（含成本欄位）、opportunity_routes。~~
-- ⬜ opportunity_sources（爬蟲來源 etag/hash）、opportunity_changes（欄位級變動）、user_portfolio（作品/能力圖譜）、opportunity_subscriptions、submission_tasks。
+- 🚧 資料表：~~opportunity_sources（來源）、opportunity_candidates（待審佇列）已建（0713）~~；opportunity_changes（欄位級變動 hash）、user_portfolio（作品/能力圖譜）、opportunity_subscriptions、submission_tasks 待建。
 - 🚧 `ai_island_fit_score` 欄位已建；**適合度規則引擎**（+AI20/+教育20/-限學生40…換算 85=必投）未實作。
 - ⬜ 更多真實競賽資料（人工核實改 verified；目前 8 筆全 unverified）。
 
@@ -286,6 +287,11 @@
 ## 立即（這兩個 cron 不加，剛做好的排程/截止提醒不會自動跑）
 - ⬜ **cron-job.org 加 job #7「agent-schedules」**：`GET https://ai-island-web.snowrealm.pet/api/cron/agent-schedules?secret=<CRON_SECRET>`、排程 `*/15 * * * *`（每 15 分）。設定照 `docs/setup/cron-setup.md`。**沒加這個 → 辦公室排程只是存著、不會到點自動執行。**
 - ⬜ **cron-job.org 加 job #8「opportunity-deadlines」**：`GET https://ai-island-web.snowrealm.pet/api/cron/opportunity-deadlines?secret=<CRON_SECRET>`、排程 `0 1 * * *`（每天台灣 09:00）。**沒加這個 → 機會截止提醒不會發。**
+- ⬜ **cron-job.org 加 job #9「opportunity-radar」**：`GET https://ai-island-web.snowrealm.pet/api/cron/opportunity-radar?secret=<CRON_SECRET>`、排程 `0 23 * * *`（每天台灣 07:00）。**沒加來源＋沒加這個 → 雷達不會抓。**
+
+## 機會雷達要你做的（人工覆核鏈的「人」）
+- ⬜ **加真實來源**：後台 `/admin/opportunities/sources` 貼你信任的官方 **RSS/Atom** 網址（政府補助、大學競賽、獎金獵人站…）。只吃 RSS/Atom；沒有 RSS 的站先略過（API/爬蟲之後才支援）。
+- ⬜ **定期審佇列**：cron 抓進來的候選在同頁「待審佇列」，你按「核准上線」才會進機會島（標 unverified，可再補獎金/截止/分類）。**不核准就不會出現在前台**——這是防 AI 亂放假資料的關鍵人工關卡。
 
 ## Zeabur 要設的環境變數（Service → Variables）
 - ⬜ **`ENABLE_SERVER_BROWSER=1`**（L2 伺服器瀏覽器）：`docker.yml` 已設 image 裝 Chromium；**這個 runtime env 沒設 → 裝了也不會啟用**（browser.render 會回「未啟用」、走 web.fetch 降級）。設完要 **Restart / Redeploy** 才生效。

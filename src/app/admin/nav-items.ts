@@ -26,6 +26,7 @@ export const ADMIN_NAV_TOP: AdminNavItem[] = [
   { href: "/admin/idea-fragments", label: "💡 給我一個點子" },
   { href: "/admin/grant", label: "🏆 補助 & 競賽作戰室" },
   { href: "/admin/opportunities", label: "🧭 機會雷達（AI 島該投的）" },
+  { href: "/admin/opportunities/sources", label: "📡 雷達來源 / 待審" },
 ];
 
 export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
