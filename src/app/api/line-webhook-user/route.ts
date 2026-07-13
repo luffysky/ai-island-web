@@ -523,6 +523,7 @@ function cardHelp(): FlexMessage {
     meta: [
       { label: "💬", value: "聊天問 AI 學員導師" },
       { label: "🤖 /分身 指令", value: "叫分身島幫你做事（背景執行）" },
+      { label: "☀️ 建議", value: "今天值得做的 3 件事" },
       { label: "🧭 找機會 XX", value: "搜尋競賽/補助/機會" },
       { label: "🧭 我的機會", value: "看收藏的機會 + 截止倒數" },
       { label: "/today", value: "今日學習狀況" },
@@ -1859,6 +1860,24 @@ export async function POST(req: NextRequest) {
         } catch (e: any) {
           await lineReply(replyToken, buildSimpleCard({ emoji: "🤖", title: "分身島啟動失敗", accentColor: "#ef4444", body: String(e?.message ?? e).slice(0, 200) }), token, QUICK_REPLY);
         }
+        continue;
+      }
+
+      // 3.491. 今日 3 件事：建議 / 今天做什麼 / /brief
+      if (["建議", "今日建議", "今天做什麼", "今天要做什麼", "/brief", "3件事", "三件事"].includes(text)) {
+        const admin = createSupabaseAdmin();
+        const { data: prof } = await admin.from("profiles").select("id").eq("line_user_id", userId).maybeSingle();
+        if (!prof) { await lineReply(replyToken, cardUnbound(userId, "今日 3 件事建議"), token, QUICK_REPLY); continue; }
+        const { buildDailyBrief } = await import("@/lib/daily-brief");
+        const brief = await buildDailyBrief((prof as any).id).catch(() => [] as string[]);
+        await lineReply(replyToken, buildSimpleCard({
+          emoji: "☀️", title: "今天值得做的 3 件事", accentColor: USER_ACCENT,
+          body: (brief.length ? brief : ["🧭 逛機會島", "📚 學一課", "🤖 叫分身島幫你查資料"]).map((b, i) => `${i + 1}. ${b}`).join("\n\n"),
+          buttons: [
+            { label: "🧭 機會島", uri: `${SITE_URL}/opportunities`, primary: true },
+            { label: "🏢 我的辦公室", uri: `${SITE_URL}/agent/office` },
+          ],
+        }), token, QUICK_REPLY);
         continue;
       }
 

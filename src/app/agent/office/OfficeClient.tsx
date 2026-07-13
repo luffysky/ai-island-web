@@ -44,6 +44,7 @@ export function OfficeClient() {
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [approvals, setApprovals] = useState<Approval[]>([]);
+  const [brief, setBrief] = useState<string[]>([]);
   const [kpi, setKpi] = useState<{ total: number; successRate: number | null; avgSteps: number; interventionRate: number } | null>(null);
   const [decidingId, setDecidingId] = useState<string>("");
   const [loading, setLoading] = useState(true);
@@ -69,13 +70,14 @@ export function OfficeClient() {
   useEffect(() => {
     let alive = true;
     (async () => {
-      const [sk, dv, tk, sc, ap, kp] = await Promise.all([
+      const [sk, dv, tk, sc, ap, kp, br] = await Promise.all([
         fetch("/api/agent/skills").then((r) => (r.ok ? r.json() : { skills: [] })).catch(() => ({ skills: [] })),
         fetch("/api/agent/devices").then((r) => (r.ok ? r.json() : { devices: [] })).catch(() => ({ devices: [] })),
         fetch("/api/agent/tasks").then((r) => (r.ok ? r.json() : { tasks: [] })).catch(() => ({ tasks: [] })),
         fetch("/api/agent/schedules").then((r) => (r.ok ? r.json() : { schedules: [] })).catch(() => ({ schedules: [] })),
         fetch("/api/agent/approvals").then((r) => (r.ok ? r.json() : { approvals: [] })).catch(() => ({ approvals: [] })),
         fetch("/api/agent/kpi").then((r) => (r.ok ? r.json() : null)).catch(() => null),
+        fetch("/api/agent/daily-brief").then((r) => (r.ok ? r.json() : { items: [] })).catch(() => ({ items: [] })),
       ]);
       if (!alive) return;
       setSkills(sk.skills ?? []);
@@ -84,6 +86,7 @@ export function OfficeClient() {
       setSchedules(sc.schedules ?? []);
       setApprovals(ap.approvals ?? []);
       setKpi(kp && typeof kp.total === "number" ? kp : null);
+      setBrief(Array.isArray(br?.items) ? br.items : []);
       setLoading(false);
     })();
     // 每 10 秒刷新「工作中的任務 + 待批准佇列」（看員工在工作 / 隨時冒出的待批准）。
@@ -166,6 +169,18 @@ export function OfficeClient() {
           </Link>
         </div>
       </div>
+
+      {/* 今日 3 件事（規則式建議、零 AI 成本）*/}
+      {brief.length > 0 && (
+        <div className="rounded-2xl border border-violet-500/25 bg-violet-500/[0.04] p-4 mb-4">
+          <div className="text-sm font-semibold mb-2 flex items-center gap-1.5 text-violet-700 dark:text-violet-300"><Sparkles className="w-4 h-4" /> 今天值得做的 3 件事</div>
+          <ol className="space-y-1.5">
+            {brief.map((b, i) => (
+              <li key={i} className="text-sm flex gap-2"><span className="text-violet-500 font-semibold shrink-0">{i + 1}.</span><span>{b}</span></li>
+            ))}
+          </ol>
+        </div>
+      )}
 
       {/* 狀態列（對標 Genspark 右側狀態面板）*/}
       <div className="grid sm:grid-cols-3 gap-3 mb-6">
