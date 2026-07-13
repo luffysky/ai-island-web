@@ -202,7 +202,7 @@
 - ~~**安全版雷達基礎**：`opportunity_sources`（curated RSS/API 來源）+ `opportunity_candidates`（待審佇列）表（RLS 後台專用，migration 已跑）；後台 `/admin/opportunities/sources`（加/開關/刪來源 + 待審佇列核准/拒絕）；cron `/api/cron/opportunity-radar`（抓 enabled RSS/Atom → 進 pending、同 URL 去重、**不自動上線**）；RSS 解析 `src/lib/rss-parse.ts`（無相依、4 單元測試）。核准＝insert opportunities 標 unverified。~~
 - ⬜ 只做了 RSS/Atom；**API/sitemap/爬蟲來源類型**待補（爬蟲守 robots、當最後手段）。
 - ⬜ 三層 hash 變動偵測（raw_html/normalized_text/structured_fields，只結構化欄位變才通知）。
-- ⬜ AI 結構化抽取（名稱/主辦/起訖/獎金/報名費/資格/文件/連結）+ 每欄存原文證據 + 信心分數（`candidates.parsed`/`confidence` 欄已預留）。
+- 🚧 AI 結構化抽取：~~後台審佇列「🤖 AI 幫填」讀候選原文頁→抽 分類/截止/獎金/主辦/免費，核准時一起帶入（`/api/admin/opportunities/candidates/extract`，禁編造 null）（0713）~~；每欄存原文證據 + 信心分數（`parsed`/`confidence` 欄已預留、未填）待補。
 - ⬜ PDF 解析 + 版本比較；來源信心分數自動化。
 - ⬜ Cron 分頻（官方 6h/已開放 3h/距截止 14 天內 1h…）+ 通知任務層（新競賽/異動/剩 30·14·7·3·1 天/缺件/自動建投件任務）。
 - ⬜ 監控（Sentry + crawl_logs）。

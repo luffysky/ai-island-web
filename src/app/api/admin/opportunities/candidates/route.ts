@@ -42,11 +42,12 @@ export async function POST(req: NextRequest) {
   const insert: Record<string, any> = {
     type: "competition",
     name: String(ov.name ?? cand.raw_title).slice(0, 300),
+    organizer: ov.organizer ? String(ov.organizer).slice(0, 120) : null,
     official_url: cand.raw_url || null,
     description: (ov.description ?? cand.raw_summary ?? null),
     category: ov.category ? String(ov.category).slice(0, 40) : null,
     prize_text: ov.prize_text ? String(ov.prize_text).slice(0, 200) : null,
-    application_deadline: ov.application_deadline || null,
+    application_deadline: (typeof ov.application_deadline === "string" && /^\d{4}-\d{2}-\d{2}$/.test(ov.application_deadline)) ? ov.application_deadline : null,
     is_free: typeof ov.is_free === "boolean" ? ov.is_free : true,
     status: "open",
     source_confidence: "unverified",

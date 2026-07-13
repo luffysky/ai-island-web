@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Rss, Plus, Trash2, Power, Check, X, ExternalLink, Loader2, AlertTriangle, RefreshCw } from "lucide-react";
+import { Rss, Plus, Trash2, Power, Check, X, ExternalLink, Loader2, AlertTriangle, RefreshCw, Sparkles } from "lucide-react";
 
 interface Source { id: string; name: string; url: string; kind: string; category_hint?: string | null; enabled: boolean; last_fetched_at?: string | null; last_status?: string | null; last_count?: number | null; notes?: string | null; }
 interface Candidate { id: string; source_name?: string | null; raw_title: string; raw_url?: string | null; raw_summary?: string | null; raw_published_at?: string | null; created_at: string; }
@@ -21,6 +21,9 @@ export function RadarClient() {
   // 每張候選卡的分類覆寫 + 忙碌狀態
   const [catOverride, setCatOverride] = useState<Record<string, string>>({});
   const [busyId, setBusyId] = useState("");
+  // AI 抽取結果（供核准時當 overrides）
+  const [sug, setSug] = useState<Record<string, { category: string | null; application_deadline: string | null; prize_text: string | null; is_free: boolean | null; organizer: string | null }>>({});
+  const [extractingId, setExtractingId] = useState("");
 
   const load = async () => {
     const [s, c] = await Promise.all([
@@ -60,13 +63,32 @@ export function RadarClient() {
     await fetch(`/api/admin/opportunities/sources?id=${id}`, { method: "DELETE" }).catch(() => {});
   };
 
+  const aiExtract = async (id: string) => {
+    if (extractingId) return;
+    setExtractingId(id);
+    try {
+      const r = await fetch("/api/admin/opportunities/candidates/extract", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }),
+      });
+      const d = await r.json();
+      if (r.ok && d.suggestion) {
+        setSug((m) => ({ ...m, [id]: d.suggestion }));
+        if (d.suggestion.category) setCatOverride((m) => ({ ...m, [id]: d.suggestion.category }));
+      }
+    } catch { /* ignore */ } finally { setExtractingId(""); }
+  };
+
   const review = async (id: string, action: "approve" | "reject") => {
     if (busyId) return;
     setBusyId(id);
     try {
+      const s = sug[id];
+      const overrides = action === "approve"
+        ? { category: catOverride[id] || s?.category || undefined, application_deadline: s?.application_deadline || undefined, prize_text: s?.prize_text || undefined, is_free: s?.is_free ?? undefined, organizer: s?.organizer || undefined }
+        : undefined;
       const r = await fetch("/api/admin/opportunities/candidates", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, action, overrides: action === "approve" && catOverride[id] ? { category: catOverride[id] } : undefined }),
+        body: JSON.stringify({ id, action, overrides }),
       });
       if (r.ok) { setCandidates((cur) => cur.filter((x) => x.id !== id)); setPendingCount((n) => Math.max(0, n - 1)); }
     } catch { /* ignore */ } finally { setBusyId(""); }
@@ -139,11 +161,23 @@ export function RadarClient() {
                 {c.source_name && <div className="text-[11px] text-fg-muted mt-0.5">來源：{c.source_name}{c.raw_published_at ? ` · ${new Date(c.raw_published_at).toLocaleDateString("zh-TW")}` : ""}</div>}
                 {c.raw_summary && <div className="text-xs text-fg-muted mt-1 line-clamp-3">{c.raw_summary}</div>}
                 {c.raw_url && <a href={c.raw_url} target="_blank" rel="noreferrer" className="text-[11px] text-accent hover:underline inline-flex items-center gap-1 mt-1 break-all">看原文 <ExternalLink className="w-3 h-3 shrink-0" /></a>}
+                {sug[c.id] && (
+                  <div className="mt-2 text-[11px] text-fg-muted flex flex-wrap gap-x-3 gap-y-0.5 rounded-lg bg-accent/5 px-2 py-1.5">
+                    <span className="text-accent font-medium">🤖 AI 讀原文抽到：</span>
+                    {sug[c.id].category && <span>分類：{sug[c.id].category}</span>}
+                    {sug[c.id].application_deadline && <span>截止：{sug[c.id].application_deadline}</span>}
+                    {sug[c.id].prize_text && <span>獎金：{sug[c.id].prize_text}</span>}
+                    {sug[c.id].organizer && <span>主辦：{sug[c.id].organizer}</span>}
+                    {sug[c.id].is_free != null && <span>{sug[c.id].is_free ? "免費" : "需報名費"}</span>}
+                    <span className="text-amber-600 dark:text-amber-400">（核准會一起帶入，仍請核對）</span>
+                  </div>
+                )}
                 <div className="flex flex-wrap items-center gap-2 mt-2.5">
                   <input value={catOverride[c.id] ?? ""} onChange={(e) => setCatOverride((m) => ({ ...m, [c.id]: e.target.value }))} placeholder="分類（選填）" className="rounded-lg border border-border bg-bg-elevated px-2 py-1 text-xs w-32" />
+                  <button onClick={() => aiExtract(c.id)} disabled={!!extractingId} title="AI 讀原文、抽出截止/獎金/分類" className="inline-flex items-center gap-1 text-xs rounded-lg border border-accent/40 text-accent px-2.5 py-1.5 hover:bg-accent/10 disabled:opacity-50">{extractingId === c.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />} AI 幫填</button>
                   <button onClick={() => review(c.id, "approve")} disabled={!!busyId} className="inline-flex items-center gap-1 text-xs rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 disabled:opacity-50"><Check className="w-3.5 h-3.5" /> 核准上線</button>
                   <button onClick={() => review(c.id, "reject")} disabled={!!busyId} className="inline-flex items-center gap-1 text-xs rounded-lg border border-border px-2.5 py-1.5 hover:bg-bg-elevated disabled:opacity-50"><X className="w-3.5 h-3.5" /> 拒絕</button>
-                  <span className="text-[10px] text-fg-muted">核准＝進機會島（標 unverified，可到列表再補欄位）</span>
+                  <span className="text-[10px] text-fg-muted">核准＝進機會島（標 unverified）</span>
                 </div>
               </div>
             ))}
