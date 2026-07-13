@@ -114,7 +114,7 @@
 - 🚧 **Embedding 先向量檢索再 LLM**（站內有 embeddings，agent 任務 RAG 未接）。
 - ⬜ **Diff 只讀變動**（呼應機會島三層 hash）。
 - ⬜ **Event-driven + Sleep + 每 Agent 每日 Budget 上限**。
-- 🚧 **成本/ROI Dashboard**（`/api/agent/kpi` 有骨架；「花 2 元找到百萬競賽」效率排行/省錢模式未做）。
+- 🚧 **成本/ROI Dashboard**（`/api/agent/kpi` 有骨架；~~辦公室已顯示分身表現：成功率/平均步數/介入率/任務數（0713）~~；成本/「花 2 元找到百萬競賽」效率排行/省錢模式未做）。
 - ⬜ **AI COO**（不做事、只拆任務/派工/選模型/控預算/重用快取）。
 - ⬜ **省錢模式三檔**（快速便宜/平衡/最高品質）使用者自選。
 - ⬜ **Cost-per-Task benchmark 實測**（對外宣稱「比 ChatGPT 省 X%」前必先實測）。

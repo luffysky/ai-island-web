@@ -44,6 +44,7 @@ export function OfficeClient() {
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [approvals, setApprovals] = useState<Approval[]>([]);
+  const [kpi, setKpi] = useState<{ total: number; successRate: number | null; avgSteps: number; interventionRate: number } | null>(null);
   const [decidingId, setDecidingId] = useState<string>("");
   const [loading, setLoading] = useState(true);
   // 新增排程表單
@@ -68,12 +69,13 @@ export function OfficeClient() {
   useEffect(() => {
     let alive = true;
     (async () => {
-      const [sk, dv, tk, sc, ap] = await Promise.all([
+      const [sk, dv, tk, sc, ap, kp] = await Promise.all([
         fetch("/api/agent/skills").then((r) => (r.ok ? r.json() : { skills: [] })).catch(() => ({ skills: [] })),
         fetch("/api/agent/devices").then((r) => (r.ok ? r.json() : { devices: [] })).catch(() => ({ devices: [] })),
         fetch("/api/agent/tasks").then((r) => (r.ok ? r.json() : { tasks: [] })).catch(() => ({ tasks: [] })),
         fetch("/api/agent/schedules").then((r) => (r.ok ? r.json() : { schedules: [] })).catch(() => ({ schedules: [] })),
         fetch("/api/agent/approvals").then((r) => (r.ok ? r.json() : { approvals: [] })).catch(() => ({ approvals: [] })),
+        fetch("/api/agent/kpi").then((r) => (r.ok ? r.json() : null)).catch(() => null),
       ]);
       if (!alive) return;
       setSkills(sk.skills ?? []);
@@ -81,6 +83,7 @@ export function OfficeClient() {
       setTasks(tk.tasks ?? []);
       setSchedules(sc.schedules ?? []);
       setApprovals(ap.approvals ?? []);
+      setKpi(kp && typeof kp.total === "number" ? kp : null);
       setLoading(false);
     })();
     // 每 10 秒刷新「工作中的任務 + 待批准佇列」（看員工在工作 / 隨時冒出的待批准）。
@@ -206,6 +209,16 @@ export function OfficeClient() {
           </div>
         </div>
       </div>
+
+      {/* 分身表現（有完成過任務才顯示）*/}
+      {kpi && kpi.total > 0 && kpi.successRate != null && (
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-black/50 dark:text-white/50 mb-5 -mt-2">
+          <span>分身表現：成功率 <b className="text-emerald-600 dark:text-emerald-400">{kpi.successRate}%</b></span>
+          <span>· 平均 {kpi.avgSteps} 步/任務</span>
+          <span>· 你介入 {kpi.interventionRate}%</span>
+          <span>· 共 {kpi.total} 個任務</span>
+        </div>
+      )}
 
       {/* 待批准佇列（有才顯示；對外/寫入動作在這裡一鍵放行）*/}
       {approvals.length > 0 && (
