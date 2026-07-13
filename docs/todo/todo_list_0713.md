@@ -37,7 +37,7 @@
 - ~~對話串 `agent_threads`（多 task 串連續對話、planNext 帶前文）。~~
 - ~~長期記憶 `agent_memory`（跨對話記得你，fact/preference/skill/project/goal，UI 可看可刪）。~~
 - ~~回合收尾抽取事實 + turn_summary（`summarize-memories` cron）。~~
-- ⬜ **pgvector 跨對話語意檢索**（「像上次那個活動再來一版」拉舊對話；embedding 欄已預留）。
+- ~~**pgvector 跨對話語意檢索**：`agent_tasks.embedding vector(1536)` + `match_agent_tasks()` 函式（migration 已跑）；`launchAgentTask` 每次把目標轉向量、撈相似度≥0.72 的過去成功任務當 priorContext（跨對話記得做過什麼、別重問），並存向量供未來檢索。用系統 OpenAI key、沒 key 靜默略過。（0713）~~
 - ⬜ **能力圖譜（越用越懂你）**：跨對話累積技能/作品/目標/資源，每次自動帶入。
 - 🐛 **Task #209「Agent 沒記憶」**：已由 thread+memory 解掉，待實測確認關閉。
 

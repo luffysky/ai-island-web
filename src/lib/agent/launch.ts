@@ -77,10 +77,26 @@ export async function launchAgentTask(opts: {
     if (lines) turnsBlock = `本串先前對話（延續脈絡；若這次省略主詞/條件，沿用這裡講過的）：\n${lines}`;
   }
 
-  const priorContext = [memoryBlock, turnsBlock].filter(Boolean).join("\n\n");
+  // pgvector RAG：把目標轉向量，撈「語意相似的過去成功任務」當參考（跨對話記得你做過什麼）。
+  // 順便把向量存到這次任務，之後的任務才撈得到它。OpenAI key 沒設/失敗 → 靜默略過、不影響主流程。
+  let ragBlock = "";
+  let goalVec: string | null = null;
+  try {
+    const { generateEmbedding, toPgVector } = await import("@/lib/embeddings");
+    const emb = await generateEmbedding(goal);
+    goalVec = toPgVector(emb.embedding);
+    const { data: sim } = await admin.rpc("match_agent_tasks", { p_user_id: userId, p_embedding: goalVec, p_exclude_thread: threadId, p_limit: 3 });
+    const useful = ((sim as any[]) ?? []).filter((s) => (s.similarity ?? 0) >= 0.72 && s.turn_summary);
+    if (useful.length) {
+      ragBlock = "你以前做過的相關任務（可參考做法/結論、別重問已知的）：\n" +
+        useful.map((s) => `你：${s.goal}\n分身：${String(s.turn_summary).slice(0, 300)}`).join("\n\n");
+    }
+  } catch { /* 無 embedding key / 失敗 → 略過 RAG */ }
+
+  const priorContext = [memoryBlock, turnsBlock, ragBlock].filter(Boolean).join("\n\n");
 
   const { data: task, error } = await admin.from("agent_tasks")
-    .insert({ user_id: userId, goal, max_steps: maxSteps, status: "planning", skill_id: skillId, thread_id: threadId })
+    .insert({ user_id: userId, goal, max_steps: maxSteps, status: "planning", skill_id: skillId, thread_id: threadId, embedding: goalVec })
     .select("id").single();
   if (error || !task) return { error: error?.message ?? "建任務失敗" };
 
