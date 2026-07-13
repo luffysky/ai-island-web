@@ -284,10 +284,10 @@
 
 > Claude 自動做程式＋push＋跑 migration，但以下是**要你本人動手**的（外部服務設定、金鑰、審核）。做完可劃線。
 
-## 立即（這兩個 cron 不加，剛做好的排程/截止提醒不會自動跑）
-- ⬜ **cron-job.org 加 job #7「agent-schedules」**：`GET https://ai-island-web.snowrealm.pet/api/cron/agent-schedules?secret=<CRON_SECRET>`、排程 `*/15 * * * *`（每 15 分）。設定照 `docs/setup/cron-setup.md`。**沒加這個 → 辦公室排程只是存著、不會到點自動執行。**
-- ⬜ **cron-job.org 加 job #8「opportunity-deadlines」**：`GET https://ai-island-web.snowrealm.pet/api/cron/opportunity-deadlines?secret=<CRON_SECRET>`、排程 `0 1 * * *`（每天台灣 09:00）。**沒加這個 → 機會截止提醒不會發。**
-- ⬜ **cron-job.org 加 job #9「opportunity-radar」**：`GET https://ai-island-web.snowrealm.pet/api/cron/opportunity-radar?secret=<CRON_SECRET>`、排程 `0 23 * * *`（每天台灣 07:00）。**沒加來源＋沒加這個 → 雷達不會抓。**
+## 立即（cron）
+- ~~**cron-job.org job #7「agent-schedules」**（每 15 分）— 0713 已設定並實測 200 `{"ok":true,"due":0}`。~~
+- ~~**cron-job.org job #8「opportunity-deadlines」**（每天 09:00）— 0713 已設定並實測 200。~~
+- ~~**cron-job.org job #9「opportunity-radar」**（每天 07:00）— 0713 已設定並實測 200。~~
 
 ## 機會雷達要你做的（人工覆核鏈的「人」）
 - ⬜ **加真實來源**：後台 `/admin/opportunities/sources` 貼你信任的官方 **RSS/Atom** 網址（政府補助、大學競賽、獎金獵人站…）。只吃 RSS/Atom；沒有 RSS 的站先略過（API/爬蟲之後才支援）。
