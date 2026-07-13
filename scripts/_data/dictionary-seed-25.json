@@ -1,0 +1,686 @@
+[
+  {
+    "slug": "composite-key",
+    "term": "composite key",
+    "zh_name": "複合主鍵",
+    "category": "concept",
+    "langs": [
+      "sql"
+    ],
+    "difficulty": 2,
+    "plain": "用『多個欄位合起來』當一筆資料的唯一識別，單一欄位不夠獨特時用。",
+    "analogy": "像用『班級＋座號』才唯一定位一個學生，光座號會撞。",
+    "example": "課表用 (學生id, 課程id) 當複合主鍵，同一人不重複選同課",
+    "related": [
+      "primary-key",
+      "foreign-key",
+      "index-sql"
+    ]
+  },
+  {
+    "slug": "join-sql",
+    "term": "JOIN",
+    "zh_name": "資料表連接",
+    "category": "syntax",
+    "langs": [
+      "sql"
+    ],
+    "difficulty": 2,
+    "plain": "把兩張表『依關聯欄位』拼起來查，一次拿到跨表的完整資料。",
+    "analogy": "像把訂單表和顧客表用顧客編號對起來，一眼看到誰買了什麼。",
+    "example": "SELECT * FROM orders JOIN users ON orders.user_id = users.id",
+    "related": [
+      "inner-outer-join",
+      "foreign-key",
+      "n-plus-one"
+    ]
+  },
+  {
+    "slug": "inner-outer-join",
+    "term": "inner / outer join",
+    "zh_name": "內連接 / 外連接",
+    "category": "concept",
+    "langs": [
+      "sql"
+    ],
+    "difficulty": 3,
+    "plain": "inner join：只留兩邊都對得上的。left join：左表全留、右邊沒對到補 null。差別在『對不上的要不要保留』。",
+    "analogy": "配對名單：inner 只留成對的；left 是左邊每個人都在，沒配到就空著。",
+    "example": "找『沒下過單的顧客』：users LEFT JOIN orders WHERE orders.id IS NULL",
+    "related": [
+      "join-sql",
+      "subquery",
+      "null-undefined"
+    ]
+  },
+  {
+    "slug": "view-sql",
+    "term": "view",
+    "zh_name": "檢視表",
+    "category": "concept",
+    "langs": [
+      "sql"
+    ],
+    "difficulty": 2,
+    "plain": "把一段常用查詢存成一個『虛擬表』，之後像查一般表一樣用它，不用每次重打複雜 SQL。",
+    "analogy": "像存好的『我的最愛查詢』，點一下就跑。",
+    "example": "建 active_users 檢視表，之後 SELECT * FROM active_users",
+    "related": [
+      "materialized-view",
+      "subquery",
+      "stored-procedure"
+    ]
+  },
+  {
+    "slug": "trigger-sql",
+    "term": "trigger",
+    "zh_name": "觸發器",
+    "category": "concept",
+    "langs": [
+      "sql"
+    ],
+    "difficulty": 3,
+    "plain": "資料表發生某事件（新增/修改/刪除）時，資料庫『自動』執行一段預設動作。",
+    "analogy": "像感應燈：有人經過(事件)就自動亮(動作)，不用手動開。",
+    "example": "新增訂單後自動寫一筆到稽核表",
+    "related": [
+      "stored-procedure",
+      "trigger",
+      "side-effect"
+    ]
+  },
+  {
+    "slug": "full-table-scan",
+    "term": "full table scan",
+    "zh_name": "全表掃描",
+    "category": "concept",
+    "langs": [
+      "sql"
+    ],
+    "difficulty": 2,
+    "plain": "查詢沒用到索引，資料庫只好『一筆一筆從頭看到尾』，資料一多就很慢。",
+    "analogy": "像沒有目錄的字典，要找一個字得整本翻。",
+    "example": "WHERE 用了沒建索引的欄位 → 全表掃描；加索引改善",
+    "related": [
+      "index-sql",
+      "query-plan",
+      "n-plus-one"
+    ]
+  },
+  {
+    "slug": "query-plan",
+    "term": "query plan / EXPLAIN",
+    "zh_name": "查詢計畫",
+    "category": "tool",
+    "langs": [
+      "sql"
+    ],
+    "difficulty": 3,
+    "plain": "資料庫『打算怎麼執行你這句查詢』的步驟說明，用 EXPLAIN 看，能揪出慢查詢是不是沒吃到索引。",
+    "analogy": "像導航先給你路線規劃，你看了才知道它要不要繞遠路。",
+    "example": "EXPLAIN ANALYZE SELECT … 看到 Seq Scan = 沒用索引",
+    "related": [
+      "full-table-scan",
+      "index-sql",
+      "n-plus-one"
+    ]
+  },
+  {
+    "slug": "deadlock-db",
+    "term": "deadlock (DB)",
+    "zh_name": "資料庫死結",
+    "category": "error",
+    "langs": [
+      "sql"
+    ],
+    "difficulty": 3,
+    "plain": "兩個交易各自鎖住對方要的資料、互相等對方放手，誰都動不了。資料庫通常會犧牲其中一個。",
+    "analogy": "像兩人各佔一半橋、都要對方先退，卡死在橋中央。",
+    "example": "A 鎖表1等表2、B 鎖表2等表1 → deadlock，一方被回滾",
+    "related": [
+      "isolation-level",
+      "pessimistic-locking",
+      "transaction"
+    ]
+  },
+  {
+    "slug": "isolation-level",
+    "term": "isolation level",
+    "zh_name": "隔離級別",
+    "category": "concept",
+    "langs": [
+      "sql"
+    ],
+    "difficulty": 3,
+    "plain": "多個交易同時跑時，彼此能看到對方多少『還沒提交的變動』。越嚴越不會互相干擾但越慢。",
+    "analogy": "像共用文件的權限：能不能看到別人打到一半的草稿。",
+    "example": "Read Committed（多數預設）避免讀到別人未提交的髒資料",
+    "related": [
+      "transaction",
+      "optimistic-locking",
+      "deadlock-db"
+    ]
+  },
+  {
+    "slug": "optimistic-locking",
+    "term": "optimistic locking",
+    "zh_name": "樂觀鎖",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "假設『很少同時改到同一筆』，不先鎖，等要存檔時比對版本號，變了才擋下重試。衝突少時效能好。",
+    "analogy": "像共筆先各自寫，存檔時發現別人已改才提醒你合併。",
+    "example": "更新帶 version 欄，WHERE version=舊值；沒更新到就是有人先改了",
+    "related": [
+      "pessimistic-locking",
+      "race-condition",
+      "isolation-level"
+    ]
+  },
+  {
+    "slug": "pessimistic-locking",
+    "term": "pessimistic locking",
+    "zh_name": "悲觀鎖",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "假設『很可能撞』，一開始就把資料鎖住，別人得排隊等你做完。安全但併發差。",
+    "analogy": "像廁所上鎖：你在裡面別人只能等，絕不會撞在一起。",
+    "example": "SELECT … FOR UPDATE 先鎖住這幾筆再改",
+    "related": [
+      "optimistic-locking",
+      "deadlock-db",
+      "isolation-level"
+    ]
+  },
+  {
+    "slug": "read-replica",
+    "term": "read replica",
+    "zh_name": "唯讀複本",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "複製一份（或多份）資料庫專門負責『讀』，分擔主庫壓力；寫入還是走主庫。讀多寫少很有效。",
+    "analogy": "像影印一堆參考本供大家借閱，正本(主庫)只管更新。",
+    "example": "報表/查詢打唯讀複本，下單/付款打主庫",
+    "related": [
+      "replication",
+      "load-balancing",
+      "eventual-consistency"
+    ]
+  },
+  {
+    "slug": "write-ahead-log",
+    "term": "write-ahead log (WAL)",
+    "zh_name": "預寫日誌",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "資料庫改資料前，先把『要改什麼』寫進日誌再動手。當機重開時靠日誌把沒寫完的補回來，不掉資料。",
+    "analogy": "像動手術前先寫好手術計畫，中途停電也能照計畫接手。",
+    "example": "PostgreSQL 用 WAL 保證當機後仍能還原到一致狀態",
+    "related": [
+      "backup-restore",
+      "transaction",
+      "graceful-shutdown"
+    ]
+  },
+  {
+    "slug": "partitioning",
+    "term": "partitioning",
+    "zh_name": "分區",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把一張超大表按規則（如日期、地區）切成多塊分開存，查詢只碰相關那塊，快很多、也好維護。",
+    "analogy": "像把一整年的帳按月份分成 12 本，查三月只翻三月那本。",
+    "example": "log 表按月分區，查近一週只掃當月分區",
+    "related": [
+      "sharding",
+      "index-sql",
+      "full-table-scan"
+    ]
+  },
+  {
+    "slug": "three-way-handshake",
+    "term": "TCP three-way handshake",
+    "zh_name": "三向交握",
+    "category": "concept",
+    "langs": [
+      "network"
+    ],
+    "difficulty": 3,
+    "plain": "TCP 連線建立的三步招呼：SYN → SYN-ACK → ACK，雙方確認彼此都收得到、才開始傳資料。",
+    "analogy": "像講電話前：『喂?』『喂，聽得到』『嗯我也聽得到』，確認通了才聊。",
+    "example": "每條 TCP 連線都先三向交握；HTTPS 之後還要 TLS 握手",
+    "related": [
+      "ssl-tls",
+      "port-number",
+      "latency-throughput"
+    ]
+  },
+  {
+    "slug": "port-number",
+    "term": "port number",
+    "zh_name": "連接埠",
+    "category": "reference",
+    "langs": [
+      "network"
+    ],
+    "difficulty": 1,
+    "plain": "同一台機器上不同服務用不同『埠號』區分，IP 找到機器、埠號找到是哪個服務。",
+    "analogy": "像大樓地址(IP)＋樓層分機(port)，才找得到正確的人。",
+    "example": "HTTP 80、HTTPS 443、本機開發常用 3000/5432(Postgres)",
+    "related": [
+      "three-way-handshake",
+      "firewall",
+      "nat"
+    ]
+  },
+  {
+    "slug": "proxy-server",
+    "term": "proxy server",
+    "zh_name": "代理伺服器",
+    "category": "concept",
+    "langs": [
+      "network"
+    ],
+    "difficulty": 2,
+    "plain": "夾在你和目標之間、代你轉送請求的中間人。可隱藏來源、快取、過濾、集中管理。",
+    "analogy": "像代購：你不直接跟賣家買，透過代購下單收貨。",
+    "example": "公司用 proxy 統一出網、記錄流量；反向代理則擋在伺服器前",
+    "related": [
+      "reverse-proxy",
+      "nginx",
+      "vpn"
+    ]
+  },
+  {
+    "slug": "nat",
+    "term": "NAT",
+    "zh_name": "網路位址轉換",
+    "category": "concept",
+    "langs": [
+      "network"
+    ],
+    "difficulty": 3,
+    "plain": "讓一整個內網共用一個對外 IP 的技術，路由器幫每台裝置的連線做位址轉換與對回。",
+    "analogy": "像公司總機一支對外電話，內部分機的通話由總機轉接對應。",
+    "example": "家裡多台裝置共用一個公網 IP 上網就是靠 NAT",
+    "related": [
+      "subnet",
+      "port-number",
+      "firewall"
+    ]
+  },
+  {
+    "slug": "subnet",
+    "term": "subnet",
+    "zh_name": "子網路",
+    "category": "reference",
+    "langs": [
+      "network"
+    ],
+    "difficulty": 3,
+    "plain": "把一個大 IP 網段切成小段來管理與隔離，用『子網路遮罩』決定哪些 IP 算同一區。",
+    "analogy": "像把一個大社區劃成幾個里，各里內部好管理、彼此有界線。",
+    "example": "192.168.1.0/24 是一個子網，容納約 254 台裝置",
+    "related": [
+      "nat",
+      "firewall",
+      "load-balancing"
+    ]
+  },
+  {
+    "slug": "load-balancing",
+    "term": "load balancing",
+    "zh_name": "負載平衡",
+    "category": "concept",
+    "langs": [
+      "network"
+    ],
+    "difficulty": 2,
+    "plain": "把大量請求分散到多台伺服器，避免單台被打爆，也讓某台掛了還有別台頂著。",
+    "analogy": "像賣場多開幾個結帳櫃台，店員(伺服器)輪流招呼、不會擠爆一個。",
+    "example": "前面一台負載平衡器把流量輪流分給後端 3 台",
+    "related": [
+      "reverse-proxy",
+      "read-replica",
+      "canary-release"
+    ]
+  },
+  {
+    "slug": "ssl-tls",
+    "term": "SSL / TLS",
+    "zh_name": "傳輸加密",
+    "category": "concept",
+    "langs": [
+      "network"
+    ],
+    "difficulty": 2,
+    "plain": "在你和網站之間建立加密通道的協定（HTTPS 就靠它），別人攔到也看不懂內容、還能驗證對方身分。",
+    "analogy": "像把信裝進只有收件人打得開的保險箱再寄，中途被攔也白搭。",
+    "example": "網址有鎖頭＝走 TLS；憑證用來證明『你真的連到官方』",
+    "related": [
+      "certificate",
+      "http-vs-https",
+      "asymmetric-encryption"
+    ]
+  },
+  {
+    "slug": "certificate",
+    "term": "SSL certificate",
+    "zh_name": "數位憑證",
+    "category": "concept",
+    "langs": [
+      "network"
+    ],
+    "difficulty": 2,
+    "plain": "由受信任機構簽發、證明『這網站真的是它宣稱的那個』的電子證件，瀏覽器靠它建立信任。",
+    "analogy": "像政府核發的身分證，讓對方相信你是本人。",
+    "example": "Let's Encrypt 免費簽憑證；過期網站會跳『不安全』警告",
+    "related": [
+      "ssl-tls",
+      "public-key",
+      "man-in-the-middle"
+    ]
+  },
+  {
+    "slug": "public-key",
+    "term": "public key",
+    "zh_name": "公鑰",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 3,
+    "plain": "非對稱加密的『可公開那把鑰匙』：別人用你的公鑰加密，只有你的私鑰能解。也用來驗證你的簽章。",
+    "analogy": "像對外公開的信箱投遞口，誰都能投，但只有你有鑰匙開箱取信。",
+    "example": "SSH/HTTPS 都用公私鑰配對建立信任",
+    "related": [
+      "private-key",
+      "asymmetric-encryption",
+      "certificate"
+    ]
+  },
+  {
+    "slug": "private-key",
+    "term": "private key",
+    "zh_name": "私鑰",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 3,
+    "plain": "非對稱加密的『絕不外流那把鑰匙』：拿來解開別人用你公鑰加密的內容、或簽署證明是你。外洩就完蛋。",
+    "analogy": "像你家保險箱唯一的鑰匙，弄丟或被複製就出大事。",
+    "example": "SSH 私鑰要設權限、別上傳；外洩等於別人能冒充你",
+    "related": [
+      "public-key",
+      "asymmetric-encryption",
+      "secret"
+    ]
+  },
+  {
+    "slug": "symmetric-encryption",
+    "term": "symmetric encryption",
+    "zh_name": "對稱加密",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 3,
+    "plain": "加密和解密用『同一把鑰匙』。速度快，但雙方得先安全地共享那把鑰匙才行。",
+    "analogy": "像同一支鑰匙開關同一個鎖，快，但鑰匙怎麼安全交給對方是難題。",
+    "example": "AES 就是對稱加密；本站的金鑰加密用 AES-256-GCM",
+    "related": [
+      "asymmetric-encryption",
+      "public-key",
+      "hashing"
+    ]
+  },
+  {
+    "slug": "asymmetric-encryption",
+    "term": "asymmetric encryption",
+    "zh_name": "非對稱加密",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 3,
+    "plain": "用『一對』公鑰/私鑰：公鑰加密只有私鑰能解，不用先共享秘密。慢，常用來安全交換對稱金鑰。",
+    "analogy": "像公開的投信口(公鑰)配私人鑰匙(私鑰)，不用事先偷偷交鑰匙。",
+    "example": "TLS 先用非對稱交換一把對稱金鑰，之後改用快的對稱加密",
+    "related": [
+      "symmetric-encryption",
+      "public-key",
+      "ssl-tls"
+    ]
+  },
+  {
+    "slug": "hashing",
+    "term": "hashing",
+    "zh_name": "雜湊",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 2,
+    "plain": "把任意資料轉成固定長度的『指紋』，同輸入必得同輸出、且無法逆推回原文。用來存密碼、驗完整性。",
+    "analogy": "像把食材打成果汁：打得出來、還原不回去，同樣食材打出同樣果汁。",
+    "example": "密碼別存明文，存雜湊；檔案 hash 比對確認沒被竄改",
+    "related": [
+      "salt",
+      "bcrypt",
+      "symmetric-encryption"
+    ]
+  },
+  {
+    "slug": "salt",
+    "term": "salt",
+    "zh_name": "加鹽",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 3,
+    "plain": "存密碼雜湊時，每個人加一段隨機字串再一起雜湊，讓相同密碼也得到不同雜湊，擋掉查表破解。",
+    "analogy": "像每碗滷肉飯加不同獨門醬，就算原料一樣、味道各不同、難以照抄。",
+    "example": "hash(密碼 + 每人不同的 salt)，防彩虹表",
+    "related": [
+      "hashing",
+      "bcrypt",
+      "private-key"
+    ]
+  },
+  {
+    "slug": "bcrypt",
+    "term": "bcrypt",
+    "zh_name": "bcrypt",
+    "category": "tool",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 2,
+    "plain": "專門雜湊密碼的演算法，內建加鹽又『故意算得慢』，讓暴力破解變超貴。存使用者密碼的標準選擇之一。",
+    "analogy": "像故意設計成很難仿造又費工的印章，仿冒者划不來。",
+    "example": "註冊時 bcrypt.hash(password)，登入時 bcrypt.compare 比對",
+    "related": [
+      "hashing",
+      "salt",
+      "least-privilege"
+    ]
+  },
+  {
+    "slug": "clickjacking",
+    "term": "clickjacking",
+    "zh_name": "點擊劫持",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 3,
+    "plain": "把你的網站用透明 iframe 疊在誘餌下面，使用者以為在點按鈕，其實點到你網站的危險操作。",
+    "analogy": "像在你要簽的紙上疊一張透明紙，你簽的其實是下面那份合約。",
+    "example": "用 X-Frame-Options / CSP frame-ancestors 禁止被 iframe 嵌",
+    "related": [
+      "content-security-policy",
+      "csrf",
+      "same-origin"
+    ]
+  },
+  {
+    "slug": "zero-day",
+    "term": "zero-day",
+    "zh_name": "零日漏洞",
+    "category": "slang",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 2,
+    "plain": "官方還不知道、還沒修補就已被攻擊者利用的漏洞。因為『修補天數＝0』而得名，最危險。",
+    "analogy": "像小偷發現一把鎖的暗門，鎖商還不知道、來不及換鎖。",
+    "example": "0-day 被公開/利用時往往一片火燒，要緊急緩解",
+    "related": [
+      "hotfix",
+      "ddos",
+      "phishing"
+    ]
+  },
+  {
+    "slug": "2fa",
+    "term": "two-factor authentication (2FA)",
+    "zh_name": "雙因素驗證",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 1,
+    "plain": "登入除了密碼(你知道的)，再加一項(你有的手機驗證碼/你是的指紋)，被偷密碼也難登入。",
+    "analogy": "像提款要卡(有的)＋密碼(知道的)，少一樣都領不了。",
+    "example": "登入輸密碼後再輸 App 的一次性驗證碼",
+    "related": [
+      "least-privilege",
+      "authentication",
+      "phishing"
+    ]
+  },
+  {
+    "slug": "sandbox",
+    "term": "sandbox",
+    "zh_name": "沙箱",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 2,
+    "plain": "把不信任的程式關在一個受限、隔離的環境跑，就算它作怪也傷不到外面的系統。",
+    "analogy": "像讓小孩在沙坑玩：怎麼弄髒都只在坑裡，不會弄髒整個家。",
+    "example": "跑使用者上傳的程式碼用沙箱，限制檔案/網路/時間",
+    "related": [
+      "least-privilege",
+      "bulkhead",
+      "graceful-degradation"
+    ]
+  },
+  {
+    "slug": "content-security-policy",
+    "term": "Content Security Policy (CSP)",
+    "zh_name": "內容安全政策",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 3,
+    "plain": "用一組 HTTP 標頭告訴瀏覽器『這頁只准載入哪些來源的腳本/圖片』，大幅降低 XSS 與惡意注入。",
+    "analogy": "像門禁白名單：只放行名單上的訪客，其餘一律擋。",
+    "example": "CSP 只允許自家網域的 script → 攔掉被注入的外部惡意腳本",
+    "related": [
+      "xss",
+      "clickjacking",
+      "same-origin"
+    ]
+  },
+  {
+    "slug": "http-vs-https",
+    "term": "HTTP vs HTTPS",
+    "zh_name": "HTTP 與 HTTPS",
+    "category": "reference",
+    "langs": [
+      "network"
+    ],
+    "difficulty": 1,
+    "plain": "HTTP 明文傳輸、可被偷看竄改；HTTPS 多了 TLS 加密與身分驗證。現在網站一律該用 HTTPS。",
+    "analogy": "HTTP 像明信片誰都看得到；HTTPS 像密封掛號信。",
+    "example": "登入/付款頁沒 HTTPS = 帳密可能被中途竊聽",
+    "related": [
+      "ssl-tls",
+      "certificate",
+      "man-in-the-middle"
+    ]
+  },
+  {
+    "slug": "dns-lookup",
+    "term": "DNS lookup",
+    "zh_name": "網域解析",
+    "category": "concept",
+    "langs": [
+      "network"
+    ],
+    "difficulty": 2,
+    "plain": "把好記的網域名(example.com)查成電腦要用的 IP 位址的過程，是連線的第一步。",
+    "analogy": "像查電話簿：知道名字(網域)，先查出號碼(IP)才打得通。",
+    "example": "首次連某站會先 DNS 查詢，之後會被快取一段時間",
+    "related": [
+      "dns",
+      "cdn-edge",
+      "latency-throughput"
+    ]
+  },
+  {
+    "slug": "traceroute",
+    "term": "traceroute",
+    "zh_name": "路由追蹤",
+    "category": "tool",
+    "langs": [
+      "network"
+    ],
+    "difficulty": 2,
+    "plain": "顯示你的封包到目標『中間經過哪些節點、每一跳多久』，用來找出網路慢/斷在哪一段。",
+    "analogy": "像追蹤包裹經過哪些轉運站、卡在哪一站。",
+    "example": "連某站很慢 → traceroute 看是哪一跳延遲爆高",
+    "related": [
+      "ping",
+      "latency-throughput",
+      "dns-lookup"
+    ]
+  },
+  {
+    "slug": "backup-restore",
+    "term": "backup / restore",
+    "zh_name": "備份 / 還原",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "定期把資料複製到別處(備份)，出事時能救回(還原)。沒驗證過能不能還原的備份，等於沒備份。",
+    "analogy": "像重要文件影印存銀行保險箱，火災了還有一份。",
+    "example": "每日自動備份 DB，並定期實測還原流程真的可用",
+    "related": [
+      "write-ahead-log",
+      "rollback",
+      "graceful-degradation"
+    ]
+  }
+]
