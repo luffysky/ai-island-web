@@ -340,8 +340,14 @@ export function AgentClient() {
   useEffect(() => {
     if (deepLinkedRef.current) return;
     deepLinkedRef.current = true;
-    const id = new URLSearchParams(window.location.search).get("task");
-    if (id) replay(id);
+    const sp = new URLSearchParams(window.location.search);
+    const id = sp.get("task");
+    if (id) { replay(id); return; }
+    // 從辦公室（/agent/office）派工：預填指令 / 預選員工，讓使用者看過再送出（不自動燒 API）
+    const g = sp.get("goal");
+    const sk = sp.get("skill");
+    if (g) setGoal(g);
+    if (sk) setSkillId(sk);
   }, [replay]);
 
   const toggleVoice = useCallback(() => {
@@ -437,6 +443,9 @@ export function AgentClient() {
               <button onClick={() => setSkillModal(true)} className="text-xs rounded-full px-2.5 py-1 border border-dashed border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">
                 ＋ 建員工
               </button>
+              <a href="/agent/office" className="text-xs rounded-full px-2.5 py-1 border border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">
+                🏢 辦公室
+              </a>
             </div>
           )}
 
@@ -831,7 +840,7 @@ function SkillStore({ skills, tools, onToggle, onClose, onDeleted }: {
                         </div>
                       </div>
                       <div className="flex flex-wrap items-center gap-1 mt-2 text-[10px]">
-                        <span className="text-black/40 dark:text-white/40 truncate max-w-full">{p.text}</span>
+                        <span className="basis-full min-w-0 break-words leading-relaxed text-black/40 dark:text-white/40">{p.text}</span>
                         {p.device && <span className="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-600 dark:text-amber-400">需本機</span>}
                         {p.danger && <span className="px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-600 dark:text-rose-400">高風險</span>}
                       </div>

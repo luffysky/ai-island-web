@@ -334,7 +334,7 @@ export function TopNav() {
       </div>
 
       {mobileMenu && (
-        <div className="md:hidden border-t border-border bg-bg px-3 py-3">
+        <div className="md:hidden border-t border-border bg-bg px-3 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))] max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain">
           <div className="px-2 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-fg-muted">
             {t("nav.explore")}
           </div>

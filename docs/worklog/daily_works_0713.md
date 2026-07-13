@@ -26,6 +26,23 @@
 6. **建置**：tsc 0 · vitest 122 綠 · next build 0。
 7. **機密**：`.env.local`（含 Brave/Tavily/Google key）未 commit；使用者 key 全 AES-256-GCM 加密存 DB。
 
+## 今日續（0713 下午）— RWD 修 + AI 員工辦公室 MVP
+9. **手機導覽破版修（192.jpg）**：TopNav 手機展開選單原本無捲動/無底部安全區 → 最後兩項（分身島/翻譯）被 Android 系統列卡住看不到。改成 `max-h-[calc(100dvh-3.5rem)] overflow-y-auto` + `pb-[calc(1rem+env(safe-area-inset-bottom))]`，超長可捲、不再被卡。
+10. **技能商店工具列 wrap（193.jpg）**：員工卡的 `allowed_tools` 原本 `truncate` 單行截斷 → 改 `basis-full break-words` 整串換行、需本機/高風險徽章自然折到下一行。
+11. **🆕 AI 員工辦公室 MVP `/agent/office`（對標 Genspark Claw 194–197）**：
+    - 狀態列：本機電腦「已連線/離線 + platform」、在職員工數（+工作中）、今日產出件數。
+    - **熱門任務快捷格**（7 項：查資料/找機會/寫文案/解釋術語/讀網頁/找課/整理本機檔案）＝點一下**預填指令**到下令列、看過再送出（不自動燒 API）；「整理本機檔案」需電腦上線才可點（gating）。
+    - 我的 AI 員工卡（emoji/職務/閒置中/派工→`/agent?skill=<id>`）＋最近工作列表（狀態→`/agent?task=<id>`）。
+    - AgentClient 加 `?goal=`/`?skill=` 深連結（辦公室派工用）；`/agent` 技能列加「🏢 辦公室」入口。
+    - **純讀 + 導頁設計**（重用 `/api/agent/{skills,devices,tasks}`），不新增寫入 API、不會意外花錢。
+12. **回答林董 Genspark 三問**（記進 todo §10-B）：桌面助手 UI ✅ 可做（我們 Web 原生、辦公室頁已達 80% 感覺，原生 tray App 列後期選配）；虛擬伺服器 ⚠️ 技術可行但常駐 VM 每台燒錢不合免費優先 → 改「用完即拋臨時沙盒」且限付費檔（見 §4 Phase E）；工作空間 Hub ✅ 可聚合既有能力（簡報/表格/文件生成器沒有＝大工程後補）。
+
+### 收尾檢查（第二輪）
+- **建置**：tsc 0 · vitest 122 綠 · next build 0（`/agent/office` 5.32 kB 已建）。
+- **RWD**：辦公室頁 `grid sm:2/lg:3` 響應式；手機選單捲動 + 安全區已修；桌面沿用既有卡片無破版。
+- **API/DB**：無新表、無新寫入端點（辦公室全讀既有 3 支 API）；`?goal=/?skill=` 僅前端預填、不改後端。
+- **安全紅線**：辦公室頁對外動作＝0；熱門任務只「預填」不自動送、文案類任務文字明示「先給我看過再決定發不發」。
+
 ## 待辦
-👉 **全部見 `docs/todo/todo_list_0713.md`**（分身島 L1–L5✅/桌面/手機/Android/安全/MCP/AI 員工辦公室/省 token；機會島 V1✅/V2–V3 部分/V4–V5⬜/後台複刻⬜；全站 AI 記帳 P0–P4/辭典/語言島）。
-建議下一步（同檔第四節）：① AI 數位員工辦公室 MVP（接 L5）② 機會島 V2/V3 主幹 ③ 後台複刻 AI 島專屬機會雷達。
+👉 **全部見 `docs/todo/todo_list_0713.md`**（分身島 L1–L5✅/桌面/手機/Android/安全/MCP/AI 員工辦公室 MVP🚧/省 token；機會島 V1✅/V2–V3 部分/V4–V5⬜/後台複刻⬜；全站 AI 記帳 P0–P4/辭典/語言島）。
+建議下一步（同檔第四節）：① 辦公室進階（cron 自動排程 + 待批准佇列聚合 + 看員工工作動畫）② 機會島 V2/V3 主幹 ③ 後台複刻 AI 島專屬機會雷達。
