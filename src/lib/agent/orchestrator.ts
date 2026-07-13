@@ -58,7 +58,24 @@ function parseDecision(text: string): Decision | null {
   t = t.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
   const s = t.indexOf("{"), e = t.lastIndexOf("}");
   if (s === -1 || e === -1 || e < s) return null;
-  try { return JSON.parse(t.slice(s, e + 1)); } catch { return null; }
+  const jsonStr = t.slice(s, e + 1);
+  try { return JSON.parse(jsonStr); } catch { /* 往下容錯修復 */ }
+
+  // 修復最常見失敗：模型把「一大段 markdown（含 ``` 程式碼、換行、引號）」塞進 summary 字串、
+  // 但沒把換行/引號 escape 好 → JSON.parse 掛掉。這裡直接把 summary 內容抽出來、容錯 unescape，
+  // 避免把整包 raw JSON 當答案顯示（使用者只想看成品本身）。
+  try {
+    const done = /"done"\s*:\s*true/.test(jsonStr);
+    // 抓 "summary":" 之後、到最後一個 " 為止（貪婪、吃到結尾的 "}）
+    const m = jsonStr.match(/"summary"\s*:\s*"([\s\S]*)"\s*}?\s*$/);
+    if (m) {
+      const summary = m[1]
+        .replace(/\\r\\n/g, "\n").replace(/\\n/g, "\n").replace(/\\t/g, "\t")
+        .replace(/\\"/g, '"').replace(/\\\\/g, "\\").trim();
+      if (summary.length > 0) return { done: done || true, summary };
+    }
+  } catch { /* ignore */ }
+  return null;
 }
 
 const PLANNER_SYSTEM = `你是 AI 島的行動代理（Agent）核心。你會被交付一個目標，要一步一步用「工具」把它完成。
