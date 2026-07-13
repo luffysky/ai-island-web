@@ -782,6 +782,37 @@ select {
 .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
 .animate-shake { animation: shake 0.4s ease-in-out; }
 
+/* ============================================================
+   連續世界 — 星空 / 光塵圖層（配 ParallaxLayer 做 2.5D 視差景深）
+   兩層不同大小 / 速度：far 遠景小白星慢飄、near 近景品牌色光塵快飄。
+   ============================================================ */
+@keyframes starDrift { from { background-position: 0 0; } to { background-position: 0 -640px; } }
+@keyframes starDrift2 { from { background-position: 0 0; } to { background-position: -220px -880px; } }
+.starfield {
+  background-image:
+    radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,.9), transparent),
+    radial-gradient(1px 1px at 65% 35%, rgba(200,225,255,.7), transparent),
+    radial-gradient(1.4px 1.4px at 40% 70%, rgba(255,255,255,.8), transparent),
+    radial-gradient(1px 1px at 85% 55%, rgba(180,210,255,.7), transparent),
+    radial-gradient(1px 1px at 30% 90%, rgba(255,255,255,.6), transparent),
+    radial-gradient(1.2px 1.2px at 90% 85%, rgba(255,255,255,.7), transparent);
+  background-size: 320px 320px;
+  background-repeat: repeat;
+  animation: starDrift 90s linear infinite;
+}
+.starfield-2 {
+  background-image:
+    radial-gradient(1.6px 1.6px at 25% 15%, rgba(139,233,253,.85), transparent),
+    radial-gradient(2px 2px at 75% 45%, rgba(189,147,249,.7), transparent),
+    radial-gradient(1.6px 1.6px at 55% 80%, rgba(80,250,123,.6), transparent);
+  background-size: 480px 480px;
+  background-repeat: repeat;
+  animation: starDrift2 62s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .starfield, .starfield-2 { animation: none; }
+}
+
 /* Chat 訊息進場（共用：所有 AI 對話介面） */
 @keyframes chat-bubble-in {
   from { opacity: 0; transform: translateY(6px) scale(0.98); }

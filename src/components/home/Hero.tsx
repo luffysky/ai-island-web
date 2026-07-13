@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { NumberTicker } from "@/components/ui/NumberTicker";
+import { ParallaxLayer, StarField } from "./parallax";
 import {
   Sparkles as SparkleIcon,
   Palette,
@@ -67,6 +68,14 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
           {/* 底部融進頁面底色（亮/暗都平順銜接下方模式卡）*/}
           <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-bg to-transparent" />
         </div>
+
+        {/* 2.5D 視差：遠景星空慢飄、近景光塵快飄（島圖不動，圖層錯速＝景深）*/}
+        <ParallaxLayer speed={24} className="absolute inset-0 overflow-hidden pointer-events-none">
+          <StarField variant="far" />
+        </ParallaxLayer>
+        <ParallaxLayer speed={62} className="absolute inset-0 overflow-hidden pointer-events-none">
+          <StarField variant="near" />
+        </ParallaxLayer>
 
         {/* 文案 */}
         <div className="relative max-w-6xl mx-auto px-6 pt-24 pb-28 md:pt-32 md:pb-36">
@@ -146,7 +155,7 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
             >
               <Link
                 href={m.href as any}
-                className={`group flex items-start gap-4 h-full rounded-2xl border border-border bg-bg-card/70 backdrop-blur p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-[var(--elev-3)] ${m.tone.hoverBorder}`}
+                className={`group flex items-start gap-4 h-full surface-glass p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-[var(--elev-3)] ${m.tone.hoverBorder}`}
               >
                 <span className={`shrink-0 grid place-items-center w-12 h-12 rounded-xl ${m.tone.chip} ${m.tone.text} transition-transform duration-200 group-hover:scale-110 group-hover:-rotate-3`}>
                   <m.Icon size={24} strokeWidth={1.75} />
