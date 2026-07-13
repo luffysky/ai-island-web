@@ -1,0 +1,488 @@
+[
+  {
+    "slug": "rest-spread",
+    "term": "rest / spread",
+    "zh_name": "其餘 / 展開 ...",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "同樣是 ...：spread 把陣列/物件「攤開」；rest 把多個值「收成一包」。看它在哪邊決定是攤開還是收集。",
+    "analogy": "spread 是把整袋零食倒出來鋪滿桌；rest 是把散落的零食掃進一個袋子。",
+    "example": "const arr=[...a, ...b]        // spread：合併\nfunction f(...args){}         // rest：把參數收成陣列",
+    "related": [
+      "destructuring",
+      "array",
+      "arguments"
+    ]
+  },
+  {
+    "slug": "async-await",
+    "term": "async / await",
+    "zh_name": "非同步等待",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "async 讓函式回傳 Promise；await 暫停在這行等結果回來再往下，寫起來像同步、其實不卡住整個程式。",
+    "analogy": "像點餐拿號碼牌：await 就是「叫到號再繼續」，這段時間廚房(其他程式)照樣運作。",
+    "example": "async function load(){ const r = await fetch(url); return r.json() }",
+    "related": [
+      "promise",
+      "callback-hell",
+      "event-loop"
+    ]
+  },
+  {
+    "slug": "immutable",
+    "term": "immutable",
+    "zh_name": "不可變",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "資料一旦建立就不改它，要變就產生一份新的。好處是不會被別處偷偷改掉、追 bug 容易。",
+    "analogy": "像蓋章的公文：不塗改原件，要修就重印一份新的，原件永遠可追溯。",
+    "example": "const next = [...arr, x]   // 不改 arr、產生新陣列（React state 常這樣）",
+    "related": [
+      "pure-function",
+      "side-effect",
+      "state"
+    ]
+  },
+  {
+    "slug": "debounce-throttle",
+    "term": "debounce / throttle",
+    "zh_name": "防抖 / 節流",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "都在限制「太頻繁的觸發」。debounce：停手一段時間才做一次（等你打完字才搜尋）；throttle：固定間隔最多做一次（每 200ms 才算一次捲動）。",
+    "analogy": "debounce 像電梯門「等沒人進來才關」；throttle 像水龍頭「不管轉多快、每秒只滴這麼多」。",
+    "example": "搜尋框用 debounce、捲動/拖曳用 throttle",
+    "related": [
+      "event",
+      "performance",
+      "rate-limit"
+    ]
+  },
+  {
+    "slug": "rate-limit",
+    "term": "rate limiting",
+    "zh_name": "速率限制",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "限制某人/某 IP 在一段時間內能打幾次 API，防止濫用或壓垮伺服器。超過就回 429。",
+    "analogy": "像遊樂園熱門設施：每小時放這麼多人，額滿就請你等下一輪。",
+    "example": "每個 IP 每分鐘最多 60 次請求，超過回 HTTP 429",
+    "related": [
+      "http-status",
+      "throttle",
+      "api"
+    ]
+  },
+  {
+    "slug": "http-status",
+    "term": "HTTP status code",
+    "zh_name": "HTTP 狀態碼",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "伺服器回應的三位數代碼：2xx 成功、3xx 轉址、4xx 你(client)錯、5xx 伺服器錯。",
+    "analogy": "像餐廳回你：200=上菜、301=搬家了請去新地址、404=沒這道菜、500=廚房爆炸。",
+    "example": "200 OK / 301 轉址 / 401 未登入 / 403 沒權限 / 404 找不到 / 429 太多請求 / 500 伺服器錯",
+    "related": [
+      "rate-limit",
+      "cors",
+      "rest-api"
+    ]
+  },
+  {
+    "slug": "cookie-session",
+    "term": "cookie / session",
+    "zh_name": "Cookie / Session",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "HTTP 本身不記得你是誰，所以用 cookie（存在瀏覽器的小紙條）配 session（伺服器端記錄）來記住登入狀態。",
+    "analogy": "像遊樂園手章：cookie 是蓋在你手上的章，session 是門口名冊；進場刷一下就知道你是誰。",
+    "example": "登入後伺服器發一個 session cookie，之後每次請求帶著它就免再登入",
+    "related": [
+      "jwt",
+      "authentication",
+      "state"
+    ]
+  },
+  {
+    "slug": "linter",
+    "term": "linter",
+    "zh_name": "程式碼檢查器",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "在你還沒執行前就掃描程式碼、抓出可疑寫法與風格問題的工具（如 ESLint）。",
+    "analogy": "像作文的自動校對：還沒交卷就先幫你圈出錯字和怪句子。",
+    "example": "ESLint 抓到「宣告了變數卻沒用」會警告你",
+    "related": [
+      "eslint",
+      "prettier",
+      "static-analysis"
+    ]
+  },
+  {
+    "slug": "prettier",
+    "term": "Prettier",
+    "zh_name": "程式碼美化器",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "自動排版程式碼（縮排、引號、分號、換行）的工具，全隊統一風格、不用再吵。",
+    "analogy": "像 Word 的「一鍵套用格式」，大家的文件長得一模一樣整齊。",
+    "example": "存檔自動跑 Prettier，程式碼縮排/引號瞬間整齊",
+    "related": [
+      "linter",
+      "eslint",
+      "formatter"
+    ]
+  },
+  {
+    "slug": "env-var",
+    "term": "environment variable",
+    "zh_name": "環境變數",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把設定值（金鑰、資料庫網址）放在程式碼外面、由環境提供，這樣不同機器不同設定、密鑰也不會進版控。",
+    "analogy": "像插座規格：同一台電器（程式）插到台灣或日本，靠當地插座(環境)供電，不用改電器本身。",
+    "example": "process.env.DATABASE_URL  // 值放 .env / 部署平台，不寫死在程式裡",
+    "related": [
+      "dotenv",
+      "secret",
+      "config"
+    ]
+  },
+  {
+    "slug": "dotenv",
+    "term": ".env / dotenv",
+    "zh_name": "環境變數檔",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "一個放在專案根目錄的 .env 檔，逐行寫 KEY=VALUE，程式啟動時載進環境變數。務必加進 .gitignore、別 commit。",
+    "analogy": "像家裡的保險箱清單：自己看得到、絕不上傳到公開的地方。",
+    "example": "# .env\nDATABASE_URL=postgres://...\nAPI_KEY=sk-xxx",
+    "related": [
+      "env-var",
+      "secret",
+      "gitignore"
+    ]
+  },
+  {
+    "slug": "rubber-duck",
+    "term": "rubber duck debugging",
+    "zh_name": "小黃鴨除錯法",
+    "category": "slang",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "把程式一行一行「講給一隻橡皮鴨聽」，講著講著自己就發現 bug 在哪。重點是被迫把邏輯講清楚。",
+    "analogy": "像考前跟同學互相講題目，講一講自己先懂了。",
+    "example": "卡關時對著鴨子（或同事）念：這裡我想做…咦，這行根本沒判斷空值！",
+    "related": [
+      "debugging",
+      "rtfm",
+      "yak-shaving"
+    ]
+  },
+  {
+    "slug": "breaking-change",
+    "term": "breaking change",
+    "zh_name": "破壞性變更",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "改動後會讓「原本正常用的人」壞掉的變更（改了函式參數、刪了欄位）。照 semver 要升主版號 (major)。",
+    "analogy": "像超商把結帳流程整個換掉，老顧客照舊操作就結不了帳。",
+    "example": "把 API 回傳的 name 欄位改名成 title → 前端全掛 = breaking change",
+    "related": [
+      "semver",
+      "backward-compat",
+      "deprecation"
+    ]
+  },
+  {
+    "slug": "backward-compat",
+    "term": "backward compatibility",
+    "zh_name": "向後相容",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "新版本仍然支援舊的用法，讓舊使用者升級後不會壞掉。跟 breaking change 相反。",
+    "analogy": "像新款遊戲機還能玩舊卡帶，老玩家不用丟掉收藏。",
+    "example": "新增參數但給預設值、舊呼叫方式照常能用 = 保持向後相容",
+    "related": [
+      "breaking-change",
+      "semver",
+      "deprecation"
+    ]
+  },
+  {
+    "slug": "deprecation",
+    "term": "deprecation",
+    "zh_name": "棄用",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "官方宣告某功能「不建議再用、未來會移除」，但暫時還能用，給大家時間換掉。",
+    "analogy": "像捷運站宣布某出口「即將封閉、請改走他處」，還沒封但別依賴了。",
+    "example": "函式標 @deprecated，IDE 會畫刪除線提醒你換新的",
+    "related": [
+      "breaking-change",
+      "backward-compat",
+      "migration"
+    ]
+  },
+  {
+    "slug": "feature-flag-toggle",
+    "term": "feature toggle",
+    "zh_name": "功能開關",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用一個開關控制功能要不要對使用者顯示，不用重新部署就能開/關，也能只開給部分人測試。",
+    "analogy": "像家裡的電燈開關：燈(功能)早就裝好了，要不要亮由開關決定。",
+    "example": "if (flags.newCheckout) 顯示新結帳頁；灰度先開給 5% 使用者",
+    "related": [
+      "ab-test",
+      "canary-release",
+      "config"
+    ]
+  },
+  {
+    "slug": "canary-release",
+    "term": "canary release",
+    "zh_name": "金絲雀發布",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "新版本先放給一小撮使用者，觀察有沒有出事，沒事再逐步擴大到所有人。出事影響範圍小。",
+    "analogy": "礦工帶金絲雀下礦坑：鳥先有反應就知道有毒氣、趕快撤，不用整隊冒險。",
+    "example": "新版先導 5% 流量，錯誤率正常再放到 100%",
+    "related": [
+      "feature-flag-toggle",
+      "blue-green",
+      "rollback"
+    ]
+  },
+  {
+    "slug": "idempotent-key",
+    "term": "idempotency key",
+    "zh_name": "冪等金鑰",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "付款/建單這類「不能做兩次」的請求，帶一把唯一金鑰，伺服器看到同一把就只處理一次，避免手滑或重試重複扣款。",
+    "analogy": "像演唱會的一次性入場手環：同一條掃第二次不再放行。",
+    "example": "刷卡請求帶 Idempotency-Key，網路重送也只扣一次款",
+    "related": [
+      "idempotent",
+      "retry",
+      "webhook"
+    ]
+  },
+  {
+    "slug": "cache-invalidation",
+    "term": "cache invalidation",
+    "zh_name": "快取失效",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "資料更新後，要讓舊的快取失效、不再被讀到。被戲稱電腦科學兩大難題之一（另一個是命名）。",
+    "analogy": "像超商改價：不只改 POS，還得把貨架上所有舊標籤撕掉，漏一張就給錯價。",
+    "example": "文章編輯後要清掉該頁 CDN 快取，否則使用者看到舊版",
+    "related": [
+      "cache",
+      "eventual-consistency",
+      "cdn"
+    ]
+  },
+  {
+    "slug": "big-endian-little-endian",
+    "term": "endianness",
+    "zh_name": "位元組序",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "多位元組的數字在記憶體裡「高位在前」還是「低位在前」的擺法。big-endian 高位先、little-endian 低位先。",
+    "analogy": "像寫日期：有人 2026-07-13、有人 13/07/2026，順序不同、意思一樣，機器對接要講好。",
+    "example": "網路傳輸多用 big-endian（network byte order）",
+    "related": [
+      "binary",
+      "byte",
+      "protocol"
+    ]
+  },
+  {
+    "slug": "utf8",
+    "term": "UTF-8 / encoding",
+    "zh_name": "字元編碼",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把文字（含中文、emoji）轉成位元組的規則。UTF-8 是現在最通用的；用錯編碼就會變亂碼「�」。",
+    "analogy": "像摩斯密碼表：發送和接收要用同一張表，不然收到的就是天書。",
+    "example": "存檔用 UTF-8，開檔也用 UTF-8，中文才不會變亂碼",
+    "related": [
+      "ascii",
+      "unicode",
+      "mojibake"
+    ]
+  },
+  {
+    "slug": "mojibake",
+    "term": "mojibake",
+    "zh_name": "亂碼",
+    "category": "slang",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "編碼對不上時，文字顯示成一堆問號或怪符號（像 �、æ‡）。日文「文字化け」來的詞。",
+    "analogy": "像用錯頻率收廣播，只聽到滋滋雜訊而不是節目。",
+    "example": "CSV 用 Big5 存、Excel 用 UTF-8 開 → 中文全變亂碼",
+    "related": [
+      "utf8",
+      "encoding",
+      "unicode"
+    ]
+  },
+  {
+    "slug": "single-source-of-truth",
+    "term": "single source of truth",
+    "zh_name": "單一真相來源",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "同一份資料只在一個地方是「權威版本」，其他地方都從它衍生，避免多份互相打架、對不起來。",
+    "analogy": "像公司只認一本正式帳；各部門的小抄都要以總帳為準，不能各記各的。",
+    "example": "使用者資料以資料庫為準，前端只是顯示、不另存一份會過期的",
+    "related": [
+      "state",
+      "immutable",
+      "cache-invalidation"
+    ]
+  },
+  {
+    "slug": "dry-principle",
+    "term": "DRY (Don't Repeat Yourself)",
+    "zh_name": "不要重複自己",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "同一段邏輯別複製貼上到處都是；抽成一個函式/元件，改一次到處生效。",
+    "analogy": "像通訊錄：號碼存一次，很多地方引用；別把同支電話抄在十張便條紙上。",
+    "example": "三個頁面都在算運費 → 抽成 calcShipping() 一處維護",
+    "related": [
+      "boilerplate",
+      "abstraction",
+      "wet"
+    ]
+  },
+  {
+    "slug": "kiss-principle",
+    "term": "KISS",
+    "zh_name": "越簡單越好",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "Keep It Simple, Stupid：能簡單解決就別搞複雜，簡單的東西好懂、好維護、少出錯。",
+    "analogy": "像開瓶器，能手一轉就開就別設計成十段變形機關。",
+    "example": "一個 if 能解的別硬套設計模式 —— KISS",
+    "related": [
+      "yagni",
+      "over-engineering",
+      "dry-principle"
+    ]
+  },
+  {
+    "slug": "shadowing",
+    "term": "variable shadowing",
+    "zh_name": "變數遮蔽",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "內層範圍宣告了跟外層同名的變數，內層就「蓋住」外層那個，容易看錯以為在改外面的。",
+    "analogy": "像公司內外都有人叫「小明」，會議室裡喊小明，回應的是這間的小明，不是隔壁的。",
+    "example": "外層有 name，函式內又 const name=... → 內層用的是自己那個",
+    "related": [
+      "scope",
+      "closure",
+      "hoisting"
+    ]
+  },
+  {
+    "slug": "memoization-cache",
+    "term": "memoization",
+    "zh_name": "記憶化",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把「同樣輸入的計算結果」記起來，下次同樣輸入直接回傳快取、不再重算。用空間換時間。",
+    "analogy": "像查過的字先抄在便條紙上，下次同一個字直接看便條、不用再翻字典。",
+    "example": "React useMemo 快取昂貴計算；費氏數列用 memo 從指數變線性",
+    "related": [
+      "cache",
+      "pure-function",
+      "performance"
+    ]
+  }
+]
