@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Bot, Laptop, LaptopMinimal, ArrowRight, Store, ChevronLeft, Sparkles, CheckCircle2, Loader2, Clock, XCircle, CalendarClock, Plus, Trash2, Power, ShieldAlert, Check, X } from "lucide-react";
 import { describeSchedule, type Frequency } from "@/lib/agent/schedule";
@@ -60,6 +60,10 @@ export function OfficeClient() {
     const d = await fetch("/api/agent/approvals").then((r) => (r.ok ? r.json() : { approvals: [] })).catch(() => ({ approvals: [] }));
     setApprovals(d.approvals ?? []);
   };
+  const loadTasks = async () => {
+    const d = await fetch("/api/agent/tasks").then((r) => (r.ok ? r.json() : { tasks: [] })).catch(() => ({ tasks: [] }));
+    setTasks(d.tasks ?? []);
+  };
 
   useEffect(() => {
     let alive = true;
@@ -79,10 +83,21 @@ export function OfficeClient() {
       setApprovals(ap.approvals ?? []);
       setLoading(false);
     })();
-    // 待批准佇列每 20 秒刷新（排程/背景任務可能隨時冒出需批准的動作）
-    const iv = setInterval(() => { if (alive) loadApprovals(); }, 20000);
+    // 每 10 秒刷新「工作中的任務 + 待批准佇列」（看員工在工作 / 隨時冒出的待批准）。
+    // 只有分頁在前景 + 有任務在跑（或有待批准）才刷、省流量。
+    const iv = setInterval(() => {
+      if (!alive || (typeof document !== "undefined" && document.visibilityState !== "visible")) return;
+      const hasLive = tasksRef.current.some((t) => ["planning", "running", "awaiting_approval", "awaiting_device"].includes(t.status));
+      if (hasLive || approvalsRef.current.length > 0) { loadTasks(); loadApprovals(); }
+    }, 10000);
     return () => { alive = false; clearInterval(iv); };
   }, []);
+
+  // 讓 interval 讀到最新的 tasks/approvals（避免閉包抓到初始空陣列 → 永遠不刷）
+  const tasksRef = useRef<TaskItem[]>([]);
+  const approvalsRef = useRef<Approval[]>([]);
+  useEffect(() => { tasksRef.current = tasks; }, [tasks]);
+  useEffect(() => { approvalsRef.current = approvals; }, [approvals]);
 
   const decideApproval = async (id: string, decision: "approved" | "denied") => {
     if (decidingId) return;
