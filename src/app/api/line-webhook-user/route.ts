@@ -871,6 +871,35 @@ export async function POST(req: NextRequest) {
         );
         continue;
       }
+      // 分身島「允許/取消」按鈕批准（LINE 內放行對外/寫入動作）
+      if (action === "agent_approve") {
+        const apprId = params.get("id");
+        const decision = params.get("d") === "approved" ? "approved" : "denied";
+        if (!apprId) { await lineReply(replyToken, "缺少確認 id、請到網站處理。", token, QUICK_REPLY); continue; }
+        const admin = createSupabaseAdmin();
+        const { data: prof } = await admin.from("profiles").select("id").eq("line_user_id", userId).maybeSingle();
+        if (!prof) { await lineReply(replyToken, cardUnbound(userId), token, QUICK_REPLY); continue; }
+        const { error, count } = await admin.from("agent_approvals")
+          .update({ decision, decided_at: new Date().toISOString() }, { count: "exact" })
+          .eq("id", apprId).eq("user_id", (prof as any).id).eq("decision", "pending");
+        if (error || !count) {
+          await lineReply(replyToken, buildSimpleCard({
+            emoji: "⌛", title: "這個確認已處理或過期", accentColor: "#6272a4",
+            body: "可能你已經按過、或已逾時（5 分鐘）。到辦公室看目前狀態。",
+            buttons: [{ label: "🏢 我的辦公室", uri: `${SITE_URL}/agent/office`, primary: true }],
+          }), token, QUICK_REPLY);
+        } else {
+          await lineReply(replyToken, buildSimpleCard({
+            emoji: decision === "approved" ? "✅" : "❌",
+            title: decision === "approved" ? "已允許、分身島繼續執行" : "已取消這個動作",
+            accentColor: decision === "approved" ? "#50fa7b" : "#ff5555",
+            body: decision === "approved" ? "分身島會繼續往下做，完成再通知你。" : "分身島不會執行這個動作。",
+            buttons: [{ label: "🏢 看辦公室", uri: `${SITE_URL}/agent/office`, primary: true }],
+          }), token, QUICK_REPLY);
+        }
+        continue;
+      }
+
       // 未知 postback action — 忽略
       console.warn("[line-webhook-user] unknown postback:", data);
       continue;

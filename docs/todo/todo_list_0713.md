@@ -142,7 +142,7 @@
 - ⬜ **統一 Bridge**：三平台共用一套「訊息 → 建 agent task → 回填結果」轉接層（沿用現有 task/thread 架構）。
 
 ### 14-2 批准流程搬到聊天平台（安全核心）
-- ⬜ **在 LINE/TG/Discord 內按鈕批准**：需確認的動作（發文/報名/寄信）直接在聊天平台用按鈕「允許/取消」，不必回網站——最順的授權體驗，且守紅線。
+- 🚧 **在 LINE/TG/Discord 內按鈕批准**：~~LINE 已做——LINE 發起的分身島任務要批准時，推一張帶「✅允許/❌取消」postback 按鈕的卡，按下即更新 `agent_approvals.decision`、分身島 waitForApproval 接手繼續（orchestrator `notifyApprovalToLine` + webhook `agent_approve` postback）（0713）~~；TG/Discord 待補（複用同模式）。
 - ⬜ **統一通知中心**：截止提醒 / 任務完成 / 需批准 統一推到使用者選的平台。
 
 ### 14-3 Outbound：Agent 起草 → 批准 → 發布（社群發文）

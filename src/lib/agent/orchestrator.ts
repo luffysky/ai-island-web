@@ -374,6 +374,27 @@ async function notifyLineIfFromLine(taskId: string, userId: string): Promise<voi
   await notifyUserLine({ userId, text: `${head}\n\n${summary.slice(0, 1500)}\n\n看完整：${site}/agent?task=${taskId}` });
 }
 
+// LINE 發起的任務需要批准時→推 LINE 一張帶「允許/取消」postback 按鈕的卡（守紅線：對外動作在 LINE 也能一鍵放行）。
+async function notifyApprovalToLine(userId: string, taskId: string, approvalId: string, toolName: string, summary: Record<string, string>): Promise<void> {
+  const admin = createSupabaseAdmin();
+  const { data: task } = await admin.from("agent_tasks").select("thread_id").eq("id", taskId).maybeSingle();
+  if (!task?.thread_id) return;
+  const { data: th } = await admin.from("agent_threads").select("title").eq("id", task.thread_id).maybeSingle();
+  if (!String((th as any)?.title ?? "").startsWith("📱 LINE")) return;
+  const lines = Object.entries(summary ?? {}).slice(0, 4).map(([k, v]) => `${k}：${v}`).join("\n");
+  const { notifyUserLine } = await import("@/lib/notify-user-line");
+  const { buildSimpleCard } = await import("@/lib/line-flex");
+  const flex = buildSimpleCard({
+    emoji: "🔐", title: "分身島需要你確認", accentColor: "#f59e0b",
+    body: `要執行：${toolName}${lines ? `\n${lines}` : ""}\n\n這是會對外/寫入的動作，允許才做。`,
+    buttons: [
+      { label: "✅ 允許", postback: `action=agent_approve&id=${approvalId}&d=approved`, displayText: "已允許 ✅", primary: true },
+      { label: "❌ 取消", postback: `action=agent_approve&id=${approvalId}&d=denied`, displayText: "已取消 ❌" },
+    ],
+  });
+  await notifyUserLine({ userId, text: `🔐 分身島需要你確認：${toolName}（在 LINE 按鈕或網站放行）`, flex });
+}
+
 export function runAgentTaskDetached(taskId: string, userId: string, goal: string, maxSteps = 40, skill?: SkillCtx, extraTools?: AgentTool[], priorContext = ""): void {
   if (RUNNING.has(taskId)) return;
   RUNNING.add(taskId);
@@ -534,6 +555,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
           .select("id").single();
         await setStatus("awaiting_approval");
         pushSafe(userId, "🤖 Agent 需要你確認", `${tool.name}：${goal}`, taskId, `agent-appr-${taskId}`);
+        notifyApprovalToLine(userId, taskId, appr!.id, tool.name, summary).catch(() => {});  // LINE 發起的任務→推 LINE 按鈕批准
         yield { type: "approval", approval: { id: appr!.id, toolName: tool.name, risk: tool.risk, summary } };
         const ok = await waitForApproval(appr!.id, taskId);
         await setStatus("running");
