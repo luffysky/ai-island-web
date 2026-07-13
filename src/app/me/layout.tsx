@@ -19,7 +19,7 @@ export default async function MeLayout({ children }: { children: React.ReactNode
   const bgCss = backgroundCss((profile as any)?.background);
 
   return (
-    <div className="min-h-screen" style={bgCss ? { background: bgCss } : undefined}>
+    <div className="min-h-screen me-page-bg" style={bgCss ? { background: bgCss } : undefined}>
       <div className="max-w-7xl mx-auto px-6 py-6">
         <div className="flex flex-col md:flex-row gap-6">
           <MeSidebar profile={profile ?? null} />

@@ -91,7 +91,7 @@ export function ConnectionsClient() {
                     <input value={handle} onChange={(e) => setHandle(e.target.value)} placeholder={p.hint} className="w-full rounded-lg border border-border bg-bg-elevated px-2.5 py-1.5 text-xs outline-none focus:border-accent" />
                     <input value={token} onChange={(e) => setToken(e.target.value)} placeholder="access token（選填、進階用、加密儲存）" className="w-full rounded-lg border border-border bg-bg-elevated px-2.5 py-1.5 text-xs outline-none focus:border-accent" />
                     <div className="flex items-center gap-2">
-                      <button onClick={() => add(p.key)} disabled={busy} className="inline-flex items-center gap-1 text-xs rounded-lg bg-accent text-white px-2.5 py-1.5 disabled:opacity-50">{busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />} 連結</button>
+                      <button onClick={() => add(p.key)} disabled={busy} className="inline-flex items-center gap-1 text-xs rounded-lg bg-accent text-black px-2.5 py-1.5 disabled:opacity-50">{busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />} 連結</button>
                       <button onClick={() => { setOpenForm(""); setErr(""); }} className="inline-flex items-center gap-1 text-xs rounded-lg border border-border px-2.5 py-1.5"><X className="w-3.5 h-3.5" /> 取消</button>
                     </div>
                   </div>

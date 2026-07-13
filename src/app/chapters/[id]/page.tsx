@@ -102,7 +102,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ id: st
           <div className="text-5xl">🔒</div>
           <h1 className="text-xl font-bold">{t("notPublishedTitle")}</h1>
           <p className="text-sm text-fg-muted">{t("notPublishedDesc")}</p>
-          <a href="/store?tab=redeem" className="inline-block px-5 py-2.5 rounded-full bg-accent text-white font-semibold">{t("unlock")}</a>
+          <a href="/store?tab=redeem" className="inline-block px-5 py-2.5 rounded-full bg-accent text-black font-semibold">{t("unlock")}</a>
         </main>
       );
     }

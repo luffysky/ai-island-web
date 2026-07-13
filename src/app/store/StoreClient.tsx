@@ -87,9 +87,9 @@ export function StoreClient({ balance, isPro, packages, plans, perks, plusPerks 
       </header>
 
       <div className="inline-flex rounded-full border border-border bg-bg-card p-1 text-sm">
-        <button onClick={() => setTab("zcoin")} className={`px-4 py-1.5 rounded-full inline-flex items-center gap-1.5 ${tab === "zcoin" ? "bg-accent text-white" : "text-fg-muted"}`}><Coins size={15} /> {t("tabTopup")}</button>
-        <button onClick={() => setTab("redeem")} className={`px-4 py-1.5 rounded-full inline-flex items-center gap-1.5 ${tab === "redeem" ? "bg-accent text-white" : "text-fg-muted"}`}><Gift size={15} /> {t("tabRedeem")}</button>
-        <button onClick={() => setTab("pro")} className={`px-4 py-1.5 rounded-full inline-flex items-center gap-1.5 ${tab === "pro" ? "bg-accent text-white" : "text-fg-muted"}`}><Crown size={15} /> {t("tabPro")}{isPro && <span className="text-[10px] px-1.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-300">{t("subscribed")}</span>}</button>
+        <button onClick={() => setTab("zcoin")} className={`px-4 py-1.5 rounded-full inline-flex items-center gap-1.5 ${tab === "zcoin" ? "bg-accent text-black" : "text-fg-muted"}`}><Coins size={15} /> {t("tabTopup")}</button>
+        <button onClick={() => setTab("redeem")} className={`px-4 py-1.5 rounded-full inline-flex items-center gap-1.5 ${tab === "redeem" ? "bg-accent text-black" : "text-fg-muted"}`}><Gift size={15} /> {t("tabRedeem")}</button>
+        <button onClick={() => setTab("pro")} className={`px-4 py-1.5 rounded-full inline-flex items-center gap-1.5 ${tab === "pro" ? "bg-accent text-black" : "text-fg-muted"}`}><Crown size={15} /> {t("tabPro")}{isPro && <span className="text-[10px] px-1.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-300">{t("subscribed")}</span>}</button>
       </div>
 
       {tab === "zcoin" && (

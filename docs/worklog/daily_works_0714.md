@@ -29,6 +29,10 @@
 - ✅ **手機底部 nav 擋住法律連結修正**：footer 加 `pb-[calc(2rem+3.5rem+env(safe-area-inset-bottom))] md:pb-8` → 隱私權/使用條款/Cookie 在手機不再被 `MobileBottomNav`(h-14 fixed) 蓋住；桌面不變。法律路由 /privacy /terms /cookies build 通過。
 - ✅ **全站深/淺色切換稽核 + 修**：subagent 掃全站，實際 offender 6 處（其餘 text-white/black 多在 accent 按鈕/暗圖上＝刻意）。已修：`/quest`(補 root 暗底、arcade 固定暗)、`EloProgress`(萌新/熟手段位字改 `text-gray/slate-500 dark:300`)、`SkillRadar`(PolarGrid 改 `var(--color-border)`)、`LearningDashboard`(Recharts tooltip/grid/axis 硬色改 token)、`ResourceCard`(github chip)、`leaderboard`(銀牌 icon)。MeHero/MeSidebar 本來就 token 化＝OK。
 - ✅ **`/agent` 輸入框重排**：textarea 改整整一欄、語音＋執行移到輸入框下面（手機不再擠）。
+- ✅ **淺色模式「整片背景黑掉」真因（林董 203.jpg）**：`/me/layout.tsx` 用 `backgroundCss(profile.background)` inline style 套「學員自訂背景」，`BG_PRESETS` **全深色漸層且無視主題** → 淺色整頁黑、側欄深字看不到。修：`.me-page-bg` + `html[data-theme=light] .me-page-bg{background:transparent!important}` → 深色自訂背景**只在深色主題套**。**這是 runtime inline style、非靜態 class → 前一次掃描漏抓**（教訓：別只掃 class）。
+- ✅ **MeHero 加實心底**（半透明 `from-accent/10` → `bg-bg-card` + 裝飾疊層）。
+- ✅ **第二輪嚴格稽核修**：`bg-accent text-white`→`text-black`(store×3/store result/connections/chapters 解鎖鈕)、leaderboard 兩處 `bg-clip-text` 加淺色 fallback、`world.tsx` 星座連線 stroke 改 token、DictHero 加實心底。
+- ⬜ latent 待續：~14 張半透明漸層卡缺實心 base（NextLesson/ResumeCTA/career/PaywallOverlay…）逐一補 `bg-bg-card`（目前可讀、非破版）。
 - ✅ **Agent 任務 cloudflare 401 失敗修**：`resolve-usage-ai.ts` 的 `isQuotaOrTransient` 補 **401/authentication/invalid key** → 某免費 provider(如 Cloudflare Workers AI)金鑰失效時**自動換下一家**、不再一個壞金鑰弄死整個任務。（林董另需去 `/admin/ai/models` 修/停用壞掉的 Cloudflare 金鑰）
 - 🚨 收尾檢查：本批多次 `tsc --noEmit`✓ / `vitest` 137✓ / `next build` exit0✓；純前端無 migration；未動 .env.local。
 

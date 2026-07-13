@@ -47,8 +47,10 @@ export function MeHero({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-accent/10 via-accent-2/5 to-accent-3/10 p-5 md:p-6"
+      className="relative overflow-hidden rounded-2xl border border-border bg-bg-card p-5 md:p-6"
     >
+      {/* accent 微漸層當「裝飾疊層」（不是底色）→ 底一定是 bg-bg-card、文字 text-fg 亮暗都讀得到 */}
+      <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-accent-2/5 to-accent-3/10 pointer-events-none" />
       <SparklesParticles count={10} colors={["#50fa7b", "#fde047", "#a855f7"]} />
       <div className="absolute -top-12 -right-12 w-48 h-48 bg-accent/15 rounded-full blur-3xl animate-pulse" />
       <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-accent-2/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />

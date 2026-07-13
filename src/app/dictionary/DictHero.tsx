@@ -8,7 +8,9 @@ const DICT_LOTTIE = "";
 
 export function DictHero() {
   return (
-    <header className="relative mb-6 overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-accent/10 via-emerald-500/[0.06] to-sky-500/10 p-6 sm:p-8">
+    <header className="relative mb-6 overflow-hidden rounded-3xl border border-border bg-bg-card p-6 sm:p-8">
+      {/* accent 微漸層當裝飾疊層、底一定是 bg-bg-card（亮暗都讀得到）*/}
+      <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-emerald-500/[0.06] to-sky-500/10 pointer-events-none" />
       {/* 漂浮小裝飾：Lottie 自建雙星閃爍（自 host、可商用），載不出來退回 ✨ emoji */}
       <span className="pointer-events-none absolute right-3 top-2 opacity-90">
         <LottieIcon src="/lotties/dict-sparkle.json" size={56} fallback={<span className="text-2xl dict-float">✨</span>} />

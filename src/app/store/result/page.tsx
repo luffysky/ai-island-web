@@ -42,7 +42,7 @@ export default async function ResultPage({ searchParams }: { searchParams: Promi
       {order && <div className="text-xs text-fg-muted">{t("orderNo", { no: order.order_no })}</div>}
       <div className="flex items-center justify-center gap-2 pt-2">
         <Link href="/store" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-bg-card border border-border text-sm hover:text-accent"><Coins size={15} /> {t("backToStore")}</Link>
-        <Link href="/creator-island" className="px-4 py-2 rounded-full bg-accent text-white text-sm">{t("backToIsland")}</Link>
+        <Link href="/creator-island" className="px-4 py-2 rounded-full bg-accent text-black text-sm">{t("backToIsland")}</Link>
       </div>
     </div>
   );

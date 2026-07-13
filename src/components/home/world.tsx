@@ -179,7 +179,7 @@ export function WorldMap({
                 y1={p.y}
                 x2={n.x}
                 y2={n.y}
-                stroke={dim ? "rgba(255,255,255,0.14)" : "rgba(139,233,253,0.5)"}
+                stroke={dim ? "color-mix(in srgb, var(--color-fg) 18%, transparent)" : "color-mix(in srgb, var(--color-accent-2) 60%, transparent)"}
                 strokeWidth={2}
                 strokeDasharray="1.5 2.5"
                 strokeLinecap="round"

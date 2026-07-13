@@ -92,7 +92,7 @@ export default async function LeaderboardPage({ searchParams }: { searchParams: 
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 shadow-2xl shadow-yellow-500/30 mb-3 ring-4 ring-yellow-500/20">
             <Trophy size={40} className="text-white drop-shadow-lg" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-2 bg-gradient-to-r from-yellow-400 via-amber-300 to-orange-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-2 bg-gradient-to-r from-yellow-400 via-amber-300 to-orange-400 bg-clip-text text-amber-600 dark:text-transparent">
             {t("title")}
           </h1>
           <p className="text-sm text-fg-muted">{t("liveUpdate")} · {boardHint(board)}</p>
@@ -266,7 +266,7 @@ function PodiumCard({ user, rank, board, t }: { user: LbUser; rank: 1 | 2 | 3; b
         </div>
         {/* 底座卡 */}
         <div className={`mt-2 px-3 py-2 rounded-xl border ring-1 ${config.ring} ${config.bg} text-center min-w-[110px] shadow-xl ${config.shadow}`}>
-          <div className={`text-sm font-extrabold bg-gradient-to-r ${config.gradient} bg-clip-text text-transparent`}>
+          <div className={`text-sm font-extrabold bg-gradient-to-r ${config.gradient} bg-clip-text text-fg dark:text-transparent`}>
             {metricOf(user, board, t).text}
           </div>
           <div className="text-[10px] text-fg-muted font-mono mt-0.5">Lv {user.level}{board !== "xp" ? ` · ${(user.xp ?? 0).toLocaleString()} XP` : ""}</div>
