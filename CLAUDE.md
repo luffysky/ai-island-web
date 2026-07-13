@@ -82,6 +82,6 @@ PostgREST 預設一次最多回 **1000 筆**。`lessons` 表已 1258 筆、任�
 - **資料表** `dictionary_terms`（migration `supabase/dictionary_migration.sql` 已跑）。`domain` 欄位預留給未來「語言島」的英/日辭典共用（`domain='english'|'japanese'`）。
 - **種子＝手寫、零 API**：`scripts/_data/dictionary-seed-N.json`（一個物件一條，欄位：slug/term/zh_name/category(syntax|concept|slang|tool|error|reference)/langs/plain/analogy/example/related/difficulty(1-3)）。**由我直接 author，不跑生成器、不花 AI 錢。**
 - **灌 DB**（冪等、依 slug upsert、讀所有 seed 檔）：`node scripts/import-dictionary.mjs`。
-- **目前進度：~1091 條 / 目標 5000。續寫從 `dictionary-seed-23.json` 接下去編號**（別重複既有 slug；批次主題見各 commit 訊息）。**「續辭典」= 從第 23 批繼續 author→import→commit→push。**（21 批＝工程實務術語 27 條；22 批＝後端/DevOps/git 進階：kafka/nginx/CQRS/event-sourcing/saga/rebase/bisect/reflog…42 條）
+- **目前進度：~1130 條 / 目標 5000。續寫從 `dictionary-seed-24.json` 接下去編號**（別重複既有 slug；批次主題見各 commit 訊息）。**「續辭典」= 從第 24 批繼續 author→import→commit→push。**（21 批工程實務 27 條；22 批後端/DevOps/git 42 條；23 批前端/React/CSS/Web API 39 條）
 - **i18n**：辭典已接翻譯管線（`content-i18n.ts` + `translate-sync-all.mjs` 的 `dictionary` scope，翻 zh_name/plain/analogy，term/example 不翻）。新增批次後跑 `node scripts/translate-sync-all.mjs`（免費 Google、長跑會斷、冪等重跑即可）補譯。頁面已在地化（切語言看譯文、沒譯 fallback 中文）。
 - **頁面**：`/dictionary`（搜尋+分類/語言篩選，`DictionaryBrowse.tsx`）、`/dictionary/[slug]`（白話+比喻+範例+相關詞、`DefinedTerm` JSON-LD）。nav 已加「程式辭典」（四語 i18n）。Hero 用自建 `public/lotties/dict-sparkle.json`。

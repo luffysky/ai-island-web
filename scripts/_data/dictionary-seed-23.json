@@ -1,0 +1,703 @@
+[
+  {
+    "slug": "reconciliation",
+    "term": "reconciliation",
+    "zh_name": "協調（React diff）",
+    "category": "concept",
+    "langs": [
+      "react"
+    ],
+    "difficulty": 3,
+    "plain": "React 比對新舊虛擬 DOM、算出「最少要改哪些真實 DOM」再動手，不整頁重畫。",
+    "analogy": "像改考卷只圈出錯的地方訂正，不是整張重寫。",
+    "example": "state 變了 → React reconcile → 只更新變動的節點",
+    "related": [
+      "virtual-dom",
+      "key-prop",
+      "render"
+    ]
+  },
+  {
+    "slug": "prop-drilling",
+    "term": "prop drilling",
+    "zh_name": "屬性鑽透",
+    "category": "slang",
+    "langs": [
+      "react"
+    ],
+    "difficulty": 2,
+    "plain": "一個資料要從最上層一路用 props 傳好幾層才到需要它的元件，中間層根本用不到卻被迫轉手。",
+    "analogy": "像傳話遊戲：明明要給最後一個人，卻得經過中間每個人的手。",
+    "example": "深層元件要 user，卻得層層 props 往下傳 → 改用 Context",
+    "related": [
+      "context-api",
+      "state",
+      "component"
+    ]
+  },
+  {
+    "slug": "context-api",
+    "term": "Context API",
+    "zh_name": "Context",
+    "category": "concept",
+    "langs": [
+      "react"
+    ],
+    "difficulty": 2,
+    "plain": "React 的跨層級傳值機制，Provider 提供、子孫直接 useContext 拿，免一層層 props 鑽透。適合放主題、登入者等全域資料。",
+    "analogy": "像大樓的公共廣播：不用一間間敲門，全樓層都聽得到。",
+    "example": "<ThemeContext.Provider> 包住、深層 useContext(ThemeContext) 直接取用",
+    "related": [
+      "prop-drilling",
+      "custom-hook",
+      "state-management"
+    ]
+  },
+  {
+    "slug": "custom-hook",
+    "term": "custom hook",
+    "zh_name": "自訂 Hook",
+    "category": "concept",
+    "langs": [
+      "react"
+    ],
+    "difficulty": 2,
+    "plain": "把可重用的元件邏輯（抓資料、訂閱、表單）抽成 useXxx 函式，多個元件共用。命名一定 use 開頭。",
+    "analogy": "像自己做的工具模組，哪個元件要用就 import 來用。",
+    "example": "function useUser(){ const [u,setU]=useState(); …; return u }",
+    "related": [
+      "context-api",
+      "useeffect-cleanup",
+      "dry-principle"
+    ]
+  },
+  {
+    "slug": "useeffect-cleanup",
+    "term": "useEffect cleanup",
+    "zh_name": "useEffect 清理",
+    "category": "concept",
+    "langs": [
+      "react"
+    ],
+    "difficulty": 3,
+    "plain": "useEffect 回傳的函式會在元件卸載或下次執行前跑，用來取消訂閱、清 timer、關連線，避免記憶體洩漏或對已卸載元件 setState。",
+    "analogy": "像離開房間前隨手關燈關窗，不留爛攤子。",
+    "example": "useEffect(()=>{ const id=setInterval(f,1000); return ()=>clearInterval(id) },[])",
+    "related": [
+      "memory-leak",
+      "custom-hook",
+      "lifecycle"
+    ]
+  },
+  {
+    "slug": "css-specificity",
+    "term": "CSS specificity",
+    "zh_name": "CSS 優先級",
+    "category": "concept",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "多條 CSS 規則衝突時，誰比較「具體」誰贏：inline > id > class > 標籤。搞不懂就會「我明明寫了怎麼沒生效」。",
+    "analogy": "像公文層級：越高階簽的越算數，同階才看先後。",
+    "example": "#box .item 比 .item 具體、會蓋過它；別動不動用 !important",
+    "related": [
+      "css-variable",
+      "bem",
+      "cascade"
+    ]
+  },
+  {
+    "slug": "grid-layout",
+    "term": "CSS Grid",
+    "zh_name": "格線佈局",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "用列(row)與行(column)的二維格線排版，適合整體版面（卡片牆、儀表板）。跟一維的 flexbox 互補。",
+    "analogy": "像 Excel 的儲存格：先畫好格子，內容各就各位。",
+    "example": "display:grid; grid-template-columns: repeat(3, 1fr)  // 三等分欄",
+    "related": [
+      "flexbox",
+      "responsive-design",
+      "box-model"
+    ]
+  },
+  {
+    "slug": "css-variable",
+    "term": "CSS variable",
+    "zh_name": "CSS 變數",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "用 --name 定義、var(--name) 取用的自訂屬性，改一處全站生效，還能被 JS 動態改（做主題切換超方便）。",
+    "analogy": "像調色盤定好『主色』，各處引用；要換色只改調色盤。",
+    "example": ":root{ --accent:#50fa7b } .btn{ color: var(--accent) }",
+    "related": [
+      "css-specificity",
+      "theme",
+      "dark-mode"
+    ]
+  },
+  {
+    "slug": "bem",
+    "term": "BEM",
+    "zh_name": "BEM 命名法",
+    "category": "reference",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "Block__Element--Modifier 的 CSS class 命名慣例，讓樣式不互相污染、一看就懂結構。",
+    "analogy": "像地址格式：區塊_元素--狀態，人人照同一格式寫。",
+    "example": ".card__title--large  // card 這個 block 的 title 元素、large 變體",
+    "related": [
+      "css-specificity",
+      "convention",
+      "maintainability"
+    ]
+  },
+  {
+    "slug": "rem-em",
+    "term": "rem / em",
+    "zh_name": "rem / em 單位",
+    "category": "reference",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "相對字級的長度單位：rem 相對『根元素』字級（穩定）、em 相對『自己/父層』字級（會層層放大）。做無障礙縮放常用 rem。",
+    "analogy": "rem 像以總部規定為準；em 像各分店自己往上一層看，容易失控。",
+    "example": "1rem = 根字級（通常 16px）；padding: 0.5rem 就是 8px",
+    "related": [
+      "responsive-design",
+      "accessibility",
+      "viewport"
+    ]
+  },
+  {
+    "slug": "position-absolute",
+    "term": "position: absolute",
+    "zh_name": "絕對定位",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "元素脫離正常排版流，相對『最近的已定位祖先』用 top/left 定位。父層記得設 position:relative 當定位基準。",
+    "analogy": "像便利貼可以貼在指定座標，不占原本行列的位置。",
+    "example": "父 position:relative；子 position:absolute; top:0; right:0  // 貼右上角",
+    "related": [
+      "z-index",
+      "box-model",
+      "transform-css"
+    ]
+  },
+  {
+    "slug": "transform-css",
+    "term": "CSS transform",
+    "zh_name": "變形",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "位移/縮放/旋轉/傾斜元素而不影響版面排版，且交給 GPU 跑、很順。",
+    "analogy": "像把貼紙旋轉縮放，旁邊的東西不會被擠動。",
+    "example": "transform: translateX(10px) scale(1.1) rotate(5deg)",
+    "related": [
+      "transition-css",
+      "animation-css",
+      "position-absolute"
+    ]
+  },
+  {
+    "slug": "transition-css",
+    "term": "CSS transition",
+    "zh_name": "過渡",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 1,
+    "plain": "屬性改變時自動補上平滑動畫（如 hover 變色慢慢變），不用寫 JS。",
+    "analogy": "像燈光『漸亮』而不是啪一下全開。",
+    "example": "transition: all .2s ease；hover 時 background 變色就會滑順過去",
+    "related": [
+      "transform-css",
+      "animation-css"
+    ]
+  },
+  {
+    "slug": "animation-css",
+    "term": "CSS animation / keyframes",
+    "zh_name": "動畫",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "用 @keyframes 定義多個時間點的樣式，讓元素自動循環/播放動畫，比 transition 更能做複雜連續動作。",
+    "analogy": "像定格動畫：定好幾個關鍵畫面，中間自動補幀。",
+    "example": "@keyframes spin{ to{ transform:rotate(360deg) } }  loading 轉圈就用它",
+    "related": [
+      "transition-css",
+      "transform-css",
+      "requestanimationframe"
+    ]
+  },
+  {
+    "slug": "aria",
+    "term": "ARIA",
+    "zh_name": "無障礙屬性",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 2,
+    "plain": "給輔助科技（螢幕閱讀器）看的額外標記，讓看不到畫面的人也能操作。能用語意 HTML 就別硬加 ARIA。",
+    "analogy": "像展場的點字與語音導覽，讓每個人都逛得了。",
+    "example": "<button aria-label=\"關閉\">×</button>  // 讀出『關閉』而不是『叉』",
+    "related": [
+      "accessibility",
+      "semantic-html",
+      "seo"
+    ]
+  },
+  {
+    "slug": "open-graph",
+    "term": "Open Graph",
+    "zh_name": "OG 分享預覽",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 1,
+    "plain": "一組 <meta> 標籤，決定連結被分享到 FB/LINE/Discord 時顯示的標題、描述、縮圖。",
+    "analogy": "像商品的包裝盒：決定別人看到你連結時的第一印象。",
+    "example": "<meta property=\"og:image\" content=\"…\">  // 分享時的預覽圖",
+    "related": [
+      "meta-tag",
+      "seo",
+      "favicon"
+    ]
+  },
+  {
+    "slug": "critical-css",
+    "term": "critical CSS",
+    "zh_name": "關鍵 CSS",
+    "category": "concept",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 3,
+    "plain": "把「首屏一眼就看到的內容」需要的 CSS 先內嵌、優先載入，其餘延後，讓畫面更快出現、不閃爍。",
+    "analogy": "像上菜先端最先吃的前菜，甜點慢點來沒關係。",
+    "example": "首屏樣式 inline 進 HTML，剩下的 CSS 非同步載",
+    "related": [
+      "preload-prefetch",
+      "web-vitals",
+      "code-splitting"
+    ]
+  },
+  {
+    "slug": "preload-prefetch",
+    "term": "preload / prefetch",
+    "zh_name": "預載 / 預取",
+    "category": "concept",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 3,
+    "plain": "preload：現在這頁馬上要用的資源先抓（字型、關鍵圖）。prefetch：使用者可能等下要去的頁面資源先偷偷抓，切過去就秒開。",
+    "analogy": "preload 像上菜前先備料；prefetch 像猜你等下會點什麼、先預熱。",
+    "example": "<link rel=\"preload\" as=\"font\" …>；下一頁的 chunk 用 prefetch",
+    "related": [
+      "critical-css",
+      "lazy-loading",
+      "code-splitting"
+    ]
+  },
+  {
+    "slug": "code-splitting",
+    "term": "code splitting",
+    "zh_name": "程式碼分割",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "把一大包 JS 拆成小塊，用到哪塊才載哪塊，首屏不用一次下載全部、載更快。",
+    "analogy": "像影集分集播出，不用一次下載整季才能看第一集。",
+    "example": "React lazy(()=>import('./Chart'))  // 圖表元件用到才載",
+    "related": [
+      "lazy-loading",
+      "tree-shaking",
+      "bundle"
+    ]
+  },
+  {
+    "slug": "source-map",
+    "term": "source map",
+    "zh_name": "原始碼對照表",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "壓縮/轉譯後的程式碼配一張對照表，讓 DevTools 報錯時能指回你原本好讀的原始碼行號，而不是壓成一行的天書。",
+    "analogy": "像翻譯書附原文對照頁，出錯能查到原文哪一句。",
+    "example": "正式站報錯 stack 指到 app.min.js:1 → 有 source map 就還原成 Button.tsx:42",
+    "related": [
+      "minify",
+      "transpile",
+      "sentry"
+    ]
+  },
+  {
+    "slug": "minify",
+    "term": "minify",
+    "zh_name": "最小化",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "把程式碼的空白、換行、註解、長變數名都拿掉/縮短，檔案變小、載更快，但人看不懂（機器照跑）。",
+    "analogy": "像把文章的空格標點全擠掉只留字，省紙但難讀。",
+    "example": "app.js 100KB → app.min.js 30KB；配 source map 才好 debug",
+    "related": [
+      "source-map",
+      "bundle",
+      "tree-shaking"
+    ]
+  },
+  {
+    "slug": "transpile",
+    "term": "transpile",
+    "zh_name": "轉譯",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "把新語法/別種語言轉成瀏覽器都懂的舊 JS（TS→JS、新 ES→ES5）。編譯的一種，語言階層差不多。",
+    "analogy": "像把方言翻成大家都聽得懂的普通話。",
+    "example": "Babel/TypeScript 把 TS 與最新語法 transpile 成通用 JS",
+    "related": [
+      "polyfill",
+      "shim",
+      "minify"
+    ]
+  },
+  {
+    "slug": "shim",
+    "term": "shim",
+    "zh_name": "墊片",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "攔在中間、把新 API 的呼叫轉接到舊環境也能動的做法。跟 polyfill 相近，但 shim 更偏『改寫既有行為』。",
+    "analogy": "像轉接頭，讓新插頭插進舊插座。",
+    "example": "用 shim 讓舊瀏覽器的某 API 行為跟新標準一致",
+    "related": [
+      "polyfill",
+      "ponyfill",
+      "feature-detection"
+    ]
+  },
+  {
+    "slug": "ponyfill",
+    "term": "ponyfill",
+    "zh_name": "Ponyfill",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "跟 polyfill 一樣補功能，但不偷改全域環境，而是『當成模組匯入來用』，不污染別人。",
+    "analogy": "像自備工具而不是動別人家的工具箱，用完不留痕跡。",
+    "example": "import fetch from 'cross-fetch'  // 不覆蓋全域 fetch，明確 import 使用",
+    "related": [
+      "polyfill",
+      "shim",
+      "side-effect"
+    ]
+  },
+  {
+    "slug": "feature-detection",
+    "term": "feature detection",
+    "zh_name": "功能偵測",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "先檢查『這個環境支不支援某功能』再決定怎麼做，而不是猜瀏覽器型號（那不可靠）。",
+    "analogy": "像進廚房先看有沒有烤箱，而不是問『你家是哪個牌子的房子』。",
+    "example": "if ('IntersectionObserver' in window) 用它、否則退回捲動事件",
+    "related": [
+      "graceful-degradation",
+      "polyfill",
+      "progressive-web-app"
+    ]
+  },
+  {
+    "slug": "progressive-web-app",
+    "term": "PWA",
+    "zh_name": "漸進式網頁應用",
+    "category": "concept",
+    "langs": [
+      "web"
+    ],
+    "difficulty": 2,
+    "plain": "用網頁技術做出「像 App」的體驗：可安裝到桌面、離線可用、能推播。靠 service worker + manifest。",
+    "analogy": "像網頁穿上 App 的外衣，能裝上手機、沒網路也開得起來。",
+    "example": "加 manifest.json + service worker → 使用者可『加到主畫面』",
+    "related": [
+      "service-worker",
+      "local-storage",
+      "web-vitals"
+    ]
+  },
+  {
+    "slug": "local-storage",
+    "term": "localStorage",
+    "zh_name": "本地儲存",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "瀏覽器裡持久存小資料（字串），關掉分頁也還在。容量約 5MB，別放敏感資料（JS 都讀得到）。",
+    "analogy": "像貼在瀏覽器上的便利貼，下次來還看得到。",
+    "example": "localStorage.setItem('theme','dark'); localStorage.getItem('theme')",
+    "related": [
+      "session-storage",
+      "cookie-session",
+      "indexeddb"
+    ]
+  },
+  {
+    "slug": "session-storage",
+    "term": "sessionStorage",
+    "zh_name": "工作階段儲存",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "跟 localStorage 一樣的 API，但只活在『這個分頁這次開著』，關掉就清空。適合暫存表單、一次性狀態。",
+    "analogy": "像會議白板：這場會用，散會就擦掉。",
+    "example": "sessionStorage.setItem('step','2')  // 關分頁就沒了",
+    "related": [
+      "local-storage",
+      "cookie-session",
+      "state"
+    ]
+  },
+  {
+    "slug": "indexeddb",
+    "term": "IndexedDB",
+    "zh_name": "瀏覽器資料庫",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "瀏覽器內建的較大型 NoSQL 資料庫，能存大量結構化資料、可離線用，比 localStorage 強大但 API 較囉嗦（常配套件用）。",
+    "analogy": "localStorage 是便條紙，IndexedDB 是一整個抽屜櫃。",
+    "example": "離線筆記 App 把資料存 IndexedDB，沒網路也能讀寫",
+    "related": [
+      "local-storage",
+      "progressive-web-app",
+      "service-worker"
+    ]
+  },
+  {
+    "slug": "web-worker",
+    "term": "Web Worker",
+    "zh_name": "背景執行緒",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "在背景另一條執行緒跑吃重運算，不卡住主執行緒（畫面），算完用訊息把結果傳回來。",
+    "analogy": "像把粗重活外包給後場，前台(畫面)照樣招呼客人不卡住。",
+    "example": "大量資料處理丟 Web Worker，UI 不會凍住",
+    "related": [
+      "event-loop",
+      "async-await",
+      "backpressure"
+    ]
+  },
+  {
+    "slug": "requestanimationframe",
+    "term": "requestAnimationFrame",
+    "zh_name": "動畫幀請求",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "跟瀏覽器說『下次要重畫畫面時叫我』，用來做順暢動畫，比 setInterval 更省電、跟螢幕更新同步。",
+    "analogy": "像跟著音樂節拍動作，而不是自己亂數拍子。",
+    "example": "function loop(){ move(); requestAnimationFrame(loop) }  // 每幀更新",
+    "related": [
+      "animation-css",
+      "throttle",
+      "web-vitals"
+    ]
+  },
+  {
+    "slug": "intersection-observer",
+    "term": "IntersectionObserver",
+    "zh_name": "交會觀察器",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "非同步監看『某元素有沒有進入畫面』，做 lazy loading、無限捲動、曝光統計超省效能，不用一直算捲動位置。",
+    "analogy": "像門口感應器：有人進門才觸發，不用一直盯著看。",
+    "example": "圖片進到視窗才載入(lazy load)；捲到底自動載下一頁",
+    "related": [
+      "lazy-loading",
+      "infinite-scroll",
+      "resize-observer"
+    ]
+  },
+  {
+    "slug": "mutation-observer",
+    "term": "MutationObserver",
+    "zh_name": "DOM 變動觀察器",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "監看 DOM 結構/屬性的變化（新增節點、改屬性），變了就通知你。用來反應別人動了頁面。",
+    "analogy": "像監視器：畫面一有變動就錄下並通知。",
+    "example": "監看某容器有無新增子節點，出現就處理",
+    "related": [
+      "intersection-observer",
+      "resize-observer",
+      "observer-pattern"
+    ]
+  },
+  {
+    "slug": "resize-observer",
+    "term": "ResizeObserver",
+    "zh_name": "尺寸觀察器",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "監看某元素『尺寸改變』就回呼，做響應式元件（圖表隨容器變大小重畫）比監聽 window resize 精準。",
+    "analogy": "像量身師傅：這件衣服(元素)尺寸一變就通知你重裁。",
+    "example": "容器變寬 → ResizeObserver 觸發 → 重新排版/重畫圖表",
+    "related": [
+      "intersection-observer",
+      "responsive-design",
+      "media-query"
+    ]
+  },
+  {
+    "slug": "formdata",
+    "term": "FormData",
+    "zh_name": "表單資料",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "用來組表單欄位（含檔案）送出去的物件，上傳圖片/多欄位常用，會自動用 multipart 編碼。",
+    "analogy": "像把要寄的東西一件件裝進包裹再一起寄。",
+    "example": "const fd=new FormData(); fd.append('file', file); fetch(url,{method:'POST',body:fd})",
+    "related": [
+      "blob",
+      "urlsearchparams",
+      "fetch-abort"
+    ]
+  },
+  {
+    "slug": "urlsearchparams",
+    "term": "URLSearchParams",
+    "zh_name": "網址查詢參數",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "方便讀/組網址 ?key=value 查詢字串的工具，自動處理編碼，不用手動拼字串。",
+    "analogy": "像自動幫你把清單整理成『?項目=數量』格式，還會轉義特殊字。",
+    "example": "const p=new URLSearchParams(); p.set('q','貓 咪'); `?${p}`  // 自動編碼",
+    "related": [
+      "formdata",
+      "query-string",
+      "encoding"
+    ]
+  },
+  {
+    "slug": "blob",
+    "term": "Blob",
+    "zh_name": "二進位大物件",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "代表一團二進位資料（圖片、檔案、下載內容）的物件，可轉成網址給 <img>/下載用。",
+    "analogy": "像一個裝著檔案內容的密封包，可貼標籤(型別)、可交給別人用。",
+    "example": "const url=URL.createObjectURL(blob); // 預覽剛上傳的圖",
+    "related": [
+      "arraybuffer",
+      "data-uri",
+      "formdata"
+    ]
+  },
+  {
+    "slug": "arraybuffer",
+    "term": "ArrayBuffer",
+    "zh_name": "位元組緩衝區",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "一段固定長度的原始位元組記憶體，處理二進位（音訊、影像、網路封包）時用，配 TypedArray 讀寫。",
+    "analogy": "像一排空格子，你決定每格怎麼解讀（整數/浮點）。",
+    "example": "從 fetch 拿 arrayBuffer() 解析二進位檔頭",
+    "related": [
+      "blob",
+      "base64",
+      "big-endian-little-endian"
+    ]
+  },
+  {
+    "slug": "data-uri",
+    "term": "data URI",
+    "zh_name": "資料網址",
+    "category": "reference",
+    "langs": [
+      "web"
+    ],
+    "difficulty": 2,
+    "plain": "把檔案內容直接用 base64 塞進網址字串（data:image/png;base64,…），省一次請求，但字串會變很長，適合小圖示。",
+    "analogy": "像把小紙條的內容直接寫在信封上，不用再附一張。",
+    "example": "<img src=\"data:image/svg+xml;base64,PHN2Zy…\">  // 內嵌小圖不另外請求",
+    "related": [
+      "base64",
+      "blob",
+      "favicon"
+    ]
+  }
+]
