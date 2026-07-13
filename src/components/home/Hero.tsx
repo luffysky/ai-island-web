@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { BackgroundBeams } from "@/components/ui/BackgroundBeams";
@@ -14,8 +13,8 @@ import {
   Gamepad2,
   Compass,
   Bot,
-  Sword,
-  Ruler,
+  Code2,
+  Trophy,
   ArrowRight,
 } from "lucide-react";
 
@@ -138,37 +137,14 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
             </div>
           </motion.div>
 
-          {/* 右：主視覺（乾淨玻璃框，柔光收斂） */}
+          {/* 右：AI 島概念主視覺（純 SVG/CSS、去角色、亮暗自動切） */}
           <motion.div
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.15, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="relative mx-auto w-full max-w-md lg:max-w-none"
+            className="relative"
           >
-            <div className="absolute -inset-3 bg-gradient-to-br from-accent/15 via-accent-2/10 to-accent-3/15 rounded-[2rem] blur-2xl" />
-            <div className="relative rounded-3xl overflow-hidden border border-border shadow-[var(--elev-4)] bg-bg-card">
-              <Image
-                src="/mascot/cover-hero.png"
-                alt={t("heroImageAlt")}
-                width={1200}
-                height={800}
-                priority
-                sizes="(max-width: 1024px) 100vw, 560px"
-                className="w-full h-auto"
-              />
-            </div>
-            {/* 角色標籤 */}
-            <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex gap-2 whitespace-nowrap">
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs surface-glass shadow-[var(--elev-2)] text-orange-400">
-                <Sword size={12} /> {t("mascotFatzai")}
-              </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs surface-glass shadow-[var(--elev-2)] text-accent-3">
-                <Ruler size={12} /> {t("mascotGubao")}
-              </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs surface-glass shadow-[var(--elev-2)] text-accent">
-                <SparkleIcon size={12} /> {t("mascotLvbao")}
-              </span>
-            </div>
+            <HeroIslandVisual />
           </motion.div>
         </div>
 
@@ -208,5 +184,77 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
         </div>
       </div>
     </section>
+  );
+}
+
+/** AI 島概念主視覺 — 純 SVG/CSS 畫的「漂浮 AI 島 + 神經核心 + 漂浮功能晶片」。
+ *  不依賴任何圖檔、全用品牌 token → 亮/暗自動切；柔和浮動、尊重 reduced-motion。 */
+function HeroIslandVisual() {
+  const chips = [
+    { Icon: Code2, label: "學程式", cls: "text-accent", pos: "left-[-2%] top-[16%]", delay: "0s" },
+    { Icon: Trophy, label: "找機會", cls: "text-warning", pos: "right-[-2%] top-[30%]", delay: "0.8s" },
+    { Icon: Bot, label: "AI 分身", cls: "text-accent-3", pos: "left-[8%] bottom-[10%]", delay: "1.6s" },
+  ];
+  return (
+    <div className="relative mx-auto w-full max-w-sm lg:max-w-md aspect-square">
+      {/* 柔光 */}
+      <div className="absolute inset-6 -z-10 rounded-full bg-gradient-to-br from-accent/20 via-accent-2/10 to-accent-3/20 blur-3xl" />
+      {/* 軌道環 */}
+      <div className="absolute inset-0 grid place-items-center pointer-events-none">
+        <div className="w-[82%] h-[82%] rounded-full border border-border/60" />
+        <div className="absolute w-[58%] h-[58%] rounded-full border border-border/40" />
+      </div>
+
+      {/* 島 + 神經核心 */}
+      <svg viewBox="0 0 400 400" className="absolute inset-0 w-full h-full" role="img" aria-label="AI 島概念主視覺">
+        <defs>
+          <linearGradient id="hi-grass" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="var(--color-accent)" />
+            <stop offset="1" stopColor="var(--color-accent-2)" />
+          </linearGradient>
+          <linearGradient id="hi-soil" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="var(--color-accent-3)" stopOpacity="0.85" />
+            <stop offset="1" stopColor="var(--color-accent-3)" stopOpacity="0.15" />
+          </linearGradient>
+          <radialGradient id="hi-core" cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0" stopColor="var(--color-accent-2)" stopOpacity="0.55" />
+            <stop offset="1" stopColor="var(--color-accent-2)" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+
+        {/* 島底（土＋電路根） */}
+        <path d="M120 232 C120 232 138 300 200 336 C262 300 280 232 280 232 Z" fill="url(#hi-soil)" />
+        <path d="M200 336 L200 372 M182 300 L172 356 M220 300 L232 356" stroke="var(--color-accent)" strokeOpacity="0.3" strokeWidth="2" strokeLinecap="round" />
+        {/* 島面（草皮） */}
+        <ellipse cx="200" cy="232" rx="86" ry="24" fill="url(#hi-grass)" />
+
+        {/* 神經核心光暈 */}
+        <circle cx="200" cy="150" r="60" fill="url(#hi-core)" />
+        {/* 連線 */}
+        <g stroke="var(--color-accent-3)" strokeWidth="1.5" strokeOpacity="0.55">
+          <line x1="200" y1="150" x2="152" y2="120" />
+          <line x1="200" y1="150" x2="250" y2="126" />
+          <line x1="200" y1="150" x2="208" y2="192" />
+          <line x1="152" y1="120" x2="250" y2="126" />
+        </g>
+        {/* 節點 */}
+        <circle cx="200" cy="150" r="10" fill="var(--color-accent-2)" />
+        <circle cx="152" cy="120" r="5.5" fill="var(--color-accent)" />
+        <circle cx="250" cy="126" r="5.5" fill="var(--color-accent-3)" />
+        <circle cx="208" cy="192" r="4.5" fill="var(--color-accent)" />
+      </svg>
+
+      {/* 漂浮功能晶片 */}
+      {chips.map((c) => (
+        <div
+          key={c.label}
+          className={`absolute ${c.pos} soft-bob inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium surface-glass shadow-[var(--elev-2)] ${c.cls}`}
+          style={{ animationDelay: c.delay }}
+        >
+          <c.Icon size={13} />
+          {c.label}
+        </div>
+      ))}
+    </div>
   );
 }

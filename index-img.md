@@ -47,26 +47,34 @@ no clutter, no busy background, no harsh rainbow neon, no jpeg artifacts, no low
 
 ---
 
-# Tier 1 — 必要（先生這 4 張就能上線）
+# 🧭 方向決定（0714）：Hero 走「AI 島概念主視覺、角色退配角」
+> - **Hero 不放角色** → 改成「漂浮 AI 島」概念圖（島＋神經核心＋電路光）。
+>   **目前 Hero 已內建一版純 SVG/CSS 畫的概念主視覺（免圖檔、已上線）**；
+>   下面 `hero-key.png` 是「想要更精緻的插畫版」時才生的**升級選項**，不急。
+> - **3 隻吉祥物保留**，但移到首頁下方「夥伴介紹」區 + 寵物系統（所以 char 去背圖仍要生）。
+> - 全站要不要收斂成 1 隻＝之後的獨立 rebrand，不在這次。
 
-### 1. `hero-key.png` — Hero 主視覺
-- **位置**：首頁最上方 Hero 右側 / 背景主圖
-- **尺寸**：1600 × 1000（16:10 橫式），去背或深色透明背景皆可
+---
+
+# Tier 1 — 必要（先生這 3 張角色去背就能換掉下方夥伴區；Hero 概念圖為選配）
+
+### 1.（選配）`hero-key.png` — Hero 概念主視覺（無角色，插畫升級版）
+- **位置**：Hero 右側，用來取代目前的 SVG 版（想要更有質感再生）
+- **尺寸**：1400 × 1400（1:1 正方）或 1600×1000，**透明背景 PNG**
 - **提示詞**：
 ```
 [STYLE BLOCK]
-Three chibi mascots standing together on a small floating tropical island in a digital sea:
-a pink pig knight holding a wooden greatsword (brown leather armor, blue cape),
-a purple polka-dot mushroom mage holding a glowing holographic tablet and a wooden ruler-wand,
-and a crowned translucent green slime sprite with a tiny gold crown and a glowing antenna.
-Behind them a softly glowing portal / archway of light. Palm trees made of light,
-gentle circuit patterns on the ground, floating holographic panels, deep navy starry sky.
-Heroic friendly mood, cinematic soft rim light, lots of clean space around the group.
-[NEGATIVE]
+A single floating tropical island hovering in a digital sea, NO characters, no creatures.
+The island's grassy top glows mint-green, its underside tapers into softly glowing circuit-root
+lines. Above the island floats a glowing "AI core": a small cyan orb connected by thin lines to
+a few smaller nodes, forming a gentle neural/constellation network. One palm tree made of light,
+faint holographic UI cards and code brackets orbiting around, concentric orbit rings,
+deep navy background. Elegant, premium, minimal, iconic, plenty of empty space.
+[NEGATIVE], no characters, no animals, no mascots, no faces
 ```
 
 ### 2. `char-fatzai.png` — 肥仔 單角色（去背）
-- **位置**：吉祥物介紹區 · 卡片一
+- **位置**：首頁下方「夥伴介紹」區 · 卡片一（＋寵物系統）
 - **尺寸**：900 × 1200（3:4 直式），**透明背景 PNG**
 - **提示詞**：
 ```
