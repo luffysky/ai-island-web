@@ -227,10 +227,10 @@
 - 🚧 `ai_island_fit_score` 欄位已建；**適合度規則引擎**（+AI20/+教育20/-限學生40…換算 85=必投）未實作。
 - ⬜ 更多真實競賽資料（人工核實改 verified；目前 8 筆全 unverified）。
 
-## 8. 後台複刻（AI 島專屬機會雷達）⬜
-- ⬜ **`/admin/opportunities`**（目前無此目錄）：列「AI 島最該投的前 N 個」+ 倒數 + 缺件 + 一鍵丟給分身島「幫我準備這場」。
-- ⬜ AI 島固定 profile（AI 教育+Agent+SaaS+創作平台+遊戲化+社群、有 Demo/課程、pre-revenue）。
-- ⬜ 專屬適合度用規則引擎 + profile 算分（優先免費/AI/創業/教育/SaaS/初賽免上台/高獎金）。
+## 8. 後台複刻（AI 島專屬機會雷達）🚧
+- ~~**`/admin/opportunities`**：列「AI 島最該投的前 30 個」（規則引擎排序）+ 倒數 + 適合原因 chips + 一鍵「丟給分身島幫我準備」+ 官網連結。已濾掉已截止/限學生。（0713）~~
+- ~~AI 島固定 profile（AI 教育+Agent+SaaS+創作平台+遊戲化+社群、有 Demo/課程、pre-revenue）→ 寫進 `src/lib/opportunity-fit.ts`。~~
+- ~~專屬適合度用規則引擎 + profile 算分（免費+25/主題相符+/免上台+12/線上+10/Demo+8/高獎金+/限學生-40/已截止濾掉），5 單元測試。（0713）~~
 - ⬜ 怎麼找：① 人工收 20–30 高價值來源 ② 分身島「機會獵人」每日 web.search+opportunity.search 掃 ③ V4 雷達。
 - ＊ 複刻策略：重用 opportunities 表 + recommend API（帶 AI 島 profile），不重寫。**等前台 V2/V3 主幹穩定後再複刻。**
 
