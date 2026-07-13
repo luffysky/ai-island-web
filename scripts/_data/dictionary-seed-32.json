@@ -1,0 +1,686 @@
+[
+  {
+    "slug": "hybrid-app",
+    "term": "hybrid app",
+    "zh_name": "混合式 App",
+    "category": "concept",
+    "langs": [
+      "mobile"
+    ],
+    "difficulty": 2,
+    "plain": "外殼是原生、內容用網頁(WebView)包起來的 App。一套網頁碼上架各平台，開發快但效能/體驗次於原生。",
+    "analogy": "像把網頁裝進 App 的殼，內外都用得到但不是純原生手感。",
+    "example": "Ionic/Cordova 把網頁包成 App",
+    "related": [
+      "webview",
+      "cross-platform",
+      "native-app"
+    ]
+  },
+  {
+    "slug": "cross-platform",
+    "term": "cross-platform",
+    "zh_name": "跨平台",
+    "category": "concept",
+    "langs": [
+      "mobile"
+    ],
+    "difficulty": 2,
+    "plain": "寫一套程式碼、產出 iOS 與 Android(甚至桌面)App。省成本，主流是 React Native、Flutter。",
+    "analogy": "像一份設計圖同時蓋出兩種樣式的房子，省重畫。",
+    "example": "新創常用 Flutter/RN 一套碼跑雙平台",
+    "related": [
+      "react-native",
+      "flutter",
+      "hybrid-app"
+    ]
+  },
+  {
+    "slug": "webview",
+    "term": "WebView",
+    "zh_name": "WebView",
+    "category": "concept",
+    "langs": [
+      "mobile"
+    ],
+    "difficulty": 2,
+    "plain": "App 內嵌的『瀏覽器元件』，用來在原生 App 裡顯示網頁。混合式 App、內嵌活動頁常用。",
+    "analogy": "像 App 裡開了一個沒有網址列的小瀏覽器視窗。",
+    "example": "App 內開條款頁、活動頁常用 WebView",
+    "related": [
+      "hybrid-app",
+      "deep-link",
+      "cross-platform"
+    ]
+  },
+  {
+    "slug": "app-store-review",
+    "term": "App Store review",
+    "zh_name": "App 上架審查",
+    "category": "concept",
+    "langs": [
+      "mobile"
+    ],
+    "difficulty": 2,
+    "plain": "App 上架前平台(Apple/Google)的人工/自動審核，檢查政策、隱私、內容。被退很常見，要留時間。",
+    "analogy": "像出版社審稿：不合規範會被打回重改。",
+    "example": "Apple 審查嚴、常因隱私揭露/支付機制被退",
+    "related": [
+      "permissions-mobile",
+      "push-notification",
+      "native-app"
+    ]
+  },
+  {
+    "slug": "push-notification",
+    "term": "push notification",
+    "zh_name": "推播通知",
+    "category": "concept",
+    "langs": [
+      "mobile"
+    ],
+    "difficulty": 2,
+    "plain": "App 沒開時也能『主動送訊息到裝置』的機制，走 Apple(APNs)/Google(FCM)的推播服務。要使用者同意。",
+    "analogy": "像 App 派人到你手機通知欄按門鈴。",
+    "example": "訂單出貨、有人回覆你 → 推播提醒",
+    "related": [
+      "app-lifecycle",
+      "deep-link",
+      "permissions-mobile"
+    ]
+  },
+  {
+    "slug": "deep-link",
+    "term": "deep link",
+    "zh_name": "深層連結",
+    "category": "concept",
+    "langs": [
+      "mobile"
+    ],
+    "difficulty": 2,
+    "plain": "直接開到 App 裡『特定頁面』的連結，而不是只開首頁。點推播/分享連結能直達內容。",
+    "analogy": "像直接帶你到書的某一頁，不是丟你在封面。",
+    "example": "myapp://product/123 或點連結開 App 商品頁",
+    "related": [
+      "universal-link",
+      "push-notification",
+      "webview"
+    ]
+  },
+  {
+    "slug": "universal-link",
+    "term": "universal link",
+    "zh_name": "通用連結",
+    "category": "concept",
+    "langs": [
+      "mobile"
+    ],
+    "difficulty": 3,
+    "plain": "用『一般 https 網址』就能開 App(裝了就開 App、沒裝就開網頁)，比自訂 scheme 的 deep link 更順、更安全。",
+    "analogy": "像同一個地址：你在城裡(裝了 App)自動帶你進門，不在就給你網頁版。",
+    "example": "點 example.com/p/1 裝了 App 就直接開該頁",
+    "related": [
+      "deep-link",
+      "app-store-review",
+      "webview"
+    ]
+  },
+  {
+    "slug": "safe-area",
+    "term": "safe area",
+    "zh_name": "安全區域",
+    "category": "concept",
+    "langs": [
+      "mobile"
+    ],
+    "difficulty": 2,
+    "plain": "螢幕上『不會被瀏海、圓角、底部橫條擋到』的可用範圍。內容要避開這些區域才不會被切掉。",
+    "analogy": "像海報要避開釘孔和裁切線，重要內容別放邊邊。",
+    "example": "用 env(safe-area-inset-bottom) 留白避開底部橫條",
+    "related": [
+      "viewport-meta",
+      "responsive-vs-adaptive",
+      "touch-target"
+    ]
+  },
+  {
+    "slug": "viewport-meta",
+    "term": "viewport meta tag",
+    "zh_name": "viewport 設定",
+    "category": "syntax",
+    "langs": [
+      "web"
+    ],
+    "difficulty": 2,
+    "plain": "手機網頁必備的一行 meta，告訴瀏覽器『照裝置寬度排版』，不然手機會用桌面寬度縮小顯示、字超小。",
+    "analogy": "像告訴列印機用對的紙張大小，不然版面全跑掉。",
+    "example": "<meta name=viewport content='width=device-width,initial-scale=1'>",
+    "related": [
+      "responsive-design",
+      "safe-area",
+      "rem-em"
+    ]
+  },
+  {
+    "slug": "responsive-vs-adaptive",
+    "term": "responsive vs adaptive",
+    "zh_name": "響應式 vs 適應式",
+    "category": "concept",
+    "langs": [
+      "web"
+    ],
+    "difficulty": 2,
+    "plain": "響應式：版面隨寬度『流動連續』調整(一套彈性佈局)。適應式：針對『幾個固定斷點』各給一版。",
+    "analogy": "響應式像彈性布料隨身型伸縮；適應式像備好 S/M/L 幾種尺寸。",
+    "example": "多數網站走響應式(flex/grid + media query)",
+    "related": [
+      "viewport-meta",
+      "media-query",
+      "touch-target"
+    ]
+  },
+  {
+    "slug": "touch-target",
+    "term": "touch target",
+    "zh_name": "點觸目標",
+    "category": "concept",
+    "langs": [
+      "mobile"
+    ],
+    "difficulty": 1,
+    "plain": "可點按元素的『有效觸控範圍』。太小手指按不準，建議至少 44×44 點，間距也要夠。",
+    "analogy": "像電梯按鈕要夠大顆，太小會按錯樓層。",
+    "example": "小圖示按鈕加 padding 撐大可點區",
+    "related": [
+      "safe-area",
+      "accessibility",
+      "responsive-vs-adaptive"
+    ]
+  },
+  {
+    "slug": "offline-first",
+    "term": "offline-first",
+    "zh_name": "離線優先",
+    "category": "concept",
+    "langs": [
+      "mobile"
+    ],
+    "difficulty": 3,
+    "plain": "設計成『沒網路也能用』：本地先存/先顯示，有網路再同步。適合行動場景(訊號不穩)。",
+    "analogy": "像先在自己筆記本上寫，有訊號再上傳雲端。",
+    "example": "筆記 App 離線能寫、連上網自動同步",
+    "related": [
+      "service-worker",
+      "indexeddb",
+      "eventual-consistency"
+    ]
+  },
+  {
+    "slug": "app-lifecycle",
+    "term": "app lifecycle",
+    "zh_name": "App 生命週期",
+    "category": "concept",
+    "langs": [
+      "mobile"
+    ],
+    "difficulty": 2,
+    "plain": "App 在前景/背景/被系統回收等『狀態變化』的過程。要在對的時機存狀態、暫停耗電作業。",
+    "analogy": "像店家的營業/打烊/歇業狀態，各狀態該做的事不同。",
+    "example": "切到背景時暫停播放、存進度；回前景再恢復",
+    "related": [
+      "background-task-mobile",
+      "graceful-shutdown",
+      "push-notification"
+    ]
+  },
+  {
+    "slug": "background-task-mobile",
+    "term": "background task",
+    "zh_name": "背景任務(行動)",
+    "category": "concept",
+    "langs": [
+      "mobile"
+    ],
+    "difficulty": 3,
+    "plain": "App 在背景時想做的事(同步、定位、播放)。系統為省電限制很多，超時或濫用會被系統終止。",
+    "analogy": "像下班後還想加班，但大樓限時斷電趕你走。",
+    "example": "背景同步資料要用系統核准的機制、別偷跑",
+    "related": [
+      "app-lifecycle",
+      "push-notification",
+      "permissions-mobile"
+    ]
+  },
+  {
+    "slug": "permissions-mobile",
+    "term": "app permissions",
+    "zh_name": "App 權限",
+    "category": "concept",
+    "langs": [
+      "mobile"
+    ],
+    "difficulty": 1,
+    "plain": "App 要用相機/定位/通知等敏感功能得先向使用者請求同意。最小權限＋講清楚用途，別一次要一堆。",
+    "analogy": "像進你家要先敲門經同意，不能自己開門亂逛。",
+    "example": "要定位前先說明用途再跳系統詢問",
+    "related": [
+      "least-privilege",
+      "app-store-review",
+      "push-notification"
+    ]
+  },
+  {
+    "slug": "wallet-crypto",
+    "term": "crypto wallet",
+    "zh_name": "加密錢包",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 2,
+    "plain": "存放你的『私鑰』、用來簽署交易與管理資產的工具。錢其實在鏈上，錢包管的是鑰匙。私鑰丟了錢就沒了。",
+    "analogy": "像鑰匙圈：錢在保險箱(鏈上)，錢包保管開箱的鑰匙。",
+    "example": "MetaMask 是常見的瀏覽器加密錢包",
+    "related": [
+      "private-key-crypto",
+      "seed-phrase",
+      "cold-wallet"
+    ]
+  },
+  {
+    "slug": "private-key-crypto",
+    "term": "private key (crypto)",
+    "zh_name": "私鑰(加密貨幣)",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 3,
+    "plain": "控制你鏈上資產的唯一鑰匙，用來簽署交易。誰有私鑰誰就是主人——外洩＝資產被拿走，且無法找回。",
+    "analogy": "像保險箱唯一鑰匙，掉了或被複製，錢就是別人的。",
+    "example": "絕不分享私鑰；官方也不會跟你要",
+    "related": [
+      "seed-phrase",
+      "wallet-crypto",
+      "private-key"
+    ]
+  },
+  {
+    "slug": "seed-phrase",
+    "term": "seed phrase",
+    "zh_name": "助記詞",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 2,
+    "plain": "12/24 個英文單字，是私鑰的『備份形式』。有它就能還原整個錢包，所以要離線抄好、絕不外流、絕不拍照上傳。",
+    "analogy": "像保險箱的萬能備用鑰匙密語，誰念得出誰就能開。",
+    "example": "抄在紙上鎖起來；輸進假網站 = 錢包被盜",
+    "related": [
+      "private-key-crypto",
+      "wallet-crypto",
+      "cold-wallet"
+    ]
+  },
+  {
+    "slug": "cold-wallet",
+    "term": "cold wallet",
+    "zh_name": "冷錢包",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 2,
+    "plain": "私鑰『離線保管』的錢包(硬體裝置/紙本)，不連網、駭客碰不到，適合長期存大額。相對是隨時連網的熱錢包。",
+    "analogy": "像把大筆現金鎖進家裡保險箱，而非放隨身錢包。",
+    "example": "Ledger/Trezor 硬體錢包存長期資產",
+    "related": [
+      "wallet-crypto",
+      "seed-phrase",
+      "private-key-crypto"
+    ]
+  },
+  {
+    "slug": "gas-fee",
+    "term": "gas fee",
+    "zh_name": "手續費(Gas)",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 2,
+    "plain": "在鏈上做交易/執行合約要付給礦工/驗證者的『運算費』。網路越忙 gas 越貴，複雜操作耗更多。",
+    "analogy": "像過路費：路越塞收費越高，開越遠付越多。",
+    "example": "以太坊尖峰時轉一筆可能貴到嚇人",
+    "related": [
+      "smart-contract",
+      "gasless",
+      "layer2"
+    ]
+  },
+  {
+    "slug": "token-web3",
+    "term": "token (web3)",
+    "zh_name": "代幣",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 2,
+    "plain": "在區塊鏈上發行的『數位資產單位』，可代表貨幣、股權、點數、會員資格等。同質(可互換)與非同質(NFT)兩類。",
+    "analogy": "像遊樂園代幣：園內通用，代表某種價值或權利。",
+    "example": "ERC-20 是同質代幣標準、ERC-721 是 NFT",
+    "related": [
+      "nft",
+      "stablecoin",
+      "smart-contract"
+    ]
+  },
+  {
+    "slug": "nft",
+    "term": "NFT",
+    "zh_name": "非同質化代幣",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 2,
+    "plain": "每一個都獨一無二、不可互換的代幣，用來表示『特定物品的所有權』(圖、票券、會員)。跟一般貨幣可互換相反。",
+    "analogy": "像有編號的限量收藏品，各不相同、不能一比一互換。",
+    "example": "數位藝術品、活動門票用 NFT 表所有權",
+    "related": [
+      "token-web3",
+      "smart-contract",
+      "immutable-ledger"
+    ]
+  },
+  {
+    "slug": "defi",
+    "term": "DeFi",
+    "zh_name": "去中心化金融",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 3,
+    "plain": "用智能合約做出『不需銀行的金融服務』(借貸、交易、賺利息)。開放透明但風險高、合約漏洞會被清空。",
+    "analogy": "像沒有銀行櫃台、由程式自動辦理的金融，方便但沒人幫你把關。",
+    "example": "在 DeFi 協議存幣賺利息、抵押借款",
+    "related": [
+      "smart-contract",
+      "stablecoin",
+      "web3"
+    ]
+  },
+  {
+    "slug": "stablecoin",
+    "term": "stablecoin",
+    "zh_name": "穩定幣",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 2,
+    "plain": "價值『錨定某資產(常是美元)』的加密貨幣，減少幣價暴漲暴跌，方便當交易媒介。也有脫鉤崩盤的風險。",
+    "analogy": "像遊樂園代幣固定 1 枚換 1 元，比波動大的紀念幣好用。",
+    "example": "USDT、USDC 錨定美元約 1:1",
+    "related": [
+      "token-web3",
+      "defi",
+      "gas-fee"
+    ]
+  },
+  {
+    "slug": "consensus",
+    "term": "consensus mechanism",
+    "zh_name": "共識機制",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 3,
+    "plain": "去中心網路裡『大家怎麼對帳本達成一致』的規則，決定誰能記帳、如何防作弊。PoW、PoS 是兩大類。",
+    "analogy": "像沒有主席的會議，靠一套投票/抽籤規則讓大家認同同一份會議紀錄。",
+    "example": "比特幣用 PoW、以太坊改用 PoS",
+    "related": [
+      "proof-of-work",
+      "proof-of-stake",
+      "distributed-ledger"
+    ]
+  },
+  {
+    "slug": "proof-of-work",
+    "term": "proof of work (PoW)",
+    "zh_name": "工作量證明",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 3,
+    "plain": "礦工比賽『解一道很耗電的算題』，先解出的能記帳並拿獎勵。安全但超耗能，比特幣用它。",
+    "analogy": "像猜密碼鎖大賽：誰先猜中誰記帳，猜要花大量電力。",
+    "example": "比特幣挖礦就是在跑 PoW",
+    "related": [
+      "consensus",
+      "mining-crypto",
+      "proof-of-stake"
+    ]
+  },
+  {
+    "slug": "proof-of-stake",
+    "term": "proof of stake (PoS)",
+    "zh_name": "權益證明",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 3,
+    "plain": "改用『質押代幣』來取得記帳資格，押越多越可能被選中，作弊會沒收質押。比 PoW 省電非常多。",
+    "analogy": "像交保證金才能當裁判，亂判就沒收保證金。",
+    "example": "以太坊轉 PoS 後能耗大降",
+    "related": [
+      "consensus",
+      "proof-of-work",
+      "stablecoin"
+    ]
+  },
+  {
+    "slug": "mining-crypto",
+    "term": "mining",
+    "zh_name": "挖礦",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 2,
+    "plain": "在 PoW 鏈上用算力競爭記帳權、賺取新幣與手續費的行為。要大量硬體與電力。",
+    "analogy": "像淘金：投入設備與力氣，運氣好挖到獎勵。",
+    "example": "顯卡礦潮曾把顯卡價格炒高",
+    "related": [
+      "proof-of-work",
+      "gas-fee",
+      "consensus"
+    ]
+  },
+  {
+    "slug": "distributed-ledger",
+    "term": "distributed ledger",
+    "zh_name": "分散式帳本",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 3,
+    "plain": "同一份帳本『複製在很多節點』、大家一起維護，沒有單一中央機構。改一處要多數同意，難竄改。",
+    "analogy": "像全班每人都有一本一樣的班費帳，改帳要多數認同。",
+    "example": "區塊鏈是分散式帳本的一種實作",
+    "related": [
+      "blockchain",
+      "decentralized",
+      "consensus"
+    ]
+  },
+  {
+    "slug": "decentralized",
+    "term": "decentralized",
+    "zh_name": "去中心化",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 2,
+    "plain": "沒有單一控制方，權力/資料分散在許多參與者手上。抗審查、無單點故障，但協調慢、體驗常較差。",
+    "analogy": "像沒有總部的社團，決策靠成員共識而非老闆一句話。",
+    "example": "去中心化 App(dApp)跑在鏈上、無中央伺服器",
+    "related": [
+      "distributed-ledger",
+      "web3",
+      "dao"
+    ]
+  },
+  {
+    "slug": "web3",
+    "term": "Web3",
+    "zh_name": "Web3",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 2,
+    "plain": "以區塊鏈為基礎、強調『使用者擁有資料與資產』的網路願景。相對於平台掌控一切的 Web2。爭議與炒作都不少。",
+    "analogy": "從『在別人平台上租攤位』(Web2)走向『自己擁有攤位與貨』(Web3)的想像。",
+    "example": "用錢包登入、資產可攜的 dApp 生態",
+    "related": [
+      "decentralized",
+      "smart-contract",
+      "dao"
+    ]
+  },
+  {
+    "slug": "dao",
+    "term": "DAO",
+    "zh_name": "去中心化自治組織",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 3,
+    "plain": "規則寫進智能合約、由代幣持有者投票治理的組織，沒有傳統管理層。理想很美、實務常遇治理與法規難題。",
+    "analogy": "像章程寫死、全員投票決事的社團，沒有理事長說了算。",
+    "example": "DAO 投票決定金庫怎麼花",
+    "related": [
+      "web3",
+      "smart-contract",
+      "decentralized"
+    ]
+  },
+  {
+    "slug": "layer2",
+    "term": "layer 2",
+    "zh_name": "第二層擴容",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 3,
+    "plain": "架在主鏈(L1)之上、把大量交易『在鏈下處理再打包回主鏈』的方案，大降手續費與塞車，繼承主鏈安全。",
+    "analogy": "像主幹道太塞，開高架橋(L2)分流，最後還是接回主幹。",
+    "example": "以太坊的 Arbitrum、Optimism 是 L2",
+    "related": [
+      "rollup-crypto",
+      "gas-fee",
+      "gasless"
+    ]
+  },
+  {
+    "slug": "rollup-crypto",
+    "term": "rollup",
+    "zh_name": "Rollup",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 3,
+    "plain": "L2 的主流做法：把一堆交易『捲成一包』在鏈下算、只把壓縮結果與證明送回主鏈，省 gas 又保安全。",
+    "analogy": "像把一車包裹先在分揀站處理好，只送一份總表回總倉。",
+    "example": "Optimistic rollup、ZK rollup 兩大類",
+    "related": [
+      "layer2",
+      "gas-fee",
+      "merkle-tree"
+    ]
+  },
+  {
+    "slug": "digital-signature",
+    "term": "digital signature",
+    "zh_name": "數位簽章",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 3,
+    "plain": "用私鑰對資料簽名、別人用你的公鑰驗證，證明『這真的是你發的、且沒被改過』。交易/憑證/JWT 都靠它。",
+    "analogy": "像蓋上只有你能蓋、誰都能驗真偽的防偽章。",
+    "example": "鏈上交易用你的私鑰簽章證明是你授權",
+    "related": [
+      "private-key",
+      "public-key",
+      "merkle-tree"
+    ]
+  },
+  {
+    "slug": "merkle-tree",
+    "term": "Merkle tree",
+    "zh_name": "默克爾樹",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 3,
+    "plain": "把大量資料兩兩雜湊、層層往上合成一個『根雜湊』的樹。改任何一筆，根就變，能高效驗證資料完整與是否包含某筆。",
+    "analogy": "像把每筆帳兩兩蓋章合併，最後一個總印代表全部，動一筆總印就不一樣。",
+    "example": "區塊鏈用 Merkle root 驗交易、Git 也用類似結構",
+    "related": [
+      "hashing",
+      "blockchain",
+      "checksum"
+    ]
+  },
+  {
+    "slug": "double-spend",
+    "term": "double spending",
+    "zh_name": "雙重支付",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 3,
+    "plain": "同一筆數位貨幣被『花兩次』的攻擊。區塊鏈靠共識與確認機制防止它——這正是中本聰解決的核心問題。",
+    "analogy": "像同一張支票影印多張到處兌現，帳本機制要擋掉。",
+    "example": "等多個區塊確認就是為了防 double spend",
+    "related": [
+      "consensus",
+      "51-attack",
+      "blockchain"
+    ]
+  },
+  {
+    "slug": "51-attack",
+    "term": "51% attack",
+    "zh_name": "51% 攻擊",
+    "category": "concept",
+    "langs": [
+      "web3"
+    ],
+    "difficulty": 3,
+    "plain": "有人掌握過半算力/質押，就能竄改交易、雙重支付。去中心網路越分散、越難被單一方掌控過半。",
+    "analogy": "像會議過半人被同一派系控制，就能強行改會議紀錄。",
+    "example": "小幣算力低較易遭 51% 攻擊",
+    "related": [
+      "double-spend",
+      "consensus",
+      "decentralized"
+    ]
+  }
+]
