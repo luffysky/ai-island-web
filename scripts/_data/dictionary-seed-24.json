@@ -1,0 +1,560 @@
+[
+  {
+    "slug": "token-llm",
+    "term": "token (LLM)",
+    "zh_name": "詞元",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 2,
+    "plain": "AI 語言模型把文字切成的最小單位，一個 token 大約是英文的幾個字母或中文的一個字。計費、長度上限都以 token 算。",
+    "analogy": "像把句子剪成一塊塊拼圖，模型一塊一塊讀、一塊一塊拼回去。",
+    "example": "「你好嗎」約 3–4 個 token；API 依 token 數計費",
+    "related": [
+      "context-window",
+      "tokenizer",
+      "llm"
+    ]
+  },
+  {
+    "slug": "tokenizer",
+    "term": "tokenizer",
+    "zh_name": "分詞器",
+    "category": "tool",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 2,
+    "plain": "把文字切成 token、再轉成數字給模型吃的元件。不同模型用不同切法，同一句話 token 數會不一樣。",
+    "analogy": "像切菜前的刀工：先剁成模型好入口的大小。",
+    "example": "同一段中文，不同 tokenizer 算出的 token 數可能差很多",
+    "related": [
+      "token-llm",
+      "embedding",
+      "context-window"
+    ]
+  },
+  {
+    "slug": "temperature-llm",
+    "term": "temperature",
+    "zh_name": "溫度（生成隨機性）",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 2,
+    "plain": "控制 AI 回答的隨機/創意程度。低溫（0）保守穩定、每次差不多；高溫更天馬行空但也更容易亂講。",
+    "analogy": "像調味：低溫是照食譜穩定出餐，高溫是廚師即興發揮。",
+    "example": "要精準/程式碼用低溫；要腦力激盪/文案用高一點",
+    "related": [
+      "system-prompt",
+      "hallucination",
+      "greedy-decoding"
+    ]
+  },
+  {
+    "slug": "zero-shot",
+    "term": "zero-shot",
+    "zh_name": "零樣本",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 2,
+    "plain": "不給任何範例，直接叫模型做某件事，靠它預訓練學到的通識直接上。相對於 few-shot（給幾個範例）。",
+    "analogy": "像沒看過考古題就直接上場考，靠平常實力。",
+    "example": "直接問『把這句翻成日文』不附範例 = zero-shot",
+    "related": [
+      "few-shot",
+      "chain-of-thought",
+      "prompt-engineering"
+    ]
+  },
+  {
+    "slug": "fine-tuning",
+    "term": "fine-tuning",
+    "zh_name": "微調",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 3,
+    "plain": "拿一個已訓練好的通用模型，再用你的專屬資料額外訓練一小輪，讓它更懂你的領域/語氣。",
+    "analogy": "像請通才員工做內部教育訓練，變得更懂公司的做法。",
+    "example": "用客服對話微調模型，回答更貼公司口吻",
+    "related": [
+      "training-data",
+      "distillation",
+      "model-weights"
+    ]
+  },
+  {
+    "slug": "distillation",
+    "term": "knowledge distillation",
+    "zh_name": "知識蒸餾",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 3,
+    "plain": "用一個大而強的模型當老師，教一個小模型模仿它的輸出，讓小模型又快又便宜、品質接近大的。",
+    "analogy": "像老師傅把手藝濃縮教給徒弟，徒弟輕便上手、做出來八九不離十。",
+    "example": "把大模型蒸餾成小模型放到手機上跑",
+    "related": [
+      "fine-tuning",
+      "quantization",
+      "inference"
+    ]
+  },
+  {
+    "slug": "model-weights",
+    "term": "model weights",
+    "zh_name": "模型權重",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 3,
+    "plain": "模型訓練後學到的一大堆數字參數，就是它的「大腦內容」。開源模型放出來的就是這些權重檔。",
+    "analogy": "像大腦裡的神經連結強度，經驗都存在這些數字裡。",
+    "example": "下載開源模型 = 下載它的 weights 檔在本機跑",
+    "related": [
+      "fine-tuning",
+      "training-data",
+      "quantization"
+    ]
+  },
+  {
+    "slug": "training-data",
+    "term": "training data",
+    "zh_name": "訓練資料",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 1,
+    "plain": "拿來教模型的資料。品質、範圍、偏見都會直接影響模型學成什麼樣——垃圾進、垃圾出。",
+    "analogy": "像給學生看的教材，教材偏了、學生也跟著偏。",
+    "example": "訓練資料只有正式書面語 → 模型不擅長口語/俚語",
+    "related": [
+      "ground-truth",
+      "labeling",
+      "data-leakage"
+    ]
+  },
+  {
+    "slug": "ground-truth",
+    "term": "ground truth",
+    "zh_name": "標準答案",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 2,
+    "plain": "拿來評分/訓練用的「公認正確答案」，模型的預測跟它比對才知道準不準。",
+    "analogy": "像考卷的標準解答，改考卷都對照它。",
+    "example": "圖片標『貓』是 ground truth，模型猜『狗』就算錯",
+    "related": [
+      "labeling",
+      "training-data",
+      "confusion-matrix"
+    ]
+  },
+  {
+    "slug": "labeling",
+    "term": "data labeling",
+    "zh_name": "資料標註",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 1,
+    "plain": "人工幫資料貼上正確答案（這張是貓、這句是負評），供模型學習。又累又貴但很關鍵。",
+    "analogy": "像幫一大箱照片一張張寫上內容標籤，之後才好教電腦認。",
+    "example": "標 1 萬張 X 光片『有無病灶』給模型學",
+    "related": [
+      "ground-truth",
+      "training-data",
+      "supervised-learning"
+    ]
+  },
+  {
+    "slug": "supervised-learning",
+    "term": "supervised learning",
+    "zh_name": "監督式學習",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 2,
+    "plain": "給模型「題目＋標準答案」成對的資料去學，學會後能對新題目給答案。最常見的機器學習。",
+    "analogy": "像有解答本陪練：對答案、錯了修正，越練越準。",
+    "example": "用標好『垃圾/正常』的信訓練垃圾郵件過濾",
+    "related": [
+      "unsupervised-learning",
+      "labeling",
+      "classification-ml"
+    ]
+  },
+  {
+    "slug": "unsupervised-learning",
+    "term": "unsupervised learning",
+    "zh_name": "非監督式學習",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 3,
+    "plain": "資料沒有標準答案，讓模型自己找出結構或分群。用來探索、分類、壓縮。",
+    "analogy": "像把一堆沒分類的照片自動歸成幾疊，沒人先告訴它類別。",
+    "example": "把顧客自動分成幾群(clustering) 做行銷",
+    "related": [
+      "supervised-learning",
+      "clustering",
+      "embedding"
+    ]
+  },
+  {
+    "slug": "classification-ml",
+    "term": "classification",
+    "zh_name": "分類",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 2,
+    "plain": "預測「屬於哪一類」的任務（是/不是、貓/狗/鳥）。輸出是類別。",
+    "analogy": "像分信件：帳單、廣告、私人信各丟一箱。",
+    "example": "判斷評論是正評還負評 = 二元分類",
+    "related": [
+      "regression-ml",
+      "supervised-learning",
+      "f1-score"
+    ]
+  },
+  {
+    "slug": "regression-ml",
+    "term": "regression (ML)",
+    "zh_name": "迴歸",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 2,
+    "plain": "預測「一個連續數值」的任務（房價、明天氣溫、銷量）。輸出是數字，不是類別。",
+    "analogy": "像估價：依坪數、地段等因素給一個金額。",
+    "example": "依坪數/屋齡/地段預測房價 = 迴歸",
+    "related": [
+      "classification-ml",
+      "supervised-learning",
+      "gradient-descent"
+    ]
+  },
+  {
+    "slug": "underfitting",
+    "term": "underfitting",
+    "zh_name": "欠擬合",
+    "category": "error",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 2,
+    "plain": "模型太簡單或沒學夠，連訓練資料都學不好，預測普遍很差。跟過擬合(overfitting)相反。",
+    "analogy": "像只背了一句口訣就上考場，什麼題都答不好。",
+    "example": "用一條直線硬套明顯彎曲的資料 → underfitting",
+    "related": [
+      "overfitting",
+      "bias-variance",
+      "training-data"
+    ]
+  },
+  {
+    "slug": "learning-rate",
+    "term": "learning rate",
+    "zh_name": "學習率",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 3,
+    "plain": "訓練時每一步『調整幅度』的大小。太大會震盪學不穩、太小學超慢。是最關鍵的超參數之一。",
+    "analogy": "像下山的步伐：跨太大會摔過頭，太小走到天黑。",
+    "example": "loss 一直上下跳 → 學習率可能設太大",
+    "related": [
+      "gradient-descent",
+      "backpropagation",
+      "batch-size"
+    ]
+  },
+  {
+    "slug": "batch-size",
+    "term": "batch size",
+    "zh_name": "批次大小",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 3,
+    "plain": "訓練時一次餵給模型幾筆資料再更新一次。大批次穩但吃記憶體，小批次省記憶體但雜訊多。",
+    "analogy": "像改考卷：一次改一疊(批)才登記分數，疊多疊少各有取捨。",
+    "example": "記憶體不夠就把 batch size 調小",
+    "related": [
+      "learning-rate",
+      "epoch",
+      "gradient-descent"
+    ]
+  },
+  {
+    "slug": "backpropagation",
+    "term": "backpropagation",
+    "zh_name": "反向傳播",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 3,
+    "plain": "訓練神經網路的核心：算出預測錯多少，再把「該怎麼修正」從輸出層一路往回傳到每個參數，逐步調準。",
+    "analogy": "像追究出錯環節：從結果往回查，每一關各自檢討修正。",
+    "example": "每個 batch：前向算預測 → 反向傳播調權重",
+    "related": [
+      "gradient-descent",
+      "learning-rate",
+      "neural-network"
+    ]
+  },
+  {
+    "slug": "activation-function",
+    "term": "activation function",
+    "zh_name": "激活函數",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 3,
+    "plain": "神經元的『開關/轉換』，加入非線性，讓網路能學到複雜關係。常見有 ReLU、sigmoid。",
+    "analogy": "像門檻：訊號夠強才放行、還決定放行多少，讓網路不只是死板的直線加總。",
+    "example": "ReLU：負的變 0、正的照舊，簡單又好用",
+    "related": [
+      "neural-network",
+      "backpropagation",
+      "gradient-descent"
+    ]
+  },
+  {
+    "slug": "precision-recall",
+    "term": "precision / recall",
+    "zh_name": "精確率 / 召回率",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 3,
+    "plain": "精確率：模型說是的裡面有多少真的是。召回率：真的是的裡面被抓出多少。常此消彼長、要權衡。",
+    "analogy": "抓小偷：精確率＝抓的人裡真小偷比例；召回率＝所有小偷被抓到的比例。",
+    "example": "垃圾信過濾：太嚴(高精確、低召回)會漏、太寬會誤殺正常信",
+    "related": [
+      "f1-score",
+      "confusion-matrix",
+      "ground-truth"
+    ]
+  },
+  {
+    "slug": "f1-score",
+    "term": "F1 score",
+    "zh_name": "F1 分數",
+    "category": "reference",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 3,
+    "plain": "精確率與召回率的調和平均，用一個數字平衡兩者。資料不平衡時比單看準確率更公道。",
+    "analogy": "像期末總分把兩科成績合起來，不讓你偏科作弊。",
+    "example": "F1 高 = 精確與召回都不錯；只要一個爛 F1 就低",
+    "related": [
+      "precision-recall",
+      "confusion-matrix",
+      "cross-validation"
+    ]
+  },
+  {
+    "slug": "data-leakage",
+    "term": "data leakage",
+    "zh_name": "資料洩漏",
+    "category": "error",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 3,
+    "plain": "訓練時不小心讓模型『偷看到』測試/未來的資訊，導致評分虛高、上線就現形。很隱蔽的坑。",
+    "analogy": "像考試前題目外流，成績漂亮但實力是假的。",
+    "example": "用『含未來資訊』的欄位預測未來 → 上線準度暴跌",
+    "related": [
+      "cross-validation",
+      "training-data",
+      "overfitting"
+    ]
+  },
+  {
+    "slug": "synthetic-data",
+    "term": "synthetic data",
+    "zh_name": "合成資料",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 2,
+    "plain": "用程式或 AI 生成的假資料，補足真實資料不夠、或避開隱私問題。品質要顧，不然模型學到假規律。",
+    "analogy": "像用模擬器練車：安全好取得，但跟真路況還是有落差。",
+    "example": "醫療資料敏感 → 用合成病例補訓練資料",
+    "related": [
+      "training-data",
+      "gan",
+      "diffusion-model"
+    ]
+  },
+  {
+    "slug": "vector-db",
+    "term": "vector database",
+    "zh_name": "向量資料庫",
+    "category": "tool",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 3,
+    "plain": "專門存 embedding 向量、能快速找『語意相近』資料的資料庫。是 RAG 的記憶體。",
+    "analogy": "像按『意思』分類的圖書館，找相似概念一秒撈出來。",
+    "example": "把文件切段轉向量存進去，問問題時找最相關的幾段餵給 LLM",
+    "related": [
+      "embedding",
+      "rag",
+      "cosine-similarity"
+    ]
+  },
+  {
+    "slug": "attention-mechanism",
+    "term": "attention mechanism",
+    "zh_name": "注意力機制",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 3,
+    "plain": "讓模型在處理每個詞時，動態決定『該多關注句子裡的哪些其他詞』。是 Transformer(GPT 等)的核心。",
+    "analogy": "像讀句子時眼睛會回看關鍵字，理解『它』指的是前面哪個人。",
+    "example": "翻譯時，輸出每個字會對齊到來源句最相關的詞",
+    "related": [
+      "transformer",
+      "neural-network",
+      "context-window"
+    ]
+  },
+  {
+    "slug": "diffusion-model",
+    "term": "diffusion model",
+    "zh_name": "擴散模型",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 3,
+    "plain": "AI 生圖的主流做法：先學會把清晰圖『加噪變雜訊』，再反過來『從雜訊一步步還原成圖』，就能無中生有畫圖。",
+    "analogy": "像看著雪花電視慢慢調出清晰畫面，只是它是憑描述調出來的。",
+    "example": "Stable Diffusion、Midjourney 生圖的底層原理",
+    "related": [
+      "gan",
+      "autoencoder",
+      "synthetic-data"
+    ]
+  },
+  {
+    "slug": "autoencoder",
+    "term": "autoencoder",
+    "zh_name": "自編碼器",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 3,
+    "plain": "把資料壓成小小的表示(編碼)再還原(解碼)的網路，逼它學出資料的精華。用於降維、去噪、異常偵測。",
+    "analogy": "像把一段話濃縮成關鍵字再還原，還原得回來表示抓到了重點。",
+    "example": "還原誤差特別大的資料 → 可能是異常",
+    "related": [
+      "embedding",
+      "unsupervised-learning",
+      "diffusion-model"
+    ]
+  },
+  {
+    "slug": "beam-search",
+    "term": "beam search",
+    "zh_name": "束搜尋",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 3,
+    "plain": "生成文字時，不只挑當下最好的一個字，而是同時保留前幾條最有希望的路徑往下探，最後選整體最好的。",
+    "analogy": "像下棋不只看一步，同時保留幾種走法各推演幾步再定案。",
+    "example": "翻譯/摘要常用 beam search 讓整句更通順",
+    "related": [
+      "greedy-decoding",
+      "temperature-llm",
+      "perplexity"
+    ]
+  },
+  {
+    "slug": "greedy-decoding",
+    "term": "greedy decoding",
+    "zh_name": "貪婪解碼",
+    "category": "concept",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 2,
+    "plain": "生成時每一步都直接挑機率最高的那個字，簡單快速但容易卡進『局部最佳』、整句不見得最好。",
+    "analogy": "像每個路口都走當下最順的路，結果不一定是全程最快。",
+    "example": "要穩定可重現用 greedy；要多樣就加隨機/beam",
+    "related": [
+      "beam-search",
+      "temperature-llm",
+      "token-llm"
+    ]
+  },
+  {
+    "slug": "perplexity",
+    "term": "perplexity",
+    "zh_name": "困惑度",
+    "category": "reference",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 3,
+    "plain": "衡量語言模型『對下一個字有多不確定』的指標，越低代表模型越『不困惑』、預測越準。",
+    "analogy": "像克漏字填空的猶豫程度：越有把握、困惑度越低。",
+    "example": "同一測試集上，perplexity 較低的模型通常語言能力較好",
+    "related": [
+      "bleu-score",
+      "token-llm",
+      "inference"
+    ]
+  },
+  {
+    "slug": "bleu-score",
+    "term": "BLEU score",
+    "zh_name": "BLEU 分數",
+    "category": "reference",
+    "langs": [
+      "ai"
+    ],
+    "difficulty": 3,
+    "plain": "評估機器翻譯/生成文字跟『參考答案』有多接近的分數（比對重疊的詞組）。高不代表一定通順，只是一種近似。",
+    "analogy": "像作文比對範文的用詞重疊度打分，抓個大概、不完全等於好壞。",
+    "example": "翻譯模型調參時用 BLEU 追蹤有沒有進步",
+    "related": [
+      "perplexity",
+      "ground-truth",
+      "f1-score"
+    ]
+  }
+]
