@@ -1,0 +1,830 @@
+[
+  {
+    "slug": "sprint",
+    "term": "sprint",
+    "zh_name": "衝刺",
+    "category": "concept",
+    "langs": [
+      "agile"
+    ],
+    "difficulty": 1,
+    "plain": "Scrum 裡固定長度(常 1–2 週)的開發週期，一開始選好要做的、結束時交出可用成果並檢討。",
+    "analogy": "像一節課或一個小關卡，時間到就結算、看做完多少。",
+    "example": "兩週一個 sprint，結束 demo 成果並開 retro",
+    "related": [
+      "scrum",
+      "retro",
+      "velocity"
+    ]
+  },
+  {
+    "slug": "retro",
+    "term": "retrospective",
+    "zh_name": "回顧會議",
+    "category": "concept",
+    "langs": [
+      "agile"
+    ],
+    "difficulty": 1,
+    "plain": "每個 sprint 結束的檢討會：哪裡做得好、哪裡卡、下次怎麼改。對事不對人。",
+    "analogy": "像比賽後的檢討會，看戰術哪裡要調整。",
+    "example": "retro 常問：keep / stop / start 三欄",
+    "related": [
+      "sprint",
+      "scrum",
+      "blameless-postmortem"
+    ]
+  },
+  {
+    "slug": "backlog-grooming",
+    "term": "backlog grooming",
+    "zh_name": "待辦梳理",
+    "category": "concept",
+    "langs": [
+      "agile"
+    ],
+    "difficulty": 2,
+    "plain": "定期整理待辦清單：排優先序、補清楚需求、估工、砍過時的，讓 sprint 開始時有準備好的項目可挑。",
+    "analogy": "像出發前先把採買清單排好順序、劃掉不要的。",
+    "example": "grooming 後 backlog 頂端都是準備好可開工的",
+    "related": [
+      "user-story",
+      "story-point",
+      "product-owner"
+    ]
+  },
+  {
+    "slug": "user-story",
+    "term": "user story",
+    "zh_name": "使用者故事",
+    "category": "concept",
+    "langs": [
+      "agile"
+    ],
+    "difficulty": 2,
+    "plain": "用『身為X，我想要Y，以便Z』的格式描述需求，聚焦使用者價值而非技術細節。",
+    "analogy": "像用顧客的話描述要什麼，而不是先講怎麼做。",
+    "example": "身為買家，我想收藏商品，以便之後快速找到",
+    "related": [
+      "acceptance-criteria",
+      "epic-story",
+      "story-point"
+    ]
+  },
+  {
+    "slug": "story-point",
+    "term": "story point",
+    "zh_name": "故事點",
+    "category": "concept",
+    "langs": [
+      "agile"
+    ],
+    "difficulty": 2,
+    "plain": "估算一項工作『相對複雜度/工作量』的抽象單位(常用費氏數列 1,2,3,5,8)，不直接等於小時。",
+    "analogy": "像用『難度星等』評估關卡，而不是硬說幾分鐘。",
+    "example": "登入頁 3 點、金流整合 8 點",
+    "related": [
+      "velocity",
+      "user-story",
+      "burndown"
+    ]
+  },
+  {
+    "slug": "velocity",
+    "term": "velocity",
+    "zh_name": "團隊速度",
+    "category": "concept",
+    "langs": [
+      "agile"
+    ],
+    "difficulty": 2,
+    "plain": "團隊每個 sprint 平均完成的故事點數，用來預估未來大概能做多少。是規劃參考、不是拿來壓榨的 KPI。",
+    "analogy": "像知道自己平均一天走幾步，好估行程。",
+    "example": "平均 velocity 20 點 → 40 點的功能約要兩個 sprint",
+    "related": [
+      "story-point",
+      "burndown",
+      "sprint"
+    ]
+  },
+  {
+    "slug": "burndown",
+    "term": "burndown chart",
+    "zh_name": "燃盡圖",
+    "category": "tool",
+    "langs": [
+      "agile"
+    ],
+    "difficulty": 2,
+    "plain": "顯示 sprint 剩餘工作量隨時間下降的曲線，一眼看出進度是超前還是落後。",
+    "analogy": "像倒數計時的存量圖，看還剩多少、來不來得及。",
+    "example": "線一直沒往下掉 → 可能卡關或估錯",
+    "related": [
+      "velocity",
+      "sprint",
+      "story-point"
+    ]
+  },
+  {
+    "slug": "epic-story",
+    "term": "epic",
+    "zh_name": "史詩(大型需求)",
+    "category": "concept",
+    "langs": [
+      "agile"
+    ],
+    "difficulty": 2,
+    "plain": "一個大到得拆成很多 user story 才做得完的大需求/主題。",
+    "analogy": "像一整個大工程，底下再分很多小任務。",
+    "example": "『結帳系統』是 epic，底下拆購物車、金流、發票等 story",
+    "related": [
+      "user-story",
+      "roadmap",
+      "backlog-grooming"
+    ]
+  },
+  {
+    "slug": "definition-of-done",
+    "term": "definition of done (DoD)",
+    "zh_name": "完成的定義",
+    "category": "concept",
+    "langs": [
+      "agile"
+    ],
+    "difficulty": 2,
+    "plain": "團隊共識『怎樣才算真的做完』的檢查清單(寫測試、過 review、部署了…)，避免『我覺得好了』各說各話。",
+    "analogy": "像交作業的評分標準，全部打勾才算交。",
+    "example": "DoD：程式碼+測試+過 review+更新文件+部署",
+    "related": [
+      "acceptance-criteria",
+      "code-review-2",
+      "test-coverage-metric"
+    ]
+  },
+  {
+    "slug": "acceptance-criteria",
+    "term": "acceptance criteria",
+    "zh_name": "驗收標準",
+    "category": "concept",
+    "langs": [
+      "agile"
+    ],
+    "difficulty": 2,
+    "plain": "一項需求『要符合哪些條件才算通過驗收』的具體清單，讓開發與驗收有共同標準。",
+    "analogy": "像驗收房子的點交清單：每一項達標才簽收。",
+    "example": "登入 AC：錯密碼要提示、鎖定 5 次、記住我可勾",
+    "related": [
+      "user-story",
+      "definition-of-done",
+      "bdd"
+    ]
+  },
+  {
+    "slug": "product-owner",
+    "term": "product owner (PO)",
+    "zh_name": "產品負責人",
+    "category": "reference",
+    "langs": [
+      "agile"
+    ],
+    "difficulty": 1,
+    "plain": "代表『使用者與商業價值』、決定 backlog 優先序、說清楚要什麼的人。對做什麼負責。",
+    "analogy": "像點菜的人：決定這桌要吃什麼、先上哪道。",
+    "example": "PO 排優先序、澄清需求；不決定技術怎麼做",
+    "related": [
+      "scrum-master",
+      "stakeholder",
+      "roadmap"
+    ]
+  },
+  {
+    "slug": "scrum-master",
+    "term": "scrum master",
+    "zh_name": "敏捷教練",
+    "category": "reference",
+    "langs": [
+      "agile"
+    ],
+    "difficulty": 1,
+    "plain": "幫團隊順利跑 Scrum、移除障礙、擋不必要干擾的角色。是servant leader、不是傳統主管。",
+    "analogy": "像球隊的後勤/教練，讓球員專心打球。",
+    "example": "scrum master 幫排除阻礙、主持站會與 retro",
+    "related": [
+      "product-owner",
+      "scrum",
+      "standup"
+    ]
+  },
+  {
+    "slug": "stakeholder",
+    "term": "stakeholder",
+    "zh_name": "利害關係人",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "對這個專案有利害關係、會受影響或有話語權的人(老闆、客戶、業務、法務)。要管理他們的期待。",
+    "analogy": "像一場活動的所有相關方：出錢的、來玩的、管場地的。",
+    "example": "改版前先跟 stakeholder 對齊期待與範圍",
+    "related": [
+      "product-owner",
+      "roadmap",
+      "okr"
+    ]
+  },
+  {
+    "slug": "roadmap",
+    "term": "product roadmap",
+    "zh_name": "產品路線圖",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "描繪產品未來『要往哪走、大致何時做什麼』的高階計畫，傳達方向而非精準時程。",
+    "analogy": "像旅遊大方向行程表：這季去哪、下季去哪，不是分鐘級時刻表。",
+    "example": "Q3 做通知、Q4 做金流；細節到 sprint 才定",
+    "related": [
+      "okr",
+      "epic-story",
+      "north-star"
+    ]
+  },
+  {
+    "slug": "okr",
+    "term": "OKR",
+    "zh_name": "目標與關鍵結果",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "Objective(想達成的目標)＋Key Results(可量化的衡量)。定方向又能追蹤，Google 帶紅的目標管理法。",
+    "analogy": "O 是『想去哪』，KR 是『怎麼知道到了』的里程碑。",
+    "example": "O：讓新用戶愛上產品；KR：留存率 40%→55%",
+    "related": [
+      "kpi-metric",
+      "north-star",
+      "roadmap"
+    ]
+  },
+  {
+    "slug": "kpi-metric",
+    "term": "KPI",
+    "zh_name": "關鍵績效指標",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "用來衡量『做得好不好』的關鍵數字(營收、活躍數、留存)。挑錯 KPI 會引導錯行為。",
+    "analogy": "像儀表板上最該盯的幾個數字。",
+    "example": "訂閱產品盯 MRR、留存、流失率",
+    "related": [
+      "okr",
+      "north-star",
+      "sli"
+    ]
+  },
+  {
+    "slug": "north-star",
+    "term": "north star metric",
+    "zh_name": "北極星指標",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "全公司對齊的『一個最能代表產品長期價值』的核心指標，指引大家別各做各的。",
+    "analogy": "像北極星：迷路時大家都看它定方向。",
+    "example": "訊息 App 的北極星：每日發送訊息數",
+    "related": [
+      "okr",
+      "kpi-metric",
+      "product-market-fit"
+    ]
+  },
+  {
+    "slug": "mvp-product",
+    "term": "MVP (product)",
+    "zh_name": "最小可行產品",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "用最小功能就能『驗證核心假設』的版本，快速上線收真實回饋，別一開始就做滿。",
+    "analogy": "像先賣一款招牌菜試市場，別一開店就 100 道。",
+    "example": "先做能下單付款的最小版，再依回饋加功能",
+    "related": [
+      "product-market-fit",
+      "iterate",
+      "yagni"
+    ]
+  },
+  {
+    "slug": "product-market-fit",
+    "term": "product-market fit (PMF)",
+    "zh_name": "產品市場契合",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "產品真正打中一群人的需求、他們願意用甚至推薦，成長開始自己跑。創業最關鍵的里程碑。",
+    "analogy": "像鑰匙終於插對鎖，一轉就開、不再硬凹。",
+    "example": "留存曲線走平、口碑自來 = 接近 PMF",
+    "related": [
+      "mvp-product",
+      "pivot-slang",
+      "north-star"
+    ]
+  },
+  {
+    "slug": "iterate",
+    "term": "iterate",
+    "zh_name": "迭代",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "小步快跑、做一點→收回饋→改一點，一輪輪逼近好結果，而不是憋大招一次到位。",
+    "analogy": "像調味邊煮邊嚐，慢慢調到剛好。",
+    "example": "每週小改上線看數據，比憋三個月更穩",
+    "related": [
+      "mvp-product",
+      "ship-fast",
+      "agile"
+    ]
+  },
+  {
+    "slug": "ship-fast",
+    "term": "ship fast / ship it",
+    "zh_name": "快速出貨",
+    "category": "slang",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "強調『先做出來上線、拿真實回饋』勝過關起門做到完美。但別把品質全丟了。",
+    "analogy": "像先開店營業再邊改，勝過裝潢十年不開門。",
+    "example": "『先 ship，之後再優化』——但別 ship 半殘品",
+    "related": [
+      "iterate",
+      "mvp-product",
+      "happy-hour-deploy"
+    ]
+  },
+  {
+    "slug": "blameless-postmortem",
+    "term": "blameless postmortem",
+    "zh_name": "無咎事後檢討",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "出事後檢討只究『系統/流程哪裡讓錯誤發生』、不追殺個人，這樣大家才敢誠實講、真正改進。",
+    "analogy": "像空難調查重點是找系統漏洞，不是罵飛行員。",
+    "example": "事故 postmortem 寫時間軸、根因、改善項，不點名怪罪",
+    "related": [
+      "postmortem",
+      "root-cause",
+      "five-whys"
+    ]
+  },
+  {
+    "slug": "on-call",
+    "term": "on-call",
+    "zh_name": "待命值班",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "輪班負責『系統半夜出事時被 call 起來處理』的人。要有 runbook、輪替公平、事後檢討減少半夜爆炸。",
+    "analogy": "像急診值班醫師，有狀況隨時要上。",
+    "example": "這週我 on-call，半夜警報響要處理",
+    "related": [
+      "incident",
+      "runbook",
+      "sev-level"
+    ]
+  },
+  {
+    "slug": "incident",
+    "term": "incident",
+    "zh_name": "事故",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "線上服務出的『需要緊急處理的故障』。有分級、有處理流程、事後要 postmortem。",
+    "analogy": "像店裡突發狀況(停電、漏水)要馬上處理。",
+    "example": "付款全掛 = 高級 incident，開戰情室處理",
+    "related": [
+      "sev-level",
+      "war-room",
+      "on-call"
+    ]
+  },
+  {
+    "slug": "sev-level",
+    "term": "severity level (SEV)",
+    "zh_name": "事故等級",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "事故嚴重度分級(SEV1 最嚴重全站掛，數字越大越輕)，決定要動員多少人、多快處理。",
+    "analogy": "像地震規模：越大越多單位總動員。",
+    "example": "SEV1：核心服務中斷；SEV3：小功能異常",
+    "related": [
+      "incident",
+      "war-room",
+      "on-call"
+    ]
+  },
+  {
+    "slug": "war-room",
+    "term": "war room",
+    "zh_name": "戰情室",
+    "category": "slang",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "重大事故時，相關人臨時聚在一個(線上)房間集中指揮、即時同步、快速決策止血。",
+    "analogy": "像作戰指揮中心，所有人盯同一張地圖一起打。",
+    "example": "SEV1 開 war room，一人指揮、其他人分頭救",
+    "related": [
+      "incident",
+      "sev-level",
+      "postmortem"
+    ]
+  },
+  {
+    "slug": "root-cause",
+    "term": "root cause analysis",
+    "zh_name": "根本原因分析",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "不只修表面症狀，往下追到『真正的源頭原因』，從根解決才不會一直復發。",
+    "analogy": "像漏水不只擦地，要找到並修好破的水管。",
+    "example": "當機表面是 OOM，根因是某查詢沒分頁撈爆",
+    "related": [
+      "five-whys",
+      "blameless-postmortem",
+      "regression"
+    ]
+  },
+  {
+    "slug": "five-whys",
+    "term": "5 whys",
+    "zh_name": "五個為什麼",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "連續追問『為什麼』約五層，一路挖到根本原因的簡單方法。",
+    "analogy": "像小孩打破砂鍋問到底，問著問著就找到真兇。",
+    "example": "掛了→為何?→沒記憶體→為何?→撈太多→為何?…",
+    "related": [
+      "root-cause",
+      "blameless-postmortem",
+      "xy-problem"
+    ]
+  },
+  {
+    "slug": "ic-role",
+    "term": "individual contributor (IC)",
+    "zh_name": "個人貢獻者",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "不帶人、專注把技術做深做好的職涯路線，跟『管理職』並列。資深 IC 影響力可以很大。",
+    "analogy": "像頂尖工匠專精手藝，不一定要當老闆才厲害。",
+    "example": "有人選 IC 走技術深度、有人走管理帶團隊",
+    "related": [
+      "tech-lead",
+      "bus-factor",
+      "deep-work"
+    ]
+  },
+  {
+    "slug": "mob-programming",
+    "term": "mob programming",
+    "zh_name": "群體程式設計",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "整組人圍著一台電腦、一起解同一個問題(一人打字、其他人出主意輪流)。適合難題或知識傳承。",
+    "analogy": "像一群人合力解一道超難謎題，你一言我一語。",
+    "example": "卡關的架構問題全組 mob 一起攻",
+    "related": [
+      "pair-programming",
+      "code-review-2",
+      "bus-factor"
+    ]
+  },
+  {
+    "slug": "code-review-2",
+    "term": "code review",
+    "zh_name": "程式碼審查",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "合併前請隊友讀你的改動、給意見、抓問題。抓 bug、傳承知識、維持品質的關鍵習慣。對事不對人。",
+    "analogy": "像交稿前請人幫看，抓錯字也一起把關品質。",
+    "example": "PR 至少一人 approve 才 merge",
+    "related": [
+      "pull-request",
+      "merge-request",
+      "definition-of-done"
+    ]
+  },
+  {
+    "slug": "merge-request",
+    "term": "merge request (MR)",
+    "zh_name": "合併請求",
+    "category": "reference",
+    "langs": [
+      "git"
+    ],
+    "difficulty": 1,
+    "plain": "GitLab 對『Pull Request』的叫法，意思一樣：請求把你的分支合進主線，附上 review 與討論。",
+    "analogy": "像交稿請主編審核後併入正式版。",
+    "example": "GitLab 開 MR、GitHub 開 PR，同一件事",
+    "related": [
+      "pull-request",
+      "code-review-2",
+      "rebase"
+    ]
+  },
+  {
+    "slug": "wip-limit",
+    "term": "WIP limit",
+    "zh_name": "進行中工作上限",
+    "category": "concept",
+    "langs": [
+      "agile"
+    ],
+    "difficulty": 2,
+    "plain": "限制『同時在做的事情數量』，逼你先做完再開新的，減少切換成本、加快整體流動。",
+    "analogy": "像規定桌上同時只能攤開兩份工作，做完一份才拿下一份。",
+    "example": "看板『進行中』欄最多 3 張卡，滿了先清",
+    "related": [
+      "kanban",
+      "context-switching",
+      "deep-work"
+    ]
+  },
+  {
+    "slug": "deep-work",
+    "term": "deep work",
+    "zh_name": "深度工作",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "不被打斷、長時間專注在高認知需求任務上的工作狀態，是產出高價值成果的關鍵。",
+    "analogy": "像關起門來心無旁騖地攻一道難題，效率遠勝零碎時間。",
+    "example": "早上排 2 小時免會議免訊息的 deep work",
+    "related": [
+      "context-switching",
+      "burnout",
+      "wip-limit"
+    ]
+  },
+  {
+    "slug": "impostor-syndrome",
+    "term": "impostor syndrome",
+    "zh_name": "冒牌者症候群",
+    "category": "slang",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "覺得自己其實沒那麼行、只是運氣好、隨時會被拆穿的心理狀態。工程師超常見，其實大家都會。",
+    "analogy": "像明明考得不錯卻覺得『這次只是運氣』的心虛。",
+    "example": "看同事都好強，覺得自己不配 —— 其實很正常",
+    "related": [
+      "burnout",
+      "bus-factor",
+      "rubber-duck"
+    ]
+  },
+  {
+    "slug": "xy-problem",
+    "term": "XY problem",
+    "zh_name": "XY 問題",
+    "category": "slang",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "你想解 X，卻自認 Y 是方法而只問 Y，結果大家陪你鑽 Y 的死胡同。該先講你真正想達成的 X。",
+    "analogy": "像問『哪買梯子』其實是要拿高處東西——直接講目的更快有解。",
+    "example": "問『怎麼用正則切檔名』其實該問『怎麼拿副檔名』(有現成函式)",
+    "related": [
+      "five-whys",
+      "rubber-duck",
+      "naming-things"
+    ]
+  },
+  {
+    "slug": "nih-syndrome",
+    "term": "not invented here (NIH)",
+    "zh_name": "非我所創症候群",
+    "category": "slang",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "抗拒用現成的外部方案，堅持什麼都自己重造，浪費時間又常做得更差。反過來也有『什麼都靠套件』的毛病。",
+    "analogy": "像不信任外面的麵包，堅持自己種麥磨粉，累死又不見得好吃。",
+    "example": "有成熟函式庫卻硬自己寫一套 = NIH",
+    "related": [
+      "over-engineering",
+      "second-system",
+      "yak-shaving"
+    ]
+  },
+  {
+    "slug": "happy-hour-deploy",
+    "term": "Friday deploy",
+    "zh_name": "週五部署(別)",
+    "category": "slang",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "工程師的迷因禁忌：週五下班前才上線，出事就毀了整個週末沒人救。能避就避。",
+    "analogy": "像放長假前才動大工程，出包了叫天不應。",
+    "example": "『別在週五 5 點 deploy』是江湖規矩",
+    "related": [
+      "ship-fast",
+      "rollback",
+      "on-call"
+    ]
+  },
+  {
+    "slug": "it-depends",
+    "term": "it depends",
+    "zh_name": "看情況",
+    "category": "slang",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "工程師最愛的答案：多數技術問題沒有絕對對錯，要看場景、規模、取捨。討厭但通常是實話。",
+    "analogy": "像問『該住哪比較好』——要看預算、通勤、家庭…看情況。",
+    "example": "『該用哪個資料庫?』『it depends』(然後開始問需求)",
+    "related": [
+      "trade-off",
+      "premature-optimization",
+      "kiss-principle"
+    ]
+  },
+  {
+    "slug": "naming-things",
+    "term": "naming things",
+    "zh_name": "命名難題",
+    "category": "slang",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "名言：『電腦科學只有兩件難事：快取失效與命名。』好名字讓程式好懂，取名卻常想很久。",
+    "analogy": "像幫小孩取名，字不多但要對一輩子，超難決定。",
+    "example": "為一個變數該叫 data / result / payload 糾結十分鐘",
+    "related": [
+      "cache-invalidation",
+      "camel-case",
+      "readability"
+    ]
+  },
+  {
+    "slug": "second-system",
+    "term": "second-system effect",
+    "zh_name": "第二系統效應",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "做完克制的第一版後，重寫第二版時容易把所有『當初想加的』全塞進去，變得臃腫過度設計。",
+    "analogy": "像第一次租屋很簡約，第二次買房把畢生夢想全塞進去、結果雜亂。",
+    "example": "『大改版』常犯 second-system，功能爆炸難維護",
+    "related": [
+      "over-engineering",
+      "nih-syndrome",
+      "gold-plating"
+    ]
+  },
+  {
+    "slug": "conway-law",
+    "term": "Conway's law",
+    "zh_name": "康威定律",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "系統的架構會長得像組織的溝通結構。三個團隊做的產品往往就切成三塊。想改架構，先想組織。",
+    "analogy": "像各部門各做各的網站，最後拼起來就是各說各話的樣子。",
+    "example": "微服務邊界常不小心對齊了團隊邊界",
+    "related": [
+      "brooks-law",
+      "bus-factor",
+      "service-mesh"
+    ]
+  },
+  {
+    "slug": "brooks-law",
+    "term": "Brooks's law",
+    "zh_name": "布魯克斯定律",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "『替一個延誤的專案加人，只會讓它更慢。』因為新人要帶、溝通成本暴增。人多不等於快。",
+    "analogy": "像一個小廚房硬塞十個廚師，反而互相卡到出不了菜。",
+    "example": "快 deadline 才加人常適得其反",
+    "related": [
+      "conway-law",
+      "context-switching",
+      "bus-factor"
+    ]
+  },
+  {
+    "slug": "hyrum-law",
+    "term": "Hyrum's law",
+    "zh_name": "海勒姆定律",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "只要 API 用的人夠多，你所有可觀察到的行為(連沒承諾的)都會有人依賴。所以任何小改都可能弄壞某人。",
+    "analogy": "像店裡不小心的習慣(某按鈕位置)久了顧客都靠它，一改就有人抗議。",
+    "example": "只是改個回傳順序、沒說要保證，卻有人依賴它掛了",
+    "related": [
+      "breaking-change",
+      "backward-compat",
+      "postel-law"
+    ]
+  },
+  {
+    "slug": "postel-law",
+    "term": "Postel's law",
+    "zh_name": "波斯特爾定律",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "『對別人寬容、對自己嚴格』：接收時容忍各種不完美輸入，發送時嚴守規範。讓系統更好互通。",
+    "analogy": "像聽別人講話包容口音、但自己講求標準清楚。",
+    "example": "解析寬鬆(容錯)、輸出嚴謹(照標準)",
+    "related": [
+      "hyrum-law",
+      "graceful-degradation",
+      "defensive-programming"
+    ]
+  },
+  {
+    "slug": "pareto",
+    "term": "Pareto principle (80/20)",
+    "zh_name": "帕雷托法則(80/20)",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "約 80% 的結果來自 20% 的原因。抓住關鍵少數(那 20%)最划算，別平均用力。",
+    "analogy": "像 20% 的招牌菜帶來 80% 的營收，主打它最有效。",
+    "example": "20% 的功能滿足 80% 的需求 → 先做那 20%",
+    "related": [
+      "mvp-product",
+      "premature-optimization",
+      "yagni"
+    ]
+  }
+]
