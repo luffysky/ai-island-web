@@ -17,7 +17,7 @@
 4. **桌面版也不要破版**：不是只顧手機——**所有介面、桌面寬螢幕一樣要檢查**，版面、對齊、間距都正常。
 5. **PWA**：有沒有影響 PWA（manifest / service worker / 離線 / 安裝）？動到相關的就驗一下。
 6. **建置驗證**：`npx tsc --noEmit`、`npx vitest run`、`npx next build` 都要綠（push = 自動上線，build 壞了會害 CI 失敗、可能推出壞版）。
-7. **全部沒問題 → 先更新工作日誌（`docs/worklog/daily_works_*.md`）→ 再 commit / push。** 完成的 todo 用刪除線標記、不要刪。（待辦統一寫 `docs/todo/todo_list_0713.md`）
+7. **全部沒問題 → 先更新工作日誌（`docs/worklog/daily_works_*.md`）→ 再 commit / push。** 完成的 todo 用刪除線標記、不要刪。（待辦統一寫 `docs/todo/todo_list_0714.md`＝現行主檔；`todo_list_0713.md` 留作歷史）
 8. **機密**：`.env.local` / 真金鑰永不 commit；`docs/logerr.md`、`docs/note.md` 保持 untracked。
 
 > 排查心法：介面怪 → 先確認「資料有沒有真的接到」（API/欄位/腳本）而不是只改前端樣式。

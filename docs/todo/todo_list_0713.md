@@ -279,7 +279,7 @@
 - ＊ 參賽級門檻：UI 不能馬虎，破版/對比/RWD/動效都要過。
 
 ## 內容 / 辭典 / 其他
-- 🚧 程式辭典續寫到 5000（~~0713 加第 21 批 27 條工程實務術語 → 現 1049 條~~，從 `dictionary-seed-22.json` 接）+ i18n 續補（新批次跑 `node scripts/translate-sync-all.mjs` 補譯，未跑=前台 fallback 中文）。
+- 🚧 程式辭典續寫到 5000（~~0713 第 21 批～0714 第 35 批 → 現 **1645 條**~~，從 `dictionary-seed-36.json` 接）+ i18n 續補（新批次跑 `node scripts/translate-sync-all.mjs` 補譯，未跑=前台 fallback 中文）。
 - ⬜ 語言島 `/語言島`（沿用 dictionary `domain='english'|'japanese'`）。
 - ⬜ 計畫書 ch2/ch6/ch7 + pitch-deck 對齊 `repositioning.md`；grant「重新定錨」四塊。
 - ⬜ `PortfoliosClient.tsx` 補 emoji picker；Z 幣續用 UX（`need_zcoin` 402 前端提示）。
