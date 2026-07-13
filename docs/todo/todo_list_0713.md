@@ -290,7 +290,7 @@
 - ~~**cron-job.org job #9「opportunity-radar」**（每天 07:00）— 0713 已設定並實測 200。~~
 
 ## 機會雷達要你做的（人工覆核鏈的「人」）
-- ⬜ **加真實來源**：後台 `/admin/opportunities/sources` 貼你信任的官方 **RSS/Atom** 網址（政府補助、大學競賽、獎金獵人站…）。只吃 RSS/Atom；沒有 RSS 的站先略過（API/爬蟲之後才支援）。
+- 🚧 **加真實來源**：~~0713 Claude 已驗證並加 2 個政府 RSS（行政院 部會新聞 ModuleType=4／本院新聞 ModuleType=3）；cron 加了機會關鍵字過濾，只把「像機會的」項目進佇列~~。你可到 `/admin/opportunities/sources` 再加更多你信任的官方 **RSS/Atom**（大學競賽、文化部/國藝會徵件…；很多政府「RSS 頻道」其實是 HTML 導覽頁、不是真 feed，加之前先確認 XML）。純機會來源（整包都是機會）把「預設分類」填 `all` 可跳過關鍵字過濾。
 - ⬜ **定期審佇列**：cron 抓進來的候選在同頁「待審佇列」，你按「核准上線」才會進機會島（標 unverified，可再補獎金/截止/分類）。**不核准就不會出現在前台**——這是防 AI 亂放假資料的關鍵人工關卡。
 
 ## Zeabur 要設的環境變數（Service → Variables）
