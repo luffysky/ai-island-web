@@ -91,7 +91,7 @@ export function AiPlanClient({ initialPlan, defaultCareer }: { initialPlan: Plan
     return (
       <div className="space-y-4">
         {/* 計畫 meta */}
-        <div className="rounded-xl bg-gradient-to-br from-accent/15 to-accent-2/10 border border-accent/40 p-4">
+        <div className="rounded-xl bg-bg-card bg-gradient-to-br from-accent/15 to-accent-2/10 border border-accent/40 p-4">
           <div className="flex items-center gap-2 flex-wrap mb-2">
             <Sparkles size={14} className="text-accent" />
             <span className="text-xs text-fg-muted">{t("aiPlanCurrent")}</span>

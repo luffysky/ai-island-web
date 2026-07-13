@@ -8,7 +8,7 @@ import { SITE_STATS } from "@/lib/site-stats";
  */
 export function PaywallOverlay({ chapterId, chapterTitle }: { chapterId: number; chapterTitle: string }) {
   return (
-    <div className="rounded-2xl border-2 border-accent/40 bg-gradient-to-br from-accent/15 via-accent-2/10 to-accent-3/5 p-8 my-8 text-center">
+    <div className="rounded-2xl border-2 border-accent/40 bg-bg-card bg-gradient-to-br from-accent/15 via-accent-2/10 to-accent-3/5 p-8 my-8 text-center">
       <div className="mb-3 flex justify-center"><Lock size={52} className="text-accent" /></div>
       <h2 className="text-2xl font-bold mb-2 flex items-center justify-center gap-2">
         <Crown size={22} className="text-yellow-400" />

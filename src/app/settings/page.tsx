@@ -40,7 +40,7 @@ export default async function SettingsPage() {
       {/* BYOK 入口：使用者自帶 API key、跳過免費額度限制 */}
       <Link
         href={"/settings/ai-keys" as any}
-        className="block rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-5 hover:from-purple-500/15 hover:to-pink-500/15 transition"
+        className="block rounded-2xl border border-purple-500/30 bg-bg-card bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-5 hover:from-purple-500/15 hover:to-pink-500/15 transition"
       >
         <div className="flex items-center justify-between gap-3">
           <div>

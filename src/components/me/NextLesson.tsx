@@ -36,7 +36,7 @@ export function NextLesson() {
   return (
     <Link
       href={`/chapters/${rec.chapter_id}#lesson-${rec.lesson_id}` as any}
-      className="block rounded-xl bg-gradient-to-br from-accent/15 via-accent-2/10 to-accent-3/5 border-2 border-accent/30 p-5 hover:border-accent transition group"
+      className="block rounded-xl bg-bg-card bg-gradient-to-br from-accent/15 via-accent-2/10 to-accent-3/5 border-2 border-accent/30 p-5 hover:border-accent transition group"
     >
       <div className="flex items-start gap-3">
         <div className="text-3xl shrink-0">📚</div>

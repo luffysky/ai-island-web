@@ -107,7 +107,7 @@ export function MePlaygroundClient() {
       />
 
       {/* 問綠寶 */}
-      <div className="rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-5">
+      <div className="rounded-2xl border border-purple-500/30 bg-bg-card bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-5">
         <div className="flex items-center gap-2 font-bold mb-1">
           <Sparkles size={18} className="text-purple-400" /> {t("askGreenGemTitle")}
         </div>

@@ -29,7 +29,7 @@ export function ResumeCTA() {
   return (
     <Link
       href="/me/resume"
-      className="relative bg-gradient-to-br from-purple-500/15 via-pink-500/10 to-orange-500/15 border border-purple-500/30 rounded-xl p-4 flex items-center gap-3 hover:border-purple-500/60 transition group"
+      className="relative bg-bg-card bg-gradient-to-br from-purple-500/15 via-pink-500/10 to-orange-500/15 border border-purple-500/30 rounded-xl p-4 flex items-center gap-3 hover:border-purple-500/60 transition group"
     >
       <button onClick={dismiss} className="absolute top-2 right-2 text-fg-muted hover:text-fg text-[10px]" title="30 天內不再顯示">×</button>
       <div className="shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">

@@ -191,7 +191,7 @@ export default async function LeaderboardPage({ searchParams }: { searchParams: 
       {/* 我自己的 sticky bottom bar */}
       {myRank && myRank.rank > 3 && (
         <div className="fixed bottom-16 md:bottom-4 left-1/2 -translate-x-1/2 z-30 max-w-md w-[calc(100vw-2rem)]">
-          <div className="bg-gradient-to-r from-accent/30 to-accent-2/30 backdrop-blur-md border border-accent/50 rounded-2xl p-3 shadow-2xl flex items-center gap-3">
+          <div className="bg-bg-card bg-gradient-to-r from-accent/30 to-accent-2/30 backdrop-blur-md border border-accent/50 rounded-2xl p-3 shadow-2xl flex items-center gap-3">
             <div className="font-mono font-bold text-accent">#{myRank.rank}</div>
             <Avatar user={myRank.user} size={32} />
             <div className="flex-1 min-w-0">

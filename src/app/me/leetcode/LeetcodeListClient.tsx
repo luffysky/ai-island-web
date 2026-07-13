@@ -142,7 +142,7 @@ export function LeetcodeListClient({
 
       {/* 今日推薦 */}
       {recommended.length > 0 && (
-        <section className="rounded-xl bg-gradient-to-br from-accent/10 to-accent-2/10 border border-accent/30 p-4">
+        <section className="rounded-xl bg-bg-card bg-gradient-to-br from-accent/10 to-accent-2/10 border border-accent/30 p-4">
           <h2 className="font-bold mb-3 flex items-center gap-2">
             <Sparkles size={16} className="text-accent" /> {t("leetcodeRecommendToday")}
           </h2>

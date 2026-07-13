@@ -86,7 +86,7 @@ export function PetEvolveClient({ pet, zBalance }: { pet: Pet | null; zBalance: 
   return (
     <div className="space-y-4">
       {/* 當前狀態 */}
-      <div className="rounded-2xl bg-gradient-to-br from-accent/15 to-accent-2/10 border border-accent/40 p-6 text-center">
+      <div className="rounded-2xl bg-bg-card bg-gradient-to-br from-accent/15 to-accent-2/10 border border-accent/40 p-6 text-center">
         <div className="text-7xl mb-2">{emojiTable[stage] ?? "🐾"}</div>
         <div className="text-2xl font-bold">{pet.name}</div>
         <div className="text-sm text-fg-muted mt-1">

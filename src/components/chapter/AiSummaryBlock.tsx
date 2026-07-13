@@ -18,7 +18,7 @@ export function AiSummaryBlock({ chapter }: { chapter: Chapter }) {
       data-ai-summary="chapter"
       data-chapter-id={chapter.id}
       data-chapter-slug={chapter.slug}
-      className="mb-6 rounded-2xl border border-purple-500/20 bg-gradient-to-br from-purple-500/5 via-pink-500/5 to-blue-500/5 p-4"
+      className="mb-6 rounded-2xl border border-purple-500/20 bg-bg-card bg-gradient-to-br from-purple-500/5 via-pink-500/5 to-blue-500/5 p-4"
     >
       <div className="flex items-start gap-2.5">
         <Sparkles size={18} className="text-purple-400 mt-0.5 shrink-0" />

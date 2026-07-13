@@ -138,7 +138,7 @@ export default async function MeOverviewPage() {
       {/* 求職準備進度（求職成果閉環入口）*/}
       <Link
         href={"/me/career-path" as any}
-        className="flex items-center gap-3 bg-gradient-to-br from-accent/15 via-accent-2/10 to-transparent border border-accent/30 rounded-xl p-4 hover:border-accent/60 transition group"
+        className="flex items-center gap-3 bg-bg-card bg-gradient-to-br from-accent/15 via-accent-2/10 to-transparent border border-accent/30 rounded-xl p-4 hover:border-accent/60 transition group"
       >
         <div className="shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent-2 flex items-center justify-center text-2xl shadow-lg">🎯</div>
         <div className="flex-1 min-w-0">

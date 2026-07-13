@@ -46,7 +46,7 @@ export default async function CertificatesPage() {
           <h2 className="font-bold mb-3">✨ {t("certEarnedHeading")}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {certs.map((c: any) => (
-              <div key={c.id} className="relative bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border-2 border-yellow-500/50 rounded-xl p-5">
+              <div key={c.id} className="relative bg-bg-card bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border-2 border-yellow-500/50 rounded-xl p-5">
                 <Award size={32} className="text-yellow-400 mb-2" />
                 <h3 className="font-bold text-lg">{c.title}</h3>
                 <div className="text-xs text-fg-muted mt-1">
