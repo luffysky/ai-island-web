@@ -15,7 +15,19 @@ export const maxDuration = 120;
  *       ③ 同 URL 去重（unique index）④ 後台人工核准才進 opportunities。
  * 絕不讓 AI 捏資料：這支只搬運來源原文、不生成、不猜。
  */
-const PER_SOURCE_LIMIT = 40;
+const PER_SOURCE_LIMIT = 60;
+
+// 只有標題/摘要命中「機會關鍵字」的項目才進待審佇列（把廣泛新聞 feed 的雜訊擋掉、省人工審）。
+// 寧可略鬆（進佇列還要人工核准）也別漏；之後可搬到後台讓林董自訂。
+const OPP_KEYWORDS = [
+  "補助", "補助款", "獎助", "獎學金", "徵件", "徵求", "徵選", "徵案", "徵稿", "徵提案", "提案徵",
+  "競賽", "大賽", "比賽", "甄選", "選拔", "報名", "招募團隊", "創業競賽", "新創", "加速器",
+  "培訓計畫", "育成", "孵化", "黑客松", "hackathon", "grant", "獎金", "頒獎典禮報名",
+];
+function looksLikeOpportunity(title: string, summary: string): boolean {
+  const hay = `${title} ${summary}`.toLowerCase();
+  return OPP_KEYWORDS.some((k) => hay.includes(k.toLowerCase()));
+}
 
 export async function GET(req: NextRequest) {
   const authErr = verifyCronAuth(req);
@@ -37,7 +49,9 @@ export async function GET(req: NextRequest) {
       if (!resp.ok) { status = `http ${resp.status}`; }
       else {
         const xml = await resp.text();
-        const items = parseFeed(xml).slice(0, PER_SOURCE_LIMIT);
+        const all = parseFeed(xml).slice(0, PER_SOURCE_LIMIT);
+        // 廣泛新聞 feed 先用關鍵字濾成「像機會的」；純機會來源可設 category_hint='all' 跳過濾除
+        const items = s.category_hint === "all" ? all : all.filter((it) => looksLikeOpportunity(it.title, it.summary));
         found = items.length;
         for (const it of items) {
           if (!it.link) continue;
