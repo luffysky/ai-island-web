@@ -56,7 +56,49 @@ no clutter, no busy background, no harsh rainbow neon, no jpeg artifacts, no low
 
 ---
 
-# Tier 1 — 必要（先生這 3 張角色去背就能換掉下方夥伴區；Hero 概念圖為選配）
+# 🌍 世界觀優先（World-first）— 首頁＝一座可往下探索的 AI 島
+
+> 核心理念：**整個首頁是「同一座島」的不同區域**，使用者往下滑＝一步步走進 AI 島（天色從黃昏漸入夜）。
+> 不是一張張互不相關的插畫。**生圖順序＝世界 → 玩法 → 角色**（角色排最後，因為世界立好就不用角色撐場）。
+
+## 🎬 生成順序（照這個，別跳）
+1. ✅ **Hero（世界）** — 黃昏漂浮 AI 島（已完成，`hero-island.png`）
+2. 🗺 **Stage Map（關卡地圖）** — 一張真正的世界地圖，島1→島6 的旅程
+3. 🚪 **Mission Dungeon（副本入口）** — 幾個不同 Portal（Python/React/SQL/Docker…）
+4. 👹 **Trap Boss（陷阱魔王）** — Boss Collection（API Key 怪 / Null 怪 / 無限迴圈 / Merge 衝突 / SQL Injection）
+5. 🐷🍄🟢 **三夥伴** — 這時才生（去背角色卡，給夥伴區＋寵物）
+6. 🎨 **五個模式小圖**（可選，Lucide 也行）
+7. 🌌 **AI 島夜景**（新增，見下）— 情感高潮 + CTA 收尾
+
+## 🧭 一致性鐵則（最大風險，務必遵守）
+- **Hero 這張＝世界聖經 / 錨點**。後面每一張都要看起來像**同一座島**：同調色、同畫風（電影感奇幻寫實）、同光線邏輯、同地貌（漂浮島＋瀑布＋水晶尖塔＋發光電路）。
+- 生每張時：**把 `hero-island.png` 當參考圖（img2img / reference）或沿用相同 seed**，別讓每張各長各的。
+- 天色隨區塊往下推移：**Hero 黃昏 → 副本 入夜 → Boss 深夜 → 夜景 星河全亮**。
+
+## 🖥️ 全部仍是 text-free + HTML 疊層（尤其地圖）
+- 圖**只給場景/底圖**，「島名、LEVEL、副本名、Boss 名、模式標題」一律**不畫進圖**、由網頁 HTML 疊。
+- **Stage Map 特別重要**：text-free 底圖 → 我用 HTML 疊**互動節點**＝一張**活的進度地圖**（反映真實解鎖/目前章節/完成度、島可點擊直接進該章）。副本入口、Boss 收藏同理（可 hover、可點）。
+- 這一步＝「插畫」升級成「產品」。
+
+## 🌌（新增）`night-scene.png` — AI 島夜景（CTA 收尾）
+- **位置**：首頁最下方「開始你的 AI 旅程」CTA 區背景
+- **尺寸**：1920 × 1080（16:9 橫式），深色，text-free
+- **提示詞**：
+```
+[STYLE BLOCK]
+The SAME floating AI island as the hero image, but now at deep night: the sky is a rich starry
+galaxy / milky way, every window and crystal spire glows, the central portal blazes with light,
+waterfalls shimmer with bioluminescence, floating lanterns and drifting light particles.
+The whole world feels alive and awake. Keep the lower-center calmer/darker for a CTA overlay.
+Anchor to the hero island's shape and palette (same world, night version).
+[NEGATIVE], no text, no UI, no characters
+```
+
+---
+
+# 各張分鏡提示詞（內容仍有效；**順序以上面 World-first 為準，角色排最後**）
+
+# Tier 1 — 角色去背（給「夥伴介紹」區＋寵物，World-first 中排第 5 才生）
 
 ### 1.（選配）`hero-key.png` — Hero 概念主視覺（無角色，插畫升級版）
 - **位置**：Hero 右側，用來取代目前的 SVG 版（想要更有質感再生）
