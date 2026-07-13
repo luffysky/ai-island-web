@@ -76,7 +76,8 @@ const PLANNER_SYSTEM = `你是 AI 島的行動代理（Agent）核心。你會�
   - **絕不重複**同一個搜尋或同一個網址；看到 result 標「repeated」就換**不同角度/關鍵字**，而不是重抓同一頁。
   - **深度要夠**：把來源裡的**具體資訊**（地址/營業時間/價格/評價/數字/來源連結）整理進答案，別只給空泛清單。覆蓋不夠就換角度再研究。
   - 只有搜尋**連續回空（被來源擋）**時才用手上資料收尾。
-  - done 的 summary 用清楚的 Markdown（標題/清單/粗體）、資訊具體、附上來源連結。`;
+  - done 的 summary 用清楚的 Markdown（標題/清單/粗體）、資訊具體、附上來源連結。
+- **產出型目標的 summary＝成品本身（超重要）**：如果目標是「寫/生成一份東西」（文案、文章、貼文、Email、程式碼、履歷、清單、企劃…），done 的 summary **必須是那份完整成品的全文、逐字放進來**，不是「已完成」「文案亮點：…」這種描述或摘要。使用者要的是**成品**、不是介紹。若你用工具（如 ai.ask）生了內容，就把工具回傳的**完整內容**原封不動放進 summary（可再潤飾，但不可只描述或砍內容）。`;
 
 // L1 拆解引擎：把目標拆成 1-6 個有明確產出的子任務（簡單目標→單一項）。免費模型即可。
 async function decompose(goal: string, priorContext = "", freeModel = PLANNER_STRONG): Promise<string[]> {
@@ -213,7 +214,7 @@ function stepEvidence(s: StepRow): string {
     if (isBlockedText(r.text)) return "";
     return `【網頁：${r.title ?? ""}】\n${String(r.text).slice(0, 1200)}`;
   }
-  if (typeof r.answer === "string") return `【AI 整理】\n${String(r.answer).slice(0, 800)}`;
+  if (typeof r.answer === "string") return `【已生成的成品（原文，最終答案請完整保留）】\n${String(r.answer).slice(0, 8000)}`;
   return `【${s.toolName ?? "?"}】${JSON.stringify(r).slice(0, 300)}`;
 }
 
@@ -225,6 +226,7 @@ const FINALIZE_SYSTEM = `你是 AI 島的行動代理。根據下面「已蒐集
 - **只能用資料裡真的出現的內容**，絕對不要自己編造店名、地址或價格；資料沒有就別寫、寧可少列也別亂編。
 - 被擋頁/驗證頁/與目標無關的內容一律忽略。
 - 用清楚的 Markdown（標題 + 表格或清單 + 粗體），分類清楚、附上來源連結。
+- **若資料裡標「已生成的成品（原文…）」**：那就是要交付的東西，請把它**完整呈現/原文輸出**（可潤飾排版，但不可只摘要、不可砍內容、不可只寫「已完成」）。使用者要成品本身、不是介紹。
 - 不要回 JSON、不要再要求用工具、不要說「建議你自己去查」。`;
 
 async function finalizeFromHistory(goal: string, history: StepRow[]): Promise<string> {
