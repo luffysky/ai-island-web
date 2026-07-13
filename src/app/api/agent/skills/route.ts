@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const VALID_TOOLS = new Set(TOOLS.map((t) => t.name));
+const CATS = new Set(["employee", "research", "write", "code", "dev", "learn", "other"]);
 
 // GET /api/agent/skills — 內建 + 我自建的技能，附 installed 旗標（安裝包模式）
 export async function GET() {
@@ -68,7 +69,6 @@ export async function POST(req: Request) {
   const name = String(b.name ?? "").trim().slice(0, 40);
   if (!name) return NextResponse.json({ error: "缺員工名稱" }, { status: 400 });
   const allowed = Array.isArray(b.allowed_tools) ? b.allowed_tools.filter((t: string) => VALID_TOOLS.has(t)).slice(0, 20) : [];
-  const CATS = new Set(["employee", "research", "write", "code", "dev", "learn", "other"]);
   const category = CATS.has(b.category) ? b.category : "employee";  // 預設「員工」
   const admin = createSupabaseAdmin();
 
@@ -89,6 +89,39 @@ export async function POST(req: Request) {
   }).select("id").single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true, id: data.id });
+}
+
+// PATCH /api/agent/skills?id=<uuid> — 編輯自己的自建技能/員工（改名/職務/emoji/職能prompt/工具集/步數/分類）
+// 內建技能是全站共用、不能直接改；前端請用「複製並編輯」（POST 帶入內建欄位）→ 變成可改的自建版。
+export async function PATCH(req: Request) {
+  const supabase = await createSupabaseServer();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const id = new URL(req.url).searchParams.get("id");
+  if (!id) return NextResponse.json({ error: "缺 id" }, { status: 400 });
+  const b = await req.json().catch(() => ({} as any));
+  const admin = createSupabaseAdmin();
+
+  const { data: existing } = await admin.from("agent_skills").select("id, user_id, is_builtin").eq("id", id).maybeSingle();
+  if (!existing) return NextResponse.json({ error: "not_found" }, { status: 404 });
+  if (existing.is_builtin || existing.user_id !== user.id) {
+    return NextResponse.json({ error: "builtin_readonly", message: "內建技能不能直接改，請用『複製並編輯』" }, { status: 403 });
+  }
+
+  const patch: Record<string, unknown> = {};
+  if (typeof b.name === "string") { const n = b.name.trim().slice(0, 40); if (n) patch.name = n; }
+  if (typeof b.description === "string") patch.description = b.description.slice(0, 200);
+  if (typeof b.emoji === "string" && b.emoji.trim()) patch.emoji = b.emoji.slice(0, 8);
+  if (typeof b.goal_template === "string") patch.goal_template = b.goal_template.slice(0, 1000);
+  if (Array.isArray(b.allowed_tools)) patch.allowed_tools = b.allowed_tools.filter((t: string) => VALID_TOOLS.has(t)).slice(0, 20);
+  if (b.max_steps != null) patch.max_steps = Math.min(Math.max(Number(b.max_steps) || 12, 1), 30);
+  if (typeof b.category === "string" && CATS.has(b.category)) patch.category = b.category;
+  if (Object.keys(patch).length === 0) return NextResponse.json({ error: "沒有可更新的欄位" }, { status: 400 });
+
+  const { error } = await admin.from("agent_skills")
+    .update(patch).eq("id", id).eq("user_id", user.id).eq("is_builtin", false);
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ ok: true });
 }
 
 // DELETE /api/agent/skills?id=<uuid> — 刪自己的自建技能

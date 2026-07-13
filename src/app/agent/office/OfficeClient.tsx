@@ -341,6 +341,9 @@ export function OfficeClient() {
         )}
       </section>
 
+      {/* AI 員工會議室 */}
+      <MeetingRoom employees={employees} />
+
       {/* 排程自動跑 */}
       <section className="mb-7">
         <div className="flex items-center justify-between mb-2.5">
@@ -444,5 +447,66 @@ export function OfficeClient() {
         )}
       </section>
     </main>
+  );
+}
+
+// AI 員工會議室：設主題 → 各員工按職能+個性輪流發言（一個接一個吐、療癒向）。
+function MeetingRoom({ employees }: { employees: SkillItem[] }) {
+  const [topic, setTopic] = useState("");
+  const [msgs, setMsgs] = useState<{ id: string; name: string; emoji: string; text: string }[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [note, setNote] = useState("");
+
+  const run = async () => {
+    const t = topic.trim();
+    if (!t || busy) return;
+    setBusy(true); setNote(""); setMsgs([]);
+    try {
+      const r = await fetch("/api/agent/office/meeting", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ topic: t }),
+      });
+      const d = await r.json();
+      if (!r.ok) { setNote(d.error ?? "開會失敗"); return; }
+      if (d.note) setNote(d.note);
+      const list: { id: string; name: string; emoji: string; text: string }[] = d.messages ?? [];
+      for (let i = 0; i < list.length; i++) {
+        await new Promise((res) => setTimeout(res, i === 0 ? 0 : 550));
+        setMsgs((m) => [...m, list[i]]);
+      }
+    } catch { setNote("開會失敗，稍後再試"); } finally { setBusy(false); }
+  };
+
+  return (
+    <section className="mb-7">
+      <div className="flex items-center justify-between mb-2.5">
+        <h2 className="text-sm font-semibold flex items-center gap-1.5">🗣️ 員工會議室 <span className="text-[11px] font-normal text-black/40 dark:text-white/40">· 設個主題，讓 AI 員工各抒己見</span></h2>
+      </div>
+      <div className="rounded-2xl border border-black/10 dark:border-white/10 p-3">
+        <div className="flex gap-2">
+          <input value={topic} onChange={(e) => setTopic(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") run(); }}
+            placeholder="會議主題（例：這週要不要做 AI 開會功能？）"
+            className="flex-1 rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-violet-400" />
+          <button onClick={run} disabled={busy || !topic.trim()} className="shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-violet-600 hover:bg-violet-700 disabled:opacity-40 text-white px-4 py-2 text-sm font-medium">
+            {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : "開會"}
+          </button>
+        </div>
+        {employees.length === 0 && <p className="text-[11px] text-black/40 dark:text-white/40 mt-2">還沒有在職員工——先去技能商店安裝或建員工。</p>}
+        {note && <p className="text-[11px] text-amber-600 dark:text-amber-400 mt-2">{note}</p>}
+        {msgs.length > 0 && (
+          <div className="mt-3 space-y-2">
+            {msgs.map((m, i) => (
+              <div key={i} className="flex gap-2 items-start animate-[fadeIn_.3s_ease]">
+                <span className="text-lg leading-none shrink-0">{m.emoji}</span>
+                <div className="min-w-0">
+                  <div className="text-[11px] text-black/50 dark:text-white/50">{m.name} · 會議發言</div>
+                  <div className="text-sm rounded-lg bg-black/5 dark:bg-white/5 px-3 py-1.5 mt-0.5 break-words">{m.text}</div>
+                </div>
+              </div>
+            ))}
+            {!busy && <button onClick={run} className="text-[11px] text-violet-600 dark:text-violet-400 hover:underline mt-1">再開一輪 →</button>}
+          </div>
+        )}
+      </div>
+    </section>
   );
 }

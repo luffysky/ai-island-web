@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Bot, Send, Loader2, CheckCircle2, XCircle, Wrench, Eye, ShieldAlert, ShieldCheck, History, Cpu, Square, Laptop, Plug, Copy, Trash2, X, Mic } from "lucide-react";
+import { Bot, Send, Loader2, CheckCircle2, XCircle, Wrench, Eye, ShieldAlert, ShieldCheck, History, Cpu, Square, Laptop, Plug, Copy, Trash2, X, Mic, Pencil } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -67,6 +67,7 @@ export function AgentClient() {
   const [skillId, setSkillId] = useState<string>("");     // 選用的技能
   const [skillModal, setSkillModal] = useState(false);
   const [skillDraft, setSkillDraft] = useState<SkillDraft | null>(null);  // L4：從任務蒸餾出的技能草稿
+  const [skillEditId, setSkillEditId] = useState<string | null>(null);    // CRUD：編輯既有自建技能/員工（null=新建/複製）
   const [synthBusy, setSynthBusy] = useState(false);
   const [storeOpen, setStoreOpen] = useState(false);
   const [mcpServers, setMcpServers] = useState<{ id: string; name: string; tools: { name: string }[] }[]>([]);
@@ -792,20 +793,26 @@ export function AgentClient() {
 
       {/* 技能商店 */}
       {storeOpen && (
-        <SkillStore skills={skills} tools={tools} onToggle={installSkill} onClose={() => setStoreOpen(false)} onDeleted={loadSkills} />
+        <SkillStore skills={skills} tools={tools} onToggle={installSkill} onClose={() => setStoreOpen(false)} onDeleted={loadSkills}
+          onEdit={(sk, mode) => {
+            setSkillDraft({ name: sk.name, emoji: sk.emoji, description: sk.description ?? "", goal_template: (sk as any).goal_template ?? "", allowed_tools: sk.allowed_tools ?? [] });
+            setSkillEditId(mode === "edit" ? sk.id : null);
+            setStoreOpen(false); setSkillModal(true);
+          }} />
       )}
 
       {/* 自建 Agent（技能）彈窗 */}
       {skillModal && (
-        <SkillCreator tools={tools} initial={skillDraft} onClose={() => { setSkillModal(false); setSkillDraft(null); }} onCreated={(id) => { loadSkills(); setSkillId(id); setSkillModal(false); setSkillDraft(null); }} />
+        <SkillCreator tools={tools} initial={skillDraft} editId={skillEditId} onClose={() => { setSkillModal(false); setSkillDraft(null); setSkillEditId(null); }} onCreated={(id) => { loadSkills(); setSkillId(id); setSkillModal(false); setSkillDraft(null); setSkillEditId(null); }} />
       )}
     </main>
   );
 }
 
-function SkillStore({ skills, tools, onToggle, onClose, onDeleted }: {
+function SkillStore({ skills, tools, onToggle, onClose, onDeleted, onEdit }: {
   skills: SkillItem[]; tools: ToolInfo[];
   onToggle: (id: string, install: boolean) => void; onClose: () => void; onDeleted: () => void;
+  onEdit: (skill: SkillItem, mode: "edit" | "fork") => void;
 }) {
   const toolMap = new Map(tools.map((t) => [t.name, t]));
   const perm = (s: SkillItem) => {
@@ -858,6 +865,7 @@ function SkillStore({ skills, tools, onToggle, onClose, onDeleted }: {
                         ) : (
                           <button onClick={() => onToggle(s.id, true)} className="flex-1 text-xs rounded-lg bg-violet-600 hover:bg-violet-700 text-white py-1.5">安裝</button>
                         )}
+                        <button onClick={() => onEdit(s, s.is_builtin ? "fork" : "edit")} title={s.is_builtin ? "複製一份來改" : "編輯"} className="shrink-0 rounded-lg border border-black/15 dark:border-white/20 px-2 hover:text-violet-500"><Pencil className="w-3.5 h-3.5" /></button>
                         {!s.is_builtin && <button onClick={() => del(s.id)} title="刪除" className="shrink-0 rounded-lg border border-black/15 dark:border-white/20 px-2 hover:text-rose-500"><Trash2 className="w-3.5 h-3.5" /></button>}
                       </div>
                     </div>
@@ -873,7 +881,7 @@ function SkillStore({ skills, tools, onToggle, onClose, onDeleted }: {
 }
 
 interface SkillDraft { name: string; emoji: string; description: string; goal_template: string; allowed_tools: string[]; }
-function SkillCreator({ tools, onClose, onCreated, initial }: { tools: ToolInfo[]; onClose: () => void; onCreated: (id: string) => void; initial?: SkillDraft | null }) {
+function SkillCreator({ tools, onClose, onCreated, initial, editId }: { tools: ToolInfo[]; onClose: () => void; onCreated: (id: string) => void; initial?: SkillDraft | null; editId?: string | null }) {
   const [name, setName] = useState(initial?.name ?? "");
   const [emoji, setEmoji] = useState(initial?.emoji ?? "🤖");
   const [desc, setDesc] = useState(initial?.description ?? "");
@@ -888,13 +896,17 @@ function SkillCreator({ tools, onClose, onCreated, initial }: { tools: ToolInfo[
     if (!name.trim()) { setErr("請填員工名字"); return; }
     setSaving(true); setErr("");
     try {
-      const r = await fetch("/api/agent/skills", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, emoji, description: desc, goal_template: prompt, allowed_tools: picked, max_steps: 12, category: "employee" }),
+      const url = editId ? `/api/agent/skills?id=${editId}` : "/api/agent/skills";
+      const payload = editId
+        ? { name, emoji, description: desc, goal_template: prompt, allowed_tools: picked }
+        : { name, emoji, description: desc, goal_template: prompt, allowed_tools: picked, max_steps: 12, category: "employee" };
+      const r = await fetch(url, {
+        method: editId ? "PATCH" : "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
       const d = await r.json();
-      if (!r.ok) { setErr(d.error ?? "建立失敗"); return; }
-      onCreated(d.id);
+      if (!r.ok) { setErr(d.error ?? (editId ? "儲存失敗" : "建立失敗")); return; }
+      onCreated(editId ?? d.id);
     } catch { setErr("建立失敗"); } finally { setSaving(false); }
   };
 
@@ -902,7 +914,7 @@ function SkillCreator({ tools, onClose, onCreated, initial }: { tools: ToolInfo[
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/50 p-4" onClick={onClose}>
       <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-[#15161c] border border-black/10 dark:border-white/10 p-5 max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-bold flex items-center gap-2"><Bot className="w-5 h-5 text-violet-500" /> 建一位 AI 員工</h2>
+          <h2 className="font-bold flex items-center gap-2"><Bot className="w-5 h-5 text-violet-500" /> {editId ? "編輯 AI 員工／技能" : "建一位 AI 員工"}</h2>
           <button onClick={onClose} className="text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white"><X className="w-5 h-5" /></button>
         </div>
         <p className="text-xs text-black/50 dark:text-white/50 mb-3">幫他取名、給職務、寫職能（要他怎麼做事）、選能用的工具。最多可建 20 位。</p>
@@ -928,7 +940,7 @@ function SkillCreator({ tools, onClose, onCreated, initial }: { tools: ToolInfo[
           </div>
           {err && <div className="text-xs text-rose-500">{err}</div>}
           <button onClick={save} disabled={saving} className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white px-4 py-2.5 text-sm font-medium">
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />} 錄取這位員工
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />} {editId ? "儲存修改" : "錄取這位員工"}
           </button>
         </div>
       </div>
