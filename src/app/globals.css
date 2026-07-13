@@ -822,8 +822,9 @@ html[data-theme="light"] .hero-bottom-seam { background: linear-gradient(to bott
 html[data-theme="light"] .starfield, html[data-theme="light"] .starfield-2 { display: none; }
 
 /* 學員自訂背景（BG_PRESETS 全是深色漸層）只在「深色主題」套用；
-   淺色主題一律回歸淺色底 → 否則深底 + 深色字(側欄/文字)看不到。inline style 用 !important 蓋掉。 */
-html[data-theme="light"] .me-page-bg { background: transparent !important; }
+   淺色主題強制回歸淺色底 → 否則深底 + 深色字(側欄/文字)看不到。
+   用實心 var(--color-bg)（不是 transparent）+ !important：不論 inline style 或背後任何深色元素都蓋掉。 */
+html[data-theme="light"] .me-page-bg { background: var(--color-bg) !important; }
 
 /* 主視覺日/夜雙圖：暗色顯示夜晚版、亮色顯示白天版（同構圖、無縫切）*/
 .img-day { display: none; }

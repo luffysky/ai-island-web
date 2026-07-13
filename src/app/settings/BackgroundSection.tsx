@@ -53,6 +53,7 @@ export function BackgroundSection({ initial }: { initial: string | null }) {
     <div className="rounded-2xl border border-border bg-bg-card p-5 space-y-3">
       <div className="text-lg font-bold">🎨 {t("personalBackground")}</div>
       <p className="text-sm text-fg-muted">{t("backgroundDesc")}</p>
+      <p className="text-xs text-fg-muted inline-flex items-center gap-1">🌙 自訂背景只在<strong className="text-fg">深色主題</strong>顯示；淺色主題為了閱讀清晰會維持淺底。</p>
 
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
         <button
