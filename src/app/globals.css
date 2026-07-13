@@ -651,7 +651,7 @@ html[data-theme="light"] .hljs-class .hljs-title { color: #b06800; }
   from { opacity: 0; transform: translateX(-100%); }
   to   { opacity: 1; transform: translateX(0); }
 }
-.animate-slide-in-left { animation: slideInLeft 0.3s cubic-bezier(0.22, 1, 0.36, 1); transform-origin: left center; }
+.animate-slide-in-left { animation: slideInLeft 0.5s cubic-bezier(0.22, 1, 0.36, 1); transform-origin: left center; }
 @media (prefers-reduced-motion: reduce) { .animate-slide-in-left { animation: none; } }
 
 /* SideNav hover 泡泡：淡入 + 從左滑出一點 */
