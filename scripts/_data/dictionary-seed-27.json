@@ -1,0 +1,884 @@
+[
+  {
+    "slug": "iaas-paas-saas",
+    "term": "IaaS / PaaS / SaaS",
+    "zh_name": "雲端三層服務",
+    "category": "reference",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "雲端服務的三種層級：IaaS 租『機器』你自己裝、PaaS 租『平台』你只管程式碼、SaaS 直接『用軟體』。越上層越省事、越沒彈性。",
+    "analogy": "IaaS 租廚房自己煮、PaaS 用共享廚房只帶食材、SaaS 直接外送吃。",
+    "example": "AWS EC2=IaaS、Zeabur/Vercel=PaaS、Gmail=SaaS",
+    "related": [
+      "faas",
+      "vm",
+      "container"
+    ]
+  },
+  {
+    "slug": "faas",
+    "term": "FaaS / serverless",
+    "zh_name": "函式即服務",
+    "category": "concept",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 3,
+    "plain": "你只寫一個函式、上傳，平台在有請求時才幫你跑、用完就收，按次計費、免管伺服器。閒置久了會冷啟動。",
+    "analogy": "像隨叫隨到的臨時工，有活才來、按件計酬，不用養全職。",
+    "example": "AWS Lambda、Vercel Functions；適合流量不定的小任務",
+    "related": [
+      "iaas-paas-saas",
+      "cold-start",
+      "edge-computing"
+    ]
+  },
+  {
+    "slug": "vm",
+    "term": "virtual machine (VM)",
+    "zh_name": "虛擬機",
+    "category": "concept",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "在一台實體機器上用軟體模擬出的『整台電腦』，有自己的作業系統，彼此隔離。比容器重但更完整隔離。",
+    "analogy": "像一棟大樓裡隔出好幾間各自水電獨立的套房。",
+    "example": "AWS EC2、本機的 VirtualBox 都是 VM",
+    "related": [
+      "container",
+      "bare-metal",
+      "iaas-paas-saas"
+    ]
+  },
+  {
+    "slug": "container-image",
+    "term": "container image",
+    "zh_name": "容器映像檔",
+    "category": "concept",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "把程式＋相依＋環境打包成的唯讀『範本』，跑起來就是一個容器。同一映像在哪都跑得一樣。",
+    "analogy": "像餐點的『冷凍包』：拆封加熱(執行)每次味道都一致。",
+    "example": "docker build 產出映像 → docker run 跑成容器",
+    "related": [
+      "registry",
+      "container",
+      "immutable-infra"
+    ]
+  },
+  {
+    "slug": "registry",
+    "term": "container registry",
+    "zh_name": "映像倉庫",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "存放與分發容器映像檔的倉庫，build 好推上去、部署時再拉下來。有公開也有私有。",
+    "analogy": "像 App Store：開發者上架映像、伺服器來下載安裝。",
+    "example": "Docker Hub、GHCR(GitHub Container Registry)；本站用 GHCR",
+    "related": [
+      "container-image",
+      "pipeline-cicd",
+      "artifact"
+    ]
+  },
+  {
+    "slug": "orchestration",
+    "term": "orchestration",
+    "zh_name": "容器編排",
+    "category": "concept",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 3,
+    "plain": "自動管理一大堆容器：部署、擴縮、健康檢查、掛了自動重啟、滾動更新。Kubernetes 是代表。",
+    "analogy": "像樂團指揮：協調每個樂手(容器)何時進、大聲小聲、有人出錯補位。",
+    "example": "K8s 讓 100 個容器自動維持、壞了自癒",
+    "related": [
+      "k8s-pod",
+      "helm",
+      "autoscaling"
+    ]
+  },
+  {
+    "slug": "k8s-pod",
+    "term": "pod (Kubernetes)",
+    "zh_name": "Pod",
+    "category": "concept",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 3,
+    "plain": "K8s 裡最小的部署單位，包一或多個緊密相關的容器，共享網路與儲存。擴縮以 pod 為單位。",
+    "analogy": "像一個工作小組：組內成員(容器)共用桌子、對外算一組。",
+    "example": "一個 web 容器 + 一個 log sidecar 放同一 pod",
+    "related": [
+      "orchestration",
+      "readiness-liveness",
+      "ingress"
+    ]
+  },
+  {
+    "slug": "helm",
+    "term": "Helm",
+    "zh_name": "Helm（K8s 套件管理）",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 3,
+    "plain": "K8s 的『套件管理器』，把一堆 YAML 設定打包成可參數化的 chart，一鍵安裝/升級整套服務。",
+    "analogy": "像 K8s 版的 npm/apt：一個指令裝好整組設定。",
+    "example": "helm install 一套含 DB、快取、服務的應用",
+    "related": [
+      "orchestration",
+      "k8s-pod",
+      "iac"
+    ]
+  },
+  {
+    "slug": "ingress",
+    "term": "ingress",
+    "zh_name": "Ingress（入口路由）",
+    "category": "concept",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 3,
+    "plain": "K8s 裡管『外部流量怎麼進到叢集內服務』的規則：依網域/路徑分流、處理 HTTPS。",
+    "analogy": "像大樓門口的引導員：依你要找誰帶你到對的樓層。",
+    "example": "ingress 把 /api 導到後端 service、/ 導到前端",
+    "related": [
+      "reverse-proxy",
+      "load-balancing",
+      "k8s-pod"
+    ]
+  },
+  {
+    "slug": "service-mesh",
+    "term": "service mesh",
+    "zh_name": "服務網格",
+    "category": "concept",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 3,
+    "plain": "在微服務之間插一層代理(sidecar)，統一處理服務間的加密、重試、限流、追蹤，不用每個服務自己寫。",
+    "analogy": "像每個部門配一位對外聯絡官，通訊規矩統一由他們處理。",
+    "example": "Istio、Linkerd；讓服務間通訊可觀測、可控",
+    "related": [
+      "orchestration",
+      "tracing",
+      "circuit-breaker"
+    ]
+  },
+  {
+    "slug": "horizontal-vertical-scaling",
+    "term": "horizontal vs vertical scaling",
+    "zh_name": "水平 / 垂直擴展",
+    "category": "concept",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "垂直：把單一機器升級更強(加 CPU/記憶體)，有上限。水平：多加幾台一起分擔，理論上無上限但要能分散。",
+    "analogy": "垂直像把一個人練更壯；水平像多請幾個人分工。",
+    "example": "無狀態服務適合水平擴展；資料庫較常先垂直",
+    "related": [
+      "autoscaling",
+      "stateless-stateful",
+      "load-balancing"
+    ]
+  },
+  {
+    "slug": "stateless-stateful",
+    "term": "stateless vs stateful",
+    "zh_name": "無狀態 / 有狀態",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "無狀態：每個請求自帶所需資訊、伺服器不記上一次，容易水平擴展。有狀態：伺服器記著會話/資料，擴展較麻煩。",
+    "analogy": "無狀態像便利商店(誰來都一樣結帳)；有狀態像你的家醫(記得你的病史)。",
+    "example": "把 session 移到 Redis → 讓 web 層變無狀態好擴展",
+    "related": [
+      "horizontal-vertical-scaling",
+      "cookie-session",
+      "read-replica"
+    ]
+  },
+  {
+    "slug": "immutable-infra",
+    "term": "immutable infrastructure",
+    "zh_name": "不可變基礎設施",
+    "category": "concept",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 3,
+    "plain": "伺服器一旦部署就不再手改，要更新就『換一台全新的』取代舊的。避免各機器慢慢長歪、狀態不一致。",
+    "analogy": "像換整台新手機而不是在舊機上東拼西補。",
+    "example": "改版就 build 新映像換掉整批，而非 SSH 進去改",
+    "related": [
+      "container-image",
+      "iac",
+      "blue-green"
+    ]
+  },
+  {
+    "slug": "terraform",
+    "term": "Terraform",
+    "zh_name": "Terraform",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 3,
+    "plain": "最流行的 IaC 工具，用宣告式設定描述雲端資源，plan 先看會改什麼、apply 才動手，跨雲通用。",
+    "analogy": "像施工藍圖：先審圖(plan)確認，再照圖施工(apply)。",
+    "example": "terraform apply 一次建好 VPC、DB、伺服器",
+    "related": [
+      "iac",
+      "provisioning",
+      "ansible"
+    ]
+  },
+  {
+    "slug": "ansible",
+    "term": "Ansible",
+    "zh_name": "Ansible",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 3,
+    "plain": "用 YAML 劇本(playbook)自動設定一批伺服器(裝軟體、改設定)，免逐台手動、可重複執行。",
+    "analogy": "像一次對全班下同一組指令，每個人自動照做。",
+    "example": "playbook 一跑，10 台機器都裝好同樣環境",
+    "related": [
+      "iac",
+      "provisioning",
+      "terraform"
+    ]
+  },
+  {
+    "slug": "provisioning",
+    "term": "provisioning",
+    "zh_name": "資源佈建",
+    "category": "concept",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "把一台新機器/服務從無到『可用』的準備過程：開機、裝軟體、設定、接網路。",
+    "analogy": "像新員工報到：發電腦、開帳號、設權限，弄到能上工。",
+    "example": "新伺服器 provisioning 好才加進負載平衡",
+    "related": [
+      "iac",
+      "terraform",
+      "bare-metal"
+    ]
+  },
+  {
+    "slug": "bare-metal",
+    "term": "bare metal",
+    "zh_name": "裸機",
+    "category": "reference",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "直接用的實體伺服器，沒有虛擬化那層。效能最好、但彈性差、要自己顧硬體。",
+    "analogy": "像自己買地自建房，最自由但什麼都得自己來。",
+    "example": "極致效能/特殊硬體需求才上裸機",
+    "related": [
+      "vm",
+      "container",
+      "iaas-paas-saas"
+    ]
+  },
+  {
+    "slug": "edge-computing",
+    "term": "edge computing",
+    "zh_name": "邊緣運算",
+    "category": "concept",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 3,
+    "plain": "把運算放到『離使用者近的節點』做，而不是全送回中央機房，降低延遲、減輕中央負擔。",
+    "analogy": "像連鎖店在各地設分店現做，而不是全從總廠配送。",
+    "example": "CDN 邊緣跑輕量函式、就近回應使用者",
+    "related": [
+      "faas",
+      "cdn-cache",
+      "latency-throughput"
+    ]
+  },
+  {
+    "slug": "cdn-cache",
+    "term": "CDN caching",
+    "zh_name": "CDN 快取",
+    "category": "concept",
+    "langs": [
+      "web"
+    ],
+    "difficulty": 2,
+    "plain": "CDN 把靜態資源(圖、CSS、JS)快取在各地節點，使用者就近拿、超快，也減輕原站流量。改檔要記得讓快取失效。",
+    "analogy": "像各地便利商店都備了熱銷品，不用每次都回總倉拿。",
+    "example": "圖片走 CDN，全球使用者就近載入",
+    "related": [
+      "cache-invalidation",
+      "edge-computing",
+      "cdn"
+    ]
+  },
+  {
+    "slug": "dns-record",
+    "term": "DNS record",
+    "zh_name": "DNS 記錄",
+    "category": "reference",
+    "langs": [
+      "network"
+    ],
+    "difficulty": 2,
+    "plain": "網域設定裡的一筆筆對應規則，告訴世界你的網域指到哪。常見有 A、CNAME、MX、TXT。",
+    "analogy": "像電話簿的一條條登記：這個名字對應哪個號碼/地址。",
+    "example": "設 A 記錄指向伺服器 IP、MX 記錄指向郵件伺服器",
+    "related": [
+      "a-record",
+      "cname",
+      "ttl-dns"
+    ]
+  },
+  {
+    "slug": "a-record",
+    "term": "A record",
+    "zh_name": "A 記錄",
+    "category": "reference",
+    "langs": [
+      "network"
+    ],
+    "difficulty": 2,
+    "plain": "把網域直接指到一個 IPv4 位址的 DNS 記錄。最基本的『網域→IP』對應。",
+    "analogy": "像把店名直接對應到一個門牌地址。",
+    "example": "example.com A 記錄 → 203.0.113.5",
+    "related": [
+      "dns-record",
+      "cname",
+      "dns-lookup"
+    ]
+  },
+  {
+    "slug": "cname",
+    "term": "CNAME record",
+    "zh_name": "CNAME 記錄",
+    "category": "reference",
+    "langs": [
+      "network"
+    ],
+    "difficulty": 2,
+    "plain": "把一個網域『指到另一個網域』(別名)，那個網域的 IP 變了你也自動跟著，免自己改 IP。",
+    "analogy": "像設定『我的信都轉寄到某某人的地址』，他搬家你也自動跟到。",
+    "example": "www.example.com CNAME → example.com；接 CDN/PaaS 常用",
+    "related": [
+      "a-record",
+      "dns-record",
+      "cdn-cache"
+    ]
+  },
+  {
+    "slug": "ttl-dns",
+    "term": "TTL (DNS)",
+    "zh_name": "DNS 存活時間",
+    "category": "reference",
+    "langs": [
+      "network"
+    ],
+    "difficulty": 2,
+    "plain": "DNS 記錄被快取多久才重查。TTL 短改動生效快但查詢多；長則相反。搬站前先調短。",
+    "analogy": "像電話簿多久更新一次：更新頻繁(短 TTL)最即時但費工。",
+    "example": "換伺服器前把 TTL 調成 300 秒，切換更快生效",
+    "related": [
+      "dns-record",
+      "cname",
+      "cache-invalidation"
+    ]
+  },
+  {
+    "slug": "uptime",
+    "term": "uptime",
+    "zh_name": "正常運行時間",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "服務『有在正常運作』的時間比例，常用幾個 9 表示。99.9% ≈ 一年約停 8.7 小時。",
+    "analogy": "像店家全年營業的比例，越高越少關門。",
+    "example": "SLA 承諾 99.9% uptime；掉到 99% 一年可停 3.65 天",
+    "related": [
+      "sla",
+      "slo",
+      "healthcheck"
+    ]
+  },
+  {
+    "slug": "sla",
+    "term": "SLA",
+    "zh_name": "服務水準協議",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "服務商『對外承諾』的服務水準(如 99.9% uptime)，沒達到通常要賠償或補償。對客戶的合約。",
+    "analogy": "像外送承諾『30 分鐘送達，超時折抵』。",
+    "example": "雲端商 SLA 保證月 uptime 99.95%、未達退費",
+    "related": [
+      "slo",
+      "sli",
+      "uptime"
+    ]
+  },
+  {
+    "slug": "slo",
+    "term": "SLO",
+    "zh_name": "服務水準目標",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "團隊『內部設定』要達到的目標(如 99.9% 請求 < 300ms)，比對外的 SLA 更嚴，當作預警線。",
+    "analogy": "像自我要求的模擬考標準，訂得比正式門檻高。",
+    "example": "SLO 設 99.9%，快跌破就先處理、別等違反 SLA",
+    "related": [
+      "sla",
+      "sli",
+      "observability"
+    ]
+  },
+  {
+    "slug": "sli",
+    "term": "SLI",
+    "zh_name": "服務水準指標",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "實際量測的『數字指標』(成功率、延遲、錯誤率)，是用來判斷有沒有達成 SLO 的依據。",
+    "analogy": "像體檢的各項數值，拿來對照健康標準(SLO)。",
+    "example": "SLI：過去 30 天 P99 延遲、5xx 比例",
+    "related": [
+      "slo",
+      "sla",
+      "apm"
+    ]
+  },
+  {
+    "slug": "observability",
+    "term": "observability",
+    "zh_name": "可觀測性",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "從系統對外的輸出(日誌、指標、追蹤)就能『推斷內部發生什麼』的能力。出事能快速定位而非瞎猜。",
+    "analogy": "像病人身上接滿監測儀，醫生看數據就知道哪裡出問題。",
+    "example": "logs + metrics + traces 三本柱撐起 observability",
+    "related": [
+      "tracing",
+      "structured-logging",
+      "apm"
+    ]
+  },
+  {
+    "slug": "tracing",
+    "term": "distributed tracing",
+    "zh_name": "分散式追蹤",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一個請求跨好幾個服務時，用同一個 trace id 串起全程，看出每一段各花多久、卡在哪。",
+    "analogy": "像包裹追蹤：一個單號看它經過每個轉運站的時間。",
+    "example": "一個 API 慢 → trace 看是 DB 那段還是外部呼叫慢",
+    "related": [
+      "observability",
+      "service-mesh",
+      "apm"
+    ]
+  },
+  {
+    "slug": "structured-logging",
+    "term": "structured logging",
+    "zh_name": "結構化日誌",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "日誌用 JSON 等結構化格式(帶欄位)而非純文字，方便機器搜尋、過濾、聚合。",
+    "analogy": "像把流水帳改成有欄位的表格，好篩好統計。",
+    "example": "log {level, msg, userId, latency} → 好用 Elasticsearch 查",
+    "related": [
+      "observability",
+      "sentry",
+      "elasticsearch"
+    ]
+  },
+  {
+    "slug": "apm",
+    "term": "APM",
+    "zh_name": "應用效能監控",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "監控應用『效能』的工具：每個 API 多快、哪段慢、錯誤率多少、資料庫查詢耗時。",
+    "analogy": "像幫應用戴健身手環，隨時看它的心率(延遲)與狀態。",
+    "example": "Datadog、New Relic 抓慢 API 與瓶頸",
+    "related": [
+      "observability",
+      "tracing",
+      "sli"
+    ]
+  },
+  {
+    "slug": "healthcheck",
+    "term": "health check",
+    "zh_name": "健康檢查",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "系統定時打一個端點問服務『你還活著/準備好了嗎』，沒回應就重啟或不導流量給它。",
+    "analogy": "像定時點名，沒答到的就先請假(不派工)。",
+    "example": "/health 回 200 才算健康；負載平衡器據此分流",
+    "related": [
+      "readiness-liveness",
+      "uptime",
+      "graceful-restart"
+    ]
+  },
+  {
+    "slug": "readiness-liveness",
+    "term": "readiness / liveness probe",
+    "zh_name": "就緒 / 存活探針",
+    "category": "concept",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 3,
+    "plain": "K8s 的兩種健康檢查：liveness 判斷『要不要重啟它』、readiness 判斷『能不能開始導流量給它』。",
+    "analogy": "liveness＝這人昏倒了要急救；readiness＝這人準備好可以接客了。",
+    "example": "剛啟動 readiness 還沒過 → 先不導流量進來",
+    "related": [
+      "healthcheck",
+      "k8s-pod",
+      "graceful-restart"
+    ]
+  },
+  {
+    "slug": "graceful-restart",
+    "term": "graceful restart",
+    "zh_name": "優雅重啟",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "更新/重啟時，先起新實例、確認健康、才把舊的下線，過程不中斷服務(零停機)。",
+    "analogy": "像接力賽：下一棒接穩了，上一棒才放手。",
+    "example": "滾動更新：新 pod ready 才砍舊 pod",
+    "related": [
+      "graceful-shutdown",
+      "rollout",
+      "canary-deploy"
+    ]
+  },
+  {
+    "slug": "chaos-engineering",
+    "term": "chaos engineering",
+    "zh_name": "混沌工程",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "主動在系統『故意製造故障』(關掉某服務、加延遲)，測試它扛不扛得住，提前找出脆弱點。",
+    "analogy": "像消防演習：平時故意演練火災，真的失火才不慌。",
+    "example": "Netflix Chaos Monkey 隨機關掉正式環境的實例",
+    "related": [
+      "disaster-recovery",
+      "bulkhead",
+      "circuit-breaker"
+    ]
+  },
+  {
+    "slug": "disaster-recovery",
+    "term": "disaster recovery (DR)",
+    "zh_name": "災難復原",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "整個機房/區域掛掉時，怎麼把服務在別處恢復的計畫與演練。備份、異地備援、切換流程都算。",
+    "analogy": "像備用發電機＋逃生計畫，大災難來也能運作。",
+    "example": "主區域故障 → 切換到異地備援區",
+    "related": [
+      "rpo-rto",
+      "backup-restore",
+      "chaos-engineering"
+    ]
+  },
+  {
+    "slug": "rpo-rto",
+    "term": "RPO / RTO",
+    "zh_name": "資料/時間復原目標",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "RPO：能容忍『掉多少資料』(以時間算，如最多掉 5 分鐘)。RTO：能容忍『多久內要恢復』。訂 DR 計畫的兩個關鍵指標。",
+    "analogy": "RPO＝最多丟幾頁沒存的稿；RTO＝最久多久要復工。",
+    "example": "RPO 5 分(每 5 分備份)、RTO 1 小時(1 小時內復原)",
+    "related": [
+      "disaster-recovery",
+      "backup-restore",
+      "sla"
+    ]
+  },
+  {
+    "slug": "integration-test",
+    "term": "integration test",
+    "zh_name": "整合測試",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "測『多個模組/服務兜在一起』能不能正常合作(如 API + 資料庫)，比單元測試涵蓋更真實但較慢。",
+    "analogy": "像不只測單一零件，而是測整台機器組起來會不會動。",
+    "example": "測『下單 API 真的寫進 DB 並回正確結果』",
+    "related": [
+      "e2e-test",
+      "unit-test",
+      "test-double"
+    ]
+  },
+  {
+    "slug": "test-double",
+    "term": "test double",
+    "zh_name": "測試替身",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "測試時用來『代替真實相依』的假物件統稱(mock、stub、fake、spy)，讓測試快、可控、不碰外部。",
+    "analogy": "像拍戲的替身演員，危險/昂貴的橋段由它上。",
+    "example": "測試不真的打付款 API，用 mock 回假結果",
+    "related": [
+      "mock-stub",
+      "unit-test",
+      "integration-test"
+    ]
+  },
+  {
+    "slug": "mock-stub",
+    "term": "mock / stub",
+    "zh_name": "Mock / Stub",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "兩種測試替身：stub 只『回固定假資料』；mock 還會『驗證有沒有被正確呼叫』。",
+    "analogy": "stub 像照稿念的臨演；mock 像還會記錄你有沒有照流程走的考官。",
+    "example": "stub 回假使用者；mock 驗證『寄信函式有被呼叫一次』",
+    "related": [
+      "test-double",
+      "unit-test",
+      "bdd"
+    ]
+  },
+  {
+    "slug": "bdd",
+    "term": "BDD",
+    "zh_name": "行為驅動開發",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "用『given-when-then』的自然語言描述期望行為，讓非工程師也讀得懂測試/規格，再據此開發。",
+    "analogy": "像先寫好『使用者故事』的驗收情境，再照著做。",
+    "example": "Given 已登入 When 按下單 Then 應扣庫存並寄確認信",
+    "related": [
+      "tdd",
+      "e2e-test",
+      "test-coverage-metric"
+    ]
+  },
+  {
+    "slug": "fuzzing",
+    "term": "fuzzing",
+    "zh_name": "模糊測試",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "自動餵大量『隨機/畸形輸入』給程式，看會不會當機或出漏洞。專抓人想不到的邊界。",
+    "analogy": "像亂敲鍵盤測試防呆，看什麼怪操作會弄壞它。",
+    "example": "對解析器丟隨機位元組，找出會 crash 的輸入",
+    "related": [
+      "edge-case",
+      "load-test",
+      "zero-day"
+    ]
+  },
+  {
+    "slug": "load-test",
+    "term": "load testing",
+    "zh_name": "負載測試",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "模擬大量使用者/請求同時打，看系統在高壓下還撐不撐得住、瓶頸在哪。",
+    "analogy": "像過年前先模擬人潮擠爆賣場，看動線會不會塞死。",
+    "example": "用 k6 灌 1 萬併發，觀察延遲與錯誤率",
+    "related": [
+      "stress-test",
+      "thundering-herd",
+      "apm"
+    ]
+  },
+  {
+    "slug": "canary-deploy",
+    "term": "canary deployment",
+    "zh_name": "金絲雀部署",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "新版先只導『一小部分流量』試水溫，指標正常再逐步放大到全部。出事影響小、好回滾。",
+    "analogy": "像新菜先給幾桌試吃，反應好再全面上菜單。",
+    "example": "新版先接 5% 流量、錯誤率 OK 再到 100%",
+    "related": [
+      "canary-release",
+      "rollout",
+      "blue-green"
+    ]
+  },
+  {
+    "slug": "rollout",
+    "term": "rollout / rolling update",
+    "zh_name": "滾動更新",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "分批把舊實例換成新版(一次換幾台)，過程保持有服務可用，不用整批同時停機。",
+    "analogy": "像換整排燈管一次換幾支，房間始終有燈亮。",
+    "example": "10 台每次換 2 台、確認健康再換下 2 台",
+    "related": [
+      "graceful-restart",
+      "canary-deploy",
+      "rollback"
+    ]
+  },
+  {
+    "slug": "artifact",
+    "term": "build artifact",
+    "zh_name": "建置產物",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "建置流程產出、拿去部署的成品(打包好的檔、容器映像、執行檔)。CI 產生、CD 拿去發布。",
+    "analogy": "像工廠產線的成品，裝箱後送去出貨。",
+    "example": "CI build 出映像(artifact)推到 registry 供部署",
+    "related": [
+      "pipeline-cicd",
+      "registry",
+      "build-cache"
+    ]
+  },
+  {
+    "slug": "pipeline-cicd",
+    "term": "CI/CD pipeline",
+    "zh_name": "CI/CD 流水線",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "程式碼一推上來就自動跑的一連串關卡：測試→建置→產出→部署。全綠才放行，減少人為失誤。",
+    "analogy": "像自動化生產線：一段段檢查關卡，過了才往下送。",
+    "example": "push → 跑測試 → build 映像 → 部署到正式(本站就這樣)",
+    "related": [
+      "artifact",
+      "build-cache",
+      "conventional-commits"
+    ]
+  },
+  {
+    "slug": "build-cache",
+    "term": "build cache",
+    "zh_name": "建置快取",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把沒變動的建置步驟結果快取起來，下次 build 直接重用、大幅加速。相依沒改就別重裝。",
+    "analogy": "像備料先冰起來，下次做菜沒換的料直接拿，不用重買重切。",
+    "example": "Docker 分層快取：相依層沒變就跳過重裝",
+    "related": [
+      "pipeline-cicd",
+      "artifact",
+      "container-image"
+    ]
+  },
+  {
+    "slug": "signed-commit",
+    "term": "signed commit",
+    "zh_name": "簽章提交",
+    "category": "concept",
+    "langs": [
+      "git"
+    ],
+    "difficulty": 2,
+    "plain": "用 GPG/SSH 金鑰替 git commit 簽名，證明『這 commit 真的是你推的』，防冒名。平台會顯示 Verified。",
+    "analogy": "像文件蓋上你的私章，證明確實出自你手。",
+    "example": "設好簽章金鑰，GitHub 顯示綠色 Verified 徽章",
+    "related": [
+      "conventional-commits",
+      "public-key",
+      "blame"
+    ]
+  }
+]
