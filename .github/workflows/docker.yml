@@ -84,6 +84,9 @@ jobs:
             SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
             APP_COMMIT=${{ github.sha }}
             APP_BUILT_AT=${{ github.event.head_commit.timestamp }}
+            # 分身島 L2 伺服器瀏覽器：image 內裝 Chromium（+300~500MB）。
+            # runtime 仍需 Zeabur env ENABLE_SERVER_BROWSER=1 才會真的啟用（沒設＝裝了但不用、graceful）。
+            INSTALL_SERVER_BROWSER=1
 
       # image 推完後、自動打 Zeabur GraphQL API 觸發該服務重部署、拉最新 image。
       # 因為 Zeabur 是 Prebuilt Image 模式、不會自己重拉 :latest、所以這裡主動觸發。

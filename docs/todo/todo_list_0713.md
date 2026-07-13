@@ -58,8 +58,8 @@
 - ⬜ **真人端到端 Demo 走一次**（下載/配對→下「跑 npm test」→確認→收結果）。
 - ⬜ **桌面 Playwright 一鍵啟用**（現需手動 `npm install playwright && npx playwright install chromium`）。
 
-## 5. L2 Docker 伺服器瀏覽器（進行中，本回合處理）
-- 🚧 **Dockerfile 裝 Chromium**：runner 階段裝 Playwright Chromium + 系統相依，讓 `browser.render` 在正式站真能開。**高風險（動部署、Zeabur 無法本機驗）** → env flag 開關 + 保留降級 + 盯部署 log。
+## 5. L2 Docker 伺服器瀏覽器（0713 開啟中）
+- 🚧 **Dockerfile 裝 Chromium**：~~Dockerfile 選配 block 已在（`INSTALL_SERVER_BROWSER`）；0713 `docker.yml` build-args 設 `INSTALL_SERVER_BROWSER=1` → image 開始裝 Chromium~~。**待林董操作 + 驗證**：① Zeabur runtime env 設 `ENABLE_SERVER_BROWSER=1` ② 盯 GHCR build（playwright install --with-deps 會多幾分鐘、失敗會保留舊 image、站不會壞）③ 部署後在 /agent 下「用真瀏覽器打開某動態頁」驗 browser.render 真的動 ④ 盯 Zeabur RAM（Chromium 吃記憶體，太吃就關掉 env）。
 
 ## 6. 手機遙控 / 跨裝置（已完成）
 - ~~手機 RWD/PWA 下令 → 雲端 → 已配對電腦執行 → 串回手機。~~
@@ -251,7 +251,7 @@
 # 三、全站其他延續待辦（7/10、7/11 起）
 
 ## AI 成本全面記帳（P0 最高，林董點名）
-- ⬜ **P0**：`admin/quiz/generate`、`pet/tick` streamAI 零記帳補 `logAiUsage`；主聊天 `ai/chat` 沒進 `inc_model_usage` 補上；抽 `streamAndLog` helper 掃全站出口。
+- ~~**P0**（0713 核對程式碼＝**已完成**，文件先前落後）：`admin/quiz/generate`(:109)、`pet/tick`(:138) 串流收尾已補 `logAiUsage`；主聊天 `ai/chat`(:528) 已補 `inc_model_usage`（用實際回答模型、不重複計 inc_system_key_usage）。~~ 選配「抽 `streamAndLog` helper 掃全站出口」暫不重構（三出口已直接補齊）。
 - ⬜ **P1 創作者綠寶**：gateHighTierModel、改串流、語意快取、每日軟上限 config（預設關）。
 - ⬜ **P2 語意快取推廣**：pop-quiz/learning-plan/blog-write/ai-assistant 接 `lookupSemanticCache`。
 - ⬜ **P3 路由統一**：面試/challenge/resume/admin 生成器→`completeForUsage`；模擬面試每回合計；移除重複 `providerFromModel`。
@@ -286,6 +286,11 @@
 ## 立即（這兩個 cron 不加，剛做好的排程/截止提醒不會自動跑）
 - ⬜ **cron-job.org 加 job #7「agent-schedules」**：`GET https://ai-island-web.snowrealm.pet/api/cron/agent-schedules?secret=<CRON_SECRET>`、排程 `*/15 * * * *`（每 15 分）。設定照 `docs/setup/cron-setup.md`。**沒加這個 → 辦公室排程只是存著、不會到點自動執行。**
 - ⬜ **cron-job.org 加 job #8「opportunity-deadlines」**：`GET https://ai-island-web.snowrealm.pet/api/cron/opportunity-deadlines?secret=<CRON_SECRET>`、排程 `0 1 * * *`（每天台灣 09:00）。**沒加這個 → 機會截止提醒不會發。**
+
+## Zeabur 要設的環境變數（Service → Variables）
+- ⬜ **`ENABLE_SERVER_BROWSER=1`**（L2 伺服器瀏覽器）：`docker.yml` 已設 image 裝 Chromium；**這個 runtime env 沒設 → 裝了也不會啟用**（browser.render 會回「未啟用」、走 web.fetch 降級）。設完要 **Restart / Redeploy** 才生效。
+  - 開啟後請盯 **Zeabur RAM**：Chromium 每次 render 吃記憶體，instance 太小可能 OOM 拖垮站；真的太吃就把這個 env 拿掉（或設成空）即可安全關閉，image 不用重建。
+- ℹ️ 其餘既有 env（`CRON_SECRET` / `AI_KEY_SECRET` / `SUPABASE_*` / 金流 / LINE / `BRAVE_API_KEY` / `TAVILY_API_KEY` 等）本次沒動、維持原樣。
 
 ## 部署後驗一下（GHCR 重建約幾分鐘）
 - ⬜ 開 `https://ai-island-web.snowrealm.pet/agent/office` 確認：狀態列、熱門任務、排程、待批准佇列都正常顯示（手機 + 桌面各看一次）。
