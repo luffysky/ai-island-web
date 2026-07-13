@@ -75,7 +75,21 @@
 - 全部**純加法**：新增 6 個 API route + 4 個 client 元件 + 1 cron，**無改既有寫入邏輯**（唯一重構是 launch.ts 已於前一批驗過）。
 - 安全：詳情頁 AI 工具全需登入；截止提醒只發 in-app/LINE（LINE 綁定才送）；對外動作 0。
 
+## 今日續（0713 更晚）— 機會島 V2 + 後台雷達 + 分身島統計
+20. **我的機會檔案（V2）**：`opportunity_profiles` 表（RLS，migration 已跑）+ `/api/opportunities/profile` GET/PUT；`/opportunities` 加編輯器（身分/擁有/完成度/想參加類型），存一次→AI 幫我挑/適合度/生成素材全自動帶入（詳情頁 server 端 `defaultAbout`）。
+21. **我的航線強化**：依截止急迫排序、7 天內「快截止」紅框+頂部急件提醒、每列「丟給分身島幫我準備」；routes API join 補 organizer。
+22. **後台 AI 島專屬機會雷達 `/admin/opportunities`**：規則引擎 `src/lib/opportunity-fit.ts`（零 AI 成本，免費+25/主題+/免上台+12/線上+10/Demo+8/高獎金+/限學生-40/已截止濾掉）+ **5 單元測試**；列前 30 名 + 原因 chips + 倒數 + 丟給分身島 + 官網；nav 加「🧭 機會雷達」。
+23. **技能成效統計**：`/api/agent/skills` GET 附 `usage{used,succeeded}`（agent_tasks 依 skill_id 聚合）；技能商店卡 + 辦公室員工卡顯示「用過 N 次·成功 X%」。
+24. **辦公室分身表現 KPI**：重用 `/api/agent/kpi` 顯示成功率/平均步數/介入率/任務數。
+
+### 本輪總結（0713 一整天，未停）
+- 分身島：辦公室 MVP+排程+待批准佇列+即時刷新+KPI+技能統計。
+- 機會島：多選篩選、V3「幫你贏」AI 三件套（讀規則/適合度/生成素材）、丟給分身島串接、我的機會檔案、航線強化、截止提醒 cron。
+- 後台：AI 島專屬機會雷達（規則引擎）。
+- 共 ~15 commit、全部 tsc 0 / next build 0 / vitest **133 綠**（新增 schedule 6 + opportunity-fit 5）；migration 3 支已跑 prod（agent_schedules / opportunity_profiles）。
+- **全程守紅線**：對外動作 0，AI 生成/排程/雷達都只到「起草/建議/發起任務」，真正對外仍待人工批准。
+
 ## 待辦
 👉 **全部見 `docs/todo/todo_list_0713.md`**（含最末 §五「需要林董自己操作」清單）。
-建議下一步：機會島 V2（首次問卷→profile→recommend、機會訂閱）、後台複刻機會雷達、全站 AI 記帳 P0（P0 建議林董在線時做、要驗證）。
+剩下的大項多屬**不適合我無人值守做**的：L2 Docker Chromium（動部署、要盯 Zeabur log）、全站 AI 記帳 P0（要逐一驗證計費出口）、機會島 V4 雷達（要真實來源 + 人工覆核）。這幾項建議林董在線時一起做。
 ⚠️ **部署後手動**：cron-job.org 加 job #7（agent-schedules 每 15 分）+ job #8（opportunity-deadlines 每天 09:00）。詳見 `docs/todo/todo_list_0713.md` §五 與 `docs/setup/cron-setup.md`。
