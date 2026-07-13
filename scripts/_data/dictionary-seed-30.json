@@ -1,0 +1,812 @@
+[
+  {
+    "slug": "crud",
+    "term": "CRUD",
+    "zh_name": "增查改刪",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "資料的四種基本操作：Create 建、Read 讀、Update 改、Delete 刪。幾乎所有管理系統的核心。",
+    "analogy": "像通訊錄：新增聯絡人、查看、修改、刪除。",
+    "example": "REST 對應：POST/GET/PUT·PATCH/DELETE",
+    "related": [
+      "rest-api",
+      "http-methods",
+      "put-vs-patch"
+    ]
+  },
+  {
+    "slug": "put-vs-patch",
+    "term": "PUT vs PATCH",
+    "zh_name": "PUT 與 PATCH",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "更新資料兩種：PUT『整筆換掉』(沒給的欄位可能被清空)、PATCH『只改給的欄位』(局部更新)。",
+    "analogy": "PUT 像整份表格重填；PATCH 像只塗改其中幾格。",
+    "example": "改暱稱用 PATCH {name}；整筆覆蓋才用 PUT",
+    "related": [
+      "crud",
+      "http-methods",
+      "idempotent-http"
+    ]
+  },
+  {
+    "slug": "header-http",
+    "term": "HTTP header",
+    "zh_name": "HTTP 標頭",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "請求/回應附帶的『後設資訊』欄位：內容型別、認證、快取、語言等。主體之外的說明。",
+    "analogy": "像包裹上的標籤：內容物、收件人、易碎與否，不是包裹本身。",
+    "example": "Content-Type、Authorization、Cache-Control",
+    "related": [
+      "content-negotiation",
+      "bearer-token",
+      "query-param"
+    ]
+  },
+  {
+    "slug": "query-param",
+    "term": "query parameter",
+    "zh_name": "查詢參數",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "網址 ? 之後的 key=value，用來篩選、分頁、排序等。多個用 & 串。",
+    "analogy": "像點餐的附加要求：少冰、去糖，附在主餐後面。",
+    "example": "/search?q=貓&page=2&sort=new",
+    "related": [
+      "path-param",
+      "url-encoding",
+      "pagination-api"
+    ]
+  },
+  {
+    "slug": "request-body",
+    "term": "request body",
+    "zh_name": "請求主體",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "POST/PUT 等請求夾帶的『資料內容』(常是 JSON)。GET 通常沒有 body。",
+    "analogy": "像寄包裹裡真正裝的東西，標籤(header)之外的內容物。",
+    "example": "POST /users body: {\"name\":\"小明\"}",
+    "related": [
+      "header-http",
+      "content-negotiation",
+      "json-schema"
+    ]
+  },
+  {
+    "slug": "status-2xx",
+    "term": "2xx / 4xx / 5xx",
+    "zh_name": "狀態碼分類",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "回應碼開頭數字的含義：2xx 成功、3xx 轉址、4xx 用戶端錯、5xx 伺服器錯。設計 API 要回對的碼。",
+    "analogy": "像考卷批改：2 是過、4 是你寫錯、5 是老師改錯。",
+    "example": "201 建立成功、400 參數錯、401 未登入、500 伺服器爆",
+    "related": [
+      "http-status",
+      "rest-api",
+      "rate-limit-header"
+    ]
+  },
+  {
+    "slug": "pagination-api",
+    "term": "API pagination",
+    "zh_name": "API 分頁",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "資料太多時分頁回傳，避免一次撈爆。常見 offset/limit 或 cursor 兩種。",
+    "analogy": "像一次上一疊菜而不是全端上桌。",
+    "example": "?page=2&limit=20 或 ?after=<cursor>",
+    "related": [
+      "cursor-pagination",
+      "query-param",
+      "n-plus-one"
+    ]
+  },
+  {
+    "slug": "versioning-api",
+    "term": "API versioning",
+    "zh_name": "API 版本管理",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "改動 API 時保留舊版讓舊客戶不壞，用版本區分(/v1、/v2 或 header)。是向後相容的實務做法。",
+    "analogy": "像出新版說明書但舊版仍可查，老用戶不被逼著馬上換。",
+    "example": "/api/v2/users；舊 app 續打 v1 不壞",
+    "related": [
+      "breaking-change",
+      "backward-compat",
+      "deprecation"
+    ]
+  },
+  {
+    "slug": "rate-limit-header",
+    "term": "rate limit headers",
+    "zh_name": "限流標頭",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "API 回應裡告訴你『這時段還剩幾次、何時重置』的標頭，超過會回 429。照它退避才不被封。",
+    "analogy": "像遊戲告訴你『技能剩幾次、幾秒後回滿』。",
+    "example": "X-RateLimit-Remaining、Retry-After",
+    "related": [
+      "rate-limit",
+      "status-2xx",
+      "header-http"
+    ]
+  },
+  {
+    "slug": "swagger",
+    "term": "Swagger / OpenAPI",
+    "zh_name": "API 規格文件",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用標準格式(OpenAPI)描述 API 有哪些端點、參數、回應，能自動生文件、測試頁、client 程式。",
+    "analogy": "像產品的官方規格書＋互動試用頁，一份文件全隊照著用。",
+    "example": "寫 OpenAPI yaml → 自動生 Swagger UI 可線上試打",
+    "related": [
+      "rest-api",
+      "json-schema",
+      "openapi"
+    ]
+  },
+  {
+    "slug": "graphql-query",
+    "term": "GraphQL query",
+    "zh_name": "GraphQL 查詢",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "GraphQL 的讀取：客戶端『指定要哪些欄位』，伺服器剛好回那些，不多不少，解決 REST 多撈/少撈的問題。",
+    "analogy": "像自助餐自己夾要的菜，不用整套端來再挑。",
+    "example": "query{ user{ name email } } 只回 name、email",
+    "related": [
+      "graphql-mutation",
+      "graphql-resolver",
+      "rest-api"
+    ]
+  },
+  {
+    "slug": "graphql-mutation",
+    "term": "GraphQL mutation",
+    "zh_name": "GraphQL 變更",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "GraphQL 的寫入操作(建立/更新/刪除)，對應 REST 的 POST/PUT/DELETE。",
+    "analogy": "像自助餐的『下單加菜』動作，而不是只看菜色。",
+    "example": "mutation{ createUser(name:\"小明\"){ id } }",
+    "related": [
+      "graphql-query",
+      "graphql-resolver",
+      "crud"
+    ]
+  },
+  {
+    "slug": "graphql-resolver",
+    "term": "GraphQL resolver",
+    "zh_name": "GraphQL 解析器",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "後端對每個欄位『怎麼取值』的函式。查詢進來時，GraphQL 逐欄呼叫對應 resolver 拼出結果。",
+    "analogy": "像每道菜各有專屬廚師，點到誰誰上工。",
+    "example": "user.email 的 resolver 去 DB 撈 email",
+    "related": [
+      "graphql-query",
+      "n-plus-one",
+      "endpoint"
+    ]
+  },
+  {
+    "slug": "websocket-2",
+    "term": "WebSocket",
+    "zh_name": "WebSocket",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "建立一條『雙向、持久』的連線，伺服器能主動推、客戶端也能隨時傳，適合即時聊天/通知/協作。",
+    "analogy": "像一直不掛斷的對講機，兩邊隨時都能講。",
+    "example": "聊天室、線上遊戲、即時報價用 WebSocket",
+    "related": [
+      "sse",
+      "long-polling",
+      "webhook-2"
+    ]
+  },
+  {
+    "slug": "webhook-2",
+    "term": "webhook",
+    "zh_name": "Webhook",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "『反向 API』：事件發生時，對方主動打你預留的網址通知你，不用你一直去問。金流、GitHub、LINE 都用。",
+    "analogy": "像訂了到貨通知：貨到店家打給你，不用你一直跑去問。",
+    "example": "付款成功 → 金流商 POST 到你的 /webhook",
+    "related": [
+      "polling-2",
+      "idempotent-key",
+      "ngrok"
+    ]
+  },
+  {
+    "slug": "polling-2",
+    "term": "polling",
+    "zh_name": "輪詢",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "定時重複去問『有沒有新東西』的做法。簡單但浪費(多數是空手而回)，即時性差。有推播就別輪詢。",
+    "analogy": "像每分鐘跑去信箱看有沒有信，而不是等郵差按鈴。",
+    "example": "每 5 秒打一次 API 看任務好了沒",
+    "related": [
+      "webhook-2",
+      "long-polling",
+      "websocket-2"
+    ]
+  },
+  {
+    "slug": "content-negotiation",
+    "term": "content negotiation",
+    "zh_name": "內容協商",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "客戶端用 Accept 標頭說『我想要什麼格式/語言』，伺服器據此回對應版本(JSON/XML、中/英)。",
+    "analogy": "像餐廳問你要中文還英文菜單，給你對應的那份。",
+    "example": "Accept: application/json → 回 JSON；Accept-Language 決定語系",
+    "related": [
+      "header-http",
+      "xml-format",
+      "utf8"
+    ]
+  },
+  {
+    "slug": "cors-2",
+    "term": "CORS",
+    "zh_name": "跨來源資源共用",
+    "category": "concept",
+    "langs": [
+      "web"
+    ],
+    "difficulty": 3,
+    "plain": "瀏覽器的安全機制：預設擋『網頁去打不同網域的 API』，除非那 API 用回應標頭明確允許你的來源。",
+    "analogy": "像別棟大樓要放你進，得先在門口名單上登記你的公司。",
+    "example": "前端打別網域 API 被擋 → 後端加 Access-Control-Allow-Origin",
+    "related": [
+      "preflight",
+      "same-origin",
+      "header-http"
+    ]
+  },
+  {
+    "slug": "preflight",
+    "term": "preflight request",
+    "zh_name": "預檢請求",
+    "category": "concept",
+    "langs": [
+      "web"
+    ],
+    "difficulty": 3,
+    "plain": "跨網域的『非簡單請求』前，瀏覽器會先自動送一個 OPTIONS 問『我可以這樣打嗎』，允許了才送正式請求。",
+    "analogy": "像進場前先派人問門口『我們這團能進嗎』，說可以才整團進。",
+    "example": "帶自訂 header 的 POST 前，先發 OPTIONS 預檢",
+    "related": [
+      "cors-2",
+      "http-methods",
+      "header-http"
+    ]
+  },
+  {
+    "slug": "api-key-auth",
+    "term": "API key",
+    "zh_name": "API 金鑰",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "一串識別你身分的金鑰字串，呼叫 API 時帶著。簡單但權限粗、要保密，別寫進前端。",
+    "analogy": "像會員卡號：報號就認得你，但別讓人抄走。",
+    "example": "?api_key=xxx 或 header X-API-Key；務必存後端",
+    "related": [
+      "bearer-token",
+      "basic-auth",
+      "secret"
+    ]
+  },
+  {
+    "slug": "basic-auth",
+    "term": "Basic auth",
+    "zh_name": "基本認證",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把『帳號:密碼』用 base64 編碼放進標頭。base64 不是加密！所以務必配 HTTPS，否則等於明文。",
+    "analogy": "像把帳密寫在明信片上——沒 HTTPS 誰攔到都看得懂。",
+    "example": "Authorization: Basic base64(user:pass)；一定要走 HTTPS",
+    "related": [
+      "bearer-token",
+      "base64",
+      "ssl-tls"
+    ]
+  },
+  {
+    "slug": "oauth-flow",
+    "term": "OAuth flow",
+    "zh_name": "OAuth 授權流程",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "『用 Google/FB 登入』背後的流程：你授權給第三方 App 有限存取你的帳號，App 拿到 token 而非你的密碼。",
+    "analogy": "像給代客泊車專用鑰匙：能開車門發動、不能開後車廂或家門。",
+    "example": "點『用 Google 登入』→ 同意畫面 → App 拿到 access token",
+    "related": [
+      "access-token",
+      "refresh-token",
+      "scope-oauth"
+    ]
+  },
+  {
+    "slug": "access-token",
+    "term": "access token",
+    "zh_name": "存取權杖",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "OAuth 拿到、用來實際存取 API 的短效票券。過期就用 refresh token 換新的，不用重新登入。",
+    "analogy": "像有效期短的一次性通行證，過期再去換一張。",
+    "example": "帶 access token 打 API；1 小時後過期換發",
+    "related": [
+      "refresh-token",
+      "bearer-token",
+      "oauth-flow"
+    ]
+  },
+  {
+    "slug": "scope-oauth",
+    "term": "OAuth scope",
+    "zh_name": "授權範圍",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "授權時限定 App 能碰哪些資料/動作(只讀 email、可發文…)。最小權限原則：只要必要的。",
+    "analogy": "像門禁卡只開特定樓層，不是萬能鑰匙。",
+    "example": "scope: read:profile；不索取用不到的 write 權限",
+    "related": [
+      "oauth-flow",
+      "least-privilege",
+      "access-token"
+    ]
+  },
+  {
+    "slug": "jwt-2",
+    "term": "JWT",
+    "zh_name": "JSON Web Token",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "自帶簽章的 token，內含使用者資訊、伺服器不用查 DB 就能驗真偽(靠簽章)。但內容只是 base64、別放機密。",
+    "analogy": "像有防偽鋼印的證件，看鋼印就知真假、不用回戶政查。",
+    "example": "header.payload.signature 三段；改內容簽章就對不上",
+    "related": [
+      "access-token",
+      "bearer-token",
+      "hashing"
+    ]
+  },
+  {
+    "slug": "csv-format",
+    "term": "CSV",
+    "zh_name": "逗號分隔值",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "用逗號分欄、換行分列的純文字表格格式，Excel 都開得了。欄位含逗號/換行要用引號包。",
+    "analogy": "像最陽春的表格：逗號當直線、換行當橫線。",
+    "example": "name,age\\n小明,18；含逗號的值要 \"a,b\"",
+    "related": [
+      "xml-format",
+      "json-schema",
+      "serialization"
+    ]
+  },
+  {
+    "slug": "yaml-format",
+    "term": "YAML",
+    "zh_name": "YAML",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "給人讀的設定檔格式，用縮排表示層級、比 JSON 少符號。但『縮排錯一格』就壞、且對 tab 敏感。",
+    "analogy": "像大綱筆記：靠縮排分層，乾淨但排版要精準。",
+    "example": "docker-compose、GitHub Actions、K8s 都用 YAML",
+    "related": [
+      "toml-format",
+      "json-schema",
+      "xml-format"
+    ]
+  },
+  {
+    "slug": "toml-format",
+    "term": "TOML",
+    "zh_name": "TOML",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "另一種好讀的設定檔格式，語法明確、不靠縮排、比 YAML 不易踩雷。Rust/Python 專案常用。",
+    "analogy": "像 INI 設定檔的進化版，清楚分區塊。",
+    "example": "Cargo.toml、pyproject.toml",
+    "related": [
+      "yaml-format",
+      "csv-format",
+      "json-schema"
+    ]
+  },
+  {
+    "slug": "xml-format",
+    "term": "XML",
+    "zh_name": "XML",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用成對標籤包資料的老牌格式，冗長但嚴謹、可驗證結構。現在多被 JSON 取代，但企業/舊系統仍常見。",
+    "analogy": "像每段內容都用開頭結尾標籤框起來，很囉嗦但很明確。",
+    "example": "<user><name>小明</name></user>；RSS、SOAP 用 XML",
+    "related": [
+      "json-schema",
+      "content-negotiation",
+      "csv-format"
+    ]
+  },
+  {
+    "slug": "markdown-format",
+    "term": "Markdown",
+    "zh_name": "Markdown",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "用簡單符號寫排版的輕量標記語言(# 標題、* 列表、** 粗體)，好寫好讀，README/筆記/文件通用。",
+    "analogy": "像用最少的符號就能排出漂亮文件，寫起來像純文字。",
+    "example": "# 標題、- 項目、[連結](url)、```程式碼```",
+    "related": [
+      "yaml-format",
+      "open-graph",
+      "readability"
+    ]
+  },
+  {
+    "slug": "json-schema",
+    "term": "JSON Schema",
+    "zh_name": "JSON 結構描述",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "用來『描述並驗證 JSON 結構』的規範：欄位型別、必填、範圍。可自動擋掉不合格的資料。",
+    "analogy": "像表單的欄位規則：哪格必填、只能填數字，送出前先驗。",
+    "example": "定義 user schema，API 收到資料先驗證再處理",
+    "related": [
+      "swagger",
+      "serialization",
+      "type-guard"
+    ]
+  },
+  {
+    "slug": "deserialization",
+    "term": "deserialization",
+    "zh_name": "反序列化",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把序列化過的資料(JSON 字串、位元組)還原成程式可用的物件。收到不信任資料要小心驗證(有安全風險)。",
+    "analogy": "像把打包的家具照說明組裝回原狀。",
+    "example": "JSON.parse(str) 把字串變回物件",
+    "related": [
+      "serialization",
+      "json-schema",
+      "data-leakage"
+    ]
+  },
+  {
+    "slug": "marshalling",
+    "term": "marshalling",
+    "zh_name": "封送",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把資料轉成能跨『程序/語言/網路』傳遞的格式的過程，概念接近序列化，常用於 RPC、跨語言呼叫。",
+    "analogy": "像把貨物換成國際通用的貨櫃規格才好跨國運。",
+    "example": "gRPC 用 protobuf marshalling 跨服務傳結構",
+    "related": [
+      "serialization",
+      "protobuf",
+      "grpc"
+    ]
+  },
+  {
+    "slug": "url-encoding",
+    "term": "URL encoding",
+    "zh_name": "網址編碼",
+    "category": "concept",
+    "langs": [
+      "web"
+    ],
+    "difficulty": 2,
+    "plain": "把網址裡的特殊字元(空格、中文、&)轉成 %XX 形式，避免破壞網址結構。又叫百分比編碼。",
+    "analogy": "像把不能直接寫在信封上的符號換成安全代碼。",
+    "example": "空格→%20、貓→%E8%B2%93；用 encodeURIComponent",
+    "related": [
+      "percent-encoding",
+      "query-param",
+      "utf8"
+    ]
+  },
+  {
+    "slug": "percent-encoding",
+    "term": "percent-encoding",
+    "zh_name": "百分比編碼",
+    "category": "reference",
+    "langs": [
+      "web"
+    ],
+    "difficulty": 2,
+    "plain": "URL encoding 的正式名稱：用 %『後接兩位十六進位』表示一個位元組。就是網址裡那些 %20、%E8。",
+    "analogy": "像用『%＋代碼』替換不能直接放的字元。",
+    "example": "? & = 這些保留字在值裡要編成 %3F %26 %3D",
+    "related": [
+      "url-encoding",
+      "utf8",
+      "hex-color"
+    ]
+  },
+  {
+    "slug": "gzip",
+    "term": "gzip",
+    "zh_name": "gzip 壓縮",
+    "category": "tool",
+    "langs": [
+      "web"
+    ],
+    "difficulty": 2,
+    "plain": "常見的壓縮法，網站傳輸前把 HTML/CSS/JS 壓小、瀏覽器自動解壓，省頻寬、載更快。",
+    "analogy": "像把衣服真空壓縮打包，寄到再彈開。",
+    "example": "回應帶 Content-Encoding: gzip，體積常降 70%",
+    "related": [
+      "compression",
+      "cdn-cache",
+      "minify"
+    ]
+  },
+  {
+    "slug": "compression",
+    "term": "compression",
+    "zh_name": "壓縮",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用演算法把資料變小。無損(還原一模一樣，如 zip、png)與有損(捨細節換更小，如 jpg、mp3)兩類。",
+    "analogy": "無損像真空壓縮(彈回原樣)、有損像壓成濃縮汁(回不到原味)。",
+    "example": "文字用無損 gzip；照片可用有損 jpg",
+    "related": [
+      "gzip",
+      "minify",
+      "checksum"
+    ]
+  },
+  {
+    "slug": "checksum",
+    "term": "checksum",
+    "zh_name": "校驗和",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "由資料算出的一小段驗證碼，收到後重算比對，確認『傳輸過程沒被改壞』。",
+    "analogy": "像貨品封條：撕過(對不上)就知道被動過。",
+    "example": "下載檔附 SHA256，比對確認沒損壞/竄改",
+    "related": [
+      "crc",
+      "md5",
+      "hashing"
+    ]
+  },
+  {
+    "slug": "md5",
+    "term": "MD5",
+    "zh_name": "MD5",
+    "category": "reference",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 2,
+    "plain": "老的雜湊演算法，可當『檔案指紋』做完整性檢查，但已被破解、絕不可用來存密碼或做安全用途。",
+    "analogy": "像舊型防偽標，驗個大概可以、防專業造假不行。",
+    "example": "驗檔案完整性偶爾還見；密碼請用 bcrypt",
+    "related": [
+      "sha",
+      "hashing",
+      "checksum"
+    ]
+  },
+  {
+    "slug": "sha",
+    "term": "SHA-256",
+    "zh_name": "SHA 雜湊",
+    "category": "reference",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 2,
+    "plain": "目前廣用的安全雜湊家族(SHA-256 等)，做完整性驗證、數位簽章、區塊鏈都靠它。比 MD5 安全。",
+    "analogy": "像更難偽造的防偽鋼印。",
+    "example": "檔案 SHA-256 校驗、憑證簽章、git commit id",
+    "related": [
+      "md5",
+      "checksum",
+      "hashing"
+    ]
+  },
+  {
+    "slug": "unix-timestamp",
+    "term": "Unix timestamp",
+    "zh_name": "Unix 時間戳",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "從 1970/1/1 UTC 起算的『秒數(或毫秒數)』，是電腦儲存時間的通用方式，跨時區也不歧義。",
+    "analogy": "像全世界共用的一支馬錶，從同一刻開始一直數秒。",
+    "example": "1700000000 是某個時刻；JS Date.now() 回毫秒",
+    "related": [
+      "epoch-time",
+      "iso-8601",
+      "utc"
+    ]
+  },
+  {
+    "slug": "epoch-time",
+    "term": "epoch time",
+    "zh_name": "紀元時間",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "時間戳的『起算原點』——通常指 Unix 紀元 1970/1/1 00:00:00 UTC。所有時間戳都是離它多少秒。",
+    "analogy": "像度量的零點，所有刻度從這裡起算。",
+    "example": "epoch = 0 就是 1970/1/1；32 位秒數會在 2038 溢位",
+    "related": [
+      "unix-timestamp",
+      "integer-overflow",
+      "utc"
+    ]
+  },
+  {
+    "slug": "iso-8601",
+    "term": "ISO 8601",
+    "zh_name": "ISO 8601 時間格式",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "國際標準的日期時間文字格式(YYYY-MM-DDTHH:mm:ssZ)，明確又可排序，API 傳時間的首選。",
+    "analogy": "像全世界通用的填表日期格式，誰看都不會誤會。",
+    "example": "2026-07-13T09:00:00Z（Z 表 UTC）",
+    "related": [
+      "utc",
+      "timezone",
+      "unix-timestamp"
+    ]
+  },
+  {
+    "slug": "utc",
+    "term": "UTC",
+    "zh_name": "協調世界時",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "全球統一的基準時間(不受時區/日光節約影響)。系統內部一律存 UTC、顯示時才換成使用者時區，是避免時間 bug 的鐵律。",
+    "analogy": "像全球對時的標準鐘，各地時間都以它加減時差。",
+    "example": "台灣 = UTC+8；DB 存 UTC、前端顯示才轉 +8",
+    "related": [
+      "timezone",
+      "iso-8601",
+      "unix-timestamp"
+    ]
+  },
+  {
+    "slug": "timezone",
+    "term": "timezone",
+    "zh_name": "時區",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "各地相對 UTC 的時差(台灣 +8)，還有惱人的日光節約時間。時間處理最容易出 bug 的地方——盡量用 UTC 運算。",
+    "analogy": "像各地的時鐘各撥了不同時差，同一刻各地顯示不同。",
+    "example": "存 UTC、比較用 UTC；只在顯示層套使用者時區",
+    "related": [
+      "utc",
+      "iso-8601",
+      "epoch-time"
+    ]
+  }
+]
