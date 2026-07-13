@@ -65,8 +65,8 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
           />
           {/* 左重右輕的暗色遮罩 → 左側白字對比足、右側露出島 */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-black/10" />
-          {/* 底部融進「世界」黃昏色（固定色、亮暗一致銜接下方 Stage Map，不露主題底色）*/}
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-[#1a1533]" />
+          {/* 底部融進「世界」色（隨主題：暗＝黃昏、亮＝白天天空，平順銜接下方 Stage Map）*/}
+          <div className="absolute inset-x-0 bottom-0 h-32 hero-bottom-seam" />
         </div>
 
         {/* 2.5D 視差：遠景星空慢飄、近景光塵快飄（島圖不動，圖層錯速＝景深）*/}

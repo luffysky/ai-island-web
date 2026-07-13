@@ -48,11 +48,8 @@ const NODE_ICONS: Record<string, LucideIcon> = {
 export function WorldZone({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <div className={`world-zone relative isolate ${className}`}>
-      {/* 日→夜漸層（黃昏紫 → 深夜黑），GPU 便宜、無 JS */}
-      <div
-        className="absolute inset-0 -z-20"
-        style={{ background: `linear-gradient(to bottom, ${WORLD_DUSK} 0%, ${WORLD_MID} 46%, ${WORLD_NIGHT} 100%)` }}
-      />
+      {/* 日→夜漸層（隨主題切：暗＝黃昏→深夜、亮＝白天天空），GPU 便宜、無 JS */}
+      <div className="absolute inset-0 -z-20 world-zone-bg" />
       {/* 星空景深：遠景慢、近景快（reduced-motion 自動靜止）；越往下夜越深、星越明顯由漸層負責 */}
       <ParallaxLayer speed={28} className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
         <StarField variant="far" />
@@ -224,9 +221,9 @@ function MapNodeDot({ node, reduce }: { node: MapNode; reduce: boolean }) {
 
   const label = (
     <span className="mt-1.5 block text-center">
-      <span className="text-xs font-semibold text-white [text-shadow:0_1px_6px_rgba(0,0,0,0.8)]">{node.name}</span>
+      <span className="text-xs font-semibold text-fg [text-shadow:0_1px_6px_rgba(0,0,0,0.55)] dark:[text-shadow:0_1px_6px_rgba(0,0,0,0.8)]">{node.name}</span>
       {node.chapters && (
-        <span className="block text-[10px] font-mono text-white/60">{node.chapters}</span>
+        <span className="block text-[10px] font-mono text-fg-muted">{node.chapters}</span>
       )}
     </span>
   );

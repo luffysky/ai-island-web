@@ -813,6 +813,14 @@ select {
   .starfield, .starfield-2 { animation: none; }
 }
 
+/* 世界背景 — 隨主題切「日/夜」：預設(暗)＝黃昏→深夜；亮色主題＝白天天空漸層。
+   星空只在夜晚(暗色)顯示。 */
+.world-zone-bg { background: linear-gradient(to bottom, #1a1533 0%, #0d1030 46%, #05060f 100%); }
+html[data-theme="light"] .world-zone-bg { background: linear-gradient(to bottom, #d7e5ff 0%, #e7eefb 52%, #f6f8fc 100%); }
+.hero-bottom-seam { background: linear-gradient(to bottom, transparent, #1a1533); }
+html[data-theme="light"] .hero-bottom-seam { background: linear-gradient(to bottom, transparent, #d7e5ff); }
+html[data-theme="light"] .starfield, html[data-theme="light"] .starfield-2 { display: none; }
+
 /* Chat 訊息進場（共用：所有 AI 對話介面） */
 @keyframes chat-bubble-in {
   from { opacity: 0; transform: translateY(6px) scale(0.98); }

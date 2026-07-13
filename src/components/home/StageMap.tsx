@@ -56,10 +56,10 @@ export async function StageMap({ chapters = [] }: { chapters?: Array<{ stage: nu
     <section className="relative py-16 md:py-20">
       <div className="max-w-6xl mx-auto px-6">
         <Reveal className="text-center mb-10">
-          <h2 className="text-3xl font-bold mb-2 inline-flex items-center gap-2 text-white">
+          <h2 className="text-3xl font-bold mb-2 inline-flex items-center gap-2 text-fg">
             <Map size={28} className="text-accent" /> {t("stageMapHeading")}
           </h2>
-          <p className="text-white/70">{t("stageMapSubtitle")}</p>
+          <p className="text-fg-muted">{t("stageMapSubtitle")}</p>
         </Reveal>
 
         {/* 互動關卡地圖：底圖＝GPT 的 stage-path 發光路徑層(alpha)，節點＝資料驅動疊在路點上、可點進該關 */}
@@ -96,11 +96,11 @@ export async function StageMap({ chapters = [] }: { chapters?: Array<{ stage: nu
           })}
         </div>
 
-        <div className="mt-8 text-sm text-white/60 inline-flex w-full items-center justify-center gap-1.5">
+        <div className="mt-8 text-sm text-fg-muted inline-flex w-full items-center justify-center gap-1.5">
           <Sparkles size={14} /> {t("stageMapFooter")} <Sparkles size={14} />
         </div>
         {totalChapters > 0 && (
-          <div className="mt-2 text-center text-xs text-white/45">
+          <div className="mt-2 text-center text-xs text-fg-dim">
             六大關卡共 {mainTotal} 章{refTotal > 0 ? ` · 另有速查附錄 ${refTotal} 章` : ""} · 全站 {totalChapters} 章
           </div>
         )}
