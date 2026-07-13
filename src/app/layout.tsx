@@ -148,7 +148,8 @@ gtag('config', '${gaId}');`}
               <main id="main-content" className="flex-1" tabIndex={-1}>{children}</main>
               <OnboardingWizard />
               <OnboardingTour />
-              <footer className="border-t border-border py-8 mt-16">
+              {/* pb 在手機多留 MobileBottomNav(h-14=3.5rem)+安全區 的高度，法律連結才不被底部 nav 擋住 */}
+              <footer className="border-t border-border mt-16 pt-8 pb-[calc(2rem+3.5rem+env(safe-area-inset-bottom,0px))] md:pb-8">
                 <div className="max-w-6xl mx-auto px-6">
                   <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-fg-muted">
                     <div>{t("footer.madeBy")}</div>

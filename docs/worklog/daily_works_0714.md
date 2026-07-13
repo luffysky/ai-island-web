@@ -26,6 +26,8 @@
 - ✅ **nav 霧面玻璃**：TopNav＋抽屜改半透明 backdrop-blur。
 - ✅ **圖層規格文件**：`index-img.md` 正式化 Stage Map 五層 2.5D 素材規格（`stage-layer-*`、除天空全透明 PNG、五層需同尺寸對齊）、封印舊單張地圖。
 - ⬜ 續做：**同尺寸五層** → ParallaxScene 完整 2.5D 場景；副本+魔王；夜景 CTA；吉祥物三角色卡；WorldMap 接真實進度；玻璃外溢其他頁。
+- ✅ **手機底部 nav 擋住法律連結修正**：footer 加 `pb-[calc(2rem+3.5rem+env(safe-area-inset-bottom))] md:pb-8` → 隱私權/使用條款/Cookie 在手機不再被 `MobileBottomNav`(h-14 fixed) 蓋住；桌面不變。法律路由 /privacy /terms /cookies build 通過。
+- 🚧 **全站深/淺色切換稽核（進行中）**：林董回報 `/quest`(卡片標題白字在淺色看不到)、`/me`(hero banner 深底+側欄字淡)。修寫死色(text-white/深底)改主題 token。
 - 🚨 收尾檢查：本批多次 `tsc --noEmit`✓ / `vitest` 137✓ / `next build` exit0✓；純前端無 migration；未動 .env.local。
 
 ## 🚨 收尾檢查清單（鐵規則）
