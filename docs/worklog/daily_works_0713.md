@@ -105,6 +105,23 @@
 - L2：Dockerfile 選配 block + docker.yml build-arg 對齊；tool 端 `ENABLE_SERVER_BROWSER` gate + graceful 降級 + `--no-sandbox/--disable-dev-shm-usage`。
 - V4：tsc 0 / build 0 / vitest 137；migration 已跑；全走 `requireAdmin` gate + RLS 後台專用。
 
+## 今日再續（0713 深夜第二輪，林董「一直做不要停」）— 通路 + 主動 + 訂閱
+28. **機會島擴充**：手動查證官網加 **25 筆真實機會**、跨 14 分類（AI/創業/補助/雲端 + 設計/攝影/文學/影視/音樂/動漫/黑客松/永續/社會創新/廣告），機會島篩選 chips 7→14。全 unverified。剔除不符的（AI CUP 限學生、Google SEA 台灣沒資格、新創事業獎已截止）。
+29. **LINE Bot 入口（分身島+機會島）**：`/分身 <指令>`→背景跑→**完成推回 LINE**（orchestrator `notifyLineIfFromLine` 偵測 thread「📱 LINE」）；`找機會 <關鍵字>`/`我的機會`/`建議`（今日3件事）。
+30. **機會訂閱（V2）**：`opportunity_subscriptions` 表 + API + `/opportunities` 訂閱 UI；比對併入 `opportunity-deadlines` cron（新符合→in-app+LINE）。
+31. **主動代理「今日 3 件事」**：`daily-brief.ts` 規則式（近截止收藏+推薦新機會+弱項章節）；LINE「建議」+ 辦公室 widget + API。
+32. **AI 結構化抽取（V4）**：審佇列「🤖 AI 幫填」讀候選原文抽 分類/截止/獎金/主辦/免費，核准帶入。
+33. **LINE 內按鈕批准（守紅線核心）**：LINE 發起任務要批准時推「✅允許/❌取消」postback 卡→更新 `agent_approvals`→分身島續跑。
+
+### migration（本輪已跑 prod）
+`opportunity_profiles`、`opportunity_sources`、`opportunity_candidates`、`opportunity_radar`… 之外新增：`opportunity_subscriptions`。
+
+### 待辦優先序（林董要「全部做完」，我排的）
+Tier1：~~LINE入口~~/~~機會訂閱~~/~~今日3件事~~/AI讀規則吃PDF(需 PDF 相依、延到你在線)。
+Tier2：~~AI結構化抽取~~/~~LINE按鈕批准~~/AI島專屬頁對照資格/統一通知中心/外部工具(需OAuth)。
+Tier3(大工程/需外部帳號)：TG/Discord入口、對外發文、桌面App、Android、雲端沙盒、AI COO、機會島V5。
+Tier4(低風險可插隊)：AI記帳P1–P4、pgvector、辭典5000、機會地圖。
+
 ## 待辦
-👉 **全部見 `docs/todo/todo_list_0713.md`**（含最末 §五「需要林董自己操作」清單，現已含：cron #7/#8/#9、Zeabur `ENABLE_SERVER_BROWSER=1`、雷達加真實來源+審佇列）。
-⚠️ **部署後手動**：cron-job.org 加 job #7（agent-schedules 每 15 分）+ job #8（opportunity-deadlines 每天 09:00）。詳見 `docs/todo/todo_list_0713.md` §五 與 `docs/setup/cron-setup.md`。
+👉 **全部見 `docs/todo/todo_list_0713.md`**（含最末 §五「需要林董自己操作」清單）。
+⚠️ **部署後手動**：cron-job.org 加 job #7/#8/#9；Zeabur `ENABLE_SERVER_BROWSER=1`；機會雷達加真實 RSS 來源。詳見 §五 與 `docs/setup/cron-setup.md`。
