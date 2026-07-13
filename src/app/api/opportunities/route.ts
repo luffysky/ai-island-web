@@ -16,6 +16,7 @@ export async function GET(req: Request) {
   const status = sp.get("status") ?? "";  // open|upcoming|closed
   const noPitch = sp.get("noPitch");      // "1" = 不用上台（初賽免 pitch）
   const online = sp.get("online");        // "1" = 全程線上
+  const urgent = sp.get("urgent");        // "1" = 14 天內截止
 
   const admin = createSupabaseAdmin();
   let query = admin.from("opportunities")
@@ -31,6 +32,13 @@ export async function GET(req: Request) {
   if (status) query = query.eq("status", status);
   if (noPitch === "1") query = query.eq("requires_pitch", false);
   if (online === "1") query = query.eq("is_online", true);
+  if (urgent === "1") {
+    // 14 天內截止（且尚未過期）
+    const today = new Date();
+    const iso = (d: Date) => d.toISOString().slice(0, 10);
+    const in14 = new Date(today.getTime() + 14 * 86400_000);
+    query = query.not("application_deadline", "is", null).gte("application_deadline", iso(today)).lte("application_deadline", iso(in14));
+  }
 
   const { data, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

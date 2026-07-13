@@ -34,6 +34,7 @@ export function OpportunityBrowse() {
   const [status, setStatus] = useState("");
   const [noPitch, setNoPitch] = useState(false);   // 免上台
   const [online, setOnline] = useState(false);      // 全程線上
+  const [urgent, setUrgent] = useState(false);      // 14 天內截止
   // AI 幫我挑（V2）
   const [recOpen, setRecOpen] = useState(false);
   const [about, setAbout] = useState("");
@@ -131,13 +132,14 @@ export function OpportunityBrowse() {
     if (status) p.set("status", status);
     if (noPitch) p.set("noPitch", "1");
     if (online) p.set("online", "1");
+    if (urgent) p.set("urgent", "1");
     try {
       const r = await fetch(`/api/opportunities?${p.toString()}`);
       const d = await r.json();
       setOpps(d.opportunities ?? []);
     } catch { /* ignore */ }
     setLoading(false);
-  }, [q, cats, freeOnly, status, noPitch, online]);
+  }, [q, cats, freeOnly, status, noPitch, online, urgent]);
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => {
@@ -265,6 +267,7 @@ export function OpportunityBrowse() {
           <button onClick={() => setNoPitch((v) => !v)} title="初賽不用上台簡報" className={`text-xs rounded-full px-2.5 py-1 border ${noPitch ? "bg-emerald-600 border-emerald-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>🎤 免上台</button>
           <button onClick={() => setOnline((v) => !v)} title="全程線上、不用到現場" className={`text-xs rounded-full px-2.5 py-1 border ${online ? "bg-emerald-600 border-emerald-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>🌐 線上</button>
           <button onClick={() => setStatus(status === "open" ? "" : "open")} className={`text-xs rounded-full px-2.5 py-1 border ${status === "open" ? "bg-emerald-600 border-emerald-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>開放中</button>
+          <button onClick={() => setUrgent((v) => !v)} title="14 天內截止" className={`text-xs rounded-full px-2.5 py-1 border ${urgent ? "bg-rose-600 border-rose-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>⏰ 快截止</button>
         </div>
       </div>
 
