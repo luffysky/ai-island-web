@@ -262,6 +262,16 @@
 - ⬜ **P4 能力擴充**：RAG 加到 assistant/面試/創作；vision 加到面試/grade_draft；`consume_ai_quota`→`_v2`。
 - 詳規劃 `docs/product/ai_upgrade_plan.md`。
 
+## 🆕 首頁改版 / 全站 UI 升級（0714 起，林董點名「太俗太亂、不夠吸引、要能參賽」）
+> 方向＝**Hybrid**（俐落高級 Hero + 下方保留精簡後的品牌樂趣）。設計參考 `ui-ux-pro-max-skill`（反俗清單：不用 emoji 當圖示、hover 150–300ms 平順過渡、對比 4.5:1、375/768/1024/1440 RWD）。
+- 🚧 **首頁 Hero 重做**：統一成品牌三色（綠#50fa7b/青#8be9fd/紫#bd93f9）不要彩虹漸層、拿掉 emoji 圖示改 Lucide、大字排版＋留白、模式卡一致化、平順 hover/active。
+- ⬜ **各區塊重做**：吉祥物介紹（改三張去背角色卡）、關卡地圖、副本＋魔王整併一區、精選章節、生涯路徑 — 逐區美化、去除燒字舊圖。
+- ⬜ **主視覺圖全換**：見 `index-img.md`（13 張 text-free 生成清單，林董用 GPT 生 → Claude 接）。現有圖都燒了文字＝顯俗，先當 placeholder。
+- ⬜ **滑順動畫**：所有可互動元件 hover/active 都要有 transition（呆板→順）；善用 `.hover-lift`/`.reveal`/framer-motion，micro-interaction（icon 位移/微縮放/光暈）。
+- ⬜ **深/淺色都要合理**：一律用 CSS token（不硬寫色），亮暗兩色都驗對比與質感。
+- ⬜ **風格外溢**：首頁定調後，把同套卡片/動效/間距系統推到其他重點頁（章節/分身島/機會島/辭典）。
+- ＊ 參賽級門檻：UI 不能馬虎，破版/對比/RWD/動效都要過。
+
 ## 內容 / 辭典 / 其他
 - 🚧 程式辭典續寫到 5000（~~0713 加第 21 批 27 條工程實務術語 → 現 1049 條~~，從 `dictionary-seed-22.json` 接）+ i18n 續補（新批次跑 `node scripts/translate-sync-all.mjs` 補譯，未跑=前台 fallback 中文）。
 - ⬜ 語言島 `/語言島`（沿用 dictionary `domain='english'|'japanese'`）。

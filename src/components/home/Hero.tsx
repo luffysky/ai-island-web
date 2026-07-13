@@ -5,9 +5,19 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { BackgroundBeams } from "@/components/ui/BackgroundBeams";
-import { Sparkles } from "@/components/ui/Sparkles";
 import { NumberTicker } from "@/components/ui/NumberTicker";
-import { Sparkles as SparkleIcon, Palette, Palmtree, ClipboardList, Sword, Ruler, Compass, Bot } from "lucide-react";
+import {
+  Sparkles as SparkleIcon,
+  Palette,
+  Palmtree,
+  GraduationCap,
+  Gamepad2,
+  Compass,
+  Bot,
+  Sword,
+  Ruler,
+  ArrowRight,
+} from "lucide-react";
 
 type HeroProps = {
   totalChapters: number;
@@ -17,241 +27,186 @@ type HeroProps = {
   creatorIslandEnabled?: boolean;
 };
 
+/** 每個模式只取品牌調色盤中的一個色相，且僅用在「圖示晶片 + hover 邊框」上，
+ *  卡片本體維持中性 surface —— 一致、乾淨、不彩虹。全部用 CSS token → 亮暗自動切。 */
+type Tone = {
+  text: string; // 圖示與 CTA 文字色
+  chip: string; // 圖示晶片底
+  hoverBorder: string; // hover 邊框色
+};
+const TONES: Record<string, Tone> = {
+  green: { text: "text-accent", chip: "bg-accent/10", hoverBorder: "hover:border-accent" },
+  cyan: { text: "text-accent-2", chip: "bg-accent-2/10", hoverBorder: "hover:border-accent-2" },
+  purple: { text: "text-accent-3", chip: "bg-accent-3/10", hoverBorder: "hover:border-accent-3" },
+  gold: { text: "text-warning", chip: "bg-warning/10", hoverBorder: "hover:border-warning" },
+  pink: { text: "text-pink", chip: "bg-pink/10", hoverBorder: "hover:border-pink" },
+};
+
 export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = true, creatorIslandEnabled = false }: HeroProps) {
   const t = useTranslations("home");
-  const modeCount = 1 + (islandEnabled ? 1 : 0) + (creatorIslandEnabled ? 1 : 0);
-  const modeGrid = modeCount >= 3 ? "sm:grid-cols-2 lg:grid-cols-3" : modeCount === 2 ? "sm:grid-cols-2" : "";
-  return (
-    <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-bg via-bg/95 to-bg">
-      {/* Aceternity 風格背景 */}
-      <BackgroundBeams className="opacity-60" />
-      <Sparkles count={18} />
 
-      {/* 既有光暈 */}
-      <div className="absolute inset-0 opacity-30 pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-accent/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent-3/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1.5s" }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[400px] md:w-[600px] h-[300px] sm:h-[400px] md:h-[600px] bg-accent-2/10 rounded-full blur-3xl" />
+  // 模式入口：中性卡 + 單色圖示晶片，順序＝學習優先、樂趣其後
+  const modes: Array<{
+    href: string;
+    Icon: typeof GraduationCap;
+    tone: Tone;
+    tag: string;
+    title: string;
+    desc: string;
+    cta: string;
+    show: boolean;
+  }> = [
+    { href: "/chapters", Icon: GraduationCap, tone: TONES.green, tag: t("modeClassicTag"), title: t("modeClassicTitle"), desc: t("modeClassicDesc"), cta: t("modeClassicCta"), show: true },
+    { href: "/quest", Icon: Gamepad2, tone: TONES.cyan, tag: t("modeQuestTag"), title: t("modeQuestTitle"), desc: t("modeQuestDesc"), cta: t("modeQuestCta"), show: true },
+    { href: "/agent", Icon: Bot, tone: TONES.purple, tag: "分身島", title: "你的 AI 分身，替你動手", desc: "交代目標，分身一步步規劃、查資料、操作，還記得你、跨裝置延續。", cta: "開始使喚", show: true },
+    { href: "/opportunities", Icon: Compass, tone: TONES.gold, tag: "機會島", title: "競賽 · 補助 · 創投雷達", desc: "找到適合你的機會、加入航線追蹤截止日，AI 幫你挑、還能模擬評審練膽。", cta: "探索機會", show: true },
+    { href: "/creator-island", Icon: Palette, tone: TONES.pink, tag: t("modeCreatorTag"), title: t("modeCreatorTitle"), desc: t("modeCreatorDesc"), cta: t("modeCreatorCta"), show: creatorIslandEnabled },
+    { href: "/island", Icon: Palmtree, tone: TONES.green, tag: t("modeIslandTag"), title: t("modeIslandTitle"), desc: t("modeIslandDesc"), cta: t("modeIslandCta"), show: islandEnabled },
+  ];
+  const visibleModes = modes.filter((m) => m.show);
+
+  return (
+    <section className="relative overflow-hidden border-b border-border">
+      {/* 極淡背景光束（收斂 opacity，不搶內容）＋ 兩點柔光暈 */}
+      <BackgroundBeams className="opacity-30" />
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-24 -left-24 w-[28rem] h-[28rem] rounded-full bg-accent/10 blur-[120px]" />
+        <div className="absolute -bottom-32 -right-16 w-[32rem] h-[32rem] rounded-full bg-accent-3/10 blur-[120px]" />
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-12 md:py-16 relative">
-        <div className="grid md:grid-cols-2 gap-10 items-center">
-          {/* 左側：文案 */}
+      <div className="max-w-6xl mx-auto px-6 pt-14 pb-12 md:pt-20 md:pb-16 relative">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+          {/* 左：文案 + CTA + 統計 */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center md:text-left"
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="text-center lg:text-left"
           >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs bg-bg-card/80 backdrop-blur border border-accent/30 mb-6 shadow-lg shadow-accent/5"
-            >
-              <SparkleIcon size={11} className="text-accent animate-pulse" />
-              <span>{t("heroBadge")}</span>
-            </motion.div>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-bg-card/70 backdrop-blur border border-border text-fg-muted mb-6">
+              <SparkleIcon size={12} className="text-accent" />
+              {t("heroBadge")}
+            </span>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-5 leading-tight tracking-tight">
+            <h1 className="text-[2.5rem] leading-[1.08] md:text-6xl font-bold tracking-tight mb-5">
               {t("heroTitlePart1")}
-              <br />
+              <br className="hidden sm:block" />
               {t("heroTitleLearn")}
-              <span className="relative inline-block">
-                <span className="bg-gradient-to-r from-accent via-accent-2 to-accent-3 bg-clip-text text-transparent animate-gradient-x">
-                  {t("heroTitleHardest")}
-                </span>
-                <span className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-accent/50 via-accent-2/50 to-accent-3/50 blur-sm" />
+              <span className="bg-gradient-to-r from-accent via-accent-2 to-accent-3 bg-clip-text text-transparent">
+                {t("heroTitleHardest")}
               </span>
               {t("heroTitleDe")}
-              <span className="bg-gradient-to-r from-accent-2 to-accent-3 bg-clip-text text-transparent">
-                {t("heroTitleTech")}
-              </span>
+              {t("heroTitleTech")}
             </h1>
 
-            <p className="text-lg text-fg-muted mb-3 leading-relaxed">
-              <NumberTicker value={totalChapters} className="text-fg font-bold" /> {t("heroTickerMid")}{" "}
-              <NumberTicker value={totalLessons} suffix="+" className="text-fg font-bold" /> {t("heroTickerEnd")}
-              <br />
+            <p className="text-base md:text-lg text-fg-muted leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8">
+              <NumberTicker value={totalChapters} className="text-fg font-semibold" /> {t("heroTickerMid")}{" "}
+              <NumberTicker value={totalLessons} suffix="+" className="text-fg font-semibold" /> {t("heroTickerEnd")}
               {t("heroSubline")}
             </p>
-            <p className="text-sm text-fg-muted mb-7 leading-relaxed">
-              <strong className="text-fg">{t("heroPlatformLabel")}</strong>{t("heroPlatformDesc")}
-              <strong className="text-fg">{t("heroPlatformGoal")}</strong>{t("heroPlatformEnd")}
-            </p>
 
-            {/* 模式入口（經典 / 島嶼 / 創作者島嶼） */}
-            <div className={`grid grid-cols-1 ${modeGrid} gap-3`}>
-              {/* 1. 經典模式（快速開始） */}
-              <motion.div whileHover={{ y: -3, scale: 1.01 }} transition={{ duration: 0.18 }}>
-                <Link
-                  href="/chapters"
-                  className="group relative overflow-hidden rounded-2xl border-2 border-border p-5 bg-bg-card hover:border-accent transition-all backdrop-blur block"
-                >
-                  <ClipboardList className="absolute -top-4 -right-4 text-accent opacity-30 group-hover:opacity-60 group-hover:scale-110 transition duration-500" size={56} strokeWidth={1.5} />
-                  <div className="relative">
-                    <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2"><ClipboardList size={22} className="text-accent" /> {t("modeClassicTag")}</div>
-                    <div className="font-bold text-lg mb-1">{t("modeClassicTitle")}</div>
-                    <p className="text-xs text-fg-muted leading-relaxed">{t("modeClassicDesc")}</p>
-                    <span className="text-[10px] text-accent mt-2 inline-block group-hover:translate-x-1 transition">{t("modeClassicCta")}</span>
-                  </div>
-                </Link>
-              </motion.div>
-              {/* 2. 創作者島嶼 */}
-              {creatorIslandEnabled && (
-                <motion.div whileHover={{ y: -3, scale: 1.01 }} transition={{ duration: 0.18 }}>
-                  <Link
-                    href={"/creator-island" as any}
-                    className="group relative overflow-hidden rounded-2xl border-2 border-accent-3/40 p-5 bg-gradient-to-br from-accent-3/15 via-pink-500/8 to-violet-500/10 hover:border-accent-3 transition-all backdrop-blur block"
-                  >
-                    <Palette className="absolute -top-4 -right-4 text-accent-3 opacity-30 group-hover:opacity-60 group-hover:scale-110 transition duration-500" size={56} strokeWidth={1.5} />
-                    <div className="relative">
-                      <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2"><Palette size={22} className="text-accent-3" /> {t("modeCreatorTag")}</div>
-                      <div className="font-bold text-lg mb-1">{t("modeCreatorTitle")}</div>
-                      <p className="text-xs text-fg-muted leading-relaxed">{t("modeCreatorDesc")}</p>
-                      <span className="text-[10px] text-accent-3 mt-2 inline-block group-hover:translate-x-1 transition">{t("modeCreatorCta")}</span>
-                    </div>
-                  </Link>
-                </motion.div>
-              )}
-              {/* 3. 程式副本島（玩遊戲學程式） */}
-              <motion.div whileHover={{ y: -3, scale: 1.01 }} transition={{ duration: 0.18 }}>
-                <Link
-                  href={"/quest" as any}
-                  className="group relative overflow-hidden rounded-2xl border-2 border-emerald-400/40 p-5 bg-gradient-to-br from-emerald-500/15 via-teal-500/8 to-cyan-500/10 hover:border-emerald-400 transition-all backdrop-blur block glow-accent"
-                >
-                  <span className="absolute -top-3 -right-2 text-5xl opacity-25 group-hover:opacity-50 group-hover:scale-110 transition duration-500">🎮</span>
-                  <div className="relative">
-                    <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2">🎮 {t("modeQuestTag")}</div>
-                    <div className="font-bold text-lg mb-1">{t("modeQuestTitle")}</div>
-                    <p className="text-xs text-fg-muted leading-relaxed">{t("modeQuestDesc")}</p>
-                    <span className="text-[10px] text-emerald-500 mt-2 inline-block group-hover:translate-x-1 transition">{t("modeQuestCta")}</span>
-                  </div>
-                </Link>
-              </motion.div>
-              {/* 4. 分身島（行動代理 Agent） */}
-              <motion.div whileHover={{ y: -3, scale: 1.01 }} transition={{ duration: 0.18 }}>
-                <Link
-                  href={"/agent" as any}
-                  className="group relative overflow-hidden rounded-2xl border-2 border-violet-400/40 p-5 bg-gradient-to-br from-violet-500/15 via-purple-500/8 to-fuchsia-500/10 hover:border-violet-400 transition-all backdrop-blur block"
-                >
-                  <Bot className="absolute -top-4 -right-4 text-violet-400 opacity-30 group-hover:opacity-60 group-hover:scale-110 transition duration-500" size={56} strokeWidth={1.5} />
-                  <div className="relative">
-                    <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2"><Bot size={22} className="text-violet-400" /> 分身島</div>
-                    <div className="font-bold text-lg mb-1">你的 AI 分身，替你動手</div>
-                    <p className="text-xs text-fg-muted leading-relaxed">交代目標，分身一步步規劃、查資料、操作，還記得你、跨裝置延續。</p>
-                    <span className="text-[10px] text-violet-400 mt-2 inline-block group-hover:translate-x-1 transition">開始使喚 →</span>
-                  </div>
-                </Link>
-              </motion.div>
-              {/* 5. 機會島（競賽/補助雷達） */}
-              <motion.div whileHover={{ y: -3, scale: 1.01 }} transition={{ duration: 0.18 }}>
-                <Link
-                  href={"/opportunities" as any}
-                  className="group relative overflow-hidden rounded-2xl border-2 border-sky-400/40 p-5 bg-gradient-to-br from-sky-500/15 via-cyan-500/8 to-blue-500/10 hover:border-sky-400 transition-all backdrop-blur block"
-                >
-                  <Compass className="absolute -top-4 -right-4 text-sky-400 opacity-30 group-hover:opacity-60 group-hover:scale-110 transition duration-500" size={56} strokeWidth={1.5} />
-                  <div className="relative">
-                    <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2"><Compass size={22} className="text-sky-400" /> 機會島</div>
-                    <div className="font-bold text-lg mb-1">競賽 · 補助 · 創投雷達</div>
-                    <p className="text-xs text-fg-muted leading-relaxed">找到適合你的機會、加入航線追蹤截止日，AI 幫你挑、還能模擬評審練膽。</p>
-                    <span className="text-[10px] text-sky-400 mt-2 inline-block group-hover:translate-x-1 transition">探索機會 →</span>
-                  </div>
-                </Link>
-              </motion.div>
-              {/* 6. 沉浸式 3D 島嶼（真正一座島；目前可關閉、放最後） */}
-              {islandEnabled && (
-                <motion.div whileHover={{ y: -3, scale: 1.01 }} transition={{ duration: 0.18 }}>
-                  <Link
-                    href={"/island" as any}
-                    className="group relative overflow-hidden rounded-2xl border-2 border-accent/40 p-5 bg-gradient-to-br from-accent/15 via-accent-2/8 to-accent-3/10 hover:border-accent transition-all backdrop-blur block"
-                  >
-                    <Palmtree className="absolute -top-4 -right-4 text-accent opacity-30 group-hover:opacity-60 group-hover:scale-110 transition duration-500" size={56} strokeWidth={1.5} />
-                    <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent-2/0 group-hover:from-accent/10 group-hover:to-accent-2/5 transition duration-500" />
-                    <div className="relative">
-                      <div className="text-lg font-semibold mb-1 inline-flex items-center gap-2"><Palmtree size={22} className="text-accent" /> {t("modeIslandTag")}</div>
-                      <div className="font-bold text-lg mb-1">{t("modeIslandTitle")}</div>
-                      <p className="text-xs text-fg-muted leading-relaxed">{t("modeIslandDesc")}</p>
-                      <span className="text-[10px] text-accent mt-2 inline-block group-hover:translate-x-1 transition">{t("modeIslandCta")}</span>
-                    </div>
-                  </Link>
-                </motion.div>
-              )}
+            {/* 主 / 次 CTA */}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-9">
+              <Link
+                href="/chapters"
+                className="group inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold bg-accent text-accent-contrast shadow-[0_8px_24px_-8px_color-mix(in_srgb,var(--color-accent)_60%,transparent)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_32px_-8px_color-mix(in_srgb,var(--color-accent)_70%,transparent)] active:translate-y-0"
+              >
+                {t("modeClassicCta")}
+                <ArrowRight size={17} className="transition-transform duration-200 group-hover:translate-x-1" />
+              </Link>
+              <Link
+                href="/agent"
+                className="group inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold border border-border bg-bg-card/60 backdrop-blur text-fg transition-all duration-200 hover:-translate-y-0.5 hover:border-accent-3 hover:text-accent-3"
+              >
+                <Bot size={17} />
+                認識你的 AI 分身
+              </Link>
             </div>
 
             {/* 統計 */}
-            <motion.div
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.5 }}
-              className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10 text-center md:text-left"
-            >
+            <div className="grid grid-cols-3 gap-4 max-w-md mx-auto lg:mx-0">
               {[
                 { label: t("statChapters"), value: totalChapters, color: "text-accent" },
                 { label: t("statLessons"), value: totalLessons, color: "text-accent-2", suffix: "+" },
                 { label: t("statStages"), value: stageCount, color: "text-accent-3" },
               ].map((s) => (
-                <div key={s.label}>
-                  <NumberTicker
-                    value={s.value}
-                    suffix={s.suffix ?? ""}
-                    className={`text-3xl md:text-4xl font-extrabold ${s.color}`}
-                  />
-                  <div className="text-xs text-fg-muted mt-1">{s.label}</div>
+                <div key={s.label} className="text-center lg:text-left">
+                  <NumberTicker value={s.value} suffix={s.suffix ?? ""} className={`text-2xl md:text-3xl font-extrabold ${s.color}`} />
+                  <div className="text-xs text-fg-muted mt-0.5">{s.label}</div>
                 </div>
               ))}
-            </motion.div>
+            </div>
           </motion.div>
 
-          {/* 右側：英雄地圖 */}
+          {/* 右：主視覺（乾淨玻璃框，柔光收斂） */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.92 }}
+            initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="relative"
+            transition={{ delay: 0.15, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="relative mx-auto w-full max-w-md lg:max-w-none"
           >
-            {/* glow */}
-            <div className="absolute -inset-4 bg-gradient-to-br from-accent/20 via-accent-2/10 to-accent-3/20 rounded-3xl blur-2xl animate-pulse" style={{ animationDuration: "4s" }} />
-            <Image
-              src="/mascot/cover-hero.png"
-              alt={t("heroImageAlt")}
-              width={1200}
-              height={800}
-              priority
-              sizes="(max-width: 768px) 100vw, 600px"
-              className="relative w-full h-auto rounded-2xl shadow-2xl border border-border"
-            />
-            {/* 角色 label */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.5 }}
-              className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex gap-2"
-            >
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-bg-card/95 backdrop-blur border border-orange-400/40 text-orange-400 shadow-lg shadow-orange-500/10">
+            <div className="absolute -inset-3 bg-gradient-to-br from-accent/15 via-accent-2/10 to-accent-3/15 rounded-[2rem] blur-2xl" />
+            <div className="relative rounded-3xl overflow-hidden border border-border shadow-[var(--elev-4)] bg-bg-card">
+              <Image
+                src="/mascot/cover-hero.png"
+                alt={t("heroImageAlt")}
+                width={1200}
+                height={800}
+                priority
+                sizes="(max-width: 1024px) 100vw, 560px"
+                className="w-full h-auto"
+              />
+            </div>
+            {/* 角色標籤 */}
+            <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex gap-2 whitespace-nowrap">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs surface-glass shadow-[var(--elev-2)] text-orange-400">
                 <Sword size={12} /> {t("mascotFatzai")}
               </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-bg-card/95 backdrop-blur border border-purple-400/40 text-purple-400 shadow-lg shadow-purple-500/10">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs surface-glass shadow-[var(--elev-2)] text-accent-3">
                 <Ruler size={12} /> {t("mascotGubao")}
               </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-bg-card/95 backdrop-blur border border-green-400/40 text-green-400 shadow-lg shadow-green-500/10">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs surface-glass shadow-[var(--elev-2)] text-accent">
                 <SparkleIcon size={12} /> {t("mascotLvbao")}
               </span>
-            </motion.div>
+            </div>
           </motion.div>
         </div>
-      </div>
 
-      <style jsx global>{`
-        @keyframes gradient-x {
-          0%, 100% { background-size: 200% 200%; background-position: left center; }
-          50% { background-size: 200% 200%; background-position: right center; }
-        }
-        .animate-gradient-x {
-          background-size: 200% auto;
-          animation: gradient-x 4s ease infinite;
-        }
-      `}</style>
+        {/* 模式入口 — 一致化卡片網格 */}
+        <div className="mt-16 md:mt-20">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {visibleModes.map((m, i) => (
+              <motion.div
+                key={m.href}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ delay: i * 0.05, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <Link
+                  href={m.href as any}
+                  className={`group flex items-start gap-4 h-full rounded-2xl border border-border bg-bg-card/70 backdrop-blur p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-[var(--elev-3)] ${m.tone.hoverBorder}`}
+                >
+                  <span className={`shrink-0 grid place-items-center w-12 h-12 rounded-xl ${m.tone.chip} ${m.tone.text} transition-transform duration-200 group-hover:scale-110 group-hover:-rotate-3`}>
+                    <m.Icon size={24} strokeWidth={1.75} />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className={`text-xs font-medium ${m.tone.text}`}>{m.tag}</span>
+                    </div>
+                    <div className="font-semibold text-[15px] mb-1 leading-snug">{m.title}</div>
+                    <p className="text-xs text-fg-muted leading-relaxed line-clamp-2">{m.desc}</p>
+                    <span className={`mt-2 inline-flex items-center gap-1 text-xs font-medium ${m.tone.text} transition-all duration-200 group-hover:gap-2`}>
+                      {m.cta}
+                      <ArrowRight size={13} />
+                    </span>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
