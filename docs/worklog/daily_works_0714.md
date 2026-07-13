@@ -19,7 +19,14 @@
   - `WorldMap`：互動關卡地圖，**節點＝純資料、與圖片解耦**（島名/進度/鎖定/目前章節/點擊全 HTML 驅動）；沒底圖時 SVG 地形降級；底圖可之後抽換 GPT 生的 text-free 地圖。
 - ✅ **StageMap 重做**：6 關卡→資料驅動互動節點（可點進該關、狀態化）＋保留文字詳情玻璃卡（SEO/a11y）；`page.tsx` 重排成 Hero→StageMap 相鄰、共處 WorldZone。
 - ✅ **元件霧面玻璃**：模式卡/詳情卡改 `.surface-glass`。
-- ⬜ 續做：副本+魔王場景（用 ParallaxScene 多圖層）、夜景 CTA、吉祥物三角色卡、真實使用者進度接進 WorldMap 的 done/locked。
+- ✅ **StageMap 真實數據**：章數改由 DB 真實資料算（全站 80 章：六大關卡 69 + 速查附錄 11），不再寫死。
+- ✅ **接 GPT 路徑層**：`hero-layer-04-path`(alpha) → `stage-path.png` 當地圖底圖，6 節點對齊路點；`WorldMap` 支援底圖/aspect/contain、有路徑不畫 HTML 連線。
+- ✅ **淺色模式修正**：世界背景 `.world-zone-bg`/`.hero-bottom-seam` 改隨主題日/夜切（暗=黃昏→深夜、亮=白天天空），星空只夜晚顯示；StageMap/WorldMap 文字改主題 token（淺色不再看不到字）。
+- ✅ **Hero 日/夜雙圖**：接 GPT `hero-island-dark`(夜)/`hero-island-light`(日) 同構圖 → `.img-night`/`.img-day` 隨 `[data-theme]` 切；淺色 Hero 是白天島嶼、不再黑。
+- ✅ **nav 霧面玻璃**：TopNav＋抽屜改半透明 backdrop-blur。
+- ✅ **圖層規格文件**：`index-img.md` 正式化 Stage Map 五層 2.5D 素材規格（`stage-layer-*`、除天空全透明 PNG、五層需同尺寸對齊）、封印舊單張地圖。
+- ⬜ 續做：**同尺寸五層** → ParallaxScene 完整 2.5D 場景；副本+魔王；夜景 CTA；吉祥物三角色卡；WorldMap 接真實進度；玻璃外溢其他頁。
+- 🚨 收尾檢查：本批多次 `tsc --noEmit`✓ / `vitest` 137✓ / `next build` exit0✓；純前端無 migration；未動 .env.local。
 
 ## 🚨 收尾檢查清單（鐵規則）
 1. **API / DB / 資料表**：辭典 import 冪等 upsert（DB count 1645 已驗）；機會島更新用 service role update 已回傳確認；本次首頁純前端、無 migration。
