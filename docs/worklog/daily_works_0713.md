@@ -122,6 +122,17 @@ Tier2：~~AI結構化抽取~~/~~LINE按鈕批准~~/AI島專屬頁對照資格/�
 Tier3(大工程/需外部帳號)：TG/Discord入口、對外發文、桌面App、Android、雲端沙盒、AI COO、機會島V5。
 Tier4(低風險可插隊)：AI記帳P1–P4、pgvector、辭典5000、機會地圖。
 
+## 今日第三輪（0713，林董選 4 項 + 持續型）
+34. **統一通知中心**：profiles 加 `line_pref_{deadlines,subscriptions,agent,learning}`；`notifyUserLine` 加 `category` 統一查偏好；設定頁「LINE 通知偏好」總開關+4 分類 toggle。
+35. **pgvector 分身島 RAG**：`agent_tasks.embedding vector(1536)` + `match_agent_tasks()`；`launchAgentTask` 撈相似度≥0.72 過去成功任務當前文（跨對話記得做過什麼）。
+36. **辭典大推進**：批 21（工程實務 27）+ 批 22（後端/DevOps/git 42）+ 批 23（前端/React/CSS/Web API 39）＝**1022→1130 條**；續寫從 seed-24 接。
+37. **機會島擴充**：再加多元真實機會（巴哈ACG/旺宏/HITCON/戰國策/龍騰/聯發科獎學金/Google實習…）＝**40 筆、19 分類**（含遊戲/資安/科學/獎學金/實習）；加「⏰ 快截止」篩選。
+38. **🆕 使用者外部帳號連結中心**：`user_connected_accounts`（**一平台可綁多帳號**、token 加密）+ `/settings/connections` UI + API。11 平台，手動連結先行、OAuth 待林董註冊各平台 app。
+
+### migration（本輪已跑 prod）
+`user_line_prefs`、`agent_task_embedding`、`user_connected_accounts`。
+
 ## 待辦
 👉 **全部見 `docs/todo/todo_list_0713.md`**（含最末 §五「需要林董自己操作」清單）。
-⚠️ **部署後手動**：cron-job.org 加 job #7/#8/#9；Zeabur `ENABLE_SERVER_BROWSER=1`；機會雷達加真實 RSS 來源。詳見 §五 與 `docs/setup/cron-setup.md`。
+⚠️ **部署後手動**：cron-job.org 加 job #7/#8/#9；Zeabur `ENABLE_SERVER_BROWSER=1`；機會雷達加真實 RSS 來源；**各平台 OAuth app**（連結中心要一鍵登入才需要）。詳見 §五 與 `docs/setup/cron-setup.md`。
+持續型可續：辭典 seed-24…（現 1130/5000）、繼續加真實機會（現 40 筆）。
