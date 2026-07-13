@@ -357,6 +357,23 @@ async function waitForApproval(approvalId: string, taskId: string, timeoutMs = 3
 // Phase 2b：背景執行——任務不綁 HTTP 連線，關掉頁面也照跑。
 // Zeabur 是長駐 node server，detached promise 會續跑；步驟寫進 DB、關鍵時刻推播、前端靠輪詢觀看。
 const RUNNING = new Set<string>();
+// LINE 回報：LINE 發起的任務（thread 標題前綴「📱 LINE」）完成後把結果推回使用者 LINE。
+async function notifyLineIfFromLine(taskId: string, userId: string): Promise<void> {
+  const admin = createSupabaseAdmin();
+  const { data: task } = await admin.from("agent_tasks").select("status, result, error, thread_id").eq("id", taskId).maybeSingle();
+  if (!task?.thread_id) return;
+  if (!["succeeded", "failed", "cancelled"].includes(String(task.status))) return;  // 還在等確認/裝置 → 先不推
+  const { data: th } = await admin.from("agent_threads").select("title").eq("id", task.thread_id).maybeSingle();
+  if (!String((th as any)?.title ?? "").startsWith("📱 LINE")) return;
+  const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
+  const summary = task.status === "succeeded"
+    ? String((task.result as any)?.summary ?? "完成")
+    : `任務未完成：${task.error ?? "失敗"}`;
+  const head = task.status === "succeeded" ? "🤖 分身島完成任務" : "🤖 分身島任務結束";
+  const { notifyUserLine } = await import("@/lib/notify-user-line");
+  await notifyUserLine({ userId, text: `${head}\n\n${summary.slice(0, 1500)}\n\n看完整：${site}/agent?task=${taskId}` });
+}
+
 export function runAgentTaskDetached(taskId: string, userId: string, goal: string, maxSteps = 40, skill?: SkillCtx, extraTools?: AgentTool[], priorContext = ""): void {
   if (RUNNING.has(taskId)) return;
   RUNNING.add(taskId);
@@ -367,6 +384,8 @@ export function runAgentTaskDetached(taskId: string, userId: string, goal: strin
     try { for await (const _ev of runAgentTask(taskId, userId, goal, maxSteps, skill, dyn, priorContext)) { void _ev; } }
     catch { /* runAgentTask 自身的 try/catch 已把任務標成 failed */ }
     finally { RUNNING.delete(taskId); }
+    // 若此任務來自 LINE（thread 標題前綴「📱 LINE」）→ 完成後把結果推回使用者的 LINE。
+    await notifyLineIfFromLine(taskId, userId).catch(() => {});
   })();
 }
 

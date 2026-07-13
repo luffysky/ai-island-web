@@ -136,7 +136,7 @@
 > 林董要：分身島 Agent 聊天能接各大軟體、機會島加自動排程 + LINE 通知。分兩向：**Inbound**（從各平台對 Agent 下令/回覆）＋**Outbound**（Agent 起草內容發到社群）。**紅線不變**：對外發布/報名一律「AI 起草 → 你一鍵批准」。
 
 ### 14-1 Inbound：把聊天平台當 Agent 入口
-- ⬜ **LINE**：LINE Bot（Messaging API）當入口——打字下令 → Agent 執行 → 回訊息；Rich Menu 快捷（找機會/看員工/今日待辦）；LIFF 內嵌分身島/機會島頁。（已有 `user_line_bind`、`NEXT_PUBLIC_USER_LINE_BOT_BASIC_ID`）
+- 🚧 **LINE**：~~LINE Bot 入口做好：`/分身 <指令>` → launchAgentTask 背景跑 → 完成把結果推回 LINE（thread 標題「📱 LINE」偵測）；`找機會 <關鍵字>` 搜機會島；`我的機會/航線` 看收藏+截止倒數；/help 已列（0713，`line-webhook-user`）~~；待補：Rich Menu 快捷鈕、LIFF 內嵌頁、需確認動作在 LINE 按鈕批准（見 14-2）。
 - ⬜ **Telegram**：Telegram Bot 當入口，群組 `@bot` 下令，inline keyboard 互動。
 - ⬜ **Discord**：Discord Bot slash commands（`/agent`、`/opportunity`）、DM 下令、伺服器頻道貼每日機會/員工報告。（已有 `discord_binding`）
 - ⬜ **統一 Bridge**：三平台共用一套「訊息 → 建 agent task → 回填結果」轉接層（沿用現有 task/thread 架構）。

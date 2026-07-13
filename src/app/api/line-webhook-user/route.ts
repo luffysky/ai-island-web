@@ -522,6 +522,9 @@ function cardHelp(): FlexMessage {
     body: "我能做的事（綁定後解鎖全部）",
     meta: [
       { label: "💬", value: "聊天問 AI 學員導師" },
+      { label: "🤖 /分身 指令", value: "叫分身島幫你做事（背景執行）" },
+      { label: "🧭 找機會 XX", value: "搜尋競賽/補助/機會" },
+      { label: "🧭 我的機會", value: "看收藏的機會 + 截止倒數" },
       { label: "/today", value: "今日學習狀況" },
       { label: "/streak", value: "看連續簽到" },
       { label: "/weak", value: "找弱項章節（quiz<60）" },
@@ -1749,6 +1752,113 @@ export async function POST(req: NextRequest) {
             { label: `🔎 找相關 lesson`, postback: `action=find_lesson&keyword=${encodeURIComponent(concept).slice(0, 100)}`, primary: true },
           ],
         }), token, aiResult.assistantMsgId ? buildNoteQuickReply(aiResult.assistantMsgId) : QUICK_REPLY);
+        continue;
+      }
+
+      // 3.48. 機會島：找機會 <關鍵字> — 搜尋競賽/補助/機會
+      const oppSearchMatch = text.match(/^\/?(?:找機會|機會)\s+(.+)/) || text.match(/^\/opportunit(?:y|ies)\s+(.+)/i);
+      if (oppSearchMatch) {
+        const kw = oppSearchMatch[1].trim();
+        const admin = createSupabaseAdmin();
+        const kwSafe = kw.replace(/[%_\\]/g, "\\$&");
+        const { data: opps } = await admin
+          .from("opportunities")
+          .select("id, name, category, prize_text, application_deadline")
+          .in("status", ["open", "upcoming"])
+          .or(`name.ilike.%${kwSafe}%,category.ilike.%${kwSafe}%,organizer.ilike.%${kwSafe}%`)
+          .limit(6);
+        const rows = (opps as any[]) ?? [];
+        if (rows.length === 0) {
+          await lineReply(replyToken, buildSimpleCard({
+            emoji: "🧭", title: `找不到「${kw}」的機會`, accentColor: USER_ACCENT,
+            body: "換個關鍵字、或到機會島看全部（競賽/補助/創業/設計/攝影/文學…）。",
+            buttons: [{ label: "🧭 逛機會島", uri: `${SITE_URL}/opportunities`, primary: true }],
+          }), token, QUICK_REPLY);
+          continue;
+        }
+        const lines = rows.slice(0, 5).map((o: any) => {
+          const dl = o.application_deadline ? `（截止 ${o.application_deadline}）` : "";
+          return `• ${o.name}${dl}\n  → ${SITE_URL}/opportunities/${o.id}`;
+        });
+        await lineReply(replyToken, buildSimpleCard({
+          emoji: "🧭", title: `「${kw}」找到 ${rows.length} 個機會`, accentColor: USER_ACCENT,
+          body: lines.join("\n\n").slice(0, 1900),
+          buttons: [{ label: "🧭 看全部機會", uri: `${SITE_URL}/opportunities`, primary: true }],
+        }), token, QUICK_REPLY);
+        continue;
+      }
+
+      // 3.481. 我的機會 / 航線 — 看收藏的機會 + 截止倒數
+      if (["我的機會", "我的航線", "航線", "找機會", "機會", "/機會", "/航線"].includes(text)) {
+        const admin = createSupabaseAdmin();
+        const { data: prof } = await admin.from("profiles").select("id").eq("line_user_id", userId).maybeSingle();
+        if (!prof) { await lineReply(replyToken, cardUnbound(userId, "機會島 · 我的航線"), token, QUICK_REPLY); continue; }
+        const { data: routes } = await admin
+          .from("opportunity_routes")
+          .select("opportunity:opportunities(id, name, application_deadline, status)")
+          .eq("user_id", (prof as any).id)
+          .limit(30);
+        const items = ((routes as any[]) ?? [])
+          .map((r) => r.opportunity)
+          .filter((o) => o && o.status !== "closed")
+          .map((o) => {
+            const dl = o.application_deadline ? Math.ceil((new Date(o.application_deadline + "T23:59:59+08:00").getTime() - Date.now()) / 86400_000) : null;
+            return { o, dl };
+          })
+          .sort((a, b) => (a.dl ?? 9999) - (b.dl ?? 9999));
+        if (items.length === 0) {
+          await lineReply(replyToken, buildSimpleCard({
+            emoji: "🧭", title: "航線還是空的", accentColor: USER_ACCENT,
+            body: "去機會島把想參加的加入「我的航線」，我幫你追截止日。",
+            buttons: [{ label: "🧭 逛機會島", uri: `${SITE_URL}/opportunities`, primary: true }],
+          }), token, QUICK_REPLY);
+          continue;
+        }
+        const lines = items.slice(0, 6).map(({ o, dl }) => {
+          const tag = dl == null ? "" : dl < 0 ? "（已截止）" : dl <= 7 ? `（剩 ${dl} 天‼️）` : `（剩 ${dl} 天）`;
+          return `• ${o.name}${tag}\n  → ${SITE_URL}/opportunities/${o.id}`;
+        });
+        await lineReply(replyToken, buildSimpleCard({
+          emoji: "🧭", title: `我的航線（${items.length}）`, accentColor: USER_ACCENT,
+          body: lines.join("\n\n").slice(0, 1900),
+          buttons: [{ label: "🧭 管理航線", uri: `${SITE_URL}/opportunities/routes`, primary: true }],
+        }), token, QUICK_REPLY);
+        continue;
+      }
+
+      // 3.49. 分身島下令：/分身 <指令> — 叫分身島（Agent）背景執行、完成到網站看
+      const agentMatch = text.match(/^\/(?:分身|agent)\s+([\s\S]+)/i) || text.match(/^分身島?\s*[:：]\s*([\s\S]+)/);
+      if (agentMatch) {
+        const goal = agentMatch[1].trim();
+        const admin = createSupabaseAdmin();
+        const { data: prof } = await admin.from("profiles").select("id").eq("line_user_id", userId).maybeSingle();
+        if (!prof) { await lineReply(replyToken, cardLockedFeature("🤖 分身島下令", "叫分身島幫你做事需要先綁定帳號。"), token, QUICK_REPLY); continue; }
+        if (goal.length < 4) {
+          await lineReply(replyToken, buildSimpleCard({
+            emoji: "🤖", title: "指令太短", accentColor: USER_ACCENT,
+            body: "用法：/分身 幫我找適合我的免費 AI 比賽\n或：/分身 抓某網址重點摘要給我",
+          }), token, QUICK_REPLY);
+          continue;
+        }
+        try {
+          const { launchAgentTask } = await import("@/lib/agent/launch");
+          const r = await launchAgentTask({ userId: (prof as any).id, goal, threadTitle: `📱 LINE：${goal}`.slice(0, 80) });
+          if ("error" in r) {
+            await lineReply(replyToken, buildSimpleCard({ emoji: "🤖", title: "分身島啟動失敗", accentColor: "#ef4444", body: r.error }), token, QUICK_REPLY);
+            continue;
+          }
+          await lineReply(replyToken, buildSimpleCard({
+            emoji: "🤖", title: "分身島開始處理", accentColor: USER_ACCENT,
+            body: `任務：${goal.slice(0, 120)}\n\n背景執行中，完成後到網站看結果。需要對外的動作（發文/報名）會停下等你確認。`,
+            meta: [{ label: "📊 看進度", value: "點下面按鈕" }],
+            buttons: [
+              { label: "📊 看任務進度", uri: `${SITE_URL}/agent?task=${r.taskId}`, primary: true },
+              { label: "🏢 我的辦公室", uri: `${SITE_URL}/agent/office` },
+            ],
+          }), token, QUICK_REPLY);
+        } catch (e: any) {
+          await lineReply(replyToken, buildSimpleCard({ emoji: "🤖", title: "分身島啟動失敗", accentColor: "#ef4444", body: String(e?.message ?? e).slice(0, 200) }), token, QUICK_REPLY);
+        }
         continue;
       }
 
