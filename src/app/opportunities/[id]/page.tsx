@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
-import { ExternalLink, ArrowLeft, Trophy, CalendarClock, AlertTriangle, Building2, Globe } from "lucide-react";
+import { ExternalLink, ArrowLeft, Trophy, CalendarClock, AlertTriangle, Building2, Globe, Bot } from "lucide-react";
 import { RulesSummary } from "./RulesSummary";
 import { FitAnalysis } from "./FitAnalysis";
 
@@ -96,11 +96,22 @@ export default async function OpportunityDetail({ params }: { params: Promise<{ 
       <RulesSummary id={o.id} hasOwnData={!!(o.description || o.eligibility || o.prize_text)} />
       <FitAnalysis id={o.id} />
 
-      {o.official_url && (
-        <a href={o.official_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 mt-6 rounded-xl bg-violet-600 hover:bg-violet-700 text-white px-4 py-2.5 text-sm font-medium">
-          <ExternalLink className="w-4 h-4" /> 前往官方網站報名
-        </a>
-      )}
+      {/* 丟給分身島幫我準備（預填指令到下令列、你看過再送；對外動作仍待批准）*/}
+      {(() => {
+        const prepGoal = `幫我準備報名「${o.name}」${o.organizer ? `（主辦：${o.organizer}）` : ""}${o.application_deadline ? `，報名截止 ${o.application_deadline}` : ""}。請：① 列出報名要準備的文件清單 ② 把重要日期整理成待辦與截止提醒 ③ 建議我現在該先做的 3 件事。需要對外的動作（報名/寄信）先問過我。`;
+        return (
+          <div className="mt-6 flex flex-wrap items-center gap-2">
+            <Link href={`/agent?goal=${encodeURIComponent(prepGoal)}` as any} className="inline-flex items-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white px-4 py-2.5 text-sm font-medium">
+              <Bot className="w-4 h-4" /> 丟給分身島幫我準備
+            </Link>
+            {o.official_url && (
+              <a href={o.official_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl border border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10 px-4 py-2.5 text-sm font-medium">
+                <ExternalLink className="w-4 h-4" /> 前往官方網站報名
+              </a>
+            )}
+          </div>
+        );
+      })()}
       <p className="mt-4 text-[11px] text-black/40 dark:text-white/40">此頁資料整理自公開資訊、可能過時；報名前請以主辦單位官方公告為準。</p>
     </div>
   );
