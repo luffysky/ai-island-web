@@ -15,7 +15,7 @@
 
 ---
 
-## 6 個 cron job 完整清單
+## 7 個 cron job 完整清單
 
 ### 1. keep-warm（**最重要**、防 Discord interaction 冷啟動）
 
@@ -71,6 +71,17 @@
 | Schedule | **每天 20:00 台灣時間**（UTC：`0 12 * * *`） |
 | Timeout | 設高一點（90 秒）— 推一群人會慢 |
 
+### 7. agent-schedules（AI 員工辦公室排程自動跑）
+
+| | |
+|---|---|
+| URL | `<SITE>/api/cron/agent-schedules?secret=<SECRET>` |
+| Method | GET |
+| Schedule | **每 15 分鐘**（cron-job.org: `*/15 * * * *`） |
+| 說明 | 撈使用者在 `/agent/office` 設的「已啟用且到期」排程、每條發起一個 agent 背景任務。排程時間是**台灣時間**、整點觸發（15 分粒度足夠）。 |
+| 紅線 | 排程只「發起任務」；任務內若要對外（發文/報名）仍走 `awaiting_approval` 待使用者批准，**不會自動對外**。 |
+| Timeout | 60–90 秒（一次最多處理 15 條、每條只是啟動背景任務） |
+
 ---
 
 ## cron-job.org 自動停用設定
@@ -104,4 +115,4 @@
 | `Authorization` | `Bearer <SECRET>` |
 | 或 `x-cron-secret` | `<SECRET>` |
 
-6 個 endpoint 全部都同時支援這三種認證方式（query / Bearer / x-cron-secret）、選一種用即可。
+7 個 endpoint 全部都同時支援這三種認證方式（query / Bearer / x-cron-secret）、選一種用即可。

@@ -43,6 +43,23 @@
 - **API/DB**：無新表、無新寫入端點（辦公室全讀既有 3 支 API）；`?goal=/?skill=` 僅前端預填、不改後端。
 - **安全紅線**：辦公室頁對外動作＝0；熱門任務只「預填」不自動送、文案類任務文字明示「先給我看過再決定發不發」。
 
+## 今日續（0713 晚）— 辦公室排程自動跑（cron 員工）
+13. **排程自動跑上線**：辦公室可設「每天/每週某時（台灣時間）自動發起任務」，可綁員工、暫停/啟用、刪除、看上次結果。
+    - **DB**：`supabase/agent_schedules_migration.sql`（RLS own policy）已跑 prod、15 欄位已驗。
+    - **API**：`/api/agent/schedules`（GET 列 / POST 建，每人上限 20）＋`/api/agent/schedules/[id]`（PATCH 開關/改時間、DELETE）。
+    - **Cron**：`/api/cron/agent-schedules`（撈 enabled 且 next_run_at≤now，單次最多 15 條，逐條 `launchAgentTask` 背景跑、推進 next_run_at/last_task_id/run_count）→ 已登記到 `docs/setup/cron-setup.md` job #7（建議每 15 分）。
+    - **時間計算**：`src/lib/agent/schedule.ts`（`computeNextRun`/`describeSchedule`，台灣 UTC+8）＋ **6 個單元測試全綠**（daily/weekly/已過推明天/9am TW=1am UTC/clamp）。
+    - **重構**：抽 `src/lib/agent/launch.ts`（建任務+背景開跑）為手動下令與排程**共用一條**，`/api/agent/tasks` POST 改用它（避免邏輯漂移）。
+    - **UI**：`/agent/office` 加「排程自動跑」區（新增表單：指令/員工/每天或每週/星期/整點 + 清單含開關·刪除·下次時間·已跑次數·看上次結果）。
+    - **紅線**：排程只「發起任務」；任務內對外仍走 `awaiting_approval` 待批准，排程不自動對外。表單也明示這點。
+
+### 收尾檢查（第三輪）
+- **建置**：tsc 0 · vitest **128 綠**（+6 排程）· next build 0（office 7.39kB、schedules、schedules/[id]、cron/agent-schedules 全建）。
+- **API/DB**：`agent_schedules` 15 欄位已驗存在；launchAgentTask 重構後 `/api/agent/tasks` 行為不變（GET 仍用 admin）。
+- **RWD**：排程表單 `flex flex-wrap` + select 響應式；清單 row `flex` 右側動作鈕 shrink-0，手機不破版。
+- **安全**：cron 走 `verifyCronAuth`（三種認證）；排程 API 全 `user_id` 過濾 + RLS；對外動作 0。
+
 ## 待辦
-👉 **全部見 `docs/todo/todo_list_0713.md`**（分身島 L1–L5✅/桌面/手機/Android/安全/MCP/AI 員工辦公室 MVP🚧/省 token；機會島 V1✅/V2–V3 部分/V4–V5⬜/後台複刻⬜；全站 AI 記帳 P0–P4/辭典/語言島）。
-建議下一步（同檔第四節）：① 辦公室進階（cron 自動排程 + 待批准佇列聚合 + 看員工工作動畫）② 機會島 V2/V3 主幹 ③ 後台複刻 AI 島專屬機會雷達。
+👉 **全部見 `docs/todo/todo_list_0713.md`**（分身島 L1–L5✅/桌面/手機/Android/安全/MCP/AI 員工辦公室 MVP+排程🚧/省 token；機會島 V1✅/V2–V3 部分/V4–V5⬜/後台複刻⬜；全站 AI 記帳 P0–P4/辭典/語言島）。
+建議下一步（同檔第四節）：① 辦公室再進階（產出佇列一鍵批准聚合 + 排程完成 LINE 通知 + 看員工工作動畫）② 機會島 V2/V3 主幹 ③ 後台複刻 AI 島專屬機會雷達。
+⚠️ **部署後手動一步**：到 cron-job.org 依 `docs/setup/cron-setup.md` job #7 加 `agent-schedules` 排程（每 15 分），排程才會真的自動跑。

@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Bot, Laptop, LaptopMinimal, ArrowRight, Store, ChevronLeft, Sparkles, CheckCircle2, Loader2, Clock, XCircle } from "lucide-react";
+import { Bot, Laptop, LaptopMinimal, ArrowRight, Store, ChevronLeft, Sparkles, CheckCircle2, Loader2, Clock, XCircle, CalendarClock, Plus, Trash2, Power } from "lucide-react";
+import { describeSchedule, type Frequency } from "@/lib/agent/schedule";
 
 interface SkillItem { id: string; name: string; description?: string; emoji: string; category: string; is_builtin: boolean; installed: boolean; }
 interface DeviceItem { id: string; name: string; platform: string; online: boolean; last_seen_at?: string | null; }
 interface TaskItem { id: string; goal: string; status: string; step_count: number; created_at: string; }
+interface Schedule { id: string; skill_id: string | null; title: string; goal: string; frequency: Frequency; hour: number; weekday: number | null; enabled: boolean; last_run_at?: string | null; last_task_id?: string | null; next_run_at: string; run_count: number; }
 
 const STATUS: Record<string, { label: string; cls: string; Icon: any }> = {
   planning: { label: "規劃中", cls: "text-sky-500", Icon: Loader2 },
@@ -39,24 +41,65 @@ export function OfficeClient() {
   const [skills, setSkills] = useState<SkillItem[]>([]);
   const [devices, setDevices] = useState<DeviceItem[]>([]);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(true);
+  // 新增排程表單
+  const [schedOpen, setSchedOpen] = useState(false);
+  const [sGoal, setSGoal] = useState("");
+  const [sSkill, setSSkill] = useState("");
+  const [sFreq, setSFreq] = useState<Frequency>("daily");
+  const [sHour, setSHour] = useState(9);
+  const [sWeekday, setSWeekday] = useState(1);
+  const [sBusy, setSBusy] = useState(false);
+  const [sErr, setSErr] = useState("");
 
   useEffect(() => {
     let alive = true;
     (async () => {
-      const [sk, dv, tk] = await Promise.all([
+      const [sk, dv, tk, sc] = await Promise.all([
         fetch("/api/agent/skills").then((r) => (r.ok ? r.json() : { skills: [] })).catch(() => ({ skills: [] })),
         fetch("/api/agent/devices").then((r) => (r.ok ? r.json() : { devices: [] })).catch(() => ({ devices: [] })),
         fetch("/api/agent/tasks").then((r) => (r.ok ? r.json() : { tasks: [] })).catch(() => ({ tasks: [] })),
+        fetch("/api/agent/schedules").then((r) => (r.ok ? r.json() : { schedules: [] })).catch(() => ({ schedules: [] })),
       ]);
       if (!alive) return;
       setSkills(sk.skills ?? []);
       setDevices(dv.devices ?? []);
       setTasks(tk.tasks ?? []);
+      setSchedules(sc.schedules ?? []);
       setLoading(false);
     })();
     return () => { alive = false; };
   }, []);
+
+  const addSchedule = async () => {
+    const goal = sGoal.trim();
+    if (!goal || sBusy) { if (!goal) setSErr("先寫要自動執行的指令"); return; }
+    setSBusy(true); setSErr("");
+    try {
+      const r = await fetch("/api/agent/schedules", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ goal, skillId: sSkill || undefined, frequency: sFreq, hour: sHour, weekday: sFreq === "weekly" ? sWeekday : undefined }),
+      });
+      const d = await r.json();
+      if (!r.ok) { setSErr(d.error ?? "新增失敗"); return; }
+      setSchedules((cur) => [d.schedule, ...cur]);
+      setSGoal(""); setSSkill(""); setSchedOpen(false);
+    } catch { setSErr("連線失敗"); } finally { setSBusy(false); }
+  };
+
+  const toggleSchedule = async (s: Schedule) => {
+    const next = !s.enabled;
+    setSchedules((cur) => cur.map((x) => (x.id === s.id ? { ...x, enabled: next } : x)));
+    const r = await fetch(`/api/agent/schedules/${s.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ enabled: next }) }).catch(() => null);
+    if (r?.ok) { const d = await r.json(); setSchedules((cur) => cur.map((x) => (x.id === s.id ? d.schedule : x))); }
+    else setSchedules((cur) => cur.map((x) => (x.id === s.id ? { ...x, enabled: s.enabled } : x))); // 失敗回復
+  };
+
+  const deleteSchedule = async (id: string) => {
+    setSchedules((cur) => cur.filter((x) => x.id !== id));
+    await fetch(`/api/agent/schedules/${id}`, { method: "DELETE" }).catch(() => {});
+  };
 
   const employees = skills.filter((s) => s.installed);
   const onlineDevice = devices.find((d) => d.online);
@@ -189,6 +232,82 @@ export function OfficeClient() {
                 </div>
               </Link>
             ))}
+          </div>
+        )}
+      </section>
+
+      {/* 排程自動跑 */}
+      <section className="mb-7">
+        <div className="flex items-center justify-between mb-2.5">
+          <h2 className="text-sm font-semibold flex items-center gap-1.5"><CalendarClock className="w-4 h-4 text-violet-500" /> 排程自動跑 <span className="text-[11px] font-normal text-black/40 dark:text-white/40">· 讓員工每天/每週自動做一件事</span></h2>
+          <button onClick={() => { setSchedOpen((v) => !v); setSErr(""); }} className="inline-flex items-center gap-1 text-[11px] rounded-full border border-violet-500/40 text-violet-600 dark:text-violet-400 px-2.5 py-1 hover:bg-violet-500/10">
+            <Plus className="w-3.5 h-3.5" /> 新增排程
+          </button>
+        </div>
+
+        {/* 新增表單 */}
+        {schedOpen && (
+          <div className="rounded-xl border border-black/10 dark:border-white/10 p-3 mb-2.5 space-y-2.5">
+            <textarea value={sGoal} onChange={(e) => setSGoal(e.target.value)} rows={2} placeholder="要自動執行的指令（例：找 3 個近期截止的免費競賽，列出截止日和來源）" className="w-full resize-none rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-violet-400" />
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <select value={sSkill} onChange={(e) => setSSkill(e.target.value)} className="rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2 py-1.5">
+                <option value="">通用分身（不指定員工）</option>
+                {employees.map((s) => <option key={s.id} value={s.id}>{s.emoji} {s.name}</option>)}
+              </select>
+              <select value={sFreq} onChange={(e) => setSFreq(e.target.value as Frequency)} className="rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2 py-1.5">
+                <option value="daily">每天</option>
+                <option value="weekly">每週</option>
+              </select>
+              {sFreq === "weekly" && (
+                <select value={sWeekday} onChange={(e) => setSWeekday(Number(e.target.value))} className="rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2 py-1.5">
+                  {["日", "一", "二", "三", "四", "五", "六"].map((w, i) => <option key={i} value={i}>週{w}</option>)}
+                </select>
+              )}
+              <select value={sHour} onChange={(e) => setSHour(Number(e.target.value))} className="rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2 py-1.5">
+                {Array.from({ length: 24 }).map((_, h) => <option key={h} value={h}>{String(h).padStart(2, "0")}:00</option>)}
+              </select>
+              <span className="text-[11px] text-black/40 dark:text-white/40">台灣時間</span>
+              <button onClick={addSchedule} disabled={sBusy} className="ml-auto text-xs rounded-lg bg-violet-600 hover:bg-violet-700 text-white px-3 py-1.5 disabled:opacity-50">{sBusy ? "新增中…" : "新增"}</button>
+            </div>
+            {sErr && <div className="text-[11px] text-rose-500">{sErr}</div>}
+            <p className="text-[11px] text-black/40 dark:text-white/40">排程只會「發起任務」；任務內若要對外（發文/報名）仍會先問過你才做。</p>
+          </div>
+        )}
+
+        {/* 排程清單 */}
+        {loading ? (
+          <div className="text-xs text-black/40 dark:text-white/40 py-4 text-center">載入中…</div>
+        ) : schedules.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-black/15 dark:border-white/15 p-5 text-center text-xs text-black/50 dark:text-white/50">
+            還沒有排程。設一個「每天早上找機會」試試？
+          </div>
+        ) : (
+          <div className="space-y-1.5">
+            {schedules.map((s) => {
+              const emp = s.skill_id ? skills.find((k) => k.id === s.skill_id) : null;
+              return (
+                <div key={s.id} className={`rounded-xl border border-black/10 dark:border-white/10 px-3 py-2.5 ${s.enabled ? "" : "opacity-55"}`}>
+                  <div className="flex items-start gap-2.5">
+                    <span className="text-lg leading-none mt-0.5">{emp?.emoji ?? "🕒"}</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-medium truncate">{s.title || describeSchedule(s.frequency, s.hour, s.weekday)}</div>
+                      <div className="text-[11px] text-black/50 dark:text-white/50 truncate">{s.goal}</div>
+                      <div className="text-[11px] text-black/40 dark:text-white/40 mt-0.5 flex flex-wrap items-center gap-x-2">
+                        <span className="text-violet-500">{describeSchedule(s.frequency, s.hour, s.weekday)}</span>
+                        {emp && <span>· {emp.name}</span>}
+                        {s.enabled ? <span>· 下次 {new Date(s.next_run_at).toLocaleString("zh-TW", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false })}</span> : <span>· 已暫停</span>}
+                        {s.run_count > 0 && <span>· 已跑 {s.run_count} 次</span>}
+                        {s.last_task_id && <Link href={`/agent?task=${s.last_task_id}` as any} className="text-violet-500 hover:underline">看上次結果</Link>}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button onClick={() => toggleSchedule(s)} title={s.enabled ? "暫停" : "啟用"} className={`p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 ${s.enabled ? "text-emerald-500" : "text-black/30 dark:text-white/30"}`}><Power className="w-4 h-4" /></button>
+                      <button onClick={() => deleteSchedule(s.id)} title="刪除" className="p-1.5 rounded-lg hover:bg-rose-500/10 text-black/30 dark:text-white/30 hover:text-rose-500"><Trash2 className="w-4 h-4" /></button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </section>
