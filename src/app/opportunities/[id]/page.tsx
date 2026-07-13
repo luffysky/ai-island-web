@@ -5,6 +5,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ExternalLink, ArrowLeft, Trophy, CalendarClock, AlertTriangle, Building2, Globe, Bot } from "lucide-react";
 import { RulesSummary } from "./RulesSummary";
 import { FitAnalysis } from "./FitAnalysis";
+import { GenerateMaterials } from "./GenerateMaterials";
 
 export const dynamic = "force-dynamic";
 
@@ -92,9 +93,10 @@ export default async function OpportunityDetail({ params }: { params: Promise<{ 
         </div>
       )}
 
-      {/* AI 工具（V3）：讀規則 + 適合度/缺件分析 */}
+      {/* AI 工具（V3）：讀規則 + 適合度/缺件分析 + 生成報名素材 */}
       <RulesSummary id={o.id} hasOwnData={!!(o.description || o.eligibility || o.prize_text)} />
       <FitAnalysis id={o.id} />
+      <GenerateMaterials id={o.id} />
 
       {/* 丟給分身島幫我準備（預填指令到下令列、你看過再送；對外動作仍待批准）*/}
       {(() => {
