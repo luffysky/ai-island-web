@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ExternalLink, ArrowLeft, Trophy, CalendarClock, AlertTriangle, Building2, Globe } from "lucide-react";
+import { RulesSummary } from "./RulesSummary";
 
 export const dynamic = "force-dynamic";
 
@@ -89,6 +90,9 @@ export default async function OpportunityDetail({ params }: { params: Promise<{ 
           <p className="text-sm text-black/70 dark:text-white/70 whitespace-pre-wrap">{o.eligibility}</p>
         </div>
       )}
+
+      {/* AI 讀規則（V3） */}
+      <RulesSummary id={o.id} hasOwnData={!!(o.description || o.eligibility || o.prize_text)} />
 
       {o.official_url && (
         <a href={o.official_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 mt-6 rounded-xl bg-violet-600 hover:bg-violet-700 text-white px-4 py-2.5 text-sm font-medium">
