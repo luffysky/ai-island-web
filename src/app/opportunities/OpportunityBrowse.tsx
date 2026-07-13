@@ -16,7 +16,7 @@ const STATUS: Record<string, { label: string; cls: string }> = {
   upcoming: { label: "即將開始", cls: "bg-sky-500/15 text-sky-600 dark:text-sky-400" },
   closed: { label: "已截止", cls: "bg-black/10 dark:bg-white/10 text-black/50 dark:text-white/50" },
 };
-const CATS = ["AI", "創業", "補助", "設計", "攝影", "文學", "影視", "動漫", "遊戲", "音樂", "黑客松", "資安", "科學", "永續", "社會創新", "廣告", "校園"];
+const CATS = ["AI", "創業", "補助", "獎學金", "實習", "設計", "攝影", "文學", "影視", "動漫", "遊戲", "音樂", "黑客松", "資安", "科學", "永續", "社會創新", "廣告", "校園"];
 
 function daysLeft(deadline?: string | null): number | null {
   if (!deadline) return null;
