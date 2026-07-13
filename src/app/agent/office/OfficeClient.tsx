@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Bot, Laptop, LaptopMinimal, ArrowRight, Store, ChevronLeft, Sparkles, CheckCircle2, Loader2, Clock, XCircle, CalendarClock, Plus, Trash2, Power, ShieldAlert, Check, X } from "lucide-react";
 import { describeSchedule, type Frequency } from "@/lib/agent/schedule";
 
-interface SkillItem { id: string; name: string; description?: string; emoji: string; category: string; is_builtin: boolean; installed: boolean; }
+interface SkillItem { id: string; name: string; description?: string; emoji: string; category: string; is_builtin: boolean; installed: boolean; usage?: { used: number; succeeded: number }; }
 interface DeviceItem { id: string; name: string; platform: string; online: boolean; last_seen_at?: string | null; }
 interface TaskItem { id: string; goal: string; status: string; step_count: number; created_at: string; }
 interface Schedule { id: string; skill_id: string | null; title: string; goal: string; frequency: Frequency; hour: number; weekday: number | null; enabled: boolean; last_run_at?: string | null; last_task_id?: string | null; next_run_at: string; run_count: number; }
@@ -304,7 +304,7 @@ export function OfficeClient() {
                   </div>
                 </div>
                 <div className="mt-2.5 flex items-center justify-between">
-                  <span className="text-[11px] text-black/40 dark:text-white/40 flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-black/25 dark:bg-white/25 inline-block" /> 閒置中</span>
+                  <span className="text-[11px] text-black/40 dark:text-white/40 flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-black/25 dark:bg-white/25 inline-block" /> {s.usage && s.usage.used > 0 ? `用過 ${s.usage.used} 次` : "閒置中"}</span>
                   <span className="text-[11px] text-violet-500 inline-flex items-center gap-0.5">派工 <ArrowRight className="w-3 h-3" /></span>
                 </div>
               </Link>

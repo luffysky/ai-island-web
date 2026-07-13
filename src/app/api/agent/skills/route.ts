@@ -20,8 +20,25 @@ export async function GET() {
     .order("is_builtin", { ascending: false }).order("category", { ascending: true }).order("created_at", { ascending: true });
   const { data: installs } = await admin.from("agent_skill_installs").select("skill_id").eq("user_id", user.id);
   const installed = new Set((installs ?? []).map((i) => i.skill_id));
+
+  // 技能成效統計：這位使用者用每個技能跑過幾次任務、成功幾次
+  const { data: usageRows } = await admin.from("agent_tasks")
+    .select("skill_id, status").eq("user_id", user.id).not("skill_id", "is", null).limit(2000);
+  const usage = new Map<string, { used: number; succeeded: number }>();
+  for (const r of usageRows ?? []) {
+    if (!r.skill_id) continue;
+    const u = usage.get(r.skill_id) ?? { used: 0, succeeded: 0 };
+    u.used += 1;
+    if (r.status === "succeeded") u.succeeded += 1;
+    usage.set(r.skill_id, u);
+  }
+
   // 自建技能永遠算已安裝；內建看有沒有裝
-  const skills = (data ?? []).map((s) => ({ ...s, installed: s.is_builtin ? installed.has(s.id) : true }));
+  const skills = (data ?? []).map((s) => ({
+    ...s,
+    installed: s.is_builtin ? installed.has(s.id) : true,
+    usage: usage.get(s.id) ?? { used: 0, succeeded: 0 },
+  }));
   return NextResponse.json({ skills });
 }
 

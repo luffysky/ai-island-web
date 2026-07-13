@@ -11,7 +11,7 @@ interface StepView { idx: number; kind: "thought" | "step"; thought?: string; to
 interface ApprovalReq { id: string; toolName: string; risk: Risk; summary: Record<string, string>; }
 interface TaskListItem { id: string; goal: string; status: string; step_count: number; created_at: string; }
 interface DeviceItem { id: string; name: string; platform: string; online: boolean; }
-interface SkillItem { id: string; name: string; description?: string; emoji: string; category: string; goal_template: string; allowed_tools: string[]; max_steps: number; is_builtin: boolean; installed: boolean; }
+interface SkillItem { id: string; name: string; description?: string; emoji: string; category: string; goal_template: string; allowed_tools: string[]; max_steps: number; is_builtin: boolean; installed: boolean; usage?: { used: number; succeeded: number }; }
 
 const CAT_LABEL: Record<string, string> = { employee: "🏢 你的 AI 員工", research: "網頁 · 研究", write: "寫作 · 建議", code: "程式碼", dev: "開發者本機", learn: "站內 · 學習", other: "其他" };
 
@@ -837,6 +837,9 @@ function SkillStore({ skills, tools, onToggle, onClose, onDeleted }: {
                         <div className="min-w-0 flex-1">
                           <div className="text-sm font-medium flex items-center gap-1.5">{s.name}{!s.is_builtin && <span className="text-[10px] text-violet-500">我的</span>}</div>
                           <div className="text-xs text-black/55 dark:text-white/55 line-clamp-2">{s.description}</div>
+                          {s.usage && s.usage.used > 0 && (
+                            <div className="text-[10px] text-black/40 dark:text-white/40 mt-0.5">用過 {s.usage.used} 次{s.usage.used > 0 && ` · 成功 ${Math.round((s.usage.succeeded / s.usage.used) * 100)}%`}</div>
+                          )}
                         </div>
                       </div>
                       <div className="flex flex-wrap items-center gap-1 mt-2 text-[10px]">

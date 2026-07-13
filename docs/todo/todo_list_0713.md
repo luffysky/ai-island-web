@@ -87,7 +87,7 @@
 - ⬜ **MCP Marketplace**（第三方 MCP 工具市場）+ **技能市集分享**（自建/合成技能分享給島民）。
 - ⬜ **技能 YAML 完整規格**（Prompt+Tools+Permission+Workflow+Success Criteria）。
 - ⬜ **內建技能實作補齊**：GitHub 管家/檔案整理師/網站巡檢員/課程整理師/學習陪練員（名冊有、workflow 未齊）。
-- ⬜ **技能成效統計**（被用幾次、成功率、熱門排序）。
+- 🚧 **技能成效統計**（~~被用幾次、成功率：`/api/agent/skills` GET 附 `usage{used,succeeded}`（agent_tasks 依 skill_id 聚合），技能商店卡 + 辦公室員工卡顯示「用過 N 次·成功 X%」（0713）~~；熱門排序未做）。
 - ⬜ **「用 Agent → 學會建 Agent」教學閉環**。
 
 ## 10. 🆕 AI 數位員工辦公室（autonomous office，大工程）
