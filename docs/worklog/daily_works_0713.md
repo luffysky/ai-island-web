@@ -89,7 +89,22 @@
 - 共 ~15 commit、全部 tsc 0 / next build 0 / vitest **133 綠**（新增 schedule 6 + opportunity-fit 5）；migration 3 支已跑 prod（agent_schedules / opportunity_profiles）。
 - **全程守紅線**：對外動作 0，AI 生成/排程/雷達都只到「起草/建議/發起任務」，真正對外仍待人工批准。
 
+## 今日壓軸（0713，林董在線）— 三大項一起收
+25. **P0 AI 記帳**：核對程式碼發現**本來就做完了**（`ai/chat:528` 有 `inc_model_usage`；`pet/tick:138`、`admin/quiz/generate:109` 有 `logAiUsage`）→ 文件先前落後，已更正劃線。**沒重加（會重複計）。**
+26. **L2 伺服器瀏覽器＝已開**：`docker.yml` build-args 加 `INSTALL_SERVER_BROWSER=1`（image 裝 Chromium）。push 觸發 GHCR 重建。**待林董**：Zeabur 設 `ENABLE_SERVER_BROWSER=1` + Restart、盯 build/RAM。build 失敗會保留舊 image、站不壞。
+27. **機會島 V4 雷達（安全版基礎完成）**：
+    - 表：`opportunity_sources`（curated 來源）+ `opportunity_candidates`（待審佇列），RLS 後台專用，migration 已跑。
+    - 後台 `/admin/opportunities/sources`：加/開關/刪來源 + 待審佇列核准/拒絕（nav 加「📡 雷達來源/待審」）。
+    - API：sources CRUD + candidates review（核准→insert opportunities 標 unverified）。
+    - cron `/api/cron/opportunity-radar`：抓 enabled RSS/Atom→pending、同 URL 去重、**不自動上線**。
+    - `src/lib/rss-parse.ts` 無相依 RSS/Atom 解析 + **4 單元測試**（vitest 137）。
+    - **紅線**：雷達只搬來源原文、不生成不猜；要人工核准才上線 → 防 AI 亂放假資料。
+
+### 三大項驗證
+- P0：讀碼確認三出口都已記帳、無重複風險。
+- L2：Dockerfile 選配 block + docker.yml build-arg 對齊；tool 端 `ENABLE_SERVER_BROWSER` gate + graceful 降級 + `--no-sandbox/--disable-dev-shm-usage`。
+- V4：tsc 0 / build 0 / vitest 137；migration 已跑；全走 `requireAdmin` gate + RLS 後台專用。
+
 ## 待辦
-👉 **全部見 `docs/todo/todo_list_0713.md`**（含最末 §五「需要林董自己操作」清單）。
-剩下的大項多屬**不適合我無人值守做**的：L2 Docker Chromium（動部署、要盯 Zeabur log）、全站 AI 記帳 P0（要逐一驗證計費出口）、機會島 V4 雷達（要真實來源 + 人工覆核）。這幾項建議林董在線時一起做。
+👉 **全部見 `docs/todo/todo_list_0713.md`**（含最末 §五「需要林董自己操作」清單，現已含：cron #7/#8/#9、Zeabur `ENABLE_SERVER_BROWSER=1`、雷達加真實來源+審佇列）。
 ⚠️ **部署後手動**：cron-job.org 加 job #7（agent-schedules 每 15 分）+ job #8（opportunity-deadlines 每天 09:00）。詳見 `docs/todo/todo_list_0713.md` §五 與 `docs/setup/cron-setup.md`。
