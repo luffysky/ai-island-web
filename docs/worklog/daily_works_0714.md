@@ -32,6 +32,15 @@
 - ✅ **Agent 任務 cloudflare 401 失敗修**：`resolve-usage-ai.ts` 的 `isQuotaOrTransient` 補 **401/authentication/invalid key** → 某免費 provider(如 Cloudflare Workers AI)金鑰失效時**自動換下一家**、不再一個壞金鑰弄死整個任務。（林董另需去 `/admin/ai/models` 修/停用壞掉的 Cloudflare 金鑰）
 - 🚨 收尾檢查：本批多次 `tsc --noEmit`✓ / `vitest` 137✓ / `next build` exit0✓；純前端無 migration；未動 .env.local。
 
+## 🟢 分身島×機會島「快速 5 件」一次清（0714 深夜）
+1. ~~**適合度規則引擎接前台**：`opportunity-radar` cron 尾段用 `scoreOpportunity` 重算所有 open/upcoming → 寫 `ai_island_fit_score`（每日跑保新鮮）。下次 cron 觸發就填值。~~
+2. ~~**每日主動推播 3 件事**：新 `/api/cron/daily-brief`（CRON_SECRET 保護、maxDuration 120）→ 掃綁 LINE+未關偏好者 → `buildDailyBrief` → `notifyUserLine(category:agent)`。**需林董加 cron job #10（每天早上一次）**。~~
+3. ~~**從歷史學習**：確認 `launch.ts` 已用 pgvector RAG 撈相似**成功**任務（`match_agent_tasks` status=succeeded）當 priorContext = 已完成。~~
+4. ~~**AI 能源中心 UI**：`/me/energy` 頁 + `EnergyCenter` 元件 + `/api/me/energy`（今日免費額度進度條/Z 幣/今日+本月分身任務/成功率/最常用技能）；MeSidebar 加 🔋 入口。全 read-only、用既有表（ai_daily_quota/agent_tasks/profiles）。~~
+5. ~~**#209 Agent 記憶收尾**：`priorContext=[memoryBlock,turnsBlock,ragBlock]` 全接進 planner + orchestrator 回合寫記憶 → 記憶功能具備、關閉。~~
+- **DB 欄位核對**（`node` 實跑）：`ai_daily_quota`/`agent_tasks(skill_id)`/`profiles(line_*, z_coin)`/`opportunities(ai_island_fit_score)` 全部存在 ✅。
+- 收尾：`tsc`✓ `vitest 137`✓ `next build`✓；新路由 `/me/energy`、`/api/me/energy`、`/api/cron/daily-brief` 都 build 出來。無 migration。
+
 ## 🚨 收尾檢查清單（鐵規則）
 1. **API / DB / 資料表**：辭典 import 冪等 upsert（DB count 1645 已驗）；機會島更新用 service role update 已回傳確認；本次首頁純前端、無 migration。
 2. **UI 接對**：Hero 模式連結指向既有路由（/chapters /quest /agent /opportunities /creator-island /island），沿用既有 i18n key。

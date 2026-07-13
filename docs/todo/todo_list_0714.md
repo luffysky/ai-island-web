@@ -28,8 +28,8 @@
 
 ## 一、分身島（AI 員工 / 行動代理）
 - ⬜ **L2 程式沙盒**：跑 Agent 產的程式碼（isolated-vm/容器、限時間/記憶體/網路）。
-- ⬜ **從歷史學習**：成功的計畫/工具序列存起來、相似任務直接套（pgvector 記憶已有基礎）。
-- ⬜ **每日主動推播**「今天值得做的 3 件事」（規則引擎已做，opt-in 免打擾推播待接）。
+- ~~**從歷史學習**：`launch.ts` 已用 pgvector RAG — 開跑前把目標轉向量、`match_agent_tasks` 撈**語意相似的過去成功任務**(status=succeeded)當 priorContext。（0714 確認完成）~~
+- ~~**每日主動推播**「今天值得做的 3 件事」：`/api/cron/daily-brief` 掃有綁 LINE+未關偏好的人→`buildDailyBrief`→推 LINE(category=agent，可在通知偏好關)。（0714，**需林董加 cron job #10**）~~
 - ⬜ **桌面助手升級**：Electron 自動更新、更多本機 Skills、Windows UIA、macOS、Tauri 正式版、端到端 Demo。
 - ⬜ **TG bot 入口**（BotFather token、inline keyboard）。
 - ⬜ **Discord bot**（slash commands `/agent` `/opportunity`、DM、頻道貼每日機會）。
@@ -38,15 +38,15 @@
 - ⬜ **外部工具**：Gmail/Calendar/GitHub/Notion/Drive 當 Agent 工具（連結中心已做基礎，待各平台 OAuth 一鍵授權）。
 - ⬜ **Credential Broker**（本機管密碼、Agent 只知有無）＋ L4 憑證/銀行/系統操作流程。
 - ⬜ **省 token**：Rule-filter 完整層、Agent 任務 Embedding RAG、每 Agent 每日 Budget 上限、成本/ROI Dashboard、省錢模式三檔。
-- ⬜ **AI 能源中心 UI**（剩餘額度/今日消耗/最耗能員工/本月成本）。
-- 🐛 #209 Agent 記憶：已由 thread+memory 解，待實測確認關閉。
+- ~~**AI 能源中心 UI**：`/me/energy`（今日免費額度+進度條/Z 幣/今日+本月分身任務/成功率/最常用技能）+ `/api/me/energy`；MeSidebar 加入口。（0714）~~（本月「成本」＝系統級 model_usage、非 per-user，待更細的用量記帳才做）
+- ~~🐛 #209 Agent 記憶：`launch.ts` `priorContext = [memoryBlock, turnsBlock, ragBlock]`（長期記憶 agent_memory + 對話串前文 + 相似成功任務 RAG）全接進 planner；orchestrator 回合收尾寫記憶 → **記憶功能已具備、關閉**。（0714）~~
 
 ---
 
 ## 二、機會島（Opportunity Island）
 - ⬜ **AI 作品分析**（網站/GitHub/PDF/PitchDeck/商業計畫/履歷 → 能力圖譜）。
 - ⬜ **PDF 規則解析** + 版本比較（詳情頁長 PDF 摘要）。
-- ⬜ **適合度規則引擎接前台**（`ai_island_fit_score` 欄位已建、算分未接）。
+- ~~**適合度規則引擎接前台**：`opportunity-radar` cron 每日用 `scoreOpportunity` 重算所有 open/upcoming 機會、寫進 `ai_island_fit_score`（規則引擎、零 AI 成本、含截止時程新鮮度）。（0714，下次 cron 跑就填值）~~
 - ⬜ **雷達 V4 擴充**：API/sitemap/爬蟲來源、三層 hash 變動偵測、每欄原文證據+信心分、cron 分頻、Sentry 監控。
 - ⬜ **AI 排程接 Calendar**、練習階梯（電梯簡報→10 分）、對手/缺點/歷屆評審分析。
 - ⬜ **V5 十層機會全上線**（補助/獎學金/VC/徵件/標案/工作/實習/海外/證照）＋ AI 配對組隊 ＋ AI 代報名（授權+守條款）。
@@ -55,6 +55,7 @@
 ---
 
 ## 三、需要林董本人操作 🔴
+- 🔴 **cron-job.org 加 job #10「daily-brief」**（每天早上一次，如 08:30）：`GET https://ai-island-web.snowrealm.pet/api/cron/daily-brief?secret=<CRON_SECRET>` → 每天推「3 件事」到有綁 LINE 的人。（0714 新增）
 - 🔴 **Zeabur 設 `ENABLE_SERVER_BROWSER=1`**：L2 伺服器瀏覽器啟用（image 已裝 Chromium，沒這 env=不啟用）；設完 Restart，盯 RAM。
 - 🔴 **機會雷達**：`/admin/opportunities/sources` 定期審待審佇列（核准才上線）＋ 加你信任的官方 RSS/Atom。
 - 🔴 **機會資料覆核**：unverified → 人工核實截止/獎金改 verified（今天已示範核對臺灣數創大賞）。

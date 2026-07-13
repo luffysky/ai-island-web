@@ -101,6 +101,19 @@
 | Schedule | **每天 1–2 次**（如台灣 07:00 → UTC `0 23 * * *`） |
 | 說明 | 從後台「雷達來源」加的 RSS/Atom 抓候選機會進**待審佇列**（`status=pending`、同 URL 去重）。**不自動上線**、要在後台 `/admin/opportunities/sources` 人工核准才變成真機會。沒加來源就是 noop。 |
 | Timeout | 120 秒 |
+| 附帶 | 尾段順便重算所有 open/upcoming 機會的 `ai_island_fit_score`（AI 島適合度、規則引擎）。 |
+
+---
+
+### 10. daily-brief（每日主動推播「今天 3 件事」到 LINE）
+
+| | |
+|---|---|
+| URL | `<SITE>/api/cron/daily-brief?secret=<SECRET>` |
+| Method | GET |
+| Schedule | **每天早上一次**（如台灣 08:30 → UTC `30 0 * * *`） |
+| 說明 | 掃「有綁 LINE + 未關通知」的使用者 → 規則式產生「今天值得做的 3 件事」(收藏機會近截止/推薦新機會/弱項章節) → 推到 LINE（分類 `agent`，使用者可在通知偏好關）。零 AI 成本、純推播。 |
+| Timeout | 120 秒 |
 
 ---
 

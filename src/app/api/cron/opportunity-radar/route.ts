@@ -74,5 +74,21 @@ export async function GET(req: NextRequest) {
     perSource.push({ name: s.name, found, new: added, status });
   }
 
-  return NextResponse.json({ ok: true, sources: sources.length, inserted, perSource });
+  // 順帶：重算所有 open/upcoming 機會的「AI 島適合度分數」→ 寫進 ai_island_fit_score
+  //（規則引擎、零 AI 成本；供後台雷達排序、前台精選用。含截止時程，每日跑保持新鮮。）
+  let scored = 0;
+  try {
+    const { scoreOpportunity } = await import("@/lib/opportunity-fit");
+    const { data: opps } = await admin.from("opportunities")
+      .select("id, name, category, tags, prize_amount, is_free, is_online, requires_pitch, requires_demo, requires_business_plan, requires_student, application_deadline, status")
+      .in("status", ["open", "upcoming"]);
+    const now = Date.now();
+    for (const o of opps ?? []) {
+      const { score } = scoreOpportunity(o as any, now);
+      await admin.from("opportunities").update({ ai_island_fit_score: score }).eq("id", (o as any).id);
+      scored++;
+    }
+  } catch { /* 分數是加分功能、失敗不影響雷達主流程 */ }
+
+  return NextResponse.json({ ok: true, sources: sources.length, inserted, perSource, scored });
 }
