@@ -226,7 +226,7 @@
 - ~~opportunities（含成本欄位）、opportunity_routes。~~
 - 🚧 資料表：~~opportunity_sources（來源）、opportunity_candidates（待審佇列）已建（0713）~~；opportunity_changes（欄位級變動 hash）、user_portfolio（作品/能力圖譜）、opportunity_subscriptions、submission_tasks 待建。
 - 🚧 `ai_island_fit_score` 欄位已建；**適合度規則引擎**（+AI20/+教育20/-限學生40…換算 85=必投）未實作。
-- ⬜ 更多真實競賽資料（人工核實改 verified；目前 8 筆全 unverified）。
+- 🚧 更多真實競賽資料：~~0713 手動查證官網加 25 筆真實機會、跨 14 類（AI/創業/補助/設計/攝影/文學/影視/音樂/動漫/黑客松/永續/社會創新/廣告/雲端），機會島篩選 chips 同步擴充~~；全部仍 unverified，待人工逐筆核實截止/獎金改 verified。
 
 ## 8. 後台複刻（AI 島專屬機會雷達）🚧
 - ~~**`/admin/opportunities`**：列「AI 島最該投的前 30 個」（規則引擎排序）+ 倒數 + 適合原因 chips + 一鍵「丟給分身島幫我準備」+ 官網連結。已濾掉已截止/限學生。（0713）~~
