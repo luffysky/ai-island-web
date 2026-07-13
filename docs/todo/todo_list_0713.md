@@ -135,6 +135,9 @@
 ## 13. 🆕 通路整合 / 深度整合（LINE / Telegram / Discord / 社群）
 > 林董要：分身島 Agent 聊天能接各大軟體、機會島加自動排程 + LINE 通知。分兩向：**Inbound**（從各平台對 Agent 下令/回覆）＋**Outbound**（Agent 起草內容發到社群）。**紅線不變**：對外發布/報名一律「AI 起草 → 你一鍵批准」。
 
+### 14-0 🆕 使用者外部帳號連結中心（0713 基礎完成）
+- 🚧 **`/settings/connections` 連結帳號中心**：~~`user_connected_accounts` 表（**一個平台可綁多個帳號**，如多個 IG；token AES-256-GCM 加密）+ `/api/me/connections` GET/POST/DELETE + 設定頁入口。支援 11 平台（TG/Discord/YT/IG/Threads/抖音/FB/X/GitHub/Gmail/Google 日曆）。目前為**手動連結**（記錄帳號 + 選填 token）。（0713）~~；待補：各平台 **OAuth 一鍵授權**（需林董先到各平台開發者後台註冊 app、設 client id/secret env）→ 才能真的自動讀寫。
+
 ### 14-1 Inbound：把聊天平台當 Agent 入口
 - 🚧 **LINE**：~~LINE Bot 入口做好：`/分身 <指令>` → launchAgentTask 背景跑 → 完成把結果推回 LINE（thread 標題「📱 LINE」偵測）；`找機會 <關鍵字>` 搜機會島；`我的機會/航線` 看收藏+截止倒數；/help 已列（0713，`line-webhook-user`）~~；待補：Rich Menu 快捷鈕、LIFF 內嵌頁、需確認動作在 LINE 按鈕批准（見 14-2）。
 - ⬜ **Telegram**：Telegram Bot 當入口，群組 `@bot` 下令，inline keyboard 互動。

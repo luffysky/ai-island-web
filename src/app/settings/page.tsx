@@ -60,6 +60,13 @@ export default async function SettingsPage() {
         initialNotifyEnabled={profile.line_notify_enabled !== false}
       />
       <NotificationPrefs />
+      <Link href={"/settings/connections" as any} className="surface p-4 flex items-center justify-between hover:border-accent/50 transition group">
+        <div>
+          <div className="font-bold flex items-center gap-2">🔗 連結帳號</div>
+          <div className="text-xs text-fg-muted mt-0.5">連結你的社群/工具帳號（IG/YT/Threads/抖音/Discord/Telegram/GitHub/Google…），一個平台可綁多個。</div>
+        </div>
+        <span className="text-accent group-hover:translate-x-0.5 transition">→</span>
+      </Link>
       <DiscordBindSection initialBind={dcBind as any} />
       <PreciseLocationToggle />
       <GdprSection initialDeletedAt={profile.deleted_at ?? null} />
