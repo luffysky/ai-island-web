@@ -37,6 +37,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Runner 預裝的 android/dotnet/ghc/CodeQL 等佔 ~15GB+，本 job 用不到。
+      # image 內裝 Chromium(+500MB) 後容易「no space left on device」→ 先清出空間。
+      - name: Free disk space (runner)
+        run: |
+          echo "== before =="; df -h /
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc \
+            /opt/hostedtoolcache/CodeQL /usr/local/share/boost /usr/local/share/powershell \
+            /usr/lib/jvm 2>/dev/null || true
+          sudo docker image prune -af 2>/dev/null || true
+          echo "== after =="; df -h /
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
