@@ -633,19 +633,7 @@ export function AgentClient() {
           </div>
 
           {/* 分身記憶（Phase C）—— 跨對話記得你，透明可刪 */}
-          {memory.length > 0 && (
-            <div className="rounded-2xl border border-black/10 dark:border-white/10 p-3.5">
-              <div className="flex items-center gap-1.5 text-sm font-semibold mb-2"><Bot className="w-4 h-4 text-violet-500" /> 分身記得你</div>
-              <ul className="space-y-1.5">
-                {memory.slice(0, 12).map((m) => (
-                  <li key={m.id} className="flex items-start gap-1.5 text-xs group">
-                    <span className="min-w-0"><span className="text-black/50 dark:text-white/50">{m.key}：</span><span className="text-black/75 dark:text-white/75 break-words">{m.value}</span></span>
-                    <button onClick={() => forgetMemory(m.id)} title="忘記這條" className="ml-auto shrink-0 opacity-60 group-hover:opacity-100 text-black/30 hover:text-rose-500 dark:text-white/30"><X className="w-3 h-3" /></button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <MemoryPanel memory={memory} onChange={loadMemory} />
 
           {/* 能力 */}
           <div className="rounded-2xl border border-black/10 dark:border-white/10 p-3.5">
@@ -828,6 +816,66 @@ export function AgentClient() {
         <SkillCreator tools={tools} initial={skillDraft} editId={skillEditId} onClose={() => { setSkillModal(false); setSkillDraft(null); setSkillEditId(null); }} onCreated={(id) => { loadSkills(); setSkillId(id); setSkillModal(false); setSkillDraft(null); setSkillEditId(null); }} />
       )}
     </main>
+  );
+}
+
+// 分身記得你 —— 每條可編輯、可刪、可自己新增（透明可控）
+function MemoryPanel({ memory, onChange }: { memory: { id: string; kind: string; key: string; value: string }[]; onChange: () => void }) {
+  const [editId, setEditId] = useState<string | null>(null);
+  const [eKey, setEKey] = useState(""); const [eVal, setEVal] = useState("");
+  const [aKey, setAKey] = useState(""); const [aVal, setAVal] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const startEdit = (m: { id: string; key: string; value: string }) => { setEditId(m.id); setEKey(m.key); setEVal(m.value); };
+  const saveEdit = async () => {
+    if (!eVal.trim()) return; setBusy(true);
+    await fetch(`/api/agent/memory?id=${editId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key: eKey, value: eVal }) }).catch(() => {});
+    setEditId(null); setBusy(false); onChange();
+  };
+  const del = async (id: string) => { await fetch(`/api/agent/memory?id=${id}`, { method: "DELETE" }).catch(() => {}); onChange(); };
+  const add = async () => {
+    if (!aVal.trim() || busy) return; setBusy(true);
+    await fetch("/api/agent/memory", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key: aKey || "備註", value: aVal }) }).catch(() => {});
+    setAKey(""); setAVal(""); setBusy(false); onChange();
+  };
+
+  const inputCls = "rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2 py-1 text-[11px] outline-none focus:border-violet-400";
+  return (
+    <div className="rounded-2xl border border-black/10 dark:border-white/10 p-3.5">
+      <div className="flex items-center gap-1.5 text-sm font-semibold mb-2"><Bot className="w-4 h-4 text-violet-500" /> 分身記得你 <span className="text-[10px] font-normal text-black/40 dark:text-white/40">· 可編輯/自己新增</span></div>
+      <ul className="space-y-1.5">
+        {memory.map((m) => (
+          <li key={m.id} className="text-xs group">
+            {editId === m.id ? (
+              <div className="flex flex-col gap-1 rounded-lg border border-violet-500/30 p-1.5">
+                <input value={eKey} onChange={(e) => setEKey(e.target.value)} placeholder="標籤（如 姓名）" className={inputCls} />
+                <textarea value={eVal} onChange={(e) => setEVal(e.target.value)} rows={2} className={`${inputCls} resize-none text-xs`} />
+                <div className="flex gap-1.5">
+                  <button onClick={saveEdit} disabled={busy} className="text-[11px] rounded bg-violet-600 hover:bg-violet-700 text-white px-2.5 py-0.5 disabled:opacity-50">存</button>
+                  <button onClick={() => setEditId(null)} className="text-[11px] text-black/50 dark:text-white/50 px-2 py-0.5">取消</button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-start gap-1.5">
+                <span className="min-w-0"><span className="text-black/50 dark:text-white/50">{m.key}：</span><span className="text-black/75 dark:text-white/75 break-words">{m.value}</span></span>
+                <div className="ml-auto shrink-0 flex gap-1 opacity-60 group-hover:opacity-100">
+                  <button onClick={() => startEdit(m)} title="編輯" className="text-black/30 dark:text-white/30 hover:text-violet-500"><Pencil className="w-3 h-3" /></button>
+                  <button onClick={() => del(m.id)} title="忘記這條" className="text-black/30 dark:text-white/30 hover:text-rose-500"><X className="w-3 h-3" /></button>
+                </div>
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+      {/* 自己新增一條 */}
+      <div className="mt-2.5 pt-2.5 border-t border-black/5 dark:border-white/10 flex flex-col gap-1.5">
+        <input value={aKey} onChange={(e) => setAKey(e.target.value)} placeholder="標籤（選填，如 偏好/目標）" className={inputCls} />
+        <div className="flex gap-1.5">
+          <input value={aVal} onChange={(e) => setAVal(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") add(); }} placeholder="要分身記住的事…" className={`${inputCls} flex-1 text-xs`} />
+          <button onClick={add} disabled={busy || !aVal.trim()} className="shrink-0 text-[11px] rounded-lg bg-violet-600 hover:bg-violet-700 text-white px-2.5 disabled:opacity-40">＋ 記住</button>
+        </div>
+      </div>
+    </div>
   );
 }
 
