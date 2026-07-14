@@ -78,3 +78,10 @@
 - ✅ **討論區/部落格留言 @提及標記（215）**：新 `MentionTextarea`（純 textarea 版 @自動完成：打 @字→`/api/mentions` 搜人→↑↓/Enter 選）；`resolveMentions` 送出前把 @顯示名 換成 token `[[user:uuid|label]]`（email 等不誤傷、本機測 4 case 過）；顯示端渲染成可點 @連結（跳用戶頁）；forum + blog 兩處 POST 都解析 token→`pushUserNotif` 通知被 tag 的人（排除自己/已通知串主，上限10）。commit `0b8aa4e7` + blog 這批。
 - 🚨 收尾：`tsc`✓ `vitest 137`✓ `next build` exit0✓；`/api/mentions` 既有、通知走既有 `notifications` 表(kind=comment、free TEXT 無 CHECK)、**無 migration**；未動 .env.local。
 - 🆕 記錄兩個新想法到 todo：首頁沉浸式滾動(scroll-world 參考)、部落格留言 @提及（本批已一起做）。
+
+## 📸 社群圖片：一次 20 張 + IG 風輪播（0715）
+- ✅ **創作者社群留言 @提及**：SocialFeed 留言框接 MentionTextarea、renderBody 渲染 @token、POST 通知被 tag 的人。（commit 5a5f46a9）
+- ✅ **社群發文一次上傳最多 20 張**：圖片 input 加 `multiple`、`attachImages` 並行上傳並 cap 20、縮圖可移除、顯示 N/20；`createPost` 也 `slice(0,20)` 保底。（其他上傳點多為單張＝頭像/背景/限動/聊天附件，20 張不適用。AI 導師/聊天的 5 張是**視覺模型上限**、刻意不動。）
+- ✅ **IG 風圖片輪播 `ImageCarousel`**：手機左右滑(scroll-snap snap-center)、桌面 hover 箭頭、右上 N/N 計數、底部圓點；單張直接顯示。社群 feed + 單篇貼文頁都換上。用 `no-scrollbar`+inline overflowX 避開全站 overflow scrollbar 樣式。
+- 🚨 收尾：`tsc`✓ `next build` exit0✓；`ci_posts.images` 是 jsonb 陣列、無 migration；未動 .env.local。commit 867c267b。
+- ⏸ **首頁沉浸式滾動（scroll-world）**：已研究其技法＝滾動洗刷「預渲染影片」的鏡頭穿越（需付費 AI 生影片素材，我們沒有）。可行替代＝用我們現有圖層做 scroll-scrubbed transform 穿越（sticky pin + useScroll 驅動景深/縮放/淡入）。**林董中途插了社群圖片需求、這項先排回佇列**、下次接著做。
