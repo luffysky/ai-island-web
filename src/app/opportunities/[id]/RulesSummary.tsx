@@ -3,13 +3,14 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Sparkles, Loader2, ClipboardPaste, ChevronDown, ChevronUp } from "lucide-react";
+import { Sparkles, Loader2, ClipboardPaste, ChevronDown, ChevronUp, Link2 } from "lucide-react";
 
-// AI 讀規則：把落落長的規則整理成結構化重點。可直接讀本筆機會資料、或貼上官網規則全文。
+// AI 讀規則：把落落長的規則整理成結構化重點。可讀本筆資料、貼規則全文、或貼簡章網址/PDF 連結自動抓取解析。
 export function RulesSummary({ id, hasOwnData }: { id: string; hasOwnData: boolean }) {
   const [open, setOpen] = useState(false);
   const [showPaste, setShowPaste] = useState(!hasOwnData);
   const [text, setText] = useState("");
+  const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState("");
   const [err, setErr] = useState("");
@@ -20,7 +21,7 @@ export function RulesSummary({ id, hasOwnData }: { id: string; hasOwnData: boole
     try {
       const r = await fetch(`/api/opportunities/${id}/rules-summary`, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: text.trim() || undefined }),
+        body: JSON.stringify({ text: text.trim() || undefined, url: url.trim() || undefined }),
       });
       const d = await r.json();
       if (r.status === 401) { window.location.href = `/login?next=/opportunities/${id}`; return; }
@@ -39,8 +40,15 @@ export function RulesSummary({ id, hasOwnData }: { id: string; hasOwnData: boole
       {open && (
         <div className="mt-3">
           <p className="text-xs text-black/55 dark:text-white/55 mb-2">
-            {hasOwnData ? "直接整理這頁的資料；" : ""}規則很長的話，把官網規則全文貼進來，AI 幫你抓出資格／文件／日期／獎金／評分重點與該注意的坑。
+            {hasOwnData ? "直接整理這頁的資料；" : ""}或貼<b>簡章網址／PDF 連結</b>讓 AI 自動抓取解析，抓出資格／文件／日期／獎金／評分重點與該注意的坑。
           </p>
+
+          {/* 簡章網址 / PDF 連結 → 自動抓取解析 */}
+          <div className="flex items-center gap-1.5 mb-2">
+            <Link2 className="w-3.5 h-3.5 text-black/40 dark:text-white/40 shrink-0" />
+            <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="貼簡章／規則的網址或 PDF 連結（選填、自動解析）"
+              className="flex-1 bg-white/60 dark:bg-white/5 border border-black/10 dark:border-white/15 rounded-xl px-2.5 py-1.5 text-sm outline-none focus:border-violet-500" />
+          </div>
 
           {!showPaste && (
             <button onClick={() => setShowPaste(true)} className="inline-flex items-center gap-1 text-xs text-violet-600 dark:text-violet-400 hover:underline mb-2">

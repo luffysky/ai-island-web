@@ -68,7 +68,7 @@
 
 ## 二、機會島（Opportunity Island）
 - ⬜ **AI 作品分析**（網站/GitHub/PDF/PitchDeck/商業計畫/履歷 → 能力圖譜）。
-- ⬜ **PDF 規則解析** + 版本比較（詳情頁長 PDF 摘要）。
+- 🚧 **PDF 規則解析** + 版本比較（詳情頁長 PDF 摘要）：~~PDF 解析已做——`rules-summary` route 加 `url` 參數，簡章網址/PDF 連結 → 伺服器抓取（PDF 用 `unpdf` 解析、HTML 去標籤）→ 併進既有 AI 規則整理；RulesSummary UI 加網址欄。unpdf 本機實測抽字 OK。（0715）~~ ⬜ 版本比較（存歷次規則版本、diff 變動）待做。
 - ~~**適合度規則引擎接前台**：`opportunity-radar` cron 每日用 `scoreOpportunity` 重算所有 open/upcoming 機會、寫進 `ai_island_fit_score`（規則引擎、零 AI 成本、含截止時程新鮮度）。（0714，下次 cron 跑就填值）~~
 - ⬜ **雷達 V4 擴充**：API/sitemap/爬蟲來源、三層 hash 變動偵測、每欄原文證據+信心分、cron 分頻、Sentry 監控。
 - ⬜ **AI 排程接 Calendar**、練習階梯（電梯簡報→10 分）、對手/缺點/歷屆評審分析。
