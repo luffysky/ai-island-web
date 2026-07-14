@@ -652,6 +652,11 @@ export function AgentClient() {
                       <span className="font-mono text-[11px]">{t.name}</span>
                       <span className={`ml-auto shrink-0 px-1.5 py-0.5 rounded text-[10px] ${b.cls}`}>{b.label}</span>
                     </div>
+                    {t.description && (
+                      <div className="text-[10px] text-black/50 dark:text-white/50 pl-5 mt-0.5 leading-snug">
+                        {t.description.replace(/\*\*/g, "").replace(/\s+/g, " ").split(/[。\n]/)[0].slice(0, 60)}
+                      </div>
+                    )}
                     {t.needsDevice && <div className="text-[10px] text-amber-600/80 dark:text-amber-400/70 pl-5 mt-0.5">需桌面助手（Phase 1b）</div>}
                   </li>
                 );
