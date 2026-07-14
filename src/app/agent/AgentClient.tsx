@@ -424,9 +424,24 @@ export function AgentClient() {
             )}
           </div>
 
+          {/* 辦公室 / 員工 —— 拉出來放顯眼、別埋在技能列裡（不然找不到）*/}
+          {!busy && (
+            <div className="flex flex-wrap items-center gap-2 mt-3">
+              <a href="/agent/office" className="inline-flex items-center gap-1.5 text-xs font-semibold rounded-full px-3.5 py-1.5 bg-violet-600 text-white hover:bg-violet-700 transition">
+                🏢 我的辦公室
+              </a>
+              <button onClick={() => setStoreOpen(true)} className="inline-flex items-center gap-1.5 text-xs font-medium rounded-full px-3.5 py-1.5 border border-violet-500/50 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">
+                👥 我的員工
+              </button>
+              <button onClick={() => setSkillModal(true)} className="inline-flex items-center gap-1.5 text-xs rounded-full px-3.5 py-1.5 border border-dashed border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">
+                ＋ 建員工
+              </button>
+            </div>
+          )}
+
           {/* 技能（已安裝）—— 選一個會限制工具集並套用它的任務框架 */}
           {!busy && (
-            <div className="flex flex-wrap items-center gap-1.5 mt-3">
+            <div className="flex flex-wrap items-center gap-1.5 mt-2">
               <span className="text-xs text-black/40 dark:text-white/40 mr-0.5">技能</span>
               {skills.filter((s) => s.installed).map((s) => {
                 const on = skillId === s.id;
@@ -442,14 +457,8 @@ export function AgentClient() {
                 );
               })}
               <button onClick={() => setStoreOpen(true)} className="text-xs rounded-full px-2.5 py-1 border border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">
-                🏢 員工 / 技能商店
+                🛒 技能商店
               </button>
-              <button onClick={() => setSkillModal(true)} className="text-xs rounded-full px-2.5 py-1 border border-dashed border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">
-                ＋ 建員工
-              </button>
-              <a href="/agent/office" className="text-xs rounded-full px-2.5 py-1 border border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">
-                🏢 辦公室
-              </a>
             </div>
           )}
 
