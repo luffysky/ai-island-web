@@ -68,3 +68,13 @@
 - ✅ **確認辦公室員工詳情+上下線+放養**（林董重貼）早先 commit `921c0469` 已上線：員工卡在職/放養中/下線狀態、🦞放養＝派讀取型瀏覽任務→回來匯報；對外留言紅線保留（AI 起草→批准才發）。
 - ✅ **RWD**：結果卡 header 改 `flex-wrap justify-end` → 存成技能+Word/PPT/Excel+複製 在窄屏自動換行不溢出；桌面同列。
 - 🚨 收尾：`tsc --noEmit`✓ / `vitest run` 137✓ / `next build` exit0✓（`/api/agent/export` 有出現在路由表）。export 純計算+讀 auth、**無 migration**；未動 .env.local / PWA。commit `a4afa041`(export)、`ac32715b`(多模式)、`e7781353`(todo)。
+
+## 🐛 開工修 4 隻 bug（0715 早）
+- ✅ **代理回覆斷掉 / 顯示整包 raw JSON（214+216+217）**：根因＝done 的產出型 summary 很長 → `planNext` maxTokens 900 把 JSON **截斷** → 收不了尾、`JSON.parse` 掛 → 退回把整包 raw JSON 當 summary 顯示（畫面出現 `{"thought":...,"done":true,...}` 且內容斷）。修：
+  - `parseDecision` JSON.parse 失敗時容錯抽 summary、**支援被截斷**（沒收尾引號/`}`）、unescape `\n`。
+  - **完成守門**：summary 若仍是 raw decision JSON / 思考草稿 / 空 → 改用 `finalizeFromHistory` 乾淨重產。
+  - `planNext` maxTokens 900→3000（強模型 1200→3500）讓完整答案不被截；子代理 done 也套 `looksLikeRawDecisionJson` 守門。
+  - 本機測 truncated/complete/unescaped/tool 四種 parse case 全過。commit `91d9b985`。
+- ✅ **討論區/部落格留言 @提及標記（215）**：新 `MentionTextarea`（純 textarea 版 @自動完成：打 @字→`/api/mentions` 搜人→↑↓/Enter 選）；`resolveMentions` 送出前把 @顯示名 換成 token `[[user:uuid|label]]`（email 等不誤傷、本機測 4 case 過）；顯示端渲染成可點 @連結（跳用戶頁）；forum + blog 兩處 POST 都解析 token→`pushUserNotif` 通知被 tag 的人（排除自己/已通知串主，上限10）。commit `0b8aa4e7` + blog 這批。
+- 🚨 收尾：`tsc`✓ `vitest 137`✓ `next build` exit0✓；`/api/mentions` 既有、通知走既有 `notifications` 表(kind=comment、free TEXT 無 CHECK)、**無 migration**；未動 .env.local。
+- 🆕 記錄兩個新想法到 todo：首頁沉浸式滾動(scroll-world 參考)、部落格留言 @提及（本批已一起做）。

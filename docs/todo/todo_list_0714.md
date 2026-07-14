@@ -23,6 +23,7 @@
 - ⬜ **玻璃/動效外溢**：把同套卡片/玻璃/動效/間距鋪到章節/分身島/機會島/辭典（一區一區換、每次驗亮暗+不破版）。
 - ⬜ **其餘主視覺**：夜景 CTA、五個模式小圖、char 去背（`index-img.md` 清單）陸續生 → 接入。
 - 🆕 **手機 nav 展開透明度微調**：目前 `bg-bg-card/80`(有 blur 65%)、`TopNav.tsx` 手機展開選單那行。感覺還是偏透，之後慢慢找合適數值(可試 /85~/92 或加深底 + 降 blur)，亮暗都要看順。
+- 🆕 **沉浸式滾動體驗（首頁新想法）**：參考 https://github.com/oso95/scroll-world —「捲動即前進」的世界感。評估把首頁 Hero→關卡地圖做成一路捲動穿越的連續場景（我們已有 `WorldZone`/`ParallaxScene`/`Reveal` 骨架，方向一致）。先看該 repo 技法(scroll-driven animation/pin/scrub)、挑可用的、守 reduced-motion + 亮暗 + RWD。
 - ＊ 參賽級門檻：破版/對比/RWD/動效都要過。
 
 ---
@@ -54,6 +55,13 @@
 - ⬜ **省 token**：Rule-filter 完整層、Agent 任務 Embedding RAG、每 Agent 每日 Budget 上限、成本/ROI Dashboard、省錢模式三檔。
 - ~~**AI 能源中心 UI**：`/me/energy`（今日免費額度+進度條/Z 幣/今日+本月分身任務/成功率/最常用技能）+ `/api/me/energy`；MeSidebar 加入口。（0714）~~（本月「成本」＝系統級 model_usage、非 per-user，待更細的用量記帳才做）
 - ~~🐛 #209 Agent 記憶：`launch.ts` `priorContext = [memoryBlock, turnsBlock, ragBlock]`（長期記憶 agent_memory + 對話串前文 + 相似成功任務 RAG）全接進 planner；orchestrator 回合收尾寫記憶 → **記憶功能已具備、關閉**。（0714）~~
+
+---
+
+## 一之二、社群 / 留言（0715 修）
+- ~~**代理回覆斷掉/顯示整包 raw JSON（214/216/217）**：done 長 summary 被 maxTokens 截斷→parse 失敗→raw JSON 當答案。修 parseDecision 截斷容錯 + 完成守門(finalizeFromHistory) + 放寬 maxTokens。（commit 91d9b985）~~
+- ~~**討論區/部落格留言 @提及標記（215）**：MentionTextarea 自動完成、token 化儲存、可點連結、通知被 tag 的人。（commit 0b8aa4e7 + blog）~~
+  - ⬜ 之後可加：編輯留言時也支援 @自動完成（目前編輯框是純 textarea，既有 token 會正常渲染但新打 @ 不跳選單）；@提及也接 LINE 推播。
 
 ---
 

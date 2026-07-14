@@ -4,6 +4,16 @@ import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 import { resolveArticle } from "@/lib/blog-resolve";
 import type { BlogComment } from "@/lib/blog-types";
 import { parseBody } from "@/lib/validate";
+import { pushUserNotif } from "@/lib/notify-helpers";
+
+// 從內容抽出 @提及 token 的 user id（去重）
+function parseMentionIds(content: string): string[] {
+  const ids = new Set<string>();
+  const re = /\[\[user:([0-9a-fA-F-]{36})\|[^\]]*\]\]/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(content)) !== null) ids.add(m[1]);
+  return [...ids];
+}
 
 const CommentSchema = z.object({
   content: z.string().trim().min(1).max(1000),
@@ -95,6 +105,19 @@ export async function POST(
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // @ 提及通知：通知被 tag 的人（排除自己；訪客留言 user?.id 為 null）
+  const mentioned = parseMentionIds(content).filter((uid) => uid !== user?.id);
+  for (const uid of mentioned.slice(0, 10)) {
+    pushUserNotif({
+      userId: uid,
+      kind: "comment",
+      title: `${authorName} 在部落格留言提到你`,
+      body: content.replace(/\[\[user:[0-9a-fA-F-]{36}\|([^\]]*)\]\]/g, "@$1").slice(0, 80),
+      link: `/blogs/${userSlug}/${articleSlug}`,
+    }).catch(() => {});
+  }
+
   return NextResponse.json({ comment: { ...data, replies: [] } });
 }
 

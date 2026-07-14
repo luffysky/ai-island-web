@@ -13,23 +13,34 @@ import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
 import { GifPicker } from "@/components/ui/GifPicker";
 import { EmojiText } from "@/components/ui/EmojiText";
 import { TranslateButton } from "@/components/ui/TranslateButton";
+import Link from "next/link";
+import { MentionTextarea, resolveMentions, type Mention } from "@/components/ui/MentionTextarea";
 
-// 留言內文渲染：圖片/GIF 網址 → <img>；其餘網址 → 連結；純文字 → 動態 emoji
+// 留言內文渲染：@提及 token → 可點連結；圖片/GIF 網址 → <img>；其餘網址 → 連結；純文字 → 動態 emoji
 const IMG_URL_RE = /^https?:\/\/[^\s]+\.(gif|png|jpe?g|webp|svg)(\?[^\s]*)?$/i;
 const GIPHY_URL_RE = /^https?:\/\/(media\d?\.giphy\.com|i\.giphy\.com)\/[^\s]+/i;
 function renderCommentContent(text: string) {
   const out: React.ReactNode[] = [];
   let key = 0;
-  text.split(/(https?:\/\/[^\s]+)/g).forEach((p) => {
-    if (!p) return;
-    if (IMG_URL_RE.test(p) || GIPHY_URL_RE.test(p)) {
-      // eslint-disable-next-line @next/next/no-img-element
-      out.push(<img key={key++} src={p} alt="gif" loading="lazy" className="block max-w-[200px] max-h-[200px] rounded-lg my-1" />);
-    } else if (/^https?:\/\//.test(p)) {
-      out.push(<a key={key++} href={p} target="_blank" rel="noreferrer" className="text-accent underline break-all">{p}</a>);
-    } else {
-      out.push(<EmojiText key={key++} text={p} size={18} />);
+  // 先切出 @提及 token，再各段切 URL
+  text.split(/(\[\[user:[0-9a-fA-F-]{36}\|[^\]]*\]\])/g).forEach((seg) => {
+    if (!seg) return;
+    const um = seg.match(/^\[\[user:([0-9a-fA-F-]{36})\|([^\]]*)\]\]$/);
+    if (um) {
+      out.push(<Link key={key++} href={`/forum/user/${um[1]}` as any} className="font-medium text-accent hover:underline">@{um[2] || "用戶"}</Link>);
+      return;
     }
+    seg.split(/(https?:\/\/[^\s]+)/g).forEach((p) => {
+      if (!p) return;
+      if (IMG_URL_RE.test(p) || GIPHY_URL_RE.test(p)) {
+        // eslint-disable-next-line @next/next/no-img-element
+        out.push(<img key={key++} src={p} alt="gif" loading="lazy" className="block max-w-[200px] max-h-[200px] rounded-lg my-1" />);
+      } else if (/^https?:\/\//.test(p)) {
+        out.push(<a key={key++} href={p} target="_blank" rel="noreferrer" className="text-accent underline break-all">{p}</a>);
+      } else {
+        out.push(<EmojiText key={key++} text={p} size={18} />);
+      }
+    });
   });
   return out;
 }
@@ -51,6 +62,8 @@ export function CommentSection({
   const [replyInput, setReplyInput] = useState("");
   const [sending, setSending] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [mentions, setMentions] = useState<Mention[]>([]);
+  const addMention = (m: Mention) => setMentions((list) => (list.some((x) => x.id === m.id) ? list : [...list, m]));
 
   const apiBase = `/api/blog/${userSlug}/${articleSlug}/comments`;
 
@@ -72,8 +85,9 @@ export function CommentSection({
   );
 
   const submit = async (content: string, parentId: string | null) => {
-    const trimmed = content.trim();
-    if (!trimmed || sending) return;
+    if (!content.trim() || sending) return;
+    // @提及：送出前把 @顯示名 換成 token（顯示端渲染成連結、後端通知被提及者）
+    const trimmed = resolveMentions(content.trim(), mentions);
 
     // optimistic：立刻 push 暫時項
     const tempId = `temp_${Date.now()}`;
@@ -102,6 +116,7 @@ export function CommentSection({
       setComments((list) => [...list, temp]);
       setInput("");
     }
+    setMentions([]);
 
     setSending(true);
     try {
@@ -195,10 +210,11 @@ export function CommentSection({
             className="w-full bg-bg border border-border rounded-lg p-2 text-sm mb-2 outline-none focus:border-accent"
           />
         )}
-        <textarea
+        <MentionTextarea
           value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="留個言吧...（可加表情、GIF）"
+          onChange={setInput}
+          onPick={addMention}
+          placeholder="留個言吧...（@ 標記某人、可加表情、GIF）"
           rows={3}
           className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
         />
@@ -230,12 +246,13 @@ export function CommentSection({
               {/* 回覆框 */}
               {replyTo === c.id && (
                 <div className="ml-8 mt-2">
-                  <textarea
+                  <MentionTextarea
                     rows={1}
                     value={replyInput}
-                    onChange={(e) => setReplyInput(e.target.value)}
+                    onChange={setReplyInput}
+                    onPick={addMention}
                     onInput={(e) => autoGrow(e.currentTarget, 120)}
-                    placeholder="回覆...（可加表情、GIF）"
+                    placeholder="回覆...（@ 標記某人、可加表情、GIF）"
                     onKeyDown={(e) => handleEnterSubmit(e, () => submit(replyInput, c.id))}
                     className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
                     style={{ maxHeight: "120px" }}
