@@ -373,7 +373,8 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const ENDPOINT = "https://api.line.me/v2/bot";
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
+// 去尾斜線：避免 env 設成 "...pet/" 時組出 "...pet//opportunities"（雙斜線在 LINE 不會自動變連結）
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet").replace(/\/+$/, "");
 
 function verifySignature(body: string, signature: string | null, secret: string): boolean {
   if (!signature) return false;
@@ -1806,15 +1807,13 @@ export async function POST(req: NextRequest) {
           }), token, QUICK_REPLY);
           continue;
         }
+        // 用「純文字訊息」回（LINE 會自動把 https 連結變成可點；flex 卡片的內文不會自動變連結）
         const lines = rows.slice(0, 5).map((o: any) => {
           const dl = o.application_deadline ? `（截止 ${o.application_deadline}）` : "";
-          return `• ${o.name}${dl}\n  → ${SITE_URL}/opportunities/${o.id}`;
+          return `• ${o.name}${dl}\n${SITE_URL}/opportunities/${o.id}`;
         });
-        await lineReply(replyToken, buildSimpleCard({
-          emoji: "🧭", title: `「${kw}」找到 ${rows.length} 個機會`, accentColor: USER_ACCENT,
-          body: lines.join("\n\n").slice(0, 1900),
-          buttons: [{ label: "🧭 看全部機會", uri: `${SITE_URL}/opportunities`, primary: true }],
-        }), token, QUICK_REPLY);
+        const oppText = `🧭 「${kw}」找到 ${rows.length} 個機會\n\n${lines.join("\n\n")}\n\n🧭 看全部：${SITE_URL}/opportunities`;
+        await lineReply(replyToken, { type: "text", text: oppText.slice(0, 4900) }, token, QUICK_REPLY);
         continue;
       }
 
