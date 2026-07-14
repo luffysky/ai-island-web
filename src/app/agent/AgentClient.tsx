@@ -7,6 +7,17 @@ import remarkGfm from "remark-gfm";
 
 type Risk = "read" | "write" | "dangerous";
 interface ToolInfo { name: string; description: string; risk: Risk; needsDevice: boolean; }
+
+// 分身島模式：切換「意圖」→ 幫你把輸出導向對的形式（多半只是加一段前綴 prompt，重用同一套任務引擎）。
+const AGENT_MODES: { key: string; emoji: string; label: string; prefix: string; placeholder: string }[] = [
+  { key: "agent", emoji: "🤖", label: "分身任務", prefix: "", placeholder: "想讓分身幫你做什麼？（會規劃、用工具完成）" },
+  { key: "ask", emoji: "💬", label: "問問", prefix: "（用你的知識直接回答、給實用建議與思路；除非需要即時/在地/最新資料否則不用上網）：", placeholder: "想問什麼？找分身聊聊、要點建議…" },
+  { key: "code", emoji: "💻", label: "寫程式", prefix: "（寫程式：給完整、可直接用的程式碼＋簡短說明與註解，用 markdown 程式碼區塊；需要的話附使用方式）：", placeholder: "要寫什麼程式？（語言、功能、需求）" },
+  { key: "doc", emoji: "📄", label: "文件", prefix: "（寫一份結構清楚的文件：標題／章節／重點清單／必要時表格，用 markdown）：", placeholder: "要寫什麼文件？（主題、對象、重點）" },
+  { key: "slides", emoji: "📊", label: "簡報", prefix: "（做簡報：每張投影片一個標題＋3–5 條重點，投影片間用 --- 分隔，開頭封面、結尾總結）：", placeholder: "要做什麼簡報？（主題、頁數、對象）" },
+  { key: "sheet", emoji: "📈", label: "表格", prefix: "（整理成 markdown 表格：欄位清楚、資料齊全，必要時附一段說明）：", placeholder: "要整理什麼表格/清單？" },
+  { key: "design", emoji: "🎨", label: "設計", prefix: "（設計提案：先用文字說風格/配色/排版，再給一段可直接用的 HTML/CSS 或 SVG 雛形，用 markdown 程式碼區塊）：", placeholder: "要設計什麼？（畫面、風格、用途）" },
+];
 interface StepView { idx: number; kind: "thought" | "step"; thought?: string; toolName?: string; risk?: Risk; args?: any; result?: any; ok?: boolean; }
 interface ApprovalReq { id: string; toolName: string; risk: Risk; summary: Record<string, string>; }
 interface TaskListItem { id: string; goal: string; status: string; step_count: number; created_at: string; }
@@ -59,6 +70,7 @@ export function AgentClient() {
   const [newToken, setNewToken] = useState<{ token: string; name: string } | null>(null);
   const [copied, setCopied] = useState(false);
   const [watching, setWatching] = useState<string>("");   // 目前輪詢觀看的 taskId（背景任務進行中就刷新）
+  const [mode, setMode] = useState<string>("agent");        // 分身島模式（agent/ask/code/doc/slides/sheet/design）
   const [threadId, setThreadId] = useState<string>("");    // Phase A：目前對話串（延續脈絡）
   const [threadTurns, setThreadTurns] = useState<{ id: string; goal: string; summary: string }[]>([]); // 本串先前回合
   const [plan, setPlan] = useState<string[]>([]);          // L1：目前任務的計畫（子任務 checklist）
@@ -283,6 +295,12 @@ export function AgentClient() {
     setApproval(null); setStatus(""); setTaskId(""); setWatching(""); setGoal("");
   }, [busy]);
 
+  // 依目前模式把使用者輸入導向對的輸出形式（加前綴；agent 模式不加）
+  const withMode = useCallback((g: string) => {
+    const m = AGENT_MODES.find((x) => x.key === mode);
+    return m && m.prefix ? `${m.prefix}${g}` : g;
+  }, [mode]);
+
   const run = useCallback(async (g: string) => {
     const text = g.trim();
     if (!text || busy) return;
@@ -383,12 +401,21 @@ export function AgentClient() {
         <section className="min-w-0">
           {/* 輸入 */}
           <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 p-3 sm:p-4">
+            {/* 模式切換：問問 / 寫程式 / 文件 / 簡報 / 表格 / 設計… */}
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              {AGENT_MODES.map((m) => (
+                <button key={m.key} onClick={() => setMode(m.key)} disabled={busy}
+                  className={`text-xs rounded-full px-2.5 py-1 border transition disabled:opacity-50 ${mode === m.key ? "bg-violet-600 border-violet-600 text-white" : "border-black/10 dark:border-white/15 text-black/60 dark:text-white/60 hover:bg-black/5 dark:hover:bg-white/10"}`}>
+                  {m.emoji} {m.label}
+                </button>
+              ))}
+            </div>
             {/* 輸入框整整一欄；語音＋執行放下面 */}
             <div className="flex flex-col gap-2">
               <textarea
                 value={goal} onChange={(e) => setGoal(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) run(goal); }}
-                rows={3} placeholder="想讓 Agent 幫你做什麼？（Ctrl/⌘ + Enter 執行）"
+                onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) run(withMode(goal)); }}
+                rows={3} placeholder={(AGENT_MODES.find((m) => m.key === mode)?.placeholder ?? "想讓分身幫你做什麼？") + "（Ctrl/⌘ + Enter 送出）"}
                 className="w-full resize-none bg-transparent outline-none text-sm sm:text-base px-2 py-1.5"
                 disabled={busy}
               />
@@ -403,8 +430,8 @@ export function AgentClient() {
                     <Square className="w-4 h-4" /> 停止
                   </button>
                 ) : (
-                  <button onClick={() => run(goal)} disabled={!goal.trim()} className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-40 text-white px-5 py-2.5 text-sm font-medium">
-                    <Send className="w-4 h-4" /> 執行
+                  <button onClick={() => run(withMode(goal))} disabled={!goal.trim()} className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-40 text-white px-5 py-2.5 text-sm font-medium">
+                    <Send className="w-4 h-4" /> {mode === "agent" ? "執行" : "送出"}
                   </button>
                 )}
               </div>
