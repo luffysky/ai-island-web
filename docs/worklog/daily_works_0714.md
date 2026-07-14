@@ -95,3 +95,12 @@
 - ✅ **每使用者每日任務上限**（`launchAgentTask`）：fail-open 上限(預設80、`AGENT_DAILY_TASK_CAP` 可調)，admin/owner 免、排程 `skipDailyCap` 不計；查詢出錯一律放行。省 token 第一步。commit 2caeafca。
 - 🚨 收尾：全部 `tsc`✓ `vitest 137`✓ `next build` exit0✓；除社群輪播無新 migration；未動 .env.local。
 - 📌 記：`po-once.com`＝社群發布中心的參考藍圖(一次發文→同步所有平台)、寫進 todo。
+
+## 🎯 機會島/分身島「排序直接做」批（0715，autonomous）
+排定優先序後照序做（不用林董出手、可驗證者優先）：
+- ✅ **#1 機會島 AI 作品分析**：`/opportunities/analyze` + `/api/opportunities/analyze-work`。貼網址(伺服器抓取轉文字)或文字→AI 萃取能力圖譜(summary/roles/skills[level+evidence]/strengths/gaps/directions/機會關鍵字)；robust JSON+正規化夾範圍；登入才用、rateLimit 20/hr、唯讀不存。機會島 header 加入口、OpportunityBrowse 讀 ?q= 帶入。smoke：頁 200、API 401(guard)。commit 13a831ad。
+- ✅ **#2 省錢模式三檔**：分身島輸入區加 💸省錢/⚖️平衡/💎品質。saver=全程便宜、balanced=需要才升級(原行為)、quality=一律強模型。costMode UI→API→launch→orchestrator；`strongModel` 用預設參數穿透 planNext/finalize/merge/subAgent → **balanced 位元級零改變不回歸**。commit 25934609。
+- ✅ **#3 AI 成本 P1 創作者綠寶軟上限**：確認**已在 code**（`CREATOR_DAILY_SOFT_CAP` 預設0=關 + creator chat route fail-open 檢查 + `gateHighTierModel` 只擋高階）。標記完成。commit f486ceaf。
+- ✅ **#4 PDF 規則解析**：`rules-summary` route 加 `url` 參數→簡章網址/PDF 連結伺服器抓取(PDF 用 `unpdf` 純 JS 解析、HTML 去標籤)→併進既有 AI 規則整理；RulesSummary UI 加網址欄。unpdf 本機實測從真 PDF 抽字 OK。(版本比較 diff 待做)。commit 7403a197。
+- ⏸ **#5 雷達 V4 擴充**（API/sitemap 來源、三層 hash 變動偵測、信心分、cron 分頻、Sentry）：**大型 cron pipeline 重構、動到生產排程**，無法離線安全驗證 → 留待林董在場能監控時做。
+- 🚨 收尾：每項 `tsc`✓ `next build` exit0✓、多數 `vitest 137`✓；新增依賴 `unpdf`；除既有表外無 migration；未動 .env.local。
