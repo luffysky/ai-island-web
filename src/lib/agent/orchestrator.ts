@@ -126,7 +126,7 @@ async function decompose(goal: string, priorContext = "", freeModel = PLANNER_ST
   } catch { return [goal]; }
 }
 
-async function planNext(goal: string, history: StepRow[], skill?: SkillCtx, extraTools: AgentTool[] = [], priorContext = "", plan: string[] = [], freeModel = PLANNER_STRONG, webCalls = 0): Promise<Decision | null> {
+async function planNext(goal: string, history: StepRow[], skill?: SkillCtx, extraTools: AgentTool[] = [], priorContext = "", plan: string[] = [], freeModel = PLANNER_STRONG, webCalls = 0, strongModel?: string): Promise<Decision | null> {
   const hist = history.map((s) =>
     `#${s.idx} ${s.toolName ?? "?"}(${JSON.stringify(s.args ?? {})}) → ${s.ok ? "ok" : "fail"}: ${JSON.stringify(s.result ?? {}).slice(0, 400)}`
   ).join("\n") || "（尚無步驟）";
@@ -158,7 +158,7 @@ ${hist}
   let res = await completeForUsage("agent_core", { system, user, maxTokens: 3000, defaultModel: freeModel });
   let d = parseDecision(res.text);
   if (!d) {
-    const strong = await pickStrongModel();
+    const strong = strongModel ?? await pickStrongModel();
     res = await completeForUsage("agent_core", { system, user, maxTokens: 3500, defaultModel: strong });
     d = parseDecision(res.text);
   }
@@ -263,12 +263,12 @@ const FINALIZE_SYSTEM = `你是 AI 島的行動代理。根據下面「已蒐集
 - **若資料裡標「已生成的成品（原文…）」**：那就是要交付的東西，請把它**完整呈現/原文輸出**（可潤飾排版，但不可只摘要、不可砍內容、不可只寫「已完成」）。使用者要成品本身、不是介紹。
 - 不要回 JSON、不要再要求用工具、不要說「建議你自己去查」。`;
 
-async function finalizeFromHistory(goal: string, history: StepRow[]): Promise<string> {
+async function finalizeFromHistory(goal: string, history: StepRow[], strongModel?: string): Promise<string> {
   try {
     const evidence = history.map(stepEvidence).filter(Boolean).join("\n\n").slice(0, 14000)
       || "（沒有可用資料）";
     const user = `目標：${goal}\n\n已蒐集的資料：\n${evidence}\n\n請直接給最終答案（第一行就是 Markdown、不要任何思考過程）：`;
-    const best = await pickStrongModel();  // 先用最強模型、品質優先
+    const best = strongModel ?? await pickStrongModel();  // 先用最強模型、品質優先（省錢模式會傳便宜模型進來）
     let out = sanitizeAnswer((await completeForUsage("agent_core", { system: FINALIZE_SYSTEM, user, maxTokens: 2600, defaultModel: best })).text);
     // 若強模型把「思考草稿」當答案吐出來（reasoning 模型常見）或幾乎沒內容 → 用穩定、聽話的 Haiku 乾淨重產一次
     if (!out || out.length < 40 || looksLikeReasoning(out.slice(0, 200))) {
@@ -283,14 +283,14 @@ async function finalizeFromHistory(goal: string, history: StepRow[]): Promise<st
 const READONLY_TOOLS = TOOLS.filter((t) => t.risk === "read" && !t.needsDevice).map((t) => t.name);
 
 // 跑一個「子代理」：對單一子任務做有上限的唯讀研究，回它的小結。無審批、無裝置。
-async function runSubAgent(subGoal: string, userId: string, freeModel: string, taskId: string, maxSteps = 5): Promise<{ goal: string; summary: string }> {
+async function runSubAgent(subGoal: string, userId: string, freeModel: string, taskId: string, maxSteps = 5, strongModel?: string): Promise<{ goal: string; summary: string }> {
   const history: StepRow[] = [];
   const doneCalls = new Map<string, ToolResult>();
   const subSkill: SkillCtx = { allowedTools: READONLY_TOOLS };  // 只給唯讀工具
   for (let i = 0; i < maxSteps; i++) {
     const webCalls = history.filter((s) => WEB_TOOLS.has(s.toolName ?? "")).length;
     if (webCalls >= 4) break;  // 子任務更省 API
-    const decision = await planNext(subGoal, history, subSkill, [], "", [], freeModel, webCalls);
+    const decision = await planNext(subGoal, history, subSkill, [], "", [], freeModel, webCalls, strongModel);
     if (!decision) break;
     if (decision.done || !decision.tool) {
       const s = sanitizeAnswer(decision.summary ?? "");
@@ -314,15 +314,15 @@ async function runSubAgent(subGoal: string, userId: string, freeModel: string, t
     }
     history.push({ idx: i, toolName: tool.name, args: decision.args, ok: result.ok, result: result.ok ? result.data : { error: result.error } });
   }
-  const summary = await finalizeFromHistory(subGoal, history);
+  const summary = await finalizeFromHistory(subGoal, history, strongModel);
   return { goal: subGoal, summary };
 }
 
 // 把多個子代理的小結合併成一份完整、去重、有條理的最終答案。
-async function mergeSubResults(goal: string, results: { goal: string; summary: string }[]): Promise<string> {
+async function mergeSubResults(goal: string, results: { goal: string; summary: string }[], strongModel?: string): Promise<string> {
   const parts = results.filter((r) => r.summary).map((r) => `## ${r.goal}\n${r.summary}`).join("\n\n").slice(0, 14000);
   if (!parts) return "";
-  const best = await pickStrongModel();
+  const best = strongModel ?? await pickStrongModel();
   return sanitizeAnswer((await completeForUsage("agent_core", {
     system: "你是總彙整員。下面是幾個子任務各自的研究結果。合併成一份給使用者的完整、有條理、不重複的繁體中文最終答案（Markdown）。保留所有具體資訊與來源連結、去掉重覆、第一行就是答案本身、不要任何思考過程。",
     user: `總目標：${goal}\n\n各子任務結果：\n${parts}\n\n請合併成最終答案：`,
@@ -431,14 +431,16 @@ async function notifyApprovalToLine(userId: string, taskId: string, approvalId: 
   await notifyUserLine({ userId, category: "agent", text: `🔐 分身島需要你確認：${toolName}（在 LINE 按鈕或網站放行）`, flex });
 }
 
-export function runAgentTaskDetached(taskId: string, userId: string, goal: string, maxSteps = 40, skill?: SkillCtx, extraTools?: AgentTool[], priorContext = ""): void {
+export type CostMode = "saver" | "balanced" | "quality";
+
+export function runAgentTaskDetached(taskId: string, userId: string, goal: string, maxSteps = 40, skill?: SkillCtx, extraTools?: AgentTool[], priorContext = "", costMode: CostMode = "balanced"): void {
   if (RUNNING.has(taskId)) return;
   RUNNING.add(taskId);
   (async () => {
     // 動態工具：沒帶就自動載入使用者啟用的 MCP server 工具（背景進行、不擋 POST 回應）
     const dyn = extraTools ?? await loadUserMcpTools(userId).catch(() => []);
     // 事件在 runAgentTask 內就已落 DB + 推播；這裡只需把 generator 跑到底、不需消費事件。
-    try { for await (const _ev of runAgentTask(taskId, userId, goal, maxSteps, skill, dyn, priorContext)) { void _ev; } }
+    try { for await (const _ev of runAgentTask(taskId, userId, goal, maxSteps, skill, dyn, priorContext, costMode)) { void _ev; } }
     catch { /* runAgentTask 自身的 try/catch 已把任務標成 failed */ }
     finally { RUNNING.delete(taskId); }
     // 若此任務來自 LINE（thread 標題前綴「📱 LINE」）→ 完成後把結果推回使用者的 LINE。
@@ -447,7 +449,7 @@ export function runAgentTaskDetached(taskId: string, userId: string, goal: strin
 }
 
 /** 跑一個任務，吐事件流。extraTools = 動態工具（如 MCP）；priorContext = 本串先前對話（Phase A 對話延續）。 */
-export async function* runAgentTask(taskId: string, userId: string, goal: string, maxSteps = 40, skill?: SkillCtx, extraTools: AgentTool[] = [], priorContext = ""): AsyncGenerator<AgentEvent> {
+export async function* runAgentTask(taskId: string, userId: string, goal: string, maxSteps = 40, skill?: SkillCtx, extraTools: AgentTool[] = [], priorContext = "", costMode: CostMode = "balanced"): AsyncGenerator<AgentEvent> {
   const admin = createSupabaseAdmin();
   const history: StepRow[] = [];
   const doneCalls = new Map<string, ToolResult>();  // 去重：同一個 (工具+參數) 只真的做一次
@@ -464,8 +466,12 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
   yield { type: "status", status: "planning" };
   await setStatus("running");
 
-  // 免費優先：本任務用「最便宜的活模型」規劃，需要時才升級（planNext 沒回有效 JSON 就升級）
-  const freeModel = await pickFreeModel();
+  // 省錢模式三檔：
+  //   saver   = 全程用便宜模型、連「升級/收尾」都不換貴的（strongModel = freeModel）
+  //   balanced= 免費優先、需要時才升級到強模型（＝原本行為）
+  //   quality = 一開始就用強模型跑整個 loop
+  const freeModel = costMode === "quality" ? await pickStrongModel() : await pickFreeModel();
+  const strongModel = costMode === "saver" ? freeModel : await pickStrongModel();
   // L1 拆解引擎：先把目標拆成計畫（存 DB 給 UI 顯示），再逐項執行
   const plan = await decompose(goal, priorContext, freeModel);
   await admin.from("agent_tasks").update({ plan, plan_done: [] }).eq("id", taskId);
@@ -477,7 +483,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
   if (canParallel) {
     try {
       yield { type: "thought", idx: 0, thought: `這任務較大，派 ${plan.length} 個子代理同時去查，再幫你彙整。` };
-      const results = await Promise.all(plan.map((sub) => runSubAgent(sub, userId, freeModel, taskId).catch(() => ({ goal: sub, summary: "" }))));
+      const results = await Promise.all(plan.map((sub) => runSubAgent(sub, userId, freeModel, taskId, 5, strongModel).catch(() => ({ goal: sub, summary: "" }))));
       let pIdx = 0;
       for (const r of results) {
         const row: StepRow = { idx: pIdx, thought: `子代理：${r.goal}`, toolName: "subagent", ok: !!r.summary, result: { goal: r.goal, summary: r.summary.slice(0, 600) } };
@@ -487,7 +493,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
         pIdx++;
       }
       await admin.from("agent_tasks").update({ step_count: pIdx, plan_done: plan }).eq("id", taskId);
-      const merged = await mergeSubResults(goal, results);
+      const merged = await mergeSubResults(goal, results, strongModel);
       if (merged) {
         await setStatus("succeeded", { result: { summary: merged }, step_count: pIdx, finished_at: new Date().toISOString() });
         await bumpThread(merged);
@@ -514,7 +520,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
       // 蒐集夠了就強制收尾：查越多越浪費 API（尤其 Brave 有月額度）。web 類工具用滿硬上限 → 直接用手上資料合成。
       const webCalls = history.filter((s) => WEB_TOOLS.has(s.toolName ?? "")).length;
       if (webCalls >= WEB_HARD_CAP) {
-        const finalAns = await finalizeFromHistory(goal, history);
+        const finalAns = await finalizeFromHistory(goal, history, strongModel);
         if (finalAns) {
           await setStatus("succeeded", { result: { summary: finalAns }, step_count: idx, finished_at: new Date().toISOString() });
           await bumpThread(finalAns);
@@ -525,10 +531,10 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
         }
       }
 
-      const decision = await planNext(goal, history, skill, extraTools, priorContext, plan, freeModel, webCalls);
+      const decision = await planNext(goal, history, skill, extraTools, priorContext, plan, freeModel, webCalls, strongModel);
       if (!decision) {
         // 規劃卡住 → 別直接失敗；用目前已查到的東西合成最終答案（找外援用強模型）
-        const salvage = history.length ? await finalizeFromHistory(goal, history) : "";
+        const salvage = history.length ? await finalizeFromHistory(goal, history, strongModel) : "";
         if (salvage) {
           await setStatus("succeeded", { result: { summary: salvage }, step_count: idx, finished_at: new Date().toISOString() });
           await bumpThread(salvage);
@@ -548,7 +554,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
         // 防呆：summary 其實是沒 parse 成功的 raw JSON、或是思考草稿、或幾乎空 → 用手上資料乾淨重產，
         // 別把 {"thought":...,"done":true,"summary":"..."} 整包丟給使用者看（214/216/217 的病灶）。
         if (!summary || looksLikeRawDecisionJson(summary) || looksLikeReasoning(summary.slice(0, 200))) {
-          const clean = history.length ? await finalizeFromHistory(goal, history) : "";
+          const clean = history.length ? await finalizeFromHistory(goal, history, strongModel) : "";
           summary = clean || sanitizeAnswer(decision.summary ?? "") || "完成。";
         }
         // L3 反思：多步計畫在 done 前驗收；沒達標就回饋、繼續做（最多 2 次，避免無限/燒錢）
@@ -649,7 +655,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
     }
 
     // 達到步數上限 → 不要直接失敗，用目前進度合成「最好的最終答案」給使用者（例如已查到的美食清單）
-    const finalAns = await finalizeFromHistory(goal, history);
+    const finalAns = await finalizeFromHistory(goal, history, strongModel);
     if (finalAns) {
       await setStatus("succeeded", { result: { summary: finalAns }, step_count: maxSteps, finished_at: new Date().toISOString() });
       await bumpThread(finalAns);

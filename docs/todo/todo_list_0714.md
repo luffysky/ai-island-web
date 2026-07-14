@@ -53,7 +53,7 @@
   - 🆕 **參考產品 po-once.com**（林董 0715 貼）：「一次發文→同步所有平台」的商業工具，跟我們社群發布中心方向一致。可參考它的 UX（一處撰稿、平台勾選、預覽各平台樣式、排程）當我們 `/agent/social` 的目標藍圖。核心差異：我們走「AI 起草→你批准→發」+ 綁在分身島生態。
 - ⬜ **外部工具**：Gmail/Calendar/GitHub/Notion/Drive 當 Agent 工具（連結中心已做基礎，待各平台 OAuth 一鍵授權）。
 - ⬜ **Credential Broker**（本機管密碼、Agent 只知有無）＋ L4 憑證/銀行/系統操作流程。
-- 🚧 **省 token**：Rule-filter 完整層、Agent 任務 Embedding RAG、~~每使用者每日任務上限（`launchAgentTask` 加 fail-open 上限、admin 免、排程不計、`AGENT_DAILY_TASK_CAP` 可調、預設 80）（0715）~~、成本/ROI Dashboard、省錢模式三檔。
+- 🚧 **省 token**：Rule-filter 完整層、Agent 任務 Embedding RAG、~~每使用者每日任務上限（`launchAgentTask` 加 fail-open 上限、admin 免、排程不計、`AGENT_DAILY_TASK_CAP` 可調、預設 80）（0715）~~、成本/ROI Dashboard、~~省錢模式三檔（分身島輸入區加 💸省錢/⚖️平衡/💎品質；省錢=全程便宜模型、平衡=需要時才升級(原行為)、品質=一律強模型；`costMode` 從 UI→API→launch→orchestrator，`strongModel` 用預設參數穿透、平衡＝零行為改變不會回歸）（0715）~~。
 - ~~**AI 能源中心 UI**：`/me/energy`（今日免費額度+進度條/Z 幣/今日+本月分身任務/成功率/最常用技能）+ `/api/me/energy`；MeSidebar 加入口。（0714）~~（本月「成本」＝系統級 model_usage、非 per-user，待更細的用量記帳才做）
 - ~~🐛 #209 Agent 記憶：`launch.ts` `priorContext = [memoryBlock, turnsBlock, ragBlock]`（長期記憶 agent_memory + 對話串前文 + 相似成功任務 RAG）全接進 planner；orchestrator 回合收尾寫記憶 → **記憶功能已具備、關閉**。（0714）~~
 

@@ -36,12 +36,14 @@ export async function POST(req: Request) {
   if (!goal) return NextResponse.json({ error: "缺 goal" }, { status: 400 });
 
   // 建任務 + 背景開跑（與排程共用 launchAgentTask；步數上限預設 40/安全上限 100）
+  const cm = body.costMode;
   const r = await launchAgentTask({
     userId: user.id,
     goal,
     skillId: body.skillId ?? null,
     threadId: body.threadId ?? null,
     maxSteps: Number(body.maxSteps) || undefined,
+    costMode: cm === "saver" || cm === "quality" || cm === "balanced" ? cm : undefined,
   });
   if ("error" in r) return NextResponse.json({ error: r.error }, { status: 500 });
   return NextResponse.json({ taskId: r.taskId, threadId: r.threadId, goal });

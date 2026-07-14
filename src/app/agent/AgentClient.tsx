@@ -71,6 +71,7 @@ export function AgentClient() {
   const [copied, setCopied] = useState(false);
   const [watching, setWatching] = useState<string>("");   // 目前輪詢觀看的 taskId（背景任務進行中就刷新）
   const [mode, setMode] = useState<string>("agent");        // 分身島模式（agent/ask/code/doc/slides/sheet/design）
+  const [costMode, setCostMode] = useState<"saver" | "balanced" | "quality">("balanced");  // 省錢模式三檔
   const [threadId, setThreadId] = useState<string>("");    // Phase A：目前對話串（延續脈絡）
   const [threadTurns, setThreadTurns] = useState<{ id: string; goal: string; summary: string }[]>([]); // 本串先前回合
   const [plan, setPlan] = useState<string[]>([]);          // L1：目前任務的計畫（子任務 checklist）
@@ -307,7 +308,7 @@ export function AgentClient() {
     setStarting(true); setSteps([]); setSummary(""); setApproval(null); setStatus("planning"); setTaskId(""); setWatching(""); setPlan([]);
     try {
       const res = await fetch("/api/agent/tasks", {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ goal: text, skillId: skillId || undefined, threadId: threadId || undefined }),
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ goal: text, skillId: skillId || undefined, threadId: threadId || undefined, costMode }),
       });
       if (!res.ok) { setStatus("failed"); setSummary("無法啟動任務（請先登入或稍後再試）。"); return; }
       const { taskId: id, threadId: tid } = await res.json();
@@ -316,7 +317,7 @@ export function AgentClient() {
       loadHistory();
     } catch { setStatus("failed"); setSummary("連線失敗。"); }
     finally { setStarting(false); }
-  }, [busy, loadHistory, skillId, threadId, loadThreadTurns]);
+  }, [busy, loadHistory, skillId, threadId, loadThreadTurns, costMode]);
 
   const [exporting, setExporting] = useState("");
   const exportAs = useCallback(async (type: "docx" | "pptx" | "xlsx") => {
@@ -441,7 +442,17 @@ export function AgentClient() {
                 className="w-full resize-none bg-transparent outline-none text-sm sm:text-base px-2 py-1.5"
                 disabled={busy}
               />
-              <div className="flex items-center justify-end gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                {/* 省錢模式三檔：省錢=全程便宜模型 · 平衡=需要時才升級 · 品質=一律用強模型 */}
+                <div className="inline-flex items-center rounded-xl border border-black/10 dark:border-white/15 overflow-hidden text-xs" title="省錢=全程便宜模型 · 平衡=需要時才升級 · 品質=一律用最強模型">
+                  {([["saver", "💸 省錢"], ["balanced", "⚖️ 平衡"], ["quality", "💎 品質"]] as const).map(([k, label]) => (
+                    <button key={k} onClick={() => setCostMode(k)} disabled={busy}
+                      className={`px-2 py-1 transition disabled:opacity-50 ${costMode === k ? "bg-violet-600 text-white" : "text-black/55 dark:text-white/55 hover:bg-black/5 dark:hover:bg-white/10"}`}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <div className="ml-auto flex items-center gap-2">
                 {voiceSupported && !busy && (
                   <button onClick={toggleVoice} title="語音輸入" className={`shrink-0 grid place-items-center w-10 h-10 rounded-xl border ${listening ? "bg-rose-500 border-rose-500 text-white animate-pulse" : "border-black/10 dark:border-white/15 text-black/50 dark:text-white/50 hover:bg-black/5 dark:hover:bg-white/10"}`}>
                     <Mic className="w-4 h-4" />
@@ -456,6 +467,7 @@ export function AgentClient() {
                     <Send className="w-4 h-4" /> {mode === "agent" ? "執行" : "送出"}
                   </button>
                 )}
+                </div>
               </div>
             </div>
             {onlineDevice && (

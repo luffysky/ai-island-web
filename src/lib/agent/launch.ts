@@ -1,5 +1,5 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
-import { runAgentTaskDetached } from "@/lib/agent/orchestrator";
+import { runAgentTaskDetached, type CostMode } from "@/lib/agent/orchestrator";
 
 /**
  * 建任務 + 在伺服器背景開跑 —— 手動下令（/api/agent/tasks POST）與排程自動跑
@@ -16,6 +16,7 @@ export async function launchAgentTask(opts: {
   maxSteps?: number;
   threadTitle?: string;            // 開新串時的標題（排程可帶「🕒 排程：…」）
   skipDailyCap?: boolean;          // 排程/系統發起 → 不計入每日上限（automation 不該被擋）
+  costMode?: CostMode;             // 省錢/平衡/品質三檔（決定用便宜或強模型）
 }): Promise<{ taskId: string; threadId: string | null } | { error: string }> {
   const { userId } = opts;
   const goal = String(opts.goal ?? "").trim().slice(0, 500);
@@ -120,6 +121,7 @@ export async function launchAgentTask(opts: {
     .select("id").single();
   if (error || !task) return { error: error?.message ?? "建任務失敗" };
 
-  runAgentTaskDetached(task.id, userId, goal, maxSteps, skill, undefined, priorContext);
+  const costMode: CostMode = opts.costMode === "saver" || opts.costMode === "quality" ? opts.costMode : "balanced";
+  runAgentTaskDetached(task.id, userId, goal, maxSteps, skill, undefined, priorContext, costMode);
   return { taskId: task.id, threadId };
 }
