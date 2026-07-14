@@ -48,6 +48,19 @@ export function OfficeClient() {
   const [kpi, setKpi] = useState<{ total: number; successRate: number | null; avgSteps: number; interventionRate: number } | null>(null);
   const [decidingId, setDecidingId] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [roaming, setRoaming] = useState<Set<string>>(new Set()); // 放養中的員工 id（本次）
+
+  // 放養：派員工「出去逛」——讀取型瀏覽任務（逛論壇/網站→回來匯報）。純讀取、不對外留言（守紅線）。
+  const roamOut = async (s: SkillItem) => {
+    if (roaming.has(s.id)) return;
+    const goal = `🦞 放養巡邏：以「${s.name}（${s.description || "團隊成員"}）」的職能角度，用 web.search / web.research 出去逛相關的論壇、社群、新聞或討論區，找 3–5 個有趣或值得注意的討論、新知或趨勢，帶回來跟我匯報（每則：標題 + 一句重點 + 連結）。純瀏覽閱讀、絕不對外留言或發文。`;
+    setRoaming((p) => new Set(p).add(s.id));
+    try {
+      const r = await fetch("/api/agent/tasks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ goal, skillId: s.id }) });
+      if (!r.ok) { setRoaming((p) => { const n = new Set(p); n.delete(s.id); return n; }); }
+      else { loadTasks(); }
+    } catch { setRoaming((p) => { const n = new Set(p); n.delete(s.id); return n; }); }
+  };
   // 新增排程表單
   const [schedOpen, setSchedOpen] = useState(false);
   const [sGoal, setSGoal] = useState("");
@@ -322,8 +335,10 @@ export function OfficeClient() {
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-            {employees.map((s) => (
-              <Link key={s.id} href={`/agent?skill=${encodeURIComponent(s.id)}` as any} className="rounded-xl border border-black/10 dark:border-white/10 p-3 hover:border-violet-400 dark:hover:border-violet-500 transition flex flex-col">
+            {employees.map((s) => {
+              const roam = roaming.has(s.id);
+              return (
+              <div key={s.id} className="rounded-xl border border-black/10 dark:border-white/10 p-3 hover:border-violet-400 dark:hover:border-violet-500 transition flex flex-col">
                 <div className="flex items-start gap-2.5">
                   <span className="text-2xl leading-none">{s.emoji}</span>
                   <div className="min-w-0 flex-1">
@@ -332,12 +347,22 @@ export function OfficeClient() {
                   </div>
                 </div>
                 <div className="mt-2.5 flex items-center justify-between">
-                  <span className="text-[11px] text-black/40 dark:text-white/40 flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-black/25 dark:bg-white/25 inline-block" /> {s.usage && s.usage.used > 0 ? `用過 ${s.usage.used} 次` : "閒置中"}</span>
-                  <span className="text-[11px] text-violet-500 inline-flex items-center gap-0.5">派工 <ArrowRight className="w-3 h-3" /></span>
+                  <span className={`text-[11px] flex items-center gap-1 ${roam ? "text-amber-500" : "text-emerald-500"}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full inline-block ${roam ? "bg-amber-500 animate-pulse" : "bg-emerald-500"}`} /> {roam ? "🦞 放養中·巡邏" : "🏢 在職"}
+                  </span>
+                  <span className="text-[10px] text-black/35 dark:text-white/35">{s.usage && s.usage.used > 0 ? `用過 ${s.usage.used} 次` : ""}</span>
                 </div>
-              </Link>
-            ))}
+                <div className="mt-2 flex gap-1.5">
+                  <Link href={`/agent?skill=${encodeURIComponent(s.id)}` as any} className="flex-1 text-center text-[11px] rounded-lg border border-black/10 dark:border-white/15 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 inline-flex items-center justify-center gap-0.5">派工 <ArrowRight className="w-3 h-3" /></Link>
+                  <button onClick={() => roamOut(s)} disabled={roam} title="派他出去逛論壇/網站，回來匯報（純讀取、不留言）" className="flex-1 text-[11px] rounded-lg bg-amber-500/90 hover:bg-amber-500 text-white py-1.5 disabled:opacity-50">🦞 放養</button>
+                </div>
+              </div>
+              );
+            })}
           </div>
+        )}
+        {employees.length > 0 && (
+          <p className="text-[11px] text-black/40 dark:text-white/40 mt-2">🦞 放養＝派員工出去逛論壇/網站、回來在下方「最近工作」匯報所見所聞（純瀏覽、不對外留言）。</p>
         )}
       </section>
 
