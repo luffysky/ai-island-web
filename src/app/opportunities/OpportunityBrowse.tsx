@@ -59,6 +59,14 @@ export function OpportunityBrowse() {
     })();
   }, []);
 
+  // 從網址 ?q= 帶入初始搜尋（AI 作品分析的關鍵字連結會導到這裡）
+  useEffect(() => {
+    try {
+      const initQ = new URLSearchParams(window.location.search).get("q");
+      if (initQ) setQ(initQ);
+    } catch { /* ignore */ }
+  }, []);
+
   const subscribeCurrent = async () => {
     if (subBusy) return;
     setSubBusy(true);
@@ -170,7 +178,8 @@ export function OpportunityBrowse() {
       <div className="mb-6">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2"><Compass className="w-7 h-7 text-violet-500" /> 機會島</h1>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <Link href="/opportunities/analyze" className="text-sm rounded-full px-3 py-1.5 border border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">✨ AI 作品分析</Link>
             <Link href="/opportunities/mock-judge" className="text-sm rounded-full px-3 py-1.5 border border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">🧑‍⚖️ 模擬評審</Link>
             <Link href="/opportunities/routes" className="text-sm rounded-full px-3 py-1.5 border border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">🧭 我的航線</Link>
           </div>
