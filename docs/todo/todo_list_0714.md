@@ -1,6 +1,7 @@
-# AI 島待辦總表（2026-07-14 · 現行主檔）
+# AI 島待辦總表（2026-07-14 · 歷史，已由 `todo_list_0715.md` 接手）
 
-> 本檔＝目前**未完成**待辦主檔。完整歷史與已完成劃線見 `todo_list_0713.md`（不刪、當歷史）。
+> ⚠️ **現行主檔已改為 `todo_list_0715.md`**。本檔留作 0714 歷史（含當日完成劃線），不刪。
+> 完整更早歷史見 `todo_list_0713.md`。
 > 圖例：⬜ 未做 · 🚧 進行中 · 🔴 需林董本人操作 · ＊ 原則/約束 · ~~劃線~~＝已完成。
 > **完成的用刪除線標記、不要刪。** 狀態依實際程式碼核對（文件常落後）。
 
@@ -67,7 +68,7 @@
 ---
 
 ## 二、機會島（Opportunity Island）
-- ⬜ **AI 作品分析**（網站/GitHub/PDF/PitchDeck/商業計畫/履歷 → 能力圖譜）。
+- ~~**AI 作品分析**（網站/GitHub/文字/履歷 → 能力圖譜）：`/opportunities/analyze` + `/api/opportunities/analyze-work`；貼網址(伺服器抓取)或文字→AI 出能力圖譜(技能長條+依據/優勢/補強/方向/機會關鍵字→導搜尋)。（0715，commit 13a831ad）~~（PDF/PitchDeck 專門解析可再加）
 - 🚧 **PDF 規則解析** + 版本比較（詳情頁長 PDF 摘要）：~~PDF 解析已做——`rules-summary` route 加 `url` 參數，簡章網址/PDF 連結 → 伺服器抓取（PDF 用 `unpdf` 解析、HTML 去標籤）→ 併進既有 AI 規則整理；RulesSummary UI 加網址欄。unpdf 本機實測抽字 OK。（0715）~~ ⬜ 版本比較（存歷次規則版本、diff 變動）待做。
 - ~~**適合度規則引擎接前台**：`opportunity-radar` cron 每日用 `scoreOpportunity` 重算所有 open/upcoming 機會、寫進 `ai_island_fit_score`（規則引擎、零 AI 成本、含截止時程新鮮度）。（0714，下次 cron 跑就填值）~~
 - ⬜ **雷達 V4 擴充**：API/sitemap/爬蟲來源、三層 hash 變動偵測、每欄原文證據+信心分、cron 分頻、Sentry 監控。
