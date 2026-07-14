@@ -56,26 +56,41 @@ function parseDecision(text: string): Decision | null {
   let t = (text ?? "").trim();
   // 去 code fence
   t = t.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
-  const s = t.indexOf("{"), e = t.lastIndexOf("}");
-  if (s === -1 || e === -1 || e < s) return null;
-  const jsonStr = t.slice(s, e + 1);
-  try { return JSON.parse(jsonStr); } catch { /* 往下容錯修復 */ }
+  const s = t.indexOf("{");
+  if (s === -1) return null;
+  const e = t.lastIndexOf("}");
+  // 完整 JSON（有收尾的 }）→ 直接 parse
+  if (e > s) {
+    try { return JSON.parse(t.slice(s, e + 1)); } catch { /* 往下容錯修復 */ }
+  }
 
   // 修復最常見失敗：模型把「一大段 markdown（含 ``` 程式碼、換行、引號）」塞進 summary 字串、
-  // 但沒把換行/引號 escape 好 → JSON.parse 掛掉。這裡直接把 summary 內容抽出來、容錯 unescape，
-  // 避免把整包 raw JSON 當答案顯示（使用者只想看成品本身）。
+  // 但沒把換行/引號 escape 好、或**輸出被 maxTokens 截斷**（沒有收尾的 "}）→ JSON.parse 掛掉。
+  // 這裡直接把 summary 內容抽出來、容錯 unescape，避免把整包 raw JSON 當答案顯示（使用者只想看成品本身）。
+  const jsonStr = t.slice(s);  // 從第一個 { 到結尾（含被截斷的情況）
   try {
     const done = /"done"\s*:\s*true/.test(jsonStr);
-    // 抓 "summary":" 之後、到最後一個 " 為止（貪婪、吃到結尾的 "}）
-    const m = jsonStr.match(/"summary"\s*:\s*"([\s\S]*)"\s*}?\s*$/);
-    if (m) {
-      const summary = m[1]
+    // 找 "summary":" 起點，抓其後**全部**內容（截斷時沒有收尾引號也要能救）
+    const key = jsonStr.search(/"summary"\s*:\s*"/);
+    if (key !== -1) {
+      let body = jsonStr.slice(key).replace(/^"summary"\s*:\s*"/, "");
+      // 若有正常收尾（未被截斷）：切掉最後一個未跳脫的 "、以及可能的 , "done":... }
+      body = body.replace(/"\s*(?:,\s*"[^"]*"\s*:\s*(?:true|false|null|"[^"]*"|\d+)\s*)*}?\s*$/, "");
+      const summary = body
         .replace(/\\r\\n/g, "\n").replace(/\\n/g, "\n").replace(/\\t/g, "\t")
         .replace(/\\"/g, '"').replace(/\\\\/g, "\\").trim();
       if (summary.length > 0) return { done: done || true, summary };
     }
   } catch { /* ignore */ }
   return null;
+}
+
+// 判斷「這段 summary 其實是沒 parse 成功的 raw decision JSON」（含 thought/done/summary 欄位）
+// → 別把整包 JSON 丟給使用者看，改用 finalizeFromHistory 乾淨重產。
+function looksLikeRawDecisionJson(s: string): boolean {
+  const h = (s ?? "").trim().slice(0, 400);
+  if (!h.startsWith("{")) return false;
+  return /"(thought|done|tool|summary)"\s*:/.test(h);
 }
 
 const PLANNER_SYSTEM = `你是 AI 島的行動代理（Agent）核心。你會被交付一個目標，要一步一步用「工具」把它完成。
@@ -138,11 +153,13 @@ ${hist}
 
 請只回下一步的 JSON。`;
   // 免費模型先跑（成本≈0）；沒回有效 JSON → 找外援：升級到較強模型再試一次
-  let res = await completeForUsage("agent_core", { system, user, maxTokens: 900, defaultModel: freeModel });
+  // maxTokens 放寬：done 的產出型 summary（完整指南/文件/程式碼）常很長，太小會被截斷 →
+  // JSON 收不了尾、parse 失敗 → 整包 raw JSON 被當答案顯示（214/216/217）。
+  let res = await completeForUsage("agent_core", { system, user, maxTokens: 3000, defaultModel: freeModel });
   let d = parseDecision(res.text);
   if (!d) {
     const strong = await pickStrongModel();
-    res = await completeForUsage("agent_core", { system, user, maxTokens: 1200, defaultModel: strong });
+    res = await completeForUsage("agent_core", { system, user, maxTokens: 3500, defaultModel: strong });
     d = parseDecision(res.text);
   }
   // 還是沒 JSON、但模型直接寫了像樣的答案 → 別因格式整個失敗，把它當最終回覆。
@@ -277,7 +294,7 @@ async function runSubAgent(subGoal: string, userId: string, freeModel: string, t
     if (!decision) break;
     if (decision.done || !decision.tool) {
       const s = sanitizeAnswer(decision.summary ?? "");
-      if (s && !looksLikeReasoning(s.slice(0, 200))) return { goal: subGoal, summary: s };
+      if (s && !looksLikeRawDecisionJson(s) && !looksLikeReasoning(s.slice(0, 200))) return { goal: subGoal, summary: s };
       break;
     }
     const tool = getTool(decision.tool);
@@ -527,7 +544,13 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
       if (decision.thought) yield { type: "thought", idx, thought: decision.thought };
 
       if (decision.done || !decision.tool) {
-        const summary = sanitizeAnswer(decision.summary ?? "") || "完成。";
+        let summary = sanitizeAnswer(decision.summary ?? "");
+        // 防呆：summary 其實是沒 parse 成功的 raw JSON、或是思考草稿、或幾乎空 → 用手上資料乾淨重產，
+        // 別把 {"thought":...,"done":true,"summary":"..."} 整包丟給使用者看（214/216/217 的病灶）。
+        if (!summary || looksLikeRawDecisionJson(summary) || looksLikeReasoning(summary.slice(0, 200))) {
+          const clean = history.length ? await finalizeFromHistory(goal, history) : "";
+          summary = clean || sanitizeAnswer(decision.summary ?? "") || "完成。";
+        }
         // L3 反思：多步計畫在 done 前驗收；沒達標就回饋、繼續做（最多 2 次，避免無限/燒錢）
         if (plan.length > 1 && critiques < 2) {
           const v = await critique(goal, plan, history, summary, freeModel);
