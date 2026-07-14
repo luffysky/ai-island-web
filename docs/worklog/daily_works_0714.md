@@ -85,3 +85,13 @@
 - ✅ **IG 風圖片輪播 `ImageCarousel`**：手機左右滑(scroll-snap snap-center)、桌面 hover 箭頭、右上 N/N 計數、底部圓點；單張直接顯示。社群 feed + 單篇貼文頁都換上。用 `no-scrollbar`+inline overflowX 避開全站 overflow scrollbar 樣式。
 - 🚨 收尾：`tsc`✓ `next build` exit0✓；`ci_posts.images` 是 jsonb 陣列、無 migration；未動 .env.local。commit 867c267b。
 - ⏸ **首頁沉浸式滾動（scroll-world）**：已研究其技法＝滾動洗刷「預渲染影片」的鏡頭穿越（需付費 AI 生影片素材，我們沒有）。可行替代＝用我們現有圖層做 scroll-scrubbed transform 穿越（sticky pin + useScroll 驅動景深/縮放/淡入）。**林董中途插了社群圖片需求、這項先排回佇列**、下次接著做。
+
+## 🚀 首頁沉浸滾動 + @提及升級 + 每日上限（0715 續，autonomous）
+- ✅ **首頁沉浸式滾動穿越 Hero**（`Hero.tsx`）：高軌道(175/210vh)+`sticky` 舞台，`useScroll` 進度驅動——島圖縮放(1→1.45)/上移、遠近星層錯速景深、暗罩加深、文案淡出上移→尾段浮現「進入 AI 島」+向下捲動提示。全程尊重 `prefers-reduced-motion`(退化成靜態、transform 皆常數、`min-h` 保底)。純現有素材(hero 日/夜圖+星層)，GPT 交五層對齊素材後可再升級。commit 177c9c9b。
+  - ⚠️ **待林董目視**：build+SSR 都綠(HTTP200、無 error page、mode 卡/StageMap/星層都在)，但本機 Chrome 擴充沒連上、沒能截圖實際捲動效果。桌機/手機請掃一眼捲動順不順、有無破版。
+- ✅ **index-img.md 更新**：加「首頁沉浸式滾動穿越素材規格」——免費圖層 transform 做法說明 + 五層對齊列為**第一優先**(一套素材餵 StageMap+沉浸滾動兩用) + 可選 `scroll-scene-01~03` 段落錨點。commit adc94ffa。
+- ✅ **@提及升級**：① 接 LINE 推播（`notifyMention` 共用助手＝in-app 鈴鐺 + LINE flex，討論區/部落格/社群統一）② 編輯留言也支援 @自動完成（討論區/部落格編輯框改 MentionTextarea）。commit c51e4a0e。
+- ✅ **創作者社群留言 @提及 + 20 圖 + IG 輪播**（見上批 5a5f46a9 / 867c267b）。
+- ✅ **每使用者每日任務上限**（`launchAgentTask`）：fail-open 上限(預設80、`AGENT_DAILY_TASK_CAP` 可調)，admin/owner 免、排程 `skipDailyCap` 不計；查詢出錯一律放行。省 token 第一步。commit 2caeafca。
+- 🚨 收尾：全部 `tsc`✓ `vitest 137`✓ `next build` exit0✓；除社群輪播無新 migration；未動 .env.local。
+- 📌 記：`po-once.com`＝社群發布中心的參考藍圖(一次發文→同步所有平台)、寫進 todo。
