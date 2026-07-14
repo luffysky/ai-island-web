@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Bot, Send, Loader2, CheckCircle2, XCircle, Wrench, Eye, ShieldAlert, ShieldCheck, History, Cpu, Square, Laptop, Plug, Copy, Trash2, X, Mic, Pencil } from "lucide-react";
+import { Bot, Send, Loader2, CheckCircle2, XCircle, Wrench, Eye, ShieldAlert, ShieldCheck, History, Cpu, Square, Laptop, Plug, Copy, Trash2, X, Mic, Pencil, FileText, FileSpreadsheet, Presentation } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -318,6 +318,28 @@ export function AgentClient() {
     finally { setStarting(false); }
   }, [busy, loadHistory, skillId, threadId, loadThreadTurns]);
 
+  const [exporting, setExporting] = useState("");
+  const exportAs = useCallback(async (type: "docx" | "pptx" | "xlsx") => {
+    if (!summary.trim() || exporting) return;
+    setExporting(type);
+    try {
+      const title = (goal || "AI島產出").replace(/^（[^）]*）：?/, "").trim().slice(0, 60) || "AI島產出";
+      const r = await fetch("/api/agent/export", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type, content: summary, title }),
+      });
+      if (!r.ok) { const d = await r.json().catch(() => ({})); alert(d.error ?? "匯出失敗"); return; }
+      const blob = await r.blob();
+      const cd = r.headers.get("Content-Disposition") ?? "";
+      const m = cd.match(/filename\*=UTF-8''([^;]+)/);
+      const fname = m ? decodeURIComponent(m[1]) : `AI島產出.${type}`;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a"); a.href = url; a.download = fname; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+    } catch { alert("匯出失敗，稍後再試"); }
+    finally { setExporting(""); }
+  }, [summary, goal, exporting]);
+
   const replay = useCallback(async (id: string) => {
     if (busy) return;
     const r = await fetch(`/api/agent/tasks/${id}`);
@@ -566,6 +588,11 @@ export function AgentClient() {
                         {synthBusy ? <Loader2 className="w-3 h-3 animate-spin" /> : <Bot className="w-3 h-3" />} 存成技能
                       </button>
                     )}
+                    <div className="flex items-center gap-0.5 mr-0.5 pr-1.5 border-r border-emerald-500/20">
+                      <button onClick={() => exportAs("docx")} disabled={!!exporting} title="下載 Word（.docx）" className="inline-flex items-center gap-0.5 text-[11px] rounded-md px-1.5 py-1 text-sky-600 dark:text-sky-400 hover:bg-sky-500/10 disabled:opacity-40">{exporting === "docx" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />} Word</button>
+                      <button onClick={() => exportAs("pptx")} disabled={!!exporting} title="下載簡報（.pptx）" className="inline-flex items-center gap-0.5 text-[11px] rounded-md px-1.5 py-1 text-orange-600 dark:text-orange-400 hover:bg-orange-500/10 disabled:opacity-40">{exporting === "pptx" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Presentation className="w-3.5 h-3.5" />} PPT</button>
+                      <button onClick={() => exportAs("xlsx")} disabled={!!exporting} title="下載 Excel（.xlsx）" className="inline-flex items-center gap-0.5 text-[11px] rounded-md px-1.5 py-1 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 disabled:opacity-40">{exporting === "xlsx" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileSpreadsheet className="w-3.5 h-3.5" />} Excel</button>
+                    </div>
                     <button onClick={() => { navigator.clipboard?.writeText(summary).catch(() => {}); }} title="複製" className="text-black/30 dark:text-white/30 hover:text-black/60 dark:hover:text-white/60"><Copy className="w-3.5 h-3.5" /></button>
                   </div>
                 </div>
