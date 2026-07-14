@@ -12,16 +12,27 @@ import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
 import { GifPicker } from "@/components/ui/GifPicker";
 import { EmojiText } from "@/components/ui/EmojiText";
 import { TranslateButton } from "@/components/ui/TranslateButton";
+import Link from "next/link";
+import { MentionTextarea, resolveMentions, type Mention } from "@/components/ui/MentionTextarea";
 
 const _IMG = /^https?:\/\/[^\s]+\.(gif|png|jpe?g|webp|svg)(\?[^\s]*)?$/i;
 const _GIPHY = /^https?:\/\/(media\d?\.giphy\.com|i\.giphy\.com)\/[^\s]+/i;
-/** 貼文內文：GIF/圖片網址→<img>、其他網址→連結、純文字→動態 emoji。 */
+/** 貼文/留言內文：@提及 token→可點連結、GIF/圖片網址→<img>、其他網址→連結、純文字→動態 emoji。 */
 function renderBody(text: string) {
-  return text.split(/(https?:\/\/[^\s]+)/g).map((p, i) => {
-    if (_IMG.test(p) || _GIPHY.test(p)) return <img key={i} src={p} alt="gif" loading="lazy" className="block max-w-[240px] max-h-[240px] rounded-lg my-1" />;
-    if (/^https?:\/\//.test(p)) return <a key={i} href={p} target="_blank" rel="noreferrer" className="text-accent underline break-all">{p}</a>;
-    return <EmojiText key={i} text={p} size={18} />;
+  const out: React.ReactNode[] = [];
+  let key = 0;
+  text.split(/(\[\[user:[0-9a-fA-F-]{36}\|[^\]]*\]\])/g).forEach((seg) => {
+    if (!seg) return;
+    const um = seg.match(/^\[\[user:([0-9a-fA-F-]{36})\|([^\]]*)\]\]$/);
+    if (um) { out.push(<Link key={key++} href={`/forum/user/${um[1]}` as any} className="font-medium text-accent hover:underline">@{um[2] || "用戶"}</Link>); return; }
+    seg.split(/(https?:\/\/[^\s]+)/g).forEach((p) => {
+      if (!p) return;
+      if (_IMG.test(p) || _GIPHY.test(p)) out.push(<img key={key++} src={p} alt="gif" loading="lazy" className="block max-w-[240px] max-h-[240px] rounded-lg my-1" />);
+      else if (/^https?:\/\//.test(p)) out.push(<a key={key++} href={p} target="_blank" rel="noreferrer" className="text-accent underline break-all">{p}</a>);
+      else out.push(<EmojiText key={key++} text={p} size={18} />);
+    });
   });
+  return out;
 }
 
 type Author = { id?: string; username?: string; display_name?: string; avatar_url?: string };
@@ -140,6 +151,7 @@ function PostCard({ p, meId, onDelete }: { p: Post; meId: string; onDelete: () =
   const [showC, setShowC] = useState(false);
   const [comments, setComments] = useState<any[] | null>(null);
   const [cbody, setCbody] = useState("");
+  const [cmentions, setCmentions] = useState<Mention[]>([]);
   const confirm = useConfirm();
   const prompt = usePrompt();
   const toast = useToast();
@@ -147,7 +159,7 @@ function PostCard({ p, meId, onDelete }: { p: Post; meId: string; onDelete: () =
   async function like() { try { const r = await call(`/api/creator-island/social/posts/${p.id}/like`, "POST"); setLiked(r.on); setLikes((n) => n + (r.on ? 1 : -1)); } catch {} }
   async function bookmark() { try { const r = await call(`/api/creator-island/social/posts/${p.id}/bookmark`, "POST"); setSaved(r.on); } catch {} }
   async function loadComments() { setShowC((s) => !s); if (comments) return; try { const j = await call(`/api/creator-island/social/posts/${p.id}/comments`, "GET"); setComments(j.comments ?? []); } catch {} }
-  async function addComment() { if (!cbody.trim()) return; try { const j = await call(`/api/creator-island/social/posts/${p.id}/comments`, "POST", { body: cbody.trim() }); setComments((c) => [...(c ?? []), j.comment]); setCbody(""); } catch {} }
+  async function addComment() { if (!cbody.trim()) return; const body = resolveMentions(cbody.trim(), cmentions); try { const j = await call(`/api/creator-island/social/posts/${p.id}/comments`, "POST", { body }); setComments((c) => [...(c ?? []), j.comment]); setCbody(""); setCmentions([]); } catch {} }
   async function del() { if (!(await confirm({ title: t("communityDeletePostConfirm"), confirmLabel: t("communityDelete"), destructive: true }))) return; try { await call(`/api/creator-island/social/posts/${p.id}`, "DELETE"); onDelete(); } catch {} }
   async function share() {
     const url = `${window.location.origin}/creator-island/p/${p.id}`;
@@ -182,7 +194,9 @@ function PostCard({ p, meId, onDelete }: { p: Post; meId: string; onDelete: () =
           <div className="flex gap-2 items-center">
             <AnimatedEmojiPicker onSelect={(e) => setCbody((v) => v + e)} buttonClassName="w-7 h-7" />
             <GifPicker onSelect={(url) => setCbody((v) => (v ? v + " " : "") + url + " ")} />
-            <textarea rows={1} value={cbody} onChange={(e) => setCbody(e.target.value)} onInput={(e) => autoGrow(e.currentTarget, 100)} onKeyDown={(e) => handleEnterSubmit(e, addComment)} placeholder={t("communityCommentPlaceholder")} className="flex-1 bg-bg-elevated border border-border rounded-2xl px-3 py-1.5 text-xs outline-none focus:border-accent resize-none" style={{ maxHeight: "100px" }} />
+            <div className="flex-1">
+              <MentionTextarea rows={1} value={cbody} onChange={setCbody} onPick={(m) => setCmentions((l) => (l.some((x) => x.id === m.id) ? l : [...l, m]))} onInput={(e) => autoGrow(e.currentTarget, 100)} onKeyDown={(e) => handleEnterSubmit(e, addComment)} placeholder={t("communityCommentPlaceholder")} className="w-full bg-bg-elevated border border-border rounded-2xl px-3 py-1.5 text-xs outline-none focus:border-accent resize-none" style={{ maxHeight: "100px" }} />
+            </div>
             <button onClick={addComment} className="text-accent text-xs">{t("communitySend")}</button>
           </div>
         </div>
