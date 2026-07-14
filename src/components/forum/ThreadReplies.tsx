@@ -440,12 +440,13 @@ function ReplyItem({
   const isOwn = currentUserId && reply.user_id === currentUserId;
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(reply.content);
+  const [editMentions, setEditMentions] = useState<Mention[]>([]);
   const [savingEdit, setSavingEdit] = useState(false);
 
   const submitEdit = async () => {
     if (!onEdit || !draft.trim() || savingEdit) return;
     setSavingEdit(true);
-    const r = await onEdit(reply.id, draft);
+    const r = await onEdit(reply.id, resolveMentions(draft, editMentions));
     setSavingEdit(false);
     if (r.ok) setEditing(false);
   };
@@ -487,9 +488,10 @@ function ReplyItem({
           </div>
           {editing ? (
             <div className="mt-1">
-              <textarea
+              <MentionTextarea
                 value={draft}
-                onChange={(e) => setDraft(e.target.value)}
+                onChange={setDraft}
+                onPick={(m) => setEditMentions((l) => (l.some((x) => x.id === m.id) ? l : [...l, m]))}
                 onInput={(e) => autoGrow(e.currentTarget, 240)}
                 rows={2}
                 autoFocus

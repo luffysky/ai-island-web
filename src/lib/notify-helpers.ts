@@ -35,6 +35,27 @@ export async function pushUserNotif(opts: {
   }
 }
 
+/** @提及通知：in-app 鈴鐺 + LINE 推播給被 tag 的人（排除自己由呼叫端處理）。
+ *  用在討論區 / 部落格 / 社群留言。preview 已把 token 還原成 @顯示名。 */
+export async function notifyMention(opts: { userId: string; mentionerName: string; where: string; preview: string; link: string }) {
+  await pushUserNotif({
+    userId: opts.userId,
+    kind: "comment",
+    title: `${opts.mentionerName} 在${opts.where}提到你`,
+    body: opts.preview.slice(0, 120),
+    link: opts.link,
+  });
+  try {
+    const { notifyUserLine } = await import("./notify-user-line");
+    const flex = buildSimpleCard({
+      emoji: "🔔", title: `${opts.mentionerName} 在${opts.where}提到你`, accentColor: "#bd93f9",
+      body: opts.preview.slice(0, 100),
+      buttons: [{ label: "去看看", uri: `${SITE_URL}${opts.link}`, primary: true }],
+    });
+    await notifyUserLine({ userId: opts.userId, text: `🔔 ${opts.mentionerName} 在${opts.where}提到你`, flex });
+  } catch { /* LINE 未綁 / 關通知 → 略過 */ }
+}
+
 /** 拿 user 簡介（給通知文案用） */
 async function brief(userId: string): Promise<string> {
   try {

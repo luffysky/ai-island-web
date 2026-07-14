@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireCreatorUser } from "@/lib/creator-engine/api";
 import { listPostComments, addPostComment } from "@/lib/creator-engine/social";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
-import { pushUserNotif } from "@/lib/notify-helpers";
+import { notifyMention } from "@/lib/notify-helpers";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -24,9 +24,9 @@ async function notifyMentions(commenterId: string, postId: string, content: stri
     const { data } = await admin.from("profiles").select("display_name, username").eq("id", commenterId).single();
     commenter = (data as any)?.display_name || (data as any)?.username || "有人";
   } catch { /* ignore */ }
-  const preview = content.replace(/\[\[user:[0-9a-fA-F-]{36}\|([^\]]*)\]\]/g, "@$1").slice(0, 80);
+  const preview = content.replace(/\[\[user:[0-9a-fA-F-]{36}\|([^\]]*)\]\]/g, "@$1");
   for (const uid of targets) {
-    pushUserNotif({ userId: uid, kind: "comment", title: `${commenter} 在社群留言提到你`, body: preview, link: `/creator-island/p/${postId}` }).catch(() => {});
+    notifyMention({ userId: uid, mentionerName: commenter, where: "社群留言", preview, link: `/creator-island/p/${postId}` }).catch(() => {});
   }
 }
 

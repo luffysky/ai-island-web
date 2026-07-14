@@ -4,7 +4,7 @@ import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 import { resolveArticle } from "@/lib/blog-resolve";
 import type { BlogComment } from "@/lib/blog-types";
 import { parseBody } from "@/lib/validate";
-import { pushUserNotif } from "@/lib/notify-helpers";
+import { notifyMention } from "@/lib/notify-helpers";
 
 // 從內容抽出 @提及 token 的 user id（去重）
 function parseMentionIds(content: string): string[] {
@@ -108,14 +108,9 @@ export async function POST(
 
   // @ 提及通知：通知被 tag 的人（排除自己；訪客留言 user?.id 為 null）
   const mentioned = parseMentionIds(content).filter((uid) => uid !== user?.id);
+  const preview = content.replace(/\[\[user:[0-9a-fA-F-]{36}\|([^\]]*)\]\]/g, "@$1");
   for (const uid of mentioned.slice(0, 10)) {
-    pushUserNotif({
-      userId: uid,
-      kind: "comment",
-      title: `${authorName} 在部落格留言提到你`,
-      body: content.replace(/\[\[user:[0-9a-fA-F-]{36}\|([^\]]*)\]\]/g, "@$1").slice(0, 80),
-      link: `/blogs/${userSlug}/${articleSlug}`,
-    }).catch(() => {});
+    notifyMention({ userId: uid, mentionerName: authorName, where: "部落格留言", preview, link: `/blogs/${userSlug}/${articleSlug}` }).catch(() => {});
   }
 
   return NextResponse.json({ comment: { ...data, replies: [] } });
