@@ -134,6 +134,29 @@ Anchor to the hero island's shape and palette (same world, night version).
 
 ---
 
+# 🎢（新增 0715）首頁沉浸式滾動穿越 — 需要的素材
+
+> 靈感：`github.com/oso95/scroll-world`——「**捲動即前進**，鏡頭一路飛穿一座生成的小世界」。
+> 它原作技法＝**滾動洗刷「預渲染影片」**（用付費 AI 生鏡頭飛行影片＋接縫連接片）。**我們不走這條**（要付費生影片素材、我們沒有）。
+> **我們的免費做法＝用「圖層 + CSS/JS transform」做 scroll-scrubbed 鏡頭穿越**：整段釘住（sticky pin）滿版，`useScroll` 進度(0→1)驅動各層**縮放/平移/淡入**，遠層慢、近層快 → 產生「往前飛進世界」的景深感。守 `prefers-reduced-motion`（關動畫時退化成一般堆疊區塊）、亮暗雙版、RWD。
+
+## 這個玩法「吃」什麼素材（越多層＝景深越真）
+1. **最需要：把上面「Stage Map 五層」交齊、且五層同尺寸對齊**（見上一節鐵則）。
+   - 這五層**同時餵** StageMap 互動地圖 **和** 沉浸式滾動穿越——**一套素材、兩個用途**。所以**五層對齊＝現在第一優先**。
+2. **（可選）鏡頭沿途的 2–3 個「場景錨點」背景**，讓穿越有「從外景 → 飛近 → 進入核心」的段落感。每張都 text-free、同世界同調色、16:9：
+   - `scroll-scene-01-approach.png`：**遠望**整座漂浮 AI 島（黃昏），大量負空間在中央（鏡頭要往裡飛）。
+   - `scroll-scene-02-surface.png`：**貼近島面**，看得到瀑布/水晶尖塔/發光電路道路（入夜）。
+   - `scroll-scene-03-core.png`：**島中心的 AI 神經核心**特寫，藍/紫全息光、能量匯聚（深夜星河）。
+   - 提示詞：每張都貼 `[STYLE BLOCK]`＋`[NEGATIVE]`，加一句 `same floating AI island world as the hero, {approach far view | close surface | core close-up}, keep center calm for camera fly-through, text-free`。
+3. 若之後真要「影片級」穿越：可再評估付費 AI 生**短鏡頭飛行影片**（Seedance/Higgsfield 那類）＋滾動洗刷播放——但**先用免費圖層版把體驗做出來**，值得再說。
+
+## 交付優先序（給 GPT 的話）
+- 🥇 **五層 stage-layer 對齊版**（sky 不透明、02–05 透明、全部同一畫布尺寸如 1672×941）← **先做這個，一交立刻接**。
+- 🥈 `scroll-scene-01~03`（沉浸穿越的段落錨點，可有可無、有更讚）。
+- 🥉 其餘角色/模式小圖照原順序。
+
+---
+
 # 各張分鏡提示詞（內容仍有效；**順序以上面 World-first 為準，角色排最後**）
 
 # Tier 1 — 角色去背（給「夥伴介紹」區＋寵物，World-first 中排第 5 才生）
