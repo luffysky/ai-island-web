@@ -271,7 +271,8 @@ export function AgentClient() {
       const { tasks } = await r.json();
       setThreadTurns((tasks ?? [])
         .filter((t: any) => t.id !== excludeId && t.status === "succeeded")
-        .map((t: any) => ({ id: t.id, goal: t.goal, summary: t.turn_summary || t.result?.summary || "" })));
+        // 顯示用「完整答案」(result)、而非壓縮版 turn_summary → 延續對話時前文一字不少
+        .map((t: any) => ({ id: t.id, goal: t.goal, summary: (typeof t.result === "string" ? t.result : t.result?.summary) || t.turn_summary || "" })));
     } catch { /* ignore */ }
   }, []);
 
@@ -476,8 +477,12 @@ export function AgentClient() {
                 <div className="space-y-2">
                   {threadTurns.map((t) => (
                     <div key={t.id} className="rounded-xl border border-black/5 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.03] p-3">
-                      <div className="text-xs text-black/45 dark:text-white/45 mb-1">你：{t.goal}</div>
-                      {t.summary && <div className="text-sm whitespace-pre-wrap leading-relaxed text-black/65 dark:text-white/65 line-clamp-4">{t.summary}</div>}
+                      <div className="text-xs font-medium text-violet-600/80 dark:text-violet-400/80 mb-1.5">你：{t.goal}</div>
+                      {t.summary && (
+                        <div className="prose-custom prose-sm max-w-none text-sm leading-relaxed text-black/75 dark:text-white/75">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>{t.summary}</ReactMarkdown>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
