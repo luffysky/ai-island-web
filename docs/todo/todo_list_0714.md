@@ -42,7 +42,8 @@
 - ⬜ **TG bot 入口**（BotFather token、inline keyboard）。
 - ⬜ **Discord bot**（slash commands `/agent` `/opportunity`、DM、頻道貼每日機會）。
 - ⬜ **統一 Bridge**：LINE/TG/Discord 共用「訊息→建 task→回填」轉接層（LINE 已做）。
-- ⬜ **Outbound 社群發文**：YT/IG/Threads/抖音/FB/X（AI 起草→你批准→發、排程發布）。＊守紅線：對外一律先批准。
+- 🚧 **社群媒體發布中心**（0714 MVP 骨架已做）：`/agent/social` — 一處撰稿/多平台勾選/排程/草稿＋連結狀態；`social_posts` 表＋`/api/social/posts` CRUD。**待接**：① 各平台發送 adapter（🟢 LINE/TG/Discord 先，🟡 Meta 系需 OAuth 審核，🔴 抖音/小紅書/Dcard 無 API）② 排程發布 cron ③ **私訊/DM 統一收件匣**（收各平台 DM→一處回，LINE/TG/Discord 可做）④ AI 起草→你批准→發（走紅線批准）。
+  - 🔴 各平台要你先辦：Meta App(FB/IG/Threads 審核)、X 開發者(多付費)、TG BotFather、Discord bot；抖音/小紅書/Dcard 現實上只能「AI 幫寫草稿、你手動貼」。
 - ⬜ **外部工具**：Gmail/Calendar/GitHub/Notion/Drive 當 Agent 工具（連結中心已做基礎，待各平台 OAuth 一鍵授權）。
 - ⬜ **Credential Broker**（本機管密碼、Agent 只知有無）＋ L4 憑證/銀行/系統操作流程。
 - ⬜ **省 token**：Rule-filter 完整層、Agent 任務 Embedding RAG、每 Agent 每日 Budget 上限、成本/ROI Dashboard、省錢模式三檔。
