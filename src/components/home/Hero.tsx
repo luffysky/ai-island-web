@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useRef } from "react";
 import { useTranslations } from "next-intl";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { NumberTicker } from "@/components/ui/NumberTicker";
-import { ParallaxLayer, StarField } from "./parallax";
+import { StarField } from "./parallax";
 import {
   Sparkles as SparkleIcon,
   Palette,
@@ -15,6 +16,7 @@ import {
   Compass,
   Bot,
   ArrowRight,
+  ChevronDown,
 } from "lucide-react";
 
 type HeroProps = {
@@ -38,6 +40,24 @@ const TONES: Record<string, Tone> = {
 
 export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = true, creatorIslandEnabled = false }: HeroProps) {
   const t = useTranslations("home");
+  const reduce = useReducedMotion();
+
+  // 沉浸式滾動穿越：釘住(sticky)的舞台隨捲動洗刷 → 鏡頭往島「飛進去」（縮放+景深錯速），
+  // 文案先在、往下淡出上移，最後浮出「進入世界」引導。關動態(reduce)時 = 一般靜態 Hero。
+  const trackRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: trackRef, offset: ["start start", "end start"] });
+  // reduce 時全部輸出常數 → 等同原本靜態 Hero
+  const islandScale = useTransform(scrollYProgress, [0, 1], reduce ? [1, 1] : [1, 1.45]);
+  const islandY = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [0, -48]);
+  const farY = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [0, -120]);
+  const nearY = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [0, -320]);
+  const nearScale = useTransform(scrollYProgress, [0, 1], reduce ? [1, 1] : [1, 1.8]);
+  const scrimOpacity = useTransform(scrollYProgress, [0, 1], reduce ? [1, 1] : [1, 1.25]);
+  const textOpacity = useTransform(scrollYProgress, reduce ? [0, 1] : [0, 0.28, 0.46], reduce ? [1, 1] : [1, 1, 0]);
+  const textY = useTransform(scrollYProgress, [0, 0.46], reduce ? [0, 0] : [0, -70]);
+  const enterOpacity = useTransform(scrollYProgress, reduce ? [0, 1] : [0.55, 0.82], reduce ? [0, 0] : [0, 1]);
+  const enterY = useTransform(scrollYProgress, [0.55, 0.9], reduce ? [0, 0] : [40, 0]);
+  const hintOpacity = useTransform(scrollYProgress, [0, 0.12], reduce ? [0, 0] : [1, 0]);
 
   const modes: Array<{ href: string; Icon: typeof GraduationCap; tone: Tone; tag: string; title: string; desc: string; cta: string; show: boolean }> = [
     { href: "/chapters", Icon: GraduationCap, tone: TONES.green, tag: t("modeClassicTag"), title: t("modeClassicTitle"), desc: t("modeClassicDesc"), cta: t("modeClassicCta"), show: true },
@@ -51,43 +71,49 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
 
   return (
     <section className="relative">
-      {/* ===== 上：情境 Hero（島為背景、暗色遮罩、白字；亮暗都維持這個電影感暗帶）===== */}
-      <div className="relative overflow-hidden">
-        {/* 背景主視覺（日/夜雙圖：暗色夜景、亮色白天，隨主題切）*/}
-        <div className="absolute inset-0">
-          <Image
-            src="/home/hero-island-dark.png"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="img-night object-cover object-[68%_center]"
-          />
-          <Image
-            src="/home/hero-island-light.png"
-            alt=""
-            fill
-            sizes="100vw"
-            className="img-day object-cover object-[68%_center]"
-          />
-          {/* 左重右輕的暗色遮罩 → 左側白字對比足、右側露出島 */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-black/10" />
+      {/* ===== 上：沉浸式滾動穿越 Hero — 高軌道 + 釘住舞台，捲動洗刷鏡頭飛進島 =====
+           reduce 時軌道降為一般高度、transform 皆常數 → 退化成靜態 Hero。 */}
+      <div ref={trackRef} className={reduce ? "relative" : "relative h-[175vh] md:h-[210vh]"}>
+        <div className={`${reduce ? "relative min-h-[86vh]" : "sticky top-0 h-screen"} overflow-hidden`}>
+          {/* 背景主視覺（日/夜雙圖：暗色夜景、亮色白天，隨主題切）+ 鏡頭推進縮放 */}
+          <motion.div className="absolute inset-0 will-change-transform" style={{ scale: islandScale, y: islandY }}>
+            <Image
+              src="/home/hero-island-dark.png"
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="img-night object-cover object-[68%_center]"
+            />
+            <Image
+              src="/home/hero-island-light.png"
+              alt=""
+              fill
+              sizes="100vw"
+              className="img-day object-cover object-[68%_center]"
+            />
+          </motion.div>
+
+          {/* 2.5D 視差：遠景星空慢飄上升、近景光塵快飄放大（隨捲動＝往前穿越的景深）*/}
+          <motion.div className="absolute inset-0 overflow-hidden pointer-events-none will-change-transform" style={{ y: farY }} aria-hidden>
+            <StarField variant="far" />
+          </motion.div>
+          <motion.div className="absolute inset-0 overflow-hidden pointer-events-none will-change-transform" style={{ y: nearY, scale: nearScale }} aria-hidden>
+            <StarField variant="near" />
+          </motion.div>
+
+          {/* 左重右輕的暗色遮罩（隨捲動加深＝飛入更深處）→ 左側白字對比足、右側露出島 */}
+          <motion.div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-black/10" style={{ opacity: scrimOpacity }} aria-hidden />
           {/* 底部融進「世界」色（隨主題：暗＝黃昏、亮＝白天天空，平順銜接下方 Stage Map）*/}
-          <div className="absolute inset-x-0 bottom-0 h-32 hero-bottom-seam" />
-        </div>
+          <div className="absolute inset-x-0 bottom-0 h-32 hero-bottom-seam" aria-hidden />
 
-        {/* 2.5D 視差：遠景星空慢飄、近景光塵快飄（島圖不動，圖層錯速＝景深）*/}
-        <ParallaxLayer speed={24} className="absolute inset-0 overflow-hidden pointer-events-none">
-          <StarField variant="far" />
-        </ParallaxLayer>
-        <ParallaxLayer speed={62} className="absolute inset-0 overflow-hidden pointer-events-none">
-          <StarField variant="near" />
-        </ParallaxLayer>
-
-        {/* 文案 */}
-        <div className="relative max-w-6xl mx-auto px-6 pt-24 pb-28 md:pt-32 md:pb-36">
+          {/* 文案（釘住期間隨捲動淡出上移，把畫面讓給「飛入世界」）*/}
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            style={{ opacity: textOpacity, y: textY }}
+            className={`${reduce ? "relative py-24 md:py-28" : "absolute inset-0 flex items-center"} max-w-6xl mx-auto px-6`}
+          >
+          <motion.div
+            initial={reduce ? { opacity: 1 } : { opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="max-w-xl"
@@ -146,6 +172,23 @@ export function Hero({ totalChapters, totalLessons, stageCount, islandEnabled = 
               ))}
             </div>
           </motion.div>
+          </motion.div>
+
+          {/* 飛入尾段：中央浮現「進入 AI 島」引導（reduce 時不顯示）*/}
+          {!reduce && (
+            <motion.div style={{ opacity: enterOpacity, y: enterY }} className="absolute inset-x-0 bottom-24 flex flex-col items-center text-center pointer-events-none">
+              <span className="text-xs tracking-[0.3em] text-white/60 mb-2">WELCOME TO</span>
+              <span className="text-2xl md:text-3xl font-bold text-white [text-shadow:0_2px_20px_rgba(0,0,0,0.6)]">AI 島</span>
+              <span className="mt-2 text-sm text-white/70 [text-shadow:0_1px_10px_rgba(0,0,0,0.6)]">往下，走進這座世界</span>
+            </motion.div>
+          )}
+
+          {/* 向下捲動提示（起始顯示、一捲就淡出）*/}
+          {!reduce && (
+            <motion.div style={{ opacity: hintOpacity }} className="absolute inset-x-0 bottom-6 flex justify-center pointer-events-none">
+              <ChevronDown size={26} className="text-white/70 animate-bounce" />
+            </motion.div>
+          )}
         </div>
       </div>
 
