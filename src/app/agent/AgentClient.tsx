@@ -436,6 +436,9 @@ export function AgentClient() {
               <button onClick={() => setSkillModal(true)} className="inline-flex items-center gap-1.5 text-xs rounded-full px-3.5 py-1.5 border border-dashed border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">
                 ＋ 建員工
               </button>
+              <a href="/agent/social" className="inline-flex items-center gap-1.5 text-xs font-medium rounded-full px-3.5 py-1.5 border border-violet-500/50 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">
+                📣 社群發布
+              </a>
             </div>
           )}
 
