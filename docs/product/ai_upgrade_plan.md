@@ -67,7 +67,7 @@
 - [x] `creator-island/ai/chat` 套 `gateHighTierModel`（高階模型免費/Plus 自動降 mid/low、防禦式：失敗保持原模型；money-leak 已堵）。
 - [ ] 改 `callAI` → `streamAI`（＋前端 IslandChat 接串流）。← 較大、需同步改前端
 - [ ] 接語意快取 `lookupSemanticCache`/`writeCache`。
-- [ ] 加「每日軟上限」config（`ai-quota-config.ts` 新增 `CREATOR_DAILY_SOFT_CAP`，**預設關/很大**；濫用再開，可選接 `consume_ai_quota_v2`）。
+- [x] 加「每日軟上限」config（`ai-quota-config.ts` 的 `CREATOR_DAILY_SOFT_CAP`，**預設 0=關**；creator chat route 已 wire fail-open 檢查）＋ `gateHighTierModel` 只擋高階、聊天保持免費。（0715 確認已完成）
 - [x] 成本記帳：creator chat 走 `callAI`（已自動 `logAiUsage`）→ 本來就有記，無需補。
 
 ### P2 — 語意快取推廣（省 token）

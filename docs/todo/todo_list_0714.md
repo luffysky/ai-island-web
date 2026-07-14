@@ -91,7 +91,7 @@
 - 🆕 **更新法律頁**（下次）：隱私權政策 `/privacy`、使用條款 `/terms`、Cookie 政策 `/cookies` 內容要重新檢視更新（對齊現況功能：AI/BYOK 金鑰、分身島對外動作、連結外部帳號、LINE 推播、機會島資料來源、個資保存等）。
 - 🚧 **程式辭典續寫到 5000**：現 **1645 條**，從 `dictionary-seed-36.json` 接（一批約 40–48 條、author→`node scripts/import-dictionary.mjs`→commit）；新批次跑 `node scripts/translate-sync-all.mjs` 補 i18n。
 - ⬜ **語言島**（英/日辭典，沿用 dictionary `domain='english'|'japanese'`）。
-- ⬜ **AI 成本記帳 P1–P4**（P0 已完成）：P1 創作者綠寶軟上限、P2 語意快取推廣、P3 路由統一、P4 RAG/vision 擴充。詳 `docs/product/ai_upgrade_plan.md`。
+- 🚧 **AI 成本記帳 P1–P4**（P0 ✅、~~P1 創作者綠寶軟上限（`CREATOR_DAILY_SOFT_CAP` 預設關 + `gateHighTierModel` 只擋高階、聊天免費）已在 code、0715 確認~~）：P2 語意快取推廣、P3 路由統一、P4 RAG/vision 擴充。詳 `docs/product/ai_upgrade_plan.md`。
 - ⬜ 計畫書 ch2/ch6/ch7 + pitch-deck 對齊 `repositioning.md`；`PortfoliosClient.tsx` emoji picker；Z 幣 402 前端提示；島嶼刷幣 phase 2；E2E + Smoke tests；3D 島嶼降耗。
 
 ---
