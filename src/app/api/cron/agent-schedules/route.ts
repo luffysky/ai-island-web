@@ -41,6 +41,7 @@ export async function GET(req: NextRequest) {
         goal: s.goal,
         skillId: s.skill_id,
         threadTitle: `🕒 排程：${s.title || s.goal}`.slice(0, 80),
+        skipDailyCap: true,   // 排程自動跑 → 不計入每日互動上限
       });
       if ("error" in r) {
         await admin.from("agent_schedules").update({ next_run_at: nextRun, updated_at: nowIso }).eq("id", s.id);

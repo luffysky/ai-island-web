@@ -15,11 +15,31 @@ export async function launchAgentTask(opts: {
   threadId?: string | null;
   maxSteps?: number;
   threadTitle?: string;            // 開新串時的標題（排程可帶「🕒 排程：…」）
+  skipDailyCap?: boolean;          // 排程/系統發起 → 不計入每日上限（automation 不該被擋）
 }): Promise<{ taskId: string; threadId: string | null } | { error: string }> {
   const { userId } = opts;
   const goal = String(opts.goal ?? "").trim().slice(0, 500);
   if (!goal) return { error: "缺 goal" };
   const admin = createSupabaseAdmin();
+
+  // 每日任務上限（防失控燒 token）：一般使用者每天 N 個互動任務；admin/owner 不限、排程不計。
+  // fail-open：查詢出錯一律放行，絕不因這個 guard 的 bug 擋住正常使用。env `AGENT_DAILY_TASK_CAP` 可調。
+  if (!opts.skipDailyCap) {
+    try {
+      const cap = Number(process.env.AGENT_DAILY_TASK_CAP) || 80;
+      const { data: prof } = await admin.from("profiles").select("role").eq("id", userId).maybeSingle();
+      const role = (prof as any)?.role;
+      if (role !== "admin" && role !== "owner") {
+        const since = new Date(); since.setHours(0, 0, 0, 0);
+        const { count } = await admin.from("agent_tasks")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", userId).gte("created_at", since.toISOString());
+        if (typeof count === "number" && count >= cap) {
+          return { error: `今天的分身任務已達上限（${cap} 個）。先看看已完成的結果，明天再繼續 🙌` };
+        }
+      }
+    } catch { /* fail-open：不擋 */ }
+  }
 
   // 選用技能：限制工具集 + 附加任務框架 + 決定 max_steps
   let skill: { allowedTools?: string[]; prompt?: string } | undefined;
