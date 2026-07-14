@@ -17,6 +17,7 @@ import { ReportButton } from "@/components/ui/ReportButton";
 import { AnimatedEmojiPicker } from "@/components/ui/AnimatedEmojiPicker";
 import { GifPicker } from "@/components/ui/GifPicker";
 import { EmojiText } from "@/components/ui/EmojiText";
+import { MentionTextarea, resolveMentions, type Mention } from "@/components/ui/MentionTextarea";
 
 export function ThreadReplies({
   threadId,
@@ -42,6 +43,9 @@ export function ThreadReplies({
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [replyInput, setReplyInput] = useState("");
   const [sending, setSending] = useState(false);
+  // @ 提及：記住使用者選過的人（送出前把 @顯示名 換成 [[user:id|label]] token）
+  const [mentions, setMentions] = useState<Mention[]>([]);
+  const addMention = (m: Mention) => setMentions((list) => (list.some((x) => x.id === m.id) ? list : [...list, m]));
   // 用全站 AuthContext（單一來源、getSession cookie cache、不會像 getUser() 在靜態頁 hydration race 回 null）
   const { user, status } = useAuth();
   const currentUserId = user?.id ?? null;
@@ -54,7 +58,8 @@ export function ThreadReplies({
   // optimistic：點 send 立刻 push、失敗 toast 退回
   const submit = async (content: string, parentId: string | null) => {
     if (!content.trim() || sending) return;
-    const trimmed = content.trim();
+    // 把選過的 @顯示名 換成儲存 token（顯示端渲染成可點連結、後端據此通知被提及者）
+    const trimmed = resolveMentions(content.trim(), mentions);
     const tempId = `temp_${Date.now()}`;
     const author = {
       display_name: t("you"),
@@ -89,6 +94,7 @@ export function ThreadReplies({
     } else {
       setInput("");
     }
+    setMentions([]);
 
     setSending(true);
     try {
@@ -281,16 +287,19 @@ export function ThreadReplies({
               {/* 回覆框 */}
               {replyTo === r.id && (
                 <div className="ml-10 mt-2 flex gap-2">
-                  <textarea
-                    rows={1}
-                    value={replyInput}
-                    onChange={(e) => setReplyInput(e.target.value)}
-                    onInput={(e) => autoGrow(e.currentTarget, 120)}
-                    onKeyDown={(e) => handleEnterSubmit(e, () => submit(replyInput, r.id))}
-                    placeholder={t("replyPlaceholder")}
-                    className="flex-1 bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
-                    style={{ maxHeight: "120px" }}
-                  />
+                  <div className="flex-1">
+                    <MentionTextarea
+                      rows={1}
+                      value={replyInput}
+                      onChange={setReplyInput}
+                      onPick={addMention}
+                      onInput={(e) => autoGrow(e.currentTarget, 120)}
+                      onKeyDown={(e) => handleEnterSubmit(e, () => submit(replyInput, r.id))}
+                      placeholder={t("replyPlaceholder")}
+                      className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
+                      style={{ maxHeight: "120px" }}
+                    />
+                  </div>
                   <button
                     onClick={() => submit(replyInput, r.id)}
                     disabled={!replyInput.trim() || sending}
@@ -324,9 +333,10 @@ export function ThreadReplies({
         </div>
       ) : (
         <div className="surface p-3">
-          <textarea
+          <MentionTextarea
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={setInput}
+            onPick={addMention}
             placeholder={t("writeReply")}
             rows={3}
             className="w-full bg-bg border border-border rounded-lg p-2 text-sm outline-none focus:border-accent resize-none"
@@ -366,8 +376,8 @@ export function ThreadReplies({
 // 回覆內文渲染：引用筆記 token [[note:id|title]] → 可點連結；圖片/GIF 網址 → <img>；其餘網址 → 連結；純文字 → 動態 emoji
 const IMG_URL_RE = /^https?:\/\/[^\s]+\.(gif|png|jpe?g|webp|svg)(\?[^\s]*)?$/i;
 const GIPHY_URL_RE = /^https?:\/\/(media\d?\.giphy\.com|i\.giphy\.com)\/[^\s]+/i;
-// 同時抓 note token 與 URL；note id 是 uuid
-const CONTENT_RE = /\[\[note:([0-9a-fA-F-]{36})\|([^\]]*)\]\]|(https?:\/\/[^\s]+)/g;
+// 同時抓 note token、@提及 token 與 URL；id 是 uuid
+const CONTENT_RE = /\[\[note:([0-9a-fA-F-]{36})\|([^\]]*)\]\]|\[\[user:([0-9a-fA-F-]{36})\|([^\]]*)\]\]|(https?:\/\/[^\s]+)/g;
 function renderContent(text: string) {
   const out: React.ReactNode[] = [];
   let last = 0;
@@ -383,8 +393,15 @@ function renderContent(text: string) {
           📄 {m[2] || "筆記"}
         </Link>,
       );
+    } else if (m[3]) {
+      // @提及：可點 → 跳到該用戶頁
+      out.push(
+        <Link key={key++} href={`/forum/user/${m[3]}` as any} className="font-medium text-accent hover:underline">
+          @{m[4] || "用戶"}
+        </Link>,
+      );
     } else {
-      const url = m[3];
+      const url = m[5];
       if (IMG_URL_RE.test(url) || GIPHY_URL_RE.test(url)) {
         // eslint-disable-next-line @next/next/no-img-element
         out.push(<img key={key++} src={url} alt="gif" loading="lazy" className="block max-w-[220px] max-h-[220px] rounded-lg my-1" />);

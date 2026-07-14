@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer, createSupabaseAdmin } from "@/lib/supabase";
 import { awardForumXp, revokeForumXp } from "@/lib/forum-xp";
-import { notifyForumReply } from "@/lib/notify-helpers";
+import { notifyForumReply, pushUserNotif } from "@/lib/notify-helpers";
+
+// 從內容抽出 @提及 token [[user:uuid|label]] 的 user id（去重）
+function parseMentionIds(content: string): string[] {
+  const ids = new Set<string>();
+  const re = /\[\[user:([0-9a-fA-F-]{36})\|[^\]]*\]\]/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(content)) !== null) ids.add(m[1]);
+  return [...ids];
+}
 
 // POST /api/forum/threads/[id]/replies — 回覆主題串
 export async function POST(
@@ -65,6 +74,20 @@ export async function POST(
         replierUsername: replierName,
         threadTitle: (thread as any).title ?? "",
         threadId,
+      }).catch(() => {});
+    }
+
+    // @ 提及通知：通知被 tag 到的人（排除自己、以及已收到「回覆你的主題」通知的串主，避免重複）
+    const threadAuthorId = (thread as any)?.user_id;
+    const replierName = (data as any).author?.display_name || (data as any).author?.username || "某人";
+    const mentioned = parseMentionIds(content).filter((uid) => uid !== user.id && uid !== threadAuthorId);
+    for (const uid of mentioned.slice(0, 10)) {
+      pushUserNotif({
+        userId: uid,
+        kind: "comment",
+        title: `${replierName} 在討論區提到你`,
+        body: content.replace(/\[\[user:[0-9a-fA-F-]{36}\|([^\]]*)\]\]/g, "@$1").slice(0, 80),
+        link: `/forum/thread/${threadId}`,
       }).catch(() => {});
     }
   } catch {}
