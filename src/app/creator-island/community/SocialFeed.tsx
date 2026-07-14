@@ -14,6 +14,10 @@ import { EmojiText } from "@/components/ui/EmojiText";
 import { TranslateButton } from "@/components/ui/TranslateButton";
 import Link from "next/link";
 import { MentionTextarea, resolveMentions, type Mention } from "@/components/ui/MentionTextarea";
+import { ImageCarousel } from "@/components/ui/ImageCarousel";
+import { X } from "lucide-react";
+
+const MAX_IMAGES = 20;
 
 const _IMG = /^https?:\/\/[^\s]+\.(gif|png|jpe?g|webp|svg)(\?[^\s]*)?$/i;
 const _GIPHY = /^https?:\/\/(media\d?\.giphy\.com|i\.giphy\.com)\/[^\s]+/i;
@@ -75,15 +79,28 @@ export function SocialFeed({ initialPosts, meId }: { initialPosts: Post[]; meId:
   const [busy, setBusy] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
-  async function attach(kind: "image" | "video" | "audio", file: File) {
+  async function attach(kind: "video" | "audio", file: File) {
     setErr(null); setBusy("upload");
     try {
       const url = await uploadFile(file);
-      if (kind === "image") setImgs((p) => [...p, url]);
-      else if (kind === "video") setVideo(url);
+      if (kind === "video") setVideo(url);
       else setAudio(url);
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
+  // 圖片可一次選多張、最多 20 張（IG 風輪播）
+  async function attachImages(files: FileList) {
+    setErr(null);
+    const room = MAX_IMAGES - imgs.length;
+    if (room <= 0) { setErr(`最多只能上傳 ${MAX_IMAGES} 張圖片`); return; }
+    const picked = Array.from(files).slice(0, room);
+    if (files.length > room) setErr(`最多 ${MAX_IMAGES} 張，只加了前 ${room} 張`);
+    setBusy("upload");
+    try {
+      const urls = await Promise.all(picked.map((f) => uploadFile(f)));
+      setImgs((p) => [...p, ...urls].slice(0, MAX_IMAGES));
+    } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+  }
+  const removeImg = (i: number) => setImgs((p) => p.filter((_, k) => k !== i));
   async function post() {
     if (!text.trim() && !imgs.length && !video && !audio) return;
     setErr(null); setBusy("post");
@@ -108,11 +125,23 @@ export function SocialFeed({ initialPosts, meId }: { initialPosts: Post[]; meId:
       <div className="bg-bg-card border border-border rounded-2xl p-4 space-y-2">
         <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3} placeholder={t("communityComposePlaceholder")}
           className="w-full bg-bg-elevated border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-accent resize-y" />
-        {imgs.length > 0 && <div className="flex gap-2 flex-wrap">{imgs.map((u, i) => <img key={i} src={u} className="w-16 h-16 rounded object-cover" />)}</div>}
+        {imgs.length > 0 && (
+          <div className="space-y-1">
+            <div className="flex gap-2 flex-wrap">
+              {imgs.map((u, i) => (
+                <div key={i} className="relative w-16 h-16 group/thumb">
+                  <img src={u} className="w-16 h-16 rounded object-cover" />
+                  <button type="button" onClick={() => removeImg(i)} aria-label="移除" className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-black/70 text-white grid place-items-center opacity-0 group-hover/thumb:opacity-100 transition"><X size={12} /></button>
+                </div>
+              ))}
+            </div>
+            <div className="text-[11px] text-fg-muted">{imgs.length}/{MAX_IMAGES} 張</div>
+          </div>
+        )}
         {video && <video src={video} controls className="w-full rounded-lg max-h-60" />}
         {audio && <audio src={audio} controls className="w-full" />}
         <div className="flex items-center gap-2 text-sm">
-          <label className="cursor-pointer hover:text-accent" title={t("communityAttachImage")}><ImageIcon size={18} /><input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) attach("image", f); e.currentTarget.value = ""; }} /></label>
+          <label className="cursor-pointer hover:text-accent" title={`${t("communityAttachImage")}（最多 ${MAX_IMAGES} 張）`}><ImageIcon size={18} /><input type="file" accept="image/*" multiple className="hidden" onChange={(e) => { const fs = e.target.files; if (fs && fs.length) attachImages(fs); e.currentTarget.value = ""; }} /></label>
           <label className="cursor-pointer hover:text-accent" title={t("communityAttachVideo")}><Film size={18} /><input type="file" accept="video/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) attach("video", f); e.currentTarget.value = ""; }} /></label>
           <label className="cursor-pointer hover:text-accent" title={t("communityAttachAudio")}><Music size={18} /><input type="file" accept="audio/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) attach("audio", f); e.currentTarget.value = ""; }} /></label>
           <AnimatedEmojiPicker onSelect={(e) => setText((v) => v + e)} />
@@ -178,7 +207,7 @@ function PostCard({ p, meId, onDelete }: { p: Post; meId: string; onDelete: () =
       </div>
       {p.content && <div className="text-sm whitespace-pre-wrap">{renderBody(p.content)}</div>}
       {p.content && <TranslateButton text={p.content} />}
-      {p.images?.length > 0 && <div className={`grid gap-1 ${p.images.length > 1 ? "grid-cols-2" : ""}`}>{p.images.map((im, i) => <img key={i} src={im.url} className="rounded-lg w-full object-cover max-h-80" />)}</div>}
+      {p.images?.length > 0 && <ImageCarousel images={p.images} maxHeight="max-h-96" />}
       {p.video_url && <video src={p.video_url} controls className="w-full rounded-lg max-h-96" />}
       {p.audio_url && <audio src={p.audio_url} controls className="w-full" />}
       <div className="flex items-center gap-4 text-sm text-fg-muted pt-1">

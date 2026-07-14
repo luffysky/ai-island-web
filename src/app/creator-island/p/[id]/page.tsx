@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { getPost } from "@/lib/creator-engine/social";
 import { ShareButton } from "@/components/share/ShareButton";
+import { ImageCarousel } from "@/components/ui/ImageCarousel";
 
 export const dynamic = "force-dynamic";
 
@@ -56,7 +57,7 @@ export default async function PostPermalink({ params }: { params: Promise<{ id: 
           <span className="ml-auto text-xs text-fg-muted">{new Date(post.created_at).toLocaleDateString("zh-TW")}</span>
         </div>
         {post.content && <div className="text-sm whitespace-pre-wrap leading-relaxed">{post.content}</div>}
-        {post.images?.length > 0 && <div className={`grid gap-1 ${post.images.length > 1 ? "grid-cols-2" : ""}`}>{post.images.map((im: any, i: number) => <img key={i} src={im.url} alt="" className="rounded-lg w-full object-cover max-h-96" />)}</div>}
+        {post.images?.length > 0 && <ImageCarousel images={post.images} maxHeight="max-h-[70vh]" />}
         {post.video_url && <video src={post.video_url} controls className="w-full rounded-lg max-h-[80vh]" />}
         {post.audio_url && <audio src={post.audio_url} controls className="w-full" />}
         <div className="flex items-center justify-between pt-1">

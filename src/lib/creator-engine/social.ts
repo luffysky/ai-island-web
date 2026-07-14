@@ -20,7 +20,7 @@ export async function createPost(userId: string, p: NewPost) {
   const { data, error } = await admin.from("ci_posts").insert({
     user_id: userId, workspace_id: p.workspaceId ?? null,
     type: p.type ?? "post", title: p.title ?? null, content: p.content ?? "",
-    images: p.images ?? [], video_url: p.videoUrl ?? null, video_thumbnail_url: p.videoThumbnailUrl ?? null, audio_url: p.audioUrl ?? null,
+    images: (p.images ?? []).slice(0, 20), video_url: p.videoUrl ?? null, video_thumbnail_url: p.videoThumbnailUrl ?? null, audio_url: p.audioUrl ?? null,
     tags: (p.tags ?? []).slice(0, 10), visibility: p.visibility ?? "public", status: "published",
   }).select(POST_COLS).single();
   if (error) throw new Error(error.message);
