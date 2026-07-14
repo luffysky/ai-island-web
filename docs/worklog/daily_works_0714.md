@@ -54,3 +54,17 @@
 6. **建置**：`tsc --noEmit` ✓、`vitest run` 137 passed ✓、`next build` exit 0 ✓。
 7. 先更新本日誌 → 再 commit/push。
 8. **機密**：未動 .env.local。
+
+## 🧩 分身島多模式 + 產出一鍵下載真檔（0714 續）
+- ✅ **分身島多模式**（`AgentClient.tsx`）：輸入框上加模式切換列 🤖分身任務／💬問問／💻寫程式／📄文件／📊簡報／📈表格／🎨設計。做法＝`AGENT_MODES` 每個模式一段導向前綴(prefix)＋專屬 placeholder，`withMode()` 把輸入包上前綴丟同一套任務引擎；🤖 無前綴＝原行為。執行鈕文案依模式(執行/送出)。零新 API、零 migration。
+- ✅ **分身產出一鍵下載真檔**：新 `POST /api/agent/export`（runtime nodejs）把 markdown 產出轉**真的 Office 檔**：
+  - docx → `docx`（標題/H1-H6/項目/編號清單；自訂 numbering config）
+  - pptx → `pptxgenjs`（`---` 或 H1/H2 分頁＋封面＋每頁標題+bullet+紫線；`write({outputType:'nodebuffer'})`）
+  - xlsx → `exceljs`（`extractTables()` 抓 markdown 表格→每表一工作表、表頭上色+自動欄寬；無表則逐行）
+  - 回傳 `Content-Disposition: attachment; filename*=UTF-8''…`、`Cache-Control: no-store`。
+  - 前端：結果卡加 Word/PPT/Excel 三鈕 → `exportAs()` fetch→blob→`<a download>`；標題取自 goal（去掉模式前綴）。
+  - **本機實測三格式都產出有效檔**（docx 8.6K／pptx 45K／xlsx 6.5K bytes）。依賴新增 `docx pptxgenjs exceljs`。
+- ✅ **設計模式 = HTML/CSS/SVG 雛形**（可直接用）；真 AI 生圖需付費 API、標 todo「之後另評估」、本批不做。
+- ✅ **確認辦公室員工詳情+上下線+放養**（林董重貼）早先 commit `921c0469` 已上線：員工卡在職/放養中/下線狀態、🦞放養＝派讀取型瀏覽任務→回來匯報；對外留言紅線保留（AI 起草→批准才發）。
+- ✅ **RWD**：結果卡 header 改 `flex-wrap justify-end` → 存成技能+Word/PPT/Excel+複製 在窄屏自動換行不溢出；桌面同列。
+- 🚨 收尾：`tsc --noEmit`✓ / `vitest run` 137✓ / `next build` exit0✓（`/api/agent/export` 有出現在路由表）。export 純計算+讀 auth、**無 migration**；未動 .env.local / PWA。commit `a4afa041`(export)、`ac32715b`(多模式)、`e7781353`(todo)。

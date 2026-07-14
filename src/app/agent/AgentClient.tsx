@@ -580,9 +580,9 @@ export function AgentClient() {
 
             {summary && !approval && (
               <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-3.5 sm:p-4">
-                <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center justify-between gap-2 flex-wrap mb-1.5">
                   <div className="flex items-center gap-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400"><CheckCircle2 className="w-4 h-4" /> 結果</div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 flex-wrap justify-end">
                     {taskId && status === "succeeded" && (
                       <button onClick={synthFromTask} disabled={synthBusy} title="把這次的做法存成可重複使用的技能" className="inline-flex items-center gap-1 text-xs rounded-full px-2 py-1 border border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10 disabled:opacity-50">
                         {synthBusy ? <Loader2 className="w-3 h-3 animate-spin" /> : <Bot className="w-3 h-3" />} 存成技能
