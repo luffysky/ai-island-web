@@ -37,6 +37,13 @@
   - 2.5 保持 LayoutGallery（版型圖鑑）。→ ch02 四節四種不同教具。
 - 派發器 LessonDemos 加 SUPPORTED 白名單；types 加 `grid-playground`。tsc/vitest137/next build 綠、ch02 已 import。
 
+## ✍️ ch51 六課全深度內容重寫（範本章·L1 內容加深）
+- 舊病：內容「長但表面」（只講方法不走完一次）+ 三課寫到一半被截斷 + 練習題壞掉（小說課叫你跑不存在的 code）。
+- 新標準（每課）：①「這課你會做出什麼」成品開場 ②真 prompt（🧑）→ AI 實際輸出（🤖）→ 用尺規批改 → 成品 的完整走查 ③☕用人話講 ④對得上主題的真練習（產出可驗證作品）⑤判斷力 miniQuiz。
+- 六課：51.1 同題實測選工具（bake-off + 3 把尺）/ 51.2 一頁故事聖經（世界觀+角色卡+三幕，含 AI 對白一致性走查）/ 51.3 部落格 E-E-A-T（AI直出 vs 加經驗對照）/ 51.4 小說 SOP（Phase3 改稿：Tell→Show 實例）/ 51.5 變現誠實版（一稿多用+五路徑現實面，不掛保證收入）/ 51.6 CRISP（爛 prompt→好 prompt 實際輸出對照）。
+- 章節 outcomes/summary/faq 同步改寫；創作章移除 playground。已 import DB、tsc/build 綠。
+- 字數比舊版精實（密度換長度）；若要更長可每課再加第二個 worked 走查。**待林董線上驗收深度標準**。
+
 ## ⏭ 待續
 - 林董線上驗收版面圖鑑手感（Claude 端 Chrome 擴充沒連、沒法目視截圖）。
 - 下一批：`prompt-lab`（餵 AI 全系列/創作章）、ch51 六課全深度內容重寫、`box-model`/`flex-playground` 補滿 ch02/03。
