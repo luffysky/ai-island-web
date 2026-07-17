@@ -6,8 +6,9 @@ import { FlexPlayground } from "./FlexPlayground";
 import { GridPlayground } from "./GridPlayground";
 import { RwdRuler } from "./RwdRuler";
 import { PromptLab } from "./PromptLab";
+import { BoxModel } from "./BoxModel";
 
-const SUPPORTED = new Set<LessonDemo["type"]>(["css-layout", "rwd-ruler", "flex-playground", "grid-playground", "prompt-lab"]);
+const SUPPORTED = new Set<LessonDemo["type"]>(["css-layout", "rwd-ruler", "flex-playground", "grid-playground", "prompt-lab", "box-model"]);
 
 /**
  * 依 demo.type 派發到對應的互動教具元件。
@@ -25,6 +26,8 @@ function DemoRenderer({ demo }: { demo: LessonDemo }) {
       return <GridPlayground title={demo.title} note={demo.note} />;
     case "prompt-lab":
       return <PromptLab title={demo.title} note={demo.note} config={demo.config} />;
+    case "box-model":
+      return <BoxModel title={demo.title} note={demo.note} />;
     default:
       return null;
   }

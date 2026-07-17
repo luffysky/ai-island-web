@@ -230,7 +230,14 @@
         ],
         "answer": "b",
         "explanation": "根據 Specificity（特異性）規則，`h1` 的權重是 0,0,0,1（只有標籤），而 `.title` 的權重是 0,0,1,0（class），因為 class = 10 分 > 標籤 = 1 分，所以 `.title { color: red; }` 會贏，標題顯示紅色。出現順序只在權重相同時才有用。"
-      }
+      },
+      "demos": [
+        {
+          "type": "box-model",
+          "title": "盒模型實驗室",
+          "note": "拉 margin/border/padding 看盒子脹縮，切 border-box vs content-box 看差別"
+        }
+      ]
     },
     {
       "id": "2.4",
