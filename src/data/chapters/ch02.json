@@ -431,6 +431,13 @@
           "level": 3,
           "text": "實戰例：彈性卡片組"
         }
+      ],
+      "demos": [
+        {
+          "type": "flex-playground",
+          "title": "Flexbox 實驗室",
+          "note": "改 flex-direction / justify-content / align-items / wrap，看方塊即時重排"
+        }
       ]
     },
     {
@@ -503,7 +510,14 @@
         ],
         "answer": "b",
         "explanation": "Grid 的 `repeat(auto-fit, minmax(250px, 1fr))` 是 2026 主流響應式寫法，能根據螢幕寬度自動調整欄數，且比 Flex 更精準不會擠在一起。選項 a 的 Flex 也能換行但不如 Grid 精確；選項 c 要靠 media query；選項 d 是手動指定位置，不適合要自動響應的圖庫。"
-      }
+      },
+      "demos": [
+        {
+          "type": "grid-playground",
+          "title": "Grid 實驗室（含豆腐排版）",
+          "note": "切換三欄／豆腐排版／auto-fit／側欄／主打跨格，拉 gap 看間距"
+        }
+      ]
     },
     {
       "id": "2.8",

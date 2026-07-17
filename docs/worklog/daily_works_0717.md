@@ -29,6 +29,14 @@
 - **建置**：`tsc --noEmit` ✓ · `vitest run 137` ✓ · `next build` exit 0 ✓。
 - **機密/PWA**：未動 `.env.local` / manifest / sw；無新前端依賴（LayoutGallery 純 div+lucide）。
 
+## 🎮 互動教具第二批（差異化 ch02 各節）
+- 林董回饋：2.5/2.12 都用同一個 LayoutGallery、看起來一樣。→ 依每節主題做不同教具：
+  - `FlexPlayground`（2.6 Flexbox）：改 flex-direction/justify/align/wrap + 方塊數量，即時重排 + 秀 CSS。
+  - `GridPlayground`（2.7 Grid）：切換 **豆腐排版**／三欄／auto-fit／側欄／主打跨格，拉 gap，秀 CSS。
+  - `RwdRuler`（2.12 RWD，獨立元件）：真響應式頁面（導覽列窄屏收成 ☰ 漢堡 + 卡片 4→2→1），拖寬度看斷點重排。
+  - 2.5 保持 LayoutGallery（版型圖鑑）。→ ch02 四節四種不同教具。
+- 派發器 LessonDemos 加 SUPPORTED 白名單；types 加 `grid-playground`。tsc/vitest137/next build 綠、ch02 已 import。
+
 ## ⏭ 待續
 - 林董線上驗收版面圖鑑手感（Claude 端 Chrome 擴充沒連、沒法目視截圖）。
 - 下一批：`prompt-lab`（餵 AI 全系列/創作章）、ch51 六課全深度內容重寫、`box-model`/`flex-playground` 補滿 ch02/03。
