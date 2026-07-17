@@ -11,6 +11,7 @@ import { Check, Lock, List, Clock, ChevronUp, ChevronDown, Gamepad2, Pencil, Lig
 import { estimateReadingTime, formatReadingTime } from "@/lib/reading-time";
 import { motion } from "framer-motion";
 import { PlaygroundCard } from "./PlaygroundCard";
+import { LessonDemos } from "./demos/LessonDemos";
 import { MiniQuizCard } from "./MiniQuizCard";
 import { PopQuiz } from "./PopQuiz";
 import { FilesPanel } from "./FilesPanel";
@@ -214,6 +215,11 @@ export function LessonCard({
             />
           ))}
         </div>
+      )}
+
+      {/* 互動體驗（引導式無碼教具）- 始終顯示 */}
+      {lesson.demos && lesson.demos.length > 0 && (
+        <LessonDemos demos={lesson.demos} />
       )}
 
       {/* 學習園地 Playground - 始終顯示、不被收合 */}

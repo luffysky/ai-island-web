@@ -25,6 +25,15 @@ export interface MiniQuiz {
   explanation?: string;
 }
 
+// 引導式互動教具（無碼、點/拉即體驗概念）。與 Playground（可編輯器）互補。
+export interface LessonDemo {
+  // 教具類型 → 對應一個 React 元件（見 components/chapter/demos/LessonDemos.tsx）
+  type: 'css-layout' | 'rwd-ruler' | 'box-model' | 'flex-playground' | 'js-behavior';
+  title?: string;          // 教具標題（可省、元件有預設）
+  note?: string;           // 一句話說明這個教具在教什麼
+  config?: Record<string, unknown>;  // 各教具自訂設定（可省）
+}
+
 export interface Lesson {
   id: string;              // '17.1'
   number: string;
@@ -60,6 +69,8 @@ export interface Lesson {
   };
   // 學習園地：每 lesson 可有多個 playground
   playgrounds?: Playground[];
+  // 互動體驗：引導式無碼教具（點/拉即體驗，如版面圖鑑、RWD 尺）
+  demos?: LessonDemo[];
   // 即時測驗
   miniQuiz?: MiniQuiz;
   // 檔案範例

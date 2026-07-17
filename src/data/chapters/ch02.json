@@ -348,7 +348,14 @@
         ],
         "answer": "c",
         "explanation": "inline-block 同時具有「不換行（inline）」和「可設寬高（block）」的特性，正好滿足這個需求。block 會換行、inline 無法設寬高、flex 是高階容器，都不如 inline-block 直接。"
-      }
+      },
+      "demos": [
+        {
+          "type": "css-layout",
+          "title": "版面圖鑑 · 互動版",
+          "note": "點不同版型、看它其實是用 flex / grid 怎麼排出來的（比看圖強）"
+        }
+      ]
     },
     {
       "id": "2.6",
@@ -840,7 +847,14 @@
         ],
         "answer": "a",
         "explanation": "Mobile First 是 2026 業界主流做法，從手機優先開始，用 min-width 逐步為更大螢幕加樣式，這樣 CSS 更少更高效。選項 b 是舊做法（Desktop First），選項 c 會導致手機看不清，選項 d 忽視了 clamp() 能減少 media query 的優勢。"
-      }
+      },
+      "demos": [
+        {
+          "type": "rwd-ruler",
+          "title": "RWD 實驗室 · 拖寬度看重排",
+          "note": "拖右緣或按手機/平板/桌機、看同一個版型怎麼在不同寬度重排"
+        }
+      ]
     },
     {
       "id": "2.13",

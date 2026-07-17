@@ -62,6 +62,7 @@ function rowToChapter(chRow: any, lessonRows: any[]): Chapter {
       tip: l.tip ?? undefined,
       exercise: l.exercise ?? undefined,
       playgrounds: l.playgrounds ?? [],
+      demos: l.demos ?? [],
       miniQuiz: l.mini_quiz ?? undefined,
       files: l.files ?? undefined,
       xp: l.xp ?? 10,

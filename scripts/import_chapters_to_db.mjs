@@ -88,6 +88,7 @@ for (const file of files) {
       tip: l.tip ?? null,
       exercise: l.exercise ?? null,
       playgrounds: l.playgrounds ?? [],
+      demos: l.demos ?? [],
       mini_quiz: l.miniQuiz ?? null,
       files: l.files ?? null,
       xp: l.xp ?? 10,
