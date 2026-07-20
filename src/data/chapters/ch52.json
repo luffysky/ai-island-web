@@ -11,395 +11,222 @@
   "prerequisites": [],
   "estimatedHours": 10,
   "outcomes": [
-    "理解核心概念",
-    "實作主流工具",
-    "整章實戰可發佈作品",
-    "知道生態 / 接案行情",
-    "對齊 2026 業界主流"
+    "看設計需求就對得上該用的 AI 工具",
+    "用六格公式寫出可控的生圖 prompt（不再碰運氣）",
+    "用 v0 生 UI、分清『殼』與『腦』的界線",
+    "用 --sref 做風格一致的系列圖、會除錯壞 prompt",
+    "用三階報價與『賣過程』差異化接案（不打價格戰）"
   ],
   "lessons": [
     {
-      "title": "AI 設計工具總圖",
-      "oneLineSummary": "不會 Photoshop 也能做設計、2026 改變遊戲",
-      "analogy": "AI 圖 / UI / Logo / 影片、Indie 設計革命。",
-      "content": "## AI 設計工具總圖\n\n設計這件事，正在經歷一場翻天覆地的變化。十年前，你非得會 Photoshop、Illustrator 才能接設計案；五年前，Figma 讓協作變容易；現在，**AI 正在直接幫你出圖、改稿、生成程式碼**。這一課我們來看清楚：主流工具在幹什麼、誰適合用、以及如何靠它們賺錢。\n\n---\n\n## 圖片生成類工具——从想法到圖片\n\n### Midjourney：美學天王\n\n**特色**：生成的圖最「漂亮」、最有藝術感，特別適合需要風格統一、高級感十足的案子。\n\n- 定價：$10-60 / 月（看訂閱等級）\n- 介面：Discord（最初），現在也有 Web 版，但 Discord 社群最活躍\n- 最適合：藝術創意案、商業廣告視覺、概念圖、遊戲角色、品牌視覺書\n- 門檻：Prompt 寫法有套路，學一週就能上手；但出好圖需要「審美眼光」持續調整\n\n**為什麼這麼多人用**：Midjourney 的訓練集合能力超強——給它「賽博龐克仙女、拿著藍光劍、在廢棄未來城市」，它真的能理解「那個感覺」，而不是機械地貼圖。對標設計師來說，這省了 80% 的「概念發想 → 初稿」時間。\n\n**常見雷**：\n- 過度依賴預設風格（比如全部都是 Midjourney 的「簽名美學」）\n- Prompt 寫得模糊，改稿改到天邊\n- 忘記商業授權問題（用在客戶案子要確認）\n\n---\n\n### DALL-E 3：最好懂\n\n**特色**：文字理解能力最強，Prompt 寫得很自然就行。整合在 ChatGPT 裡，不用額外切換介面。\n\n- 定價：$20 / 月（ChatGPT Plus）\n- 最適合：想快速測試想法、文案敘述型的圖片需求\n- 門檻：很低，直接用英文或中文描述就行\n\n**vs Midjourney 的差別**：DALL-E 3 更「聽話」，但美學層次偏淺；Midjourney 需要更多調教，但能出更高級的視覺。選哪個？**想省力用 DALL-E，想要品質用 Midjourney**。\n\n---\n\n### Stable Diffusion：DIY 之王\n\n**特色**：完全開源、可在自己電腦跑、沒有任何雲端隱私疑慮，自由度極高。\n\n- 定價：免費（開源）\n- 門檻：**很陡**——需要會裝環境、調參數、理解模型概念\n- 最適合：有技術背景的人、想完全掌控的創意者、對隱私敏感的團隊\n\n**為什麼有人選它**：商業級的 Midjourney、DALL-E 有授權成本 + 雲端保存疑慮；Stable Diffusion 一台本地機器、無限制跑，成本只有電費。但代價是要花時間學。\n\n---\n\n### Flux：2024+ 新寵\n\n**特色**：寫實度最高、細節最清楚，剛出來不久但已經在挑戰 Midjourney 的地位。\n\n- 定價：免費（開源）+ Replicate 雲端版按次計費（很便宜）\n- 最適合：商品照、建築、人物、3D 寫實感強的案子\n- 門檻：中等，Replicate 網站上直接用無需安裝\n\n**為什麼突然紅了**：Flux 的手指生成準確率高（AI 生成人物最常出現「手指怪異」問題），色彩層次更豐富，很多設計師已經開始用它接實際案子。\n\n---\n\n### Ideogram：文字渲染之王\n\n**特色**：AI 圖片裡加文字最不會變成「符號亂碼」的工具。\n\n- 定價：有免費額度，訂閱更多\n- 最適合：Logo 設計、海報、社群貼文、任何文字要求高的設計\n\n**為什麼單獨提它**：其他工具生成的圖若要文字，常會出現扭曲、拼不出正確英文字母的情況；Ideogram 能可靠地生成「Café」「$99」這類文字。做海報、Logo 時超useful。\n\n---\n\n## UI / 網頁設計類——從想法到程式碼\n\n這類工具的革命性在於：**不再只是出圖，直接出 React 程式碼、能立刻跑**。\n\n### Figma + AI：現有工具升級\n\n**特色**：Figma（最流行的設計軟體）內建 AI 功能，拖拉物件、AI 自動補全。\n\n- 定價：Figma 本身 $12-144/月，AI 功能含在內\n- 用法：設計稿拖一下、寫個簡短描述，AI 幫你生成相似元素、補齊樣式\n- 最適合：已經在用 Figma 的設計師，想加快重複工作\n\n**實際情況**：補全率還不到「完全自動化」，但省去 30% 機械重複工作。\n\n---\n\n### v0（Vercel）：遊戲規則改變者\n\n**特色**：描述一句話 → **直接生成可跑的 React + Tailwind 程式碼**。不是圖，是真的程式碼。\n\n- 定價：免費 + Pro 方案\n- 用法：「我想要一個深色模式的電商卡片，左邊圖片右邊商品資訊」→ v0 給你可用的完整元件\n- 最適合：Frontend 快速原型、MVP 頁面、不想從零手寫 UI\n\n**為什麼轟動**：傳統流程是設計師出稿 → 工程師看稿 → 重新寫一遍（常常有偏差）。v0 跳過中間人，**直接變成能用的程式碼**。一個人也能快速建出完整網站雛型。\n\n**代價**：生成的程式碼品質不等，需要工程師審查、優化。不是「丟給 v0 就完工」。\n\n---\n\n### Galileo AI & Subframe：Figma 補強\n\n**特色**：Figma 設計稿 → 一鍵轉成高保真 wireframe，或直接產生互動原型。\n\n- 定價：$30-50/月\n- 最適合：UI/UX 設計師想加快產出\n\n---\n\n## Logo / 品牌工具——Logo 一鍵生\n\n### Looka：Logo 工廠\n\n**特色**：輸入品牌名稱、行業、風格偏好 → 自動生成幾十個 Logo 選項，可編輯。\n\n- 定價：試用免費，買稿件 $20-100\n- 最適合：小商家、新創快速要 Logo、預算有限\n\n**坦白說**：Looka 的 Logo 常見、不夠獨特，但「有勝於無」，適合當起點。\n\n### Brandmark：類似選項\n\n---\n\n## 影片 AI 工具——從文字到影片\n\n### Runway ML / Pika / Luma：Text-to-Video\n\n**特色**：「一個少女在沙灘上穿著紅洋裝轉圈」→ 生成 5-10 秒的影片。\n\n- 定價：Runway $12-35/月，Pika 類似\n- 最適合：短視頻、社群內容、概念影片、廣告素材\n- 門檻：低，就是打 Prompt\n\n**現況**：品質還在「演示級」，不夠細膩做正式商業影片，但用來做社群、概念視頻已經可用。\n\n---\n\n### Synthesia / HeyGen：AI 虛擬主播\n\n**特色**：輸入稿件 → AI 真人（虛擬）對著鏡頭唸稿，能選膚色、服裝。\n\n- 定價：$30-50/月\n- 最適合：教學影片、客服説明、企業視頻、配音節省成本\n\n**適用場景**：「我需要 20 語言的解說影片」——傳統要找 20 個配音員，現在 AI 一鍵生。\n\n---\n\n## 3D 工具——文字到 3D 模型\n\n### Meshy / Luma Genie：Text-to-3D\n\n**特色**：「一隻紫色機械獅子」→ 生成可用的 3D 模型，能放進遊戲引擎。\n\n- 定價：$10-30/月\n- 最適合：遊戲、AR、虛擬展廳、元宇宙內容\n\n**眼下水位**：品質在「概念原型」等級，精細產品還得人工雕琢，但省 70% 初始建模時間。\n\n---\n\n## 用 AI 設計接案實戰\n\n### 現實收價\n\n- **Logo 設計**：NT$5,000 - 30,000\n- **網站視覺（3-5 頁）**：NT$30,000 - 100,000\n- **完整品牌視覺系統**：NT$50,000 - 300,000+\n\n### AI 怎麼改變接案\n\n**舊模式**：設計師手工出稿 → 修改 5-10 輪 → 交稿（一案 1-4 週）\n\n**新模式（AI 加速）**：\n1. 用 AI 快速生成 5-10 個方向版本\n2. 客戶選定方向\n3. 用 AI + 人工 polish 細節\n4. 1-2 天交稿\n\n**結果**：同樣時薪，你能接 3-5 倍的案子，或保持產量、利",
+      "title": "AI 設計工具總圖：看需求選工具",
+      "oneLineSummary": "不背工具、看『你要做什麼』",
+      "analogy": "五種活配五種工具，接案第一個判斷。",
+      "content": "## 這一課你會做出什麼\n\n一張**「接案選工具決策表」**——遇到任何設計需求，你都能一眼知道「這個活該用哪個工具、為什麼」。重點不是背 20 個工具名，是**看到需求就對得上工具**。\n\n> 設計正在翻天覆地：十年前要會 Photoshop 才能接案，現在 AI 直接幫你出圖、改稿、生程式碼。但工具一堆，新手最容易「每個都聽過、每個都不會選」。這課教你用「需求」反查工具，不是死背清單。\n\n---\n\n## 別背工具、要看「你要做什麼」\n\n把設計需求分成五種活，每種活有它的主力工具：\n\n| 你要做的活 | 主力工具 | 為什麼 |\n|---|---|---|\n| **生一張有藝術感的圖** | Midjourney | 美學最強、風格統一，適合形象照/概念圖 |\n| **生寫實商品照/人物** | Flux | 寫實度最高、手指不畸形（AI 生人最常翻車的地方） |\n| **圖裡要放正確文字**（Logo/海報） | Ideogram | 唯一能穩定拼對「Café」「$99」不亂碼的 |\n| **想省事、隨手測想法** | DALL-E 3（在 ChatGPT 裡） | 最聽話、自然語言就行，但美學偏淺 |\n| **要能跑的網頁 UI** | v0（Vercel） | 描述一句話 → 直接出可執行的 React 程式碼 |\n| **要短影片** | Runway / Pika / Luma | text/image → 5-10 秒短片 |\n\n> 還有 Stable Diffusion（開源、可本地跑、免費但門檻陡）留給想完全掌控、或對隱私敏感的人。\n\n---\n\n## 走一次真實接案：一個客戶、三個活\n\n客戶開一間咖啡廳，找你做三樣：①一張 IG 形象照 ②一個 Logo ③一個開幕活動網頁。**同一個案子，三個活該用三個不同工具**：\n\n- **形象照**：要溫暖有質感、給人「想坐進去」的感覺 → **Midjourney**（藝術感），prompt 走「暖木色、晨光、淺景深」。\n- **Logo**：店名「晨光咖啡」四個字要清楚不能糊 → **Ideogram**（文字渲染），再用 Figma 微調對齊；純 AI 的 Logo 通常不夠獨特，當起點、你收尾。\n- **活動網頁**：要能真的上線、手機也好看 → **v0**，描述「深色、綠色強調、報名按鈕、RWD」直接生 React。\n\n**看懂了嗎？** 「用哪個工具」不是看哪個最紅，是看**這個活的重點是什麼**（藝術感？文字正確？要能跑？）。這張對照表，就是你接案時的第一個判斷。\n\n---\n\n## 一句誠實話：工具會了不等於做得好\n\n任何人裝了 Midjourney 都能出圖、拉了 Figma 都能排版。所以**「會工具」很快變成基本盤、不值錢**；值錢的是「審美」和「幫客戶想清楚要什麼」——這是後面幾課會一直回到的主軸（尤其 52.6 接案）。\n\n---\n\n## ☕ 用人話講\n\n選 AI 設計工具，就像工具箱裡的螺絲起子——**看螺絲挑起子，不是挑最貴那支**。記住五種活配五種工具（藝術圖→MJ、寫實→Flux、文字→Ideogram、UI code→v0、影片→Runway 系），遇到需求對一下表就好。工具是量產的、你的眼光才是差異化。",
       "tip": {
-        "type": "milestone",
-        "text": "AI 設計 = 速度 + 廣度。但審美是你的。"
+        "type": "practical",
+        "text": "工具會了是基本盤，眼光才是差異化。"
       },
       "id": "52.1",
       "number": "LESSON 52.1",
       "xp": 10,
       "exercise": {
-        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
-        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
-        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+        "question": "做一張你自己的「接案選工具決策表」：列出 5 種你可能接到的設計活（例：Logo、商品照、簡報、UI、社群圖），各配一個主力工具並寫一句『為什麼是它』。然後挑一個朋友/店家的真實需求，用你的表選出該用哪個工具。",
+        "hint": "選工具的依據是『這個活的重點』：要藝術感？要文字正確？要能跑的 code？要寫實？把重點寫出來，工具自然浮現。",
+        "answer": "沒有標準答案，但好的表每一列都講得出『為什麼』：Logo→Ideogram(文字不亂碼)、商品照→Flux(寫實)、形象圖→Midjourney(美學)、UI→v0(出code)、社群圖→DALL-E/Canva(快)。能對著真實需求選對、並說出理由，就是這課的目標。"
       },
       "outline": [
         {
           "level": 2,
-          "text": "主流 AI 設計工具"
-        },
-        {
-          "level": 3,
-          "text": "圖片生成"
-        },
-        {
-          "level": 3,
-          "text": "UI 設計"
-        },
-        {
-          "level": 3,
-          "text": "Logo / 品牌"
-        },
-        {
-          "level": 3,
-          "text": "影片"
-        },
-        {
-          "level": 3,
-          "text": "3D"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "接案變現"
-        },
-        {
-          "level": 3,
-          "text": "設計接案"
-        },
-        {
-          "level": 3,
-          "text": "AI + 設計"
-        },
-        {
-          "level": 3,
-          "text": "反 pattern"
+          "text": "別背工具、要看「你要做什麼」"
         },
         {
           "level": 2,
-          "text": "跟設計師的差別"
-        },
-        {
-          "level": 3,
-          "text": "純設計師"
-        },
-        {
-          "level": 3,
-          "text": "AI 設計師"
-        },
-        {
-          "level": 3,
-          "text": "混合"
+          "text": "走一次真實接案：一個客戶、三個活"
         },
         {
           "level": 2,
-          "text": "心法"
+          "text": "一句誠實話：工具會了不等於做得好"
+        },
+        {
+          "level": 2,
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "根據這堂課的內容，想要用 AI 設計工具接案賺錢，最容易踩到的陷阱是什麼？",
+        "question": "客戶要一張 Logo，店名四個中文字必須清楚呈現。下列哪個工具最適合當主力？",
         "options": [
           {
             "value": "a",
-            "label": "直接把 AI 生成的圖當成品交給客戶，不做任何調整"
+            "label": "Ideogram——它是目前最能穩定把文字拼對、不變亂碼的生圖工具"
           },
           {
             "value": "b",
-            "label": "選擇 Midjourney 而不是 DALL-E 3"
+            "label": "Midjourney——因為它美學最強"
           },
           {
             "value": "c",
-            "label": "用 Figma 而不用 v0 來設計網站"
+            "label": "v0——因為它能生程式碼"
           },
           {
             "value": "d",
-            "label": "沒有向客戶解釋你用了 AI 工具"
+            "label": "Runway——因為它功能最多"
           }
         ],
         "answer": "a",
-        "explanation": "課程強調「純 AI 直出（客戶失望）」是反 pattern，重點是 AI 圖只是「素材」不是「成品」，必須人工 polish 才能交付。選項 d 也提到不解釋給客戶會賣不出去，但最大的陷阱就是品質問題。"
+        "explanation": "Logo 的關鍵需求是『文字要正確』，而多數生圖工具做文字會亂碼，Ideogram 正是解這個痛點的。選工具看『這個活的重點』，不是看哪個最紅或美學最強——Midjourney 美但文字常出錯、v0 是生 UI code 的、Runway 是影片。"
       }
     },
     {
-      "title": "Midjourney + Prompt 工程",
-      "oneLineSummary": "寫對 prompt = 神圖、寫錯 = 廢圖",
-      "analogy": "60% 在 prompt、40% 在後製。",
-      "content": "## Prompt 工程：跟 AI 對話的藝術\n\n### 為什麼 Prompt 很重要？\n\n你去餐廳點餐，跟老闆說「來一份飯」和「來一份醬油炒飯、不要蔥、半熟蛋、上面灑黑芝麻」，出來的東西完全不一樣。Midjourney 也是——**同樣的概念，prompt 寫得清楚就出好圖，寫得模糊就浪費 credit**。\n\nAI 圖像生成模型（generative AI model —— 會自動生成內容的人工智慧）是怎麼跑的呢？它看過數百萬張圖 + 文字描述，學到「某些詞彙組合通常會產生某種畫風」。你給的 prompt 就是在引導它：「用你學過的知識，混出我要的圖」。所以**「給指令給得越具體，結果越符合期望」**——這就是 prompt 工程的核心。\n\n---\n\n## 用公式化結構，避免碰運氣\n\n### 基本公式\n\n```\n[主角/場景] , [風格] , [構圖方式] , [光線] , [攝影設備/技法] , [品質詞彙]\n```\n\n這個順序不是鐵律，但這樣寫有幾個好處：\n- **主角放前面**：AI 優先權最高、不容易被風格吃掉\n- **風格次之**：決定整體調性\n- **光線和攝影詞彙**：讓細節更逼真\n- **品質詞彙結尾**：確保成品解析度或藝術性\n\n### 完整範例拆解\n\n```\nA cozy coffee shop interior, warm wood tones, \nsoft morning light through windows, \nshallow depth of field, \nshot on Sony A7IV with 50mm lens, \nphotorealistic, 8k\n```\n\n逐句講解：\n- **「A cozy coffee shop interior」**：主角很清楚，是「舒服的咖啡廳室內」，不是外面、不是街景\n- **「warm wood tones」**：色溫——暖色系、木質感，而不是冰冷金屬感\n- **「soft morning light through windows」**：光線故事——早上軟光透過窗戶，時間和情緒都定了\n- **「shallow depth of field」**：攝影術語，背景模糊、主體清晰（很像手機人像模式）\n- **「shot on Sony A7IV with 50mm lens」**：裝備名字——用真實相機品牌會提升寫實感，因為 AI 學過這些相機的風格\n- **「photorealistic」**：不是畫、是照片\n- **「8k」**：高解析度\n\n**為什麼要這樣寫？** 因為如果你只寫「nice coffee shop」，AI 可能出現：卡通風、糟糕光線、怪角度、模糊不清。反之，上面的 prompt 每一個詞彙都在消除歧義。\n\n---\n\n## 風格詞彙：決定畫風的魔法字\n\n這些詞彙 Midjourney 特別認識（因為訓練資料裡超常見），用對了能 10 倍加分：\n\n| 詞彙 | 用途 | 例子 |\n|------|------|------|\n| `photorealistic` | 照片級逼真 | 人像、產品、室內設計 |\n| `cinematic` | 電影光影感 | 動作場景、戲劇感故事 |\n| `anime style` | 日漫風 | 角色、奇幻場景 |\n| `watercolor` | 水彩畫感 | 風景、插畫、文藝 |\n| `oil painting` | 古典油畫 | 人物肖像、藝術風 |\n| `minimalist` | 極簡白色 / 黑色背景 | logo、icon、商業設計 |\n| `cyberpunk` | 霓虹 / 未來科技 | 科幻、城市、暗黑風 |\n| `vaporwave` | 蒸氣波（80 年代復古 + 粉紫霓虹） | 復古藝術、裝置藝術 |\n| `illustration` | 插畫手感 | 繪本、網頁設計 |\n| `storybook` | 兒童繪本風 | 童話、溫馨場景 |\n\n**常見雷**：千萬不要一次堆太多風格詞彙（例如「photorealistic AND anime AND cyberpunk」），AI 會神經錯亂，出來的圖會怪掉。\n\n---\n\n## 光線和攝影詞彙：讓圖有靈魂\n\n### 光線方向和質感\n\n| 詞彙 | 效果 |\n|------|------|\n| `soft lighting` | 柔和、沒有硬影、像雲天拍攝 |\n| `dramatic lighting` | 高對比、陰影深、戲劇張力 |\n| `golden hour` | 日出 / 日落時分的溫暖橘光 |\n| `neon lighting` | 霓虹燈、鮮豔人工光 |\n| `studio lighting` | 專業攝影棚、精準光源、完美曝光 |\n| `backlighting` | 逆光、人物後面有光、輪廓清晰 |\n| `rim lighting` | 邊緣光、人物輪廓發光 |\n\n### 攝影技法詞彙\n\n| 詞彙 | 解釋 | 視覺效果 |\n|------|------|---------|\n| `shallow depth of field` | 淺景深 | 主體清晰、背景模糊（景深 —— depth of field 就是「背景模糊程度」） |\n| `bokeh` | 散景（日文借詞） | 背景光點變成夢幻圓形光暈 |\n| `wide angle` | 廣角鏡頭 | 視野寬、建築物四周會扭曲（魚眼感） |\n| `macro` | 微距攝影 | 超近距、細節清晰、小東西看很大 |\n| `aerial view` | 俯瞰 / 空拍視角 | 從上往下看、適合風景 / 城市 |\n| `tilt shift` | 移軸攝影 | 只有一條細線清晰、上下模糊（玩具感） |\n\n**為什麼這些詞彙值錢？** 因為它們對應真實相機的物理特性，AI 訓練資料裡有大量專業攝影師的作品，所以一說「shallow depth of field」它就懂「背景要糊」。\n\n---\n\n## Aspect Ratio（長寬比）：決定圖的形狀\n\n不同用途需要不同比例，別浪費 credit 生成後再裁：\n\n```\n--ar 1:1      正方形（社群媒體頭貼、logo）\n--ar 16:9     寬螢幕（電腦桌布、YouTube 縮圖）\n--ar 9:16     手機直式（IG Story、TikTok、手機桌布）\n--ar 3:4      人像風景（海報、相框、人物肖像）\n--ar 4:3      傳統照片（教科書、列印海報）\n--ar 2:1      超寬（電影海報、橫式壁報）\n```\n\n**用法**：在 prompt 最後面加 `--ar 9:16` 就好。\n\n```\nA girl reading in a cozy library, warm lighting, \nphotorealistic, 8k --ar 9:16\n```\n\n---\n\n## 排除：告訴 AI 「不要畫」\n\n有時候你想要某樣東西，但又不想要其他東西干擾：\n\n```\nA beautiful mountain landscape --no people --no buildings --no snow\n```\n\n用 `--no [詞彙]` 就能減低那些元素出現的機率。常用的排除詞：\n- `--no people` ：清空人類\n- `--no text` ：不要文字（手寫字常出錯）\n- `--no blurry` ：不要模糊\n- `--no bad quality` ：不要廢圖質感\n\n**但要小心過度排除**：太多 `--no` 會讓 AI 過度糾正、反而出怪東西。通常 2-3 個排除就夠。\n\n---\n\n## 參考圖像：帶著風格樣本溝通\n\n### 舊方法（V5 及以前）\n\n```\n[image_url] A cat in similar style\n```\n\n直接貼 URL，但效果不太穩定。\n\n### V6+ 新方法：Cref 和 Sref\n\nMidjourney V6 以後引入了更精細的參考方式：\n\n```\n/imagine [ref_url] A cat playing piano --cref [character_url] --sref [style_url]\n```\n\n- **`--cref`（character reference）**：參考**角色 / 主體的樣子**——比如「我要的貓咪長得像這張照片」\n- **`--sref`（style reference）**：參考**整體風格 / 光線 / 配色**——比如「我要這張圖的光線感覺」\n\n**用途場景**：\n1. **設計一個角色系列**（貓咪在不同場景）：用 `--cref` 固定貓咪長相\n2. **保持品牌視覺一致**（多張海報）：用 `--sref` 固定光線 / 色溫\n\n### 風格代碼（Style Reference 的進階用法）\n\n第一張圖生成後，Midjourney 會給它一個代碼。你可以用這個代碼套在後續圖片上：\n\n```\n第一張： A cozy cat, warm lighting --q 1\n→ Midjourney 回應的圖 ID: 1234567890\n\n第二張： A cozy dog --sref 1234567890\n第三張： A cozy rabbit --sref 1234567890\n```\n\n這樣你的「貓狗兔子」系列就會有統一的溫暖光線 / 配色風格，看起來像同一系列作品。\n\n---\n\n## V6+ 的自然語言 Prompt\n\n新版 Midjourney 不再要求",
+      "title": "Midjourney + Prompt 工程（六格公式）",
+      "oneLineSummary": "同一 AI、換個會寫 prompt 的人差十倍",
+      "analogy": "主體→風格→光線→構圖→品質→比例，按順序堆。",
+      "content": "## 這一課你會做出什麼\n\n同一個主體，你會寫出「爛 prompt」和「結構化 prompt」各一版，親眼看它們差多少——並學會一套**六格公式**，之後生圖不再碰運氣。（下面的「圖像 Prompt 積木」可以直接點著組。）\n\n> 你去餐廳說「來一份飯」和「醬油炒飯、不要蔥、半熟蛋、灑黑芝麻」，端上來的完全不同。Midjourney 一樣：**同樣的概念，prompt 寫清楚就出好圖，寫模糊就浪費 credit**。\n\n---\n\n## 六格公式：按順序堆，別碰運氣\n\n```\n[主體], [風格], [光線], [構圖/鏡頭], [品質], [比例參數]\n```\n\n順序有意義：**主體放最前**（AI 優先權最高、不被風格吃掉）→ 風格定調性 → 光線給情緒 → 構圖給空間感 → 品質定成品類型 → 參數（`--ar`）最後。\n\n---\n\n## 走一次：爛 prompt vs 公式 prompt\n\n🧑 **爛 prompt**：`a coffee shop`\n\n🖼️ **會出什麼**：AI 只能亂猜——可能是卡通風、可能光線很醜、可能是外觀不是室內、每次天差地別。你等於把方向盤交給運氣。\n\n🧑 **公式 prompt**：\n\n```\nA cozy coffee shop interior,\nwarm wood tones,\nsoft morning light through windows,\nshallow depth of field with bokeh,\nphotorealistic, 8k,\n--ar 16:9\n```\n\n🖼️ **會出什麼**：暖木色、晨光透窗、背景柔焦、照片級質感的橫幅室內照——**每一個詞都在消除一種歧義**，所以結果穩定、可控。\n\n逐格拆解為什麼：\n\n- **主體**「cozy coffee shop interior」→ 定了是室內、是舒服的調性。\n- **風格**「warm wood tones」→ 暖色木質，不是冰冷金屬。\n- **光線**「soft morning light」→ 早晨柔光，時間和情緒都定了。\n- **構圖**「shallow depth of field, bokeh」→ 背景柔焦、主體突出（像手機人像模式）。\n- **品質**「photorealistic, 8k」→ 是照片不是畫、高解析。\n- **比例**「--ar 16:9」→ 橫幅，先定好省得生完再裁。\n\n---\n\n## 三組「開掛」關鍵字（記這些就夠起步）\n\n- **風格**：`photorealistic`（寫實）/ `cinematic`（電影感）/ `anime style, Studio Ghibli`（加作品名超精準）/ `watercolor`（水彩）。\n- **光線**：`golden hour`（日落金光）/ `soft lighting`（柔和）/ `dramatic lighting`（高對比）。`golden hour + soft lighting` 十張有八張好看。\n- **比例**：`--ar 1:1`（社群方形）/ `16:9`（寬螢幕）/ `9:16`（手機直式）。\n\n⚠️ **最常見的雷**：一次堆太多風格（`photorealistic + anime + cyberpunk` 同時上），AI 會神經錯亂出怪圖。**一次一個主風格**。\n\n---\n\n## ☕ 用人話講\n\n寫生圖 prompt 就像點餐——講得越具體，端上來越接近你要的。記住六格公式「主體→風格→光線→構圖→品質→比例」，按順序堆、一次一個主風格。你會發現：**同一個 AI，換個會寫 prompt 的人，出圖品質差十倍**。上面的積木先玩熟，手感就有了。",
       "tip": {
-        "type": "practical",
-        "text": "Midjourney 1 個月 $10 = Indie 設計神器。"
+        "type": "pro",
+        "text": "一次一個主風格；golden hour + soft lighting 開掛組合。"
       },
       "id": "52.2",
       "number": "LESSON 52.2",
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "挑一個具體主體（例：你的寵物、你家客廳、一杯你常喝的飲料），先寫一個「爛 prompt」（3 字內，如 a cat），再用六格公式寫一個「結構化 prompt」。如果你有 Midjourney/DALL-E，兩個都生一次比對；沒有的話，逐格寫下『這格加了什麼、消除了什麼歧義』。",
+        "hint": "用下面的『圖像 Prompt 積木』先點著組一版當範本，再換成你自己的主體。記得一次只放一個主風格。",
+        "answer": "驗收：結構化版應該六格都到位、且你講得出每格的作用（主體定內容、風格定調性、光線定情緒、構圖定空間、品質定類型、--ar 定形狀）。實際生圖的話，你會看到爛 prompt 每次亂跳、結構化 prompt 穩定可控——這就是 prompt 工程的價值。"
       },
       "outline": [
         {
           "level": 2,
-          "text": "Prompt 結構"
-        },
-        {
-          "level": 3,
-          "text": "範例"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "Style 關鍵字"
+          "text": "六格公式：按順序堆，別碰運氣"
         },
         {
           "level": 2,
-          "text": "攝影詞彙"
+          "text": "走一次：爛 prompt vs 公式 prompt"
         },
         {
           "level": 2,
-          "text": "燈光"
+          "text": "三組「開掛」關鍵字（記這些就夠起步）"
         },
         {
           "level": 2,
-          "text": "Aspect Ratio"
-        },
-        {
-          "level": 2,
-          "text": "排除（Negative）"
-        },
-        {
-          "level": 2,
-          "text": "Reference Image"
-        },
-        {
-          "level": 2,
-          "text": "風格代碼（--sref）"
-        },
-        {
-          "level": 2,
-          "text": "Variations"
-        },
-        {
-          "level": 2,
-          "text": "品質"
-        },
-        {
-          "level": 2,
-          "text": "V6+ 提示技巧"
-        },
-        {
-          "level": 3,
-          "text": "自然語言"
-        },
-        {
-          "level": 3,
-          "text": "Permutation"
-        },
-        {
-          "level": 2,
-          "text": "商業使用"
-        },
-        {
-          "level": 3,
-          "text": "授權"
-        },
-        {
-          "level": 3,
-          "text": "不能"
-        },
-        {
-          "level": 2,
-          "text": "工作流程"
-        },
-        {
-          "level": 3,
-          "text": "客戶要 5 張圖"
-        },
-        {
-          "level": 2,
-          "text": "進階：Stable Diffusion"
-        },
-        {
-          "level": 2,
-          "text": "心法"
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "你想用 Midjourney 生成一張商品照片，需要同時保持多張圖的風格一致。下列哪個做法最有效率？",
+        "question": "下列哪個 prompt 寫法最可能出「怪圖」？",
         "options": [
           {
             "value": "a",
-            "label": "每次生圖都重新寫一遍完整的 prompt，確保描述詳細"
+            "label": "photorealistic + anime style + cyberpunk + oil painting 一次全加"
           },
           {
             "value": "b",
-            "label": "第一張用詳細 prompt 生圖，拿到風格代碼後用 --sref 套用到後續的圖"
+            "label": "主體 → 一個主風格 → 光線 → 構圖 → 品質 → --ar 依序堆疊"
           },
           {
             "value": "c",
-            "label": "直接用 Permutation 語法 {產品A, 產品B, 產品C} 一次生三張"
+            "label": "a cozy coffee shop, warm light, --ar 16:9"
           },
           {
             "value": "d",
-            "label": "所有圖都改用 Stable Diffusion 的 LoRA 訓練，完全自己控制風格"
+            "label": "用 golden hour + soft lighting 當光線"
           }
         ],
-        "answer": "b",
-        "explanation": "課程強調風格代碼 --sref 的用途就是保持一致風格，一次確定風格後可以重複套用到不同主題上。Permutation 是用來一次跑多個變體，不是為了保持風格；LoRA 是進階選項，不是「最有效率」的做法。"
-      }
+        "answer": "a",
+        "explanation": "一次堆多個互相衝突的主風格（寫實＋動漫＋賽博龐克＋油畫）會讓 AI 神經錯亂、出怪圖。好 prompt 是『一次一個主風格』再按公式補光線/構圖/品質。B/C/D 都是正確做法。"
+      },
+      "demos": [
+        {
+          "type": "prompt-builder",
+          "title": "圖像 Prompt 積木",
+          "note": "點積木依六格公式即時組出 prompt、看每個零件加了什麼"
+        }
+      ]
     },
     {
-      "title": "v0 / Figma AI：UI 設計革命",
-      "oneLineSummary": "Describe → React + Tailwind code 直接生成",
-      "analogy": "前端 + 設計師被合併。",
-      "content": "## v0（Vercel）—— AI 設計到程式碼的直接通道\n\n### 什麼是 v0？為什麼要用？\n\nv0 是 Vercel（Next.js 製作公司）推出的 AI 設計工具。簡單說：**你用自然語言描述一個 UI 長什麼樣，它直接給你可以執行的 React 程式碼**。\n\n想像你是設計師，手上只有筆和紙，寫下「我要一個定價頁面，有三個方案、深色主題、綠色強調色」，然後有個魔法師幫你畫出設計稿、還順便寫好 HTML + CSS + JavaScript。v0 就是那個魔法師。\n\n### 核心功能拆解\n\n**文字敘述 → React 元件**\n- 你在 v0 網站輸入自然語言提示詞（Prompt）\n- 描述你要什麼樣的界面、什麼風格、什麼功能\n- v0 用 Claude AI 理解你的描述，自動生成完整的 React 元件程式碼\n\n**即時預覽和迭代**\n- 程式碼生成後，右邊馬上看到視覺預覽\n- 如果不滿意，直接改描述重新生成\n- 不必手動改 CSS、調 layout——直接用自然語言改\n\n**直接匯出可用程式碼**\n- 生成的程式碼基於 React + Tailwind CSS + shadcn/ui（一套現成的 UI 元件庫）\n- 可以直接複製貼到你的 Next.js 專案，馬上能執行\n- 不是設計圖檔、不是 Figma 原型——是真的可以跑的程式碼\n\n**訂閱模式**\n- 免費版：有限制、適合小試\n- 付費版（US$20/月）：包含 ChatGPT Plus 權限、無限生成、優先處理\n\n### 實際使用範例\n\n💬 **你輸入的提示詞：**\n\n```\nA pricing page with 3 tiers:\n- Free: NT$0, includes 100 lessons, basic support\n- Pro: NT$299/month, all content, priority support, live classes\n- Lifetime: NT$15000, everything + lifetime access + 1-on-1 coaching\n\nDesign requirements:\n- Dark theme (dark blue background)\n- Green accent color (#10b981)\n- Use shadcn/ui Card component for tier cards\n- Include checkmark icons for features\n- Mobile responsive\n- Call-to-action button on each tier\n```\n\n💬 **v0 生成的程式碼（部份示意）：**\n\n```jsx\nimport { Button } from \"@/components/ui/button\"\nimport { Card } from \"@/components/ui/card\"\nimport { Check } from \"lucide-react\"\n\nexport default function PricingPage() {\n  const tiers = [\n    {\n      name: \"Free\",\n      price: \"NT$0\",\n      features: [\"100 lessons\", \"Basic support\"],\n      cta: \"Get Started\"\n    },\n    {\n      name: \"Pro\",\n      price: \"NT$299\",\n      period: \"/month\",\n      features: [\"All content\", \"Priority support\", \"Live classes\"],\n      cta: \"Subscribe Now\",\n      highlight: true\n    },\n    {\n      name: \"Lifetime\",\n      price: \"NT$15000\",\n      features: [\"Everything\", \"Lifetime access\", \"1-on-1 coaching\"],\n      cta: \"Unlock Forever\"\n    }\n  ]\n\n  return (\n    <div className=\"min-h-screen bg-slate-900 text-white p-8\">\n      <h1 className=\"text-4xl font-bold text-center mb-12\">簡單、透明的訂閱方案</h1>\n      \n      <div className=\"grid md:grid-cols-3 gap-6 max-w-5xl mx-auto\">\n        {tiers.map((tier) => (\n          <Card \n            key={tier.name} \n            className={`p-6 ${tier.highlight ? 'border-green-500 bg-slate-800' : 'bg-slate-800'}`}\n          >\n            <h2 className=\"text-2xl font-bold mb-2\">{tier.name}</h2>\n            <div className=\"text-3xl font-bold text-green-500 mb-1\">\n              {tier.price}\n            </div>\n            {tier.period && <p className=\"text-sm text-gray-400 mb-6\">{tier.period}</p>}\n            \n            <ul className=\"space-y-3 mb-6\">\n              {tier.features.map((feature) => (\n                <li key={feature} className=\"flex items-center gap-2\">\n                  <Check className=\"w-4 h-4 text-green-500\" />\n                  {feature}\n                </li>\n              ))}\n            </ul>\n            \n            <Button className=\"w-full bg-green-600 hover:bg-green-700\">\n              {tier.cta}\n            </Button>\n          </Card>\n        ))}\n      </div>\n    </div>\n  )\n}\n```\n\n你可以直接複製這段程式碼到 React 專案裡跑。不用自己寫 CSS、不用手動排版、不用調響應式（RWD）——已經幫你做好了。\n\n### v0 最適合的場景\n\n- **Landing page**：首頁、銷售頁、行銷頁面\n- **定價頁**：列表化的內容很適合 AI 理解和生成\n- **Dashboard**：資料展示、圖表、統計面板\n- **表單和認證**：註冊、登入、編輯表單\n- **卡片網格**：產品列表、功能介紹、組合頁面\n\n### v0 做不好的事情（坦白說）\n\n- **複雜的狀態管理**：牽涉到多個頁面共享資料、複雜邏輯，v0 生不出你要的程式結構\n- **高度互動動畫**：拖拉、3D 效果、複雜的事件處理，v0 不擅長\n- **自訂邏輯**：業務特定的演算法、特殊的資料流，需要人工補\n- **與後端緊密整合**：API 呼叫、驗證、錯誤處理，v0 只生基礎框架，細節要自己寫\n\n**誠實建議**：v0 最強的地方是「快速生出靜態或半互動的 UI」。如果你的案子主要是設計 + 基礎互動，v0 是神器；但如果牽涉複雜商業邏輯，v0 是加速器、不是全能工具。\n\n---\n\n## Figma AI：設計工具內的 AI 助手\n\n### 為什麼 Figma 這樣的設計軟體也要內建 AI？\n\n因為 **Figma 的使用者是設計師，不一定會寫 code**。Figma AI 的目的是讓設計師在熟悉的界面內，用 AI 快速生成設計稿。\n\n### Figma 的三個 AI 功能\n\n**1. Figma First Draft—— 線框圖自動生成**\n- 你寫一句話：「我要一個社群媒體應用的首頁」\n- Figma AI 在你的設計檔內直接生出基礎線框圖（Wireframe）\n- 省下「從空白畫布開始」的時間\n\n**2. Figma Make—— 完整設計生成**\n- 這是 2024 年之後推出的新功能\n- 不只生線框，而是生完整的、有視覺設計的設計稿\n- 你給文字描述 + 參考圖片，它生出可用的設計檔\n\n**3. 各式 AI 插件**\n- **Magician**：AI 文案生成、圖片建議、顏色搭配\n- **Icons8 Lunacy**：可以用文字描述直接生成圖示\n- **Diagram**：自動生成流程圖、組織圖\n\n### Figma AI vs v0：怎麼選？\n\n| 對象 | 工具 | 輸入 | 輸出 | 適合誰 |\n|------|------|------|------|--------|\n| 設計師 | Figma AI | 文字 + 圖片 | 設計稿（.fig 檔） | 想快速出設計稿給開發者 |\n| 開發者 / 全棧 | v0 | 文字 | React 程式碼 | 想直接生出能執行的網頁 |\n\n---\n\n## AI 加速的設計到開發流程\n\n### 傳統流程（一個月的痛苦）\n\n```\nWeek 1: 需求訪談 + User Story（3 天）\n       ↓\n       Wireframe 手繪 + 討論（3-5 天）\n       ↓\nWeek 2-3: Mockup 設計（2-3 天）\n          ↓\n          客戶反覆改稿（3-5 天）\n          ↓\nWeek 4: Prototype（互動原型，1 天）\n       ↓\n       開發者看設計自己理解 + 寫 code（1-2 週）\n       ↓\n結果：設計和程式碼長得不一樣、客戶不滿意\n```\n\n### AI 加速流程（3-5 天完成）\n\n```\nDay 1: 需求訪談 → v0 描述 → 生出 Mockup（1-2 小時）\n       ↓\n       客戶看預覽、即時改（1-2 小時）\n       ↓\nDay 2: 確認設計、Export code（30 分鐘）\n       ↓\nDay 3-4: 開發者直接用程式碼、連後端、測試（1-2 天）\n         ↓\nDay 5: 上線\n```\n\n**時間縮短**：30 天 → 5 天  \n**設計到程式碼 gap**：幾乎零（因為程式碼直接是設計生成的）  \n**客戶滿意度**：更高（看到的就是最終產品）\n\n---\n\n## v0 進階技巧：從「新手亂改」升級到「專業迭代」\n\n### 技巧 1：帶著參考圖片改\n\n不要只用文字描述，上傳你喜歡的設計圖片：\n\n```\nCreate a card component like this reference image:\n[上傳一個你喜歡的 card 設計]\n\nBut apply it to this content:\n- Product title: \"AI 設計課程\"\n- Price",
+      "title": "v0 / Figma AI：描述 → 能跑的 UI",
+      "oneLineSummary": "v0 做『好看的殼』、你做『會動的腦』",
+      "analogy": "一句需求生 React；看懂界線比會用更重要。",
+      "content": "## 這一課你會做出什麼\n\n用 v0 從一句需求生出一個**能跑的 React 元件**，並且看懂「v0 幫你做完什麼、你還得自己補什麼」——這條界線比會用 v0 更重要。\n\n> v0（念 v-zero）是 Vercel 做的 AI UI 生成器：**你用自然語言描述介面，它直接給你可執行的 React + Tailwind 程式碼**。不是設計圖、不是假圖，是複製貼上就能跑的元件。\n\n---\n\n## 走一次：一句話 → 定價頁\n\n💬 你在 v0 輸入：\n\n```\n做一個定價頁，3 個方案（Free $0 / Pro $20 一月 / Enterprise 客製），\n深色主題、綠色強調色，每個方案有勾選清單和 Get Started 按鈕，\n用 Tailwind 和 shadcn/ui，要 RWD。\n```\n\n💻 v0 約 30 秒生出（節錄）：\n\n```jsx\nexport default function PricingPage() {\n  const tiers = [\n    { name: \"Free\", price: \"$0\", features: [\"5 projects\"], cta: \"Get Started\" },\n    { name: \"Pro\", price: \"$20\", features: [\"Unlimited\", \"Priority\"], cta: \"Get Started\", highlight: true },\n    { name: \"Enterprise\", price: \"Custom\", features: [\"Dedicated manager\"], cta: \"Contact us\" },\n  ];\n  return (\n    <div className=\"min-h-screen bg-slate-900 text-white p-8\">\n      <div className=\"grid md:grid-cols-3 gap-6 max-w-5xl mx-auto\">\n        {tiers.map((t) => (\n          <div key={t.name} className={`p-6 rounded-xl bg-slate-800 ${t.highlight ? \"border-2 border-green-500\" : \"\"}`}>\n            <h2 className=\"text-2xl font-bold\">{t.name}</h2>\n            <p className=\"text-3xl text-green-400 my-3\">{t.price}</p>\n            <ul className=\"space-y-2 mb-6\">{t.features.map((f) => <li key={f}>✓ {f}</li>)}</ul>\n            <button className=\"w-full bg-green-600 rounded py-2\">{t.cta}</button>\n          </div>\n        ))}\n      </div>\n    </div>\n  );\n}\n```\n\n**複製這段就能跑**——不用自己寫 CSS、排版、RWD 都做好了。這就是 v0 的魔力。\n\n---\n\n## 關鍵：v0 幫你做完什麼、你還要補什麼\n\n這條界線是這課的重點——**不懂它，你會以為「v0 生完就完工」，然後在真專案裡踩坑**。\n\n✅ **v0 幫你做好的**（靜態、美觀的版面）：\n- Landing page、定價頁、Dashboard 單頁、登入/註冊表單、產品卡片牆\n- 樣式、排版、RWD、基本互動（hover、展開）\n\n❌ **v0 做不好、要你自己補的**（行為邏輯）：\n- **接真資料**：上面 tiers 是寫死的假資料，接 `/api/...` 要你自己來。\n- **狀態管理**：跨頁共享資料、購物車那種複雜邏輯。\n- **複雜互動**：拖拉、即時協作、精細動畫。\n- **後端整合**：API 呼叫、驗證、錯誤處理。\n\n**一句話**：v0 擅長「美觀的靜態版面」，不擅長「行為邏輯」。它給你元件框架，業務邏輯要你接（下一課 52.5 會教怎麼用 Cursor 把邏輯接上）。\n\n---\n\n## Figma AI：給設計師的另一條路\n\n如果你是設計師、不寫 code，Figma 內建的 AI（First Draft 生線框、Make 生完整設計稿）讓你在熟悉的介面裡快速出**設計稿**給工程師。差別：**Figma AI 出 .fig 設計檔、v0 出能跑的 code**。你是工程/全棧就用 v0，是設計師就用 Figma AI。\n\n---\n\n## ☕ 用人話講\n\nv0 把「描述 → 能跑的網頁」這段壓到幾十秒，但你一定要記住那條界線：**它做「好看的殼」，你做「會動的腦」**。把 v0 當「超快出殼機」、把接資料和邏輯留給自己（或下一課的 Cursor），你就不會掉進「以為生完就完工」的坑。",
       "tip": {
-        "type": "milestone",
-        "text": "v0 + Tailwind + shadcn = 2026 前端設計神器。"
+        "type": "warning",
+        "text": "別以為 v0 生完就完工——接資料/邏輯要自己補。"
       },
       "id": "52.3",
       "number": "LESSON 52.3",
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "上 v0（有免費額度）或用任一能生 UI 的 AI，用一句需求生一個元件（例：一張個人名片卡／一個聯絡表單／一個功能三欄介紹）。把生出來的結果貼進筆記，然後列出『v0 幫我做好的 3 件事』和『我還得自己補的 2 件事』。",
+        "hint": "描述時把『主題色、要幾個區塊、要不要 RWD、用不用 shadcn/ui』講清楚，出來的品質差很多。補的部分通常是：接真資料、按鈕點了要做什麼、特殊互動。",
+        "answer": "驗收重點不是圖多漂亮，而是你答對那條界線：v0 做好的通常是版面/樣式/RWD/基本互動；你要補的通常是接 API 真資料、狀態邏輯、按鈕的實際行為。能清楚說出這條界線，代表你不會掉進『生完就完工』的坑。"
       },
       "outline": [
         {
           "level": 2,
-          "text": "v0（Vercel）"
-        },
-        {
-          "level": 3,
-          "text": "功能"
-        },
-        {
-          "level": 3,
-          "text": "用法"
-        },
-        {
-          "level": 3,
-          "text": "適合"
-        },
-        {
-          "level": 3,
-          "text": "不適合"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "Figma + AI"
-        },
-        {
-          "level": 3,
-          "text": "Figma First Draft"
-        },
-        {
-          "level": 3,
-          "text": "Figma Make"
-        },
-        {
-          "level": 3,
-          "text": "插件"
+          "text": "走一次：一句話 → 定價頁"
         },
         {
           "level": 2,
-          "text": "設計流程（AI 加速）"
-        },
-        {
-          "level": 3,
-          "text": "傳統"
-        },
-        {
-          "level": 3,
-          "text": "AI 加速"
+          "text": "關鍵：v0 幫你做完什麼、你還要補什麼"
         },
         {
           "level": 2,
-          "text": "v0 進階技巧"
-        },
-        {
-          "level": 3,
-          "text": "1. 給範例"
-        },
-        {
-          "level": 3,
-          "text": "2. 分步驟改"
-        },
-        {
-          "level": 3,
-          "text": "3. 用 shadcn/ui"
-        },
-        {
-          "level": 3,
-          "text": "4. iterate"
+          "text": "Figma AI：給設計師的另一條路"
         },
         {
           "level": 2,
-          "text": "Subframe"
-        },
-        {
-          "level": 2,
-          "text": "Banani"
-        },
-        {
-          "level": 2,
-          "text": "設計接案：AI 重塑"
-        },
-        {
-          "level": 3,
-          "text": "報價結構"
-        },
-        {
-          "level": 3,
-          "text": "報價案例"
-        },
-        {
-          "level": 2,
-          "text": "心法"
-        },
-        {
-          "level": 2,
-          "text": "學習資源"
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "根據這堂課，使用 v0 和 Figma AI 最大的優勢是什麼？",
+        "question": "你用 v0 生了一個很漂亮的定價頁，裡面方案價格是寫死的。要接上後端真實價格，正確認知是？",
         "options": [
           {
             "value": "a",
-            "label": "可以完全不用懂設計，直接交付給客戶"
+            "label": "這屬於『行為邏輯/接資料』，v0 通常不幫你做完，要自己（或用 Cursor）接 API"
           },
           {
             "value": "b",
-            "label": "從描述需求到產出可用的 code，大幅縮短時間，設計和開發無縫接軌"
+            "label": "v0 一定會自動幫你接好資料庫，不用管"
           },
           {
             "value": "c",
-            "label": "能自動做出所有複雜的互動和動畫效果"
+            "label": "要重生一次、v0 第二次就會自己接 API"
           },
           {
             "value": "d",
-            "label": "設計師不需要學任何程式概念也能做出完美網站"
+            "label": "付費版 v0 會自動連上你的後端"
           }
         ],
-        "answer": "b",
-        "explanation": "課程重點強調 AI 工具是『速度倍增器』，將傳統 1.5 週的流程壓縮到 3 天，設計直接生出 code 無中間斷層。A 選項忽略了要『帶審美觀』的重要性，C 和 D 都違背課程所說 v0 不適合複雜互動的限制。"
+        "answer": "a",
+        "explanation": "v0 擅長生『美觀的靜態版面』，不擅長『行為邏輯』。接真資料、狀態、API 這些都要你自己補。認清這條界線，才不會以為『v0 生完就完工』——這正是下一課用 Cursor 接邏輯要解決的。"
       }
     },
     {
-      "title": "Midjourney 進階 Prompt + Style Code",
-      "oneLineSummary": "不只「a cat」、要設計感",
-      "analogy": "專業 vs 業餘差在 prompt。",
-      "content": "# Midjourney 進階 Prompt + Style Code\n\n## 為什麼要進階？先講為什麼\n\n你剛學會 Midjourney，丟了「a cat」，電腦生出一隻貓。但為什麼有人生出來是雜誌封面等級、有人生出來像素描？**祕密就在 Prompt 的層次和參數**。\n\n初級 Prompt 像「我要一杯咖啡」——咖啡店會端來一杯。進階 Prompt 像「我要一杯拉花拿鐵、奶泡比例 3:1、用中深烘豆、倒在白色陶瓷杯、側光拍攝」——咖啡師和攝影師都知道你要什麼。\n\n## Prompt 結構——層層疊疊的拼圖\n\nMidjourney 吃的 Prompt 順序很重要。記住這個黃金公式，按順序堆疊：\n\n```\n[主體], [風格], [構圖/場景], [燈光], [攝影技法], [品質], [參數]\n```\n\n**每一層都有用**——不是疊得越多越好，而是要「對的位置放對的詞」。\n\n### 實戰範例 1：靜物咖啡廳\n\n```\nA cozy coffee shop interior with wooden counter,\nwarm wood tones and cream walls,\nsoft morning light streaming through large windows,\nshallow depth of field with bokeh,\nshot on Sony A7IV with 50mm lens f/1.8,\nphotorealistic, 8k, professional product photography\n```\n\n**為什麼這樣寫？**\n- 前面（主體 + 場景）：AI 先理解「咖啡廳、木製吧台」的大框\n- 中間（顏色 + 燈光）：聚焦「棕褐色調 + 早晨柔和光線」，情緒就出來了\n- 後面（攝影機型 + 品質）：AI 知道走「專業攝影」路線，不是漫畫不是油畫\n\n💡 **新手常犯的錯**：什麼都想要、一口氣堆 20 個形容詞，結果 AI 眼花撩亂、生出怪東西。\n\n### 實戰範例 2：角色插圖\n\n```\nA fantasy elf warrior with silver hair and pointed ears,\nmid-action pose with sword raised,\nanime style inspired by Studio Ghibli,\nsoft watercolor aesthetic with bold outlines,\ndramatic backlighting with cool blue tones,\nillustration, character sheet, high detail\n```\n\n**為什麼這樣寫？**\n- 角色細節（頭髮、耳朵）要最前面——AI 容易漏掉細節，越重要越早寫\n- 風格（anime + Ghibli）：就算你只說「anime」，加上「Ghibli」就像給 AI 看參考圖一樣精準\n- 品質方向（illustration、character sheet）：比單純「high quality」更有用，因為告訴 AI 想要什麼類型的輸出\n\n## 關鍵字庫——會用這些字、層次差很大\n\n### 風格（Style）—— 決定整個調性\n\n**寫實系：**\n- `photorealistic` —— 照相級寫實\n- `cinematic` —— 電影感、大片既視感\n- `editorial photography` —— 雜誌級專業感\n\n**繪畫系：**\n- `watercolor painting` —— 水彩、透光感強\n- `oil painting` —— 油畫、厚重質感\n- `acrylic` —— 壓克力、鮮豔對比\n- `minimalist illustration` —— 極簡線條\n\n**虛構系：**\n- `anime style` —— 日漫\n- `Studio Ghibli style` —— 特指宮崎駿、軟和、有溫度\n- `cyberpunk` —— 賽博龐克、霓虹 + 科技感\n- `vaporwave` —— 迷幻 80 年代、紫色和粉紅色\n- `art deco` —— 幾何 + 金色 + 奢華感\n\n**✨ 密技**：風格可以混搭。比如 `anime style + cyberpunk + neon lighting` 就會生出賽博龐克動漫。\n\n### 攝影視角和構圖（Composition）\n\n- `wide angle` —— 廣角、環境感強、適合風景\n- `macro` —— 微距、近距離細節\n- `aerial view` —— 俯視、無人機視角\n- `Dutch angle` —— 傾斜、動感、緊張感\n- `rule of thirds` —— 三分法構圖、經典專業\n\n**景深（Depth of Field）—— 背景模糊度：**\n- `shallow depth of field` —— 背景虛、主體清\n- `bokeh` —— 虛化球體很漂亮、適合夜景\n- `sharp focus` —— 從前到後都清楚、適合風景\n\n### 燈光（Lighting）—— 情緒的 50%\n\n- `soft lighting` —— 柔和、溫暖、舒服\n- `dramatic lighting` —— 明暗對比強、張力大\n- `neon lighting` —— 霓虹管、夜間科技感\n- `studio lighting` —— 專業棚光、乾淨\n- `backlit` —— 逆光、輪廓發光\n- `rim lighting` —— 邊緣光、人物側面發光\n- `golden hour` —— 日出 / 日落、橙金色\n- `blue hour` —— 黃昏之後、深藍色\n\n**秘訣**：`golden hour + soft lighting` 是新手開掛組合，十張有八張好看。\n\n## Parameter 參數——微調的魔法棒\n\nMidjourney 的參數寫在 Prompt 最後面，前面加 `--` 開頭。\n\n### `--ar` 比例（Aspect Ratio）\n\n- `--ar 1:1` —— 方形、適合 IG 貼文、頭貼\n- `--ar 16:9` —— 寬螢幕、適合影片縮圖、電影海報\n- `--ar 9:16` —— 豎屏、適合 IG Story、手機 app 封面\n- `--ar 3:2` —— 古典相機比例、雜誌風\n- `--ar 4:3` —— 肖像、人物照\n\n**新手提示**：預設是 `1:1`。如果忘記加，一代美術會硬生成正方形。\n\n### `--style raw` —— 減少過度「美化」\n\nMidjourney 預設有自動「調整」——讓圖漂亮、飽和、討喜。有時候你想要「最忠實於 prompt 的樣子」，加上 `--style raw`。\n\n```\nA weathered concrete wall with graffiti,\ngritty documentary style,\nharsh midday light,\n--ar 16:9\n--style raw\n```\n\n加 `--style raw` 後：不會自動磨皮、不會加光暈，就是你 prompt 要的樣子。\n\n### `--stylize` 或 `--s` —— AI 自由度控制\n\n數字範圍 0-1000，預設 100。\n\n- `--stylize 25` 低值 —— AI 「照題目做」、字面解釋、著重細節準度\n- `--stylize 100` 中等 —— 平衡好、推薦\n- `--stylize 750` 高值 —— AI「自由發揮」、藝術性強、可能出現驚喜但也可能偏離需求\n\n**實戰**：接案時用低 stylize（25-50），想要創意發揮時用高 stylize（600+）。\n\n### `--no` —— 排除不要的東西\n\n如果你想要「森林風景、但不要人」：\n\n```\nA dense forest with ancient trees and moss,\ngolden hour lighting,\n--no people, buildings, roads\n```\n\n`--no` 後面列舉你不要的東西，用逗號分隔。**超好用但容易過度使用**——加太多排除條件，反而限制 AI，生圖品質會下降。\n\n### `--niji` 或 `--niji 6` —— 動漫専用模型\n\n想要純動漫風格，加 `--niji 6` 會走日漫模型，比 `--model midjourney` 更懂 anime 美學。\n\n```\nA magical girl with long blue hair,\noversized eyes with starlight,\nanime style,\n--niji 6\n```\n\n## Style Code（--sref）—— 風格鎖定、接案神器\n\n### 什麼是 Style Code？\n\n一個 10 位數的代碼，代表一張圖的「整體視覺風格」。你可以把某一張圖的風格「複製」到新圖上。\n\n**關鍵：色調、筆觸、光影的質感會保持一致，但主體完全不同。**\n\n### 怎麼用？\n\n**第一步：生出你滿意的「風格參考圖」**\n\n```\nA woman in vintage 50s dress,\nwarm film photography,\nsoft focus,\n--ar 3:2\n```\n\n生圖後，在反應裡點 📨 icon（envelope），複製出 Job ID。進 style explorer 查這個 ID 的 style code（比如：`1234567890`）。\n\n**第二步：用同個 style code 生不同主體**\n\n```\nA man in vintage 50s suit --sref 1234567890\n```\n\n```\nA vintage 50s car in a diner --sref 1234567890\n```\n\n```\nA 1950s kitchen interior --sref 1234567890\n```\n\n結果：三張圖主體完全不同，但顏色、光影、質感、年代感都統一了。\n\n### 為什麼這對接案超重要？\n\n客戶常說「這五張圖的風格不一樣，我要統一」。傳統設計師要慢慢調整。你用 `--sref`：\n\n- **一致性秒解決**：一組 style code 可以生 10-20 張圖，全部統一風格\n- **快速迭代**：客戶改需求，你只需要改 Prompt 主體，風格自動套\n- **時間省一倍**：傳統修圖師要色彩分級一張張調，你直接重生\n\n**💡 獨立設計師絕招**：建立自",
+      "title": "Midjourney 進階：除錯 + Style Code",
+      "oneLineSummary": "從『隨手打』升級到『控制得住』",
+      "analogy": "除錯＝拿掉打架的，--sref＝鎖定系列風格。",
+      "content": "## 這一課你會做出什麼\n\n一個「壞掉的 prompt」的診斷與修復，加上學會 `--sref` 做**風格一致的系列圖**（接案神器）。你會從「隨手打 a cat」升級到「控制得住結果」。\n\n> 同樣丟 Midjourney，有人生出雜誌封面、有人生出隨機素描。差別在**層次和參數**。\n\n---\n\n## 先學會「除錯」：為什麼這個 prompt 會爛\n\n看一個新手常寫的壞 prompt：\n\n```\na beautiful amazing cat, photorealistic, anime style, cyberpunk,\noil painting, 4k, 8k, hyper detailed, masterpiece, trending,\ndramatic, colorful, cute, --no ugly --no bad --no blurry --no weird\n```\n\n**為什麼會爛？逐點診斷**：\n\n- **主風格打架**：`photorealistic + anime + cyberpunk + oil painting` 四種互斥，AI 神經錯亂。\n- **無意義堆疊**：`beautiful amazing masterpiece trending` 這些空詞不給方向、只稀釋重點。\n- **過度排除**：一串 `--no` 反而讓 AI 過度糾正、出更怪的東西（2-3 個排除就夠）。\n\n**修好版**：\n\n```\nA fluffy orange cat sitting on a windowsill,\nphotorealistic,\nsoft afternoon light,\nshallow depth of field,\n8k, --ar 3:2\n```\n\n一個主體、一個主風格、一種光線、一個構圖——**乾淨、可控**。這就是「除錯」思維：不是加更多詞，是拿掉打架的、留下給方向的。\n\n---\n\n## 關鍵參數（微調的魔法棒）\n\n- `--ar` 比例：`1:1` / `16:9` / `9:16`（見上一課）。\n- `--style raw`：關掉 Midjourney 的自動美化，「最忠實於你 prompt 的樣子」，適合寫實/紀實。\n- `--stylize`（`--s`，0-1000，預設 100）：低值（25-50）AI 照題目做、接案用；高值（600+）AI 自由發揮、要驚喜用。\n- `--niji 6`：純日漫模型，要 anime 就加它。\n- `--no`：排除元素，**最多 2-3 個**。\n\n---\n\n## `--sref`：風格鎖定，接案一致性神器\n\n客戶最常說：「這五張圖風格不統一，我要一致。」傳統設計師要一張張調色，你用 `--sref`（style reference）一鍵解決：\n\n**第 1 步**：生一張你滿意的風格參考圖，拿到它的代碼（style code，如 `1234567890`）。\n\n**第 2 步**：用同一個代碼生不同主體：\n\n```\nA man in vintage 50s suit --sref 1234567890\nA vintage 50s car in a diner --sref 1234567890\nA 1950s kitchen interior --sref 1234567890\n```\n\n結果：三張圖**主體完全不同，但色調、光影、年代感統一**——看起來像同一系列作品。\n\n**為什麼接案超值錢**：一組 style code 可以生 10-20 張統一風格的圖；客戶改需求你只改主體、風格自動套。時間省一半。\n\n---\n\n## ☕ 用人話講\n\n進階 prompt 的兩把鑰匙：**除錯**（拿掉打架的主風格和空詞，不是加更多）和 **`--sref`**（用一個風格代碼把一整組圖鎖成同一調性）。前者讓單張圖可控，後者讓一整個系列一致——這正是接案交件時，客戶願意付高價的地方。",
       "tip": {
-        "type": "milestone",
-        "text": "Midjourney Pro = Indie 設計神器。"
+        "type": "pro",
+        "text": "--sref 一個代碼鎖住一整組圖的風格，接案神器。"
       },
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「Midjourney 進階 Prompt + Style Code」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（photorealistic、cinematic、anime style、watercolor）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "這是一個壞掉的 prompt：『a nice beautiful dog, photorealistic, anime, watercolor, cyberpunk, 4k 8k masterpiece, --no ugly --no bad --no weird --no blurry』。請診斷它至少 3 個問題、然後重寫成一個乾淨可控的版本（一個主體、一個主風格、光線、構圖、比例）。",
+        "hint": "三大病：主風格互相打架、空詞堆疊（beautiful/masterpiece 沒方向）、--no 過度排除。修的方向是『拿掉打架的、留下給方向的』，不是加更多。",
+        "answer": "診斷：①photorealistic/anime/watercolor/cyberpunk 四種主風格互斥→神經錯亂 ②beautiful/masterpiece/4k8k 空詞稀釋重點 ③四個 --no 過度糾正。修好版例：『A golden retriever lying on a wooden floor, photorealistic, soft window light, shallow depth of field, --ar 3:2』——一個主風格、有光線有構圖、不過度排除。"
       },
       "id": "52.4",
       "number": "LESSON 52.4",
@@ -407,110 +234,69 @@
       "outline": [
         {
           "level": 2,
-          "text": "Prompt 結構"
-        },
-        {
-          "level": 3,
-          "text": "範例"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "關鍵字庫"
-        },
-        {
-          "level": 3,
-          "text": "Style"
-        },
-        {
-          "level": 3,
-          "text": "攝影"
-        },
-        {
-          "level": 3,
-          "text": "燈光"
+          "text": "先學會「除錯」：為什麼這個 prompt 會爛"
         },
         {
           "level": 2,
-          "text": "Parameters"
-        },
-        {
-          "level": 3,
-          "text": "--ar 比例"
-        },
-        {
-          "level": 3,
-          "text": "--style raw"
-        },
-        {
-          "level": 3,
-          "text": "--stylize"
-        },
-        {
-          "level": 3,
-          "text": "--no"
+          "text": "關鍵參數（微調的魔法棒）"
         },
         {
           "level": 2,
-          "text": "Style Code（--sref）保持風格一致"
+          "text": "`--sref`：風格鎖定，接案一致性神器"
         },
         {
           "level": 2,
-          "text": "Character Reference（--cref）"
-        },
-        {
-          "level": 2,
-          "text": "V7（2025+）"
-        },
-        {
-          "level": 2,
-          "text": "商業使用"
-        },
-        {
-          "level": 2,
-          "text": "工作流（接案）"
-        },
-        {
-          "level": 2,
-          "text": "心法"
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "你想用 Midjourney 為客戶做一系列商業廣告圖片，要確保所有圖片的視覺風格保持一致。下列做法哪一個最有效？",
+        "question": "你要生一個「復古 50 年代」風格的系列圖（人物、車、廚房各一張），要讓三張看起來像同一組作品。最有效的做法是？",
         "options": [
           {
             "value": "a",
-            "label": "每次生圖時都寫詳細的 Style 關鍵字描述（如 cyberpunk、cinematic 等）"
+            "label": "先生一張滿意的風格參考、取得 style code，之後每張都加 --sref <該代碼>"
           },
           {
             "value": "b",
-            "label": "使用 --sref 參數搭配同一個 Style Code，讓所有圖片保持一致的視覺風格"
+            "label": "每張都手動打一模一樣的一長串風格形容詞"
           },
           {
             "value": "c",
-            "label": "調高 --stylize 數值到 750 以上，讓 AI 自由發揮更有創意"
+            "label": "把三個主體全塞進同一個 prompt 生一張圖"
           },
           {
             "value": "d",
-            "label": "使用 --cref 參數來控制每張圖片的人物角色一致性"
+            "label": "用 --stylize 1000 讓 AI 自由發揮"
           }
         ],
-        "answer": "b",
-        "explanation": "Style Code（--sref）的核心用途就是跨圖片保持視覺風格一致，特別適合商業案件。選項 a 只是描述風格但不保證一致；c 是增加 AI 自由度反而失控；d 的 --cref 是用來控制角色而非整體風格。"
-      }
+        "answer": "a",
+        "explanation": "--sref（style reference）用一個 style code 把色調/光影/質感鎖定，主體換掉、風格自動套，是做『一致系列圖』最有效的方法，也是接案交件保持一致性的神器。手打形容詞很難每次一致、--stylize 高值反而更發散。"
+      },
+      "demos": [
+        {
+          "type": "prompt-builder",
+          "title": "圖像 Prompt 積木",
+          "note": "先在這裡把乾淨、可控的 prompt 組出來，再去 Midjourney 加參數"
+        }
+      ]
     },
     {
-      "title": "v0 + Cursor：AI UI 開發革命",
-      "oneLineSummary": "寫文字 → React 元件",
-      "analogy": "前端 + 設計合併。",
-      "content": "## v0 + Cursor：AI UI 開發革命\n\n### 為什麼這課重要？\n\n你可能有過這種經驗：老闆說「幫我做一個定價頁面」，你得花一整天切版、調樣式、測響應式設計。現在，你可以用一句描述讓 AI 生出完整 React 元件，再用 Cursor 快速整合進專案。**這堂課教你用 AI 工具把前端開發速度快 5 倍**。\n\n---\n\n## v0 是什麼？——AI 變魔術師的 UI 生成器\n\n### 核心概念\n\nv0（念「v-zero」）是 Vercel 公司做的 AI UI 生成器。你用文字描述介面需求，它就直接生出「能用的 React + Tailwind 程式碼」。不是草稿、不是假圖，**是真的能複製貼上就跑的元件**。\n\n### 收費＆內建元件庫\n\n- **$20 / 月**：無限生成次數\n- **內建 shadcn/ui**：就是那個知名的無頭 UI 套件（headless components），包括按鈕、模態視窗、下拉選單等。意思是你生出來的元件不會很醜，已經是設計過的樣子\n\n### 真實例子：從文字到元件\n\n假如你要做一個定價頁面，你在 v0 輸入：\n\n```\nCreate a pricing page with 3 tiers:\n- Free: $0/month, 5 projects\n- Pro: $20/month, unlimited projects, early support\n- Enterprise: custom pricing, dedicated manager\n\nUse dark mode with blue and green accents.\nInclude a \"Get Started\" button under each tier.\nUse Tailwind CSS and shadcn/ui.\n```\n\n**30 秒內**，v0 生出一個完整的 React 元件：\n\n```jsx\nimport { Button } from \"@/components/ui/button\";\nimport { Card } from \"@/components/ui/card\";\n\nexport default function PricingPage() {\n  return (\n    <div className=\"min-h-screen bg-slate-900 text-white py-12\">\n      <div className=\"max-w-6xl mx-auto\">\n        <h1 className=\"text-4xl font-bold text-center mb-4\">Simple Pricing</h1>\n        <p className=\"text-center text-gray-400 mb-12\">Choose the plan that fits your needs</p>\n        \n        <div className=\"grid md:grid-cols-3 gap-8\">\n          {/* Free Tier */}\n          <Card className=\"bg-slate-800 border-slate-700 p-8\">\n            <h2 className=\"text-2xl font-bold mb-2\">Free</h2>\n            <p className=\"text-4xl font-bold text-blue-400 mb-4\">$0</p>\n            <ul className=\"space-y-2 mb-8 text-gray-300\">\n              <li>✓ 5 projects</li>\n            </ul>\n            <Button className=\"w-full bg-blue-600 hover:bg-blue-700\">Get Started</Button>\n          </Card>\n\n          {/* Pro Tier */}\n          <Card className=\"bg-slate-800 border-green-500 border-2 p-8 relative\">\n            <div className=\"absolute top-4 right-4 bg-green-500 text-black px-3 py-1 rounded-full text-sm font-bold\">Popular</div>\n            <h2 className=\"text-2xl font-bold mb-2\">Pro</h2>\n            <p className=\"text-4xl font-bold text-green-400 mb-4\">$20<span className=\"text-lg\">/mo</span></p>\n            <ul className=\"space-y-2 mb-8 text-gray-300\">\n              <li>✓ Unlimited projects</li>\n              <li>✓ Early support</li>\n            </ul>\n            <Button className=\"w-full bg-green-600 hover:bg-green-700\">Get Started</Button>\n          </Card>\n\n          {/* Enterprise */}\n          <Card className=\"bg-slate-800 border-slate-700 p-8\">\n            <h2 className=\"text-2xl font-bold mb-2\">Enterprise</h2>\n            <p className=\"text-4xl font-bold text-gray-400 mb-4\">Custom</p>\n            <ul className=\"space-y-2 mb-8 text-gray-300\">\n              <li>✓ Dedicated manager</li>\n              <li>✓ Custom features</li>\n            </ul>\n            <Button variant=\"outline\" className=\"w-full\">Contact us</Button>\n          </Card>\n        </div>\n      </div>\n    </div>\n  );\n}\n```\n\n**這就是 v0 的魔力**：沒有設計師、沒有 Figma，純文字變完整頁面。\n\n### 快速迭代\n\n不滿意？直接改需求。比如：\n\n⌨️ 「Make the Pro button bigger and add a gradient」\n\nv0 秒改。再說：\n\n⌨️ 「Add a testimonials section below」\n\n又生出一個新區塊。**沒有固定套路，一次一次地逼近你心目中的樣子**。\n\n### 什麼時候用 v0\n\n✅ **用 v0 超有效**：\n- Landing page（首頁）\n- Pricing 頁面\n- Dashboard 的單一頁面\n- 登入 / 註冊表單\n- 產品介紹區塊\n- 簡單 CRUD UI（Create、Read、Update、Delete）\n\n❌ **v0 會崩潰**：\n- 複雜的狀態管理（Redux / Zustand 那種）\n- 動畫和微互動（詳細的 Framer Motion 序列）\n- 高度自訂的互動邏輯（拖拖拉拉、即時協作）\n- 需要連接複雜 API 的邏輯層\n\n**為什麼？**因為 v0 擅長「美觀的靜態版面」，不擅長「行為邏輯」。它生的是元件框架，需要你手動接業務邏輯。\n\n---\n\n## Cursor 是什麼？——VS Code 的 AI 超級助手\n\n### 核心概念\n\nCursor 是一個**基於 VS Code 改造的編輯器**，內建強大的 AI。不是普通的自動補完，而是能理解你整個專案、跨檔案編輯、快速重構的副駕駛。\n\n### 三個超實用快捷鍵\n\n| 快捷鍵 | 功能 | 使用時機 |\n|--------|------|---------|\n| **Cmd+K**（Mac）/ **Ctrl+K**（Windows） | 「生成代碼」模式 | 問 AI「幫我寫個函式」，框選一段代碼問「改成 async」 |\n| **Cmd+L** / **Ctrl+L** | Chat 聊天室 | 像用 ChatGPT，但 AI 知道你的整個專案 |\n| **Tab** | AI 自動補完 | 輸一半，Tab 完成（像 GitHub Copilot） |\n\n### Cursor 的超能力\n\n**1. Codebase Aware（懂你的整個專案）**\n\n你告訴 Cursor：「這個按鈕點擊後，應該呼叫 `/api/checkout` 並更新 Redux store」。\n\nCursor **自動知道**：\n- 你的 API route 在哪\n- Redux action 怎麼寫\n- 檔案結構怎樣\n- 是不是用 TypeScript\n\n不用你一次次解釋。\n\n**2. Multi-file Edit（一次改多個檔案）**\n\n傳統：改 `Button.tsx` → 再改 `types.ts` → 再改 `hooks/useButton.ts`\n\n用 Cursor：「改這個表單驗證邏輯」，Cursor 一次幫你改 3 個相關檔案。\n\n**3. Refactor（重構代碼）**\n\n老代碼又臭又長？選中一段，Cmd+K：\n\n⌨️ 「把這個 component 拆成更小的子 components」\n\nCursor 自動：\n- 拆檔案\n- 調整 import\n- 傳遞 props\n\n### 收費\n\n- **$20 / 月**（和 v0 一樣）\n- 有免費版，但限制多\n\n---\n\n## 完整流程：v0 → Cursor → Production\n\n### 第 1 步：v0 快速生 UI 元件\n\n你需要做一個新的統計儀表板。在 v0 花 **5 分鐘**：\n\n💬 v0 產出：完整的儀表板元件代碼\n\n### 第 2 步：複製進 Cursor，整合業務邏輯\n\n把 v0 的程式碼複製進你的 Cursor 專案，建立一個新檔案 `Dashboard.tsx`。\n\n然後你在 Cursor 裡問：\n\n⌨️ 「這個儀表板現在有假數據。幫我接上 `/api/dashboard` API，用 React Query 實現資料抓取和自動刷新」\n\nCursor 會：\n- 加入 React Query hook\n- 處理載入狀態（loading）\n- 處理錯誤狀態\n- 綁定真實資料到圖表\n\n```jsx\nimport { useQuery } from '@tanstack/react-query';\n\nexport default function Dashboard() {\n  const { data, isLoading, error } = useQuery({\n    queryKey: ['dashboard'],\n    queryFn: async () => {\n      const res = await fetch('/api/dashboard');\n      return res.json();\n    },\n  });\n\n  if (isLoading) return <div>Loading...</div>;\n  if (error) return <div>Error loading dashboard</div>;\n\n  return (\n    <div>\n      {/* 原本 v0 的 UI，現在用 data 填充 */}\n    </div>\n  );\n}\n```\n\n### 第 3 步：上線\n\n檔案完成 → Git commit → Deploy 到 Vercel / Railway / AWS。\n\n**從想法到上線：1 天內完成**。沒有 Cursor，你可能需要 3 天。\n\n---\n\n## 還有其他類似工具：Bolt.new 和 Lovable\n\n### Bolt.new（Firebase CEO 做的）\n\n- 像 v0 的「加強版」\n- 可以生整個 app（不只是元件），包括後端\n- 整個 app 在一個沙箱裡跑，可以實時預覽\n- $20 / 月\n\n### Lovable（前 Vercel 員工做的）\n\n- 也是生整個 full-stack app\n- UI 設計能力比 v0 更強\n- $",
+      "title": "v0 + Cursor：AI 前端開發流程",
+      "oneLineSummary": "v0 出殼、Cursor 接腦、你當驗收",
+      "analogy": "一天做完一個功能頁的可複製 SOP。",
+      "content": "## 這一課你會做出什麼\n\n一條**「v0 出殼 → Cursor 接腦 → 上線」**的完整流程規劃：你會知道每一步該對 AI 說什麼、把「一天做完一個功能頁」變成可複製的 SOP。\n\n> 上一課學到 v0 擅長「好看的殼」、不擅長「會動的腦」。這課補上另一半：用 **Cursor**（內建 AI 的編輯器）把邏輯接上。兩個一起用，前端開發能快好幾倍。\n\n---\n\n## Cursor 是什麼\n\nCursor 是**基於 VS Code 改造、內建強 AI 的編輯器**。它不是普通自動補完，而是**懂你整個專案、能跨檔案編輯**的副駕駛。三個核心動作：\n\n- **Ctrl/Cmd + K**：框選一段 code 叫它改（「改成 async」「拆成子元件」）。\n- **Ctrl/Cmd + L**：像 ChatGPT 聊天，但它知道你的整個專案結構。\n- **Tab**：AI 自動補完（打一半、Tab 完成）。\n\n它的超能力是 **codebase aware**：你說「這按鈕點了要呼叫 /api/checkout」，它自己知道你的 API route 在哪、用不用 TypeScript，不用你一步步解釋。\n\n---\n\n## 走一次：一天做出一個「統計儀表板」\n\n**第 1 步 · v0 出殼（5 分鐘）**\n\n💬 對 v0：`做一個統計儀表板，上排 4 個數字卡（今日營收/訂單/新用戶/轉換率），下面一個折線圖區塊，深色主題。`\n→ 拿到漂亮但「用假資料」的元件。\n\n**第 2 步 · Cursor 接腦（20 分鐘）**\n\n把 v0 的 code 貼進專案存成 `Dashboard.tsx`，然後在 Cursor 對它說：\n\n⌨️ `這個儀表板現在是假數據。幫我接 /api/dashboard，用 React Query 抓資料、加 loading 和 error 狀態、把數字卡和圖表綁上真資料。`\n\nCursor 會幫你補出：\n\n```jsx\nimport { useQuery } from '@tanstack/react-query';\nexport default function Dashboard() {\n  const { data, isLoading, error } = useQuery({\n    queryKey: ['dashboard'],\n    queryFn: () => fetch('/api/dashboard').then(r => r.json()),\n  });\n  if (isLoading) return <div>載入中…</div>;\n  if (error) return <div>載入失敗</div>;\n  // 原本 v0 的 UI，改成用 data 填\n}\n```\n\n**第 3 步 · 上線**：commit → 部署到 Vercel/Zeabur。從想法到上線，**一天內**。\n\n---\n\n## 這條流程的分工心法\n\n- **v0** = 出「殼」（版面、樣式、RWD）——它最快。\n- **Cursor** = 接「腦」（資料、邏輯、狀態、錯誤處理）——它懂你專案。\n- **你** = 出「判斷」（這樣接對不對、code 品質夠不夠、要不要重構）。\n\n⚠️ 誠實提醒：AI 生的 code 品質不一，**一定要自己 review**——特別是安全（別把金鑰寫死）、錯誤處理、和「它是不是誤解了需求」。AI 是加速器，不是免驗收。\n\n---\n\n## 其他同類工具\n\n- **Bolt.new**：像 v0 加強版，能生「整個 app」含後端、沙箱即時預覽。\n- **Lovable**：也生 full-stack app，UI 能力更強。\n\n選哪個不重要，重要的是這條「AI 出殼 → AI/你接腦 → 你驗收 → 上線」的流程心法，換工具都通。\n\n---\n\n## ☕ 用人話講\n\n一個人做前端的新公式：**v0 出殼、Cursor 接腦、你當驗收**。殼和腦都有 AI 幫忙，你的價值移到「判斷對不對、品質夠不夠」。記住：AI 生的東西一定要自己 review 過再上線——快，但不能省掉驗收這一步。",
       "tip": {
-        "type": "milestone",
-        "text": "v0 + Cursor + shadcn = 前端神器。"
+        "type": "warning",
+        "text": "AI 生的 code 一定要自己 review 再上線，別省驗收。"
       },
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "挑一個你想做的功能頁（例：待辦清單／個人作品集／報名表單），把它拆成一條三步流程並寫出每步要對 AI 說的話：①給 v0 的『出殼』prompt ②給 Cursor 的『接腦』指令（要接什麼資料/邏輯）③你上線前要親自 review 的 2 個點。",
+        "hint": "出殼 prompt 講清楚版面和樣式；接腦指令講清楚『資料從哪來、按鈕點了做什麼』；review 點通常是安全（金鑰）、錯誤處理、和 AI 有沒有誤解需求。",
+        "answer": "驗收：你的流程要體現分工——v0 負責版面樣式、Cursor 負責接資料/邏輯/狀態、你負責驗收。好的 review 點會包含『有沒有把敏感資訊寫死』『錯誤/載入狀態有沒有處理』『AI 是否誤解需求』。能寫出這條 SOP，代表你抓到了 AI 前端開發的節奏。"
       },
       "id": "52.5",
       "number": "LESSON 52.5",
@@ -518,94 +304,66 @@
       "outline": [
         {
           "level": 2,
-          "text": "v0（Vercel）"
-        },
-        {
-          "level": 3,
-          "text": "是什麼"
-        },
-        {
-          "level": 3,
-          "text": "範例"
-        },
-        {
-          "level": 3,
-          "text": "Iterate"
-        },
-        {
-          "level": 3,
-          "text": "適合"
-        },
-        {
-          "level": 3,
-          "text": "不適合"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "Cursor"
-        },
-        {
-          "level": 3,
-          "text": "是什麼"
-        },
-        {
-          "level": 3,
-          "text": "強項"
-        },
-        {
-          "level": 3,
-          "text": "$20/月"
+          "text": "Cursor 是什麼"
         },
         {
           "level": 2,
-          "text": "Bolt.new / Lovable"
+          "text": "走一次：一天做出一個「統計儀表板」"
         },
         {
           "level": 2,
-          "text": "流程：v0 → Cursor → Production"
+          "text": "這條流程的分工心法"
         },
         {
           "level": 2,
-          "text": "心法"
+          "text": "其他同類工具"
+        },
+        {
+          "level": 2,
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "根據課程，v0 和 Cursor 在 AI UI 開發流程中各自扮演什麼角色？",
+        "question": "用 v0 + Cursor 開發，最不該省略的一步是？",
         "options": [
           {
             "value": "a",
-            "label": "v0 用來快速生成 UI 元件，Cursor 用來整合進 codebase 並接 API 做進一步實作"
+            "label": "自己 review AI 生的 code（安全、錯誤處理、有沒有誤解需求）再上線"
           },
           {
             "value": "b",
-            "label": "v0 和 Cursor 功能完全相同，都可以用來開發整個應用程式"
+            "label": "把 v0 的 prompt 寫到 500 字以上"
           },
           {
             "value": "c",
-            "label": "Cursor 用來描述 UI 需求，v0 用來調整程式碼細節和 refactor"
+            "label": "一定要買 Cursor 付費版"
           },
           {
             "value": "d",
-            "label": "v0 適合複雜的 state 和動畫，Cursor 只能做簡單的 autocomplete"
+            "label": "每個元件都用 3 種工具各生一次"
           }
         ],
         "answer": "a",
-        "explanation": "課程核心就是 v0（設計階段）→ Cursor（實作階段）的流程。v0 描述文字生元件，Cursor 則是 codebase aware 的編輯器，用來整合進專案、接 API、做多檔案編輯。其他選項混淆了兩工具的功能定位。"
+        "explanation": "AI 生的 code 品質不一、可能誤解需求或有安全問題（例如把金鑰寫死）。v0 出殼、Cursor 接腦都快，但『你驗收』這步不能省——這是 AI 加速開發時你不可取代的價值。"
       }
     },
     {
       "title": "AI 設計接案：報價 + 差異化",
-      "oneLineSummary": "會工具 = 量、懂設計 = 價",
-      "analogy": "不要在 Fiverr 玩 $10 logo。",
-      "content": "## AI 設計接案：報價 + 差異化\n\n### 服務類型 + 報價——先懂市場行情\n\n首先、要知道自己在賣什麼、市場願意付多少。這不是隨便喊價、而是有依據的定價。\n\n**常見服務及市場行情：**\n\n- **Logo 設計**：NT$ 10-50k\n  - 10k 級：簡單線稿、單色、給新創或 soho\n  - 30k 級：有概念、多色、含 3-5 版本\n  - 50k 級：深度 discovery、品牌故事、完整 guideline\n\n- **品牌全套**：NT$ 50-200k\n  - Logo + 色票 + 字體 + 應用手冊（官網、信紙、名片 mockup）\n  - 高端：含品牌故事文案、競品分析、30 天客戶支援\n  - 低端：交檔案、客戶自己應用\n\n- **網站視覺設計**：NT$ 30-100k\n  - 只設計（Figma）、不寫程式\n  - 首頁 + 內頁 layout、不含開發\n  - 30k：簡單 5 頁、模板改；100k：複雜交互、自訂設計\n\n- **社群圖月費**：NT$ 10-50k/月（通常 10-30 張）\n  - 把客戶當「經常性簽約」、用 AI 快速產出\n  - 月費制讓收入穩定、比一次性案子好\n  - 範例：IG post + Stories + 封面、月持續優化\n\n- **UI 設計**（App / SaaS 介面）：NT$ 50-300k\n  - 最複雜的、要懂使用者流程、交互邏輯\n  - 通常給科技新創或軟體公司\n  - 高端：含 user research、wireframe、prototype、design system\n\n- **平面印刷品**：NT$ 5-30k\n  - 名片、海報、DM、菜單\n  - 用 AI 快速量產是優勢\n  - 5k：簡單模板改；30k：完全客製\n\n💡 **怎麼定自己的價**：先看對手（競業、不是 Fiverr），再看自己有沒有獨特性。新手從行情下緣開始、做出 case study 後逐年漲 10-20%。\n\n---\n\n### 找客戶——不同管道、成功率差很大\n\n**1. 個人品牌（最好用）**\n- 在 IG / Threads / LinkedIn 分享 case study\n- 一個月發 3-4 個案例、寫「我怎麼做、客戶得到什麼」\n- 不是發設計圖、是發「故事」\n- 範例：「小咖啡館重新做 brand，開幕半年營收 +50%」配圖、簡述過程\n- **優點**：客戶主動找你、信任度高、能收較高價\n- **缺點**：要持續產出內容、前 3 個月成果不明顯\n\n**2. 接案平台（Fiverr / 99designs / 104）**\n- 快速接案、但都在打價格戰\n- 你會跟全世界競爭、印度 designer 能 5 美金 做 logo\n- **缺點**：紅海、難建立個人品牌、客戶品質參差\n- **只適合**：新手積累經驗 + 快速賺生活費、但不要久待\n\n**3. 推薦（永遠最好）**\n- 接完一個客戶、問：「你認識誰需要設計？介紹一下我」\n- 舊客戶介紹來的新客、簽約率 80% 以上\n- **為什麼**：有人背書、信任度最高\n- **怎麼做**：案子結束、送小禮物 / 寄感謝卡、主動追蹤、每季寄近況\n\n**4. 直接 outreach（冷開發）**\n- 列 100 間小品牌（新餐廳、新咖啡廳、新服飾店）\n- 寫 email：「我看過你的 IG，品牌很有故事，但 logo 可以更有力。我能幫你重新設計『X』，成本 NT$ XX，可以 30 分鐘免費聊？」\n- 不要說「我是設計師」、要說「我幫 [業種] 做過什麼」\n- **成功率**：約 3-5% 有回應、但這些都是高潛力客戶\n\n💡 **最聰明的策略**：用個人品牌 + 推薦作主力、接案平台當備胎。\n\n---\n\n### 接案流程——專業 SOP 建立信任\n\n把接案分成清楚步驟、客戶會感覺你很專業、願意付高價。\n\n**1. 初步諮詢（Consult）—— 30 分鐘、免費**\n- 客戶線上約、你聽他講業務 / 痛點 / 期望\n- 你不要馬上設計、只是「蒐集資訊」\n- 結尾：「我回去想想、24 小時內給你 3 個方案 + 報價」\n- 用意：篩掉不認真的、讓認真的感覺被重視\n\n**2. 正式報價 —— 24 小時內送出、3 個方案**\n- 方案 A：基礎版（NT$ XX）\n- 方案 B：標準版（NT$ XX、最推薦）\n- 方案 C：豪華版（NT$ XX、含額外服務）\n- 寫「每個方案包含什麼」、不是只有價格\n- 附上「為什麼我建議方案 B」的理由\n\n**3. 簽約 + 訂金 —— 50% 先付、確保雙方認真**\n- 合約要寫：修改次數上限（通常 1-2 輪）、交付日期、超期罰則\n- 50% 訂金付款後才開始做\n- 這避免客戶反悔、也讓你確保案子品質\n\n**4. Discovery 深聊 —— 1-2 小時、線上或面對面**\n- 不是「快速聊」、是「仔細訪談」\n- 問題清單：\n  - 你的品牌核心是什麼？（不是業務、是「為什麼」）\n  - 目標客群是誰？\n  - 競品有誰、他們怎麼做的？\n  - 你心中理想的設計長什麼樣？\n  - 預算和時間有什麼限制？\n- 記錄答案、給客戶寄「會議紀錄」（他會感覺很專業）\n\n**5. 第一輪概念提案 —— 3-5 個工作天**\n- 提 3-5 個完全不同的方向（不是小改版）\n- 每個方案配「為什麼這樣做」的說明（rationale）\n- 範例：「方案 A 強調『手工感』，因為你客群重視 authentic；方案 B 走『現代極簡』，因為競品都很複雜」\n- 用 Figma / PDF 讓客戶線上看、或面對面講解\n- **關鍵**：不要一開始就給太多版本、會讓客戶迷茫\n\n**6. 修改輪次 —— 合約限制 1-2 輪**\n- 客戶選方向後、你做微調（顏色 / 字型 / 比例）\n- 合約要寫清楚：「1 輪 = 最多 5 個修改點」\n- 超過輪次、每輪加 NT$ 3000\n- 這防止客戶無止盡改、也保護你的時間\n\n**7. 最終交付 + 尾款 + 推薦請求**\n- 客戶確認滿意後、收尾款\n- 交付「所有檔案」：設計檔 + 導出 PNG / SVG / PDF\n- 寫一段簡單的「使用說明」（怎麼改顏色、怎麼在哪裡用）\n- **最後**：寄感謝卡、說「如果朋友需要設計，很感謝你介紹」\n\n---\n\n### 差異化——為什麼不打價格戰\n\n**為什麼 AI 設計容易陷入紅海？**\n\n因為工具民主化了。任何人裝 Midjourney 能出圖、能用 Figma 拉 UI。但「能做≠ 做得好」。客戶不是買「工具使用者」、是買「有品味的人」。\n\n**1. 不在 Fiverr / 99designs 出現**\n\n那些平台就是「商品市場」—— commodity market。客戶把設計當「成本」、盯著最便宜的選。\n\n**改做什麼：**\n- 自己的簡單網站（不用複雜、用 Carrd / Wix 就行）\n- LinkedIn、IG 發 case study\n- 直接寄信給潛在客\n- 在地活動、設計展、創業論壇認識創業家\n\n**2. 賣「過程」、不賣「結果」**\n\n客戶一開始想要「一個 logo」、但真正需要的是「清楚自己品牌是什麼」。\n\n**怎麼做：**\n\n把交付改成「完整品牌設計服務」\n- Discovery interview（問卷 + 面談）\n- Mood board 合作（一起選參考、不是你單方決定）\n- 3 個完全不同概念（不是 3 個相似版本）+ 詳細說明「為什麼」\n- Brand guidelines 手冊（色票、字體、怎麼用、不怎麼用）\n- 30 天 mentoring（交付後、客戶提問可以線上問你）\n\n**結果：**客戶會說「他不是只畫圖、他幫我理清楚品牌」，願意付 3 倍價。\n\n**3. 賣「顧問」、不賣「設計",
+      "oneLineSummary": "會工具賺量、懂設計賺價",
+      "analogy": "三階報價讓客戶選、賣過程不賣單圖。",
+      "content": "## 這一課你會做出什麼\n\n一份**三階報價 + 一句差異化說法**，讓你不用在「$10 logo」的紅海裡削價。重點：**會工具賺的是量、懂設計賺的是價**。\n\n> 工具民主化後，人人能出圖、能拉 UI，「會工具」很快變基本盤。客戶不是買「工具使用者」，是買「有品味、能幫他想清楚的人」。這課教你怎麼把這件事變成報價。\n\n---\n\n## 先懂行情（台灣概況，僅供參考）\n\n| 服務 | 常見區間 | 差在哪 |\n|---|---|---|\n| Logo | NT$10–50k | 10k 單色線稿；50k 含品牌故事＋規範手冊 |\n| 品牌全套 | NT$50–200k | Logo＋色票＋字體＋應用手冊 |\n| 網站視覺（不含開發） | NT$30–100k | 頁數與客製程度 |\n| 社群圖月費 | NT$10–50k/月 | 通常 10–30 張、月約制收入穩 |\n| UI 設計（App/SaaS） | NT$50–300k | 含流程/wireframe/design system |\n\n（本課只談定價方法，不對你的收入做任何保證——市場、能力、客源都會影響。）\n\n---\n\n## 三階報價：讓客戶「選」，不是「殺價」\n\n客戶問「logo 多少錢？」時，**別報一個數字**（他只會嫌貴或殺價）。給三個方案讓他選：\n\n```\n方案 A 基礎 NT$12,000\n  · 1 個主 Logo、單色/彩色各一、交 PNG/SVG\n方案 B 標準 NT$28,000（最推薦）\n  · A 的全部 + 3 個不同概念方向 + 名片/大頭貼應用 + 1 輪修改\n方案 C 完整 NT$55,000\n  · B 的全部 + 品牌故事 + 色票字體規範手冊 + 30 天諮詢\n```\n\n**為什麼有效**：客戶的注意力從「要不要做」變成「選哪個」；中間方案（B）通常最多人選（錨定效應）；而且你把「價值」寫出來了，不是只有數字。\n\n---\n\n## 差異化：賣「過程」，不賣「一張圖」\n\n客戶說要「一個 logo」，其實他需要的是「搞清楚自己品牌是什麼」。把交付從「一張圖」升級成「一段幫他理清楚的過程」：\n\n- **Discovery 訪談**：問他品牌的「為什麼」、目標客群、競品。\n- **一起選 mood board**：不是你單方決定，是合作。\n- **3 個不同概念 + 為什麼**：「A 走手工感因為你客群重 authentic；B 走現代極簡因為競品都很雜」。\n- **交規範手冊 + 交付後 30 天可問**。\n\n**結果**：客戶會說「他不是只畫圖、他幫我想清楚品牌」——這句話就是你收 3 倍價的理由。\n\n---\n\n## 通路心法（一句話版）\n\n- **主力**：個人品牌（IG/Threads 發 case study，講「客戶得到什麼」不是貼圖）＋ 老客戶推薦（簽約率最高）。\n- **備胎**：接案平台（Fiverr/104）當新手練手、賺生活費，但那是紅海、別久待。\n- **主動**：冷開發時說「我幫〔某業種〕做過什麼」，不是「我是設計師」。\n\n---\n\n## ☕ 用人話講\n\nAI 讓「出圖」變便宜，所以別靠「出圖」賺錢——靠「幫客戶想清楚」賺錢。報價給三階讓他選、交付賣過程不賣單圖、通路靠個人品牌和推薦。工具人人有，你的**眼光和陪客戶想清楚的能力**，才是別人抄不走、也殺不了價的東西。",
       "tip": {
         "type": "business",
-        "text": "差異化靠 brand + niche + personality。"
+        "text": "賣『幫客戶想清楚』的過程，不打 $10 logo 價格戰。"
       },
       "exercise": {
-        "question": "找一個你身邊的例子、用「AI 設計接案：報價 + 差異化」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "情境題：一個開手搖飲店的朋友問你『幫我設計一個 Logo 要多少錢？』請寫出你的回覆：①一份三階報價（A/B/C，各寫價格和包含什麼）②推薦哪一階、為什麼 ③一句差異化說法，讓他覺得你不只是『畫圖的』。",
+        "hint": "三階的差別要是『包含的服務』不是只有價格數字。差異化說法的核心：你賣的是『幫他把品牌想清楚的過程』，不是一張圖。",
+        "answer": "沒有唯一答案，好的回覆會：①三階用『包含什麼』區隔（如 A 只交檔、B 加多概念+應用、C 加品牌故事+手冊）②推薦中間方案並給理由 ③差異化點在『過程/顧問』（例：我會先花時間搞清楚你的客群和競品，給你 3 個不同方向和背後理由，不是隨手畫一個）。注意：不對收入掛保證。"
       },
       "id": "52.6",
       "number": "LESSON 52.6",
@@ -613,75 +371,51 @@
       "outline": [
         {
           "level": 2,
-          "text": "服務類型 + 報價"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "找客戶"
+          "text": "先懂行情（台灣概況，僅供參考）"
         },
         {
           "level": 2,
-          "text": "接案 SOP"
+          "text": "三階報價：讓客戶「選」，不是「殺價」"
         },
         {
           "level": 2,
-          "text": "差異化（不打價格戰）"
-        },
-        {
-          "level": 3,
-          "text": "1. 不在 Fiverr / 99designs"
-        },
-        {
-          "level": 3,
-          "text": "2. 賣「過程」、不賣「結果」"
-        },
-        {
-          "level": 3,
-          "text": "3. 賣「顧問」、不賣「設計」"
-        },
-        {
-          "level": 3,
-          "text": "4. Niche 化"
-        },
-        {
-          "level": 3,
-          "text": "5. Case study 證明"
-        },
-        {
-          "level": 3,
-          "text": "6. Personality"
+          "text": "差異化：賣「過程」，不賣「一張圖」"
         },
         {
           "level": 2,
-          "text": "Pricing 公式"
+          "text": "通路心法（一句話版）"
         },
         {
           "level": 2,
-          "text": "心法"
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "根據課程內容，如果你想在 AI 設計接案市場避免打價格戰、建立差異化，下列做法何者最符合課程教的心法？",
+        "question": "客戶問「Logo 多少錢？」時，為什麼「給三階報價」通常比「報一個數字」好？",
         "options": [
           {
             "value": "a",
-            "label": "在 Fiverr 和 99designs 上架服務，用「我用 AI 快、所以便宜」來吸引客戶"
+            "label": "把客戶的決定從『要不要做/嫌不嫌貴』變成『選哪一階』，還能把每階的價值寫清楚"
           },
           {
             "value": "b",
-            "label": "強調自己的設計過程（Discovery、Mood board、3 個概念加說明）和顧問角色，而不只是賣「我會設計 logo」"
+            "label": "因為三個數字加起來比較多"
           },
           {
             "value": "c",
-            "label": "主要靠降低時間成本來提高利潤，因為 AI 工具讓製作速度變快"
+            "label": "因為這樣可以拖延報價時間"
           },
           {
             "value": "d",
-            "label": "跳過 Consult 和 Discovery 階段，直接給客戶 3 個方案快速成交"
+            "label": "因為客戶一定會選最貴的那個"
           }
         ],
-        "answer": "b",
-        "explanation": "課程核心就是「賣過程、賣顧問、不賣結果」，並在自己的網站和 IG 建立個人品牌。選項 a 和 c 都掉進「降價陷阱」；選項 d 跳過差異化的關鍵步驟。只有 b 符合「懂設計才能收高價」的心法。"
+        "answer": "a",
+        "explanation": "單一報價容易被殺價或嫌貴；三階報價把注意力轉成『選哪個』、能凸顯每階包含的價值（不只是數字），中間方案常因錨定效應最受青睞。這是『賣過程/價值、不打價格戰』的具體做法。"
       }
     }
   ],
@@ -698,24 +432,25 @@
     "perfectBonus": 50
   },
   "summary": [
-    "Midjourney 出圖速度快適合概念發想，Flux 自由度高但需耐心，Figma AI 最適合直接做 UI",
-    "Prompt 工程的核心是「具體細節」，風格、色系、構圖一個都不能少",
-    "v0 和 Figma AI 讓你從設計稿秒產程式碼，大幅縮短開發時間",
-    "Style Code 和參考圖能確保多張圖的視覺一致性，是專業成品的基本",
-    "AI 設計接案不是比誰便宜，而是快速迭代、清楚溝通、提供客戶想不到的方案"
+    "選工具看『這個活的重點』（藝術感→MJ、寫實→Flux、文字→Ideogram、UI code→v0、影片→Runway系），不是背清單。",
+    "生圖 prompt 用六格公式（主體→風格→光線→構圖→品質→比例）、一次一個主風格，同一 AI 出圖差十倍。",
+    "v0 出『好看的殼』、不做『會動的腦』；接資料/狀態/API 要自己或用 Cursor 補。",
+    "進階 prompt 兩把鑰匙：除錯（拿掉打架的主風格與空詞）＋ --sref（一個代碼鎖住系列風格）。",
+    "AI 前端流程：v0 出殼 → Cursor 接腦 → 你驗收 → 上線；AI 生的 code 一定要自己 review。",
+    "接案別靠『出圖』賺錢（人人會）、靠『幫客戶想清楚』賺錢；三階報價讓客戶選、賣過程不賣單圖。"
   ],
   "faq": [
     {
-      "q": "我完全不會畫畫，能用 AI 設計工具接案嗎？",
-      "a": "能。AI 設計工具讓你用文字或簡單指示就能產出成品，重點是你能寫清楚需求、會調整、懂美感原理。很多接案者就是靠 Prompt 工程和 Figma AI 組合在接案。"
+      "q": "我完全不會畫畫/設計，能靠 AI 接設計案嗎？",
+      "a": "工具門檻確實降低了，但『會出圖』很快變基本盤。真正決定你能不能接到、接得久的是審美，和幫客戶想清楚需求的能力（見 52.6）。先用 AI 做出自己的作品集，再談接案。"
     },
     {
-      "q": "Midjourney 和 Flux，我該學哪一個？",
-      "a": "如果預算有限就從 Flux 開始，完全免費；如果要快速出圖和商業級品質，Midjourney 更穩定。理想是兩個都會用，根據案子選工具。"
+      "q": "Midjourney、DALL-E、Flux 到底該用哪個？",
+      "a": "看你要做什麼：要藝術感/形象圖用 Midjourney、要寫實商品/人物用 Flux、圖裡要正確文字用 Ideogram、想省事隨手測用 DALL-E。工具是配需求的，不是選最紅的（見 52.1）。"
     },
     {
-      "q": "AI 設計會被淘汰嗎？",
-      "a": "不會被完全淘汰，但會改變接案方式。未來競爭力在於「會用 AI 快速迭代、能理解客戶美感、提出創意想法」的設計師，純靠技術手熟的設計師才危險。"
+      "q": "v0 生完 UI 是不是就能直接上線？",
+      "a": "不行。v0 做好『版面/樣式/RWD』，但接真資料、狀態邏輯、API、安全這些要你自己（或用 Cursor）補，而且 AI 生的 code 一定要自己 review 再上線。"
     }
   ]
 }

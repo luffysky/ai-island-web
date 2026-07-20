@@ -44,6 +44,13 @@
 - 章節 outcomes/summary/faq 同步改寫；創作章移除 playground。已 import DB、tsc/build 綠。
 - 字數比舊版精實（密度換長度）；若要更長可每課再加第二個 worked 走查。**待林董線上驗收深度標準**。
 
+## ✍️ ch52（AI 設計）全深度重寫 + 專屬教具（0718）
+- 舊病：五課全截斷 + 練習題全罐頭（設計課叫你跑 code/重構舊專案）。
+- 新版六課：52.1 看需求選工具（選型決策表+真接案三活走查）/ 52.2 六格 prompt 公式（爛 vs 公式對照）/ 52.3 v0 出殼 vs 接腦界線 / 52.4 進階：除錯壞 prompt + --sref 系列一致 / 52.5 v0+Cursor 流程 SOP / 52.6 三階報價+賣過程差異化（不掛保證收入）。
+- **練習題每課不同題型**（依林董要求）：選型題/對照實作/實作/除錯改進/流程設計/情境報價。
+- 專屬教具 **PromptBuilder**（圖像 prompt 積木、點 chip 依六格公式即時組 prompt，複用給生圖章）掛 52.2 / 52.4。
+- outcomes/summary/faq 同步；tsc/vitest137/build 綠、已 import DB。
+
 ## ⏭ 待續
 - 林董線上驗收版面圖鑑手感（Claude 端 Chrome 擴充沒連、沒法目視截圖）。
 - 下一批：`prompt-lab`（餵 AI 全系列/創作章）、ch51 六課全深度內容重寫、`box-model`/`flex-playground` 補滿 ch02/03。

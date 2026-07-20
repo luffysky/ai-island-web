@@ -7,8 +7,9 @@ import { GridPlayground } from "./GridPlayground";
 import { RwdRuler } from "./RwdRuler";
 import { PromptLab } from "./PromptLab";
 import { BoxModel } from "./BoxModel";
+import { PromptBuilder } from "./PromptBuilder";
 
-const SUPPORTED = new Set<LessonDemo["type"]>(["css-layout", "rwd-ruler", "flex-playground", "grid-playground", "prompt-lab", "box-model"]);
+const SUPPORTED = new Set<LessonDemo["type"]>(["css-layout", "rwd-ruler", "flex-playground", "grid-playground", "prompt-lab", "box-model", "prompt-builder"]);
 
 /**
  * 依 demo.type 派發到對應的互動教具元件。
@@ -28,6 +29,8 @@ function DemoRenderer({ demo }: { demo: LessonDemo }) {
       return <PromptLab title={demo.title} note={demo.note} config={demo.config} />;
     case "box-model":
       return <BoxModel title={demo.title} note={demo.note} />;
+    case "prompt-builder":
+      return <PromptBuilder title={demo.title} note={demo.note} />;
     default:
       return null;
   }
