@@ -22,1303 +22,830 @@
   ],
   "lessons": [
     {
-      "title": "SEO 總圖：2026 怎麼做",
-      "oneLineSummary": "不只關鍵字、是「Google + AI 都讀懂你」",
-      "analogy": "2026 SEO + GEO 並行。",
-      "content": "## 為什麼 SEO 仍重要\n- 70% 流量來自搜尋\n- 免費、長期\n- 信任度高（vs 廣告）\n\n## 2026 三大引擎\n- **Google**（傳統 SEO）\n- **AI 搜尋**（ChatGPT / Perplexity / Claude）\n- **TikTok / IG / YT**（內容搜尋）\n\n要同時優化。\n\n## SEO 三大支柱\n1. **Technical SEO**：結構 / 速度 / 索引\n2. **Content SEO**：有價值的內容\n3. **Off-page SEO**：外部連結\n\n## 2026 新趨勢\n- E-E-A-T（Experience/Expertise/Authority/Trust）\n- AI Overviews（Google）\n- GEO（AI 搜尋優化）\n- Helpful Content\n\n## Indie 適合\n- 部落格 → 內容 SEO\n- SaaS → 技術 SEO\n- 在地服務 → 本地 SEO\n\n## 時間\n- 1-3 月：建基礎\n- 3-6 月：開始有流量\n- 6-12 月：穩定排名\n\n## 工具\n- Google Search Console（必、免費）\n- Ahrefs / SEMrush（商業）\n- Ubersuggest\n- Screaming Frog\n\n## 心法\n- 寫給人、不是寫給機器\n- 內容 > 技巧\n- 持續輸出 > 一次爆紅\n- 不要黑帽\n\n**☕ 用人話講**\n\nSEO（搜尋引擎優化）就是**讓 Google（還有現在的 AI）看懂你的網站、在別人搜尋時排到前面**。2026 的重點不只是塞關鍵字，而是「內容好 + 技術好 + 被信任」三者兼具。**一句話記住**：像開店選位置 + 做招牌——東西再好，藏在巷尾沒人找得到；SEO 就是讓你的店出現在大馬路上、招牌清楚顯眼。\n",
+      "title": "SEO + GEO 總圖：2026 怎麼做",
+      "oneLineSummary": "被 Google 找到、也被 AI 引用",
+      "analogy": "SEO 不是死了、是多了一個 AI 戰場",
+      "content": "## 這一課你會做出什麼\n\n一張「2026 搜尋優化全景圖」：知道 **SEO**（被 Google 等搜尋引擎找到）和 **GEO**（被 ChatGPT/Perplexity 這類 AI 引用）兩條線各是什麼、你該同時顧。\n\n> 常有人說「AI 來了 SEO 死了」——錯。人們還是在搜尋，只是**多了一個新戰場**：AI 回答問題時會「引用」某些來源。你要的是**兩邊都被看到**。\n\n---\n\n## 兩條線\n\n- **SEO（傳統）**：讓你的網頁在 Google/Bing 排名靠前，被點進來。靠：對的關鍵字、好內容、技術健康、被別人連結。\n- **GEO（AI 引擎優化）**：讓 AI 回答時**引用你的內容**當來源。靠：清楚結構化的內容、明確的事實與數據、被信任的來源。\n\n**共同底層其實一樣**：**有用、清楚、可信的內容**——不管是給人看、給 Google 排、還是給 AI 引用，好內容都是根。技術和技巧只是放大器。\n\n---\n\n## 這章會帶你走的路\n\n關鍵字 → 內容 → 技術健康 → 被連結 → 看數據 → GEO → 接案變現。**別想一次全學**，先抓一條主線：**「找到有人在搜、你答得比別人好的問題，寫一篇真的有用的內容」**——這就是 SEO 的心臟，其他都是輔助。\n\n---\n\n## ☕ 用人話講\n\nSEO 沒死，只是多了 GEO 這條線——除了被 Google 找到，還要被 AI 引用。但別被術語嚇到：**兩邊的根都是「有用、清楚、可信的內容」**。這章教你把這件事做對、再用技術和技巧放大。先記住 SEO 的心臟：找到「有人在搜、你答得最好」的問題，把它答透。",
       "tip": {
-        "type": "milestone",
-        "text": "2026 SEO = Google + AI 雙線。"
+        "type": "pro",
+        "text": "傳統 SEO + 讓 AI 願意引用你 = GEO。"
       },
       "id": "13.1",
       "number": "LESSON 13.1",
       "xp": 10,
-      "playgrounds": [
-        {
-          "key": "13.1.auto",
-          "language": "html",
-          "title": "SEO 的起點：寫好 <head>",
-          "initialCode": "<!DOCTYPE html>\n<html lang=\"zh-Hant\">\n<head>\n  <meta charset=\"UTF-8\">\n  <!-- SEO 三要素：標題、描述、語言 -->\n  <title>學寫程式 | AI 島：從零到上線</title>\n  <meta name=\"description\" content=\"AI 島用國中生都懂的方式教你寫程式，從 HTML 到 AI 應用一條龍。\">\n</head>\n<body style=\"font-family:system-ui;padding:24px;line-height:1.8;color:#1f2937\">\n  <h1>從零學寫程式</h1>\n  <p>這頁的 &lt;title&gt; 跟 &lt;meta description&gt; 就是 Google 搜尋結果上會顯示的標題與說明。</p>\n  <p>👆 改改上面 head 裡的 title，想像它出現在 Google 搜尋結果第一名。</p>\n</body>\n</html>",
-          "hint": "title 跟 meta description 就是 Google 搜尋結果上的標題與說明。改改看。"
-        }
-      ],
       "exercise": {
-        "question": "找一個你身邊的例子、用「SEO 總圖：2026 怎麼做」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "盤點題：①寫出你（或你想做的網站/事業）想被搜尋到的 3 個問題/關鍵字 ②判斷這 3 個裡，哪些比較適合『傳統 SEO(被 Google 找到)』、哪些也值得做『GEO(被 AI 引用)』③說明為什麼『有用清楚可信的內容』對兩邊都是根。",
+        "hint": "SEO=被搜尋引擎排名、GEO=被AI引用。兩邊的根都是好內容。想想你的目標讀者是用 Google 搜、還是問 ChatGPT。",
+        "answer": "驗收：①列出真實的目標問題 ②理解 SEO/GEO 的差別與各自適用 ③抓到『好內容是兩邊共同的根、技術只是放大器』。達標重點是不被術語嚇到、看懂 SEO 的心臟是『答透有人在搜的問題』。"
       },
       "outline": [
         {
           "level": 2,
-          "text": "為什麼 SEO 仍重要"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "2026 三大引擎"
+          "text": "兩條線"
         },
         {
           "level": 2,
-          "text": "SEO 三大支柱"
+          "text": "這章會帶你走的路"
         },
         {
           "level": 2,
-          "text": "2026 新趨勢"
-        },
-        {
-          "level": 2,
-          "text": "Indie 適合"
-        },
-        {
-          "level": 2,
-          "text": "時間"
-        },
-        {
-          "level": 2,
-          "text": "工具"
-        },
-        {
-          "level": 2,
-          "text": "心法"
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "根據課程，2026 年做 SEO 時最容易踩的坑是什麼？",
+        "question": "關於 2026 的搜尋優化，最正確的觀念是？",
         "options": [
           {
             "value": "a",
-            "label": "只優化 Google，忽視 AI 搜尋和社媒搜尋"
+            "label": "SEO 沒死、只是多了 GEO(被 AI 引用)這條線；兩邊的根都是有用、清楚、可信的內容"
           },
           {
             "value": "b",
-            "label": "過度堆砌關鍵字、忽視內容品質"
+            "label": "AI 來了，SEO 完全沒用了、不用做"
           },
           {
             "value": "c",
-            "label": "沒有買 Ahrefs 或 SEMrush 等工具"
+            "label": "只要一直塞關鍵字就能排名"
           },
           {
             "value": "d",
-            "label": "沒有在 1-3 月內衝出流量"
+            "label": "SEO 和 GEO 完全無關、要各做一套完全不同的內容"
           }
         ],
-        "answer": "b",
-        "explanation": "課程強調『寫給人、不是寫給機器』和『內容 > 技巧』，同時提到 E-E-A-T 信任度為新趨勢。選項 A 錯在 2026 確實要同時優化三大引擎；C 錯在免費工具也能做；D 錯在 1-3 月只是建基礎，3-6 月才開始有流量。"
+        "answer": "a",
+        "explanation": "人們仍在搜尋，只是多了 AI 引用這個新戰場(GEO)。SEO 和 GEO 的共同底層都是『有用、清楚、可信的內容』——好內容是根，技術與技巧是放大器。SEO 沒死、塞關鍵字早就沒用、兩條線也共享同一批好內容。"
       }
     },
     {
-      "title": "關鍵字研究",
-      "oneLineSummary": "不是寫你想寫的、是寫 user 在搜的",
-      "analogy": "寫錯關鍵字 = 沒流量、白寫一年。",
-      "content": "## 工具\n- Google Keyword Planner（免費）\n- Google Trends\n- Ahrefs / SEMrush（商業）\n- Ubersuggest（中價）\n- Answer the Public\n\n中文：5118.com、愛站網。\n\n## 關鍵字分類\n- **Head**：高量高競爭（「Python」）\n- **Body**：中量中競爭（「Python 爬蟲教學」）\n- **Long-tail**：低量低競爭（「Python 爬蟲蝦皮 2026」）—Indie 黃金\n\n## Search Intent\n- Informational：「什麼是 X」→ 部落格\n- Navigational：「FB 登入」→ 官網\n- Transactional：「買 iPhone」→ 商品頁\n- Commercial：「iPhone 17 vs 16」→ 評測\n\n寫內容對應 intent。\n\n## Long-tail 策略\n寫 100 個 long-tail > 1 個 head。\n每個 50-500 搜尋、加起來幾千流量。\n\n## 競品分析\n1. Google 搜你的關鍵字\n2. 看前 10\n3. 比他們寫得「更深 / 更新 / 更實用」\n4. Ahrefs 看他們其他關鍵字\n\n## Skyscraper\n1. 找對手最熱門\n2. 寫更好的\n3. 推給連結 source\n\n## AEO（Answer Engine Optimization）\n- 結構化（H1/H2/H3）\n- 明確 Q&A\n- 段落短\n\n## 心法\n- 找 long-tail（competition < 30）\n- 一週 1-2 篇深度文\n- 主題群（pillar + cluster）\n- 不追熱門詞\n\n**☕ 用人話講**\n\n關鍵字研究的核心：**別寫「你想寫的」，要寫「使用者實際在搜的字」**。研究大家都怎麼搜、找出「有人搜、但競爭又沒那麼激烈」的字來切入。**一句話記住**：像擺攤賣東西——不是賣你自己愛吃的，而是賣路過的人想買的；先搞清楚大家在找什麼，再決定做什麼內容。\n",
+      "title": "搜尋引擎怎麼運作",
+      "oneLineSummary": "懂爬取→索引→排名，才知道怎麼優化",
+      "analogy": "不懂機制就是瞎做 SEO",
+      "content": "## 這一課你會做出什麼\n\n搞懂搜尋引擎的**三個動作**——爬取、索引、排名。懂了機制，後面每個 SEO 技巧你才知道「在解決哪一步」。\n\n---\n\n## 三步驟（白話）\n\n1. **爬取（Crawl）**：Google 的爬蟲(bot)沿著連結到處爬網頁。**如果爬不到你**（沒被連結、被 robots 擋、網站掛掉），後面都免談。\n2. **索引（Index）**：把爬到的頁面「收進資料庫」。頁面要能被理解（有內容、不是空殼、不是重複）才會被收。**沒被索引＝Google 根本不知道你存在。**\n3. **排名（Rank）**：有人搜某個詞時，Google 從索引裡挑出最相關、最有用、最可信的頁面排序。這一步就是所有 SEO 技巧在搶的。\n\n---\n\n## 對應到 SEO 工作\n\n- **爬不到** → 檢查 sitemap、robots.txt、內部連結（見 technical SEO）。\n- **沒被索引** → 內容要有實質、別重複、用 Google Search Console 看索引狀態。\n- **排不上** → 內容更相關更有用、技術更健康、被更多好網站連結。\n\n**排查口訣**：SEO 出問題先問「是爬不到、沒索引、還是排不上？」——三步定位，別亂改。\n\n---\n\n## ☕ 用人話講\n\n搜尋引擎做三件事：**爬到你、把你收進索引、決定你的排名**。這三步是 SEO 的骨架——任何技巧都是在解決其中一步。所以網頁沒流量時，先定位：是 Google 爬不到你、沒把你收進索引、還是收了但排不上？定位對了，才不會瞎改一通。",
       "tip": {
-        "type": "milestone",
-        "text": "Indie SEO：100 篇 long-tail > 10 篇 head。"
+        "type": "pro",
+        "text": "三步：爬到你、收進索引、決定排名。"
       },
       "id": "13.2",
       "number": "LESSON 13.2",
       "xp": 10,
-      "playgrounds": [
-        {
-          "key": "13.2.auto",
-          "language": "html",
-          "title": "關鍵字要自然放進 title / h1 / 內文",
-          "initialCode": "<!DOCTYPE html>\n<html lang=\"zh-Hant\">\n<head>\n  <meta charset=\"UTF-8\">\n  <!-- 關鍵字「台北 親子餐廳」自然放進 title -->\n  <title>台北親子餐廳推薦 2026｜10 間必訪有遊戲區</title>\n</head>\n<body style=\"font-family:system-ui;padding:24px;line-height:1.8;color:#1f2937\">\n  <h1>台北親子餐廳推薦</h1>\n  <p>想找<strong>台北親子餐廳</strong>？這篇整理 10 間有遊戲區、好停車的口袋名單…</p>\n  <p>👆 「台北親子餐廳」這組關鍵字自然出現在 title、h1、第一段——寫的是「使用者在搜的字」，不是你想寫的字。</p>\n</body>\n</html>",
-          "hint": "寫「使用者在搜的字」，並讓它自然出現在標題與第一段。"
-        }
-      ],
       "exercise": {
-        "question": "找一個你身邊的例子、用「關鍵字研究」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "排查題：假設你的一個網頁在 Google 完全搜不到（連搜網址+標題都找不到）。①依『爬取→索引→排名』你會先懷疑哪一步、為什麼 ②你會怎麼檢查它到底被 Google 收錄了沒（用什麼工具/方法）③如果是『排不上』而非『沒收錄』，處理方向會有什麼不同。",
+        "hint": "『完全搜不到、連網址+標題都找不到』通常是沒被索引(甚至沒被爬到)，不是排名問題。用 Google Search Console 看索引狀態、或 site:你的網址 搜。",
+        "answer": "驗收：①判斷『完全找不到』多半是爬取/索引問題不是排名 ②知道用 GSC 或 site: 指令查收錄 ③理解排名問題(有收錄但排後面)的處理方向不同(改內容/技術/連結)。抓到『三步定位、別亂改』就達標。"
       },
       "outline": [
         {
           "level": 2,
-          "text": "工具"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "關鍵字分類"
+          "text": "三步驟（白話）"
         },
         {
           "level": 2,
-          "text": "Search Intent"
+          "text": "對應到 SEO 工作"
         },
         {
           "level": 2,
-          "text": "Long-tail 策略"
-        },
-        {
-          "level": 2,
-          "text": "競品分析"
-        },
-        {
-          "level": 2,
-          "text": "Skyscraper"
-        },
-        {
-          "level": 2,
-          "text": "AEO（Answer Engine Optimization）"
-        },
-        {
-          "level": 2,
-          "text": "心法"
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "你是一個新手部落格寫手，想寫關於「咖啡」的內容。根據這課教的策略，你應該怎麼選擇關鍵字？",
+        "question": "你的網頁用 site: 指令查發現 Google 根本沒收錄它。這屬於哪一步的問題？",
         "options": [
           {
             "value": "a",
-            "label": "寫「咖啡」這個 Head 關鍵字，因為搜尋量最大，流量最多"
+            "label": "爬取/索引問題——Google 還沒爬到或沒把它收進索引，不是排名問題，該先查 sitemap/robots/內部連結與 GSC 索引狀態"
           },
           {
             "value": "b",
-            "label": "寫「咖啡豆品牌推薦 2026」、「冷萃咖啡怎麼做」這類 Long-tail 關鍵字，每個搜尋量小但競爭低，加起來流量可觀"
+            "label": "純排名問題，多塞點關鍵字就會出現"
           },
           {
             "value": "c",
-            "label": "寫自己最喜歡喝的咖啡品牌和風味，不用管別人在搜什麼"
+            "label": "外部連結不夠多"
           },
           {
             "value": "d",
-            "label": "先寫完 100 篇文章再做關鍵字研究，之後再調整"
+            "label": "網站速度太慢"
           }
         ],
-        "answer": "b",
-        "explanation": "課程的核心心法是「寫使用者實際在搜的字」，Long-tail 策略正是 Indie 寫手的黃金法則——選低競爭、具體的關鍵字，寫 100 個 long-tail 勝過 1 個 head。選項 a 是新手常犯的錯誤（高競爭難排名），c 和 d 都違反了「先研究、後寫作」的流程。"
+        "answer": "a",
+        "explanation": "搜尋引擎三步：爬取→索引→排名。site: 查不到代表頁面根本沒被收進索引（甚至沒被爬到）——這是爬取/索引問題，要查 sitemap、robots.txt、有沒有內部連結、用 GSC 看索引狀態。塞關鍵字、加外連、優化速度都是『排名』階段的事，對『沒被收錄』無效。"
       }
     },
     {
-      "title": "Technical SEO",
-      "oneLineSummary": "網站速度慢 / 結構亂 = 內容再好沒用",
-      "analogy": "技術 SEO 是地基。",
-      "content": "## 必做\n\n### 1. Mobile-first\n2026 Google 用 mobile 排名。\n\n### 2. Core Web Vitals\n- LCP < 2.5s\n- INP < 200ms\n- CLS < 0.1\n\n工具：PageSpeed Insights、Lighthouse。\n\n### 3. HTTPS\n\n### 4. URL 結構\n```\n✅ /blog/python-scraping\n❌ /post.php?id=12345\n```\n\n### 5. Robots.txt\n```\nUser-agent: *\nAllow: /\nSitemap: https://example.com/sitemap.xml\n```\n\n### 6. Sitemap.xml\n提交到 GSC。\n\n### 7. Schema.org\n```html\n<script type=\"application/ld+json\">\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"BlogPosting\",\n  \"headline\": \"...\",\n  \"author\": { \"@type\": \"Person\", \"name\": \"...\" },\n  \"datePublished\": \"2026-05-17\"\n}\n</script>\n```\n\n常用：BlogPosting、Product、Review、FAQ、HowTo。\n\n### 8. Canonical\n```html\n<link rel=\"canonical\" href=\"https://example.com/post\" />\n```\n\n### 9. hreflang\n```html\n<link rel=\"alternate\" hreflang=\"en\" href=\"...\" />\n<link rel=\"alternate\" hreflang=\"zh-tw\" href=\"...\" />\n```\n\n### 10. Meta\n```html\n<title>...</title>\n<meta name=\"description\" content=\"...\">\n<meta property=\"og:title\" content=\"...\">\n<meta property=\"og:image\" content=\"...\">\n```\n\n## Next.js\n```tsx\nexport async function generateMetadata({ params }) {\n  return {\n    title: `${post.title} - AI 島`,\n    description: post.excerpt,\n    openGraph: { images: [post.image] }\n  };\n}\n```\n\n## 心法\n- Day 1 設好 sitemap + robots\n- 提交 GSC\n- Speed > Schema > 其他\n- 永遠 mobile-first\n\n**☕ 用人話講**\n\nTechnical SEO（技術面）：**內容再好，網站慢、結構亂、Google 爬不進來，一樣沒用**。要顧網站速度、清楚的結構、能被正確索引。**一句話記住**：像店面——商品再棒，但門難開、走道亂、招牌壞掉，客人（跟 Google 的爬蟲）一樣進不來、找不到。\n",
+      "title": "關鍵字研究：找對的字",
+      "oneLineSummary": "找『有人搜、你答得好、競爭合理』的字",
+      "analogy": "對著沒人搜的字寫 = 白寫",
+      "content": "## 這一課你會做出什麼\n\n一套**選對關鍵字**的方法——避開新手最大的坑：花力氣寫一篇「根本沒人搜」或「你贏不了」的關鍵字。\n\n---\n\n## 好關鍵字的三個條件\n\n1. **有人在搜**（有搜尋量）：對著沒人搜的字寫＝白寫。\n2. **競爭合理**（難度不要太高）：新手去搶「行銷」「減肥」這種大詞，排不上。\n3. **意圖清楚**（你知道搜的人要什麼）：能對到你有的內容/產品。\n\n**新手甜蜜點＝長尾關鍵字**：3-5 個字的組合，搜量中等、競爭低、意圖明確。\n\n- ❌ 「咖啡」（大詞、競爭死、意圖模糊）\n- ✅ 「手沖咖啡 新手 器具推薦」（意圖清楚：想買器具的新手）\n\n---\n\n## 怎麼找\n\n1. **從你懂的、目標客群會問的問題出發**：把他們會打進 Google 的話寫下來。\n2. **用工具看搜量與難度**：免費的 Google Keyword Planner、Ubersuggest 有限額；付費的 Ahrefs/SEMrush 更完整。\n3. **看 Google 自動完成與「其他人也問」**：搜一個詞，Google 建議的延伸就是真實需求。\n4. **看對手排什麼**：排在你前面的頁面用哪些關鍵字。\n\n---\n\n## 一個判斷：優先寫「有商業價值」的字\n\n同樣難度，「iPhone 推薦」比「iPhone 歷史」值錢——前者的搜尋者想買、能變現。優先寫「你有經驗、又有商業/轉換價值」的關鍵字。\n\n---\n\n## ☕ 用人話講\n\n關鍵字選錯，內容寫得再好也白費。找「**有人搜、你贏得了、意圖清楚**」的字——新手的甜蜜點是長尾（「手沖咖啡新手器具推薦」勝過「咖啡」）。從目標客群會問的問題出發、用工具查搜量難度、看 Google 建議和對手，優先挑你有經驗又有商業價值的字。",
       "tip": {
-        "type": "milestone",
-        "text": "Next.js + Vercel 預設技術 SEO 強。"
+        "type": "pro",
+        "text": "長尾+意圖清楚+難度低=新手甜蜜點。"
       },
       "id": "13.3",
       "number": "LESSON 13.3",
       "xp": 10,
-      "playgrounds": [
-        {
-          "key": "13.3.auto",
-          "language": "html",
-          "title": "試試看",
-          "initialCode": "<script type=\"application/ld+json\">\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"BlogPosting\",\n  \"headline\": \"...\",\n  \"author\": { \"@type\": \"Person\", \"name\": \"...\" },\n  \"datePublished\": \"2026-05-17\"\n}\n</script>",
-          "hint": "改 code、按執行看結果"
-        }
-      ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "選字題：挑一個你懂的主題，①想出 1 個『大詞』和 3 個『長尾關鍵字』②判斷 3 個長尾裡哪個『搜尋意圖最清楚、最有商業/轉換價值』③說明你會怎麼查它到底有沒有人搜(工具/方法)。",
+        "hint": "長尾=3-5字組合、意圖清楚。有商業價值=搜的人想買/會轉換。查搜量：Keyword Planner/Ubersuggest、看 Google 自動完成與『其他人也問』。",
+        "answer": "驗收：①能區分大詞與長尾 ②挑出意圖清楚+有商業價值的字並說理由 ③知道用工具或 Google 建議查搜量。抓到『有人搜+競爭合理+意圖清楚、長尾是甜蜜點、優先有商業價值』就達標。"
       },
       "outline": [
         {
           "level": 2,
-          "text": "必做"
-        },
-        {
-          "level": 3,
-          "text": "1. Mobile-first"
-        },
-        {
-          "level": 3,
-          "text": "2. Core Web Vitals"
-        },
-        {
-          "level": 3,
-          "text": "3. HTTPS"
-        },
-        {
-          "level": 3,
-          "text": "4. URL 結構"
-        },
-        {
-          "level": 3,
-          "text": "5. Robots.txt"
-        },
-        {
-          "level": 3,
-          "text": "6. Sitemap.xml"
-        },
-        {
-          "level": 3,
-          "text": "7. Schema.org"
-        },
-        {
-          "level": 3,
-          "text": "8. Canonical"
-        },
-        {
-          "level": 3,
-          "text": "9. hreflang"
-        },
-        {
-          "level": 3,
-          "text": "10. Meta"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "Next.js"
+          "text": "好關鍵字的三個條件"
         },
         {
           "level": 2,
-          "text": "心法"
+          "text": "怎麼找"
+        },
+        {
+          "level": 2,
+          "text": "一個判斷：優先寫「有商業價值」的字"
+        },
+        {
+          "level": 2,
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "根據課程內容，如果你的網站內容很好，但是加載速度很慢、URL 結構混亂，Google 爬蟲爬不進來，這會對 SEO 有什麼影響？",
+        "question": "對一個 SEO 新手，選關鍵字最好的策略是？",
         "options": [
           {
             "value": "a",
-            "label": "沒有影響，因為內容好就夠了，Google 一定會給高排名"
+            "label": "挑『有人搜、競爭合理、意圖清楚』的長尾關鍵字，優先選你有經驗又有商業價值的"
           },
           {
             "value": "b",
-            "label": "有很大影響。再好的內容，如果網站慢、結構亂、Google 爬不進來，還是不會有好排名"
+            "label": "專攻搜尋量最大的大詞，流量才多"
           },
           {
             "value": "c",
-            "label": "只要設定好 robots.txt 就能解決所有問題"
+            "label": "挑完全沒人搜的冷門字，才沒有競爭"
           },
           {
             "value": "d",
-            "label": "只要用 Next.js 就自動會有好的 SEO"
+            "label": "隨便選，內容寫好就會有排名"
           }
         ],
-        "answer": "b",
-        "explanation": "課程的核心心法就是：內容好不夠，Technical SEO 也要做好。網站速度、URL 結構、可被正確索引，這些基礎沒做好，Google 爬蟲進不來，排名也好不了。就像店面再棒，但招牌壞掉、走道亂，客人也進不來。"
+        "answer": "a",
+        "explanation": "大詞競爭死、新手排不上；完全沒人搜的字寫了也沒流量。甜蜜點是長尾關鍵字：有一定搜量、競爭合理、意圖清楚，且優先挑你有經驗又有商業/轉換價值的。關鍵字選錯，內容再好也白費——選對是 SEO 的第一步。"
       }
     },
     {
-      "title": "Content SEO",
-      "oneLineSummary": "寫得讓 Google + AI 愛",
-      "analogy": "2026 內容比技術重要 10 倍。",
-      "content": "## E-E-A-T\n- Experience：第一手經驗\n- Expertise：專業\n- Authoritativeness：權威\n- Trustworthiness：可信\n\n## Pillar + Cluster\n- Pillar：寬泛主題（5000+ 字）\n- Cluster：long-tail（連到 pillar）\n\n## 寫作框架\n- AIDA（Attention/Interest/Desire/Action）\n- PAS（Problem/Agitate/Solution）\n- Inverted Pyramid（最重要先寫）\n\n## 必有元素\n- H1：1 個、含主關鍵字\n- H2/H3：分章節\n- TL;DR：開頭摘要\n- 目錄\n- 圖（每 300 字 1 張）\n- 內外連結\n- CTA\n\n## 字數\n- 質 > 量\n- 主題完整覆蓋\n- 長文（2000+ 字）通常贏\n\n## 標題規則\n- 含關鍵字\n- 數字（「10 個方法」）\n- 年份（「2026」）\n- 益處\n- 50-60 字\n\n範例：\n- ❌「Python 爬蟲」\n- ✅「Python 爬蟲完整教學：2026 最新 + 10 個實戰」\n\n## URL Slug\n```\n✅ /blog/python-scraping-2026\n❌ /blog/post-12345\n```\n\n## 圖片 SEO\n- 檔名：`python-scraping-example.png`\n- alt：「Python 爬蟲程式範例」\n- 格式：WebP\n- lazy load\n\n## 內部連結\n每篇 3-10 個 internal links。\n\n## 更新舊內容\n- 每 6 個月 review\n- 加新資訊\n- 改標題加 2026\n- Resubmit GSC\n\n## 內容類型\n- 教學（How-to）\n- 比較（X vs Y）\n- 列表（Top 10）\n- 案例研究\n\n**☕ 用人話講**\n\nContent SEO：寫出**Google 跟 AI 都愛的內容**——清楚的標題層級、真正回答使用者的問題、夠深入有料。**一句話記住**：像寫一篇真正有用的攻略——不是湊字數騙點擊，而是讀者看完問題真的解決了；這種內容 Google 才愛往前推。\n",
+      "title": "搜尋意圖：給對他要的東西",
+      "oneLineSummary": "同一個字、意圖不同、該給的內容不同",
+      "analogy": "答非所問 = Google 不會給你排名",
+      "content": "## 這一課你會做出什麼\n\n學會判斷**搜尋意圖（search intent）**——搜同一個字的人，可能想「查資料、想買、想找某個網站、想比較」，你給的內容形式要對得上，否則 Google 不會排你。\n\n---\n\n## 四種常見意圖\n\n- **資訊型（Informational）**：想知道「怎麼做/是什麼」。例：「手沖咖啡 怎麼沖」→ 給教學文。\n- **交易型（Transactional）**：想買。例：「手沖壺 推薦 購買」→ 給產品/比較頁。\n- **導航型（Navigational）**：想去某個特定網站。例：「YouTube 登入」→ 品牌自己的頁。\n- **商業調查型（Commercial）**：買之前在比較。例：「A 牌 vs B 牌 手沖壺」→ 給評測/對比。\n\n---\n\n## 怎麼判斷意圖：直接看 Google\n\n**最準的方法**：把關鍵字丟進 Google，看**現在排在前面的是什麼類型**——都是教學文？那意圖是資訊型；都是商品頁？那是交易型。**Google 已經幫你驗證過搜的人要什麼**，你照那個形式做就對了。\n\n---\n\n## 為什麼這麼重要\n\n你寫了一篇超棒的「教學文」，但那個關鍵字的搜尋者其實想「買東西」——**答非所問，Google 不會給你排名**，因為它知道使用者不會滿意。內容再好，形式不對就是白做。\n\n---\n\n## ☕ 用人話講\n\n搜同一個字的人，要的東西可能完全不同（查資料 vs 想買 vs 找網站 vs 比較）。判斷意圖最準的方法就是**把字丟進 Google 看前幾名是什麼類型**——它們就是答案。內容形式對不上意圖，寫得再好 Google 也不會排你。先看意圖、再決定要寫教學文、產品頁、還是對比評測。",
       "tip": {
-        "type": "milestone",
-        "text": "E-E-A-T + Pillar/Cluster。"
+        "type": "pro",
+        "text": "先判斷意圖、再決定內容形式。"
       },
       "id": "13.4",
       "number": "LESSON 13.4",
       "xp": 10,
-      "playgrounds": [
-        {
-          "key": "13.4.auto",
-          "language": "html",
-          "title": "內容結構：清楚的標題層級",
-          "initialCode": "<!DOCTYPE html>\n<html lang=\"zh-Hant\">\n<head><meta charset=\"UTF-8\"><title>新手如何學寫程式</title></head>\n<body style=\"font-family:system-ui;padding:24px;line-height:1.8;color:#1f2937\">\n  <!-- 清楚的標題層級，Google 跟 AI 都更容易讀懂結構 -->\n  <h1>新手如何學寫程式（2026 完整指南）</h1>\n  <h2>1. 先選一個方向</h2>\n  <p>前端、後端，還是 AI？先選一個別貪心…</p>\n  <h2>2. 每天寫一點</h2>\n  <p>連續比衝刺重要，一天 30 分鐘勝過週末爆肝…</p>\n  <h2>常見問題</h2>\n  <p>Q：要先學好英文嗎？A：不用，邊學邊查就好。</p>\n  <p>👆 用 h1 → h2 清楚分層 + 「常見問題」區塊，容易被 Google 做成 rich snippet。</p>\n</body>\n</html>",
-          "hint": "h1 → h2 分層清楚 + 有 FAQ 區塊，Google 跟 AI 都更好讀。"
-        }
-      ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "意圖判斷題：挑 2 個關鍵字，①各判斷它最可能的搜尋意圖(資訊/交易/導航/商業調查)②說明你會怎麼『用 Google 驗證』你的判斷 ③各該給什麼『內容形式』(教學文/產品頁/對比評測…)。",
+        "hint": "最準的驗證法：把字丟進 Google 看前幾名是什麼類型。前幾名都教學文→資訊型、都商品頁→交易型。內容形式要對得上意圖。",
+        "answer": "驗收：①能判斷意圖 ②知道『看 Google 前幾名』來驗證 ③內容形式對得上意圖。抓到『意圖決定內容形式、答非所問不會被排、Google 前幾名就是答案』就達標。"
       },
       "outline": [
         {
           "level": 2,
-          "text": "E-E-A-T"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "Pillar + Cluster"
+          "text": "四種常見意圖"
         },
         {
           "level": 2,
-          "text": "寫作框架"
+          "text": "怎麼判斷意圖：直接看 Google"
         },
         {
           "level": 2,
-          "text": "必有元素"
+          "text": "為什麼這麼重要"
         },
         {
           "level": 2,
-          "text": "字數"
-        },
-        {
-          "level": 2,
-          "text": "標題規則"
-        },
-        {
-          "level": 2,
-          "text": "URL Slug"
-        },
-        {
-          "level": 2,
-          "text": "圖片 SEO"
-        },
-        {
-          "level": 2,
-          "text": "內部連結"
-        },
-        {
-          "level": 2,
-          "text": "更新舊內容"
-        },
-        {
-          "level": 2,
-          "text": "內容類型"
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "你寫了一篇 1500 字的文章，包含所有必要的 H1、H2、圖片和連結，但內容只淺談主題，沒有深入解答讀者的問題。根據 Content SEO 的核心概念，這篇文章最可能遇到什麼問題？",
+        "question": "你為關鍵字寫了一篇很棒的教學文，但一直排不上，發現 Google 前幾名全是商品購買頁。最可能的原因是？",
         "options": [
           {
             "value": "a",
-            "label": "字數太少，Google 無法判斷主題權重"
+            "label": "搜尋意圖不符——這個字的搜尋者想『買』(交易型)，你卻給『教學』(資訊型)，形式對不上意圖，Google 不會排你"
           },
           {
             "value": "b",
-            "label": "雖然結構完整，但內容深度不夠，不符合『質 > 量』的原則，Google 不會偏愛它"
+            "label": "教學文寫得不夠長"
           },
           {
             "value": "c",
-            "label": "缺少 TL;DR 和目錄，導致使用者體驗差"
+            "label": "沒有買外部連結"
           },
           {
             "value": "d",
-            "label": "沒有加入數字和年份在標題裡，排名會被有數字的文章完全壓制"
+            "label": "網站速度問題"
           }
         ],
-        "answer": "b",
-        "explanation": "Content SEO 最核心的理念是『質 > 量』——寫出真正解決問題、深度覆蓋主題的內容，Google 才會推薦。這篇文章結構合格但內容淺，正好違反了這個原則；相比之下，選項 a、c、d 都是表面問題，不是根本的內容品質問題。"
+        "answer": "a",
+        "explanation": "Google 前幾名全是商品頁，代表這個字的搜尋意圖是『交易型(想買)』。你給教學文=答非所問，即使內容很好，Google 也不會排你，因為它知道搜尋者不會滿意。判斷意圖最準的方法就是看 Google 前幾名的類型，並用對得上的內容形式(這裡該做產品/比較頁)。"
       }
     },
     {
-      "title": "GEO：AI 搜尋優化",
-      "oneLineSummary": "2026 新領域、讓 ChatGPT / Perplexity 引用你",
-      "analogy": "不是 SEO 替代、是 SEO 加值。",
-      "content": "## 什麼是 GEO\nGenerative Engine Optimization。\n讓 AI 搜尋引用你、給 backlink、列為來源。\n\n## 為什麼\n- 2026 25% 搜尋是 AI\n- AI 不導流（多數）\n- 但「被引用」= 信譽 + brand awareness\n\n## 優化策略\n\n### 1. 結構化\n- 明確 H1/H2/H3\n- 條列 / 編號\n- TL;DR\n- FAQ\n\n### 2. 答得直接\n不要 fluff、不要 storytelling 開頭。\n```\nQ: Python 怎麼爬蝦皮？\nA: 用 Playwright 開瀏覽器、找 selector、抓資料寫 CSV。\n```\n\n### 3. 引用權威\n- Mozilla / W3C / 官方 docs\n- 論文 / 研究\n\n### 4. Schema.org\n- FAQPage\n- HowTo\n- Article（含 author）\n\n### 5. Author 強化\n- About page 詳細\n- LinkedIn / Twitter 連結\n- 作者頁列文章\n\n### 6. 新鮮度\n- 顯示日期\n- 定期更新\n- 加 \"Updated 2026\"\n\n### 7. 第一手資料\n- 產業案例\n- 原創數據\n- 第一手經驗\n\n### 8. 引用優化\n- 每段獨立可引用\n- 短段（2-3 句）\n- 含具體數字\n\n### 9. 多模態\n- 圖加 alt\n- Diagram 清楚\n\n### 10. brand mention\n- Reddit / Hacker News / YouTube\n- Brand 一致\n\n## 測試\n- ChatGPT / Perplexity / Claude 搜尋你的領域\n- 看 AI 引用誰\n- 學他們\n\n## 工具\n- Otterly.AI\n- AthenaHQ\n- Wordlift\n- Surfer SEO\n\n## 心法\n- AI 是補強、不是替代\n- 結構 > 風格\n- 直答 > 鋪陳\n- 一手 > 二手\n\n**☕ 用人話講**\n\nGEO（生成式引擎優化）是 2026 的新領域——**讓 ChatGPT、Perplexity 這些 AI 在回答問題時「引用你的內容」**。重點是結構清楚、答案明確、來源可信。**一句話記住**：像當一個記者愛採訪的專家——講話有條理、答案明確、有可信度，AI 就愛引用你的話當答案，幫你帶來曝光。\n",
+      "title": "On-page SEO：頁面基本功",
+      "oneLineSummary": "標題/描述/H標/網址，給引擎清楚訊號",
+      "analogy": "頁面訊號亂 = Google 看不懂你在講什麼",
+      "content": "## 這一課你會做出什麼\n\n一份**單一頁面的 SEO 基本功清單（on-page）**——讓 Google 一看就懂「這頁在講什麼、值不值得排」。這些是你完全能掌控、又最基本的訊號。\n\n---\n\n## 六個必做的 on-page 訊號\n\n1. **標題 Title（最重要）**：包含主關鍵字、吸引人、約 60 字內。這是搜尋結果的大標，也是最強排名訊號之一。\n2. **Meta description**：150 字內的摘要，雖不直接影響排名，但影響「點不點進來」（點擊率）。\n3. **H1/H2/H3 標籤**：用標題階層把內容分段，H1 一個、放主題；H2 放各段主題。給引擎和讀者結構。\n4. **URL（網址）**：短、有意義、含關鍵字（`/手沖咖啡-器具推薦` 勝過 `/p?id=8823`）。\n5. **關鍵字自然分佈**：主關鍵字出現在標題、開頭、幾個小標——但**自然**，別硬塞（keyword stuffing 會被懲罰）。\n6. **圖片 alt**：圖片加替代文字，兼顧無障礙與圖片搜尋。\n\n---\n\n## 一個心法：寫給人、順便給引擎\n\n別為了 SEO 把內容寫得像機器（狂重複關鍵字、讀起來很怪）。**先寫給人看得舒服，再確認上面六個訊號都清楚**——Google 越來越懂「讀起來自然、對人有用」的內容，硬塞關鍵字只會反效果。\n\n---\n\n## ☕ 用人話講\n\nOn-page 就是把「這頁在講什麼」清楚地講給 Google 聽：**好標題（含關鍵字）、吸引人的描述、清楚的 H 標階層、乾淨的網址、關鍵字自然分佈、圖片 alt**。這些你完全能掌控、又最基本。重點是「寫給人看得舒服、順便讓訊號清楚」，別硬塞關鍵字把內容寫成機器文。",
       "tip": {
-        "type": "trend",
-        "text": "2026 GEO 新藍海。"
+        "type": "pro",
+        "text": "把『這頁在講什麼』講清楚給引擎。"
       },
       "id": "13.5",
       "number": "LESSON 13.5",
       "xp": 10,
-      "playgrounds": [
-        {
-          "key": "13.5.auto",
-          "language": "html",
-          "title": "GEO：用結構化資料讓 AI 讀懂你",
-          "initialCode": "<!DOCTYPE html>\n<html lang=\"zh-Hant\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>什麼是 GEO？</title>\n  <!-- 結構化資料（JSON-LD）：讓 AI 直接讀懂這頁在回答什麼問題 -->\n  <script type=\"application/ld+json\">\n  {\n    \"@context\": \"https://schema.org\",\n    \"@type\": \"FAQPage\",\n    \"mainEntity\": [{\n      \"@type\": \"Question\",\n      \"name\": \"什麼是 GEO？\",\n      \"acceptedAnswer\": { \"@type\": \"Answer\", \"text\": \"GEO 是優化內容，讓 ChatGPT、Perplexity 等 AI 願意引用你。\" }\n    }]\n  }\n  </script>\n</head>\n<body style=\"font-family:system-ui;padding:24px;line-height:1.8;color:#1f2937\">\n  <h1>什麼是 GEO？</h1>\n  <p><strong>GEO（生成式引擎優化）</strong>就是讓 AI 搜尋（ChatGPT、Perplexity）願意引用你的內容。</p>\n  <p>👆 上面 head 裡的 JSON-LD 結構化資料，能讓 AI 直接讀懂「這頁在回答什麼問題」。</p>\n</body>\n</html>",
-          "hint": "head 裡的 JSON-LD 能讓 AI / Google 直接讀懂「這頁在回答什麼」。"
-        }
-      ],
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「GEO：AI 搜尋優化」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "實作題：挑一個頁面(自選或你要寫的)，寫出它的 on-page 六要素——①Title(含關鍵字、60字內)②Meta description ③H1 和 3 個 H2 ④建議的 URL ⑤你會怎麼避免『關鍵字硬塞』。",
+        "hint": "Title 最重要、含主關鍵字又吸引人。H1 一個放主題、H2 放各段。URL 短、有意義、含關鍵字。關鍵字要自然分佈不硬塞。",
+        "answer": "驗收：六要素齊全且合理(標題含關鍵字、H 標有階層、URL 乾淨)、且理解關鍵字要自然不硬塞。抓到『把這頁在講什麼清楚給引擎、寫給人順便給引擎』就達標。"
       },
       "outline": [
         {
           "level": 2,
-          "text": "什麼是 GEO"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "為什麼"
+          "text": "六個必做的 on-page 訊號"
         },
         {
           "level": 2,
-          "text": "優化策略"
-        },
-        {
-          "level": 3,
-          "text": "1. 結構化"
-        },
-        {
-          "level": 3,
-          "text": "2. 答得直接"
-        },
-        {
-          "level": 3,
-          "text": "3. 引用權威"
-        },
-        {
-          "level": 3,
-          "text": "4. Schema.org"
-        },
-        {
-          "level": 3,
-          "text": "5. Author 強化"
-        },
-        {
-          "level": 3,
-          "text": "6. 新鮮度"
-        },
-        {
-          "level": 3,
-          "text": "7. 第一手資料"
-        },
-        {
-          "level": 3,
-          "text": "8. 引用優化"
-        },
-        {
-          "level": 3,
-          "text": "9. 多模態"
-        },
-        {
-          "level": 3,
-          "text": "10. brand mention"
+          "text": "一個心法：寫給人、順便給引擎"
         },
         {
           "level": 2,
-          "text": "測試"
-        },
-        {
-          "level": 2,
-          "text": "工具"
-        },
-        {
-          "level": 2,
-          "text": "心法"
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "根據 GEO 的核心概念，以下哪個做法最符合「讓 AI 搜尋引擎願意引用你」的目標？",
+        "question": "關於 on-page SEO，下列哪個做法是對的？",
         "options": [
           {
             "value": "a",
-            "label": "寫一篇長篇大論、用優美文筆開頭講故事，讓內容看起來很專業"
+            "label": "標題含關鍵字又吸引人、H 標分層、URL 乾淨、關鍵字自然分佈——寫給人看得舒服、順便讓訊號清楚"
           },
           {
             "value": "b",
-            "label": "直接回答問題、用清楚的結構（H1/H2/H3）、列出具體步驟、加上權威來源連結"
+            "label": "把主關鍵字在文章裡重複塞越多次越好"
           },
           {
             "value": "c",
-            "label": "盡量多寫各種角度的觀點，讓內容看起來很全面均衡"
+            "label": "標題越長、塞越多關鍵字越好"
           },
           {
             "value": "d",
-            "label": "引用很多其他網站的文章，證明你有做功課"
+            "label": "URL 用 /p?id=8823 這種比較專業"
           }
         ],
-        "answer": "b",
-        "explanation": "GEO 的核心是「結構清楚 > 風格」、「直答 > 鋪陳」、「權威來源」。AI 搜尋引擎喜歡能直接找到答案、有明確層級結構、有可信來源的內容，而不是靠文筆或面面俱到的內容。"
+        "answer": "a",
+        "explanation": "On-page 是把『這頁在講什麼』清楚給引擎：好標題(含關鍵字又吸引人)、H 標階層、乾淨含關鍵字的 URL、關鍵字自然分佈、圖片 alt。核心心法是『寫給人看得舒服、順便讓訊號清楚』。硬塞關鍵字(stuffing)會被懲罰、超長標題和亂碼 URL 都是反效果。"
       }
     },
     {
-      "title": "Local SEO：在地服務",
-      "oneLineSummary": "餐廳 / 美容 / 維修—Google Maps 優化",
-      "analogy": "在地服務 80% 流量靠這個。",
-      "content": "## 必做\n\n### 1. Google Business Profile\n免費、最重要：\n- business.google.com 註冊\n- 填完整資料\n- 驗證地址\n- 上傳照片\n- 回覆評論\n\n### 2. NAP 一致\nName / Address / Phone 全網一致：\n- 官網\n- Google Maps\n- FB / IG\n- 黃頁\n\n### 3. 評論\n- 主動請客戶評論\n- 回覆每則（包含負評）\n- 不要造假\n\n### 4. 在地關鍵字\n- 「鶯歌咖啡廳」\n- 「板橋寵物美容」\n\n### 5. 在地內容\n- 「鶯歌十大景點」\n- 「新北寵物友善餐廳」\n\n### 6. Schema.org LocalBusiness\n```json\n{\n  \"@type\": \"LocalBusiness\",\n  \"name\": \"AI 島咖啡\",\n  \"address\": { \"addressLocality\": \"新北市\", \"postalCode\": \"239\" },\n  \"geo\": { \"latitude\": 25.05, \"longitude\": 121.35 },\n  \"openingHours\": \"Mo-Fr 09:00-18:00\",\n  \"telephone\": \"+886-2-...\"\n}\n```\n\n### 7. 在地連結\n- 地方媒體報導\n- 在地 directory\n\n### 8. 行動友善\n80%+ 在地搜尋從手機。\n\n## 多分店\n每分店一個 GBP + landing page。\n\n## 工具\n- Google Business Profile\n- BrightLocal\n- Whitespark\n\n## 接案\n- NT$ 5-30k setup\n- NT$ 1-5k/月維護\n- 餐廳 / 牙醫 / 維修需求大\n\n**☕ 用人話講**\n\nLocal SEO（在地 SEO）：餐廳、美容、維修這類**靠在地客的生意**，主要流量來自 Google Maps 跟「附近的…」這種在地搜尋。**一句話記住**：像讓你的店出現在「附近美食」地圖上——在地客搜「附近剪髮」就看到你，這比去拼全國排名實際得多、轉換也高。\n",
+      "title": "Technical SEO：讓引擎爬得到、看得懂",
+      "oneLineSummary": "sitemap/robots/索引，打通爬取索引",
+      "analogy": "技術沒打通 = 內容再好也進不了索引",
+      "content": "## 這一課你會做出什麼\n\n一份**技術 SEO 檢查清單**——確保 Google 爬得到、看得懂、收得進索引。這是「爬取→索引」那兩步的基礎建設，沒打通，內容再好也白搭。\n\n---\n\n## 核心幾項（白話）\n\n1. **sitemap.xml**：一份「網站地圖」列出你所有重要頁面，交給 Google（透過 Search Console），幫它更快爬到。\n2. **robots.txt**：告訴爬蟲「哪些能爬、哪些別爬」。**最常見的災難是不小心 Disallow 了整站**——上線前一定檢查。\n3. **可索引性**：別讓重要頁面被 `noindex` 標籤擋掉、別大量重複內容（用 canonical 指定正版）。\n4. **內部連結**：頁面之間互相連結，讓爬蟲能沿著走到每一頁（孤島頁面爬不到）。\n5. **HTTPS**：用 SSL（https），這是基本的信任與排名訊號。\n6. **手機友善**：Google 用行動版優先索引（mobile-first），手機版破版會扣分。\n\n---\n\n## 工具：Google Search Console（GSC）是你的儀表板\n\n免費、必裝。它告訴你：哪些頁被索引了、爬取有沒有錯誤、哪些關鍵字帶來曝光與點擊。**技術 SEO 出問題，第一個看 GSC。**\n\n---\n\n## ☕ 用人話講\n\n技術 SEO 是地基：讓 Google **爬得到（sitemap、內部連結、robots 別擋錯）、看得懂、收得進索引（別 noindex、別重複）**，加上 HTTPS 和手機友善。內容再好，地基沒打通就進不了索引。裝好 Google Search Console 當儀表板——技術出問題先看它。",
       "tip": {
-        "type": "business",
-        "text": "在地服務客戶 = 月費被動收入。"
+        "type": "pro",
+        "text": "先讓 Google 爬得到、收得進去。"
       },
       "id": "13.6",
       "number": "LESSON 13.6",
       "xp": 10,
-      "playgrounds": [
-        {
-          "key": "13.6.auto",
-          "language": "json",
-          "title": "試試看",
-          "initialCode": "{\n  \"@type\": \"LocalBusiness\",\n  \"name\": \"AI 島咖啡\",\n  \"address\": { \"addressLocality\": \"新北市\", \"postalCode\": \"239\" },\n  \"geo\": { \"latitude\": 25.05, \"longitude\": 121.35 },\n  \"openingHours\": \"Mo-Fr 09:00-18:00\",\n  \"telephone\": \"+886-2-...\"\n}",
-          "hint": "改 code、按執行看結果"
-        }
-      ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "檢查題：①用你的話解釋 sitemap.xml 和 robots.txt 各的作用 ②寫出一個『技術 SEO 最容易出的災難』和怎麼避免(提示:robots)③說明你會用什麼工具檢查頁面到底被 Google 索引了沒。",
+        "hint": "sitemap=給 Google 的網站地圖、robots=告訴爬蟲哪些別爬。最常見災難：不小心 Disallow 整站。檢查索引用 Google Search Console。",
+        "answer": "驗收：①能解釋 sitemap/robots ②點出 robots Disallow 整站的災難與檢查 ③知道用 GSC 看索引。抓到『技術 SEO 是爬取/索引的地基、GSC 是儀表板』就達標。"
       },
       "outline": [
         {
           "level": 2,
-          "text": "必做"
-        },
-        {
-          "level": 3,
-          "text": "1. Google Business Profile"
-        },
-        {
-          "level": 3,
-          "text": "2. NAP 一致"
-        },
-        {
-          "level": 3,
-          "text": "3. 評論"
-        },
-        {
-          "level": 3,
-          "text": "4. 在地關鍵字"
-        },
-        {
-          "level": 3,
-          "text": "5. 在地內容"
-        },
-        {
-          "level": 3,
-          "text": "6. Schema.org LocalBusiness"
-        },
-        {
-          "level": 3,
-          "text": "7. 在地連結"
-        },
-        {
-          "level": 3,
-          "text": "8. 行動友善"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "多分店"
+          "text": "核心幾項（白話）"
         },
         {
           "level": 2,
-          "text": "工具"
+          "text": "工具：Google Search Console（GSC）是你的儀表板"
         },
         {
           "level": 2,
-          "text": "接案"
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "你經營一間在新北市板橋的咖啡廳，想做 Local SEO。下列哪個做法最能直接幫你在「附近咖啡廳」搜尋時出現？",
+        "question": "你的整個網站突然從 Google 消失。檢查發現 robots.txt 裡有 `Disallow: /`。這代表什麼？",
         "options": [
           {
             "value": "a",
-            "label": "砸大錢買全國咖啡廳相關的廣告關鍵字"
+            "label": "你不小心叫爬蟲『整站都別爬』，Google 爬不到就無法索引——移除這行、重新提交 sitemap"
           },
           {
             "value": "b",
-            "label": "在 Google Business Profile 完整填寫資料、驗證地址、上傳照片、回覆評論"
+            "label": "這是正常的、robots.txt 本來就該這樣寫"
           },
           {
             "value": "c",
-            "label": "寫 100 篇部落格文章介紹咖啡豆知識"
+            "label": "是排名問題，多寫幾篇文章就會回來"
           },
           {
             "value": "d",
-            "label": "跟全國知名部落客合作推廣"
+            "label": "是網站速度太慢造成的"
           }
         ],
-        "answer": "b",
-        "explanation": "Local SEO 的核心是讓在地客在地圖上找到你，Google Business Profile 是最重要的免費工具。完整資料、驗證、評論管理直接影響在地搜尋排名，比全國流量或部落格文章對在地生意更有效。"
+        "answer": "a",
+        "explanation": "`Disallow: /` 是叫爬蟲『整站都不要爬』——這是技術 SEO 最常見的災難之一，會讓整站從索引消失。robots.txt 控制爬蟲能爬哪些，上線前一定要檢查沒有誤擋。這跟排名或速度無關，是爬取階段被擋死了，要移除該行並用 GSC 重新提交。"
       }
     },
     {
-      "title": "Link Building",
-      "oneLineSummary": "其他網站連到你 = Google 信任分數",
-      "analogy": "質 > 量、一個好連結 > 100 個垃圾。",
-      "content": "## 評估\n- DA / DR：30+ 算好\n- Relevance：相關 > 隨機\n- Anchor text：自然\n- Dofollow vs Nofollow\n\n## 建連結方法\n1. **寫好內容**（自然吸引）\n2. **Guest Post**：寫文給別人帶連結\n3. **Skyscraper**：寫更好版本\n4. **Broken Link Building**：找對方 404、推你的\n5. **HARO**：記者找專家、回 → 報導帶連結\n6. **Resource Pages**：爭取被加入清單\n7. **Podcast / Interview**\n8. **Tool / Calculator**：免費工具吸引連結\n9. **Original Research**：數據被引用\n10. **PR**\n\n## 不要（黑帽）\n- ❌ 買連結\n- ❌ PBN\n- ❌ Link farms\n- ❌ Comment spam\n\n短期 work、長期被砍。\n\n## 工具\n- Ahrefs / SEMrush\n- Hunter.io\n- BuzzSumo\n- HARO\n\n## Anchor text 分布\n- 50% naked URL\n- 20% brand\n- 15% generic\n- 10% partial match\n- 5% exact\n\n## Internal Linking\n也重要：\n- 連到 pillar content\n- 老文章連新（傳權重）\n- Anchor text 含關鍵字\n\n## 預算\n- Indie：寫內容 + outreach\n- 中型：月 NT$ 5-20k\n- 大型：月 NT$ 50k+\n\n## 心法\n- 質 > 量\n- 自然 > 操弄\n- 多元化來源\n- 不要買連結\n\n**☕ 用人話講**\n\nLink Building（連結建立）：**其他網站連到你，等於 Google 眼中的「信任投票」**，排名會加分。要靠好內容自然被連、或主動經營。**一句話記住**：像找人推薦——越多有信譽的人介紹你（連向你的網站），Google 就越覺得你可信，排名自然往上爬。\n",
+      "title": "網站速度 + Core Web Vitals",
+      "oneLineSummary": "慢的網站、使用者和 Google 都討厭",
+      "analogy": "載入慢 = 跳出高、排名扣分",
+      "content": "## 這一課你會做出什麼\n\n搞懂 Google 用來衡量「網頁體驗好不好」的 **Core Web Vitals** 三個指標，以及怎麼讓網站更快——因為慢的網站，使用者會跳走、Google 也扣分。\n\n---\n\n## 三個指標（白話）\n\n- **LCP（最大內容繪製）**：主要內容多快載出來？→ 衡量「載入速度」。目標 < 2.5 秒。\n- **INP（互動延遲，取代舊的 FID）**：你點了之後多快有反應？→ 衡量「互動順不順」。\n- **CLS（版面位移）**：畫面會不會載到一半跳來跳去（圖片跑出來把文字擠走）？→ 衡量「視覺穩定」。目標接近 0。\n\n---\n\n## 常見的變快做法\n\n1. **壓縮圖片**：圖片通常是最大兇手。用對格式(WebP)、對尺寸、lazy-load。\n2. **少載沒用的東西**：一堆第三方 script、龐大的 JS/CSS 是拖累。砍掉用不到的。\n3. **用 CDN + 快取**：讓內容從離使用者近的地方送。\n4. **保留圖片/元素的尺寸**：先框好位子，避免 CLS(版面亂跳)。\n\n---\n\n## 工具：PageSpeed Insights / GSC\n\nGoogle 的 **PageSpeed Insights** 免費測你的頁面、給分數和具體建議；**Search Console** 有 Core Web Vitals 報告看整站狀況。**別憑感覺，用工具量。**\n\n---\n\n## ☕ 用人話講\n\n慢的網站沒人等——使用者跳走、Google 扣分。Core Web Vitals 量三件事：**載得快不快(LCP)、點了有沒有快反應(INP)、畫面會不會亂跳(CLS)**。變快最有效通常是壓圖片、砍沒用的 script、用快取/CDN。用 PageSpeed Insights 量、別憑感覺——它會直接告訴你哪裡慢、怎麼修。",
       "tip": {
-        "type": "practical",
-        "text": "寫好內容 + Guest post + HARO = Indie 三招。"
+        "type": "pro",
+        "text": "三個指標:載入/互動/穩定。"
       },
       "id": "13.7",
       "number": "LESSON 13.7",
       "xp": 10,
       "exercise": {
-        "question": "找一個你身邊的例子、用「Link Building」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "優化題：①用你的話解釋 LCP、INP、CLS 各衡量什麼 ②挑一個你覺得會拖慢網站的常見原因、寫出怎麼改 ③說明你會用什麼工具『量』而不是憑感覺判斷快不快。",
+        "hint": "LCP=載入速度、INP=互動反應、CLS=版面穩定。最常見兇手是沒壓縮的大圖片。用 PageSpeed Insights 測、GSC 看整站。",
+        "answer": "驗收：①能解釋三指標各衡量什麼 ②舉出一個變快做法(壓圖/砍script/快取)③知道用工具量(PageSpeed Insights)。抓到『慢=跳出高+扣分、三指標、用工具量不憑感覺』就達標。"
       },
       "outline": [
         {
           "level": 2,
-          "text": "評估"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "建連結方法"
+          "text": "三個指標（白話）"
         },
         {
           "level": 2,
-          "text": "不要（黑帽）"
+          "text": "常見的變快做法"
         },
         {
           "level": 2,
-          "text": "工具"
+          "text": "工具：PageSpeed Insights / GSC"
         },
         {
           "level": 2,
-          "text": "Anchor text 分布"
-        },
-        {
-          "level": 2,
-          "text": "Internal Linking"
-        },
-        {
-          "level": 2,
-          "text": "預算"
-        },
-        {
-          "level": 2,
-          "text": "心法"
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "根據 Link Building 的核心原則，下列哪一個做法最符合 Google 眼中「好的連結」？",
+        "question": "Core Web Vitals 的 CLS（版面位移）指標，是在衡量什麼？",
         "options": [
           {
             "value": "a",
-            "label": "花錢買 50 條來自高 DA 網站的連結，快速提升排名"
+            "label": "畫面會不會載到一半跳來跳去(如圖片載出來把文字擠走)——衡量視覺穩定，越接近 0 越好"
           },
           {
             "value": "b",
-            "label": "寫一篇很棒的原創內容，自然吸引相關網站主動連向你"
+            "label": "網頁的載入速度多快"
           },
           {
             "value": "c",
-            "label": "在論壇留言區大量貼自己網站連結，增加曝光"
+            "label": "伺服器的回應時間"
           },
           {
             "value": "d",
-            "label": "加入 PBN（私人部落格網絡），自己建立多個網站互相連結"
+            "label": "網站每月的流量"
           }
         ],
-        "answer": "b",
-        "explanation": "Link Building 的心法是「質 > 量、自然 > 操弄」。選項 a、c、d 都是買連結、留言 spam、PBN 等黑帽手法，短期有效但長期會被 Google 砍。只有 b 是正道——靠好內容自然吸引，這樣的連結最被信任。"
+        "answer": "a",
+        "explanation": "Core Web Vitals 三指標：LCP(載入速度)、INP(互動反應)、CLS(版面位移/視覺穩定)。CLS 衡量的正是『畫面會不會載到一半亂跳』(圖片或廣告晚載出來把內容擠走)，很惱人。避免方法是先框好圖片/元素的尺寸位子。它跟載入速度(LCP)、互動(INP)、流量都不同。"
       }
     },
     {
-      "title": "GSC + Analytics",
-      "oneLineSummary": "SEO 必裝兩個免費工具",
-      "analogy": "不看數據 = 瞎做 SEO。",
-      "content": "## Google Search Console\n\n### 設定\n1. search.google.com/search-console\n2. 加 property\n3. 驗證\n4. 提交 sitemap\n\n### 必看\n- **Performance**：關鍵字 / CTR / 排名\n- **Coverage**：索引狀態\n- **Core Web Vitals**\n- **Sitemaps**\n- **URL Inspection**：重新索引\n\n## Google Analytics 4\n\n### 裝\n```html\n<script async src=\"https://www.googletagmanager.com/gtag/js?id=G-XXX\"></script>\n<script>\n  window.dataLayer = window.dataLayer || [];\n  function gtag(){dataLayer.push(arguments);}\n  gtag('js', new Date());\n  gtag('config', 'G-XXX');\n</script>\n```\n\n### 必看\n- Realtime\n- Acquisition（流量來源）\n- Engagement\n- Conversions\n\n### Events\n```javascript\ngtag(\"event\", \"sign_up\", { method: \"email\" });\ngtag(\"event\", \"purchase\", { value: 99, currency: \"TWD\" });\n```\n\n## GA4 替代（隱私友善）\n- Plausible（$9/月）\n- Fathom\n- Umami（開源）\n- Cloudflare Web Analytics（免費）\n\n## Bing Webmaster\n別忘了 Bing（10% 市占）：bing.com/webmasters。\n\n## 報表工具\n- Looker Studio（免費）\n- AgencyAnalytics\n- Databox\n\n## 心法\n- GSC + GA = SEO 必裝\n- 月看 trend\n- 找出「快進前 10」的關鍵字加強\n- 不追每日數據\n\n**☕ 用人話講**\n\nSEO 必裝兩個免費工具：**Google Search Console**（看你在搜尋上的表現、哪些字帶人來）、**Google Analytics**（看訪客進來後做了什麼）。**一句話記住**：像店裡的來客報表——哪些字把人帶進來、客人進來後逛什麼，看數據才知道下一步該做什麼，而不是憑感覺瞎做。\n",
+      "title": "結構化資料 Schema.org",
+      "oneLineSummary": "給引擎『機器讀得懂』的標籤",
+      "analogy": "少了結構化、你的頁面在搜尋結果很陽春",
+      "content": "## 這一課你會做出什麼\n\n搞懂**結構化資料（Schema.org）**——用一種「機器讀得懂」的標籤，明確告訴搜尋引擎「這頁是文章/商品/食譜/FAQ…、作者是誰、價格多少」，換來更豐富的搜尋結果（rich results）。\n\n---\n\n## 為什麼有用\n\n一般網頁 Google 要用 AI 去「猜」內容是什麼；加了結構化資料，你直接**明講**：這是一篇文章、發布日 X、作者 Y；這是商品、價格 Z、評分 4.8。好處：\n\n- **更豐富的搜尋結果**：星等評分、價格、FAQ 展開、食譜時間——這些會讓你的結果更顯眼、點擊率更高。\n- **幫 AI/GEO 理解**：結構清楚的內容，AI 也更容易正確引用（見後面 GEO 章）。\n\n---\n\n## 常見類型\n\n- **Article**：文章（作者、發布日、標題）。\n- **Product**：商品（價格、庫存、評分）。\n- **FAQPage**：常見問答（可在搜尋結果直接展開）。\n- **Recipe / Event / LocalBusiness** 等。\n\n實作上用 **JSON-LD**（一段放在頁面裡的 JSON），Google 推薦這種方式。工具：Google 的 **Rich Results Test** 驗證你標對沒。\n\n---\n\n## ☕ 用人話講\n\n結構化資料就是給網頁貼上「機器讀得懂的標籤」，明講這頁是文章/商品/FAQ、作者價格是什麼——不用讓 Google 猜。回報是更豐富、更顯眼的搜尋結果(星等、價格、FAQ 展開)，點擊率更高，也幫 AI 正確引用你。用 JSON-LD 標、用 Rich Results Test 驗證。",
       "tip": {
-        "type": "milestone",
-        "text": "Day 1 裝 GSC + GA。"
+        "type": "pro",
+        "text": "用 Schema 讓引擎懂你的內容是什麼。"
       },
       "id": "13.8",
       "number": "LESSON 13.8",
       "xp": 10,
-      "playgrounds": [
-        {
-          "key": "13.8.auto",
-          "language": "html",
-          "title": "試試看",
-          "initialCode": "<script async src=\"https://www.googletagmanager.com/gtag/js?id=G-XXX\"></script>\n<script>\n  window.dataLayer = window.dataLayer || [];\n  function gtag(){dataLayer.push(arguments);}\n  gtag('js', new Date());\n  gtag('config', 'G-XXX');\n</script>",
-          "hint": "改 code、按執行看結果"
-        }
-      ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "應用題：挑一個頁面類型(文章/商品/FAQ/在地店家…)，①說明你會用哪個 Schema 類型 ②列出這個類型該標哪些資訊(如商品:價格/評分)③說明加了結構化資料，你的搜尋結果會多出什麼、對點擊率有什麼幫助。",
+        "hint": "文章→Article、商品→Product、常見問答→FAQPage、店家→LocalBusiness。用 JSON-LD 標、Rich Results Test 驗證。回報是 rich results(星等/價格/FAQ 展開)。",
+        "answer": "驗收：①選對 Schema 類型 ②列出該標的關鍵資訊 ③理解 rich results 的好處(更顯眼、點擊率高、幫 AI 引用)。抓到『結構化資料=明講內容是什麼、換更豐富的搜尋結果』就達標。"
       },
       "outline": [
         {
           "level": 2,
-          "text": "Google Search Console"
-        },
-        {
-          "level": 3,
-          "text": "設定"
-        },
-        {
-          "level": 3,
-          "text": "必看"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "Google Analytics 4"
-        },
-        {
-          "level": 3,
-          "text": "裝"
-        },
-        {
-          "level": 3,
-          "text": "必看"
-        },
-        {
-          "level": 3,
-          "text": "Events"
+          "text": "為什麼有用"
         },
         {
           "level": 2,
-          "text": "GA4 替代（隱私友善）"
+          "text": "常見類型"
         },
         {
           "level": 2,
-          "text": "Bing Webmaster"
-        },
-        {
-          "level": 2,
-          "text": "報表工具"
-        },
-        {
-          "level": 2,
-          "text": "心法"
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "根據這課教的內容，Google Search Console 和 Google Analytics 4 分別主要看什麼？",
+        "question": "為網頁加「結構化資料(Schema.org)」的主要好處是什麼？",
         "options": [
           {
             "value": "a",
-            "label": "GSC 看訪客進來後做了什麼、GA4 看你在搜尋上的排名和點擊率"
+            "label": "明確告訴引擎這頁是什麼(文章/商品/FAQ…)，換來更豐富顯眼的搜尋結果(星等/價格/FAQ)、提高點擊率，也幫 AI 正確引用"
           },
           {
             "value": "b",
-            "label": "GSC 看你在搜尋上的表現和排名、GA4 看訪客進來後的行為和轉換"
+            "label": "能直接讓你排名第一"
           },
           {
             "value": "c",
-            "label": "GSC 和 GA4 都是看搜尋排名，只是介面不同"
+            "label": "可以讓網站載入變快"
           },
           {
             "value": "d",
-            "label": "GSC 看流量來源、GA4 看索引狀態"
+            "label": "可以取代寫內容，不用寫文章了"
           }
         ],
-        "answer": "b",
-        "explanation": "GSC 的 Performance 看關鍵字、排名、CTR；GA4 的 Acquisition 和 Conversions 看訪客來源和轉換。兩個工具一個看「人進來前」、一個看「進來後」，缺一不可。"
+        "answer": "a",
+        "explanation": "結構化資料(用 JSON-LD)是給引擎『機器讀得懂的標籤』，明講內容是文章/商品/FAQ、作者/價格/評分等，不用讓 Google 猜。回報是更豐富的搜尋結果(rich results：星等、價格、FAQ 展開)，讓結果更顯眼、點擊率更高，也幫 AI/GEO 正確引用。它不保證排第一、不影響速度、也不能取代內容。"
       }
     },
     {
-      "title": "內容生產流程",
-      "oneLineSummary": "一個人持續寫 100 篇？流程化、可",
-      "analogy": "不是天才、是系統。",
-      "content": "## 6 階段流程\n\n### Phase 1：研究（月）\n- 列 20-50 個關鍵字\n- 用工具找 long-tail\n- Volume 50-1000、competition < 30\n- 排程 calendar\n\n### Phase 2：規劃（週）\n- 選下週 3 個\n- 看 SERP top 10\n- 寫大綱\n- 標目標字數\n\n### Phase 3：寫作\n- 先寫大綱\n- AI 起草（Claude / GPT）\n- 加自己經驗 / 案例\n- 加圖\n- 寫 meta\n\n### Phase 4：發布\n- CMS\n- slug / tag / category\n- 內連結\n- 提交 GSC\n\n### Phase 5：推廣\n- 社群分享\n- Reddit / 論壇\n- Newsletter\n\n### Phase 6：監控\n- GSC 看 impressions / CTR\n- GA 看流量\n- 6 個月後 review、更新\n\n## AI 輔助\n- Claude / GPT：起草\n- Surfer SEO：優化 score\n- Frase：研究 + 寫\n- Jasper：行銷型\n\n⚠️ 不要全 AI 直出：\n- 加經驗\n- 加案例 / 數據\n\n## 內容曆\nNotion / Trello / Airtable：\n| 日期 | 主題 | 關鍵字 | 字數 | 狀態 |\n\n## 節奏\n- 1 週 1-2 篇\n- 月 4-8 篇\n- 半年 20-50 篇\n- 1 年 → 流量起飛\n\n## Content Pruning\n不是越多越好：\n- 沒流量的\n- 過時內容\n- 重複主題\n→ 刪 / 合併 / 重寫\n\n## 心法\n- 不追完美、追上線\n- 80/20：標題 + 第一段 = 80% 點擊\n- 持續 > 一次爆\n\n**☕ 用人話講**\n\n內容生產流程：一個人要持續產出上百篇文章怎麼辦？把它**流程化**——選題 → 寫 → 優化 → 發布 → 更新，做成一條生產線。**一句話記住**：像開麵包店——不是每次都從頭亂做，而是有 SOP（備料 → 烤 → 上架），才能穩定大量產出又不把自己累垮。\n",
+      "title": "Content SEO：E-E-A-T + 寫給人",
+      "oneLineSummary": "好內容才是排名的根、加上你的經驗",
+      "analogy": "AI 直出無經驗的內容、Google 越來越不買單",
+      "content": "## 這一課你會做出什麼\n\n搞懂 Google 現在最看重的內容品質框架 **E-E-A-T**，以及為什麼「加上你的真實經驗」是 AI 時代內容能不能排上的關鍵。下面的情境判斷讓你先練「什麼對 SEO 好、什麼是雷」。\n\n> E-E-A-T = **Experience（經驗）、Expertise（專業）、Authoritativeness（權威）、Trust（信任）**。Google 用它判斷「這內容值不值得信、值不值得排」。\n\n---\n\n## 四個字，白話講\n\n- **Experience（經驗）**：作者有沒有『親身用過/做過』？——這是 AI 直出最缺的，也是你贏過一堆 AI 文的地方。\n- **Expertise（專業）**：內容夠不夠專業正確？\n- **Authoritativeness（權威）**：這個網站/作者在這領域是不是被認可（被連結、被引用）？\n- **Trust（信任）**：資訊可不可信（有來源、有作者、網站可靠）？\n\n---\n\n## AI 時代的關鍵：加上「只有你知道的」\n\n人人都能用 AI 產內容，於是「加上你的真實經驗」變成稀缺。同一篇「匯出海報教學」：\n- AI 直出：「點 Export、選 PNG 即可。」（泛泛、誰都能生）\n- 加了你：「我第一次匯出上傳 IG 就糊掉——要勾『2x』才清楚，位置在面板右邊。我現在固定用 PNG+2x。」\n\n第二段憑什麼贏？**踩過的坑、精確的位置、你的定論**——這就是 Experience，AI 生不出來。\n\n---\n\n## ☕ 用人話講\n\n好內容才是排名的根，Google 用 E-E-A-T(經驗/專業/權威/信任)衡量它。AI 時代人人都能產內容，於是**「加上你的真實經驗」(Experience)變成最稀缺的**——踩過的坑、具體的數字、你的做法，是 AI 直出永遠缺、也是你贏過一堆 AI 文的地方。先寫給人真的有用，SEO 才有根。",
       "tip": {
-        "type": "practical",
-        "text": "1 週 1-2 篇、堅持 1 年。"
+        "type": "pro",
+        "text": "經驗+專業+權威+信任=E-E-A-T。"
       },
       "id": "13.9",
       "number": "LESSON 13.9",
       "xp": 10,
       "exercise": {
-        "question": "找一個你身邊的例子、用「內容生產流程」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "內容改造題：挑一個你懂的主題，①寫一段『AI 直出版』的說明(泛泛的)②改寫成『加了你真實經驗版』(踩過的坑/具體位置數字/你的做法)③指出你加的是 E-E-A-T 的哪個 E、為什麼它讓 Google 更願意排你。",
+        "hint": "AI 直出缺的是 Experience(經驗)。加經驗最有效三種料:踩過的坑、精確細節(位置/數字)、你的定論(我現在固定…)。",
+        "answer": "驗收：①兩段對照看得出差異 ②加了具體的親身經驗 ③知道加的是 Experience、且理解它是 AI 直出缺、Google 看重的。抓到『好內容是根、E-E-A-T、加真實經驗贏過 AI 文』就達標。"
       },
       "outline": [
         {
           "level": 2,
-          "text": "6 階段流程"
-        },
-        {
-          "level": 3,
-          "text": "Phase 1：研究（月）"
-        },
-        {
-          "level": 3,
-          "text": "Phase 2：規劃（週）"
-        },
-        {
-          "level": 3,
-          "text": "Phase 3：寫作"
-        },
-        {
-          "level": 3,
-          "text": "Phase 4：發布"
-        },
-        {
-          "level": 3,
-          "text": "Phase 5：推廣"
-        },
-        {
-          "level": 3,
-          "text": "Phase 6：監控"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "AI 輔助"
+          "text": "四個字，白話講"
         },
         {
           "level": 2,
-          "text": "內容曆"
+          "text": "AI 時代的關鍵：加上「只有你知道的」"
         },
         {
           "level": 2,
-          "text": "節奏"
-        },
-        {
-          "level": 2,
-          "text": "Content Pruning"
-        },
-        {
-          "level": 2,
-          "text": "心法"
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "根據內容生產流程，為什麼要把內容製作分成 6 個階段而不是直接寫完就發布？",
+        "question": "AI 時代，一篇內容要能在 Google 排得好，最稀缺、最關鍵的是什麼？",
         "options": [
           {
             "value": "a",
-            "label": "把複雜的工作流程化，才能穩定大量產出、不會遺漏 SEO 優化和推廣步驟"
+            "label": "加上作者的真實經驗(Experience)——踩過的坑、具體細節、你的做法，這是 AI 直出永遠缺的"
           },
           {
             "value": "b",
-            "label": "因為 AI 工具需要 6 個步驟才能生成完整內容"
+            "label": "把關鍵字塞得越滿越好"
           },
           {
             "value": "c",
-            "label": "只有經過 6 個階段的文章才符合 Google 的收錄標準"
+            "label": "文章字數衝到越多越好"
           },
           {
             "value": "d",
-            "label": "為了讓每篇文章都達到完美品質才能發布"
+            "label": "用 AI 大量產出內容、量大就會贏"
           }
         ],
         "answer": "a",
-        "explanation": "課程強調的核心是「流程化」——把內容生產變成 SOP，像麵包店的備料→烤→上架一樣有系統，這樣才能持續穩定產出多篇文章，不會遺漏研究、規劃、推廣、監控等關鍵步驟。選項 b、c、d 都不符合課程重點。"
-      }
+        "explanation": "Google 用 E-E-A-T(經驗/專業/權威/信任)衡量內容。人人都能用 AI 產內容後，最稀缺的就是 Experience(真實經驗)——踩過的坑、精確細節、你的定論，這是 AI 直出生不出來、也是你贏過一堆 AI 文的地方。塞關鍵字、衝字數、大量 AI 產出都無法取代真實經驗帶來的信任與價值。"
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "SEO 好習慣還是雷？",
+          "note": "判斷這樣做對 SEO 是好、有風險、還是不行",
+          "config": {
+            "scenarios": [
+              {
+                "text": "為了排名，把主關鍵字在文章裡重複塞了 50 次，讀起來很怪。",
+                "correct": "no",
+                "why": "關鍵字堆砌(keyword stuffing)是老派黑帽手法、會被懲罰。要自然分佈。"
+              },
+              {
+                "text": "寫一篇教學，加入自己親身踩過的坑和具體做法。",
+                "correct": "ok",
+                "why": "這正是 E-E-A-T 的 Experience，Google 越來越看重、也贏過 AI 直出。"
+              },
+              {
+                "text": "花錢買一堆低品質網站的連結指向你。",
+                "correct": "no",
+                "why": "買低品質連結是黑帽、Google 會抓、可能被降權。連結要用『賺』的(好內容自然被連)。"
+              },
+              {
+                "text": "把關鍵字丟進 Google 看前幾名的內容形式，照那個意圖做內容。",
+                "correct": "ok",
+                "why": "用 Google 前幾名驗證搜尋意圖、給對形式，是正確做法。"
+              },
+              {
+                "text": "整站用同一篇內容複製到幾十個頁面、只改標題。",
+                "correct": "no",
+                "why": "大量重複/薄內容(thin/duplicate content)不會被好好索引、也傷排名。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
-      "title": "SEO 接案 + 變現",
-      "oneLineSummary": "會 SEO 可月入 NT$ 30-200k",
-      "analogy": "結合技術 + 內容 + 行銷的綜合能力。",
-      "content": "## 服務類型\n1. **SEO Audit**：NT$ 10-50k、一次\n2. **上線 SEO setup**：NT$ 30-100k\n3. **月費維護**：NT$ 10-50k/月\n4. **SEO + 內容代寫**：一篇 NT$ 2000-10000\n5. **顧問**：NT$ 3000-10000/hr\n\n## 找客戶\n\n### 1. 在地服務\n- 餐廳 / 牙醫 / 維修\n- NT$ 5-30k/月\n\n### 2. 中小企業\n- NT$ 30-100k + 月費\n\n### 3. 電商\n- NT$ 50-300k\n\n### 4. SaaS\n- NT$ 50-200k/月\n\n## 簽約\n\n### 報價單必有\n- Scope\n- 時程\n- 交付物\n- 付款條件\n\n### 不保證排名\n影響因素多、Google 演算法變。\n承諾「努力 + 報告」、不承諾「上第一頁」。\n\n### 月報模板\n- 流量變化\n- 排名變化\n- 新關鍵字\n- 下月計畫\n\n## 案例：在地餐廳\n\n**Setup（NT$ 30k）**：\n- Google Business Profile\n- 官網 Local SEO\n- Schema.org\n- 在地內容（5 篇）\n\n**月費（NT$ 8k）**：\n- 評論回覆\n- 新內容\n- 監控 + 報表\n\n**3 月成果**：Google Maps 進前 3、月客 +30%、簽 1 年。\n\n## 升級\n\n### Level 1：自由接案\n- 月 NT$ 30-100k\n- 1-3 客戶\n\n### Level 2：Agency\n- 月 NT$ 100-500k\n- 雇人、5-20 客戶\n\n### Level 3：SaaS / 工具 / 教課\n\n## 資源\n- Backlinko（Brian Dean）\n- Ahrefs Blog\n- SEMrush Academy\n\n## 心法\n- 不保證排名\n- 月報專業\n- 長期 > 一次性\n\n**☕ 用人話講**\n\n會 SEO 可以月入 NT$ 3～20 萬——這課講怎麼接案、報價、交付。**一句話記住**：像學會一門能直接變現的手藝——SEO 是少數「學會就能馬上接案賺錢」的技能，需求穩定、單價也不低。\n",
+      "title": "Pillar + Cluster：內容架構",
+      "oneLineSummary": "成群結隊寫、用內連結建立權威",
+      "analogy": "零散寫文章、Google 看不出你是專家",
+      "content": "## 這一課你會做出什麼\n\n一份**用 Pillar（支柱頁）+ Cluster（衛星文）建立主題權威**的內容藍圖。零散寫文章 Google 看不出你是專家；成群結隊寫，才建得起 Topic Authority。\n\n---\n\n## 架構\n\n- **Pillar Page（支柱頁）**：某主題的「超完整指南」（常 3000-5000 字），涵蓋全景。例：「2026 完整手沖咖啡指南」。\n- **Cluster（衛星文）**：5-10 篇更深入的子題。例：「手沖器具新手推薦」「手沖比例怎麼抓」「手沖 vs 濾掛」。\n- **內部連結（關鍵！）**：每篇 cluster 用有意義的 anchor text 連回 pillar、pillar 也連向各 cluster。Google 爬到這些連結，就懂「這群文章圍繞同一主題」，把你當**該領域權威**。\n\n---\n\n## 為什麼有效\n\nGoogle 現在重視「你對這主題懂不懂全貌」，不只「單篇好不好」。就像你更信『看過 100 個相同病例的醫生』。把一個主題**寫透、串成一群**，Google 才給你這個主題的權威分與排名。\n\n---\n\n## 怎麼開始\n\n1. 選一個你能寫透的主題當 pillar。\n2. 列出這主題底下讀者會問的 5-10 個子問題當 cluster。\n3. 先寫幾篇 cluster、都內連回 pillar，慢慢補齊。\n\n---\n\n## ☕ 用人話講\n\nSEO 別零散寫，要成群結隊：一篇超完整的 Pillar 當堡壘、5-10 篇 Cluster 當衛星、用內部連結把它們串成一個主題群。Google 看到你把一個主題講透、串成一片，才把你當這領域的權威、給你排名。選一個你能寫透的主題，列出子題、一篇篇補、都連回支柱。",
       "tip": {
-        "type": "milestone",
-        "text": "會 SEO + 1 個成功 case = 月入 NT$ 30k+。"
+        "type": "pro",
+        "text": "支柱頁+衛星文+內連結=主題權威。"
       },
       "id": "13.10",
       "number": "LESSON 13.10",
       "xp": 10,
       "exercise": {
-        "question": "找一個你身邊的例子、用「SEO 接案 + 變現」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "藍圖題：選一個你懂的主題，設計一組 Pillar + Cluster——①一個 Pillar 標題(超完整指南)②4 個 Cluster 標題(具體子題)③說明這 4 篇怎麼用『內部連結』跟 Pillar 串起來 ④為什麼這樣做 Google 會把你當這主題的權威。",
+        "hint": "Pillar 要全景、Cluster 要具體(一個子問題一篇)。內連結用有意義的 anchor text 互連。Topic Authority 來自把主題寫透、串成一群。",
+        "answer": "驗收：①Pillar 夠全 ②Cluster 是具體不重疊的子題 ③內連結概念正確(cluster↔pillar 互連成主題群)④理解 Topic Authority。抓到『成群結隊+內連結建立主題權威』就達標。"
       },
       "outline": [
         {
           "level": 2,
-          "text": "服務類型"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "找客戶"
-        },
-        {
-          "level": 3,
-          "text": "1. 在地服務"
-        },
-        {
-          "level": 3,
-          "text": "2. 中小企業"
-        },
-        {
-          "level": 3,
-          "text": "3. 電商"
-        },
-        {
-          "level": 3,
-          "text": "4. SaaS"
+          "text": "架構"
         },
         {
           "level": 2,
-          "text": "簽約"
-        },
-        {
-          "level": 3,
-          "text": "報價單必有"
-        },
-        {
-          "level": 3,
-          "text": "不保證排名"
-        },
-        {
-          "level": 3,
-          "text": "月報模板"
+          "text": "為什麼有效"
         },
         {
           "level": 2,
-          "text": "案例：在地餐廳"
+          "text": "怎麼開始"
         },
         {
           "level": 2,
-          "text": "升級"
-        },
-        {
-          "level": 3,
-          "text": "Level 1：自由接案"
-        },
-        {
-          "level": 3,
-          "text": "Level 2：Agency"
-        },
-        {
-          "level": 3,
-          "text": "Level 3：SaaS / 工具 / 教課"
-        },
-        {
-          "level": 2,
-          "text": "資源"
-        },
-        {
-          "level": 2,
-          "text": "心法"
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "你跟一個在地牙醫診所簽了 SEO 合約，客戶問你：「你能保證我的診所在 Google 搜尋上排第一頁嗎？」你應該怎麼回答？",
+        "question": "Pillar + Cluster 策略讓 Google 把你當「某主題權威」的核心機制是？",
         "options": [
           {
             "value": "a",
-            "label": "不能保證排名，但承諾會努力優化並定期提供詳細報告"
+            "label": "用有意義的內部連結把支柱頁與衛星文串成一個主題群，讓 Google 看出你把整個主題講透了"
           },
           {
             "value": "b",
-            "label": "保證 3 個月內排上第一頁，不然免費做到達成為止"
+            "label": "每篇文章都塞滿關鍵字"
           },
           {
             "value": "c",
-            "label": "說排名取決於 Google 演算法，我也無法控制，所以不做這個承諾"
+            "label": "一天發布 20 篇文章衝數量"
           },
           {
             "value": "d",
-            "label": "保證排名，但要另外加價做付費廣告來加速"
+            "label": "買很多外部連結"
           }
         ],
         "answer": "a",
-        "explanation": "課程明確指出『不保證排名』，因為影響因素多、Google 演算法會變，應該承諾『努力 + 報告』而非排名結果。選項 b 過度承諾會惹麻煩；c 雖然技術上對但太消極，無法簽約；d 是轉移話題，不是誠實回應。"
+        "explanation": "Topic Authority(主題權威)來自『結構』：Pillar 講全景、Cluster 講各子題、再用有意義的內部連結把它們串成一個主題群，Google 就理解你把整個主題講透了、給你權威分與排名。單純塞關鍵字、衝數量、買外連都不是重點——關鍵是成群結隊+內連結。"
       }
     },
     {
-      "title": "SEO 演算法 + 心法",
-      "oneLineSummary": "Google 怎麼決定排名？",
-      "analogy": "懂原理才能因應變化。",
-      "content": "## 重要前 10 因素\n1. Backlinks\n2. Content quality\n3. RankBrain（AI / 用戶滿意度）\n4. Search intent match\n5. E-E-A-T\n6. Mobile-friendly\n7. Page speed\n8. HTTPS\n9. Internal linking\n10. Schema markup\n\n## RankBrain\n- Google ML 判斷「user 滿意度」\n- 訊號：跳出率、停留時間、後退\n- 寫真有用、不要 click-bait\n\n## 演算法更新\n- Core Updates（年 3-4 次）\n- Helpful Content Update\n- Spam Update\n- Product Reviews Update\n\n被打到怎辦：\n1. 不慌\n2. 等 4-6 週\n3. Review 內容（E-E-A-T）\n4. 加深度\n5. 移除薄內容\n\n## 白帽 vs 黑帽\n- ✅ 白帽：好內容、自然連結、技術乾淨\n- ❌ 黑帽：買連結、PBN、Cloaking\n\n## 2025-2026 趨勢\n\n### 1. AI 內容洗牌\nGoogle 打壓純 AI、偏好「人 + AI 共寫」。\n\n### 2. E-E-A-T 強化\n作者背景、第一手經驗更重要。\n\n### 3. SERP 變樣\n- AI Overviews\n- Featured snippets\n- People Also Ask\n- 點擊率下降\n\n### 4. 0-click search\n40%+ 不點任何結果。\nSEO 變「品牌曝光」。\n\n### 5. Voice / Visual search\nLong-tail + 對話式。\n\n## Indie 心法\n- 寫真經驗\n- 結構清楚（AI 愛）\n- 持續輸出\n- 自己網域\n- 長期心態（6-12 個月）\n\n## 你的優勢\n- niche（小但深）\n- long-tail\n- 第一手經驗\n- 速度 + 品質\n\n## 不適合 SEO\n- 純電商（紅海）\n- 新聞（巨頭壟斷）\n- 廣告變現（被打壓）\n\n## 心法\n- 真誠 > 技巧\n- 長期 > 短期\n- niche > 大眾\n- 寫給人 + AI\n\n**☕ 用人話講**\n\nGoogle 到底怎麼決定排名？這課帶你理解背後邏輯（相關性、權威性、使用者體驗）+ 長期經營的心法。**一句話記住**：像搞懂老師的打分標準——與其猜題，不如理解「他重視什麼」（內容、信任、體驗），照著做就能穩穩拿高分。\n",
+      "title": "內部連結策略",
+      "oneLineSummary": "把權重和讀者，在自己站內導對地方",
+      "analogy": "沒有內連結、好內容像孤島",
+      "content": "## 這一課你會做出什麼\n\n一套**內部連結（internal linking）**的做法——把網站內的頁面互相連結，讓 Google 爬得完、讓「排名權重」流到重要頁面、也讓讀者留更久。\n\n---\n\n## 內部連結做三件事\n\n1. **幫爬蟲走到每一頁**：沒被任何頁面連到的『孤島頁』，爬蟲很難發現。\n2. **傳遞權重**：被越多(好)頁面連到的頁面，Google 越覺得它重要。把內連結導向你「最想排」的頁面。\n3. **留住讀者**：相關內容互相連，讀者一篇看完接著看下一篇，停留時間變長(對排名也是好訊號)。\n\n---\n\n## 三個原則\n\n- **用有意義的 anchor text**：連結文字要說明目標頁在講什麼（『手沖比例怎麼抓』），不要用『點這裡』——anchor text 也是給 Google 的訊號。\n- **從強頁連到要拉的頁**：你流量最高的文章，內連到你想推的新頁/產品頁。\n- **相關才連、別硬連**：連結要對讀者有用，硬塞一堆不相關連結反而扣分。\n\n---\n\n## ☕ 用人話講\n\n內部連結是把你站內的『權重和讀者』導對地方：讓爬蟲走得完、讓重要頁面被更多好頁面連到而變重要、讓讀者一篇接一篇留更久。原則就三個：用有意義的連結文字(不要『點這裡』)、從你的強頁連到想拉的頁、只連相關的。它是最被低估、又完全免費的 SEO 手段。",
       "tip": {
-        "type": "milestone",
-        "text": "SEO 永遠白帽、永遠 niche、永遠長期。"
+        "type": "pro",
+        "text": "連結有意義的頁、用對的 anchor。"
       },
       "id": "13.11",
       "number": "LESSON 13.11",
       "xp": 10,
       "exercise": {
-        "question": "把本節「SEO 演算法 + 心法」的核心心法、轉成一個具體的「我今天 / 這週要做」的小行動。",
-        "hint": "心法 ≠ 知識、心法要落地。「我從今天起、每天 ___」這種格式。",
-        "answer": "好行動 = 小（5-10 分鐘以內）+ 具體（不模糊）+ 可量化（有沒有做得出來）。例：『每天起床先列 3 件最重要的事再開電腦』比『更專注』可執行 100 倍。配合 streak（連續紀錄）讓自己上癮。"
+        "question": "實作題：假設你有一篇高流量文章、想推一個新頁面。①你會怎麼用『內部連結』把權重和讀者從強頁導到新頁 ②你會用什麼樣的 anchor text(連結文字)、為什麼不用『點這裡』③說明為什麼『孤島頁面(沒人連)』對 SEO 不利。",
+        "hint": "從強頁內連到想拉的頁、用有意義的 anchor text(說明目標頁在講什麼)。孤島頁爬蟲難發現、也拿不到權重。",
+        "answer": "驗收：①懂得從強頁導權重到目標頁 ②用有意義 anchor 而非『點這裡』且知道原因(anchor 是給 Google 的訊號)③理解孤島頁的問題。抓到『內連結傳權重+幫爬取+留讀者、用對 anchor』就達標。"
       },
       "outline": [
         {
           "level": 2,
-          "text": "重要前 10 因素"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "RankBrain"
+          "text": "內部連結做三件事"
         },
         {
           "level": 2,
-          "text": "演算法更新"
+          "text": "三個原則"
         },
         {
           "level": 2,
-          "text": "白帽 vs 黑帽"
-        },
-        {
-          "level": 2,
-          "text": "2025-2026 趨勢"
-        },
-        {
-          "level": 3,
-          "text": "1. AI 內容洗牌"
-        },
-        {
-          "level": 3,
-          "text": "2. E-E-A-T 強化"
-        },
-        {
-          "level": 3,
-          "text": "3. SERP 變樣"
-        },
-        {
-          "level": 3,
-          "text": "4. 0-click search"
-        },
-        {
-          "level": 3,
-          "text": "5. Voice / Visual search"
-        },
-        {
-          "level": 2,
-          "text": "Indie 心法"
-        },
-        {
-          "level": 2,
-          "text": "你的優勢"
-        },
-        {
-          "level": 2,
-          "text": "不適合 SEO"
-        },
-        {
-          "level": 2,
-          "text": "心法"
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "根據課程內容，如果你的網站在 Google 演算法更新後排名大幅下降，最重要的第一步應該是什麼？",
+        "question": "關於內部連結的「anchor text(連結文字)」，正確做法是？",
         "options": [
           {
             "value": "a",
-            "label": "立即大量購買高品質外部連結，快速提升網站權威性"
+            "label": "用有意義、能說明目標頁在講什麼的文字(如『手沖比例怎麼抓』)——它也是給 Google 的訊號"
           },
           {
             "value": "b",
-            "label": "不用慌張，先等待 4-6 週，同時檢視內容的 E-E-A-T 是否達標"
+            "label": "一律用『點這裡』最簡潔"
           },
           {
             "value": "c",
-            "label": "馬上改用純 AI 寫文章，因為 Google 偏好 AI 內容"
+            "label": "連結文字不重要、隨便寫"
           },
           {
             "value": "d",
-            "label": "使用 Cloaking 技術隱藏真實內容，應對演算法變化"
+            "label": "每個內部連結都用一模一樣的關鍵字當文字"
           }
         ],
-        "answer": "b",
-        "explanation": "課程明確指出被演算法打到的應對步驟是：1.不慌 2.等 4-6 週 3.檢視內容品質（E-E-A-T）。a 項違反白帽原則；c 項誤解了課程「人 + AI 共寫」而非純 AI；d 項是黑帽手法，完全錯誤。"
+        "answer": "a",
+        "explanation": "Anchor text(連結文字)也是給 Google 的訊號——它幫 Google 理解『被連的那一頁在講什麼』。所以要用有意義、描述性的文字(如『手沖比例怎麼抓』)，而不是『點這裡』(沒傳達任何訊息)。內部連結同時幫爬取、傳權重、留讀者，是最被低估又免費的 SEO 手段。"
       }
     },
     {
-      "title": "Schema.org 結構化資料深入",
-      "oneLineSummary": "讓 Google 顯示 rich snippet、CTR +30%",
-      "analogy": "免費的視覺化升級。",
-      "content": "## 常用 Schema 類型\n\n### Article / BlogPosting\n```json\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"BlogPosting\",\n  \"headline\": \"Python 爬蟲完整教學\",\n  \"image\": \"https://example.com/cover.jpg\",\n  \"author\": { \"@type\": \"Person\", \"name\": \"Luffysky\" },\n  \"publisher\": {\n    \"@type\": \"Organization\",\n    \"name\": \"AI 島\",\n    \"logo\": { \"@type\": \"ImageObject\", \"url\": \"...\" }\n  },\n  \"datePublished\": \"2026-05-17\",\n  \"dateModified\": \"2026-05-17\"\n}\n```\n\n### Product\n```json\n{\n  \"@type\": \"Product\",\n  \"name\": \"iPhone 17 Pro\",\n  \"image\": \"...\",\n  \"description\": \"...\",\n  \"offers\": {\n    \"@type\": \"Offer\",\n    \"price\": \"35900\",\n    \"priceCurrency\": \"TWD\",\n    \"availability\": \"https://schema.org/InStock\"\n  },\n  \"aggregateRating\": {\n    \"@type\": \"AggregateRating\",\n    \"ratingValue\": \"4.5\",\n    \"reviewCount\": \"300\"\n  }\n}\n```\n\n### FAQPage\n```json\n{\n  \"@type\": \"FAQPage\",\n  \"mainEntity\": [\n    {\n      \"@type\": \"Question\",\n      \"name\": \"Python 適合初學者嗎？\",\n      \"acceptedAnswer\": {\n        \"@type\": \"Answer\",\n        \"text\": \"...\"\n      }\n    }\n  ]\n}\n```\n\n### HowTo\n```json\n{\n  \"@type\": \"HowTo\",\n  \"name\": \"如何安裝 Python\",\n  \"step\": [\n    { \"@type\": \"HowToStep\", \"text\": \"下載...\" }\n  ]\n}\n```\n\n### LocalBusiness\n```json\n{\n  \"@type\": \"Restaurant\",\n  \"name\": \"鶯歌咖啡廳\",\n  \"address\": {...},\n  \"geo\": {...},\n  \"openingHours\": \"Mo-Fr 09:00-18:00\"\n}\n```\n\n### Recipe / Event / Course / Movie / Book...\nschema.org 列了 800+ 種。\n\n## 測試\n- **Rich Results Test**（Google）\n- **Schema.org Validator**\n- Google Search Console → Enhancements 看狀態\n\n## 影響\n- Rich snippet（評分、價格、FAQ accordion）\n- AI Overviews 引用\n- Knowledge panel\n- CTR +20-30%\n\n## Next.js 整合\n```tsx\nexport default function Post({ post }) {\n  const schema = {\n    \"@context\": \"https://schema.org\",\n    \"@type\": \"BlogPosting\",\n    \"headline\": post.title,\n    ...\n  };\n  \n  return (\n    <>\n      <script\n        type=\"application/ld+json\"\n        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}\n      />\n      <article>...</article>\n    </>\n  );\n}\n```\n\n## 心法\n- 文章必加 BlogPosting\n- 電商必加 Product\n- 在地必加 LocalBusiness\n- FAQ 部分加 FAQPage\n- 不要造假（被罰）\n\n**☕ 用人話講**\n\nSchema.org 結構化資料：用標準格式**標記你的內容**，讓 Google 在搜尋結果直接顯示 **rich snippet**（星等評價、價格、FAQ 展開），更吸睛、點閱率更高。**一句話記住**：像幫商品貼上標準規格標籤——Google 一看就懂「這是食譜、4 顆星、30 分鐘」，然後直接秀在搜尋結果上，比別人更醒目。\n",
+      "title": "外部連結 Link Building",
+      "oneLineSummary": "連結要用『賺』的、不是用『買』的",
+      "analogy": "買低品質連結 = 被 Google 抓、降權",
+      "content": "## 這一課你會做出什麼\n\n搞懂**外部連結（backlinks）**為什麼重要、以及怎麼用「賺的」而不是「買的」方式取得——因為買低品質連結會被 Google 抓、可能降權。\n\n> 外部連結＝別的網站連到你。Google 把它當「別人對你的投票」——越多『可信網站』連你，你越被信任、越容易排前面。\n\n---\n\n## 為什麼「買連結」是雷\n\n黑帽做法(花錢買一堆低品質網站的連結)Google 越來越會抓，被抓到可能被降權甚至懲罰。**連結的『品質』遠比『數量』重要**：一個權威網站的連結，勝過一百個垃圾連結。\n\n---\n\n## 用「賺」的方式取得連結\n\n1. **做值得被連的內容**：真正有用的指南、原創數據/研究、免費工具——別人自然會引用連結你。這是根本。\n2. **主動 outreach**（見下一課）：找相關的部落格/媒體，禮貌地介紹你的內容，請他們參考連結。\n3. **客座文章（guest post）**：幫別的網站寫有價值的文章、附上你的連結。\n4. **修補斷連結**：找對方頁面上失效的連結，建議用你的內容替代。\n\n---\n\n## 一個心法：先有值得被連的東西\n\n沒有好內容，再怎麼要連結都像乞討。**先把『值得被連的資產』做出來**（超完整指南、獨家數據、好用工具），link building 才有底氣。\n\n---\n\n## ☕ 用人話講\n\n外部連結是『別的網站對你的投票』，Google 很看重——但要用『賺』的不是『買』的。買低品質連結會被抓、可能降權；品質遠比數量重要。正道是：先做出值得被連的東西(好指南/獨家數據/免費工具)，再透過 outreach、客座文章去要連結。沒有好資產，要連結就像乞討。",
       "tip": {
-        "type": "practical",
-        "text": "Schema = 免費 CTR +30%。"
+        "type": "pro",
+        "text": "做值得被連的內容、再去要連結。"
       },
       "id": "13.12",
       "number": "LESSON 13.12",
       "xp": 15,
-      "playgrounds": [
-        {
-          "key": "13.12.auto",
-          "language": "json",
-          "title": "試試看",
-          "initialCode": "{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"BlogPosting\",\n  \"headline\": \"Python 爬蟲完整教學\",\n  \"image\": \"https://example.com/cover.jpg\",\n  \"author\": { \"@type\": \"Person\", \"name\": \"Luffysky\" },\n  \"publisher\": {\n    \"@type\": \"Organization\",\n    \"name\": \"AI 島\",\n    \"logo\": { \"@type\": \"ImageObject\", \"url\": \"...\" }\n  },\n  \"datePublished\": \"2026-05-17\",\n  \"dateModified\": \"2026-05-17\"\n}",
-          "hint": "改 code、按執行看結果"
-        }
-      ],
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「Schema.org 結構化資料深入」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "策略題：①用你的話解釋為什麼『買一堆低品質連結』是危險的 ②想一個你(或你的網站)能做出來、『值得被別人連結』的資產(指南/數據/工具)③說明拿到連結後，為什麼『一個權威網站的連結勝過一百個垃圾連結』。",
+        "hint": "買低品質連結是黑帽、會被 Google 抓降權。連結品質>數量。要用賺的:先做值得被連的內容，再 outreach/客座。",
+        "answer": "驗收：①理解買連結的風險 ②想得出一個值得被連的資產 ③理解品質>數量。抓到『連結用賺不用買、品質重於數量、先有值得被連的東西』就達標。"
       },
       "outline": [
         {
           "level": 2,
-          "text": "常用 Schema 類型"
-        },
-        {
-          "level": 3,
-          "text": "Article / BlogPosting"
-        },
-        {
-          "level": 3,
-          "text": "Product"
-        },
-        {
-          "level": 3,
-          "text": "FAQPage"
-        },
-        {
-          "level": 3,
-          "text": "HowTo"
-        },
-        {
-          "level": 3,
-          "text": "LocalBusiness"
-        },
-        {
-          "level": 3,
-          "text": "Recipe / Event / Course / Movie / Book..."
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "測試"
+          "text": "為什麼「買連結」是雷"
         },
         {
           "level": 2,
-          "text": "影響"
+          "text": "用「賺」的方式取得連結"
         },
         {
           "level": 2,
-          "text": "Next.js 整合"
+          "text": "一個心法：先有值得被連的東西"
         },
         {
           "level": 2,
-          "text": "心法"
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "你的網站是一個線上課程平台，想讓 Google 搜尋結果顯示課程評分、價格和課程大綱。根據本課內容，你應該在頁面加入哪種 Schema 類型才最合適？",
+        "question": "關於取得外部連結(backlinks)，最正確且安全的做法是？",
         "options": [
           {
             "value": "a",
-            "label": "BlogPosting，因為課程內容也是文章形式"
+            "label": "先做出值得被連的內容(好指南/獨家數據/免費工具)，再透過 outreach/客座去賺連結；品質遠比數量重要"
           },
           {
             "value": "b",
-            "label": "Course，它能標記課程名稱、評分、價格等資訊"
+            "label": "花錢買越多連結越好，數量最重要"
           },
           {
             "value": "c",
-            "label": "FAQPage，因為課程通常有常見問題"
+            "label": "去一堆低品質網站大量交換連結"
           },
           {
             "value": "d",
-            "label": "HowTo，因為課程教人怎麼做某件事"
+            "label": "連結完全沒用，不用管"
           }
         ],
-        "answer": "b",
-        "explanation": "本課列出 Schema.org 有 800+ 種類型，其中 Course 專門用來標記課程的結構化資料（名稱、評分、價格等）。BlogPosting 是給文章用、FAQPage 是給常見問題用、HowTo 是給教學步驟用，都不如 Course 準確。"
+        "answer": "a",
+        "explanation": "外部連結是 Google 很看重的『別人對你的投票』，但要用『賺』的不是『買』的——買低品質連結是黑帽、會被抓、可能降權。連結的品質(一個權威網站)遠勝數量(一百個垃圾站)。正道是先做出值得被連的資產，再透過 outreach、客座文章去取得。"
       }
     },
     {
-      "title": "Core Web Vitals 優化",
-      "oneLineSummary": "Google 排名因素、用戶體驗指標",
-      "analogy": "不達標 = 排名跌。",
-      "content": "## 三大指標（2024+）\n\n### LCP（Largest Contentful Paint）\n最大內容繪製時間。\n**目標**：< 2.5s\n\n### INP（Interaction to Next Paint）\n互動到下次繪製。2024 取代 FID。\n**目標**：< 200ms\n\n### CLS（Cumulative Layout Shift）\n累積版面位移。\n**目標**：< 0.1\n\n## 優化 LCP\n\n### 找出 LCP 元素\nDevTools → Performance → 跑一次。\n通常是 hero image 或 H1。\n\n### 加快\n```html\n<!-- Preload critical image -->\n<link rel=\"preload\" as=\"image\" href=\"/hero.jpg\" />\n\n<!-- Priority hint -->\n<img src=\"/hero.jpg\" fetchpriority=\"high\" />\n```\n\n### CDN\n靜態資源放 Cloudflare / Vercel Edge。\n\n### Server Response\n- 用 SSG / ISR（Next.js）\n- 加 cache headers\n- 升級 hosting tier\n\n## 優化 INP\n\n### 重 JS task 切片\n```javascript\n// ❌ 卡 main thread\nheavyData.forEach(processItem);\n\n// ✅ 用 setTimeout 切片\nfunction processBatch(items, i = 0) {\n  const end = Math.min(i + 100, items.length);\n  for (let j = i; j < end; j++) processItem(items[j]);\n  if (end < items.length) {\n    setTimeout(() => processBatch(items, end), 0);\n  }\n}\n```\n\n### React 18 transition\n```typescript\nimport { useTransition } from \"react\";\n\nconst [isPending, startTransition] = useTransition();\n\nfunction search(query) {\n  startTransition(() => {\n    setResults(filter(query));\n  });\n}\n```\n\n### Debounce / Throttle\n```typescript\nconst debounced = useDeferredValue(searchTerm);\n```\n\n### Virtual List\n列表 > 1000 row 用 virtualization：\n- react-window\n- tanstack/virtual\n\n## 優化 CLS\n\n### 圖片 / video 加 dimensions\n```html\n<!-- ❌ -->\n<img src=\"/photo.jpg\" />\n\n<!-- ✅ -->\n<img src=\"/photo.jpg\" width=\"800\" height=\"600\" />\n```\n\n### Next.js Image\n自動處理：\n```tsx\nimport Image from \"next/image\";\n<Image src=\"/photo.jpg\" width={800} height={600} alt=\"...\" />\n```\n\n### Font Loading\n```css\n@font-face {\n  font-family: \"Inter\";\n  src: url(\"/inter.woff2\") format(\"woff2\");\n  font-display: swap;\n  size-adjust: 100%;\n}\n```\n\n### 避免動態插入內容\n不要在「已渲染」上方插入廣告 / 內容。\n\n## 測量\n\n### Lab data\n- Lighthouse\n- PageSpeed Insights\n- WebPageTest\n\n### Field data（真實）\n- Google Search Console\n- Vercel Speed Insights\n- Sentry RUM\n- web-vitals lib\n\n```javascript\nimport { onCLS, onINP, onLCP } from \"web-vitals\";\n\nonCLS(metric => sendToAnalytics(metric));\nonINP(metric => sendToAnalytics(metric));\nonLCP(metric => sendToAnalytics(metric));\n```\n\n## 看 p75（不是平均）\nGoogle 算「75th percentile」、不是平均。\n極端的拖累分數。\n\n## 心法\n- 一致 mobile-first\n- LCP > INP > CLS（影響大小）\n- 真實數據 > Lab\n- 月 review 一次\n\n**☕ 用人話講**\n\nCore Web Vitals 是 Google 的**使用者體驗評分**（載入快、互動順、版面不亂跳），也是排名因素之一。**一句話記住**：像餐廳的「上菜速度 + 桌子不晃 + 服務順暢」評分——體驗好 Google 給你加分，使用者也比較願意留下來。\n",
+      "title": "Outreach + 客座文章",
+      "oneLineSummary": "禮貌、給價值、幫對方一個忙",
+      "analogy": "罐頭群發乞討連結 = 沒人理你",
+      "content": "## 這一課你會做出什麼\n\n一套**主動聯繫（outreach）取得連結/客座機會**的做法——關鍵是「像交朋友、給對方價值」，而不是罐頭群發乞討。\n\n---\n\n## 為什麼多數 outreach 失敗\n\n因為長這樣：「您好，我是XX，可以連結我的網站嗎？」——**沒給對方任何理由/價值**，直接丟垃圾桶。對方每天收一堆這種信。\n\n---\n\n## 有效 outreach 的做法\n\n1. **先建立一點關係/做功課**：真的讀過對方的內容、在信裡具體提到（不是複製貼上的稱讚）。\n2. **給對方一個『價值』或『理由』**：\n   - 「你這篇文章提到 X，我剛好做了一份更完整的 X 數據/指南，也許對你讀者有用。」\n   - 「你頁面上這個連結失效了(附截圖)，我這篇可以替代。」（幫對方修東西）\n3. **具體、簡短、不強求**：一封短信、清楚說你能提供什麼，別長篇大論、別逼人。\n\n---\n\n## 客座文章（Guest Post）\n\n幫相關的、有讀者的網站**寫一篇真的有價值的文章**，附上你的連結。重點是「文章要對他們讀者好」——你是去貢獻的，不是去塞廣告的。找對方向：搜「你的主題 + write for us / 投稿」。\n\n---\n\n## ☕ 用人話講\n\nOutreach 成不成，差別在「你是去給價值、還是去乞討」。罐頭群發「連我一下」沒人理。有效做法是：真的讀過對方內容、具體提到、給一個對方會在乎的理由(更好的資源、幫他修失效連結)、簡短不強求。客座文章也一樣——去貢獻一篇對他讀者有用的好文，不是去塞廣告。像交朋友，不像發垃圾信。",
       "tip": {
-        "type": "performance",
-        "text": "Core Web Vitals 不達標 = 排名跌 + 用戶跑。"
+        "type": "pro",
+        "text": "像交朋友、不像發垃圾信。"
       },
       "id": "13.13",
       "number": "LESSON 13.13",
       "xp": 10,
-      "playgrounds": [
-        {
-          "key": "13.13.auto",
-          "language": "html",
-          "title": "試試看",
-          "initialCode": "<!-- Preload critical image -->\n<link rel=\"preload\" as=\"image\" href=\"/hero.jpg\" />\n\n<!-- Priority hint -->\n<img src=\"/hero.jpg\" fetchpriority=\"high\" />",
-          "hint": "改 code、按執行看結果"
-        }
-      ],
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「Core Web Vitals 優化」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "實作題：挑一個你會想連結/投稿的網站，寫一封『有效的 outreach 短信』——要包含:①一句具體提到對方內容的話(證明你讀過)②你能給對方的一個價值/理由 ③一個簡短不強求的請求。再說明為什麼『您好可以連我嗎』這種罐頭信會失敗。",
+        "hint": "outreach 要像交朋友給價值:讀過對方內容、給理由(更好資源/幫修失效連結)、簡短不逼人。罐頭群發沒給價值=丟垃圾桶。",
+        "answer": "驗收：①信裡有具體、非複製貼上的內容提及 ②給了對方一個會在乎的價值/理由 ③簡短不強求。並理解罐頭信失敗的原因。抓到『outreach=給價值像交朋友、不是罐頭乞討』就達標。"
       },
       "outline": [
         {
           "level": 2,
-          "text": "三大指標（2024+）"
-        },
-        {
-          "level": 3,
-          "text": "LCP（Largest Contentful Paint）"
-        },
-        {
-          "level": 3,
-          "text": "INP（Interaction to Next Paint）"
-        },
-        {
-          "level": 3,
-          "text": "CLS（Cumulative Layout Shift）"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "優化 LCP"
-        },
-        {
-          "level": 3,
-          "text": "找出 LCP 元素"
-        },
-        {
-          "level": 3,
-          "text": "加快"
-        },
-        {
-          "level": 3,
-          "text": "CDN"
-        },
-        {
-          "level": 3,
-          "text": "Server Response"
+          "text": "為什麼多數 outreach 失敗"
         },
         {
           "level": 2,
-          "text": "優化 INP"
-        },
-        {
-          "level": 3,
-          "text": "重 JS task 切片"
-        },
-        {
-          "level": 3,
-          "text": "React 18 transition"
-        },
-        {
-          "level": 3,
-          "text": "Debounce / Throttle"
-        },
-        {
-          "level": 3,
-          "text": "Virtual List"
+          "text": "有效 outreach 的做法"
         },
         {
           "level": 2,
-          "text": "優化 CLS"
-        },
-        {
-          "level": 3,
-          "text": "圖片 / video 加 dimensions"
-        },
-        {
-          "level": 3,
-          "text": "Next.js Image"
-        },
-        {
-          "level": 3,
-          "text": "Font Loading"
-        },
-        {
-          "level": 3,
-          "text": "避免動態插入內容"
+          "text": "客座文章（Guest Post）"
         },
         {
           "level": 2,
-          "text": "測量"
-        },
-        {
-          "level": 3,
-          "text": "Lab data"
-        },
-        {
-          "level": 3,
-          "text": "Field data（真實）"
-        },
-        {
-          "level": 2,
-          "text": "看 p75（不是平均）"
-        },
-        {
-          "level": 2,
-          "text": "心法"
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "你的網站 LCP 是 2.8 秒，INP 是 150 毫秒，CLS 是 0.08。根據 Core Web Vitals 的目標，哪個指標需要優化？",
+        "question": "為什麼多數「請求連結」的 outreach 信件會失敗？",
         "options": [
           {
             "value": "a",
-            "label": "LCP，因為它超過 2.5 秒的目標"
+            "label": "因為它們是罐頭群發、沒給對方任何理由或價值(『您好可以連我嗎』)，直接被丟垃圾桶"
           },
           {
             "value": "b",
-            "label": "INP，因為它最容易受 JavaScript 影響"
+            "label": "因為信寫得不夠長"
           },
           {
             "value": "c",
-            "label": "CLS，因為它是三個指標中最重要的"
+            "label": "因為沒有附上價目表"
           },
           {
             "value": "d",
-            "label": "都符合目標，不需要優化"
+            "label": "因為沒有一次寄給夠多人"
           }
         ],
         "answer": "a",
-        "explanation": "LCP 目標是 < 2.5 秒，你的 2.8 秒超標了；INP 150ms < 200ms 達標；CLS 0.08 < 0.1 也達標。所以只有 LCP 需要優化。"
+        "explanation": "多數 outreach 失敗是因為像罐頭乞討——沒讀過對方內容、沒給任何理由或價值(『您好，連我一下好嗎』)，對方每天收一堆，直接丟垃圾桶。有效做法是像交朋友給價值：具體提到讀過對方的東西、給一個對方會在乎的理由(更好的資源、幫他修失效連結)、簡短不強求。信更長或群發更多人只會更糟。"
       }
     },
     {

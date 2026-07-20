@@ -116,6 +116,12 @@
 - **③版權/防人名**：compose song 與 suno mode 皆已含硬規則(禁真實人名/樂團/指名模仿/引用受版權歌詞)，搜尋→編織走同一路徑守到。
 - API(複用既有 embedding RPC·無新表)/UI(接真API)/RWD(flex-wrap+min-w-0)/tsc/vitest137/build 皆綠。
 
+## ✍️ ch13（SEO+GEO 25 課大章）Batch 1：13.1-13.13（0721）
+- ch13 內容偏薄+重複兇(關鍵字/GEO/Local/接案/心法/連結各兩課)+罐頭 → 當 ch59 規模全重寫。
+- Batch 1（13 課·去重去保證加深）：SEO+GEO 總圖 / 引擎原理(爬取索引排名) / 關鍵字研究 / 搜尋意圖 / On-page / Technical SEO / 速度CWV / Schema結構化 / Content E-E-A-T / Pillar-Cluster / 內部連結 / 外部連結(賺不買) / Outreach客座。
+- 互動：`ScenarioJudge`掛 13.9「SEO 好壞習慣判斷」(關鍵字堆砌/買連結/重複內容=雷)。tsc/vitest137/build 綠、已 import。
+- Batch 2 待做：13.14-13.25（Local SOP/多語/GEO深入/GSC分析/內容更新/UX心理/AI時代變化/工具/內容SOP/接案報價/心法）。
+
 ## 📊 內容重寫進度（本 session）
 - 創作叢集 ch51~60 全部 10 章完成；**ch03 UI/UX 除罐頭+加互動完成**。
 - 互動教具 12 種（+ColorContrast）。
