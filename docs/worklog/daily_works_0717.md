@@ -65,10 +65,16 @@
 - 教具：PromptLab 音樂版 config（54.1 模糊 vs 具體風格描述）。
 - tsc/vitest137/build 綠、已 import DB。
 
+## ✍️ ch55（AI 行銷）全深度重寫 + 漏斗模擬器（0718）
+- 舊病：六課截斷、罐頭、重複（55.2/55.6 都 email）。重寫去重：55.1 工具地圖 / 55.2 漏斗+名單 / 55.3 SEO Pillar-Cluster / 55.4 一稿多用+A/B / 55.5 LINE OA / 55.6 Email 自有名單。
+- **量身互動教具**（非 prompt/CSS 類）：`FunnelSim` 行銷漏斗模擬器（拉各關轉換率、看複利、找破口）掛 55.2。
+- 題型：規劃/漏斗診斷計算/SEO規劃/一稿多用實作/LINE規劃/Email序列實作；全移除業績保證。
+- tsc/vitest137/build 綠、已 import DB。
+
 ## 📊 內容重寫進度（本 session）
-- 已完成全深度重寫：**ch51 寫作、ch52 設計、ch53 影音、ch54 音樂**（創作章 4/9）。
-- 互動教具：LayoutGallery/Flex/Grid/BoxModel/RwdRuler/PromptLab/PromptBuilder（7 種）。
-- 待續創作章：ch55 行銷、ch56 虛擬IP、ch57 法律、ch58 職涯、ch60 心法；之後 ch03/13/43-45 及技術章除罐頭。
+- 已完成全深度重寫：**ch51 寫作、ch52 設計、ch53 影音、ch54 音樂、ch55 行銷**（創作章 5/9）。
+- 互動教具 8 種：LayoutGallery/Flex/Grid/BoxModel/RwdRuler/PromptLab/PromptBuilder/**FunnelSim**（教具按章量身、非套 CSS 組）。
+- 待續創作章：ch56 虛擬IP、ch57 法律、ch58 職涯、ch60 心法；之後 ch03/13/43-45 及技術章除罐頭。
 
 ## ⏭ 待續
 - 林董線上驗收版面圖鑑手感（Claude 端 Chrome 擴充沒連、沒法目視截圖）。

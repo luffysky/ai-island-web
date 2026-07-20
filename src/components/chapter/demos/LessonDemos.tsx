@@ -8,8 +8,9 @@ import { RwdRuler } from "./RwdRuler";
 import { PromptLab } from "./PromptLab";
 import { BoxModel } from "./BoxModel";
 import { PromptBuilder } from "./PromptBuilder";
+import { FunnelSim } from "./FunnelSim";
 
-const SUPPORTED = new Set<LessonDemo["type"]>(["css-layout", "rwd-ruler", "flex-playground", "grid-playground", "prompt-lab", "box-model", "prompt-builder"]);
+const SUPPORTED = new Set<LessonDemo["type"]>(["css-layout", "rwd-ruler", "flex-playground", "grid-playground", "prompt-lab", "box-model", "prompt-builder", "funnel-sim"]);
 
 /**
  * 依 demo.type 派發到對應的互動教具元件。
@@ -31,6 +32,8 @@ function DemoRenderer({ demo }: { demo: LessonDemo }) {
       return <BoxModel title={demo.title} note={demo.note} />;
     case "prompt-builder":
       return <PromptBuilder title={demo.title} note={demo.note} />;
+    case "funnel-sim":
+      return <FunnelSim title={demo.title} note={demo.note} />;
     default:
       return null;
   }
