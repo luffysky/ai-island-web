@@ -134,6 +134,11 @@
 - 同治法:內容/miniQuiz 保留,換 25 罐頭練習成真協作情境題(工程×設計/PM/業務/行銷/客服/法務/財會/HR/Data/高層/客戶、翻譯技術、衝突、影響力、困難對話、code review、async、post-mortem、on-call、1-on-1)。
 - 互動:`PriorityMatrix`(45.15 利害關係人 權力×關心) + `ScenarioJudge`(45.17 困難對話怎麼回應)。tsc/vitest137/build 綠、已 import。**PM 三兄弟 ch43/44/45 全部完成。**
 
+## 🔧 ch47（AI 應用工程 25 課）除罐頭 + 加互動（0721）
+- 結構:47.1-47.21 是各產業「N 種 AI 應用」清單課(survey)、47.22-25 才是技術硬菜(streaming/function calling/RAG,有 code)。全罐頭。
+- 治法:保留內容,換 25 罐頭練習——產業課→「挑該產業真實重複工作、設計用 AI 做、指出該領域的坑」(各產業對題不同模板、內含醫療/法律/HR/金融的合規與偏見注意)、技術課→實作理解題。補 47.9 缺的 miniQuiz。
+- 互動:`PromptLab`(47.1 比 AI 輸出、AI 應用基本功)。tsc/vitest137/build 綠、已 import。
+
 ## 📊 內容重寫進度（本 session）
 - 創作叢集 ch51~60 全部 10 章完成；**ch03 UI/UX 除罐頭+加互動完成**。
 - 互動教具 12 種（+ColorContrast）。
