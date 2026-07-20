@@ -126,6 +126,10 @@
 - 同 ch03：內容/miniQuiz 紮實保留，只換 25 個罐頭練習成真 PM 題(選型/實作/風險矩陣/情境判斷/實戰)、尾巴 43.21-25 重複課改實戰版。
 - 互動：`DecisionQuiz`(43.2 方法論選型 瀑布/敏捷/Lean) + `PriorityMatrix`(43.10 風險矩陣 機率×衝擊) + `ScenarioJudge`(43.12 變更該不該接/scope creep)。tsc/vitest137/build 綠、已 import。
 
+## 🗂️ ch44（產品經理 PdM 25 課）除罐頭 + 加互動（0721）
+- 同 ch03/ch43：內容/miniQuiz 保留，換 25 罐頭練習成真 PdM 題(JTBD/PRD/優先序/A/B/GTM/onboarding/retention/競品/協作/growth loop…實作題)。
+- 互動：`PriorityMatrix`(44.6 影響×成本 quick wins) + `FunnelSim`(44.8 AARRR 漏斗) + `ScenarioJudge`(44.9 A/B測試別被假數據騙)。tsc/vitest137/build 綠、已 import。
+
 ## 📊 內容重寫進度（本 session）
 - 創作叢集 ch51~60 全部 10 章完成；**ch03 UI/UX 除罐頭+加互動完成**。
 - 互動教具 12 種（+ColorContrast）。
