@@ -86,10 +86,16 @@
 - **量身互動** `ScenarioJudge`（情境判斷·config 可複用）：57.2 商用情境、57.5 個資情境各一組（判可以/風險/不行→揭曉）。RWD 嚴謹（按鈕 flex-wrap、文字 break-words）。
 - 題型：分析/情境判斷/案例分析/自律守則/合規檢核。非法律意見免責已註明。
 
+## ✍️ ch58（AI 時代職涯）全深度重寫 + PriorityMatrix（0718）
+- 舊病：重複（58.1/58.3 都「誰被取代」）+ 截斷 + 罐頭 + 收入數字。重構 5 個不重複：58.1 職涯核心+誰被取代 / 58.2 學習路徑 / 58.3 怎麼學>學什麼(學習金字塔) / 58.4 副業→Indie SOP / 58.5 自我品牌build in public。
+- **量身互動**：`PriorityMatrix`（2×2象限·點選放置·config可複用）掛 58.1「技能象限盤點(AI取代性×優勢)」；`DecisionQuiz` 掛 58.2「路線自測」。
+- 題型：象限盤點/路徑自測/金字塔應用/轉型規劃/自我品牌行動；移除收入保證。RWD 嚴謹(點選非拖曳、flex-wrap、break-words)。
+
 ## 📊 內容重寫進度（本 session）
-- 已完成全深度重寫：**ch51~57**（創作章 7/9：寫作/設計/影音/音樂/行銷/虛擬IP/法律）。
-- 互動教具 10 種：CSS家族5 + PromptLab/PromptBuilder + FunnelSim + DecisionQuiz + **ScenarioJudge**（按章量身）。
-- 待續創作章：ch58 職涯、ch59 一人公司、ch60 心法（ch58 起要建 PriorityMatrix）；之後 ch03/13/43-45 及技術章除罐頭。
+- 已完成全深度重寫：**ch51~58**（創作章 8/9：寫作/設計/影音/音樂/行銷/虛擬IP/法律/職涯）。
+- 互動教具 11 種：CSS家族5 + PromptLab/PromptBuilder + FunnelSim + DecisionQuiz + ScenarioJudge + **PriorityMatrix**（按章量身）。
+- 待續創作章：ch59 一人公司、ch60 心法；之後 ch03/13/43-45 及技術章除罐頭。
+- 剩餘新 B 元件待建：RegexTester/JsonTree/HttpInspector/CronBuilder/Tokenizer/SortingViz/GitGraph/NeuralForward/AuthFlow/ColorContrast/MLBoundary（技術章時建）。
 
 ## ⏭ 待續
 - 林董線上驗收版面圖鑑手感（Claude 端 Chrome 擴充沒連、沒法目視截圖）。

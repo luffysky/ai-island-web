@@ -11,8 +11,9 @@ import { PromptBuilder } from "./PromptBuilder";
 import { FunnelSim } from "./FunnelSim";
 import { DecisionQuiz } from "./DecisionQuiz";
 import { ScenarioJudge } from "./ScenarioJudge";
+import { PriorityMatrix } from "./PriorityMatrix";
 
-const SUPPORTED = new Set<LessonDemo["type"]>(["css-layout", "rwd-ruler", "flex-playground", "grid-playground", "prompt-lab", "box-model", "prompt-builder", "funnel-sim", "decision-quiz", "scenario-judge"]);
+const SUPPORTED = new Set<LessonDemo["type"]>(["css-layout", "rwd-ruler", "flex-playground", "grid-playground", "prompt-lab", "box-model", "prompt-builder", "funnel-sim", "decision-quiz", "scenario-judge", "priority-matrix"]);
 
 /**
  * 依 demo.type 派發到對應的互動教具元件。
@@ -40,6 +41,8 @@ function DemoRenderer({ demo }: { demo: LessonDemo }) {
       return <DecisionQuiz title={demo.title} note={demo.note} config={demo.config} />;
     case "scenario-judge":
       return <ScenarioJudge title={demo.title} note={demo.note} config={demo.config} />;
+    case "priority-matrix":
+      return <PriorityMatrix title={demo.title} note={demo.note} config={demo.config} />;
     default:
       return null;
   }
