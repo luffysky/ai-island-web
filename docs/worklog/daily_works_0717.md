@@ -91,11 +91,14 @@
 - **量身互動**：`PriorityMatrix`（2×2象限·點選放置·config可複用）掛 58.1「技能象限盤點(AI取代性×優勢)」；`DecisionQuiz` 掛 58.2「路線自測」。
 - 題型：象限盤點/路徑自測/金字塔應用/轉型規劃/自我品牌行動；移除收入保證。RWD 嚴謹(點選非拖曳、flex-wrap、break-words)。
 
+## ✍️ ch60（創業心法/心理）全深度重寫（0718）
+- 舊病：跟 ch59 重疊 + 內部重複(60.1/60.3、60.2/60.5) + 收入保證。聚焦「心態/心理」重構 6 個不重複：60.1 選對遊戲(Indie≠矽谷) / 60.2 孤獨 / 60.3 焦慮自我懷疑 / 60.4 burnout健康 / 60.5 長跑機制 / 60.6 定義自由。
+- 複用互動：`DecisionQuiz`(60.2 你最卡哪個心理關卡) + `PriorityMatrix`(60.5 重要vs緊急艾森豪矩陣)。題型：反思/自我檢測/焦慮日記/健康稽核/時間象限/願景寫作；移除收入保證。
+
 ## 📊 內容重寫進度（本 session）
-- 已完成全深度重寫：**ch51~58**（創作章 8/9：寫作/設計/影音/音樂/行銷/虛擬IP/法律/職涯）。
-- 互動教具 11 種：CSS家族5 + PromptLab/PromptBuilder + FunnelSim + DecisionQuiz + ScenarioJudge + **PriorityMatrix**（按章量身）。
-- 待續創作章：ch59 一人公司、ch60 心法；之後 ch03/13/43-45 及技術章除罐頭。
-- 剩餘新 B 元件待建：RegexTester/JsonTree/HttpInspector/CronBuilder/Tokenizer/SortingViz/GitGraph/NeuralForward/AuthFlow/ColorContrast/MLBoundary（技術章時建）。
+- 已完成全深度重寫：**ch51~58 + ch60**（創作章 9 章，僅剩 ch59 一人公司 25 課大章）。
+- 互動教具 11 種（全按章量身）：LayoutGallery/Flex/Grid/BoxModel/RwdRuler/PromptLab/PromptBuilder/FunnelSim/DecisionQuiz/ScenarioJudge/PriorityMatrix。
+- 待續：**ch59（25 課大章，獨立處理）**；之後 ch03/13/43-45 及技術章除罐頭（技術章時建 RegexTester/JsonTree/HttpInspector 等剩餘 B 元件）。
 
 ## ⏭ 待續
 - 林董線上驗收版面圖鑑手感（Claude 端 Chrome 擴充沒連、沒法目視截圖）。
