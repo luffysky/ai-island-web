@@ -58,4 +58,14 @@ ch50（25 節）同型問題：17/25 節練習罐頭。內容夠深、只換練�
 - **API/DB**：`import_chapters_to_db ch50` → 25 lessons / 0 errors；**DB 覆核** 50.4 workflow-flow(3nodes)、50.11 workflow-flow(4nodes)、50.7 無 demo（正確）、exercise 已換應用題。
 - **建置**：`tsc` ✓ · `vitest 137` ✓ · `next build` exit 0 ✓。RWD／亮暗 token 同 AgentLoop 規格。機密/PWA 未動。
 
-ch49 + ch50（AI Agent / n8n 兩大旗艦章）完成。**教具庫新增 2 個：AgentLoop、WorkflowFlow。** 下一步可續：ch06/11/12/14/15/23/24/25/37/42 薄章補厚，或辭典 seed-41 續寫。
+ch49 + ch50（AI Agent / n8n 兩大旗艦章）完成。**教具庫新增 2 個：AgentLoop、WorkflowFlow。**
+
+---
+
+## 📚 薄章補厚 — 開工（linj 指示：三軌都做、順序自訂、全手寫不花 AI 錢）
+**重新認定**：survey 的「<1500 字＝薄」會誤判——實讀 ch06 多數節（含 table/code/用人話講）其實夠好。**真正一致的缺口是「練習罐頭 + 沒互動教具」**。故薄章治療 = **de-can 練習 + 疊合適教具（能複用就複用）+ 只補真正 stub 的內容**，不硬灌已夠好的節（守寧缺勿濫）。
+
+### ch06 JSON 完整（25 節）
+- **de-can 20 題** → 對得上 JSON 主題的應用題（手寫 5 型別物件、parse/stringify 方向與丟失、JSON Schema 註冊表單、Zod/Pydantic 執行期驗證、LLM 結構化輸出、REST vs GraphQL、五大地雷情境、JWT payload 為何不能放密碼、JSON Patch、tRPC 限制、一份 Zod schema 走全端…）。
+- **新教具 `JsonTree`（json-tree）**：`src/components/chapter/demos/JsonTree.tsx`。互動可展開/收合的 JSON 樹、型別配色、`overflow-x-auto`。掛 **6.1**（第一份 JSON——補足 6.1 原本沒有任何 JSON 範例的缺口）、**6.6**（巢狀結構、看 author 重複）。types union + 派發器接線。
+- 檢查：`tsc`/`vitest 137`/`next build` 全綠；`import ch06` 0 errors；DB 覆核 6.1/6.6 demos=json-tree、練習已換。**教具庫 +1（JsonTree）。**

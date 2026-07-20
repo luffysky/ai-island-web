@@ -74,7 +74,32 @@
         ],
         "answer": "b",
         "explanation": "課程強調 JSON 贏在『人讀得懂、機器解析快、所有語言都支援、夠簡單』，並用 USB Type-C 的比喻說明它不是最強但『哪都能用』才是真正的勝因。選項 a 只是歷史、c 被課程否定、d 曲解了標準化過程。"
-      }
+      },
+      "demos": [
+        {
+          "type": "json-tree",
+          "title": "這就是一份 JSON",
+          "note": "JSON 的長相——物件 { } 裝著一組「鍵: 值」。點左邊箭頭把巢狀的 skills / address 收起來看看。",
+          "config": {
+            "caption": "一份描述「一個人」的 JSON。裡面用到了 6 種值裡的 5 種：字串、數字、布林、null、陣列，還有巢狀物件。",
+            "data": {
+              "name": "小明",
+              "age": 25,
+              "isStudent": true,
+              "skills": [
+                "JSON",
+                "Python",
+                "API"
+              ],
+              "address": {
+                "city": "台北",
+                "zip": "100"
+              },
+              "nickname": null
+            }
+          }
+        }
+      ]
     },
     {
       "id": "6.2",
@@ -98,9 +123,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "手寫一份描述『你自己』的 JSON 物件，至少用到 5 種值型別（string / number / boolean / null / array）並包含一個巢狀物件。標出每個欄位是哪種型別。最後故意寫一個常見錯誤（尾逗號或用單引號），並說明為什麼 JSON 不接受。",
+        "hint": "JSON 只有 6 種值、2 種容器（物件 {} / 陣列 []）。字串一定用雙引號、不能有尾逗號、不能寫註解。",
+        "answer": "範例：{ \"name\": \"小明\"(string), \"age\": 25(number), \"vip\": false(boolean), \"nickname\": null, \"skills\": [\"JSON\",\"Python\"](array), \"address\": { \"city\": \"台北\" }(物件) }。錯誤示範：{ 'name': '小明', } —— 單引號不合法（JSON 字串一定雙引號）、結尾多一個逗號也不合法。JSON 語法比 JS 嚴格，這兩個是最常見的踩雷。"
       },
       "outline": [
         {
@@ -162,9 +187,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "後端 API 回傳的其實是一段『JSON 字串』，前端拿到要用。回答：(1) JSON.parse 和 JSON.stringify 各在哪個方向用？(2) JSON.stringify 一個含 function、undefined、Date 的物件，會發生什麼？",
+        "hint": "parse＝字串→物件（收資料時）；stringify＝物件→字串（送資料/存 localStorage 時）。stringify 會丟掉不屬於 JSON 的東西。",
+        "answer": "(1) 收到 API 的字串 → JSON.parse 變成能操作的物件；要送出去或存進 localStorage → JSON.stringify 變回字串。(2) stringify 會：function 與 undefined 直接被略過（物件裡的該鍵消失）、Date 被轉成 ISO 字串（parse 回來不會自動變回 Date）。所以『存進去再讀出來』的資料型別可能跟原本不同，日期尤其要注意。"
       },
       "outline": [
         {
@@ -226,9 +251,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "幫一個『使用者註冊表單』的資料寫一份 JSON Schema 的重點：哪些欄位 required、email 的型別與格式、age 的範圍。再用一句話說明 JSON Schema 的價值。",
+        "hint": "JSON Schema 是『描述資料該長怎樣』的規格：type、required、format、minimum/maximum。價值在前後端共用同一份規格。",
+        "answer": "重點：required: [\"email\",\"password\"]；email: { type:\"string\", format:\"email\" }；password: { type:\"string\", minLength:8 }；age: { type:\"integer\", minimum:13, maximum:120 }。價值：前後端共用一份 schema，前端擋錯誤輸入、後端也用同一份驗證，規格不會兩邊講不一樣，還能自動生文件。"
       },
       "outline": [
         {
@@ -286,9 +311,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "選 Zod（TS）或 Pydantic（Python），幫『一筆訂單』寫出驗證重點（欄位＋型別＋規則，例如金額 > 0、數量是正整數）。再說明：為什麼『執行期驗證』比只靠 TypeScript 型別重要？",
+        "hint": "TS 型別在編譯後就消失了，擋不住『執行期真的收到的髒資料』（API 回傳、使用者輸入）。Zod/Pydantic 在跑的時候真的檢查。",
+        "answer": "Zod 範例重點：amount: z.number().positive()、qty: z.number().int().positive()、items: z.array(...).nonempty()、email: z.string().email()。為什麼需要執行期驗證：TS 型別只在寫 code/編譯時存在，程式跑起來後 API 或使用者送來的資料是什麼型別 TS 管不到；Zod/Pydantic 在執行期真的檢查每一筆進來的資料，擋掉髒資料、避免後面爆炸。"
       },
       "outline": [
         {
@@ -354,9 +379,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "拿本節的論壇貼文例子，指出『author 重複出現』會造成什麼維護痛點；然後把它正規化，寫出正規化後『users 只存一份』的結構。並說明：前端狀態管理（Redux / Zustand）為什麼也常這樣存？",
+        "hint": "重複資料 = 改一個地方要改很多處、容易不一致。正規化＝每種實體用 id 當 key 只存一份，其他地方用 id 指過去。",
+        "answer": "痛點：同一個 author 在貼文和每則留言都抄一份，使用者改頭像/改名要同步改幾十處、漏一處就不一致。正規化：users: { \"user-42\": { name, avatar } }，貼文和留言都只存 author_id: \"user-42\" 指過去。前端這樣存的原因：畫面很多地方都要顯示同一個使用者，存一份、大家指過去，更新一次全畫面同步，也避免記憶體重複與資料不一致（Redux Toolkit 的 createEntityAdapter 就是做這個）。"
       },
       "outline": [
         {
@@ -390,7 +415,35 @@
         ],
         "answer": "a",
         "explanation": "正規化的核心就是消除重複——把重複的資料（使用者）只存一份，其他地方用 ID 指向它，這樣改一個地方就搞定。反正規化（選項 c）反而是故意複製，會讓問題更嚴重。"
-      }
+      },
+      "demos": [
+        {
+          "type": "json-tree",
+          "title": "巢狀結構：一層包一層",
+          "note": "點開 author / comments，看資料怎麼一層包一層——注意 author 重複出現了（正規化要解決的就是它）。",
+          "config": {
+            "caption": "一則論壇貼文。author 在貼文本身、又在每則留言裡各出現一次（重複）——這就是本節正規化要處理的問題。",
+            "data": {
+              "id": "post-001",
+              "title": "AI 島開課",
+              "author": {
+                "id": "user-42",
+                "name": "Luffysky"
+              },
+              "comments": [
+                {
+                  "id": "c1",
+                  "author": {
+                    "id": "user-42",
+                    "name": "Luffysky"
+                  },
+                  "text": "歡迎留言"
+                }
+              ]
+            }
+          }
+        }
+      ]
     },
     {
       "id": "6.7",
@@ -414,9 +467,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "設計一個『要 LLM 回固定 JSON』的任務（例如把一段商品評論抽成 { sentiment, topics[] }）。寫出你要求的 JSON 格式，並說明：為什麼要強制它回 JSON、而不是一段自由文字？",
+        "hint": "後面的程式要用 LLM 的輸出，所以要結構化（固定欄位）才能穩定接。自由文字每次格式不一、程式難解析。",
+        "answer": "任務：輸入一則評論，要 LLM 回 { \"sentiment\": \"正面|負面|中立\", \"topics\": [\"...\"] }。強制 JSON 的原因：程式後續要拿 sentiment 分流、拿 topics 統計，若 LLM 回一段自由文字，每次寫法都不同、無法穩定抽欄位。要求固定 JSON（並在 prompt 明講只回 JSON、用 OpenAI response_format / Claude tool use 強制）才能自動化。"
       },
       "outline": [
         {
@@ -482,9 +535,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "針對『查商品列表』這個功能，分別想想用 RESTful 跟 GraphQL 各會怎麼設計（URL / query 大概長怎樣）。並說明：GraphQL 解決了 REST 的什麼痛點？",
+        "hint": "REST 用『網址 + HTTP 動詞』、一個端點回固定欄位；GraphQL 一個端點、client 自己指定要哪些欄位。痛點關鍵字：over-fetching / under-fetching。",
+        "answer": "REST：GET /products?category=book&page=1，回傳每個商品的固定全部欄位。GraphQL：POST /graphql，query { products(category:\"book\"){ id name price } } —— client 指定只要 id/name/price。GraphQL 解決的痛點：REST 常 over-fetching（回一堆你不要的欄位、浪費頻寬）或 under-fetching（要多打幾次才湊齊資料）；GraphQL 讓前端一次拿剛好需要的，行動裝置省流量特別有感。"
       },
       "outline": [
         {
@@ -550,9 +603,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "說明 OpenAPI 文件的價值：列出 3 件『有了它就能自動做』的事。再為一個端點（例如 GET /users/:id）寫出它該描述的 4 個東西。",
+        "hint": "OpenAPI＝用一份標準文件描述整個 API。有了它，工具能自動生文件、生 client SDK、開 mock server。",
+        "answer": "自動做的事：①產出互動式 API 文件（Swagger UI）②產各語言的 client SDK（不用手刻請求）③開 mock server（前端不等後端就能開發）。一個端點該描述：method（GET）、path（/users/{id}）、收什麼（path 參數 id: string）、回什麼（200 回 User 物件的 schema、404 回 error）。這四樣講清楚，別的團隊不用問你就能接。"
       },
       "outline": [
         {
@@ -670,9 +723,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "從 JSON 五大地雷挑 2 個（沒有日期型別 / 大數字掉精度 / null vs undefined vs 不存在 / 浮點誤差 / 鍵順序不保證），各寫出一個會真的踩到的情境，以及你的解法。",
+        "hint": "JSON 沒有 Date 型別（要用字串）、數字是 double（大整數如雪花 ID 會掉精度）。解法通常是『用字串傳』。",
+        "answer": "地雷1 沒日期型別：後端傳 createdAt，前端 parse 回來是字串不是 Date，直接比較大小或 .getFullYear() 會出錯 → 統一用 ISO 8601 字串（\"2026-07-21T...\"）傳、前端自己 new Date()。地雷2 大數字掉精度：資料庫 bigint 主鍵（如 90071992547409931）超過 JS 安全整數，parse 後尾數變掉 → 這類 ID 一律用 string 傳，別用 number。"
       },
       "outline": [
         {
@@ -861,9 +914,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "規劃一個小 API 的『一條龍型別安全』：一份 schema 怎麼同時拿來做 (a) 執行期驗證 (b) 產生 TS 型別 (c) 當 API 文件？畫出資料從 client 到 server 會在哪幾處被驗。",
+        "hint": "現代做法是『一份 schema 當唯一真相』（Zod/Pydantic），型別自動推導、執行期也用它驗。驗證點：client 送出前、server 收到時。",
+        "answer": "一份 Zod schema：(a) 用 schema.parse() 在執行期驗證真實資料；(b) 用 z.infer<typeof schema> 自動生出 TS 型別（不用另外手寫）；(c) 可轉成 JSON Schema / OpenAPI 當文件。資料流：使用者填表 → client 端先用 schema 驗一次（即時提示）→ 送到 server → server 入口再用同一份 schema 驗一次（不信任前端）→ 通過才進 DB。同一份規格，兩端共用、型別不會不同步。"
       },
       "miniQuiz": {
         "question": "在這個型別安全的 API 層 pattern 中，為什麼需要用 Zod 的 parse() 來驗證伺服器回應？",
@@ -911,9 +964,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "『能成功 JSON.parse』跟『結構正確』差在哪？舉一個能 parse 成功、但結構其實錯的例子（少必填欄位或型別錯），並說明為什麼還是需要 schema 驗證。",
+        "hint": "parse 只確認『是不是合法 JSON 語法』，不管內容對不對。結構驗證才管『該有的欄位有沒有、型別對不對』。",
+        "answer": "例：{ \"age\": \"二十五\", \"email\": 123 } 是合法 JSON、parse 得過，但 age 應該是數字卻給字串、email 應是字串卻給數字——結構全錯。parse 只保證語法合法，不保證內容符合你的規格。所以收到外部資料要再用 JSON Schema / Zod 驗結構，否則髒資料照樣進系統，等到後面用到才爆、更難查。"
       },
       "outline": [
         {
@@ -987,9 +1040,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "用 Zod 幫一個表單（自選，例如登入）寫 schema 的重點，並說明 Zod 的殺手鐧 `z.infer`：為什麼『從 schema 自動生 TS 型別』能避免 bug？",
+        "hint": "z.infer<typeof schema> 讓型別跟驗證規則來自同一份 schema，改一處兩邊一起變，不會不同步。",
+        "answer": "登入 schema：z.object({ email: z.string().email(), password: z.string().min(8) })。殺手鐧：const data: z.infer<typeof loginSchema> —— TS 型別直接從 schema 推導出來。好處：如果你只手寫 TS 型別、又另外寫驗證，兩者容易對不上（改了驗證忘了改型別）；用 z.infer 只有『一份真相』，schema 一改型別自動跟著變，減少型別與實際驗證不一致的 bug。"
       },
       "outline": [
         {
@@ -1063,9 +1116,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "給一個巢狀 JSON（例如 API 回一批 user、每個 user 有 posts 陣列），寫出你要用 JSONPath 取『所有貼文的標題』的路徑，並說明 JSONPath 像 SQL 的什麼？",
+        "hint": "JSONPath 用 $ 代表根、. 進入欄位、[*] 代表陣列每一個。它像 SQL 的『查詢語言』，讓你不用寫迴圈就從大物件挑資料。",
+        "answer": "路徑：$.users[*].posts[*].title —— 取所有 user 的所有 post 的 title。JSONPath 像 SQL 的 SELECT/WHERE：SQL 從資料表撈欄位，JSONPath 從巢狀 JSON 撈值，都是『宣告你要什麼、不用自己寫迴圈一層層挖』。處理 API 回傳的大 JSON、或設定檔取值時很好用（JMESPath 是類似的另一套）。"
       },
       "outline": [
         {
@@ -1147,9 +1200,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "說明為什麼『設定檔』適合用 JSONC / JSON5 / YAML（能寫註解、尾逗號），但『API 傳輸』還是用純 JSON？舉一個你會想在設定檔裡加註解的例子。",
+        "hint": "設定檔是給人維護的（要註解說明為什麼這樣設）；API 傳輸是機器對機器、要最大相容性，純 JSON 最通用。",
+        "answer": "設定檔給人看、常需要註解說明某個值為什麼這樣設、也常增刪選項（尾逗號方便），所以 tsconfig 用 JSONC、很多工具用 YAML。API 傳輸是程式對程式、跨語言，純 JSON 相容性最好、最無歧義，沒必要（也不該）夾註解。會加註解的例子：設定檔裡 \"timeout\": 30 // 第三方 API 很慢、別調低於 30 秒，讓接手的人知道原因。"
       },
       "outline": [
         {
@@ -1227,9 +1280,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "為什麼 100GB 的 JSON 用 JSON.parse 會 crash？說明 streaming 解析 / JSONL 怎麼解決，並舉一個適合用 JSONL 的場景。",
+        "hint": "JSON.parse 要把『整個檔案』一次讀進記憶體才能解析，太大就 OOM。streaming/JSONL 是『邊讀邊處理、一次一小塊/一筆』。",
+        "answer": "JSON.parse 需要整份載入記憶體再解析，100GB 直接爆記憶體 crash。解法：①streaming parser 邊讀邊吐出物件、不用整份載入；②JSONL（每行一個獨立 JSON 物件）可以一行一行讀、處理完就丟、記憶體恆定。適合 JSONL 的場景：機器學習資料集、日誌檔、大量匯出的紀錄——一筆一筆處理、隨時可中斷續傳，不需要一次看全部。"
       },
       "outline": [
         {
@@ -1403,9 +1456,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "說明 tRPC 的賣點：為什麼它不用寫 OpenAPI / GraphQL schema，就能讓 client 呼叫 server 有型別？再說明它的最大限制。",
+        "hint": "tRPC 靠『前後端都是 TypeScript、共用型別』達成端到端型別安全，不需另寫 schema 檔。限制也來自這裡。",
+        "answer": "賣點：server 定義的 router 型別，client 直接 import 過來用，呼叫 API 就像呼叫本地 function、參數和回傳都有 TS 型別與自動補全，不用另寫 OpenAPI/GraphQL schema 也不用生 client。限制：前後端必須都是 TypeScript 且在同一個 monorepo 共享型別——如果 client 是別的語言（手機 App 用 Swift/Kotlin）或第三方要接你的 API，tRPC 就不適用，那種要用 REST/GraphQL/OpenAPI。"
       },
       "outline": [
         {
@@ -1483,9 +1536,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "說明 JWT 的三段（header.payload.signature）各是什麼，並回答：為什麼 payload 裡『不能放密碼或機密』？最後設計你會放進 payload 的 3 個欄位。",
+        "hint": "JWT 的 payload 只是 base64 編碼（不是加密），任何人都能解開看內容。signature 只保證『沒被竄改』，不保證『看不到』。",
+        "answer": "三段：header（用什麼演算法簽）、payload（放使用者資訊的 JSON）、signature（用密鑰簽的章、驗有沒有被改）。payload 不能放機密：它只是 base64 編碼、不是加密，任何拿到 token 的人都能 decode 看到內容；簽章只防竄改、不防偷看。會放的欄位：uid（誰）、role（權限）、exp（過期時間）——都是非機密、用來識別身分與授權的資訊，密碼/金鑰絕不放進去。"
       },
       "outline": [
         {
@@ -1587,9 +1640,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "什麼時候用 JSON Patch（只傳改動）會比傳整個物件好？寫出一個『把 name 改掉、再加一個 tag』的 patch 大概長怎樣（用 op / path / value 的概念）。",
+        "hint": "物件很大但只改一點點時，只傳 diff 省頻寬、也更精準（不會不小心覆蓋別人同時改的欄位）。",
+        "answer": "適用時機：物件很大、每次只改幾個欄位（如編輯個人資料、協作文件），傳整包浪費且可能覆蓋掉別人剛改的部分。JSON Patch 只描述改動：[ { \"op\":\"replace\", \"path\":\"/name\", \"value\":\"新名字\" }, { \"op\":\"add\", \"path\":\"/tags/-\", \"value\":\"vip\" } ] —— replace 換掉 name、add 往 tags 陣列尾端加一個。伺服器照著套用，精準又省流量。"
       },
       "outline": [
         {
@@ -1671,9 +1724,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "你要把一個 API 交接給別的團隊，說明為什麼給他們一份 OpenAPI（Swagger）文件、比口頭或聊天講清楚得多。列出他們拿到文件後能『自動生出』的 2 樣東西。",
+        "hint": "口頭/文字容易漏、會過時；OpenAPI 是機器可讀的正式合約，工具能直接吃它產東西、也永遠跟著更新。",
+        "answer": "口頭講會漏細節、也會跟實際 API 不同步；OpenAPI 是一份精確、機器可讀的合約，寫清楚每個端點收什麼回什麼。對方拿到能自動生出：①各語言的 client SDK（不用手刻 fetch）②互動式文件 Swagger UI 可直接試打；還能開 mock server 讓他們先開發。交接一份文件，勝過來回問十次。"
       },
       "outline": [
         {
@@ -1747,9 +1800,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "綜合本章：規劃一個『表單 → API → DB』全程型別安全的流程，指出同一份 Zod schema 會在哪幾個地方被重複使用。",
+        "hint": "一份 schema 走天下：前端表單驗證、API 入口驗證、型別推導都用它，不重複定義、不會不同步。",
+        "answer": "流程與 schema 使用點：①前端表單——用 schema 即時驗使用者輸入、錯了馬上提示；②送到 API——server 入口再用『同一份』schema 驗一次（不信任前端）；③型別——用 z.infer 從 schema 推導 TS 型別給前後端共用；④存 DB 前的資料形狀也對得上。一份 Zod schema 當唯一真相，表單、API、型別三處共用，改一次全部同步，這就是型別安全全端的核心。"
       },
       "outline": [
         {
