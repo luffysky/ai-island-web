@@ -86,6 +86,9 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
   const [toast, setToast] = useState<string | null>(null);
   const [todayPair, setTodayPair] = useState<{ a_id: string; a_title: string; b_id: string; b_title: string; similarity: number } | null>(null);
   const [savedKeys, setSavedKeys] = useState<Set<string>>(new Set());
+  // 綠寶找碎片寫歌：輸入主題 → 語意搜碎片（無 embedding key 時 fallback 純文字）→ 選取 → 可綠寶編織/手動
+  const [songQ, setSongQ] = useState("");
+  const [songMatches, setSongMatches] = useState<any[] | null>(null);
   const confirm = useConfirm();
   const prompt = usePrompt();
   function flash(m: string) { setToast(m); setTimeout(() => setToast(null), 1600); }
@@ -263,6 +266,41 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
       setRecording((p) => [...p, { agent: "compose", params: { workType: wt } }]);
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   }
+  // 綠寶找碎片寫歌：語意搜尋，回空則 fallback 純文字比對本地碎片
+  async function findFragmentsForSong() {
+    const query = songQ.trim(); if (!query) return;
+    setErr(null); setBusy("songsearch"); setSongMatches(null);
+    try {
+      const j = await api("/api/creator-island/fragments/search", { workspaceId, query, count: 10 });
+      let matches: any[] = Array.isArray(j.matches) ? j.matches : [];
+      if (!matches.length) {
+        // fallback：純文字（語意不可用或沒命中）
+        const ql = query.toLowerCase();
+        matches = fragments.filter((f) => (f.title + " " + (f.content ?? "")).toLowerCase().includes(ql)).slice(0, 10);
+      }
+      setSongMatches(matches);
+      if (!matches.length) flash("找不到相關碎片，換個關鍵字試試");
+    } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+  }
+  // 把搜到的碎片全部選起來（可再手動增減）
+  function selectAllMatches() {
+    if (!songMatches?.length) return;
+    setSelected((p) => new Set([...p, ...songMatches.map((m) => m.id)]));
+    flash(`已選取 ${songMatches.length} 個碎片`);
+  }
+  // 一鍵：選取搜到的碎片 + 讓綠寶編織成歌
+  async function weaveSongFromMatches() {
+    if (!songMatches?.length) return;
+    const ids = songMatches.map((m) => m.id);
+    setSelected((p) => new Set([...p, ...ids]));
+    setWorkType("song"); setAdvice(null); setErr(null); setResult(null); setBusy("compose");
+    try {
+      const json = await api("/api/creator-island/ai/compose", { workspaceId, fragmentIds: ids, workType: "song" });
+      setResult({ action: "compose", sourceIds: ids, ...json });
+      setRecording((p) => [...p, { agent: "compose", params: { workType: "song" } }]);
+    } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+  }
+
   async function saveFragment(title: string, content: string) {
     try { const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title, content, sourceType: "ai_assisted", derivedFrom: result?.sourceIds ?? [], relationType: "condensed_from" }); setFragments((p) => [fragment, ...p]); flash(t("hubSavedFragment")); setResult(null); setSelected(new Set()); }
     catch (e: any) { setErr(e.message); }
@@ -553,6 +591,54 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
           <button onClick={createCollection} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-dashed border-border text-fg-muted hover:text-accent"><Plus size={12} /> {t("hubNewCollection")}</button>
         </div>
         <div className="text-[10px] text-fg-muted mb-3">{t("hubDragHint")}</div>
+
+        {/* 🎵 綠寶找碎片寫歌 */}
+        <div className="rounded-2xl border border-pink-400/30 bg-gradient-to-br from-pink-500/[0.06] to-amber-400/[0.06] p-3 mb-3">
+          <div className="text-sm font-bold inline-flex items-center gap-1.5"><Music size={14} className="text-pink-500" /> 綠寶找碎片寫歌</div>
+          <div className="text-[11px] text-fg-muted mt-0.5 mb-2">打一個主題／心情，綠寶幫你從碎片森林找出相關的，選起來讓它編織成完整的一首歌（也可以自己手動挑）。</div>
+          <div className="flex gap-2">
+            <input value={songQ} onChange={(e) => setSongQ(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") findFragmentsForSong(); }}
+              placeholder="例：雨天的孤獨、夏夜的心跳、想回家的路…" maxLength={100}
+              className="flex-1 min-w-0 bg-bg-elevated border border-border rounded-full px-3.5 py-1.5 text-xs outline-none focus:border-pink-400" />
+            <button onClick={findFragmentsForSong} disabled={busy !== null || !songQ.trim()}
+              className="shrink-0 inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-pink-500/20 text-pink-700 dark:text-pink-200 text-xs font-bold disabled:opacity-40 hover:bg-pink-500/30 transition">
+              <Search size={12} /> {busy === "songsearch" ? "找碎片中…" : "找碎片"}
+            </button>
+          </div>
+          {songMatches && (
+            <div className="mt-2.5">
+              {songMatches.length === 0 ? (
+                <div className="text-xs text-fg-muted">沒找到相關碎片，換個關鍵字試試。</div>
+              ) : (
+                <>
+                  <div className="text-[11px] text-fg-muted mb-1.5">找到 {songMatches.length} 個相關碎片（點一下加入/移除選取）：</div>
+                  <div className="flex flex-wrap gap-1.5 mb-2.5">
+                    {songMatches.map((m) => {
+                      const on = selected.has(m.id);
+                      return (
+                        <button key={m.id} onClick={() => toggle(m.id)}
+                          className={`text-[11px] px-2.5 py-1 rounded-full border transition inline-flex items-center gap-1 ${on ? "bg-accent text-black border-accent font-semibold" : "bg-bg-card border-border text-fg-muted hover:border-accent/50"}`}>
+                          {on && <Check size={11} />}{m.title || "未命名碎片"}
+                          {typeof m.similarity === "number" && <span className="opacity-60">{Math.round(m.similarity * 100)}%</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <button onClick={weaveSongFromMatches} disabled={busy !== null}
+                      className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full bg-gradient-to-r from-pink-500 to-amber-400 text-black text-xs font-bold disabled:opacity-40">
+                      <Wand2 size={13} /> {busy === "compose" ? "綠寶編織中…" : "讓綠寶編織成歌"}
+                    </button>
+                    <button onClick={selectAllMatches} disabled={busy !== null}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-border bg-bg-card text-xs disabled:opacity-40 hover:border-accent/40">
+                      <Check size={12} /> 全部選起來（手動編織）
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </div>
 
         <div className="flex items-center gap-2 flex-wrap mb-2">
           <div data-tour="forest" className="text-sm uppercase tracking-wider text-fg-muted inline-flex items-center gap-1.5"><Trees size={14} /> {t("hubFragmentForestN", { n: shownFragments.length })}</div>

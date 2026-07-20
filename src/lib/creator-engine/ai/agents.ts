@@ -160,7 +160,13 @@ const ComposeSong = z.object({
 export async function compose(workspaceId: string, userId: string, workType: string, frags: { id: string; title: string; content: string }[]) {
   const isSong = workType === "song";
   if (isSong) {
-    const system = `你是「編織者」。把這些碎片編成『一首完整、前後呼應』的歌——不是把碎片各塞一段，而是先定一個貫穿全曲的主題與情緒弧線，再讓每個碎片成為推進這條線的段落，副歌要收束整首的核心。並產出可直接用的音樂提示詞。
+    const system = `你是「編織者」。把這些碎片編成『一首完整、有起承轉合、唱得滿一首歌長度（約 3–3.5 分鐘）』的歌——不是把碎片各塞一段，而是先定一個貫穿全曲的主題與情緒弧線，再讓每個碎片成為推進這條線的段落，副歌要收束整首的核心。並產出可直接用的音樂提示詞。
+
+【必須是「完整的一首歌」，不能太短（這點最重要）】
+- 段落要完整、要有反覆：至少 [Intro]（可省）→ [Verse 1] → [Pre-Chorus] → [Chorus] → [Verse 2] → [Pre-Chorus] → [Chorus] → [Bridge] → [Chorus]（最後一次副歌可加強/變化）→ [Outro]。
+- 至少要有「2 段主歌」，副歌至少「重複 3 次」——這樣唱出來才有完整一首歌的長度，不會只有 2 分鐘。
+- 每段 Verse 至少 4 行、Chorus 至少 4 行；歌詞要「唱得出來」：口語、有畫面、押韻自然，不是散文分行。
+- 段落標記一律用「英文方括號」如 [Verse 1]、[Pre-Chorus]、[Chorus]、[Bridge]、[Outro]——Suno 靠這個讀懂結構、才會生出完整編曲與長度（【】全形括號 Suno 讀不到，不要用）。
 
 【版權與人名硬規則（務必遵守）】
 - sunoPrompt 只能用「風格／情緒／樂器／節奏／人聲質地」等一般描述（例：dreamy city pop, warm female vocals, 90s synth, mid-tempo）。
@@ -168,11 +174,11 @@ export async function compose(workspaceId: string, userId: string, workType: str
 - 歌詞必須是原創，不可引用或改寫任何既有受版權保護的歌詞。
 - 若碎片內含真實人名，歌詞可保留敘事需要的稱呼，但 sunoPrompt 一律不得出現人名。
 
-只回傳 JSON：{"title":"歌名","lyricsSectioned":"含【Verse】【Pre-Chorus】【Chorus】【Bridge】【Outro】標記的完整歌詞","sunoPrompt":"Suno 風格英文提示（純風格描述、無人名/無指名模仿）","mvPrompt":"MV 視覺英文提示","usedFragmentIds":["用到的碎片id"]}。歌詞繁中、prompt 可英文。`;
+只回傳 JSON：{"title":"歌名","lyricsSectioned":"用 [Verse 1] [Pre-Chorus] [Chorus] [Verse 2] [Bridge] [Outro] 等『英文方括號』段落標記的、完整可唱滿一首歌長度（2 段以上主歌、副歌重複 3 次）的原創歌詞","sunoPrompt":"Suno 風格英文提示（純風格描述、無人名/無指名模仿）","mvPrompt":"MV 視覺英文提示","usedFragmentIds":["用到的碎片id"]}。歌詞繁中、prompt 可英文。`;
     return runAgent({
       agentType: "compose", workspaceId, userId, schema: ComposeSong,
       input: { workType, fragmentIds: frags.map((f) => f.id) },
-      system, user: `碎片：\n\n${fragmentBlock(frags)}`, maxTokens: 3000,
+      system, user: `碎片：\n\n${fragmentBlock(frags)}`, maxTokens: 4200,
     });
   }
   const system = `你是「編織者」。把這些碎片『融合』成一篇 ${workType} 作品草稿。最重要的目標：讀起來是「一個整體」，不是「東一塊西一塊」的碎片拼貼。

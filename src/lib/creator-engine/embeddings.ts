@@ -58,3 +58,23 @@ export async function relatedFragments(workspaceId: string, fragmentId: string, 
   if (error) return [];
   return (data as any[]) ?? [];
 }
+
+/**
+ * 用一段「文字查詢/主題」語意搜尋碎片（給「綠寶找碎片來寫歌」用）。
+ * 把 query embed 後跟碎片向量比相似度；無 OpenAI key → embedText 回 null → 回空陣列（前端 fallback 純文字搜尋）。
+ */
+export async function searchFragmentsByQuery(workspaceId: string, query: string, count = 8): Promise<any[]> {
+  const q = (query ?? "").trim();
+  if (!q) return [];
+  const admin = createSupabaseAdmin();
+  await backfillWorkspaceEmbeddings(workspaceId).catch(() => {});
+  const vec = await embedText(q.slice(0, 2000));
+  if (!vec) return [];
+  const emb = `[${vec.join(",")}]`;
+  // p_exclude 傳一個不存在的 uuid → 等於不排除任何碎片、變成純「用查詢搜相似」。
+  const { data, error } = await admin.rpc("ci_related_fragments", {
+    p_workspace: workspaceId, p_embedding: emb, p_exclude: "00000000-0000-0000-0000-000000000000", match_count: count,
+  });
+  if (error) return [];
+  return (data as any[]) ?? [];
+}

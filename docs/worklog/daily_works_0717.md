@@ -110,6 +110,12 @@
 - **新互動教具 `ColorContrast`**（調色即時算 WCAG 對比、過不過 AA/AAA）掛 3.4/3.22；複用 BoxModel(3.6)/RwdRuler(3.15)/LayoutGallery(3.24)。
 - tsc/vitest137/build 綠、已 import。**教訓：技術/概念章多半內容有料，主要工作是除罐頭+加互動，不需整章改寫。**
 
+## 🎵 創作者島「碎片編織歌曲」改善（0721）
+- **①歌更完整（不再才 2 分鐘）**：`compose()` song system prompt 重寫——完整段落([Intro]→Verse1→Pre→Chorus→Verse2→Chorus→Bridge→Chorus→Outro)、≥2 段主歌、副歌重複 3 次、段落用英文方括號(Suno 才讀懂結構生完整編曲)；maxTokens 3000→4200。
+- **②綠寶搜碎片寫歌**：新 `searchFragmentsByQuery`(embed 查詢→ci_related_fragments, exclude dummy uuid) + `POST /api/creator-island/fragments/search`(語意搜、無 key fallback 純文字)；CreatorIslandClient 加「🎵 綠寶找碎片寫歌」面板：打主題→找碎片→點 chip 選取→「讓綠寶編織成歌」(一鍵選+compose song) / 「全部選起來手動編織」。
+- **③版權/防人名**：compose song 與 suno mode 皆已含硬規則(禁真實人名/樂團/指名模仿/引用受版權歌詞)，搜尋→編織走同一路徑守到。
+- API(複用既有 embedding RPC·無新表)/UI(接真API)/RWD(flex-wrap+min-w-0)/tsc/vitest137/build 皆綠。
+
 ## 📊 內容重寫進度（本 session）
 - 創作叢集 ch51~60 全部 10 章完成；**ch03 UI/UX 除罐頭+加互動完成**。
 - 互動教具 12 種（+ColorContrast）。
