@@ -122,6 +122,10 @@
 - 互動：`ScenarioJudge`掛 13.9「SEO 好壞習慣判斷」(關鍵字堆砌/買連結/重複內容=雷)。tsc/vitest137/build 綠、已 import。
 - Batch 2（13.14-13.25，12 課）：Local SEO/多語hreflang/GEO概念/GEO實作/GSC看數據+漏斗/內容更新/SEO+UX/AI時代變化/工具全景/內容SOP/接案(不保證排名)/心法。FunnelSim 掛 13.18 SEO 漏斗。章 outcomes/summary/faq 更新。**ch13 全 25 課完成。**
 
+## 🗂️ ch43（專案管理 25 課）除罐頭 + 加互動（0721）
+- 同 ch03：內容/miniQuiz 紮實保留，只換 25 個罐頭練習成真 PM 題(選型/實作/風險矩陣/情境判斷/實戰)、尾巴 43.21-25 重複課改實戰版。
+- 互動：`DecisionQuiz`(43.2 方法論選型 瀑布/敏捷/Lean) + `PriorityMatrix`(43.10 風險矩陣 機率×衝擊) + `ScenarioJudge`(43.12 變更該不該接/scope creep)。tsc/vitest137/build 綠、已 import。
+
 ## 📊 內容重寫進度（本 session）
 - 創作叢集 ch51~60 全部 10 章完成；**ch03 UI/UX 除罐頭+加互動完成**。
 - 互動教具 12 種（+ColorContrast）。
