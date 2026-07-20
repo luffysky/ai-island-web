@@ -1,0 +1,402 @@
+[
+  {
+    "slug": "csv-module",
+    "term": "csv",
+    "zh_name": "CSV 讀寫（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "讀寫 CSV 檔的標準庫，不用安裝。核心：csv.reader / csv.writer（逐列），或 csv.DictReader / DictWriter（用欄名當 key，最常用）。做『資料分析前的匯入匯出』、或不想扛 pandas 時處理表格資料就用它。注意用 newline='' 開檔避免多空行。",
+    "analogy": "像 Excel 的純文字版：一行一筆、逗號分欄，Python 幫你正確處理引號與換行。",
+    "example": "import csv\nwith open('data.csv', newline='', encoding='utf-8') as f:\n    for row in csv.DictReader(f):\n        print(row['name'], row['age'])",
+    "related": [
+      "read-csv-pandas",
+      "pandas",
+      "file-io",
+      "json-module"
+    ]
+  },
+  {
+    "slug": "sqlite3-module",
+    "term": "sqlite3",
+    "zh_name": "內建 SQL 資料庫",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "Python 內建、零安裝的關聯式資料庫，整個 DB 就是一個檔案。適合小工具、原型、本地儲存、爬蟲存資料——不用架 MySQL/Postgres。用 connect() 開檔、cursor.execute() 下 SQL、commit() 存檔。**一定用參數化 (?) 傳值防 SQL injection**。",
+    "analogy": "像一個裝在單一檔案裡的迷你資料庫，隨身帶著走、不用另外開伺服器。",
+    "example": "import sqlite3\nconn = sqlite3.connect('app.db')\nconn.execute('CREATE TABLE IF NOT EXISTS users(id INTEGER, name TEXT)')\nconn.execute('INSERT INTO users VALUES (?, ?)', (1, 'Nami'))\nconn.commit()",
+    "related": [
+      "sqlalchemy",
+      "sql-injection",
+      "orm",
+      "file-io"
+    ]
+  },
+  {
+    "slug": "random-module",
+    "term": "random",
+    "zh_name": "亂數（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "產生亂數的標準庫：random.random()（0-1 小數）、randint(a,b)（整數）、choice(seq)（隨機挑一個）、shuffle(list)（原地洗牌）、sample(seq,k)（不重複抽 k 個）。做遊戲、抽樣、隨機測試資料常用。**注意：不夠安全，做密碼/token 要用 secrets 模組。**",
+    "analogy": "像一顆程式化的骰子與洗牌機，要隨機就找它。",
+    "example": "import random\nprint(random.randint(1, 6))          # 擲骰\nprint(random.choice(['a','b','c']))   # 隨機挑一個\nrandom.shuffle(deck)                  # 洗牌",
+    "related": [
+      "secrets-module",
+      "numpy",
+      "sample-population"
+    ]
+  },
+  {
+    "slug": "secrets-module",
+    "term": "secrets",
+    "zh_name": "安全亂數 / token（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "產生『密碼學等級』安全亂數的標準庫，用在會影響安全的地方：secrets.token_hex()/token_urlsafe() 生 API token、session id、重設密碼連結；secrets.choice() 安全地隨機挑。**別用 random 做這些**（random 可被預測）。",
+    "analogy": "random 是玩具骰子、secrets 是賭場等級的亂數——牽涉安全就用後者。",
+    "example": "import secrets\ntoken = secrets.token_urlsafe(32)   # 產生安全的一次性 token\nprint(token)",
+    "related": [
+      "random-module",
+      "hashlib-module",
+      "jwt",
+      "bearer-token"
+    ]
+  },
+  {
+    "slug": "uuid-module",
+    "term": "uuid",
+    "zh_name": "唯一識別碼 UUID（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "產生全域唯一 ID 的標準庫，最常用 uuid.uuid4()（隨機、幾乎不會撞）。當你要一個『保證唯一、不用查資料庫也不會重複』的 id（訂單編號、檔名、分散式系統的主鍵）就用它。",
+    "analogy": "像每個東西發一組全世界唯一的身分證號，不用中央發號也不會撞號。",
+    "example": "import uuid\norder_id = str(uuid.uuid4())   # '3c4fa197-5f85-...'",
+    "related": [
+      "hashlib-module",
+      "secrets-module",
+      "primary-key"
+    ]
+  },
+  {
+    "slug": "time-module",
+    "term": "time",
+    "zh_name": "時間 / sleep（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "處理時間的低階標準庫：time.time()（現在的 Unix 時間戳，秒）、time.sleep(秒)（暫停程式，做輪詢/限速常用）、time.perf_counter()（高精度計時、量效能）。跟日期物件有關的用 datetime，這個偏『秒數與暫停』。",
+    "analogy": "像碼錶與計時器：要暫停、要量時間就找它。",
+    "example": "import time\nstart = time.perf_counter()\ntime.sleep(1)              # 暫停 1 秒\nprint(time.perf_counter() - start)  # 量花了多久",
+    "related": [
+      "datetime-module",
+      "asyncio",
+      "timeit"
+    ]
+  },
+  {
+    "slug": "functools-module",
+    "term": "functools",
+    "zh_name": "函式工具箱（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "強化函式的標準庫，三個最常用：@lru_cache（自動快取函式結果、加速重複計算）、partial()（固定函式的部分參數、產生新函式）、reduce()（把序列累積成一個值）、@wraps（寫裝飾器時保留原函式資訊）。寫進階、優化效能時很好用。",
+    "analogy": "像函式的改裝工具箱：加快取、預設參數、包裝，讓函式更好用。",
+    "example": "from functools import lru_cache\n@lru_cache            # 自動記住算過的結果\ndef fib(n): return n if n<2 else fib(n-1)+fib(n-2)",
+    "related": [
+      "decorator",
+      "itertools",
+      "memoization"
+    ]
+  },
+  {
+    "slug": "glob-module",
+    "term": "glob",
+    "zh_name": "檔案萬用字元搜尋（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "用萬用字元 (* ?) 找符合的檔案路徑。glob.glob('*.csv') 找當前目錄所有 csv、glob.glob('data/**/*.png', recursive=True) 遞迴找。做批次處理一堆檔案（爬蟲下載的圖、一堆資料檔）時，先用它把檔案列出來。",
+    "analogy": "像檔案總管的搜尋框打 *.csv：一次抓出所有符合的檔。",
+    "example": "import glob\nfor path in glob.glob('images/*.jpg'):\n    process(path)   # 批次處理所有 jpg",
+    "related": [
+      "pathlib",
+      "os-module",
+      "shutil-module"
+    ]
+  },
+  {
+    "slug": "shutil-module",
+    "term": "shutil",
+    "zh_name": "高階檔案操作（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "os 之上的高階檔案操作：shutil.copy()/copytree()（複製檔案/整個資料夾）、move()（移動）、rmtree()（刪整個資料夾，os.remove 只能刪單檔）、make_archive()（打包成 zip/tar）。搬移備份檔案、整理下載資料時用。",
+    "analogy": "像檔案總管的複製/剪下/刪整個資料夾——os 做不到的整包操作交給它。",
+    "example": "import shutil\nshutil.copytree('src', 'backup')   # 複製整個資料夾\nshutil.make_archive('out', 'zip', 'dist')  # 打包成 out.zip",
+    "related": [
+      "os-module",
+      "pathlib",
+      "zipfile-module"
+    ]
+  },
+  {
+    "slug": "zipfile-module",
+    "term": "zipfile",
+    "zh_name": "壓縮檔讀寫（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "讀寫 zip 壓縮檔的標準庫：ZipFile 開檔、extractall() 解壓、write() 加檔進去。處理使用者上傳的 zip、打包多個檔案下載、解開資料集時用。tarfile 是 .tar.gz 的對應版本。",
+    "analogy": "像程式化的解壓縮軟體：把一堆檔壓成一包、或解開一包。",
+    "example": "import zipfile\nwith zipfile.ZipFile('data.zip') as z:\n    z.extractall('out/')       # 解壓到 out/",
+    "related": [
+      "shutil-module",
+      "file-io",
+      "gzip"
+    ]
+  },
+  {
+    "slug": "urllib-module",
+    "term": "urllib",
+    "zh_name": "內建 HTTP（urllib.request）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "Python 內建、不用安裝的 HTTP 工具。urllib.request.urlopen(url) 抓網頁、urllib.parse 處理網址（拼 query string、encode）。**能用就好，但實務上 requests / httpx 好用太多**——urllib 適合『不想裝任何套件』的極簡情境。",
+    "analogy": "像陽春版的 requests：內建、堪用，但沒 requests 順手。",
+    "example": "from urllib.request import urlopen\nhtml = urlopen('https://example.com').read().decode()",
+    "related": [
+      "requests",
+      "httpx",
+      "web-scraping"
+    ]
+  },
+  {
+    "slug": "socket-module",
+    "term": "socket",
+    "zh_name": "網路底層通訊（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "TCP/UDP 網路通訊的最底層標準庫，收發原始封包。自己寫伺服器/客戶端、做即時通訊、掃 port 時會碰到。**多數應用不用直接寫 socket**（有 requests、websockets、框架幫你），但懂它才懂網路怎麼運作。",
+    "analogy": "像電話線路本身：上層的 HTTP、WebSocket 都是架在它之上的。",
+    "example": "import socket\ns = socket.socket()\ns.connect(('example.com', 80))",
+    "related": [
+      "http-protocol",
+      "websocket",
+      "tcp-udp"
+    ]
+  },
+  {
+    "slug": "heapq-module",
+    "term": "heapq",
+    "zh_name": "堆積 / 優先佇列（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "用一般 list 實作『最小堆積』的標準庫：heappush 加、heappop 每次取出最小的。要『一直拿最小/最大的那個』（如 Top-K、Dijkstra、任務排程依優先度）時用，比每次排序快。nlargest/nsmallest 直接取前 N 大/小。",
+    "analogy": "像一個永遠把最小的擺最上面的籃子：拿最小的 O(log n)，不用整個排序。",
+    "example": "import heapq\nh = []\nheapq.heappush(h, 5); heapq.heappush(h, 1)\nprint(heapq.heappop(h))   # 1（最小的先出）",
+    "related": [
+      "priority-queue",
+      "bisect-module",
+      "binary-tree"
+    ]
+  },
+  {
+    "slug": "bisect-module",
+    "term": "bisect",
+    "zh_name": "二分插入 / 搜尋（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "在『已排序的 list』上做二分搜尋與插入：bisect_left/right 找該插入的位置（O(log n)）、insort 保持排序地插入。要在有序資料裡快速找位置、維護排行榜、做區間對應（分數轉等第）時用。",
+    "analogy": "像圖書館按書號插書：直接算出該插哪，不用從頭找。",
+    "example": "import bisect\nscores = [60, 70, 80, 90]\nprint(bisect.bisect(scores, 75))   # 2（75 該插在 index 2）",
+    "related": [
+      "binary-search-tree",
+      "heapq-module",
+      "sorted"
+    ]
+  },
+  {
+    "slug": "queue-module",
+    "term": "queue",
+    "zh_name": "執行緒安全佇列（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "多執行緒間安全傳遞資料的佇列：Queue（FIFO 先進先出）、LifoQueue（後進先出）、PriorityQueue（依優先度）。做生產者-消費者模式（一堆執行緒放任務、一堆執行緒拿任務）時用，它幫你處理鎖、不會出錯。單執行緒用 collections.deque 就好。",
+    "analogy": "像餐廳的取餐號碼機：多個窗口同時取號也不會亂、不會發錯。",
+    "example": "from queue import Queue\nq = Queue()\nq.put('task1'); q.put('task2')\nprint(q.get())   # 'task1'",
+    "related": [
+      "threading",
+      "collections",
+      "concurrent-futures"
+    ]
+  },
+  {
+    "slug": "statistics-module",
+    "term": "statistics",
+    "zh_name": "基礎統計（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "內建的基礎統計庫，不用扛 numpy 就能算：mean（平均）、median（中位數）、mode（眾數）、stdev/pvariance（標準差/變異數）、quantiles（分位數）。做簡單資料分析、算個平均中位數時最輕量。大量數值運算才升級 numpy。",
+    "analogy": "像口袋計算機的統計鍵：小量資料算平均中位數不用搬出 numpy 大砲。",
+    "example": "import statistics\ndata = [3, 5, 7, 9]\nprint(statistics.mean(data), statistics.median(data))",
+    "related": [
+      "numpy",
+      "pandas",
+      "math-module"
+    ]
+  },
+  {
+    "slug": "concurrent-futures",
+    "term": "concurrent.futures",
+    "zh_name": "執行緒 / 程序池（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "最好用的『平行處理』高階介面：ThreadPoolExecutor（多執行緒、適合 I/O 密集如大量下載/API）、ProcessPoolExecutor（多程序、適合 CPU 密集如大量計算）。用 executor.map() 就能把一個迴圈變平行。比直接手寫 threading/multiprocessing 簡單太多。",
+    "analogy": "像請一組工人同時做：I/O 等待多用執行緒池、純計算重用程序池。",
+    "example": "from concurrent.futures import ThreadPoolExecutor\nwith ThreadPoolExecutor() as ex:\n    results = list(ex.map(fetch, urls))   # 平行抓一堆網址",
+    "related": [
+      "threading",
+      "multiprocessing-module",
+      "asyncio",
+      "gil"
+    ]
+  },
+  {
+    "slug": "multiprocessing-module",
+    "term": "multiprocessing",
+    "zh_name": "多程序平行（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "用『多個程序』真正平行跑 CPU 密集工作，繞過 GIL（Python 的全域鎖，讓多執行緒無法真的同時算）。做大量數值計算、影像處理、平行跑模型時用。要簡單的話直接用 concurrent.futures 的 ProcessPoolExecutor。",
+    "analogy": "多開幾個 Python 分身各自算，繞過『同一時間只能一個執行緒算』的限制。",
+    "example": "from multiprocessing import Pool\nwith Pool(4) as p:\n    results = p.map(heavy_compute, data)",
+    "related": [
+      "gil",
+      "threading",
+      "concurrent-futures"
+    ]
+  },
+  {
+    "slug": "tempfile-module",
+    "term": "tempfile",
+    "zh_name": "暫存檔 / 目錄（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "安全地建立暫存檔與暫存資料夾：NamedTemporaryFile、TemporaryDirectory（用完自動刪、不會撞名、放對系統暫存區）。處理上傳檔、產生中間檔、測試時需要臨時空間就用它，不要自己在專案裡亂建 tmp 檔。",
+    "analogy": "像用完即丟的免洗餐具：系統幫你準備、用完自動收走。",
+    "example": "import tempfile\nwith tempfile.TemporaryDirectory() as d:\n    # d 這個資料夾用完會自動刪掉\n    process_in(d)",
+    "related": [
+      "os-module",
+      "pathlib",
+      "shutil-module"
+    ]
+  },
+  {
+    "slug": "configparser-module",
+    "term": "configparser",
+    "zh_name": "ini 設定檔（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "讀寫 .ini 格式設定檔的標準庫（分 [section]、key=value）。程式的設定不要硬寫進 code，放設定檔比較好改。不過現代更常用環境變數（python-dotenv）或 YAML/TOML；configparser 是內建、最簡單的一種。",
+    "analogy": "像 Windows 的 .ini 設定檔：分區塊、一行一個設定。",
+    "example": "import configparser\ncfg = configparser.ConfigParser()\ncfg.read('config.ini')\nprint(cfg['db']['host'])",
+    "related": [
+      "python-dotenv",
+      "pyyaml",
+      "env-var"
+    ]
+  },
+  {
+    "slug": "traceback-module",
+    "term": "traceback",
+    "zh_name": "錯誤堆疊處理（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "處理例外的堆疊追蹤（traceback）：在 except 裡用 traceback.format_exc() 把完整錯誤字串抓下來寫進 log、或 print_exc() 印出來。做錯誤記錄、除錯、把錯誤回報到監控系統時用。搭配 logging 記下『哪裡爆、怎麼爆』。",
+    "analogy": "像把當機現場的完整照片存下來：不只知道出錯，還知道錯在哪一層。",
+    "example": "import traceback\ntry:\n    risky()\nexcept Exception:\n    logging.error(traceback.format_exc())",
+    "related": [
+      "logging",
+      "read-traceback",
+      "exception"
+    ]
+  },
+  {
+    "slug": "base64-module",
+    "term": "base64",
+    "zh_name": "Base64 編碼（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "把二進位資料（圖片、檔案）編成純文字（ASCII）的標準庫，方便塞進 JSON、URL、email、data URI。base64.b64encode/b64decode。**注意：這是編碼不是加密**，任何人都能解回來，別拿來『藏』機密。",
+    "analogy": "像把圖片翻譯成一串可貼在文字裡的密碼字（但誰都能翻回來）。",
+    "example": "import base64\ns = base64.b64encode(b'hello').decode()   # 'aGVsbG8='\nprint(base64.b64decode(s))                 # b'hello'",
+    "related": [
+      "hashlib-module",
+      "json-module",
+      "encoding"
+    ]
+  }
+]

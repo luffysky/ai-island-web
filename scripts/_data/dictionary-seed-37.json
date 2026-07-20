@@ -1,0 +1,431 @@
+[
+  {
+    "slug": "scrapy",
+    "term": "Scrapy",
+    "zh_name": "爬蟲框架（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "功能完整的『爬蟲框架』，不只抓單頁、而是幫你管整個大型爬蟲專案：自動排程請求、並發、重試、pipeline（抓下來的資料自動清洗入庫）、遵守 robots。**大量、結構化、要持續跑的爬蟲**用它；只抓幾頁用 requests+BeautifulSoup 就好。",
+    "analogy": "requests+BS 是手工採集、Scrapy 是整條自動化採集生產線。",
+    "example": "# scrapy 用 Spider 類別定義怎麼爬\nclass MySpider(scrapy.Spider):\n    def parse(self, response):\n        yield {'title': response.css('h1::text').get()}",
+    "related": [
+      "beautifulsoup",
+      "requests",
+      "playwright",
+      "web-scraping",
+      "xpath"
+    ]
+  },
+  {
+    "slug": "playwright",
+    "term": "Playwright",
+    "zh_name": "現代瀏覽器自動化（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "微軟出的瀏覽器自動化工具，比 Selenium 新、快、穩。用真的瀏覽器跑，能處理 **JavaScript 動態載入的頁面**（爬蟲最頭痛的）、自動等元素、截圖、也常拿來做 **E2E 測試**。爬 SPA/需要登入互動的網站首選。",
+    "analogy": "像請一個機器人幫你真的開瀏覽器點來點去——連 JS 生出來的內容都抓得到。",
+    "example": "from playwright.sync_api import sync_playwright\nwith sync_playwright() as p:\n    page = p.chromium.launch().new_page()\n    page.goto('https://example.com')\n    print(page.title())",
+    "related": [
+      "selenium",
+      "beautifulsoup",
+      "web-scraping",
+      "e2e-test"
+    ]
+  },
+  {
+    "slug": "httpx",
+    "term": "httpx",
+    "zh_name": "現代 HTTP 客戶端（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "requests 的現代升級版：API 幾乎一樣好用，但**支援 async（非同步）**、HTTP/2、連線池。要一次打大量 API、或在 async 程式（FastAPI/asyncio）裡發請求時用它取代 requests。同步情境 requests 也很好，看要不要 async。",
+    "analogy": "像 requests 加上『可以同時打很多通電話』的能力。",
+    "example": "import httpx\nasync with httpx.AsyncClient() as c:\n    r = await c.get('https://api.example.com')   # 非同步發請求",
+    "related": [
+      "requests",
+      "aiohttp",
+      "asyncio",
+      "api"
+    ]
+  },
+  {
+    "slug": "aiohttp",
+    "term": "aiohttp",
+    "zh_name": "非同步 HTTP（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "純 async 的 HTTP 客戶端＋伺服器框架。要用 asyncio 高並發地抓大量網址、或寫非同步 API 伺服器時用。跟 httpx 定位接近（都支援 async）；aiohttp 也能當伺服器。同步需求還是用 requests。",
+    "analogy": "像一個專為『同時處理成千上萬個連線』設計的 HTTP 工具。",
+    "example": "import aiohttp, asyncio\nasync def fetch(url):\n    async with aiohttp.ClientSession() as s:\n        async with s.get(url) as r: return await r.text()",
+    "related": [
+      "httpx",
+      "asyncio",
+      "requests"
+    ]
+  },
+  {
+    "slug": "lxml",
+    "term": "lxml",
+    "zh_name": "高速 XML/HTML 解析（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "C 寫的高速 XML/HTML 解析庫，支援 **XPath**（強大的節點查詢語法）。爬蟲要解析大量 HTML、或處理 XML 時，比純 Python 的解析器快很多。BeautifulSoup 也可以指定用 lxml 當後端解析器加速。",
+    "analogy": "像 HTML 的高速搜尋引擎：用 XPath 精準又快速地撈出你要的節點。",
+    "example": "from lxml import html\ntree = html.fromstring(page_source)\ntitles = tree.xpath('//h2/text()')   # 用 XPath 撈所有 h2",
+    "related": [
+      "beautifulsoup",
+      "xpath",
+      "scrapy",
+      "web-scraping"
+    ]
+  },
+  {
+    "slug": "openpyxl",
+    "term": "openpyxl",
+    "zh_name": "讀寫 Excel（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "直接讀寫 Excel .xlsx 檔（不用開 Excel）：讀取儲存格、寫入、套公式、設格式、加圖表。做『產出 Excel 報表』『讀客戶給的 Excel』時用。只是要把資料當表格分析，用 pandas.read_excel（它底層也常用 openpyxl）更快。",
+    "analogy": "像用程式操作 Excel：填表、算公式、產報表都不用手動。",
+    "example": "from openpyxl import Workbook\nwb = Workbook(); ws = wb.active\nws['A1'] = '姓名'; ws['B1'] = '分數'\nwb.save('report.xlsx')",
+    "related": [
+      "pandas",
+      "csv-module",
+      "read-csv-pandas"
+    ]
+  },
+  {
+    "slug": "pillow",
+    "term": "Pillow (PIL)",
+    "zh_name": "影像處理（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "Python 最常用的影像處理庫（import 用 PIL）：開圖、縮放、裁切、旋轉、轉格式、加浮水印、產縮圖。做圖片上傳處理、批次改圖、生成圖片時的基本工具。更進階的電腦視覺（辨識、偵測）才用 OpenCV。",
+    "analogy": "像程式版的小畫家＋批次改圖工具：縮圖、裁切、轉檔一次搞定。",
+    "example": "from PIL import Image\nim = Image.open('photo.jpg')\nim.thumbnail((200, 200))     # 縮成縮圖\nim.save('thumb.jpg')",
+    "related": [
+      "opencv",
+      "numpy",
+      "matplotlib"
+    ]
+  },
+  {
+    "slug": "opencv",
+    "term": "OpenCV (cv2)",
+    "zh_name": "電腦視覺（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "電腦視覺的主力庫（import cv2）：讀寫影像/影片、濾鏡、邊緣偵測、人臉/物件偵測、影像變換。做影像辨識、視訊處理、AI 視覺前處理時用。單純縮圖轉檔用 Pillow 就好，要『理解影像內容』才用 OpenCV。",
+    "analogy": "Pillow 是修圖、OpenCV 是讓電腦『看懂』影像（找臉、找邊、追蹤）。",
+    "example": "import cv2\nimg = cv2.imread('face.jpg')\ngray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)   # 轉灰階",
+    "related": [
+      "pillow",
+      "numpy",
+      "pytorch-tf",
+      "cnn"
+    ]
+  },
+  {
+    "slug": "scipy",
+    "term": "SciPy",
+    "zh_name": "科學計算（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "架在 numpy 之上的科學計算庫：最佳化、積分、統計檢定、訊號處理、線性代數、稀疏矩陣。做工程/科學運算、統計分析（t 檢定、迴歸）時用。日常資料分析 pandas+numpy 夠，要進階數學/統計才升級 scipy。",
+    "analogy": "numpy 是算術基礎、scipy 是上面加的一整套科學工具箱。",
+    "example": "from scipy import stats\nt, p = stats.ttest_ind(group_a, group_b)   # 做 t 檢定",
+    "related": [
+      "numpy",
+      "pandas",
+      "scikit-learn",
+      "statistics-module"
+    ]
+  },
+  {
+    "slug": "plotly",
+    "term": "Plotly",
+    "zh_name": "互動式圖表（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "做『可互動』圖表的庫：滑鼠移上去看數值、縮放、篩選，還能輸出成網頁。matplotlib/seaborn 出的是靜態圖，要放上網頁、儀表板、給人玩的圖用 Plotly。Dash（同公司）能用它做完整資料 app。",
+    "analogy": "matplotlib 是印在紙上的圖、Plotly 是可以用滑鼠玩的互動圖。",
+    "example": "import plotly.express as px\nfig = px.scatter(df, x='gdp', y='life', color='country')\nfig.show()   # 互動式散點圖",
+    "related": [
+      "matplotlib",
+      "seaborn",
+      "streamlit",
+      "pandas"
+    ]
+  },
+  {
+    "slug": "polars",
+    "term": "Polars",
+    "zh_name": "高速 DataFrame（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "用 Rust 寫的超快 DataFrame 庫，API 類似 pandas 但**快很多、更省記憶體**，支援延遲執行（lazy）與多核。處理大資料（pandas 跑很慢或裝不下）時用。小資料 pandas 生態最成熟、還是首選。",
+    "analogy": "像 pandas 的渦輪增壓版：大資料集跑起來快好幾倍。",
+    "example": "import polars as pl\ndf = pl.read_csv('big.csv')\nout = df.filter(pl.col('age') > 18).group_by('city').mean()",
+    "related": [
+      "pandas",
+      "numpy",
+      "dataframe"
+    ]
+  },
+  {
+    "slug": "tqdm",
+    "term": "tqdm",
+    "zh_name": "進度條（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "一行就幫你的迴圈加上進度條（顯示 % 、剩餘時間、速度）。跑爬蟲、批次處理、訓練模型這種要跑很久的迴圈時，包一下就知道進度、不用瞎等。只要把可迭代物件用 tqdm() 包起來。",
+    "analogy": "像下載檔案的進度條：讓漫長的迴圈看得到還要多久。",
+    "example": "from tqdm import tqdm\nfor url in tqdm(urls):     # 迴圈自動長出進度條\n    fetch(url)",
+    "related": [
+      "rich",
+      "logging"
+    ]
+  },
+  {
+    "slug": "rich",
+    "term": "Rich",
+    "zh_name": "終端美化輸出（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "讓終端機輸出變漂亮的庫：彩色文字、表格、進度條、語法高亮、漂亮的錯誤訊息、markdown 渲染。做 CLI 工具、想讓 print 的結果好看好讀時用。rich.print 直接取代 print。",
+    "analogy": "像給黑白的終端機上色排版：表格、進度、重點一目了然。",
+    "example": "from rich import print\nfrom rich.table import Table\nprint('[bold green]完成![/]')   # 彩色輸出",
+    "related": [
+      "tqdm",
+      "typer",
+      "logging"
+    ]
+  },
+  {
+    "slug": "typer",
+    "term": "Typer",
+    "zh_name": "做 CLI 工具（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "用型別提示（type hint）快速做命令列工具的庫（FastAPI 同作者）：把函式參數變成命令列參數、自動生成 --help、自動驗證型別。要把 Python 腳本變成好用的 CLI 指令時用。內建的 argparse 較繁瑣，Typer/Click 更現代。",
+    "analogy": "像 FastAPI 但做的是『命令列指令』：寫個函式就自動變成 CLI。",
+    "example": "import typer\ndef main(name: str, count: int = 1):\n    for _ in range(count): print(f'Hi {name}')\ntyper.run(main)   # 自動變成 CLI",
+    "related": [
+      "argparse",
+      "fastapi",
+      "rich",
+      "click"
+    ]
+  },
+  {
+    "slug": "pyyaml",
+    "term": "PyYAML",
+    "zh_name": "YAML 設定檔（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "讀寫 YAML 格式的庫（yaml.safe_load / dump）。YAML 比 JSON 好讀好寫（可寫註解、少括號），常用在設定檔（CI、Docker Compose、k8s、app 設定）。**讀不信任的來源一定用 safe_load**（load 有安全風險）。",
+    "analogy": "像更好讀的 JSON：靠縮排分層、可寫註解，設定檔的常客。",
+    "example": "import yaml\nwith open('config.yml') as f:\n    cfg = yaml.safe_load(f)   # 一定用 safe_load",
+    "related": [
+      "json-module",
+      "configparser-module",
+      "python-dotenv"
+    ]
+  },
+  {
+    "slug": "python-dotenv",
+    "term": "python-dotenv",
+    "zh_name": "載入 .env 環境變數（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "把 .env 檔裡的設定（API 金鑰、資料庫連線）載入成環境變數，**讓機密不寫死在 code 裡、也不進版控**（.env 要加進 .gitignore）。load_dotenv() 後用 os.getenv() 讀。這是管理密鑰的基本安全做法。",
+    "analogy": "像把家裡鑰匙放保險箱、程式需要時才拿——不會把鑰匙貼在門上（寫進 code）。",
+    "example": "from dotenv import load_dotenv\nimport os\nload_dotenv()\napi_key = os.getenv('OPENAI_API_KEY')",
+    "related": [
+      "os-module",
+      "configparser-module",
+      "env-var",
+      "secrets-module"
+    ]
+  },
+  {
+    "slug": "boto3",
+    "term": "boto3",
+    "zh_name": "AWS SDK（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "操作 AWS 雲端服務的官方 Python SDK：上傳/下載 S3 檔案、發 SQS 訊息、跑 Lambda、讀寫 DynamoDB 等。程式要跟 AWS 互動就用它。用之前要設好認證（金鑰或 IAM 角色）。",
+    "analogy": "像 AWS 的萬用遙控器：用程式操作雲端上的各種服務。",
+    "example": "import boto3\ns3 = boto3.client('s3')\ns3.upload_file('report.pdf', 'my-bucket', 'report.pdf')",
+    "related": [
+      "cloud",
+      "object-storage",
+      "python-dotenv"
+    ]
+  },
+  {
+    "slug": "openai-sdk",
+    "term": "openai",
+    "zh_name": "OpenAI API SDK（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "呼叫 OpenAI 模型（GPT 等）的官方 Python 套件：對話補全、串流、function calling、embedding、生圖。做 AI 應用、串 GPT 進你的程式時用。金鑰用環境變數管理（python-dotenv），別寫死。",
+    "analogy": "像打電話給 GPT 的話筒：把 prompt 傳過去、拿回 AI 的回答。",
+    "example": "from openai import OpenAI\nclient = OpenAI()\nr = client.chat.completions.create(model='gpt-4o',\n    messages=[{'role':'user','content':'嗨'}])",
+    "related": [
+      "anthropic-sdk",
+      "langchain",
+      "rag",
+      "function-calling"
+    ]
+  },
+  {
+    "slug": "anthropic-sdk",
+    "term": "anthropic",
+    "zh_name": "Anthropic / Claude SDK（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "呼叫 Anthropic 的 Claude 模型的官方 Python 套件：對話、串流、tool use、長上下文、看圖。做 AI 應用要用 Claude 時用。用法跟 openai 套件類似，金鑰同樣用環境變數管理。",
+    "analogy": "像打給 Claude 的話筒：傳訊息過去、拿回回答，也能給它工具用。",
+    "example": "import anthropic\nclient = anthropic.Anthropic()\nmsg = client.messages.create(model='claude-sonnet-4',\n    max_tokens=1024, messages=[{'role':'user','content':'嗨'}])",
+    "related": [
+      "openai-sdk",
+      "langchain",
+      "rag",
+      "function-calling"
+    ]
+  },
+  {
+    "slug": "langchain",
+    "term": "LangChain",
+    "zh_name": "LLM 應用框架（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "串接 LLM 應用的框架：把『模型＋提示模板＋記憶＋工具＋檢索(RAG)』組起來，快速做聊天機器人、文件問答、agent。好處是有現成元件；壞處是抽象層多、有時直接用 SDK 更簡單。做複雜 AI 流程時評估要不要用。",
+    "analogy": "像 LLM 應用的樂高：把模型、記憶、工具、資料庫拼成一個 AI 系統。",
+    "example": "from langchain_openai import ChatOpenAI\nllm = ChatOpenAI(model='gpt-4o')\nprint(llm.invoke('用一句話解釋 RAG').content)",
+    "related": [
+      "openai-sdk",
+      "anthropic-sdk",
+      "rag",
+      "vector-db",
+      "embedding"
+    ]
+  },
+  {
+    "slug": "streamlit",
+    "term": "Streamlit",
+    "zh_name": "快速做資料 App（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "用純 Python（不用寫前端）快速做互動式資料/AI 網頁 app：拉個滑桿、上傳檔、畫圖、show 表格，幾十行就變一個網頁。做資料分析 demo、ML 模型展示、內部小工具時超快。要正式產品級前端還是用真的框架。",
+    "analogy": "像把 Python 腳本一鍵變成網頁：不用碰 HTML/JS 就有互動介面。",
+    "example": "import streamlit as st\nname = st.text_input('你的名字')\nif name: st.write(f'嗨 {name}!')",
+    "related": [
+      "plotly",
+      "gradio",
+      "pandas",
+      "fastapi"
+    ]
+  },
+  {
+    "slug": "celery",
+    "term": "Celery",
+    "zh_name": "分散式任務佇列（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "把『耗時工作』丟到背景非同步執行的分散式任務佇列：寄信、產報表、跑爬蟲、影片轉檔——不要卡住使用者的請求。搭配 Redis/RabbitMQ 當訊息中介。也能做排程（定時任務）。Web 後端規模化的常見組件。",
+    "analogy": "像餐廳的出餐後台：點單（請求）馬上收，耗時的料理丟後廚（worker）慢慢做。",
+    "example": "from celery import Celery\napp = Celery('tasks', broker='redis://localhost')\n@app.task\ndef send_email(to): ...   # 丟到背景執行",
+    "related": [
+      "redis-py",
+      "queue-module",
+      "concurrent-futures",
+      "cron"
+    ]
+  },
+  {
+    "slug": "faker",
+    "term": "Faker",
+    "zh_name": "產生假資料（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "產生擬真的假資料：姓名、地址、email、電話、公司、文章、日期。做測試、填 demo 資料庫、壓力測試、開發時需要一堆假資料時用，支援多語言（含繁中）。比自己手打 test data 快太多。",
+    "analogy": "像一台假身分產生機：要多少筆擬真的測試資料都幫你變出來。",
+    "example": "from faker import Faker\nfake = Faker('zh_TW')\nprint(fake.name(), fake.address(), fake.email())",
+    "related": [
+      "pytest",
+      "hypothesis",
+      "random-module"
+    ]
+  }
+]
