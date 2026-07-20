@@ -71,10 +71,17 @@
 - 題型：規劃/漏斗診斷計算/SEO規劃/一稿多用實作/LINE規劃/Email序列實作；全移除業績保證。
 - tsc/vitest137/build 綠、已 import DB。
 
+## ✍️ ch56（虛擬 IP）全深度重寫 + DecisionQuiz（0718）
+- 舊病：重複最嚴重（56.1/56.4 都五類型、56.2/56.5 都 VTuber 技術、56.3/56.6 都變現）+ 大量收入保證。
+- 重構 6 個不重複：56.1 五類型+選路線 / 56.2 角色設定+一致性 / 56.3 Live2D vs VRM 技術 / 56.4 LINE貼圖上架 / 56.5 純AI主播能與不能+倫理 / 56.6 鐵粉多元變現。
+- **量身互動教具** `DecisionQuiz`（config 驅動、可複用）：56.1「我適合哪種虛擬 IP」3 題測驗。
+- 題型：自我定位/實作/選型規劃/實作規劃/判斷/變現規劃；全移除收入保證。
+- tsc/vitest137/build 綠、已 import DB。
+
 ## 📊 內容重寫進度（本 session）
-- 已完成全深度重寫：**ch51 寫作、ch52 設計、ch53 影音、ch54 音樂、ch55 行銷**（創作章 5/9）。
-- 互動教具 8 種：LayoutGallery/Flex/Grid/BoxModel/RwdRuler/PromptLab/PromptBuilder/**FunnelSim**（教具按章量身、非套 CSS 組）。
-- 待續創作章：ch56 虛擬IP、ch57 法律、ch58 職涯、ch60 心法；之後 ch03/13/43-45 及技術章除罐頭。
+- 已完成全深度重寫：**ch51 寫作、ch52 設計、ch53 影音、ch54 音樂、ch55 行銷、ch56 虛擬IP**（創作章 6/9）。
+- 互動教具 9 種：LayoutGallery/Flex/Grid/BoxModel/RwdRuler/PromptLab/PromptBuilder/FunnelSim/**DecisionQuiz**（按章量身、非套 CSS 組）。
+- 待續創作章：ch57 法律、ch58 職涯、ch60 心法；之後 ch03/13/43-45 及技術章除罐頭。
 
 ## ⏭ 待續
 - 林董線上驗收版面圖鑑手感（Claude 端 Chrome 擴充沒連、沒法目視截圖）。
