@@ -1,0 +1,496 @@
+[
+  {
+    "slug": "transformers-lib",
+    "term": "transformers",
+    "zh_name": "HuggingFace 模型（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "HuggingFace 的招牌套件，一行就能載入並跑數萬個預訓練模型（文字生成、翻譯、分類、摘要、語音、影像）。做 NLP/AI 任務不想從零訓練時用它抓現成模型。pipeline() 是最快的入口。是 AI 開發的核心工具之一。",
+    "analogy": "像 AI 模型的 App Store：要哪個能力，載一個現成模型直接用。",
+    "example": "from transformers import pipeline\nclf = pipeline('sentiment-analysis')\nprint(clf('這產品超棒'))   # [{'label':'POSITIVE',...}]",
+    "related": [
+      "pytorch-tf",
+      "scikit-learn",
+      "langchain",
+      "fine-tune"
+    ]
+  },
+  {
+    "slug": "spacy",
+    "term": "spaCy",
+    "zh_name": "工業級 NLP（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "快速、實用的自然語言處理庫：斷詞、詞性標註、命名實體辨識（抓出人名/地名/公司）、依存句法。做『從文字裡抽結構化資訊』（如從履歷抽技能、從新聞抽事件）時用。比 NLTK 快、更適合正式產品。",
+    "analogy": "像一個讀文字的助理：幫你標出詞性、找出裡面的人名地名公司。",
+    "example": "import spacy\nnlp = spacy.load('zh_core_web_sm')\nfor ent in nlp('小明在台北工作').ents: print(ent.text, ent.label_)",
+    "related": [
+      "nltk",
+      "transformers-lib",
+      "scikit-learn"
+    ]
+  },
+  {
+    "slug": "nltk",
+    "term": "NLTK",
+    "zh_name": "NLP 教學工具（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "歷史悠久的自然語言處理庫，內建大量語料庫與教學用工具（斷詞、詞幹、停用詞、情感）。適合『學 NLP 概念、做研究/教學』；要正式產品的效能與實用性，spaCy/transformers 更好。",
+    "analogy": "像 NLP 的教科書＋實驗室：概念齊全、適合學習與研究。",
+    "example": "import nltk\nfrom nltk.tokenize import word_tokenize\nprint(word_tokenize('Hello world'))",
+    "related": [
+      "spacy",
+      "transformers-lib"
+    ]
+  },
+  {
+    "slug": "gradio",
+    "term": "Gradio",
+    "zh_name": "快速做 AI Demo UI（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "幾行 Python 就把你的模型/函式變成可分享的網頁介面（上傳圖、輸入文字、看結果），HuggingFace 生態最愛。做 ML 模型 demo、給人試玩你的 AI 時最快。跟 Streamlit 類似，Gradio 更偏『包一個函式成介面』。",
+    "analogy": "像把你的 AI 函式一鍵變成可以玩的網頁 demo。",
+    "example": "import gradio as gr\ngr.Interface(fn=classify, inputs='image', outputs='label').launch()",
+    "related": [
+      "streamlit",
+      "transformers-lib",
+      "fastapi"
+    ]
+  },
+  {
+    "slug": "statsmodels",
+    "term": "statsmodels",
+    "zh_name": "統計建模（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "做正式統計建模與檢定的庫：線性/邏輯迴歸（附完整統計摘要、p 值、信賴區間）、時間序列（ARIMA）、假設檢定。要『解釋關係、做統計推論』（不只是預測）時用它，比 scikit-learn 更偏統計。",
+    "analogy": "scikit-learn 重預測、statsmodels 重解釋（給你 p 值、係數意義的完整統計報告）。",
+    "example": "import statsmodels.api as sm\nmodel = sm.OLS(y, sm.add_constant(X)).fit()\nprint(model.summary())   # 完整迴歸統計報告",
+    "related": [
+      "scikit-learn",
+      "scipy",
+      "pandas"
+    ]
+  },
+  {
+    "slug": "xgboost",
+    "term": "XGBoost",
+    "zh_name": "梯度提升樹（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "表格資料上最常奪冠的機器學習演算法庫（梯度提升決策樹）。做結構化資料的預測/分類（風險評分、銷售預測、Kaggle 競賽）時,常比深度學習更準更快。LightGBM 是類似的競爭者。",
+    "analogy": "像一群決策樹接力補強彼此的錯——表格資料預測的常勝軍。",
+    "example": "import xgboost as xgb\nmodel = xgb.XGBClassifier().fit(X_train, y_train)\npreds = model.predict(X_test)",
+    "related": [
+      "scikit-learn",
+      "classification-regression",
+      "pandas"
+    ]
+  },
+  {
+    "slug": "pymongo",
+    "term": "PyMongo",
+    "zh_name": "MongoDB 驅動（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "操作 MongoDB（NoSQL 文件資料庫）的官方 Python 驅動：存取像 JSON 的文件、查詢、索引。當資料結構彈性、不想先定 schema、或存半結構化資料時用 Mongo＋pymongo。查詢語法用 dict 表達。",
+    "analogy": "像用程式操作一個裝 JSON 文件的資料庫：存取都像在玩 dict。",
+    "example": "from pymongo import MongoClient\ndb = MongoClient()['mydb']\ndb.users.insert_one({'name': 'Nami', 'age': 25})",
+    "related": [
+      "nosql",
+      "sqlalchemy",
+      "redis-py",
+      "json-module"
+    ]
+  },
+  {
+    "slug": "redis-py",
+    "term": "redis (redis-py)",
+    "zh_name": "Redis 客戶端（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "操作 Redis（超快的記憶體資料庫）的 Python 客戶端。用途：快取（減少打 DB）、session 儲存、排行榜、限流計數器、當 Celery 的訊息中介。key-value 操作簡單，速度極快。",
+    "analogy": "像程式的高速便條本：常用資料放記憶體、存取快到飛起。",
+    "example": "import redis\nr = redis.Redis()\nr.set('views', 0); r.incr('views')   # 計數器",
+    "related": [
+      "cache",
+      "celery",
+      "pymongo",
+      "rate-limit"
+    ]
+  },
+  {
+    "slug": "psycopg2",
+    "term": "psycopg2",
+    "zh_name": "PostgreSQL 驅動（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "Python 連 PostgreSQL 最主流的驅動。直接下 SQL 存取 Postgres 資料庫。**用參數化查詢防 SQL injection**。多數人透過 SQLAlchemy（ORM）間接用它；要寫原生 SQL、要效能時直接用 psycopg2。",
+    "analogy": "像 Python 跟 PostgreSQL 之間的專用電話線。",
+    "example": "import psycopg2\nconn = psycopg2.connect(dsn)\nconn.cursor().execute('SELECT * FROM users WHERE id=%s', (1,))",
+    "related": [
+      "sqlalchemy",
+      "sql-injection",
+      "sqlite3-module"
+    ]
+  },
+  {
+    "slug": "uvicorn",
+    "term": "Uvicorn",
+    "zh_name": "ASGI 伺服器（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "跑非同步 Python Web 應用（FastAPI/Starlette）的高效能 ASGI 伺服器。開發時 uvicorn app:app --reload、正式常配 Gunicorn 一起用。是把你的 FastAPI 服務『真的跑起來對外服務』的那一層。",
+    "analogy": "像餐廳的外場：把你的 FastAPI 廚房做好的東西，實際端出去給客人（處理連線）。",
+    "example": "# 終端執行：uvicorn main:app --reload --port 8000",
+    "related": [
+      "fastapi",
+      "wsgi-asgi",
+      "gunicorn"
+    ]
+  },
+  {
+    "slug": "websockets",
+    "term": "websockets",
+    "zh_name": "WebSocket（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "用 asyncio 做 WebSocket（前後端即時雙向通訊）的純 Python 庫。做聊天室、即時通知、線上協作、遊戲等『伺服器要主動推、雙向即時』的功能時用。HTTP 是一問一答，WebSocket 是保持連線雙向講。",
+    "analogy": "HTTP 像寄信一來一往、WebSocket 像打電話保持通話兩邊隨時能講。",
+    "example": "import websockets, asyncio\nasync def handler(ws):\n    async for msg in ws: await ws.send(f'收到: {msg}')",
+    "related": [
+      "socket-module",
+      "aiohttp",
+      "http-protocol"
+    ]
+  },
+  {
+    "slug": "cryptography-lib",
+    "term": "cryptography",
+    "zh_name": "加密（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "Python 最推薦的加密庫：對稱加密（Fernet，最好上手）、非對稱、雜湊、簽章、憑證。要『真正加密資料』（可解回來，跟 hashlib 單向不同）時用。**別自己刻加密演算法**，用這種經審核的庫。",
+    "analogy": "像專業保險箱：把資料鎖起來、只有拿鑰匙的人能解開。",
+    "example": "from cryptography.fernet import Fernet\nkey = Fernet.generate_key(); f = Fernet(key)\ntoken = f.encrypt(b'secret'); print(f.decrypt(token))",
+    "related": [
+      "hashlib-module",
+      "secrets-module",
+      "pyjwt",
+      "encryption"
+    ]
+  },
+  {
+    "slug": "pyjwt",
+    "term": "PyJWT",
+    "zh_name": "JWT 權杖（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "產生與驗證 JWT（JSON Web Token）的庫。JWT 是登入驗證常用的『通行證』：伺服器簽發、之後每次請求帶著它證明身分（不用每次查 DB）。做 API 登入、無狀態驗證時用。encode 簽發、decode 驗證。",
+    "analogy": "像演唱會手環：入場時發你一個簽過章的手環，之後看手環就知道你是誰、不用再查名單。",
+    "example": "import jwt\ntoken = jwt.encode({'uid': 1}, 'secret', algorithm='HS256')\nprint(jwt.decode(token, 'secret', algorithms=['HS256']))",
+    "related": [
+      "jwt",
+      "cryptography-lib",
+      "passlib",
+      "bearer-token"
+    ]
+  },
+  {
+    "slug": "passlib",
+    "term": "passlib",
+    "zh_name": "密碼雜湊（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "安全儲存密碼的庫，用 bcrypt/argon2 等『慢雜湊＋salt』把密碼變成無法還原、也難暴力破解的形式。**存使用者密碼一定用這種，不要用 md5/sha 或明文。**verify 時比對雜湊。",
+    "analogy": "像把密碼放進特製保險箱：存的是雜湊、就算資料庫外洩也難還原密碼。",
+    "example": "from passlib.hash import bcrypt\nh = bcrypt.hash('mypassword')\nprint(bcrypt.verify('mypassword', h))   # True",
+    "related": [
+      "hashlib-module",
+      "secrets-module",
+      "cryptography-lib",
+      "pyjwt"
+    ]
+  },
+  {
+    "slug": "marshmallow",
+    "term": "marshmallow",
+    "zh_name": "序列化 / 驗證（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "把 Python 物件『序列化』成 JSON、以及驗證『收到的資料格式對不對』的庫。做 API 時檢查輸入、整理輸出。功能跟 Pydantic 重疊（Pydantic 更現代、FastAPI 內建用它）；舊專案或 Flask 常見 marshmallow。",
+    "analogy": "像海關檢查：進來的資料驗格式、出去的資料整理成乾淨 JSON。",
+    "example": "from marshmallow import Schema, fields\nclass UserSchema(Schema):\n    name = fields.Str(required=True); age = fields.Int()",
+    "related": [
+      "pydantic",
+      "json-module",
+      "fastapi"
+    ]
+  },
+  {
+    "slug": "arrow",
+    "term": "Arrow",
+    "zh_name": "更好用的日期時間（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "讓日期時間操作更人性化的庫：解析各種格式、時區轉換、加減時間、humanize（『3 小時前』）都比內建 datetime 簡潔。處理時區、要顯示相對時間時很省事。pendulum 是類似的競爭者。",
+    "analogy": "像 datetime 的加強版：時區、相對時間（3 小時前）都變得超簡單。",
+    "example": "import arrow\nnow = arrow.now('Asia/Taipei')\nprint(now.shift(hours=-3).humanize())   # '3 hours ago'",
+    "related": [
+      "datetime-module",
+      "python-dateutil",
+      "calendar-module"
+    ]
+  },
+  {
+    "slug": "python-dateutil",
+    "term": "python-dateutil",
+    "zh_name": "強大日期解析（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "補足內建 datetime 的庫：parse() 智慧解析『幾乎任何格式』的日期字串（不用先知道格式）、relativedelta 做『加一個月/一年』這種曆法運算、處理重複規則（rrule）。處理使用者輸入的雜亂日期時超好用。",
+    "analogy": "像萬能日期翻譯機：丟任何格式的日期字串進去，它都認得。",
+    "example": "from dateutil import parser\nprint(parser.parse('2026年7月21日 下午3點'))   # 自動解析成 datetime",
+    "related": [
+      "datetime-module",
+      "arrow",
+      "calendar-module"
+    ]
+  },
+  {
+    "slug": "apscheduler",
+    "term": "APScheduler",
+    "zh_name": "進階排程（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "在 Python 程式裡排定時任務的庫：cron 式（每天 9 點）、固定間隔（每 5 分鐘）、指定時間跑一次。做定時抓資料、定時報表、定時清理時用。比作業系統的 cron 更能整合進你的應用、跨平台。schedule 是更輕量的版本。",
+    "analogy": "像程式內建的鬧鐘與行事曆：到點自動跑你排好的任務。",
+    "example": "from apscheduler.schedulers.background import BackgroundScheduler\nsched = BackgroundScheduler()\nsched.add_job(job, 'cron', hour=9); sched.start()",
+    "related": [
+      "cron",
+      "celery",
+      "schedule-lib"
+    ]
+  },
+  {
+    "slug": "watchdog",
+    "term": "watchdog",
+    "zh_name": "監控檔案變動（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "監控『檔案/資料夾有沒有被改動』的庫，一有新增/修改/刪除就觸發你的處理。做自動重載（改檔就重跑）、自動處理『丟進資料夾就處理』的流程、同步工具時用。",
+    "analogy": "像裝在資料夾上的門鈴：有人動了裡面的檔案就立刻通知你。",
+    "example": "from watchdog.observers import Observer\n# 監看資料夾，檔案一變就呼叫你的 handler",
+    "related": [
+      "os-module",
+      "glob-module",
+      "apscheduler"
+    ]
+  },
+  {
+    "slug": "loguru",
+    "term": "loguru",
+    "zh_name": "超好用的 logging（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "讓 Python logging 變超簡單的庫：一行 logger.info() 就有漂亮彩色輸出、自動記錄檔案行號、自動轉檔（rotation）、抓完整例外堆疊。內建 logging 設定繁瑣，loguru 開箱即用。做日誌記錄想省事就用它。",
+    "analogy": "像內建 logging 的免設定升級版：一行就有漂亮又完整的日誌。",
+    "example": "from loguru import logger\nlogger.info('啟動完成')\nlogger.exception('出錯了')   # 自動帶完整堆疊",
+    "related": [
+      "logging",
+      "rich",
+      "sentry-sdk",
+      "traceback-module"
+    ]
+  },
+  {
+    "slug": "sentry-sdk",
+    "term": "sentry-sdk",
+    "zh_name": "錯誤監控（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "把線上發生的錯誤自動回報到 Sentry 平台的庫：使用者踩到 bug、程式當掉，你馬上收到通知＋完整堆疊＋發生情境（不用等使用者回報）。正式產品的錯誤監控標配。一行 init 就開始捕捉未處理的例外。",
+    "analogy": "像產品的黑盒子＋警報器：出事自動錄下現場、立刻通知你。",
+    "example": "import sentry_sdk\nsentry_sdk.init(dsn='https://...@sentry.io/123')\n# 之後未捕捉的錯誤自動回報",
+    "related": [
+      "logging",
+      "loguru",
+      "traceback-module",
+      "monitoring"
+    ]
+  },
+  {
+    "slug": "black-formatter",
+    "term": "black",
+    "zh_name": "程式碼格式化（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "『不容妥協』的 Python 自動格式化工具：一跑就把整個專案的縮排、引號、換行統一成一致風格，團隊不用再吵格式。存檔時自動跑、或 CI 檢查。搭配 ruff/isort 一起用。省下所有格式爭論。",
+    "analogy": "像自動燙衣機：不管你怎麼寫，跑一下就變成整齊統一的樣子。",
+    "example": "# 終端執行：black .   （自動格式化整個專案）",
+    "related": [
+      "ruff",
+      "mypy-checker",
+      "pep8",
+      "pre-commit"
+    ]
+  },
+  {
+    "slug": "ruff",
+    "term": "Ruff",
+    "zh_name": "超快 linter / 格式化（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "用 Rust 寫的超快 Python linter（抓風格問題、潛在 bug、沒用到的 import），也能當 formatter。速度比舊工具（flake8/pylint）快幾十倍，正在成為 2026 主流。一個工具取代一堆 lint 工具。",
+    "analogy": "像超高速的程式碼糾察隊：秒掃全專案、揪出風格與潛在問題。",
+    "example": "# 終端執行：ruff check .    /    ruff format .",
+    "related": [
+      "black-formatter",
+      "mypy-checker",
+      "pep8"
+    ]
+  },
+  {
+    "slug": "mypy-checker",
+    "term": "mypy",
+    "zh_name": "靜態型別檢查（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "檢查 Python 型別提示（type hint）對不對的工具：不用跑程式就抓出『把字串傳給要數字的函式』這種型別錯誤。搭配 type hint 用，讓 Python 有點像有型別檢查的語言，減少 bug。CI 常跑它把關。",
+    "analogy": "像上線前的型別體檢：不用跑就抓出『型別用錯』的地雷。",
+    "example": "# 加了 type hint 後，終端執行：mypy your_module.py",
+    "related": [
+      "type-hint",
+      "type-hint-python",
+      "ruff",
+      "pydantic"
+    ]
+  },
+  {
+    "slug": "hypothesis",
+    "term": "Hypothesis",
+    "zh_name": "屬性測試（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "『屬性測試（property-based testing）』庫：你不用自己想一堆測試案例,只要描述『輸入的規則』和『該成立的性質』,它自動生成大量刁鑽的邊界輸入去打你的程式、找出你沒想到的 bug。配 pytest 用。",
+    "analogy": "像一個專門找碴的測試員:自動想出你沒料到的極端輸入來考你的程式。",
+    "example": "from hypothesis import given, strategies as st\n@given(st.integers())\ndef test_abs_positive(x): assert abs(x) >= 0",
+    "related": [
+      "pytest",
+      "unittest",
+      "faker"
+    ]
+  },
+  {
+    "slug": "pyinstaller",
+    "term": "PyInstaller",
+    "zh_name": "打包成執行檔（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "把 Python 程式＋所有相依套件打包成單一執行檔（.exe/.app）的工具,讓沒裝 Python 的人也能直接雙擊執行。做桌面小工具、要分發給一般使用者時用。一行 pyinstaller --onefile 就打包。",
+    "analogy": "像把整個 Python 廚房裝進一個便當盒:對方不用裝食材也能直接吃。",
+    "example": "# 終端執行：pyinstaller --onefile app.py",
+    "related": [
+      "venv-workflow",
+      "pip",
+      "poetry-pip"
+    ]
+  },
+  {
+    "slug": "qrcode-lib",
+    "term": "qrcode",
+    "zh_name": "產生 QR Code（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "用一行 Python 產生 QR code 圖片的庫。做電子票券、付款碼、連結分享、Wi-Fi 分享碼時用。搭配 Pillow 輸出圖片。要『讀』QR code 則用 opencv 或 pyzbar。",
+    "analogy": "像 QR code 產生器:給它文字/網址,吐出一張掃描碼。",
+    "example": "import qrcode\nimg = qrcode.make('https://example.com')\nimg.save('qr.png')",
+    "related": [
+      "pillow",
+      "opencv"
+    ]
+  }
+]

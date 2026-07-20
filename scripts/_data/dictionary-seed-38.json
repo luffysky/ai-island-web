@@ -1,0 +1,441 @@
+[
+  {
+    "slug": "calendar-module",
+    "term": "calendar",
+    "zh_name": "日曆（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "產生與操作日曆的標準庫：印出某月/某年的月曆、判斷閏年 isleap()、算某天星期幾 weekday()、某月有幾天 monthrange()。做排班、行事曆、報表『這個月幾號是週幾』時用。跟 datetime 搭配（datetime 管日期時間、calendar 管日曆結構）。",
+    "analogy": "像牆上的月曆：印出整月、告訴你幾號星期幾、這個月有幾天。",
+    "example": "import calendar\nprint(calendar.month(2026, 7))       # 印出 2026 年 7 月的月曆\nprint(calendar.isleap(2028))         # True（閏年）",
+    "related": [
+      "datetime-module",
+      "time-module"
+    ]
+  },
+  {
+    "slug": "hashlib-module",
+    "term": "hashlib",
+    "zh_name": "雜湊 / 摘要（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "算資料『指紋』的標準庫：sha256()/md5() 把任意資料變成固定長度的雜湊值。用途：檢查檔案有沒有被改（比對雜湊）、儲存密碼時存雜湊而非明文（要配 salt）、去重。**注意：雜湊是單向的（算不回原文）；存密碼別用純 md5/sha，要用 bcrypt/argon2（見 passlib）。**",
+    "analogy": "像資料的指紋：內容變一點指紋就完全不同，但不能從指紋還原內容。",
+    "example": "import hashlib\nh = hashlib.sha256(b'hello').hexdigest()\nprint(h)   # 固定長度的指紋字串",
+    "related": [
+      "secrets-module",
+      "passlib",
+      "base64-module",
+      "encryption"
+    ]
+  },
+  {
+    "slug": "decimal-module",
+    "term": "decimal",
+    "zh_name": "精確小數（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "做『精確』小數運算的標準庫，避開浮點誤差（0.1+0.2 用 float 會等於 0.30000000000000004）。**處理金錢、稅、匯率等不能有誤差的地方一定用 Decimal**，不要用 float。可設定精度與四捨五入模式。",
+    "analogy": "float 是快但會有微小誤差的估算、Decimal 是慢但精準的記帳計算機。",
+    "example": "from decimal import Decimal\nprint(0.1 + 0.2)                     # 0.30000000000000004（float 誤差）\nprint(Decimal('0.1') + Decimal('0.2'))  # 0.3（精確）",
+    "related": [
+      "fractions-module",
+      "math-module",
+      "float"
+    ]
+  },
+  {
+    "slug": "fractions-module",
+    "term": "fractions",
+    "zh_name": "分數（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "用『真正的分數』做運算的標準庫，Fraction(1,3) 就是 1/3、不會變成 0.333…。要保留精確的比例、機率、需要約分的地方用。它會自動約分（Fraction(2,4) → 1/2）。",
+    "analogy": "像數學課的分數：1/3 就是 1/3，不會被強迫變成除不盡的小數。",
+    "example": "from fractions import Fraction\nprint(Fraction(1,3) + Fraction(1,6))   # 1/2（自動約分）",
+    "related": [
+      "decimal-module",
+      "math-module"
+    ]
+  },
+  {
+    "slug": "textwrap-module",
+    "term": "textwrap",
+    "zh_name": "文字換行 / 縮排（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "處理多行文字排版的標準庫：wrap()/fill() 把長字串折成指定寬度、shorten() 截短加省略號、dedent() 移除多餘縮排（處理三引號字串很好用）、indent() 加縮排。做終端輸出排版、產生報表文字時用。",
+    "analogy": "像 Word 的自動換行與縮排：把一長串文字排成整齊的段落。",
+    "example": "import textwrap\nprint(textwrap.fill('很長的一段文字...', width=20))  # 折成每行 20 字",
+    "related": [
+      "string-methods",
+      "rich"
+    ]
+  },
+  {
+    "slug": "difflib-module",
+    "term": "difflib",
+    "zh_name": "文字差異比對（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "比對兩段文字/序列差異的標準庫：ndiff/unified_diff 看兩份文字改了哪裡（像 git diff）、SequenceMatcher 算相似度、get_close_matches 找最接近的字（做拼字建議/模糊比對）。做版本比對、找相似字串時用。",
+    "analogy": "像 git diff 或 Word 的追蹤修訂：標出兩份文字差在哪、有多像。",
+    "example": "import difflib\nprint(difflib.get_close_matches('appel', ['apple','ample','apply']))  # ['apple','apply','ample']",
+    "related": [
+      "fuzzy-match",
+      "string-methods"
+    ]
+  },
+  {
+    "slug": "pprint-module",
+    "term": "pprint",
+    "zh_name": "漂亮印出（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "把巢狀的 dict/list（如 JSON、API 回應）印得整齊好讀，自動縮排換行，不像 print 擠成一團。除錯看複雜資料結構時很好用。pprint.pprint(data) 就好。",
+    "analogy": "像把亂糟糟的資料自動排版成好讀的樹狀結構。",
+    "example": "from pprint import pprint\npprint(complex_nested_dict)   # 整齊縮排印出",
+    "related": [
+      "json-module",
+      "rich",
+      "print-debug"
+    ]
+  },
+  {
+    "slug": "contextlib-module",
+    "term": "contextlib",
+    "zh_name": "with 情境管理工具（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "幫你做 with 語句（context manager）的工具箱：@contextmanager 用一個函式就寫出 with 區塊（省得寫 __enter__/__exit__ 類別）、suppress() 優雅忽略特定例外、closing() 確保資源關閉。要做『進入時設定、離開時清理』的東西時用。",
+    "analogy": "像自動的開門關門機制：進去自動開燈、離開自動關燈，不會忘。",
+    "example": "from contextlib import contextmanager\n@contextmanager\ndef timer():\n    import time; s=time.time(); yield; print(time.time()-s)",
+    "related": [
+      "with-statement",
+      "context-manager",
+      "decorator"
+    ]
+  },
+  {
+    "slug": "operator-module",
+    "term": "operator",
+    "zh_name": "運算子函式（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "把運算子（+ < []．）變成可傳遞的函式：itemgetter/attrgetter（依欄位/屬性取值，排序時超好用）、add/mul 等。常搭 sorted/map/max 用，比寫 lambda 更快更清楚。",
+    "analogy": "把 +、<、[] 這些符號變成可以當參數傳的函式。",
+    "example": "from operator import itemgetter\nusers.sort(key=itemgetter('age'))   # 依 age 排序（比 lambda 快）",
+    "related": [
+      "lambda",
+      "functools-module",
+      "sorted"
+    ]
+  },
+  {
+    "slug": "inspect-module",
+    "term": "inspect",
+    "zh_name": "程式內省（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "在執行期『檢視程式自己』的標準庫：拿到函式的參數簽名 signature()、原始碼 getsource()、判斷是不是函式/類別、看呼叫堆疊。寫框架、除錯工具、裝飾器、自動生文件時用。一般應用少用，但很強大。",
+    "analogy": "像讓程式照鏡子：看清自己的函式長什麼樣、被誰呼叫。",
+    "example": "import inspect\nprint(inspect.signature(myfunc))   # 看函式的參數簽名",
+    "related": [
+      "decorator",
+      "importlib-module",
+      "metaclass"
+    ]
+  },
+  {
+    "slug": "importlib-module",
+    "term": "importlib",
+    "zh_name": "動態匯入（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "在執行期『用字串名稱』動態載入模組的標準庫：import_module('json') 等於 import json，但模組名可以是變數。做外掛系統（plugin）、依設定載入不同模組時用。也能重新載入模組（reload）。",
+    "analogy": "像用名字點名叫模組進來——名字可以是變數，不用寫死。",
+    "example": "import importlib\nmod = importlib.import_module(plugin_name)   # 動態載入外掛",
+    "related": [
+      "module-import",
+      "inspect-module"
+    ]
+  },
+  {
+    "slug": "timeit-module",
+    "term": "timeit",
+    "zh_name": "精準測效能（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "精準量一小段 code 跑多快的標準庫，會重複跑很多次取平均、避免雜訊。比較兩種寫法哪個快時用它，別自己用 time 手量（不準）。命令列 python -m timeit 也能直接用。",
+    "analogy": "像實驗室的碼錶：重複測很多次、給你可信的平均速度。",
+    "example": "import timeit\nprint(timeit.timeit('sum(range(100))', number=10000))",
+    "related": [
+      "time-module",
+      "cprofile-module"
+    ]
+  },
+  {
+    "slug": "cprofile-module",
+    "term": "cProfile",
+    "zh_name": "效能剖析（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "找出程式『慢在哪個函式』的標準庫，跑一遍後列出每個函式被呼叫幾次、花多少時間。程式很慢但不知道瓶頸在哪時用它定位（別憑感覺優化）。配 snakeviz/pstats 看視覺化結果。",
+    "analogy": "像程式的健康檢查報告：告訴你時間都花在哪個函式上。",
+    "example": "import cProfile\ncProfile.run('my_slow_function()')   # 列出各函式耗時",
+    "related": [
+      "timeit-module",
+      "logging"
+    ]
+  },
+  {
+    "slug": "struct-module",
+    "term": "struct",
+    "zh_name": "二進位打包（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "在 Python 值和 C 風格二進位資料之間轉換的標準庫：pack/unpack 依格式字串（如 '>I' 大端序 4 byte 整數）打包/解包。處理二進位檔格式、網路封包、跟 C 程式/硬體交換資料時用。",
+    "analogy": "像把數字裝進固定格式的盒子（幾個 byte、大端小端），或從盒子拆出來。",
+    "example": "import struct\ndata = struct.pack('>I', 1024)      # 打包成 4 byte\nprint(struct.unpack('>I', data))    # (1024,)",
+    "related": [
+      "array-module",
+      "socket-module",
+      "base64-module"
+    ]
+  },
+  {
+    "slug": "io-module",
+    "term": "io",
+    "zh_name": "記憶體檔案 StringIO/BytesIO（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "在記憶體裡當『假檔案』用的標準庫：StringIO（文字）、BytesIO（二進位）——把字串/位元組當檔案讀寫，不用真的寫到磁碟。要把資料餵給『只接受檔案』的函式、或在記憶體處理上傳/下載內容時用。",
+    "analogy": "像記憶體裡的隱形檔案：程式以為在讀寫檔，其實在記憶體、不落地。",
+    "example": "from io import StringIO\nbuf = StringIO()\ncsv.writer(buf).writerow(['a','b'])   # 寫進記憶體而非磁碟",
+    "related": [
+      "file-io",
+      "csv-module",
+      "tempfile-module"
+    ]
+  },
+  {
+    "slug": "ipaddress-module",
+    "term": "ipaddress",
+    "zh_name": "IP 位址處理（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "處理 IP 位址與網段的標準庫：驗證 IP 合不合法、判斷某 IP 在不在某網段（CIDR）、IPv4/IPv6 互通、算網段裡有幾個位址。做網路工具、防火牆規則、白名單判斷時用。",
+    "analogy": "像 IP 位址的計算機：驗證、比對網段、算範圍都不用自己刻。",
+    "example": "import ipaddress\nnet = ipaddress.ip_network('192.168.1.0/24')\nprint(ipaddress.ip_address('192.168.1.5') in net)   # True",
+    "related": [
+      "socket-module",
+      "dns"
+    ]
+  },
+  {
+    "slug": "unicodedata-module",
+    "term": "unicodedata",
+    "zh_name": "Unicode 資料（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "查詢 Unicode 字元資訊、做正規化的標準庫：normalize() 把『看起來一樣但編碼不同』的字統一（處理全形半形、組合字元）、判斷字元類別。做文字清洗、搜尋比對、去除變音符號時用。",
+    "analogy": "像 Unicode 字典：查字元屬性、把長得一樣但編碼不同的字統一。",
+    "example": "import unicodedata\nprint(unicodedata.normalize('NFKC', 'ＡＢＣ'))   # 全形轉半形 'ABC'",
+    "related": [
+      "string-methods",
+      "encoding",
+      "regex"
+    ]
+  },
+  {
+    "slug": "warnings-module",
+    "term": "warnings",
+    "zh_name": "警告訊息（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "發出『警告』但不中斷程式的標準庫（跟拋例外不同）：warnings.warn() 提醒使用者某功能過時（DeprecationWarning）、用法不建議。寫套件/API 要提醒使用者『這個以後會拿掉』時用。也能過濾/忽略特定警告。",
+    "analogy": "像黃燈提醒：不擋你走，但告訴你這樣做以後會有問題。",
+    "example": "import warnings\nwarnings.warn('這個函式即將淘汰', DeprecationWarning)",
+    "related": [
+      "logging",
+      "exception",
+      "deprecation"
+    ]
+  },
+  {
+    "slug": "getpass-module",
+    "term": "getpass",
+    "zh_name": "安全輸入密碼（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "在終端機讓使用者輸入密碼但『不顯示在螢幕上』的標準庫（打字看不到、不留在畫面）。寫 CLI 工具需要輸入密碼/金鑰時用，別用 input（會明碼顯示）。也能取得目前登入的使用者名稱。",
+    "analogy": "像網站登入的密碼框：打字變成點點點，不會被旁邊的人看到。",
+    "example": "import getpass\npw = getpass.getpass('密碼: ')   # 輸入時螢幕不顯示",
+    "related": [
+      "input",
+      "secrets-module",
+      "python-dotenv"
+    ]
+  },
+  {
+    "slug": "platform-module",
+    "term": "platform",
+    "zh_name": "平台 / 系統資訊（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "查詢執行環境資訊的標準庫：作業系統 platform.system()（Windows/Linux/Darwin）、Python 版本、CPU 架構、機器名稱。寫跨平台程式要『依系統做不同事』、或記錄環境資訊除錯時用。",
+    "analogy": "像程式的『關於本機』：查出跑在什麼系統、什麼 Python、什麼架構。",
+    "example": "import platform\nprint(platform.system(), platform.python_version())",
+    "related": [
+      "os-module",
+      "sys-module"
+    ]
+  },
+  {
+    "slug": "smtplib-module",
+    "term": "smtplib",
+    "zh_name": "寄 Email（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "用程式寄 email 的標準庫（走 SMTP 協定），搭配 email 模組組出含附件/HTML 的信。做系統通知、密碼重設信、報表寄送時用。**實務上寄大量/交易信多用第三方服務（SendGrid/SES/Resend）**，smtplib 適合簡單自寄。",
+    "analogy": "像用程式操作一台寄信機：連上郵件伺服器、把信送出去。",
+    "example": "import smtplib\ns = smtplib.SMTP('smtp.gmail.com', 587); s.starttls()\ns.login(user, pw); s.sendmail(frm, to, msg)",
+    "related": [
+      "email",
+      "socket-module",
+      "celery"
+    ]
+  },
+  {
+    "slug": "webbrowser-module",
+    "term": "webbrowser",
+    "zh_name": "開瀏覽器（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "用程式打開系統預設瀏覽器到某個網址的標準庫，一行 webbrowser.open(url)。做 CLI 工具跑完自動開結果頁、OAuth 登入導向、開文件時用。超簡單但很實用。",
+    "analogy": "像程式幫你點『在瀏覽器開啟』：自動跳出網頁。",
+    "example": "import webbrowser\nwebbrowser.open('https://localhost:3000')   # 自動開瀏覽器",
+    "related": [
+      "urllib-module",
+      "os-module"
+    ]
+  },
+  {
+    "slug": "ctypes-module",
+    "term": "ctypes",
+    "zh_name": "呼叫 C 函式庫（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "讓 Python 直接呼叫 C 寫的動態函式庫（.dll/.so）的標準庫，不用寫 C 擴充。要用系統底層 API、串接沒有 Python 綁定的 C 函式庫時用。進階、少見，但需要時是救星。",
+    "analogy": "像翻譯機：讓 Python 直接跟 C 寫的函式庫對話。",
+    "example": "import ctypes\nlibc = ctypes.CDLL('libc.so.6')   # 載入 C 函式庫",
+    "related": [
+      "struct-module",
+      "subprocess"
+    ]
+  },
+  {
+    "slug": "weakref-module",
+    "term": "weakref",
+    "zh_name": "弱引用（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "建立『不會阻止物件被回收』的引用的標準庫。一般引用會讓物件活著（不被垃圾回收），弱引用不會。做快取、觀察者、避免循環引用造成記憶體洩漏時用。進階記憶體管理才碰。",
+    "analogy": "像便利貼提醒：物件還在就能用它、物件被清掉便利貼就自動失效，不會硬留著它。",
+    "example": "import weakref\nref = weakref.ref(obj)   # obj 被回收後 ref() 回 None",
+    "related": [
+      "gc-module",
+      "garbage-collection"
+    ]
+  },
+  {
+    "slug": "doctest-module",
+    "term": "doctest",
+    "zh_name": "文件即測試（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "把寫在 docstring 裡的『範例』當測試跑的標準庫：你在函式說明裡寫 >>> f(2) 3，doctest 會實際跑並檢查輸出對不對。好處是『範例＝文件＝測試』三合一，範例永遠不會過時。小專案輕量測試很方便。",
+    "analogy": "像讓說明書裡的範例自我驗證：範例錯了測試就紅，文件永遠是對的。",
+    "example": "def add(a,b):\n    '''>>> add(2,3)\n    5'''\n    return a+b\n# python -m doctest 檔案.py 會跑範例當測試",
+    "related": [
+      "pytest",
+      "unittest",
+      "docstring"
+    ]
+  }
+]
