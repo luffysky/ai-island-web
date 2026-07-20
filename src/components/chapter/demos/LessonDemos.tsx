@@ -13,8 +13,9 @@ import { DecisionQuiz } from "./DecisionQuiz";
 import { ScenarioJudge } from "./ScenarioJudge";
 import { PriorityMatrix } from "./PriorityMatrix";
 import { ColorContrast } from "./ColorContrast";
+import { AgentLoop } from "./AgentLoop";
 
-const SUPPORTED = new Set<LessonDemo["type"]>(["css-layout", "rwd-ruler", "flex-playground", "grid-playground", "prompt-lab", "box-model", "prompt-builder", "funnel-sim", "decision-quiz", "scenario-judge", "priority-matrix", "color-contrast"]);
+const SUPPORTED = new Set<LessonDemo["type"]>(["css-layout", "rwd-ruler", "flex-playground", "grid-playground", "prompt-lab", "box-model", "prompt-builder", "funnel-sim", "decision-quiz", "scenario-judge", "priority-matrix", "color-contrast", "agent-loop"]);
 
 /**
  * 依 demo.type 派發到對應的互動教具元件。
@@ -46,6 +47,8 @@ function DemoRenderer({ demo }: { demo: LessonDemo }) {
       return <PriorityMatrix title={demo.title} note={demo.note} config={demo.config} />;
     case "color-contrast":
       return <ColorContrast title={demo.title} note={demo.note} />;
+    case "agent-loop":
+      return <AgentLoop title={demo.title} note={demo.note} config={demo.config} />;
     default:
       return null;
   }

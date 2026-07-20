@@ -1,0 +1,564 @@
+[
+  {
+    "slug": "enum-module",
+    "term": "enum",
+    "zh_name": "列舉（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "定義『一組具名常數』的標準庫，用 Enum 把魔術數字/字串換成有名字的選項（Color.RED、Status.PENDING），程式更好讀、IDE 能補全、比對更安全。狀態機、選項、常數集合都用它取代散落的字串。",
+    "analogy": "像下拉選單的固定選項：只能選這幾個、每個都有名字，不會打錯字。",
+    "example": "from enum import Enum\nclass Status(Enum):\n    PENDING = 1; DONE = 2\nprint(Status.DONE.name)   # 'DONE'",
+    "related": [
+      "dataclasses-module",
+      "constant",
+      "type-hint"
+    ]
+  },
+  {
+    "slug": "dataclasses-module",
+    "term": "dataclasses",
+    "zh_name": "資料類別（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "用一個 @dataclass 裝飾器自動幫類別產生 __init__/__repr__/__eq__ 的標準庫，省去一堆樣板碼。專門裝資料的類別（設定、DTO、座標點）用它，一行欄位宣告就好。要驗證資料則用 Pydantic。",
+    "analogy": "像自動填好表格骨架：你只寫欄位、初始化和印出比較都自動生成。",
+    "example": "from dataclasses import dataclass\n@dataclass\nclass Point:\n    x: int; y: int\nprint(Point(1,2))   # Point(x=1, y=2)",
+    "related": [
+      "enum-module",
+      "pydantic",
+      "type-hint",
+      "namedtuple"
+    ]
+  },
+  {
+    "slug": "abc-module",
+    "term": "abc",
+    "zh_name": "抽象基底類別（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "定義『抽象基底類別』的標準庫：用 @abstractmethod 規定子類別『一定要實作某些方法』，否則不能實例化。設計介面/框架、要強制子類別遵守約定時用。是 Python 版的 interface。",
+    "analogy": "像考試規定必答題：繼承的子類別沒答（沒實作）就不准交卷（不能建立物件）。",
+    "example": "from abc import ABC, abstractmethod\nclass Shape(ABC):\n    @abstractmethod\n    def area(self): ...",
+    "related": [
+      "inheritance",
+      "duck-typing",
+      "interface",
+      "dataclasses-module"
+    ]
+  },
+  {
+    "slug": "gzip-module",
+    "term": "gzip",
+    "zh_name": "gzip 壓縮（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "讀寫 .gz 壓縮檔的標準庫，介面跟 open() 幾乎一樣。壓縮單一大檔（日誌、資料集、備份）省空間、或處理網路傳來的 gzip 資料時用。要打包整個資料夾用 zipfile/tarfile。",
+    "analogy": "像真空壓縮袋：把單一檔案壓小、要用時再解開。",
+    "example": "import gzip\nwith gzip.open('data.txt.gz', 'wt') as f:\n    f.write('很多很多文字...')",
+    "related": [
+      "zipfile-module",
+      "tarfile-module",
+      "shutil-module"
+    ]
+  },
+  {
+    "slug": "tarfile-module",
+    "term": "tarfile",
+    "zh_name": "tar 打包（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "打包/解開 .tar、.tar.gz 檔的標準庫（Linux 世界最常見的封存格式）。把整個資料夾封成一個檔案分發、或解開下載的 .tar.gz 原始碼/資料集時用。可搭 gzip 同時壓縮。",
+    "analogy": "像把整箱東西用膠帶封成一大包（可再抽真空壓縮）。",
+    "example": "import tarfile\nwith tarfile.open('proj.tar.gz','w:gz') as t:\n    t.add('myfolder')",
+    "related": [
+      "zipfile-module",
+      "gzip-module",
+      "shutil-module"
+    ]
+  },
+  {
+    "slug": "shelve-module",
+    "term": "shelve",
+    "zh_name": "持久化字典（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "像用 dict 一樣操作、但『存到磁碟』的標準庫——關掉程式資料還在。做小型本地儲存（設定、快取、簡單記錄）又不想架資料庫時用。底層是 dbm+pickle。多人/大量還是用 SQLite。",
+    "analogy": "像一個關機也不會忘的字典：存取像 dict，但資料躺在硬碟上。",
+    "example": "import shelve\nwith shelve.open('cache') as db:\n    db['user'] = {'name': 'Robin'}   # 存到磁碟",
+    "related": [
+      "sqlite3-module",
+      "pickle",
+      "json-module"
+    ]
+  },
+  {
+    "slug": "fnmatch-module",
+    "term": "fnmatch",
+    "zh_name": "檔名萬用比對（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "用萬用字元（* ? [seq]）比對檔名/字串的標準庫，跟 glob 同一套規則但只做『字串比對』（不掃磁碟）。過濾一堆檔名裡符合 *.jpg 的、或做簡單樣式比對時用。要真正列出符合的檔案用 glob。",
+    "analogy": "像檔名的簡易篩子：用 *.jpg 這種樣式挑出符合的名字。",
+    "example": "import fnmatch\nprint(fnmatch.filter(['a.jpg','b.png','c.jpg'], '*.jpg'))  # ['a.jpg','c.jpg']",
+    "related": [
+      "glob-module",
+      "regex",
+      "pathlib"
+    ]
+  },
+  {
+    "slug": "signal-module",
+    "term": "signal",
+    "zh_name": "作業系統訊號（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "處理作業系統『訊號』的標準庫：最常用來攔截 Ctrl+C（SIGINT）或關機訊號（SIGTERM），做『收到就優雅收尾』（存檔、關連線、印訊息）而不是硬中斷。寫長跑服務、守護程式時用。",
+    "analogy": "像門口的門鈴：系統要你停下時先按鈴，你能先收好東西再走，而非被硬拖走。",
+    "example": "import signal\ndef bye(sig, frame): print('優雅關閉'); exit()\nsignal.signal(signal.SIGINT, bye)   # 攔 Ctrl+C",
+    "related": [
+      "os-module",
+      "subprocess",
+      "multiprocessing-module"
+    ]
+  },
+  {
+    "slug": "atexit-module",
+    "term": "atexit",
+    "zh_name": "結束時執行（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "註冊『程式結束前一定要跑』的收尾函式的標準庫，不管正常結束都會被呼叫（關檔、存狀態、清暫存）。比到處寫收尾更集中可靠。@atexit.register 掛一個就好。",
+    "analogy": "像離開房間前的自動待辦：不管你怎麼走，出門前都會幫你關燈鎖門。",
+    "example": "import atexit\n@atexit.register\ndef cleanup(): print('掰掰、清理完成')",
+    "related": [
+      "signal-module",
+      "contextlib-module",
+      "with-statement"
+    ]
+  },
+  {
+    "slug": "locale-module",
+    "term": "locale",
+    "zh_name": "地區化格式（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "依『地區/語系』格式化數字、貨幣、日期的標準庫（千分位、貨幣符號、小數點寫法各國不同）。做多語系、要依使用者所在地正確顯示金額/數字時用。字串翻譯則搭 gettext。",
+    "analogy": "像入境隨俗的格式員：同一筆金額在美國印 $1,234.5、在德國印 1.234,5。",
+    "example": "import locale\nlocale.setlocale(locale.LC_ALL, '')\nprint(locale.currency(1234.5))",
+    "related": [
+      "gettext-module",
+      "decimal-module",
+      "calendar-module"
+    ]
+  },
+  {
+    "slug": "gettext-module",
+    "term": "gettext",
+    "zh_name": "字串翻譯 i18n（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "Python 標準的介面翻譯（i18n）機制：把程式裡的英文字串包成 _('Hello')，再依語系載入對應譯文（.po/.mo 檔）。做多語系桌面/CLI 程式時用。Web 專案多用框架自己的 i18n。",
+    "analogy": "像同步口譯：程式講一句、依當地語言換成對應譯文播出去。",
+    "example": "import gettext\n_ = gettext.gettext\nprint(_('Hello'))   # 依載入的語系顯示譯文",
+    "related": [
+      "locale-module",
+      "i18n"
+    ]
+  },
+  {
+    "slug": "cmath-module",
+    "term": "cmath",
+    "zh_name": "複數數學（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "處理複數（含虛數 i）數學運算的標準庫，是 math 的複數版（複數開根號、指數、極座標轉換）。做電機/訊號處理/工程數學、需要虛數運算時用。純實數用 math 就好。",
+    "analogy": "像 math 的進階版：連『虛數』這種普通計算機做不了的都能算。",
+    "example": "import cmath\nprint(cmath.sqrt(-1))   # 1j（虛數單位）",
+    "related": [
+      "math-module",
+      "numpy",
+      "statistics-module"
+    ]
+  },
+  {
+    "slug": "mmap-module",
+    "term": "mmap",
+    "zh_name": "記憶體映射檔案（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "把檔案『映射進記憶體』直接當一大塊 bytes 存取的標準庫，不用一次讀進整個檔、也能被多個程序共享。處理超大檔案（比記憶體還大）、或程序間快速共享資料時用。進階效能工具。",
+    "analogy": "像把一本超厚的書攤在桌上直接翻到任一頁，而不是先整本影印進腦袋。",
+    "example": "import mmap\nwith open('big.bin','r+b') as f:\n    mm = mmap.mmap(f.fileno(), 0)\n    print(mm[:10])   # 直接讀前 10 byte",
+    "related": [
+      "io-module",
+      "struct-module",
+      "multiprocessing-module"
+    ]
+  },
+  {
+    "slug": "array-module",
+    "term": "array",
+    "zh_name": "型別化陣列（內建）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "存『同一型別大量數字』的緊湊陣列標準庫，比 list 省記憶體（list 每個元素都是完整物件）。純數字大陣列又不想裝 numpy 時用；要做數學運算還是 numpy 強。",
+    "analogy": "像規格統一的收納盒：只裝同一種數字、排得更緊、更省空間。",
+    "example": "from array import array\narr = array('i', [1,2,3,4])   # 'i'=整數陣列",
+    "related": [
+      "numpy",
+      "struct-module",
+      "list"
+    ]
+  },
+  {
+    "slug": "sympy",
+    "term": "SymPy",
+    "zh_name": "符號數學（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "做『符號運算』的庫——像數學課那樣解方程式、微分、積分、化簡、因式分解，得到『公式解』而非近似數值。做數學工具、驗算、產生公式、教學時用。數值計算用 numpy/scipy。",
+    "analogy": "像會解代數的數學家：給它 x²−1，它告訴你 =(x−1)(x+1)，不是給你一個小數。",
+    "example": "import sympy as sp\nx = sp.Symbol('x')\nprint(sp.integrate(2*x, x))   # x**2",
+    "related": [
+      "scipy",
+      "numpy",
+      "statistics-module"
+    ]
+  },
+  {
+    "slug": "networkx",
+    "term": "NetworkX",
+    "zh_name": "圖論 / 網路分析（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "建立與分析『圖（節點＋邊）』的庫：社群網路、關係圖、路徑規劃、相依關係。算最短路徑、找中心節點、社群偵測、拓撲排序都有現成函式。做關係分析、推薦、依賴圖時用。",
+    "analogy": "像關係圖的瑞士刀：把『誰連到誰』畫成網、算出誰最關鍵、兩點怎麼走最近。",
+    "example": "import networkx as nx\nG = nx.Graph(); G.add_edge('A','B'); G.add_edge('B','C')\nprint(nx.shortest_path(G, 'A', 'C'))   # ['A','B','C']",
+    "related": [
+      "graph",
+      "data-structure",
+      "pandas"
+    ]
+  },
+  {
+    "slug": "feedparser",
+    "term": "feedparser",
+    "zh_name": "RSS / Atom 解析（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "解析 RSS/Atom 訂閱源的庫，一行把部落格/新聞/Podcast 的 feed 變成好用的 Python 物件（標題、連結、時間、內文）。做新聞聚合、內容監控、自動追蹤更新時用（本專案機會島雷達就靠這類）。",
+    "analogy": "像訂閱管家：把各家網站的更新 feed 統一整理成一張清單給你。",
+    "example": "import feedparser\nd = feedparser.parse('https://example.com/rss')\nprint(d.entries[0].title)",
+    "related": [
+      "scrapy",
+      "beautifulsoup",
+      "requests"
+    ]
+  },
+  {
+    "slug": "pypdf",
+    "term": "pypdf",
+    "zh_name": "讀寫 PDF（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "純 Python 操作 PDF 的庫：抽取文字、合併/拆分頁面、旋轉、加密、加浮水印。做『從 PDF 抽文字』（餵給 AI/搜尋）、合併報表、批次處理 PDF 時用。掃描影像型 PDF 要抽字得配 OCR。",
+    "analogy": "像 PDF 的瑞士刀：拆頁、併檔、抽字、加密都能做。",
+    "example": "from pypdf import PdfReader\nreader = PdfReader('doc.pdf')\nprint(reader.pages[0].extract_text())",
+    "related": [
+      "pdfplumber",
+      "reportlab",
+      "pillow"
+    ]
+  },
+  {
+    "slug": "python-docx",
+    "term": "python-docx",
+    "zh_name": "產生 Word 文件（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "用程式讀寫 Word（.docx）的庫：加標題、段落、表格、圖片、樣式。做『自動產生報告/合約/信件』、批次套版、從資料生 Word 時用。要產 PDF 用 reportlab，簡報用 python-pptx。",
+    "analogy": "像機器人打字員：照你的資料自動排出一份格式整齊的 Word 文件。",
+    "example": "from docx import Document\ndoc = Document(); doc.add_heading('報告', 0)\ndoc.add_paragraph('內容...'); doc.save('r.docx')",
+    "related": [
+      "openpyxl",
+      "python-pptx",
+      "reportlab",
+      "pypdf"
+    ]
+  },
+  {
+    "slug": "python-pptx",
+    "term": "python-pptx",
+    "zh_name": "產生 PowerPoint（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "用程式產生/編輯 PowerPoint（.pptx）的庫：加投影片、文字框、圖表、圖片、套版面。做『資料自動變簡報』、批次產月報投影片、套模板時用。",
+    "analogy": "像自動簡報助理：把數字和重點自動排進一張張投影片。",
+    "example": "from pptx import Presentation\nprs = Presentation()\nprs.slides.add_slide(prs.slide_layouts[0]); prs.save('deck.pptx')",
+    "related": [
+      "python-docx",
+      "openpyxl",
+      "matplotlib"
+    ]
+  },
+  {
+    "slug": "reportlab",
+    "term": "ReportLab",
+    "zh_name": "產生 PDF（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "從零用程式畫出 PDF 的庫：文字、表格、圖形、發票/報表版面精準控制。做『系統自動開發票/證書/報表 PDF』時用。要『改現有 PDF』用 pypdf；要 HTML 轉 PDF 用 weasyprint。",
+    "analogy": "像 PDF 印表機：照你的指令把文字表格圖形排版、印成一份 PDF。",
+    "example": "from reportlab.pdfgen import canvas\nc = canvas.Canvas('out.pdf')\nc.drawString(72, 800, '發票'); c.save()",
+    "related": [
+      "pypdf",
+      "python-docx",
+      "pillow"
+    ]
+  },
+  {
+    "slug": "tabulate",
+    "term": "tabulate",
+    "zh_name": "漂亮表格輸出（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "把二維資料（list of list、dict）印成整齊的文字/Markdown 表格的庫，一行就有對齊的表格。做 CLI 工具輸出、產 Markdown 報表、log 表格資料時用。要炫的終端表格用 rich。",
+    "analogy": "像自動製表機：丟資料進去，吐出對齊漂亮的表格。",
+    "example": "from tabulate import tabulate\nprint(tabulate([['Ace',30],['Sabo',28]], headers=['名','數'], tablefmt='github'))",
+    "related": [
+      "rich",
+      "pandas",
+      "pprint-module"
+    ]
+  },
+  {
+    "slug": "humanize",
+    "term": "humanize",
+    "zh_name": "人性化數字（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "把冷冰冰的數字變『人話』的庫：1234567 → '1.2 million'、大檔案 size → '1.5 MB'、時間差 → '3 天前'、序數 → '1st'。做 UI 顯示、通知文案、報表時讓數字更好讀。",
+    "analogy": "像翻譯員把機器數字講成人話：不講 86400 秒，講『一天前』。",
+    "example": "import humanize\nprint(humanize.naturalsize(1500000))   # '1.5 MB'\nprint(humanize.intcomma(1234567))      # '1,234,567'",
+    "related": [
+      "arrow",
+      "tabulate",
+      "locale-module"
+    ]
+  },
+  {
+    "slug": "schedule-lib",
+    "term": "schedule",
+    "zh_name": "輕量排程（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "用超白話語法排定時任務的庫：schedule.every().day.at('09:00').do(job)。做簡單的『每隔多久跑一次』時比 cron/APScheduler 更好上手。適合小腳本；要持久化、錯過補跑、分散式用 APScheduler/Celery。",
+    "analogy": "像會讀白話的鬧鐘：『每天早上九點做這件事』照字面設定就好。",
+    "example": "import schedule, time\nschedule.every(10).minutes.do(job)\nwhile True: schedule.run_pending(); time.sleep(1)",
+    "related": [
+      "apscheduler",
+      "celery",
+      "cron"
+    ]
+  },
+  {
+    "slug": "tenacity",
+    "term": "Tenacity",
+    "zh_name": "自動重試（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "幫函式加『失敗自動重試』的庫，用裝飾器設定重試次數、間隔（指數退避）、遇到哪種例外才重試。打外部 API/DB 常因網路暫時失敗，用它自動重試比自己寫 try 迴圈乾淨得多。",
+    "analogy": "像鍥而不捨的撥號：電話沒通就等一下再撥、越撥間隔越長，撥幾次還不通才放棄。",
+    "example": "from tenacity import retry, stop_after_attempt\n@retry(stop=stop_after_attempt(3))\ndef call_api(): ...   # 失敗自動重試 3 次",
+    "related": [
+      "httpx",
+      "requests",
+      "exception",
+      "decorator"
+    ]
+  },
+  {
+    "slug": "click",
+    "term": "Click",
+    "zh_name": "做 CLI 工具（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "做命令列工具的老牌庫（Flask 作者出品）：用裝飾器定義指令、參數、選項，自動產生 --help 與參數驗證。做正式 CLI 工具時用，跟 Typer 同源（Typer 更新、用 type hint）。",
+    "analogy": "像 CLI 工具的框架：你標好指令和參數，它自動生出漂亮的說明與解析。",
+    "example": "import click\n@click.command()\n@click.option('--name')\ndef hi(name): click.echo(f'Hi {name}')",
+    "related": [
+      "typer",
+      "argparse",
+      "rich"
+    ]
+  },
+  {
+    "slug": "gunicorn",
+    "term": "Gunicorn",
+    "zh_name": "WSGI 伺服器（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 3,
+    "plain": "跑同步 Python Web 應用（Flask/Django）的正式生產級伺服器，用多個 worker 處理並發請求。開發用內建 server、上線用 Gunicorn（常搭 Nginx）。非同步的 FastAPI 則用 Uvicorn。",
+    "analogy": "像餐廳開多個結帳櫃檯：Gunicorn 開多個 worker 同時服務客人，不塞車。",
+    "example": "# 終端執行：gunicorn -w 4 myapp:app   （開 4 個 worker）",
+    "related": [
+      "uvicorn",
+      "flask",
+      "django",
+      "wsgi-asgi"
+    ]
+  },
+  {
+    "slug": "pygame",
+    "term": "Pygame",
+    "zh_name": "做 2D 遊戲（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "做 2D 遊戲/多媒體的老牌庫：畫圖形、播音效、抓鍵盤滑鼠、遊戲迴圈。學程式做小遊戲（貪食蛇、打磚塊）、互動視覺作品時很適合、成就感高。做正式商業遊戲會轉更專業引擎。",
+    "analogy": "像陽春遊戲機的工具箱：畫面、音效、控制都給你，自己組一台小遊戲。",
+    "example": "import pygame\npygame.init()\nscreen = pygame.display.set_mode((640,480))   # 開遊戲視窗",
+    "related": [
+      "opencv",
+      "pillow",
+      "random-module"
+    ]
+  },
+  {
+    "slug": "pyautogui",
+    "term": "PyAutoGUI",
+    "zh_name": "桌面自動化（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "用程式控制『滑鼠鍵盤』自動操作桌面的庫：移動點擊、打字、截圖、找畫面上的圖。自動化重複的桌面操作（沒有 API 的軟體、批次填表）時用。脆弱（畫面一變就壞），能用 API 就別用它。",
+    "analogy": "像請機器人幫你操作滑鼠鍵盤：照腳本點來點去、自動打字。",
+    "example": "import pyautogui\npyautogui.click(100, 200)\npyautogui.typewrite('hello')",
+    "related": [
+      "playwright",
+      "selenium",
+      "opencv"
+    ]
+  },
+  {
+    "slug": "geopy",
+    "term": "GeoPy",
+    "zh_name": "地理座標 / 距離（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "處理地理位置的庫：地址轉經緯度（geocoding）、經緯度轉地址（反解）、算兩點之間的實際距離。做地圖功能、找最近的店、依地址定位、算配送距離時用。底層可接多家地圖服務。",
+    "analogy": "像地理助理：給地址回經緯度、給兩個點算出實際幾公里。",
+    "example": "from geopy.distance import geodesic\nprint(geodesic((25.03,121.56),(24.14,120.68)).km)  # 台北→台中約 130 km",
+    "related": [
+      "networkx",
+      "folium",
+      "requests"
+    ]
+  },
+  {
+    "slug": "validators-lib",
+    "term": "validators",
+    "zh_name": "格式驗證（外部）",
+    "category": "tool",
+    "langs": [
+      "python"
+    ],
+    "difficulty": 1,
+    "plain": "驗證常見格式對不對的小庫：email、URL、IP、信用卡、domain 等，一行回 True/False。做表單/輸入驗證、快速檢查資料合不合法時用。複雜規則配 Pydantic/正則。",
+    "analogy": "像格式檢查員：丟 email/網址進去，馬上回你『格式對不對』。",
+    "example": "import validators\nprint(validators.email('a@b.com'))   # True\nprint(validators.url('not a url'))    # ValidationError",
+    "related": [
+      "pydantic",
+      "regex",
+      "marshmallow"
+    ]
+  }
+]
