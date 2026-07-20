@@ -15,11 +15,11 @@
   ],
   "estimatedHours": 12,
   "outcomes": [
-    "理解核心概念",
-    "實作主流工具",
-    "整章實戰可發佈作品",
-    "知道生態 / 接案行情",
-    "對齊 2026 業界主流"
+    "分清接案/SaaS/創作者三模式、選適合自己的起步",
+    "走完接案(找客戶→報價→交付→轉產品)的實作",
+    "找真痛點、做 MVP、定價、拿到前 100→1000 用戶",
+    "看懂 MRR/Churn/LTV/CAC、用數據經營",
+    "用槓桿放大產能、守法律財務健康底線、把生意做久"
   ],
   "lessons": [
     {
@@ -919,786 +919,804 @@
     {
       "id": "59.14",
       "number": "LESSON 59.14",
-      "title": "Solo SaaS Stack（AI 加速版）",
-      "oneLineSummary": "Solo SaaS Stack（AI 加速版）：一人做 SaaS 的技術棧",
-      "analogy": "像一人軍火庫——用對工具 + AI，一個人也能撐起一個 SaaS 的開發跟營運。",
-      "content": "2026 一個人 SaaS stack 完全不同於 2020。**AI + 工具讓 1 人能撐 5 人 team 工作**。\n\n  \n### 核心 stack\n\n```text\nFrontend：\n- Next.js 15（最主流）\n- shadcn/ui（copy 進 codebase）\n- Tailwind CSS\n\n時間節省：從零 1 個月 → 用 shadcn 3-7 天\n\nBackend + Database：\n- Supabase（Postgres + Auth + Realtime + Storage）\n  Free tier 夠 small SaaS、$25/月 starter\n- 或 Neon + Clerk（更 flexible）\n- 或 self-host Postgres（後期）\n\n最簡單：Supabase\n最 flexible：Neon + Clerk\n\nAuth：\n- Clerk（$25/月、免費 1000 user）\n- Supabase Auth（內建）\n- BetterAuth（new 2024）\n\n別自己寫 auth — security critical、別省這錢\n\nPayment：\n- Stripe（最主流、3% 手續費）\n- Paddle（merchant of record、自動 tax、5%+）\n- Lemon Squeezy（indie friendly、5%、自動 tax）\n\n新 indie：Lemon Squeezy（global）或 Stripe\n\nEmail：\n- Resend（$20/月、最 dev-friendly、React Email template）\n- Postmark / SendGrid（大公司）\n\nDeploy：\n- Vercel（最簡單、git push = deploy、$20/月）\n- Railway（容器、$5/月）\n- Fly.io（全球分散）\n- Cloudflare Pages（免費 tier 大）\n\n新 indie：Vercel\n\nAnalytics：\n- PostHog（最完整、Free 1M events/月、可自架）\n- Plausible（simple web、$9/月）\n- Vercel Analytics（內建）\n\nCustomer Support：\n- 用 email 開始\n- > 100 customer：加 Crisp（$0-25/月）\n- > 500 customer：考慮 Intercom\n```\n\n  \n### AI Stack（必備）\n\n```text\nDevelopment：\n- Cursor / Claude Code（最強 AI IDE）\n- v0（UI generation）\n- Vercel AI SDK（product 加 AI）\n\nContent / Marketing：\n- Claude（writing / strategy）\n- Perplexity（research）\n- Granola（meeting notes）\n\nDesign：\n- v0（component generation）\n- Figma + Magicpattern\n- Galileo AI\n\nCustomer：\n- Intercom Fin（AI 客服）\n- Claude API（自架）\n\n成本：\n- Cursor：$20/月\n- Claude Pro：$20/月\n- API usage：variable\n- Total：$50-100/月\n\nROI：1 人 = 5 人 productivity\n```\n\n  \n### Total Cost（典型 indie SaaS）\n\n```text\nInfrastructure：\n- Vercel：$20\n- Supabase：$25\n- Clerk：$25（如用）\n- Resend：$20\n\nAI：\n- Cursor：$20\n- Claude：$20\n\nTools：\n- PostHog：$0（small）\n- Crisp：$25\n- Linear：$8\n- Notion：$10\n\nTotal：$150-200/月\n\n對比 2015 setup：\n2026 1 個人達同等 functionality\n成本 $200 vs $2000\n```\n\n  \n### Boilerplate 加速\n\n```text\n不從零開始：\n\nMarc Lou's ShipFast（$199 lifetime）：\n- Next.js + Supabase + Stripe + Resend\n- Login / Payment / Email / SEO\n- 時間省：1-2 個月\n\n其他：\n- Makerkit（modern）\n- Divjoy（generator）\n- Bullet Train（Rails）\n\nROI：\n$200 boilerplate = 1-2 個月時間\n你時間值 $100-500/hour\nROI 100-500x\n```\n\n  \n### 什麼**不**用早期\n\n  \n- **Kubernetes**—Vercel 夠\n- **Microservices**—monolith 對 1-100 user 夠\n- **Custom auth**—用 Clerk / Supabase\n- **Redis**—Postgres caching 夠\n- **GraphQL**—REST / tRPC 夠\n- **多 environment**—prod + local 夠\n- **Custom CI/CD**—Vercel auto-deploy 夠\n- **Multi-region**—等 5000+ user 再說\n\n  \n**🚀 進階技巧**\n\nStack 心法：**「Boring stack > cool stack」**。Postgres + Next.js + Vercel 用 5 年都 OK、最新 framework 6 個月過時。Indie 時間 = 最 expensive resource、選穩定無聊 stack 解放時間給 product / customer。**每個 stack decision 問**：「3 年後我還會 thank 過去自己嗎？」\n\n  \n\n  \n\n🎯\n面試考點\n\n台灣科技公司面試 90% 會問「一人公司」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。**準備時不用背、用自己做過的小專案當例子最有說服力**。\n\n**☕ 用人話講**\n\nSolo SaaS Stack（AI 加速版）——一人做 SaaS 的技術棧。**一句話記住**：像一人軍火庫——用對工具 + AI，一個人也能撐起一個 SaaS 的開發跟營運。\n",
+      "title": "Solo SaaS 技術棧（AI 加速版）",
+      "oneLineSummary": "選能一個人維護的簡單棧",
+      "analogy": "技術選型錯 = 一個人養不動",
+      "content": "## 這一課你會做出什麼\n\n一套**「一個人養得動」的 SaaS 技術選型原則**。一人公司選技術，第一原則不是「最潮」，是「**我一個人維護得了嗎**」。\n\n---\n\n## 選型三原則\n\n1. **選你已經熟的**：一人公司沒有本錢邊學新框架邊做產品。用你最順手的（例：Next.js 全棧、或 Python）。\n2. **選『託管』的，別自己養機器**：資料庫用 Supabase/Neon、部署用 Vercel/Zeabur/Railway、金流用綠界/藍新/Stripe——把「維運」外包給服務，你只寫產品邏輯。\n3. **選 AI 幫得上的主流技術**：主流框架 AI 訓練資料多、除錯快；冷門技術 AI 幫不上、卡住只能自己啃。\n\n---\n\n## 一個一人 SaaS 的典型棧（參考）\n\n- 前端＋後端：Next.js（一套語言全包）\n- 資料庫＋Auth：Supabase（託管、內建登入）\n- 部署：Vercel / Zeabur（push 就上線）\n- 金流：綠界/藍新（台灣）或 Stripe（國際）\n- 信件：Resend；分析：簡單的就好\n- **AI 輔助**：Copilot/Cursor 寫 code、Claude 除錯與想架構\n\n**重點不是這個清單、是原則**：越少要你自己維運的東西越好——你的時間該花在「產品和用戶」，不是「顧伺服器」。\n\n---\n\n## ☕ 用人話講\n\n一人公司選技術，第一問「我一個人養得動嗎」：用你熟的、選託管服務（DB/部署/金流都給別人維運）、選 AI 幫得上的主流技術。別為了潮而選冷門的東西——你沒有一整組維運團隊。把時間留給產品和用戶，不是伺服器。",
       "tip": {
         "type": "pro",
-        "text": "台灣科技公司面試 90% 會問「一人公司」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+        "text": "用你熟的、託管的、AI 幫得上的。"
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "選型題：為你的 SaaS 點子選一套『一個人養得動』的技術棧——①前後端/DB/部署/金流各選一個 ②每個選擇寫一句『為什麼一個人養得動』（熟悉/託管/AI幫得上）③指出你會刻意『不自己做』的一件事（外包給哪個服務）。",
+        "hint": "三原則：用你熟的、選託管(別自己養機器)、選AI幫得上的主流。把維運外包給 Supabase/Vercel/金流商。",
+        "answer": "驗收：①選出一套完整棧 ②選擇理由對應三原則 ③指出刻意外包的維運項。抓到『第一原則是一個人維護得了、用熟的+託管+主流、時間留給產品』就達標。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "核心 stack"
+          "level": 2,
+          "text": "這一課你會做出什麼"
         },
         {
-          "level": 3,
-          "text": "AI Stack（必備）"
+          "level": 2,
+          "text": "選型三原則"
         },
         {
-          "level": 3,
-          "text": "Total Cost（典型 indie SaaS）"
+          "level": 2,
+          "text": "一個一人 SaaS 的典型棧（參考）"
         },
         {
-          "level": 3,
-          "text": "Boilerplate 加速"
-        },
-        {
-          "level": 3,
-          "text": "什麼不用早期"
+          "level": 2,
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "根據 2026 年的 Solo SaaS Stack，為什麼一個人能用比 2015 年便宜 10 倍的成本（$200 vs $2000）做出同等功能的產品？",
+        "question": "一人公司選 SaaS 技術棧，最重要的第一原則是？",
         "options": [
           {
             "value": "a",
-            "label": "因為伺服器硬體變便宜了，雲端供應商競爭激烈"
+            "label": "『我一個人維護得了嗎』——用熟悉的、選託管服務(DB/部署/金流外包)、選 AI 幫得上的主流技術"
           },
           {
             "value": "b",
-            "label": "因為 AI 工具（Cursor、Claude）+ 整合好的 SaaS 工具（Supabase、Stripe、Vercel）讓一個人能做 5 人份的工作，省去大量開發時間和自建成本"
+            "label": "選最新最潮的技術才顯得專業"
           },
           {
             "value": "c",
-            "label": "因為現在不需要 Auth 和 Payment 這些功能了"
+            "label": "什麼都自己架自己養，最省成本"
           },
           {
             "value": "d",
-            "label": "因為使用 Kubernetes 和 Microservices 反而浪費錢，所以改用免費軟體"
+            "label": "選最冷門的技術避免競爭"
           }
         ],
-        "answer": "b",
-        "explanation": "核心重點就是 AI + 現成工具的組合讓生產力大幅提升。課程強調選用 Boring Stack（Postgres + Next.js + Vercel 等穩定工具）+ AI IDE 加速開發，減少重複造輪子，這才是成本驟降的主因。選項 a 只說硬體，選項 c 反而增加功能，選項 d 誤解架構決策。"
+        "answer": "a",
+        "explanation": "一人公司沒有維運團隊，技術選型第一問是『我一個人養得動嗎』：用你最熟的（不邊學邊做）、選託管服務把維運外包（Supabase/Vercel/金流商）、選 AI 訓練資料多的主流技術（除錯快）。追潮或選冷門會讓你卡在維運和沒人幫的坑裡，時間該花在產品和用戶。"
       }
     },
     {
       "id": "59.15",
       "number": "LESSON 59.15",
-      "title": "內容創作者路線",
-      "oneLineSummary": "內容創作者路線：靠內容（影片 / 文章）經營一人事業",
-      "analogy": "像養自媒體——內容帶來流量跟信任，再用多元方式變現。",
-      "content": "不寫 code 也能 indie—**內容創作者**路線。Newsletter / YouTube / podcast / course / community。\n\n  \n### Creator 跟 SaaS 不同\n\n```text\nSaaS：build product → 賣 software → 客戶用\nCreator：build audience → 賣 attention/knowledge/community\n\n兩條路有 overlap：\n- 都靠 distribution\n- 都 build personal brand\n- 都需要長期 commit\n\n選 creator if：\n- 愛寫 / 講 / 教\n- 有獨特 perspective\n- 不愛 build product\n- Long-term audience 思維\n```\n\n  \n### Creator 5 種 revenue stream\n\n```text\n1. Sponsorship（廣告）\n   Newsletter：$10-50 CPM × 10k 訂閱 = $100-500/issue\n   YouTube：$10-30 CPM × 50k view = $500-1500/video\n   Podcast：$20-50 CPM × 10k DL = $200-500\n\n2. 數位產品\n   Course：$50-$2000（pre-recorded、once and forever）\n   Ebook：$10-$50\n   Template：$10-$200（Notion / design / code）\n   Community：$10-$100/月（recurring）\n   Coaching：$100-$5000/hour\n\n   工具：Gumroad / Lemon Squeezy / Teachable / Circle\n\n3. Affiliate\n   Amazon Associates（4-10%）\n   ConvertKit（30% lifetime）\n   SaaS：20-30% first year\n   優：Passive、缺：低 commission\n\n4. Subscriptions / Memberships\n   Substack paid newsletter：$5-100/月\n   Patreon：multi-tier\n   YouTube Members / Premium podcast\n   優：Recurring revenue + LTV、缺：產出壓力\n\n5. Consulting / Speaking\n   Consulting：$200-$2000/hour\n   Speaking：$5k-$50k/talk\n   Workshops：$5k-$50k/day\n   Advisory：$5k-$50k/月 retainer\n```\n\n  \n### Creator 成長 timeline\n\n```text\nMonth 1-6：Foundation\n- 累積 first 100 follower\n- Income：$0、Status：hobby\n\nMonth 6-18：Traction\n- 1k-5k follower\n- First sponsor、first $1k revenue\n- Income：$100-$1000/月、Status：side project\n\nYear 2-3：Sustainable\n- 5k-30k follower\n- 多 revenue stream\n- Income：$3k-$10k/月、Status：part-time / full-time decision\n\nYear 3-5：Pro\n- 30k-200k follower\n- 6-figure income\n- Income：$10k-$50k/月、Status：full-time pro\n\nYear 5+：Brand\n- 200k+ follower\n- $500k+/年、Industry authority\n```\n\n  \n### 選 platform\n\n  \n| Platform | 適合 | 優 | 缺 |\n| --- | --- | --- | --- |\n| Newsletter | 寫作者 | Owned audience、不被 algorithm 殺、易變現 | 成長慢 |\n| YouTube | 視覺強 | Discoverable、ad revenue | Production 時間多 |\n| Podcast | 講話 / interview | 高 engagement、loyal audience | Discoverability 差 |\n| Twitter / X | indie hacker / tech | Fast feedback、network | Algorithm 變 |\n| LinkedIn | B2B / professional | Professional audience | Tone formal |\n| TikTok / Threads | Visual / lifestyle | Reach 大 | Hard 變現 B2B |\n\n  \n### Creator 案例\n\n```text\nJustin Welsh\n- Niche：LinkedIn for solopreneurs\n- Started 2019（40s 從零）\n- Revenue 2024：$5M+/年\n- Team：solo（1 contractor）\n- Key：daily LinkedIn posts、1 個 course 持續賣\n\nAli Abdaal\n- Niche：Productivity\n- Started 2017（醫學生）\n- Revenue 2024：$7M+/年\n- Team：10+\n- Key：multi-platforms、hire to scale\n\nPat Flynn\n- Niche：Online business\n- Started 2008（job loss）\n- Revenue 2024：$5M+/年\n- Key：累積 15+ 年、透明 income reports\n```\n\n  \n### Indie 工程師 + Creator 混合\n\n```text\n2026 trend：tech creator + indie SaaS\n\n例：\n- Theo (t3.gg)：YouTube + SaaS（Ping）\n- Fireship：YouTube + Courses + Products\n- Web Dev Simplified：YouTube + Premium courses\n\nPattern：\n1. Tech creator build audience\n2. SaaS 賣給 audience\n3. Audience trust → easy customer acquisition\n4. Product profits → fund creator\n\n優：Diversified revenue、audience compound、cross-promote\n挑戰：Time split、兩個都要做好、burnout risk\n```\n\n  \n**🚀 進階技巧**\n\nCreator 心法：**「Audience > Product」**—Product 會老、niche 會 saturate、技術會變。**Audience trust = lifetime asset**。Justin Welsh 隨時換 product、audience 跟。**每天 build 一點 audience**—5 年後你會 thank 過去自己。\n\n**☕ 用人話講**\n\n內容創作者路線——靠內容（影片 / 文章）經營一人事業。**一句話記住**：像養自媒體——內容帶來流量跟信任，再用多元方式變現。\n",
+      "title": "創作者路線：靠受眾變現",
+      "oneLineSummary": "先養受眾、再用多種方式變現",
+      "analogy": "沒受眾就急著賣 = 沒人買",
+      "content": "## 這一課你會做出什麼\n\n搞懂**創作者路線的變現邏輯**：先用內容養一群信任你的受眾，再用多種方式把信任變成收入。順序錯了（沒受眾就急著賣）會很慘。\n\n---\n\n## 核心順序：受眾 → 信任 → 變現\n\n1. **先持續產出有價值的內容**（教學/觀點/經驗），養出一群「覺得你有料、願意追蹤」的人。\n2. **信任累積到一定程度**，變現才會順——因為人們是「因為信任你才買」，不是因為你在賣。\n3. **別倒過來**：沒受眾就狂推銷，只會把僅有的人也趕跑。\n\n---\n\n## 創作者的變現方式（多半組合使用）\n\n- **自家產品/課程**：把你的專業做成課程、電子書、模板——利潤最高、最能長久。\n- **訂閱電子報/會員**：鐵粉每月付費看更多（見 ch55.6）。\n- **業配/贊助**：品牌付費，但只接你真的用/相信的（見 ch51.5、ch57 倫理）。\n- **聯盟行銷**：推薦你真的用的工具抽佣。\n- **導流到你的 SaaS/服務**：內容是最好的產品入口。\n\n**關鍵**：一份好內容可以「一稿多用」鋪多平台（見 ch55.4）、也能長期被搜尋到（SEO，見 ch55.3）——這就是內容的複利。\n\n---\n\n## ☕ 用人話講\n\n創作者路線的鐵律是順序：**先養受眾和信任、再變現**，別沒人追蹤就急著賣。變現靠組合（自家產品/訂閱/業配/聯盟/導流），其中自家產品利潤最高、最長久。而內容會複利——一稿多用鋪多平台、SEO 長期帶流量。人們是因為信任你才買，所以「有料且持續」永遠是第一步。（收入因人而異、不做保證。）",
       "tip": {
-        "type": "tip",
-        "text": "Creator 跟 SaaS 不同——你本人就是產品，靠持續產出累積信任再變現（課程 / 訂閱 / 業配）；慢但複利，貴在持續。"
+        "type": "pro",
+        "text": "內容養信任、信任再變現。"
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "規劃題：設計你的創作者變現路徑——①你會產出什麼主題的內容來養受眾（你有料的領域）②養到一定受眾後，你打算用哪 2 種方式變現、為什麼 ③解釋為什麼『先養受眾再變現』的順序不能顛倒。",
+        "hint": "先持續產有價值的內容養信任、再變現。自家產品利潤最高。順序顛倒(沒受眾就推銷)會把僅有的人趕跑。",
+        "answer": "驗收：①內容主題建立在你的專業上 ②選 2 種變現且有理由（自家產品/訂閱/業配/聯盟/導流）③理解『信任先於變現』的順序。抓到『受眾→信任→變現、內容會複利、自家產品最長久』就達標。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "Creator 跟 SaaS 不同"
+          "level": 2,
+          "text": "這一課你會做出什麼"
         },
         {
-          "level": 3,
-          "text": "Creator 5 種 revenue stream"
+          "level": 2,
+          "text": "核心順序：受眾 → 信任 → 變現"
         },
         {
-          "level": 3,
-          "text": "Creator 成長 timeline"
+          "level": 2,
+          "text": "創作者的變現方式（多半組合使用）"
         },
         {
-          "level": 3,
-          "text": "選 platform"
-        },
-        {
-          "level": 3,
-          "text": "Creator 案例"
-        },
-        {
-          "level": 3,
-          "text": "Indie 工程師 + Creator 混合"
+          "level": 2,
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "如果你想成為內容創作者，以下哪個敘述最能說明 Creator 跟 SaaS 創業者的根本差異？",
+        "question": "創作者路線變現，最關鍵的順序原則是？",
         "options": [
           {
             "value": "a",
-            "label": "Creator 靠建立受眾來賣注意力/知識，SaaS 靠建立產品來賣軟體"
+            "label": "先用有價值的內容養受眾與信任、再變現；人們是因為信任你才買，順序不能顛倒"
           },
           {
             "value": "b",
-            "label": "Creator 不需要長期承諾，SaaS 需要長期承諾"
+            "label": "一開始就狂推銷、賣越多越好"
           },
           {
             "value": "c",
-            "label": "Creator 可以不要懂行銷，SaaS 必須要很會行銷"
+            "label": "先衝粉絲數量，內容品質不重要"
           },
           {
             "value": "d",
-            "label": "Creator 一開始就能賺錢，SaaS 需要很久才能賺錢"
+            "label": "只靠業配就能長久變現"
           }
         ],
         "answer": "a",
-        "explanation": "課程明確列出『Creator：build audience → 賣 attention/knowledge/community』vs『SaaS：build product → 賣 software』，這是兩條路的核心差異。b、c、d 都不是課程強調的重點，也不夠精確。"
+        "explanation": "創作者變現的鐵律是順序：先持續產出有價值的內容養出信任你的受眾，再變現——因為人們是因為信任你才買。沒受眾就急著推銷，會把僅有的人也趕跑。變現靠組合（自家產品最長久/訂閱/業配/聯盟/導流），而『有料且持續』的內容是永遠的第一步。"
       }
     },
     {
       "id": "59.16",
       "number": "LESSON 59.16",
-      "title": "多 Income Stream",
-      "oneLineSummary": "多 Income Stream：多個收入來源 = 穩定",
-      "analogy": "像分散投資——別只靠一個收入，多幾條腿（接案 + 產品 + 課程）才站得穩。",
-      "content": "1 個 income source = risky。**indie 大都 multi-stream**—不是賺更多、是 diversify risk。\n\n  \n### 為什麼 multi-stream\n\n```text\n1 個 stream risk：\n- 客戶 churn → revenue 崩\n- Algorithm 變 → traffic 死\n- Product 過時 → 賣不出\n- Burnout → 無法工作\n\nMulti-stream buffer：\n- A stream 死、B 仍 alive\n- Total income 穩定\n- Mental security\n```\n\n  \n### 4 種 stream type\n\n```text\nTier 1：High effort, low scalability\nFreelance / Consulting：$100-500/hr、月 $5k-$30k\n- 優：Day 1 賺錢、學商業\n- 缺：時間天花板、burnout\n\nTier 2：Medium effort, medium scalability\nCourses / Coaching / Workshops：$50-$2000/sale、月 $1k-$50k\n- 優：Build once sell many、authority\n- 缺：Marketing effort 大、需要 audience\n\nTier 3：High effort, high scalability\nSaaS / Products：$10-100/月、月 $1k-$100k+\n- 優：最高 leverage、recurring、exit potential\n- 缺：1-2 年才 traction、高失敗率\n\nTier 4：Low effort, low income\nAffiliate / Ad revenue：月 $100-$10k\n- 優：真 passive（mostly）\n- 缺：低 income、algorithm 依賴\n```\n\n  \n### 典型 indie 收入 mix（2026）\n\n```text\n例 1：Tech indie（hybrid）\n- SaaS：$8000（50%）\n- Freelance：$5000（30%）\n- Course：$2000（13%）\n- Affiliate：$1000（7%）\nTotal：$16000/月\n\n例 2：Pure creator\n- Newsletter sponsorship：$5000（30%）\n- Course：$8000（50%）\n- Coaching：$2000（13%）\n- Affiliate：$1200（7%）\nTotal：$16200/月\n\n例 3：Multi-SaaS（Marc Lou style）\n- SaaS A：$30000\n- SaaS B：$15000\n- SaaS C：$10000\n- 3 個 small：$15000\nTotal：$70000/月\n```\n\n  \n### 怎麼 build multi-stream\n\n```text\nStep 1：第一個 stream（年 1）\n- focus 1 stream first\n- 學該 stream（深）\n- Reach $3k-$5k/月 sustainable\n- 不要分心其他\n\nStep 2：第二個 stream（年 2）\n- 第一 stream 穩定後 add\n- 選 adjacent（leverage 同 audience）\n\n不要 totally separate：\n- SaaS A（dev tool）+ SaaS B（pet app）\n- 兩 audience 不重疊 = 雙倍 effort\n\n要 leverage same audience：\n- Newsletter audience → buy course\n- SaaS customer → 報名 community\n- Audience compound effect\n\nStep 3：3-5 streams（年 3+）\nActive：\n1. Main SaaS（$10k+ MRR）\n2. Course（recurring sale）\n3. Newsletter sponsor（monthly）\nPassive：\n4. Affiliate\n5. 舊產品 maintenance\n\n不超過 5 個 — Focus 80/20\n```\n\n  \n### Synergy（streams 互相 amplify）\n\n```text\n最佳 mix = synergy：\n\n例 1：creator + SaaS\n- Newsletter 累積 audience\n- SaaS 賣給 audience\n- SaaS user share → newsletter 成長\n\n例 2：consulting + SaaS\n- Consult 客戶 → 看 product gap\n- Build SaaS 解 gap\n- 賣回 consulting 客戶\n\n例 3：course + coaching\n- Course 大量便宜\n- Coaching 少量貴\n- Course alumni buy coaching\n```\n\n  \n### 避免「Shiny Object」\n\n```text\n誘惑：「另一 stream 看起來簡單 + 高收入」\n\n實際：\n- 每 stream 學習曲線\n- 看別人 easy 是 survivor bias\n- Split focus = 都 mediocre\n\n對策：\n1. 第一 stream 真 dominant 才 add\n2. Each new stream 12 個月 focus\n3. 失敗 streams kill 不保留\n\n更少更深 > 更多更淺\n```\n\n  \n**🚀 進階技巧**\n\nMulti-stream 心法：**「Diversify outcome, not effort」**—多 stream 不是讓你做更多事、是讓你 single effort generate multiple outcome。1 篇 newsletter 同時 build audience + sponsor revenue + course sales + community growth—4 outcome 1 effort。\n\n**☕ 用人話講**\n\n多 Income Stream——多個收入來源 = 穩定。**一句話記住**：像分散投資——別只靠一個收入，多幾條腿（接案 + 產品 + 課程）才站得穩。\n",
+      "title": "多元收入流：分散風險",
+      "oneLineSummary": "別把收入押在一個籃子",
+      "analogy": "單一收入 = 一斷就全垮",
+      "content": "## 這一課你會做出什麼\n\n搞懂一人公司為什麼要**多元收入流**、以及怎麼「循序」建立而不是一次全開累死自己。\n\n> 只靠一種收入＝把命脈押在一個客戶/一個平台/一個產品上。那個一斷，你就全垮。多條收入腿，站得穩。\n\n---\n\n## 為什麼要多元\n\n- **平台風險**：只靠 YouTube/某平台，演算法或政策一變就完蛋。\n- **客戶集中風險**：接案只有一個大客戶，他跑了你就沒收入。\n- **產品風險**：只有一個產品，它退燒你就歸零。\n\n**多元＝抗震**：一條斷了，其他還撐著。\n\n---\n\n## 一人公司常見的收入組合\n\n- 接案（現金流穩定底盤）＋ 一個 SaaS（複利成長）＋ 內容變現（品牌＋導流）。\n- 或：一個主力 SaaS ＋ 周邊小產品/課程 ＋ 聯盟/贊助。\n\nPieter Levels 這類 indie 就是「同時經營好幾個產品」，一個表現差、有別的頂著。\n\n---\n\n## 但別一次全開（新手最常犯）\n\n多元不是「同時做十件事」——那會分散精力、每件都半吊子。**正確順序：先把一條做到穩、再長第二條。** 一次全開只會讓你什麼都做不好、還先燒壞自己（見 ch60 burnout）。\n\n---\n\n## ☕ 用人話講\n\n多元收入流是一人公司的抗震設計：別把命脈押在一個客戶/平台/產品，多條腿一條斷了還有別的撐。常見組合是接案（底盤）＋SaaS（複利）＋內容（導流）。但關鍵是『循序』——先把一條做到穩，再長下一條，別一次全開把自己累垮、每件都半吊子。",
       "tip": {
-        "type": "tip",
-        "text": "多收入來源 = 穩定，但別一開始就分散——先把一條做到能養活自己，再疊第二條，否則每條都半死不活。"
+        "type": "pro",
+        "text": "多條腿站得穩、但別一次全開。"
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "規劃題：設計你的『多元收入組合』——①列出你想建立的 2-3 條收入腿，說明各自扮演什麼角色（穩定底盤/複利成長/品牌導流）②說明你會用什麼『順序』建立（先做哪條、什麼時候長下一條）③你目前最大的『集中風險』是什麼（押在哪一個籃子）。",
+        "hint": "好組合混不同性質(接案穩+SaaS複利+內容導流)。關鍵是循序：先把一條做穩再長下一條，別一次全開。",
+        "answer": "驗收：①2-3 條互補的收入腿、各有角色 ②有循序建立的順序（不是一次全開）③能指出自己的集中風險。抓到『多元抗震、循序建立別一次全開』就達標。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "為什麼 multi-stream"
+          "level": 2,
+          "text": "這一課你會做出什麼"
         },
         {
-          "level": 3,
-          "text": "4 種 stream type"
+          "level": 2,
+          "text": "為什麼要多元"
         },
         {
-          "level": 3,
-          "text": "典型 indie 收入 mix（2026）"
+          "level": 2,
+          "text": "一人公司常見的收入組合"
         },
         {
-          "level": 3,
-          "text": "怎麼 build multi-stream"
+          "level": 2,
+          "text": "但別一次全開（新手最常犯）"
         },
         {
-          "level": 3,
-          "text": "Synergy（streams 互相 amplify）"
-        },
-        {
-          "level": 3,
-          "text": "避免「Shiny Object」"
+          "level": 2,
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "根據課程內容，indie 建立多個 income stream 的主要目的是什麼？",
+        "question": "關於一人公司的多元收入流，最正確的做法是？",
         "options": [
           {
             "value": "a",
-            "label": "為了讓總收入盡可能多，每個 stream 都要做到最大"
+            "label": "為了抗風險而多元，但要循序建立——先把一條做到穩再長下一條，別一次全開累垮自己"
           },
           {
             "value": "b",
-            "label": "分散風險，確保單一 stream 失敗時收入仍能保持穩定"
+            "label": "一開始就同時做十件事，越多越安全"
           },
           {
             "value": "c",
-            "label": "同時做很多事，證明自己的能力和毅力"
+            "label": "專注單一收入來源永遠最好，不用多元"
           },
           {
             "value": "d",
-            "label": "快速嘗試新商業模式，找到最賺錢的那個"
+            "label": "哪個熱門就一直換，不用把任何一條做穩"
           }
         ],
-        "answer": "b",
-        "explanation": "課程明確強調「不是賺更多、是 diversify risk」。多 stream 的核心是當一個 stream（如 algorithm 變化、客戶流失）出現問題時，其他 stream 仍能維持收入穩定和心理安全感。選項 a 理解錯目的、c 和 d 都不是課程強調的重點。"
+        "answer": "a",
+        "explanation": "多元收入是抗震設計（別把命脈押在一個客戶/平台/產品）。但多元不等於同時做十件事——那會分散精力、每件半吊子、還先燒壞自己。正確是循序：先把一條做到穩，再長第二條。單一來源則有一斷全垮的風險。"
       }
     },
     {
       "id": "59.17",
       "number": "LESSON 59.17",
-      "title": "Burnout 預防 + 工作節奏",
-      "oneLineSummary": "Burnout 預防 + 工作節奏：一人公司最大的殺手是燒光自己",
-      "analogy": "像長跑要配速——打倒你的常常不是失敗，而是把自己累垮；顧好節奏才走得遠。",
-      "content": "indie 最大 risk 不是 product 失敗、**是 burnout**。Burn out 後 6 個月效率回不來。\n\n\n### Burnout 5 個 stage\n\n```text\nStage 1：Honeymoon（excited）\n- All-in energy\n- 每天工作 12+ hours\n- Excited learning new things\n- 「I love this」\n\nStage 2：Onset of Stress（壓力起來）\n- 一些 days 感覺 overwhelm\n- Sleep 質量降\n- Personal life 開始 sacrifice\n- 但仍 push through\n\nStage 3：Chronic Stress（慢性壓力）\n- Fatigue everyday\n- Cynicism 開始\n- Snap at people\n- 想 escape\n- Productivity ↓\n\nStage 4：Burnout\n- 真的 burnout\n- 不能 work effectively\n- Physical symptoms（頭痛 / 失眠 / 焦慮）\n- 看 product 反感\n- 想 quit\n\nStage 5：Habitual Burnout\n- 沒處理 stage 4\n- Permanent dysfunction\n- Depression\n- 需要 medical help\n\n關鍵：\nStage 3 catch！\nStage 4 已 recovery 慢\nStage 5 需要 quit + medical\n```\n\n\n### Burnout 早期 signal\n\n\n- 週日晚上焦慮（怕週一）\n- 看 product dashboard 心煩\n- Customer email 反感（之前興奮）\n- 持續 sleep 不好\n- Social life 完全 disappear\n- Hobbies 全停\n- 體重變化（暴增 / 暴減）\n- 飲酒 / 咖啡 / 物質 dependency 上升\n- 對家人 short-tempered\n- 失去 motivation 對 build\n\n\n有 3+ signal = warning、5+ = burnout。\n\n\n### 怎麼預防\n\n\n#### 1. Time boundary\n\n```text\n設明確 work hour：\n\n例：\n- 9am - 6pm：work\n- 6pm 後：personal time\n- 週六：休\n- 週日：reading / planning（light）\n\n關鍵：\n- 公開 commit（家人 + Twitter）\n- 例外 = exception、不是 norm\n- 1 個 emergency 月可、不能 weekly\n\n對 indie：誘惑「always work」高\n- 沒老闆 push\n- 「再多 1 小時就 ship」\n- 永遠不滿足\n\n對策：\n- Hard stop times\n- 「After 6pm 不開 laptop」rule\n- 跟自己 contract\n- 違反 = penalty（捐錢 / etc）\n```\n\n\n#### 2. Energy > Time\n\n```text\n不是 work 多 hour、是 high-energy work：\n\nPeak hours：\n- 早上 9-12（大多人）\n- 深度 work（code / write）\n- Phone off / 干擾 0\n\nLow hours：\n- 下午 3-5\n- Email / admin / 客服\n- 不重要 task\n\n晚上：\n- Recovery\n- Read / family / exercise\n- 不 force work\n\n8 hour focused = 12 hour 分心\nEnergy management > time tracking\n```\n\n\n#### 3. 健康基本\n\n```text\nSleep：\n- 7-8 hour\n- 固定 schedule\n- 不熬夜 build\n\nExercise：\n- 每週 3-4 次\n- 30 min minimum\n- 跑步 / 重訓 / 瑜伽 不重要\n- Movement is medicine\n\nDiet：\n- 不亂吃 fast food\n- Hydrate\n- 限制 alcohol\n\nSocial：\n- Family / friends 持續\n- 不變 hermit\n- 1-on-1 meaningful conversation\n\n這些非 luxury — 是productivity 基礎\nindie 多忽略以為「之後再說」\n之後 burnout 為時已晚\n```\n\n\n#### 4. Breaks\n\n```text\n每天：\n- 5 min break / hour\n- 走出去 / 喝水\n- 不滑 phone\n\n每週：\n- 1 個 full day off\n- 沒 work（不開 Slack / email）\n\n每季：\n- 4-5 天 vacation\n- 不 product check（要 trust 系統）\n\n每年：\n- 2 週 long vacation\n- Full disconnect\n- Recharge\n\n著名 indie 都長假：\n- Pieter Levels：每年 3 個月 nomad / no work\n- Marc Lou：定期 weekend off\n- DHH：「always sustainable pace」\n\n短期不放 = 長期 burnout\n不是「不忙」、是「節奏」\n```\n\n\n#### 5. Outsource 不喜歡的\n\n```text\n每個 indie 有討厭的部分：\n- 客服 → hire VA / AI chatbot\n- 設計 → freelancer\n- SEO content → AI + editor\n- 法律 → 律師\n- 財會 → 會計師\n- Marketing video → 找 creator\n\n不要 try 都自己 do\n你 burnout source = 你討厭的工作\nOutsource 它\n\n成本：\n- 月 $500-2000 outsource\n- 但 saves your mental health\n- ROI 在 sustainability\n\n「我能省錢自己 do」trap：\n- 短期 save $1000\n- 長期 burnout 失去 productivity\n- Net 大 loss\n```\n\n\n### 當你 burnout\n\n```text\n已 burnout 怎辦：\n\nStep 1：Acknowledge\n- 不否認\n- 不 push through\n- 跟家人 / 朋友講\n\nStep 2：Pause（真的）\n- 1-2 週 minimum off\n- 不開 product\n- 不看 metric\n- Auto-responder 設\n\nStep 3：醫生 / Therapist\n- 不是「弱」\n- 專業 help\n- 台灣：精神科 / 心理諮商\n- Online：Better Help\n\nStep 4：Recovery\n- 4-8 週 reduced workload\n- 重要 customer email only\n- Postpone non-essential\n\nStep 5：Restructure\n- 為什麼 burnout？\n- 系統性問題在哪？\n- 怎麼 prevent 重複？\n\nStep 6：Slow return\n- 50% capacity 1 個月\n- 75% 1 個月\n- 100% gradually\n\n不要：\n- 跟 burnout fight（會輸）\n- 假裝 OK\n- 用 alcohol / drug / etc cope\n```\n\n\n### Healthy indie 節奏\n\n```text\n每天：\n- 6 hour focused work\n- 不超過 8 hour\n- 1 hour exercise / hobby\n- Family / friends 時間\n\n每週：\n- 5 days work\n- 2 days off（真的 off）\n- 1 個 hobby afternoon\n\n每月：\n- 1 個 4-day weekend\n- 不 check product\n\n每季：\n- 1 週 vacation\n\n每年：\n- 2-4 週 long vacation\n- 1 個 sabbatical（若需要）\n\nSustainable > Maximum\n1 年 100% 慢、5 年 60% sustainable 贏\n```\n\n\n### 「Hustle culture」反思\n\n```text\n2010-2020：「hustle 24/7」narrative\n2020+：反彈\n\n真相：\n- Gary Vee work 16 hr / day 是 outlier（並 sustainable to him）\n- 大多 founders 9-6 productive\n- Sleep deprivation 殺 IQ 30%\n- Burnout 比 「lazy」kill 更多 startup\n\n新 indie 心態：\n「Marathon、not sprint」\n- 2-5 年 long-term\n- 不是 6 個月 burn 100%\n- Slow + steady wins\n\nPieter Levels 名言：\n「If you can't enjoy the journey, you've already lost.」\n```\n\n\n**🚀 進階技巧**\n\nBurnout 心法：**「你 health = company asset #1」**。Down 1 個月 = 公司 down 1 個月、down 6 個月 = 公司能 die。每天 30 分鐘 exercise + 8 小時 sleep = 比加班 2 小時 ROI 高 10x。**Sustainable founders win long-term**—Marc Lou、Pieter Levels、DHH 都 emphasize sustainable pace、不是 hustle harder。\n\n**☕ 用人話講**\n\nBurnout 預防 + 工作節奏——**一人公司最大的殺手是燒光自己**。**一句話記住**：像長跑要配速——打倒你的常常不是失敗，而是把自己累垮；顧好節奏才走得遠。\n",
+      "title": "槓桿：自動化 + AI + 外包",
+      "oneLineSummary": "一個人的產能靠槓桿放大",
+      "analogy": "什麼都親手做 = 卡在自己",
+      "content": "## 這一課你會做出什麼\n\n搞懂一人公司怎麼用**槓桿**（自動化、AI、外包）突破「一個人時間有限」的天花板——不是把自己累死，是讓一個人做出好幾個人的產能。\n\n> 一人公司最大的限制是「你只有一個人、24 小時」。突破它不是硬撐更久，是**把重複的交給機器、把不擅長的交給別人**。\n\n---\n\n## 三種槓桿\n\n1. **自動化**：任何「重複、規則明確」的事都該自動化——自動回覆常見問題、自動寄歡迎信、自動開發票、cron 定時任務。設定一次、之後不用管。\n2. **AI 當員工**：客服草稿、內容初稿、資料整理、程式碼、除錯——讓 AI 當你的各部門助手（這正是本站分身島的概念）。你當導演、把關品質。\n3. **外包**：你不擅長、或不值得你花時間的（設計、記帳、剪片、翻譯），花錢請人做。**你的時間該花在只有你能做的核心事上。**\n\n---\n\n## 判斷什麼該用槓桿\n\n問三個問題：\n- **這件事重複嗎？** → 重複的自動化。\n- **這件事 AI 做得夠好嗎？** → 夠好的交 AI、你把關。\n- **這件事非我不可嗎？** → 不是的外包出去。\n\n把時間留給「非你不可、且最有價值」的事（產品方向、關鍵決策、客戶關係）。\n\n---\n\n## ☕ 用人話講\n\n一個人怎麼做出一個團隊的產能？靠槓桿：**重複的自動化、AI 能做的交給 AI（你把關）、不擅長的外包。** 判斷法就三問：重複嗎、AI 夠好嗎、非我不可嗎。把你有限的時間留給「只有你能做、又最有價值」的事——這才是一人公司能放大、又不把自己累垮的關鍵。",
       "tip": {
-        "type": "warn",
-        "text": "一人公司最大殺手是燒光自己——盯早期信號（提不起勁、易怒、睡不好），刻意排休、設工作邊界。你垮了公司就沒了。"
+        "type": "pro",
+        "text": "重複的自動化、不擅長的外包。"
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "槓桿盤點題：列出你（一人公司）目前/未來會做的 5-6 件事，各判斷該用哪種槓桿——①自動化（重複規則明確）②交給 AI（AI 做得夠好）③外包（不擅長/不值得你做）④非你不可（自己做）。",
+        "hint": "三問：重複嗎→自動化；AI夠好嗎→交AI把關；非我不可嗎→不是的外包。把時間留給只有你能做、最有價值的事。",
+        "answer": "驗收：能把事項合理分到四類、且『非你不可』留給高價值核心（產品/決策/客戶關係）。抓到『重複自動化、AI能做交AI、不擅長外包、時間留給只有你能做的』就達標。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "Burnout 5 個 stage"
+          "level": 2,
+          "text": "這一課你會做出什麼"
         },
         {
-          "level": 3,
-          "text": "Burnout 早期 signal"
+          "level": 2,
+          "text": "三種槓桿"
         },
         {
-          "level": 3,
-          "text": "怎麼預防"
+          "level": 2,
+          "text": "判斷什麼該用槓桿"
         },
         {
-          "level": 3,
-          "text": "當你 burnout"
-        },
-        {
-          "level": 3,
-          "text": "Healthy indie 節奏"
-        },
-        {
-          "level": 3,
-          "text": "「Hustle culture」反思"
+          "level": 2,
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "根據課程內容，為什麼 Burnout 預防對 indie 創業者特別重要？",
+        "question": "一人公司用「槓桿」突破時間天花板，判斷一件事該怎麼處理，最好的三個提問是？",
         "options": [
           {
             "value": "a",
-            "label": "因為 Burnout 後恢復需要很久，可能導致產品開發失敗，比產品本身失敗的風險更大"
+            "label": "這件事重複嗎(→自動化)、AI 做得夠好嗎(→交AI把關)、非我不可嗎(→不是的外包)"
           },
           {
             "value": "b",
-            "label": "因為 indie 創業者通常沒有足夠的休假政策和福利"
+            "label": "這件事我做起來開不開心"
           },
           {
             "value": "c",
-            "label": "因為 Burnout 會直接導致公司被迫收掉"
+            "label": "這件事有沒有用到最新的工具"
           },
           {
             "value": "d",
-            "label": "因為 Burnout 比其他職業更容易發生在年輕創業者身上"
+            "label": "這件事花的錢夠不夠少"
           }
         ],
         "answer": "a",
-        "explanation": "課程開頭明確說明『indie 最大 risk 不是 product 失敗、是 burnout。Burn out 後 6 個月效率回不來』，強調的是 burnout 的長期恢復時間和對效率的影響，這對仰賴個人推進的 indie 創業者來說是致命風險。其他選項都是衍生問題或不在課程範圍內。"
+        "explanation": "一人公司的天花板是時間，突破靠槓桿。判斷一件事怎麼處理就三問：重複嗎（重複的自動化）、AI 做得夠好嗎（夠好的交 AI、你把關）、非我不可嗎（不是的外包）。目的是把有限時間留給『只有你能做、又最有價值』的事（產品方向、關鍵決策、客戶關係），而不是什麼都親手做卡死自己。"
       }
     },
     {
       "id": "59.18",
       "number": "LESSON 59.18",
-      "title": "從 indie 變團隊 / 不變團隊",
-      "oneLineSummary": "從 indie 變團隊 / 不變團隊：要不要從一個人變團隊",
-      "analogy": "像店開大要不要請人——請了有產能、也有管理成本；想清楚要不要、什麼時候。",
-      "content": "到 $10k+ MRR 後決定點：**hire 還是繼續 solo**？兩條路都對、選錯後悔多年。\n\n\n### 「永遠 solo」case\n\n```text\n適合 solo 永遠的：\n\n特質：\n- 不想 manage 人\n- 享受 deep work alone\n- 不想 corporate culture\n- Value freedom > growth\n\n著名 solo-forever：\n- Pieter Levels：12 個 SaaS、$1M+/年、永遠 solo\n- Marc Lou：9 個 SaaS、$1M+/年、minimal team\n- DHH：37signals（Basecamp）、purposefully small\n\n商業 model：\n- Lifestyle business\n- 50%+ profit margin\n- Customer 質 > 量\n- 不 IPO / sell\n\n優：\n- 100% control\n- 不 dilute equity\n- 不 manage drama\n- 全部 profit 你的\n\n缺：\n- 收入有上限（你 24 hour）\n- 不能 sick day（無 backup）\n- 沒同事 social\n- Scale 有限\n\n財務真實：\n$200k-$1M/年 = solo upper bound\n$1M+ = 通常需要 team\n```\n\n\n### 「變團隊」case\n\n```text\n該 hire 的 signal：\n\n- 你 work 60+ hours 持續 3 個月\n- 客戶要求超出你 capacity\n- 有明確 task 你討厭做（客服 / 行銷）\n- Want to scale beyond solo limit\n- Building 真正 company（exit goal）\n\n第一個 hire：\n不是 full-time engineer\n通常：\n- Virtual Assistant（$500-1500/月）\n- Customer Success（$1000-2500/月）\n- Marketing / Content（$1500-3000/月）\n\n順序原則：\nhire 你最痛 / 最不喜歡的工作\n不是 hire 你最會的（你做更好）\n\n例：\n你討厭 customer email → hire CS\n你不會 marketing → hire marketer\n你討厭 admin → hire VA\n```\n\n\n### 第一個 hire\n\n\n#### 選誰\n\n```text\n找 indie-friendly 人格：\n- 自我 driven\n- Async work 能力\n- 多 hat 接受\n- 不需 micromanage\n- 對 startup 有 passion\n\n避免：\n- 大公司 culture 人（不適 indie）\n- 純 task taker（你想要 thinker）\n- 不能 deal with ambiguity\n```\n\n\n#### 怎麼找\n\n```text\n1. Network（最常）\n   - 朋友推薦\n   - 之前 collaborator\n   - 你 audience 中找\n\n2. Twitter / LinkedIn\n   - 看誰寫 thoughtful comment\n   - DM 邀請\n   - 已經 fit your culture\n\n3. 平台\n   - Twitter job tweet\n   - Indie Hackers\n   - Remote OK / We Work Remotely\n\n4. 試合作\n   - Contract 3-6 個月\n   - 確定 fit 才 full-time\n   - 不直接 commit\n```\n\n\n#### 多少薪資\n\n```text\n2026 international remote freelance：\n\nVA / Operations：$1000-2500/月（亞洲 base）\nCustomer Success：$2000-4500/月\nContent / Marketing：$2000-5000/月\nEngineer：$3000-8000/月（mid-level remote）\nSenior Engineer：$6000-12000/月\n\n台灣 base 雇人：\n- 比 international 低\n- 但 + 勞健保 等 cost\n\n每雇 1 個全職 ≈ $4000-8000/月 cost\n你 MRR 至少要 $20000+ 才 sustainable hire\n```\n\n\n### 從 solo → 2-3 人\n\n```text\n3 人 team challenges：\n\n1. Documentation 必須\n   - 你 process 全在腦\n   - 別人怎麼做？\n   - 寫 SOP\n\n2. 溝通 overhead\n   - Solo：0 meetings\n   - 2 人：weekly sync\n   - 3 人：daily standup 可能\n   - 你 work hours 減少\n\n3. Decision velocity 降\n   - 之前自己決定\n   - 現在要 consult\n   - 慢 30-50%\n\n4. Culture 開始 form\n   - 你 default = culture\n   - 但 conscious decisions 重要\n   - Hire #1 影響 hire #2\n\n5. Money 管理變難\n   - Payroll\n   - Tax\n   - Benefits\n   - 雇用合約\n\n工具：\n- Deel / Remote（國際 hiring）\n- Linear（task）\n- Notion（docs）\n- Slack（async）\n```\n\n\n### 從 3 → 10 人（real team）\n\n```text\n大躍進 challenge：\n\n你變 manager 主要：\n-  50% time on people / strategy\n- 不再 hands-on code daily\n\n新 skill：\n- Hire well\n- Performance management\n- Culture building\n- Strategic thinking\n- Investor relations（如 raise）\n\n很多 indie 卡在 5-10 人：\n- 不享受 management\n- Miss the building\n- Burnout 不同 way\n- 想回到 solo / 賣公司\n\n對策：\n1. 自己決定要不要走\n2. 不勉強（不適合 management 就賣）\n3. 找 COO 接 operations\n4. 你 focus product / strategy\n```\n\n\n### 「Calm company」哲學\n\n\nDHH（Basecamp / 37signals）推：\n\n```text\n核心：\n- 不 IPO\n- 不 high growth at all cost\n- 50 人 team max（intentionally）\n- Profitable from day 1\n- No bullshit culture\n\n特點：\n- 員工 4-day work week\n- 6 週 cycles\n- 不 unlimited vacation（4 週 mandatory）\n- Profit sharing\n- Long tenure\n\n「Calm Company」適合：\n- 想 build sustainable\n- 不想 corporate craziness\n- Lifestyle but more scale than solo\n- 5-50 人 sweet spot\n\n收入 model：\n- 不追 unicorn\n- $10M-$100M ARR\n- 高 profit margin\n- 不 exit（不 sell）\n```\n\n\n### 2026 趨勢\n\n\n- **AI 讓 1 人能做 5 人活**—很多 indie 選永遠 solo\n- **Distributed micro-teams**—2-5 人 remote 全球\n- **Fractional roles**—1 個 CFO serve 5 公司\n- **Async 文化**—不需要 office\n- **Lifestyle > scale**—不每個 indie 想 IPO\n\n\n**🚀 進階技巧**\n\nSolo vs Team 心法：**「Hire 不是 reward、是 trade-off」**。Hire 後你失去：control / freedom / profit margin / decision velocity。獲得：scale / 同事 / 不 single point of failure。**選你能 live with 的 trade-off**—Pieter Levels 跟 Stripe 兄弟都成功、不同 path。**不要因為「應該 hire」hire**—因為「你 burnout 沒辦法」hire。\n\n**☕ 用人話講**\n\n從 indie 變團隊 / 不變團隊——要不要從一個人變團隊。**一句話記住**：像店開大要不要請人——請了有產能、也有管理成本；想清楚要不要、什麼時候。\n",
+      "title": "要不要變團隊？",
+      "oneLineSummary": "一個人 vs 小團隊的取捨",
+      "analogy": "以為變大才成功、其實各有代價",
+      "content": "## 這一課你會做出什麼\n\n想清楚一個關鍵抉擇：**要不要從一個人變成小團隊？** 這不是「當然要變大」的問題——兩條路各有代價，關鍵看**你要的是什麼生活**。下面的測驗幫你釐清。\n\n---\n\n## 保持一個人 vs 組小團隊\n\n| | 保持一個人 | 組小團隊 |\n|---|---|---|\n| 自由 | 最高（自己說了算） | 降低（要管人、要對人負責） |\n| 天花板 | 你的時間（靠槓桿放大） | 較高（更多人手做更多事） |\n| 複雜度 | 低（沒有管理成本） | 高（招募、溝通、發薪、文化） |\n| 風險 | 你倒下就停 | 分散，但要養活別人 |\n\n---\n\n## 什麼時候「該」考慮加人\n\n- 你已經用盡自動化/AI/外包的槓桿（見 59.17），還是做不完。\n- 有一塊「持續、核心、不適合外包」的工作需要專人。\n- 加這個人能明顯放大收入，而不只是增加成本。\n\n**別為了『看起來像個公司』而招人**——多一個人是多一份責任、多一份管理，也少一份自由。\n\n---\n\n## 一個中間選項：長期夥伴而非雇員\n\n很多一人公司不招全職，而是用**長期配合的外包/合作夥伴**（設計師、工程師、VA）——要人手時有、不用養固定人事、保留彈性。這常是比「正式擴編」更適合一人公司的路。\n\n---\n\n## ☕ 用人話講\n\n要不要變團隊，不是「當然要變大」——保持一個人有最高自由、最低複雜度；組團隊天花板較高但要管人、養人、少自由。該加人的訊號是「槓桿用盡還是做不完、且加人能明顯放大收入」，而不是「想看起來像公司」。很多人選中間路：用長期外包夥伴而非全職雇員，保留彈性。先用測驗想清楚你要的生活。",
       "tip": {
-        "type": "warning",
-        "text": "新手 3 大坑：(1) 不看 console—F12 按 Console 看錯誤訊息、99% 問題在那裡 (2) 不存檔就 F5—改完忘記儲存以為「程式沒效果」 (3) 抄 code 不理解—複製貼上能跑、但下次要改就崩潰。記得：先看懂、再寫。"
+        "type": "pro",
+        "text": "看你要的生活、不是別人的期待。"
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "抉擇題：用下面的測驗看你比較適合『保持一個人』還是『組小團隊』。然後：①寫你同不同意、為什麼 ②如果要加人手，你會先用『全職雇員』還是『長期外包夥伴』、為什麼 ③你認為自己該加人的『訊號』會是什麼。",
+        "hint": "該加人的訊號：槓桿(自動化/AI/外包)用盡還做不完、有核心工作需專人、加人能明顯放大收入。別為了『像公司』而招人。中間選項是長期外包夥伴。",
+        "answer": "驗收：①理解兩條路的取捨(自由vs天花板/複雜度)②多數一人公司適合先用長期外包夥伴保彈性 ③加人訊號合理(槓桿用盡+能放大收入)。抓到『變大不是必然、看你要的生活、別為面子招人』就達標。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "「永遠 solo」case"
+          "level": 2,
+          "text": "這一課你會做出什麼"
         },
         {
-          "level": 3,
-          "text": "「變團隊」case"
+          "level": 2,
+          "text": "保持一個人 vs 組小團隊"
         },
         {
-          "level": 3,
-          "text": "第一個 hire"
+          "level": 2,
+          "text": "什麼時候「該」考慮加人"
         },
         {
-          "level": 3,
-          "text": "從 solo → 2-3 人"
+          "level": 2,
+          "text": "一個中間選項：長期夥伴而非雇員"
         },
         {
-          "level": 3,
-          "text": "從 3 → 10 人（real team）"
-        },
-        {
-          "level": 3,
-          "text": "「Calm company」哲學"
-        },
-        {
-          "level": 3,
-          "text": "2026 趨勢"
+          "level": 2,
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "你的 SaaS 現在 $15k MRR，每週工作 50 小時，客戶常要求你處理超出能力的工作。根據這課的邏輯，你應該怎麼做？",
+        "question": "一人公司考慮「要不要組團隊」，最健康的判斷是？",
         "options": [
           {
             "value": "a",
-            "label": "馬上招聘一個工程師，因為工程師能幫你最快提升技術能力"
+            "label": "看你要的生活與取捨——保持一個人有最高自由，該加人的訊號是槓桿用盡還做不完且加人能放大收入，別為『像公司』而招人"
           },
           {
             "value": "b",
-            "label": "先想清楚是否真的要建團隊還是想維持 solo，因為兩條路都對、選錯後悔多年"
+            "label": "當然要盡快變大，人越多越成功"
           },
           {
             "value": "c",
-            "label": "等到 $50k MRR 再考慮招人，現在還太早"
+            "label": "永遠不能加任何人，否則就不算一人公司"
           },
           {
             "value": "d",
-            "label": "招聘一個客戶成功或虛擬助手，來處理你最討厭或最痛的工作"
+            "label": "看到別人擴編就跟著擴編"
           }
         ],
-        "answer": "d",
-        "explanation": "課程清楚說明第一個 hire 不是招你最會的人（工程師），而是按『你最痛/最不喜歡的工作』來雇人。$15k MRR 有能力支撐這個決定，關鍵是解決你最大的瓶頸。選項 b 雖然也對，但不如 d 具體針對『該怎麼做』的實際行動。"
-      }
-    },
-    {
-      "id": "59.19",
-      "number": "LESSON 59.19",
-      "title": "Exit：賣公司 / 收購",
-      "oneLineSummary": "Exit：賣公司 / 收購：indie 也能把產品賣掉變現",
-      "analogy": "像把養大的店頂讓——做起來的 SaaS 能賣給別人（Microacquire 等），一次入袋。",
-      "content": "不是每個 indie 都要 sell、但**知道怎麼 sell**是 leverage—你 always have option。\n\n  \n### 為什麼 sell\n\n```text\n1. Burnout\n   - 8 年了、累了\n   - Sell + 退休 / 新 project\n\n2. Lifestyle 改變\n   - 結婚 / 生小孩\n   - 想 stable income\n\n3. Money goal hit\n   - 30 歲 financial freedom\n   - 不需要更多\n\n4. Market timing\n   - 你 niche 飽和\n   - Sell 趁高點\n\n5. 不對的 ownership\n   - 你不享受 manage\n   - 想回到 IC\n\n6. Opportunity 太大\n   - 大公司 want to acquire\n   - Price 不能拒\n```\n\n  \n### 多少 SaaS 值\n\n```text\nSaaS valuation rule of thumb：\n\nSmall SaaS（$5k-$50k MRR）：\n- 2-4x ARR\n- 例：$10k MRR = $120k ARR → $240k-$480k\n\nMedium SaaS（$50k-$500k MRR）：\n- 4-8x ARR\n- 例：$100k MRR = $1.2M ARR → $4.8M-$9.6M\n\nLarge SaaS（$500k+ MRR）：\n- 6-15x ARR\n- Strategic acquirer 給更高\n\nVC-backed unicorn：\n- 20-40x ARR（hype period）\n- 不適用 indie\n\n調整因素：\n- MRR 成長率（> 20%/年 → premium）\n- Churn（ 30% MRR → discount\n- Strategic value to acquirer → premium\n```\n\n  \n### 誰買 indie SaaS\n\n  \n#### 1. Acquihire\n\n```text\n大公司想你「人」+ product\n通常 small acquisition\n\n例：\n你 SaaS $30k MRR\n大公司 hire 你 + 砍 product\nPay you $500k + 2 年 retention bonus\n\n優：\n- Fast exit\n- Stable salary 後\n缺：\n- 不真值 product\n- 你被 lock in\n```\n\n  \n#### 2. Strategic Acquisition\n\n```text\n競品 / adjacent company 買你\n通常 fair multiple\n\n例：\n你 SaaS $50k MRR（$600k ARR）\n競品 acquire $3M（5x ARR）\nIntegrate 進他 platform\n\n優：\n- 真值 product\n- 你 cash out\n缺：\n- Earn-out 可能（部分 condition on）\n```\n\n  \n#### 3. PE / Holding Company\n\n```text\nPrivate Equity 買 cash-flowing SaaS\n\n特徵：\n- $1M+ ARR\n- 高 profit margin\n- 穩定 growth\n- 不 high-risk\n\n例：\n- Tiny Capital\n- Constellation Software\n- WP Engine（acquire WordPress plugins）\n\n優：\n- Multiple times revenue\n- 你 mostly cash out\n缺：\n- Operational changes\n- Customer 可能 affected\n```\n\n  \n#### 4. Marketplace（Acquire.com）\n\n```text\n專門 indie SaaS marketplace：\n\nAcquire.com（前 MicroAcquire）：\n- $10k-$10M deal size\n- 連結 indie seller / individual buyer\n- 列 hundreds of SaaS for sale\n\nProcess：\n1. 列你 SaaS（metrics 公開）\n2. Buyer interest 表達\n3. 簽 NDA + 深入 due diligence\n4. Negotiate\n5. Close（通常 2-4 個月）\n\nBuyer types：\n- Tech entrepreneurs（buy + grow）\n- Operators（buy + run）\n- Indie hackers（buy as portfolio）\n```\n\n  \n### 準備 sell\n\n```text\n6-12 個月前 prepare：\n\nFinancials：\n- Clean books（accountant review）\n- P&L、cash flow 分明\n- 訂閱 metrics（MRR / churn / LTV）\n- 沒 personal expense 混\n\nOperations：\n- Document everything（SOP）\n- 你能 1 個月不 work 也 run？\n- Customer 不依賴你個人\n- Tech stack 不 weird\n\nLegal：\n- Trademark 在公司名下\n- 沒 IP issue\n- Contracts clean\n- 沒 outstanding lawsuit\n\nGrowth：\n- 6 個月 steady growth（不 plateau）\n- 不要 sell at plateau（valuation 低）\n```\n\n  \n### 怎麼 negotiate\n\n```text\n不是「price」單一 number：\n\nDeal structure：\n- Cash upfront：50-80%\n- Earn-out：20-50%（depending on hitting metrics）\n- Equity in acquirer：可能\n- Retention bonus（你 stay）：可能\n\nKey terms：\n- Working capital adjustment\n- Reps and warranties\n- Indemnification\n- Non-compete（多久 not start similar）\n- Employment（你 stay 多久）\n\nNegotiate priorities：\n1. Cash amount\n2. Cash upfront %（越高越好）\n3. Non-compete duration\n4. Earn-out conditions（避免 too aggressive）\n\n工具：\n- Acquire.com 內建 contract template\n- M&A lawyer（$5k-20k、必要）\n- Accountant（tax structuring）\n```\n\n  \n### Tax 考量\n\n```text\n賣 SaaS = 一筆大 income / capital gain\n\n台灣：\n- 公司股權轉讓\n  - 個人賣未上市股票：證券交易所得目前停徵，但金額大可能觸到最低稅負制（AMT）\n  - 一定要保留完整交易紀錄、找會計師試算\n- 若是賣「資產 / 業務」而非股權 → 列入營業所得課稅\n\n海外架構（賣給國外 acquirer）：\n- 常見用控股公司持有，找跨境稅務顧問，別自己亂搞\n```\n\n> 💡 **進階技巧 — Build like you'll never sell, prepare like you will tomorrow**：把產品建得像 lifetime company（高品質、乾淨、有文件），自然就會變成 acquirer 想要的。Clean books + clear SOP = 隨時 exit-ready。不是每個 indie 都要賣，而是永遠保有「賣」這個 option。\n\n**☕ 用人話講**\n\nExit：賣公司 / 收購——indie 也能把產品賣掉變現。**一句話記住**：像把養大的店頂讓——做起來的 SaaS 能賣給別人（Microacquire 等），一次入袋。\n",
-      "tip": {
-        "type": "practical",
-        "text": "想著 exit 之前先把生意做穩；能穩定獲利的小生意本身就是好結果，不一定要賣。"
+        "answer": "a",
+        "explanation": "變大不是必然的成功。保持一個人有最高自由與最低複雜度；組團隊天花板較高但要管人、養人、少自由。該加人的訊號是『自動化/AI/外包槓桿用盡還做不完、且加人能明顯放大收入』，而非為了看起來像公司。很多一人公司選中間路——用長期外包夥伴保留彈性，而不急著全職擴編。"
       },
-      "xp": 10,
-      "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
-      },
-      "outline": [
+      "demos": [
         {
-          "level": 3,
-          "text": "為什麼 sell"
-        },
-        {
-          "level": 3,
-          "text": "多少 SaaS 值"
-        },
-        {
-          "level": 3,
-          "text": "誰買 indie SaaS"
-        },
-        {
-          "level": 3,
-          "text": "準備 sell"
-        },
-        {
-          "level": 3,
-          "text": "怎麼 negotiate"
-        },
-        {
-          "level": 3,
-          "text": "Tax 考量"
+          "type": "decision-quiz",
+          "title": "你適合保持一個人、還是組小團隊？",
+          "note": "回答 3 題看傾向（只是參考）",
+          "config": {
+            "intro": "沒有對錯，看你要的生活。",
+            "questions": [
+              {
+                "q": "你最在意？",
+                "options": [
+                  {
+                    "label": "完全自主、自己說了算",
+                    "scores": {
+                      "solo": 2
+                    }
+                  },
+                  {
+                    "label": "能做更大的事、突破時間天花板",
+                    "scores": {
+                      "team": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "對『管人』的感覺？",
+                "options": [
+                  {
+                    "label": "很累、我寧可不要",
+                    "scores": {
+                      "solo": 2
+                    }
+                  },
+                  {
+                    "label": "還行、我願意帶人",
+                    "scores": {
+                      "team": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你目前的狀況？",
+                "options": [
+                  {
+                    "label": "槓桿(自動化/AI/外包)還沒用滿",
+                    "scores": {
+                      "solo": 2
+                    }
+                  },
+                  {
+                    "label": "槓桿用盡還是做不完、且加人能放大收入",
+                    "scores": {
+                      "team": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "solo": {
+                "emoji": "🧍",
+                "title": "先保持一個人",
+                "desc": "你重視自主、也還沒把槓桿用滿。先把自動化/AI/外包用好(見59.17)，需要人手時用長期外包夥伴保彈性，別急著擴編。"
+              },
+              "team": {
+                "emoji": "👥",
+                "title": "可以考慮加人",
+                "desc": "你願意帶人、且槓桿用盡還做不完、加人能放大收入。可以先從長期夥伴或關鍵職位一人開始，別一次擴一大票。"
+              }
+            }
+          }
         }
       ]
     },
     {
-      "id": "59.20",
-      "number": "LESSON 59.20",
-      "title": "台灣做一人公司的特別考量",
-      "oneLineSummary": "台灣做一人公司的特別考量：稅務、法律",
-      "analogy": "像在地創業的眉角——行號或公司怎麼選、二代健保這些台灣特有的，要先搞懂。",
-      "content": "台灣 indie 跟矽谷 indie 不同—**市場、稅、社群、文化都有特色**。\n\n  \n### 市場考量\n\n  \n#### 賣台灣 vs 賣全球\n\n```text\n賣台灣（local SaaS）：\n- 客戶 pool：~50k 中小企業 SaaS willing\n- 客單價較低（NT$500-3000/月）\n- 中文 marketing\n- 客服中文\n- 信用卡接受度 OK\n\n賣全球（international SaaS）：\n- 客戶 pool：millions\n- 客單價較高（USD $30-300/月）\n- 英文 everything\n- Async timezones\n- Stripe 完整\n\n新 indie 建議：\n- 英文懂 → 全球（市場大太多）\n- 英文不夠 → 台灣 niche\n\n例：\n- OrderEase（餐廳）：台灣 local\n- YukiChat（AI chat）：可全球\n- Insight（survey）：全球\n- 毛行天下（pet）：台灣 niche\n```\n\n  \n#### 台灣 niche 機會\n\n```text\n2026 台灣 indie 友善 niche：\n\n被 ignore 的 vertical：\n- 餐廳 / 小店 SaaS\n- 房仲 / 不動產\n- 牙醫 / 診所\n- 補習班 / 教育\n- 攝影 / 婚禮\n- 寵物業\n- 物流 / 配送\n\n特徵：\n- 大廠不 care\n- 客戶痛點明確\n- 中文 + 在地 know-how 護城河\n- NT$2k-10k/月 ARPU 容易達\n\n劣勢：\n- TAM 有限\n- Scale 後沒 international 路\n- 1 個 SaaS 上限 NT$30M-100M/年\n```\n\n  \n### 稅務 + 法務\n\n  \n#### 個人 vs 公司\n\n```text\n選身份（Ch25.6 詳細）：\n\n純個人（執行業務所得）：\n- 月收 < NT$80k、剛起步、客戶少\n- 成本最低、彈性最高\n\n行號 / 公司：\n- 月收穩定 > NT$80k、需要發票、想抵費用、要找合作\n\n台灣特別優勢：健保 / 勞保便宜、生活成本低、亞洲時區方便接日韓客戶\n```\n\n> 💡 **進階技巧 — 在地 cost + 全球 revenue = 最佳結構**：台灣生活成本 NT$50k–80k/月就能過得不錯，賣全球 + 收 USD，income 不被台灣薪資天花板限制。只賣台灣 → 容易卡在 ARR 上限；賣全球 → 沒上限。學英文 + 累積國際 audience，是台灣 indie 最大的投資。\n\n**☕ 用人話講**\n\n台灣做一人公司的特別考量——稅務、法律。**一句話記住**：像在地創業的眉角——行號或公司怎麼選、二代健保這些台灣特有的，要先搞懂。\n",
+      "id": "59.19",
+      "number": "LESSON 59.19",
+      "title": "Exit：把產品/事業賣掉",
+      "oneLineSummary": "做的東西也可以是資產、能賣",
+      "analogy": "不是只有上市才叫成功退出",
+      "content": "## 這一課你會做出什麼\n\n搞懂一人公司的 **Exit（退出）**——你做的產品/事業本身是一項**資產，可以賣掉變現**。不是只有「IPO 上市」才叫成功退出。\n\n> 很多 indie 產品最後被別人買走，創辦人拿一筆錢、去做下一個。這是完全正當、也常見的路。\n\n---\n\n## 為什麼小產品也能賣\n\n買家買的是**「穩定的現金流」和「現成的用戶/營收」**。一個月營收穩定、churn 低的小 SaaS，對想省下「從零做起」的人來說很有價值——他們寧可花錢買現成的。\n\n**常見估值參考**：小型 SaaS 常以「年營收（ARR）的某個倍數」或「月利潤 × N 個月」計價（倍數因成長性、穩定度而異）。重點是**穩定、可預測**的生意最好賣。\n\n---\n\n## 在哪賣\n\n- 專門的收購市集（如 Acquire、Flippa 等）媒合買賣雙方。\n- 你的社群/人脈裡，可能就有想接手的人。\n\n---\n\n## 什麼讓你的產品「好賣」\n\n1. **營收穩定、churn 低**：可預測 = 買家敢出手。\n2. **不完全依賴你個人**：如果沒有你就跑不動（全靠你的臉/人脈），買家會擔心。文件化、自動化能加分。\n3. **乾淨的數據與帳務**：能清楚證明營收、成本、用戶數。\n\n---\n\n## ☕ 用人話講\n\n一人公司的 Exit 不是只有上市——你的產品本身就是資產，穩定賺錢的小 SaaS 可以直接賣掉變一筆錢。買家買的是「現成的穩定現金流」。想讓它好賣：營收穩定、churn 低、別讓生意完全綁在你個人身上、帳務乾淨。做得好，「賣掉去做下一個」是很正當的成功。（估值因人而異、不做保證。）",
       "tip": {
         "type": "pro",
-        "text": "台灣科技公司面試 90% 會問「一人公司」相關問題。常考：(1) 概念定義（用自己的話講）(2) 怎麼用 / 有沒有踩過坑 (3) 為什麼選這個不選那個。準備時不用背、用自己做過的小專案當例子最有說服力。"
+        "text": "小產品也能賣、賣的是穩定現金流。"
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "思考題：假設你有一個穩定的小 SaaS 想賣掉——①買家最在意的兩件事是什麼、為什麼 ②為了讓它『好賣』，你現在就該做哪兩件事 ③說明為什麼『生意完全綁在你個人身上』會降低賣相。",
+        "hint": "買家買的是穩定可預測的現金流。好賣的關鍵：營收穩定+churn低、不依賴你個人(文件化/自動化)、帳務乾淨。",
+        "answer": "驗收：①點出買家在意穩定現金流+可預測 ②現在能做的(顧churn/文件化/記好帳)③理解『太依賴創辦人個人』會讓買家卻步。抓到『產品是可賣的資產、穩定+不綁個人+帳乾淨才好賣』就達標。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "市場考量"
+          "level": 2,
+          "text": "這一課你會做出什麼"
         },
         {
-          "level": 3,
-          "text": "稅務 + 法務"
+          "level": 2,
+          "text": "為什麼小產品也能賣"
+        },
+        {
+          "level": 2,
+          "text": "在哪賣"
+        },
+        {
+          "level": 2,
+          "text": "什麼讓你的產品「好賣」"
+        },
+        {
+          "level": 2,
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "根據課程內容，一個剛起步的台灣 indie 開發者，如果英文能力不錯，應該優先選擇哪個策略來最大化收入潛力？",
+        "question": "想讓你的一人 SaaS 產品「好賣（容易被收購）」，最關鍵的是什麼？",
         "options": [
           {
             "value": "a",
-            "label": "專注賣台灣的中小企業市場，因為在地客服優勢明顯"
+            "label": "營收穩定、churn 低、且生意不完全依賴你個人（文件化/自動化）、帳務乾淨可預測"
           },
           {
             "value": "b",
-            "label": "以全球市場為目標，利用台灣低成本 + 全球 USD 收入的優勢"
+            "label": "功能越多越複雜越值錢"
           },
           {
             "value": "c",
-            "label": "先做台灣 niche 產品驗證，等到月收穩定再轉向全球"
+            "label": "完全靠你個人的名氣和人脈在運轉"
           },
           {
             "value": "d",
-            "label": "同時開發台灣和全球兩個版本，分散風險"
+            "label": "只要成長曲線很陡就好，穩不穩定不重要"
           }
         ],
-        "answer": "b",
-        "explanation": "課程的核心建議是：台灣 indie 的最大優勢在於「低生活成本 + 全球收入」——用 NT$50k-80k/月就能生活，卻能賺 USD，避開台灣薪資天花板。只賣台灣會被 ARR 上限限制，賣全球才是無上限成長。"
+        "answer": "a",
+        "explanation": "買家買的是『現成的穩定現金流』，所以最看重營收穩定、churn 低、可預測；同時生意若完全綁在你個人（沒你就跑不動）會讓買家卻步，文件化/自動化能加分；帳務乾淨才能證明營收。功能多不等於值錢，穩定可預測比陡但不穩的成長更好賣。"
+      }
+    },
+    {
+      "id": "59.20",
+      "number": "LESSON 59.20",
+      "title": "台灣一人公司實務：開業 + 稅",
+      "oneLineSummary": "登記/發票/稅，別踩帳務地雷",
+      "analogy": "忽略帳務 = 未來被追稅、罰款",
+      "content": "## 這一課你會做出什麼\n\n一份**台灣一人公司/接案者的開業與帳務基本功**——別因為「一個人」就忽略稅務，事後被追稅、罰款很痛。\n\n> 這不是要你變會計，是讓你知道「該做哪些、找誰做」，別踩到帳務地雷。（本課為一般說明、非稅務/法律意見，實務請諮詢會計師。）\n\n---\n\n## 起步的三種身份（簡化理解）\n\n- **個人接案**：收入併入個人綜合所得稅。少量接案最單純，但客戶多會要求開發票/收據。\n- **行號（獨資/合夥）**：去國稅局辦「營業登記」，能開發票、報營業稅，客戶（尤其公司）比較願意合作、也顯得正式。一人公司常走這條。\n- **公司（有限公司）**：更正式、責任有限，但成本與帳務更複雜，通常規模大一點才需要。\n\n多數一人起步從**個人接案或行號**開始，等規模大再考慮公司。\n\n---\n\n## 帳務基本功（現在就做）\n\n1. **開一個事業專用帳戶**：收入支出跟個人分開，報稅、對帳都清楚。\n2. **每一筆都記帳**：誰付你多少、花了什麼（可用 Excel 或記帳軟體）。**這是報稅、也是看清事業健康的依據。**\n3. **保留憑證**：發票、收據、合約留好，被查帳時有據。\n4. **找個配合的記帳士/會計師**：一年花一點錢，省下大量踩雷和時間，值得。\n\n---\n\n## ☕ 用人話講\n\n一個人做，帳務照樣要顧——忽略它未來會被追稅、罰款。起步多從個人接案或辦行號開始（能開發票、顯正式），規模大再考慮公司。現在就做三件事：開事業專用帳戶、每筆記帳、留好憑證，再找個記帳士配合。花小錢省大麻煩。（非稅務意見，實務請問會計師。）",
+      "tip": {
+        "type": "pro",
+        "text": "早點搞懂、正式又省心。"
+      },
+      "xp": 10,
+      "exercise": {
+        "question": "實務規劃題：假設你要開始接案/做一人公司——①你會先用『個人接案』還是『辦行號』、為什麼 ②列出你現在就會做的 3 個帳務基本動作 ③你打算自己記帳還是找記帳士、理由。",
+        "hint": "少量起步可個人接案、要開發票顯正式辦行號、規模大再考慮公司。帳務基本功：事業專用帳戶、每筆記帳、留憑證、找記帳士。",
+        "answer": "驗收：①身份選擇有理由(規模/是否要開發票)②三個帳務動作(專用帳戶/記帳/留憑證)③理解找記帳士的價值。抓到『一個人也要顧帳務、循身份起步、基本功+找專業』就達標。（非稅務意見）"
+      },
+      "outline": [
+        {
+          "level": 2,
+          "text": "這一課你會做出什麼"
+        },
+        {
+          "level": 2,
+          "text": "起步的三種身份（簡化理解）"
+        },
+        {
+          "level": 2,
+          "text": "帳務基本功（現在就做）"
+        },
+        {
+          "level": 2,
+          "text": "☕ 用人話講"
+        }
+      ],
+      "miniQuiz": {
+        "question": "關於台灣一人公司/接案者的帳務，最正確的觀念是？",
+        "options": [
+          {
+            "value": "a",
+            "label": "一個人也要正式顧帳務(專用帳戶/每筆記帳/留憑證/找記帳士)，忽略未來會被追稅罰款"
+          },
+          {
+            "value": "b",
+            "label": "一個人做不用報稅、也不用記帳"
+          },
+          {
+            "value": "c",
+            "label": "收入直接進個人帳戶、混在一起最方便"
+          },
+          {
+            "value": "d",
+            "label": "一定要一開始就開有限公司才合法"
+          }
+        ],
+        "answer": "a",
+        "explanation": "『一個人』不等於可以忽略帳務——忽略未來會被追稅、罰款。基本功是：開事業專用帳戶(收支分離)、每筆記帳、留好憑證、找記帳士配合。起步可從個人接案或辦行號(能開發票、顯正式)開始，規模大再考慮公司，不是一開始就得開有限公司。（非稅務意見，實務請問會計師。）"
       }
     },
     {
       "id": "59.21",
       "number": "LESSON 59.21",
-      "title": "真實案例：indie 月入 NT$100k+",
-      "oneLineSummary": "真實案例：indie 月入 NT$100k+：真實案例",
-      "analogy": "像看前輩怎麼成功的——真實案例比理論有用，照著學能少走很多冤枉路。",
-      "content": "不是 hype、看具體 case—**普通人怎麼到 NT$100k/月**。\n\n  \n### Case 1：Pieter Levels（@levelsio）\n\n```text\nNiche：Nomad / remote work\nStarted：2014（27 歲、不富裕）\nApproach：12 startups in 12 months\n\nPortfolio（2024）：\n- NomadList：$30k+/月\n- RemoteOK：$50k+/月\n- Photo AI：$50k+/月\n- 其他 SaaS：$20k+/月\n- Total：$150k+/月（$1.8M+/年）\n\nStack：\n- PHP + jQuery（simple、boring）\n- 1 大 server\n- Cloudflare CDN\n- 不用 framework\n\nKey principles：\n- Ship 快（ product\n- 不 scale team\n\n啟發：\n- 中年也可以 start\n- 不寫 code 也能 indie\n- Personal brand 是 ultimate moat\n- Solo 不是 limitation\n```\n\n  \n### Case 4：Tony Dinh（Black Magic）\n\n```text\nNiche：Twitter analytics for creators\nStarted：2021\nLocation：Taiwan（住 Taipei）\n\nRevenue（2024）：\n- Black Magic SaaS：$30k+/月\n- Typing Mind（AI chat UI）：$20k+/月\n- 其他：$10k+/月\n- Total：$60k+/月\n\nStack：\n- React + Supabase\n- Stripe\n- Build in public 全程\n\nAudience：\n- Twitter：200k+ followers\n- 全 international\n\nKey：\n- 公開分享 build + metric\n- 多 SaaS portfolio\n- Twitter is distribution\n- 住台灣 + 賣全球\n\n啟發：\n- 台灣 indie 完全可行\n- Twitter audience 跨產品\n- Multiple SaaS 分散 risk\n- 1 個 SaaS 不夠\n```\n\n  \n### Case 5：Sahil Lavingia（Gumroad）\n\n```text\nNiche：creator commerce\nStarted：2011\nPath：VC-funded → bootstrapped 轉型\n\nRevenue（2024）：\n- Gumroad：$20M+/年\n- 個人 income：$1M+/年\n- Calm company（不 sell、不 hyper-grow）\n\nStack：\n- 經典 SaaS stack\n- 8 人 team（小）\n\nKey：\n- 拒絕 VC growth-at-all-cost\n- Profitable from day 1\n- 4-day work week team\n- 公開 metric / strategy\n\n啟發：\n- VC 不是唯一路\n- 「Calm company」是 viable\n- 小 team 能大 ARR\n- 拒絕 corporate norm\n```\n\n  \n### Case 6：Adam Wathan（Tailwind）\n\n```text\nNiche：CSS framework\nStarted：2017（前端 dev → entrepreneur）\n\nRevenue：\n- Tailwind UI（components）：$5M+/年\n- Tailwind Plus / book sales：$2M+/年\n- Open source Tailwind CSS（main）\n\nPath：\n- Build OSS（Tailwind CSS）→ huge audience\n- 賣 commercial products to audience\n- Newsletter + community\n\nTeam：8 人（最近 grow）\n\nKey：\n- OSS as marketing\n- Sell to dev audience\n- Quality content（YouTube + blog）\n- Build long-term（5+ 年）\n\n啟發：\n- OSS 是 indie distribution\n- Dev 商業化 OK\n- Sell complements to free\n- Audience 累積 5+ 年 worth it\n```\n\n  \n### Common patterns（從這些 case 學）\n\n```text\n1. Long-term commit\n   - 大多 5+ 年才 traction\n   - 不要 expect overnight\n\n2. Build in public\n   - 70%+ 公開 share\n   - Audience 是 leverage\n\n3. Niche start\n   - 不是廣產品\n   - 從小 niche 開始\n\n4. Multiple income streams\n   - 不全押 1 stream\n   - Diversify\n\n5. Solo or small team\n   - 大多 0-10 人\n   - 不 IPO ambition\n\n6. Personal brand\n   - 自己 = 公司\n   - Twitter / LinkedIn 重要\n\n7. Bootstrap or minimal funding\n   - 不 raise huge round\n   - Profitable 為 priority\n\n8. International market\n   - 不 limit 1 國\n   - English language\n\n9. AI augmented（2024+）\n   - 1 人能做更多\n   - 工具 leverage 大\n\n10. Lifestyle > scale\n    - 不為 IPO 而 IPO\n    - 享受 journey\n```\n\n  \n### 台灣人 specific learnings\n\n  \n- **不需要 emigrate**—Tony Dinh / Daniel Chen 證明\n- **英文是必要 tool**—accent OK、能溝通就行\n- **Twitter / LinkedIn 是 distribution**—不只美國人用\n- **Time zone 不是 blocker**—async OK\n- **台灣 cost low**—不像矽谷 burn rate 高\n- **政府 / 稅務麻煩、但能克服**—會計師 + 律師 retainer\n\n  \n**🚀 進階技巧**\n\nCase study 心法：**「跟 1 個 case 學 deep、勝看 100 個 case shallow」**。選 1 個跟你最像的 indie、訂閱他 newsletter、看他 talks、模仿他 strategy 6 個月—比讀 50 本 startup book ROI 高。**從 Pieter / Marc / Tony / Justin 選一個 closest to your situation**—follow 1 年、行動。\n\n**☕ 用人話講**\n\n真實案例：indie 月入 NT$100k+——真實案例。**一句話記住**：像看前輩怎麼成功的——真實案例比理論有用，照著學能少走很多冤枉路。\n",
+      "title": "真實案例：可複製的原則",
+      "oneLineSummary": "看案例學『原則』、不是抄數字",
+      "analogy": "抄別人的路、忽略你的條件不同",
+      "content": "## 這一課你會做出什麼\n\n從幾個知名 indie 案例裡，萃取出**「可複製的原則」**——而不是被那些漂亮的收入數字迷惑（那些是結果、不是保證，每個人條件不同）。\n\n> 看案例的正確方式不是「他月入 X、我也要」，是「他做對了什麼『原則』、哪些我能用」。\n\n---\n\n## 從案例萃取的共通原則\n\n- **Pieter Levels（Nomad List / PhotoAI）**：同時經營多個小產品（多元收入抗震）、Build in Public、快速上線、抓自己的癢。→ 原則：**多產品分散 + 公開做 + 快速驗證。**\n- **Tony Dinh（TypingMind 等）**：邊接案/工作邊做產品、公開分享數據、產品解決具體小痛點。→ 原則：**現金流兜底 + 小 niche + 公開累積受眾。**\n- **各種訂閱制創作者**：靠持續內容養受眾、再用自家產品變現。→ 原則：**受眾先於變現、內容複利。**\n\n**注意這些原則你都見過**——因為它們就是這章前面在講的：三模式、找痛點、MVP、定價、Build in Public、多元收入、槓桿。案例只是「這些原則真的有人用出來」的示範。\n\n---\n\n## 別做的事：抄數字、抄路徑\n\n- 「他靠 X 賺錢，我也做 X」——但他做 X 時市場、時機、他的受眾都跟你不同。\n- 「他月入 Y，所以做這個能月入 Y」——那是他的結果，不是你的保證。\n\n**抄原則、不抄數字；學做法、不迷結果。**\n\n---\n\n## ☕ 用人話講\n\n看 indie 案例，別盯著收入數字流口水（那是結果、不是保證）。要萃取『可複製的原則』——你會發現這些成功者做的，就是這章一直在講的：多元、公開做、找真痛點、快速驗證、受眾先於變現。案例的價值是「證明這些原則真的有用」，不是「照抄他的路就能有他的收入」。抄原則、不抄數字。",
       "tip": {
-        "type": "tip",
-        "text": "Pieter Levels、Tony Dinh 都是「普通人 + 持續 ship」做出來的——別只看結果的數字，看他們 ship 了多少次才中。重點是開始 + 持續。"
+        "type": "pro",
+        "text": "案例是原則的示範、不是保證。"
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "案例分析題：挑一個你知道的 indie/創作者成功案例（或用課文的例子）——①寫出他做對的 2-3 個『原則』（對應這章的概念）②指出哪一條原則你現在就能用在自己身上、怎麼用 ③說明為什麼『照抄他的收入數字當目標』是危險的。",
+        "hint": "抄原則不抄數字：從案例萃取『多元/公開做/找痛點/快速驗證/受眾先於變現』這類原則。他的數字是結果、你的條件不同。",
+        "answer": "驗收：①萃取出可複製的原則(非表面數字)②連結到自己能用的做法 ③理解『數字是結果不是保證、條件不同不能直接抄』。抓到『看案例學原則、不迷結果數字』就達標。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "Case 1：Pieter Levels（@levelsio）"
+          "level": 2,
+          "text": "這一課你會做出什麼"
         },
         {
-          "level": 3,
-          "text": "Case 4：Tony Dinh（Black Magic）"
+          "level": 2,
+          "text": "從案例萃取的共通原則"
         },
         {
-          "level": 3,
-          "text": "Case 5：Sahil Lavingia（Gumroad）"
+          "level": 2,
+          "text": "別做的事：抄數字、抄路徑"
         },
         {
-          "level": 3,
-          "text": "Case 6：Adam Wathan（Tailwind）"
-        },
-        {
-          "level": 3,
-          "text": "Common patterns（從這些 case 學）"
-        },
-        {
-          "level": 3,
-          "text": "台灣人 specific learnings"
+          "level": 2,
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "根據課程中的幾個案例，indie 開發者要達到月入 NT$100k+ 的「最關鍵共同點」是什麼？",
+        "question": "看 indie 成功案例，最正確的學習方式是？",
         "options": [
           {
             "value": "a",
-            "label": "一開始就要募大筆創投資金，才有足夠資源快速成長"
+            "label": "萃取可複製的『原則』（多元/公開做/找痛點/快速驗證/受眾先於變現），而不是抄他的收入數字或路徑"
           },
           {
             "value": "b",
-            "label": "長期承諾（5+ 年）+ 公開分享進度 + 從小 niche 開始，逐步累積個人品牌和受眾"
+            "label": "他做什麼我就做一模一樣的，複製他的路"
           },
           {
             "value": "c",
-            "label": "必須組建一個 20+ 人的專業團隊，才能管理多個產品線"
+            "label": "他月入多少，我照做就能月入多少"
           },
           {
             "value": "d",
-            "label": "只能靠單一爆款產品成功，不需要多個收入來源"
+            "label": "只看收入數字，數字越高的案例越值得抄"
           }
         ],
-        "answer": "b",
-        "explanation": "所有案例（Pieter、Tony、Sahil、Adam）都展現出：耐心投入多年、主動 build in public 建立受眾信任、從明確的小眾市場切入、最後透過個人品牌和社群創造多個收入流。這才是月入破 100k 的真實路徑，而非靠單一資金、大團隊或產品。"
+        "answer": "a",
+        "explanation": "案例的價值是『證明某些原則真的有用』，不是『照抄就有同樣收入』。成功者做對的往往是可複製的原則（多元收入、公開做、找真痛點、快速驗證、受眾先於變現）。但他們的市場、時機、受眾跟你不同，收入是結果不是保證。正確做法是抄原則、不抄數字；學做法、不迷結果。"
       }
     },
     {
       "id": "59.22",
       "number": "LESSON 59.22",
-      "title": "2026-2030 indie 趨勢",
-      "oneLineSummary": "2026-2030 indie 趨勢：未來趨勢",
-      "analogy": "像看風向——AI 讓一人公司更可行，看懂趨勢、提早布局的人佔便宜。",
-      "content": "未來 5 年 indie landscape 大改變。**看到趨勢 = 提前布局**。\n\n  \n### 趨勢 1：AI 把 1 人放大到 100 人\n\n```text\n2024-2026：Cursor / Claude Code / v0 起飛\n2026-2028：AI agent 取代多角色\n2028-2030：1 個 indie + 5 AI agents = 真實 company\n\n具體：\n- 寫 code：AI 80%、人 20%\n- 客服：AI 90% 處理\n- Content：AI 寫 + 人 polish\n- 設計：v0 / AI 生 + 人 curate\n- 行銷：AI 自動 outreach + 人 strategy\n- 分析：AI dashboard + 人 decision\n\n新「solo」definition：\n不是「1 個人」\n是「1 個 human + 多個 AI tools」\n\n對 indie：\n- Solo SaaS 上限提到 $5M-$10M ARR\n- 不需要 hire 那麼快\n- AI 工具費  Product\n\n```text\n過去：build product → market → sell\n未來：build audience → sell anything\n\n新 indie pattern：\n1. Build niche audience（newsletter / X / YouTube）\n2. Listen + sell what they want\n3. Switch product easily（audience 跟）\n\n例：\n- Justin Welsh：audience first、course 第二\n- Ali Abdaal：audience first、course 第二\n- Marc Lou：audience first、SaaS 第二\n\n對 indie：\n- Day 1 開始 build audience\n- 不要 ship 完才 marketing\n- Audience 是 cross-product asset\n\n工具：\n- Newsletter（owned）\n- X / LinkedIn（borrowed）\n- Podcast / YouTube（high engagement）\n- Discord community（deep relationship）\n```\n\n  \n### 趨勢 4：Lifestyle business 主流\n\n```text\n過去：startup = IPO / unicorn ambition\n2026+：Calm company / lifestyle 受尊敬\n\n驅動：\n- VC funding 變難（rate up）\n- Founder burnout 警示\n- Remote work normalize\n- 「夠用」哲學 spread\n\n例：\n- DHH（Basecamp）：永不 IPO\n- Pieter Levels：永遠 solo\n- Marc Lou：multi-SaaS lifestyle\n\n新「成功」definition：\n- $50k-$500k/年（comfortable）\n-  quantity\n- Sustainability mindset\n```\n\n  \n### 對你的 implication\n\n  \n- **Now is the time**—infrastructure 完備、tools 強、market global\n- **AI is leverage**—1 人能做 5 人活\n- **Audience first**—Day 1 開始\n- **Niche > Broad**—深耕一塊\n- **Lifestyle > Scale**—$30k/月 = 財富自由\n- **Long-term thinking**—5-10 年 commit\n- **Health priority**—Burnout = 最大 risk\n- **Community moat**—Build relationships not just product\n\n  \n### 從今天起\n\n```text\n不要等「ready」、開始：\n\nToday：\n- Tweet「I'm starting [project]」\n- 公開 commit\n\nThis week：\n- Outline first product\n- Ship landing page\n- Collect 5 emails\n\nThis month：\n- Ship MVP\n- 第一個 paying customer\n- Build in public 30 個 posts\n\nThis year：\n- $1k MRR\n- 1000 audience\n- 第一個 case study\n\nNext 5 years：\n- $10k+ MRR\n- 多 income stream\n- Lifestyle 自由\n- 不靠任何老闆\n\nStart today\nNot next Monday\nNot after「我學完」\nNow.\n\n> 💡 **進階技巧 — 最終心法**：最大的 risk 不是 indie 失敗，是 5 年後你仍在等「完美時機」。完美時機不存在——帶著不完美開始，再 iterate 到更好。Pieter Levels、Marc Lou、Justin Welsh 都是普通人 + 開始 + 持續，5 年後就是複利結果。從今晚開始 1 小時：寫一則 tweet、開一個 landing page、訪 1 個潛在客戶。\n\n**☕ 用人話講**\n\n2026-2030 indie 趨勢——未來趨勢。**一句話記住**：像看風向——AI 讓一人公司更可行，看懂趨勢、提早布局的人佔便宜。\n",
+      "title": "2026-2030：AI 讓一人公司更可行",
+      "oneLineSummary": "趨勢站在一人公司這邊",
+      "analogy": "以為要大團隊才做得起來 = 過時",
+      "content": "## 這一課你會做出什麼\n\n看懂一個對你有利的大趨勢：**AI 正讓「一人公司」比以往任何時候都更可行**——這不是雞湯，是門檻在實際下降。\n\n---\n\n## 為什麼趨勢站在一人公司這邊\n\n1. **做東西的門檻大降**：以前要一組人的產品，現在一個人＋AI（v0/Cursor/Claude/各種生成工具）幾天就能做出 MVP。\n2. **各部門都有 AI 補位**：客服、行銷文案、設計、資料分析、程式——每個都有 AI 助手，一個人 cover 的範圍被放大。\n3. **通路更平**：Build in Public、社群、SEO 讓一個人也能被全世界看到，不需要行銷預算。\n4. **金流/託管服務成熟**：收款、部署、資料庫都能外包給服務，維運成本極低。\n\n---\n\n## 但也有『反面』要清醒\n\n- **競爭也變多**：門檻低＝人人能做，同質產品變多。你的差異化（真痛點、你的觀點、你的受眾）更重要。\n- **AI 生的東西同質**：純 AI 直出的內容/產品會越來越像，**「加上只有你有的東西」**才是護城河（見 ch51.3、ch57）。\n\n---\n\n## 對你的意義\n\n趨勢是助力、不是保證。它降低了「開始」的門檻，但「做出有人要、有差異化的東西」還是要你自己。**現在是一人公司的好時代——但好時代裡，做對的人才贏。**\n\n---\n\n## ☕ 用人話講\n\n2026-2030 的大趨勢對一人公司超有利：做東西的門檻大降、各部門都有 AI 補位、通路變平、託管服務成熟——一個人能做的事被放大好幾倍。但別忘了反面：門檻低＝競爭多、AI 產出同質，你的差異化（真痛點、觀點、受眾）反而更關鍵。趨勢是助力不是保證，好時代裡做對的人才贏。",
       "tip": {
-        "type": "tip",
-        "text": "AI 把 1 人放大成 100 人——2026-2030 一人公司的天花板大幅提高。最大的 risk 不是失敗，是一直等「完美時機」不開始。"
+        "type": "pro",
+        "text": "AI 補齊各部門、門檻持續下降。"
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "趨勢應用題：①寫出 AI/趨勢讓你的一人公司計畫『更可行』的 2 個具體地方（哪些事以前要團隊、現在你一個人＋AI 能做）②寫出這個趨勢帶來的 1 個『風險』（如競爭變多/產品同質）③你打算用什麼『差異化』來應對。",
+        "hint": "趨勢助力：做東西門檻降、各部門AI補位、通路變平。反面：競爭多、AI同質→差異化(真痛點/你的觀點/你的受眾)更重要。",
+        "answer": "驗收：①舉出被 AI 放大的能力 ②看見門檻低=競爭多的反面 ③有具體差異化策略。抓到『趨勢有利但競爭也多、差異化更關鍵、趨勢是助力不是保證』就達標。"
       },
       "outline": [
         {
-          "level": 3,
-          "text": "趨勢 1：AI 把 1 人放大到 100 人"
+          "level": 2,
+          "text": "這一課你會做出什麼"
+        },
+        {
+          "level": 2,
+          "text": "為什麼趨勢站在一人公司這邊"
+        },
+        {
+          "level": 2,
+          "text": "但也有『反面』要清醒"
+        },
+        {
+          "level": 2,
+          "text": "對你的意義"
+        },
+        {
+          "level": 2,
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "根據這堂課的內容，2026-2030 年 indie 的最大改變是什麼？",
+        "question": "關於「AI 讓一人公司更可行」這個趨勢，最清醒的理解是？",
         "options": [
           {
             "value": "a",
-            "label": "AI 工具讓 1 個人能做出過去需要 100 人才能做的事，同時從 Day 1 就開始建立 audience 而不是等產品完成才行銷"
+            "label": "門檻大降是助力（各部門AI補位、通路變平），但門檻低=競爭多、AI產出同質，你的差異化反而更關鍵"
           },
           {
             "value": "b",
-            "label": "所有 indie 都必須募資才能成功，因為競爭變得更激烈"
+            "label": "有了 AI，隨便做都會成功"
           },
           {
             "value": "c",
-            "label": "Indie 應該放棄做產品，改成只經營 newsletter 和社群媒體就能賺錢"
+            "label": "AI 會自動幫你做出有人要、有差異化的產品"
           },
           {
             "value": "d",
-            "label": "未來 indie 的目標就是做到 unicorn 或 IPO，才算真正成功"
+            "label": "趨勢好，所以不用管競爭和差異化"
           }
         ],
         "answer": "a",
-        "explanation": "課程的核心重點是：AI 放大個人能力（1 人 + AI = 過去的 100 人）+ Audience first 策略（不再等產品完美才開始行銷），這兩個趨勢合起來才是 2026-2030 indie 的關鍵改變。b、c、d 都是誤解或與課程內容相反的選項。"
+        "explanation": "AI 確實讓一人公司更可行（做東西門檻降、各部門有 AI 補位、通路變平、託管成熟）。但要清醒看反面：門檻低代表人人能做、競爭變多、純 AI 產出同質化。所以你的差異化（真痛點、你的觀點、你的受眾）反而更重要。趨勢是降低『開始』門檻的助力，不是『做出有人要的東西』的保證——好時代裡做對的人才贏。"
       }
     },
     {
-      "title": "MRR / ARR / Churn：Indie SaaS 的核心指標",
-      "oneLineSummary": "MRR / ARR / Churn：Indie SaaS 的核心指標",
-      "analogy": "像看健康數字——月收入（MRR）、流失率（churn）是 SaaS 的命脈，要天天盯。",
-      "content": "## 核心定義\n- **MRR**：月經常性收入（Monthly Recurring Revenue）\n- **ARR**：年經常性收入（Annual Recurring Revenue）= MRR × 12\n- **Churn Rate**：流失率（這個月離開的客戶 / 上月總客戶）\n- **LTV**：客戶終身價值（Lifetime Value）= ARPU / Churn\n- **CAC**：客戶獲取成本（Customer Acquisition Cost）\n- **Payback Period**：CAC 回本時間 = CAC / 月利潤\n\n## Indie SaaS 階段\n```\n$0 ────────── 第 1 個付費客戶 ──────────\n   ↓\n$1k MRR ───── Ramen 等級（活下去）──────\n   ↓\n$10k MRR ──── 替代正職階級 ─────────────\n   ↓\n$100k MRR ─── 雇人、規模化 ──────────────\n   ↓\n$1M ARR ───── 媒體焦點、可被收購 ────────\n```\n\n## Churn 是隱形殺手\n```\n月 MRR 增 $1000、月 Churn 5%\n→ 第 12 個月只剩 $7500 增加（5% × 12 = 60% 流失）\n\n月 MRR 增 $1000、月 Churn 2%\n→ 第 12 個月 $10,000 完整保留\n```\n\n**降低 churn 比拉新客重要 10 倍**。\n\n## 提高 LTV 的 7 招\n1. **更貴的方案**（高層級客戶 churn 低 + 收得多）\n2. **年費折扣**（年付一次、減少猶豫期）\n3. **多產品 bundle**（一個工具好用、用 5 個更黏）\n4. **onboarding 強化**（首週決定 90% 留存）\n5. **客服 / 社群**（人情味黏度）\n6. **不斷加值**（每月新功能、捨不得停）\n7. **網路效應**（朋友也用→不能停）\n\n## 工具\n- **Stripe**：付費處理（Indie 標配）\n- **Newebpay / 綠界**：台灣金流\n- **Lemon Squeezy**：免處理稅務\n- **ChartMogul / Baremetrics**：MRR 追蹤\n- **Profitwell**：免費 MRR 分析\n\n## 公開 MRR 案例\n- **Pieter Levels** (Nomadlist)：$200k+/月\n- **Tony Dinh** (TypingMind)：$60k+/月\n- **Marc Lou** (ShipFast)：$50k+/月\n\n他們的共同點：**公開分享 MRR、建造在公開（Build in Public）**。\n\n**☕ 用人話講**\n\nMRR / ARR / Churn——Indie SaaS 的核心指標。**一句話記住**：像看健康數字——月收入（MRR）、流失率（churn）是 SaaS 的命脈，要天天盯。\n",
+      "title": "Indie SaaS 指標全解",
+      "oneLineSummary": "看懂 MRR/ARR/Churn/LTV/CAC",
+      "analogy": "不看數據 = 憑感覺經營、會盲",
+      "content": "## 這一課你會做出什麼\n\n看懂 SaaS 的幾個**關鍵數字**——它們讓你「憑數據」而不是「憑感覺」經營，早點發現問題。\n\n---\n\n## 五個必懂指標（白話版）\n\n- **MRR（月經常性收入）**：每月穩定會進來的訂閱收入。SaaS 的命脈——看它有沒有穩定成長。\n- **ARR（年經常性收入）**：MRR × 12，年度視角。\n- **Churn（流失率）**：一段時間內「退訂/流失」的用戶或收入比例。**這是漏水速度**——churn 高，拉再多新客也留不住（見 59.13）。\n- **LTV（顧客終身價值）**：一個客戶從開始到流失，總共帶給你多少錢。\n- **CAC（獲取一個客戶的成本）**：你花多少行銷/廣告費才換到一個付費客戶。\n\n---\n\n## 最重要的一個關係：LTV > CAC\n\n**一個客戶帶來的錢（LTV），要大於你獲取他的成本（CAC）**，生意才成立。常聽的健康門檻是 **LTV 至少是 CAC 的 3 倍**。\n\n- 如果 CAC > LTV：你每拉一個客戶都在虧錢，拉越多虧越多。\n- 想改善：降低 CAC（找更便宜的獲客管道，如 SEO/內容）、或提高 LTV（降 churn、讓客戶付更久或付更多）。\n\n---\n\n## 別只看「新增」，要看「淨成長」\n\n新增很爽，但如果 churn 也高，你是在漏水的桶子加水。真正的健康是**「新增 − 流失」的淨成長為正、且穩定**。所以降 churn（留住客戶）常比拉新更划算。\n\n---\n\n## ☕ 用人話講\n\n經營 SaaS 要憑數據不憑感覺，看五個數字：MRR（命脈）、ARR（年視角）、Churn（漏水速度）、LTV（一個客戶總共值多少）、CAC（換一個客戶花多少）。最關鍵的一條規則是 **LTV 要大於 CAC（最好 3 倍以上）**，否則拉客越多虧越多。而降 churn（別讓桶子漏水）常比拚命拉新更划算。",
       "tip": {
-        "type": "business",
-        "text": "Indie SaaS 寫日記公開 MRR、自帶行銷流量。看到「這個一人公司月入 NT$50 萬」、潛在客戶會想：「我也要試」。"
+        "type": "pro",
+        "text": "幾個關鍵數字看清生意健康。"
       },
       "id": "59.23",
       "number": "LESSON 59.23",
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "指標題：①用你的話解釋 Churn 和 LTV 各是什麼、為什麼重要 ②解釋『LTV > CAC』這條規則的意思、如果反過來(CAC>LTV)會怎樣 ③假設你的 churn 很高，你會優先『拉新客』還是『降低流失』、為什麼。",
+        "hint": "Churn=漏水速度、LTV=一個客戶總共值多少。LTV<CAC=每拉一個都虧。churn高時降流失常比拉新划算(桶子在漏水)。",
+        "answer": "驗收：①能白話解釋 churn(流失)與 LTV(顧客終身價值)②理解 LTV>CAC 是生意成立的底線、反過來會越拉越虧 ③churn 高時優先降流失(漏水的桶子加水沒用)。抓到『憑數據經營、LTV>CAC、降churn常勝過拉新』就達標。"
       },
       "outline": [
         {
           "level": 2,
-          "text": "核心定義"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "Indie SaaS 階段"
+          "text": "五個必懂指標（白話版）"
         },
         {
           "level": 2,
-          "text": "Churn 是隱形殺手"
+          "text": "最重要的一個關係：LTV > CAC"
         },
         {
           "level": 2,
-          "text": "提高 LTV 的 7 招"
+          "text": "別只看「新增」，要看「淨成長」"
         },
         {
           "level": 2,
-          "text": "工具"
-        },
-        {
-          "level": 2,
-          "text": "公開 MRR 案例"
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "根據課程內容，為什麼「降低 churn 比拉新客重要 10 倍」？",
+        "question": "SaaS 經營中，「LTV > CAC」這條規則的意思是？",
         "options": [
           {
             "value": "a",
-            "label": "因為拉新客的成本（CAC）永遠比留住舊客高，所以應該專注降低流失率來保護既有收入基礎"
+            "label": "一個客戶帶來的錢(LTV)要大於獲取他的成本(CAC)、生意才成立；反過來則拉越多客虧越多"
           },
           {
             "value": "b",
-            "label": "因為新客戶的品質通常比較差，容易產生問題"
+            "label": "用戶數越多越好，成本不用管"
           },
           {
             "value": "c",
-            "label": "因為市場上已經沒有新客戶可以拉，所以只能靠留住舊客"
+            "label": "只要 MRR 有在成長，其他指標都不用看"
           },
           {
             "value": "d",
-            "label": "因為降低 churn 不需要花任何成本，而拉新客需要行銷預算"
+            "label": "CAC 越高代表產品越高級越好"
           }
         ],
         "answer": "a",
-        "explanation": "課程用數字舉例說明：5% churn 月拉 $1000 新客，12 個月後只剩 $7500；但 2% churn 卻能保留 $10,000。這說明高流失率會侵蝕掉辛苦拉來的新客，所以守護既有收入基礎（降低 churn）的效果遠勝於不斷拉新客。"
+        "explanation": "LTV(顧客終身價值)是一個客戶總共帶給你多少錢，CAC 是獲取他的成本。LTV 必須大於 CAC(常見健康門檻是 3 倍以上)生意才成立——否則你每拉一個客戶都在虧、拉越多虧越多。改善靠降 CAC(更便宜的獲客如 SEO)或提高 LTV(降 churn、讓客戶付更久更多)。只看 MRR 或用戶數而忽略成本與流失，會憑感覺盲目經營。"
       }
     },
     {
-      "title": "Build in Public：把過程當作行銷",
-      "oneLineSummary": "Build in Public：把過程當作行銷",
-      "analogy": "像公開做、公開失敗、公開賺——2026 最強的 indie 行銷，透明反而最吸引人。",
-      "content": "## 為什麼 Build in Public 有效\n1. **行銷成本 ≈ $0**：發 Twitter / 文章本來就要寫\n2. **建立信任**：客戶看你怎麼解決問題、會買單\n3. **找到 niche**：留言、DM 告訴你他們的痛\n4. **早期客戶池**：ship 那天 100 人等著付錢\n\n## 該 share 什麼\n✅ **該分享**：\n- 想法 / 計畫\n- 技術選型決策\n- MRR 進度\n- 失敗的功能 / pivot 故事\n- 學到的教訓\n- 客戶反饋（去個資後）\n\n❌ **別分享**：\n- 客戶名單\n- API key / 密碼\n- 不能說的 NDA 內容\n- 抱怨客戶的話\n\n## 平台選擇\n- **Twitter / X**：英文圈 Indie 主場\n- **LinkedIn**：B2B 主場\n- **Threads**：台灣 / 亞洲新平台\n- **Instagram**：視覺強的產品\n- **YouTube**：長內容、深度故事\n- **個人 blog**：SEO + 深度\n- **Reddit**：r/SideProject / r/SaaS / r/EntrepreneurRideAlong\n\n## Build in Public 的內容類型\n\n### Daily Log\n「Day 47：今天卡在 Stripe webhook、最後發現是 timezone bug。MRR $1,234」\n\n### Milestone\n「終於破 $1k MRR ！這個是 6 個月的路程⋯」\n\n### Story\n「為什麼我決定砍掉 80% 功能、只留核心」\n\n### Numbers\n「2026 Q1 MRR：$3.5k → $4.2k、+20%。Churn 從 8% 降 5%」\n\n### Failure\n「上週 ship 的新功能、3 天後客訴爆炸、回滾。學到 X、Y、Z」\n\n## 案例分析\n- **Pieter Levels** (Nomadlist, RemoteOK, PhotoAI)：\n  - 全公開 MRR、每月分享\n  - 7 個產品都用同套打法\n  - 每年 $3M+ ARR、一個人\n\n- **Marc Lou** (ShipFast, IndiePage):\n  - 「我每天寫 1 個 tweet」\n  - 12 個月從 0 到 $30k+ MRR\n\n- **Daniel Vassallo**：\n  - 從 Amazon 離職、Twitter follower 從 0 累積\n  - 賣自己的書 + 課程 + community\n  - 比正職薪水高\n\n## Indie 心態調整\n- **不是創業、是 Lifestyle business**：不追獨角獸、追自由\n- **不是大公司、是一人公司**：不雇人、自動化 + 外包\n- **不是每個 idea 都要試**：每年挑 1-2 個、深耕\n\n## 怎麼開始\n1. **挑 1 個平台**（Twitter 或 LinkedIn）\n2. **每天發 1 則**（30 天試試）\n3. **真實、具體**：不發勵志、發數字 / 故事\n4. **回每一則留言**（剛開始有人留言超珍貴）\n5. **記錄 30 天**：看哪種內容最有共鳴、雙倍下注\n\n**☕ 用人話講**\n\nBuild in Public——把過程當作行銷。**一句話記住**：像公開做、公開失敗、公開賺——2026 最強的 indie 行銷，透明反而最吸引人。\n",
+      "title": "獲客通路：怎麼被看見",
+      "oneLineSummary": "沒有通路、再好的產品也沒人知道",
+      "analogy": "以為好產品自己會紅 = 最大迷思",
+      "content": "## 這一課你會做出什麼\n\n搞懂一人公司的**獲客通路**——「怎麼讓人知道你的東西存在」。這是最多人忽略、卻決定生死的一環：**再好的產品，沒人看到就等於不存在。**\n\n> 新手最大的迷思：「產品夠好，用戶自己會來。」不會。世界上很多好產品死於「沒人知道」。\n\n---\n\n## 通路分兩種：可累積 vs 一次性\n\n- **可累積（複利）**：SEO 內容、Build in Public/社群、YouTube、電子報名單。今天投入、未來持續帶客，越滾越大。**一人公司要優先做這種。**\n- **一次性（爆量但不持續）**：Product Hunt 上架、被大帳號提到、投廣告。帶來一波流量，但停了就沒了。適合「配合可累積通路」用。\n\n---\n\n## 一人公司的通路策略\n\n1. **選 1-2 個『可累積』通路深耕**（別全開，見 59.12）：多數選「內容/SEO」＋「一個社群平台」。\n2. **持續、一致**：通路都靠「一直在」才複利。三天打魚不會有效果。\n3. **一次性通路當『助推』**：上線時用 Product Hunt/找人提一句衝一波，但別依賴它。\n4. **讓滿意用戶幫你傳**：內建分享/推薦誘因，口碑是最便宜的通路。\n\n---\n\n## ☕ 用人話講\n\n再好的產品，沒人看到就等於不存在——「好產品自己會紅」是最大的迷思。獲客通路分「可累積」（SEO/社群/名單，會複利）和「一次性」（Product Hunt/廣告，衝一波就沒）。一人公司要**優先選 1-2 個可累積通路深耕、持續一致**，一次性的當助推，再讓滿意用戶幫你口碑傳播。通路做對，好產品才有機會被看見。",
       "tip": {
-        "type": "milestone",
-        "text": "Build in Public 不是「行銷技巧」、是「心態革命」。願意被看到、願意失敗被看到的人、長期會贏。Luffysky 的 SnowRealm 也是這套路—公開做、邊做邊賣。"
+        "type": "pro",
+        "text": "選對通路、持續經營、可累積優先。"
       },
       "id": "59.24",
       "number": "LESSON 59.24",
       "xp": 10,
       "exercise": {
-        "question": "找一個你身邊的例子、用「Build in Public：把過程當作行銷」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "通路題：為你的產品/服務規劃獲客——①選 1-2 個『可累積』通路(SEO/社群/名單…)深耕、說為什麼(你受眾在哪)②你會用什麼『一次性』通路當上線助推 ③你打算怎麼讓滿意用戶幫你口碑傳播。",
+        "hint": "可累積通路(會複利)優先、選1-2個深耕別全開。一次性(PH/廣告)當助推別依賴。口碑靠分享/推薦誘因。",
+        "answer": "驗收：①選對可累積通路且對應受眾、不貪多 ②一次性通路當助推的定位正確 ③有口碑/推薦的做法。抓到『好產品也要通路、可累積優先深耕、一次性當助推、口碑最便宜』就達標。"
       },
       "outline": [
         {
           "level": 2,
-          "text": "為什麼 Build in Public 有效"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "該 share 什麼"
+          "text": "通路分兩種：可累積 vs 一次性"
         },
         {
           "level": 2,
-          "text": "平台選擇"
+          "text": "一人公司的通路策略"
         },
         {
           "level": 2,
-          "text": "Build in Public 的內容類型"
-        },
-        {
-          "level": 3,
-          "text": "Daily Log"
-        },
-        {
-          "level": 3,
-          "text": "Milestone"
-        },
-        {
-          "level": 3,
-          "text": "Story"
-        },
-        {
-          "level": 3,
-          "text": "Numbers"
-        },
-        {
-          "level": 3,
-          "text": "Failure"
-        },
-        {
-          "level": 2,
-          "text": "案例分析"
-        },
-        {
-          "level": 2,
-          "text": "Indie 心態調整"
-        },
-        {
-          "level": 2,
-          "text": "怎麼開始"
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "根據課程，為什麼 Build in Public 對獨立開發者特別有效？",
+        "question": "關於一人公司的獲客通路，最正確的觀念是？",
         "options": [
           {
             "value": "a",
-            "label": "因為幾乎不用花錢行銷，同時能建立信任、找到真正的客戶需求、還能累積早期買家"
+            "label": "『好產品自己會紅』是迷思；要優先選 1-2 個可累積通路(SEO/社群/名單)深耕持續，一次性通路當助推"
           },
           {
             "value": "b",
-            "label": "因為在 Twitter 上分享就能自動獲得 1000 個粉絲，然後他們都會買你的產品"
+            "label": "產品做得夠好，用戶自然會來，不用管通路"
           },
           {
             "value": "c",
-            "label": "因為把所有開發細節公開，競爭對手就不敢抄襲你的想法"
+            "label": "所有通路一起全開才能最大曝光"
           },
           {
             "value": "d",
-            "label": "因為公開失敗故事能獲得同情，客戶會因為可憐你而購買"
+            "label": "只靠一次投廣告或上 Product Hunt 就能長久獲客"
           }
         ],
         "answer": "a",
-        "explanation": "課程開頭明確列出 Build in Public 的四大優勢：行銷成本近乎零、透過過程建立信任、透過留言找到 niche、ship 前已有等著的客戶。其他選項都是誤解——並非自動獲粉或靠同情，而是通過真實、具體的內容和互動帶來實際價值。"
+        "explanation": "『好產品自己會紅』是最大的迷思——很多好產品死於沒人知道。獲客通路分可累積(SEO/社群/名單，會複利)和一次性(PH/廣告，衝一波就沒)。一人公司要優先選 1-2 個可累積通路深耕、持續一致(靠『一直在』才複利)，一次性的當助推、別依賴，再用口碑放大。全開會分散精力。"
       }
     },
     {
-      "title": "一人公司財務：稅 / 帳 / 法律",
-      "oneLineSummary": "一人公司財務：稅 / 帳 / 法律（台灣）：必懂的財務",
-      "analogy": "像當老闆要懂財務——行號或公司、稅率、二代健保，搞懂才不會踩雷被罰。",
-      "content": "## 個人 vs 行號 vs 公司\n\n### 個人接案（最簡單）\n- 開二代健保補充保費（單筆 > NT$ 20k 扣 2.11%）\n- 報綜合所得稅（5%-40%）\n- 適合：年收入 < NT$ 100 萬\n\n### 行號（個人工作室）\n- 設立費 NT$ 1k 內\n- 不繳營業稅（年營業額 < NT$ 20k 月 / NT$ 240k 年免）\n- 報營業稅 1%（超過 240k / 年）+ 綜所稅\n- 適合：年收入 NT$ 100-500 萬\n\n### 有限公司\n- 設立費 NT$ 4-6k\n- 5% 營業稅\n- 20% 營利事業所得稅\n- 適合：年收入 > NT$ 500 萬 / 需開發票 / 想分散稅務\n\n## 稅率對比（年入 NT$ 200 萬範例）\n| 模式 | 稅 + 健保 | 實拿 |\n|---|---|---|\n| 個人 | ~ NT$ 50 萬 | NT$ 150 萬 |\n| 行號 | ~ NT$ 35 萬 | NT$ 165 萬 |\n| 有限公司（不領薪）| ~ NT$ 40 萬 + 之後分紅 | 視情況 |\n\n## 國外客戶收款\n- **Stripe**（最方便、約 3.4% 手續費）\n- **Paddle**（替你處理全球稅務、會貴）\n- **Wise**（外幣帳戶、轉成 TWD）\n- **PayPal**（老牌、手續費高）\n\n⚠️ 收入超過 NT$ 670 萬要列 CFC（受控外國公司）申報。\n\n## 必要文件\n1. **接案合約**：載明 scope、付款、IP 歸屬\n2. **保密協議（NDA）**：客戶要求時用\n3. **發票**：行號 / 公司必開\n4. **服務條款（SaaS）**：英文版必備（中國 / 全球客戶）\n5. **隱私政策**：GDPR + 台灣 PDPA\n\n## 常見坑\n- ❌ 沒開發票：B2B 客戶不付、要罰\n- ❌ 兩段薪：個人接案 + 上班、兩邊都扣健保\n- ❌ 沒備份合約：客戶賴帳告不回來\n- ❌ 沒分公司戶 / 個人戶：稅務查帳爆炸\n- ❌ 國外收款沒申報：FATCA 查到罰大條\n\n## 推薦會計\n- **記帳大師**（軟體 NT$ 6k / 年）：自動同步銀行\n- **找會計師**：年收入 > NT$ 200 萬建議外包、約 NT$ 30-50k / 年\n\n## 強烈推薦學習資源\n- 國稅局網站「電子發票」「個人服務業」\n- 經濟部商業司「公司登記」\n- 各銀行 SaaS 收款方案（中信、玉山、台新最積極）\n\n**☕ 用人話講**\n\n一人公司財務：稅 / 帳 / 法律（台灣）——必懂的財務。**一句話記住**：像當老闆要懂財務——行號或公司、稅率、二代健保，搞懂才不會踩雷被罰。\n",
+      "title": "一人公司的風險與長久經營",
+      "oneLineSummary": "顧好法律/財務/健康三條底線",
+      "analogy": "只顧成長、忽略底線 = 一夕崩盤",
+      "content": "## 這一課你會做出什麼\n\n一份**「讓一人公司走得久」的底線清單**。做大之前，先確保不會因為某個沒顧好的地方一夕崩盤。核心：**一人公司拚的是『久』不是『大』。**\n\n---\n\n## 三條不能破的底線\n\n1. **法律/合規底線**：授權（AI 生成物商用、素材版權，見 ch57）、個資（用戶資料合規，見 ch57.5）、合約（接案自保，見 59.4）。踩了可能被告、被罰，一次就傷筋動骨。\n2. **財務底線**：帳務清楚+報稅（見 59.20）、留現金緩衝（別把收入全花掉，遇淡季/客戶跑掉才撐得住）、收入別過度集中（見 59.16 多元）。\n3. **健康/心理底線**：別 burnout（見 ch60）——你是事業唯一的機器，機器壞了什麼都停。可持續比爆衝重要。\n\n---\n\n## 一人公司特有的『單點風險』\n\n你就是公司的全部——**你生病、你倦怠、你出事，事業就停**。所以：\n- **留緩衝**：現金緩衝（6 個月）、也留「可以喘息不工作」的餘裕。\n- **降低對你個人的依賴**：文件化、自動化、讓別人也能接手一部分（這也讓產品更好賣，見 59.19）。\n- **買對的保險**：健康/意外等基本保障，別讓一次意外拖垮一切。\n\n---\n\n## ☕ 用人話講\n\n一人公司要走得久，先守三條底線：**法律合規**（授權/個資/合約別踩雷）、**財務**（帳清楚+留現金緩衝+收入別集中）、**健康心理**（別 burnout，你是唯一的機器）。而且你就是公司的全部——留好緩衝、降低對你個人的依賴、買對保險。記住：一人公司拚的是把生意做『久』，不是做『大』；活得久，複利和自由才會真的來。",
       "tip": {
-        "type": "practical",
-        "text": "一開始就把『公私帳分開、發票 / 收據留好』養成習慣，報稅季不會手忙腳亂。"
+        "type": "pro",
+        "text": "把生意做『久』比做『大』重要。"
       },
       "id": "59.25",
       "number": "LESSON 59.25",
       "xp": 10,
       "exercise": {
-        "question": "找一個你身邊的例子、用「一人公司財務：稅 / 帳 / 法律」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "底線稽核題：檢查你的一人公司（真實或規劃）在三條底線上的狀況——①法律/合規：你最該補的一個漏洞是什麼(授權/個資/合約)②財務：你有沒有現金緩衝、收入會不會太集中 ③健康/心理：你怎麼避免 burnout。各寫一個具體改善動作。",
+        "hint": "三底線：法律(授權/個資/合約)、財務(帳清楚+現金緩衝+多元)、健康(別burnout)。加上『你是唯一的機器』→留緩衝、降低對你個人的依賴。",
+        "answer": "驗收：三條底線各有誠實檢查+一個具體改善(如補一份合約範本/存6個月緩衝/設真正的下班)。抓到『拚久不拚大、守法律財務健康三底線、降低單點風險』就達標。"
       },
       "outline": [
         {
           "level": 2,
-          "text": "個人 vs 行號 vs 公司"
-        },
-        {
-          "level": 3,
-          "text": "個人接案（最簡單）"
-        },
-        {
-          "level": 3,
-          "text": "行號（個人工作室）"
-        },
-        {
-          "level": 3,
-          "text": "有限公司"
+          "text": "這一課你會做出什麼"
         },
         {
           "level": 2,
-          "text": "稅率對比（年入 NT$ 200 萬範例）"
+          "text": "三條不能破的底線"
         },
         {
           "level": 2,
-          "text": "國外客戶收款"
+          "text": "一人公司特有的『單點風險』"
         },
         {
           "level": 2,
-          "text": "必要文件"
-        },
-        {
-          "level": 2,
-          "text": "常見坑"
-        },
-        {
-          "level": 2,
-          "text": "推薦會計"
-        },
-        {
-          "level": 2,
-          "text": "強烈推薦學習資源"
+          "text": "☕ 用人話講"
         }
       ],
       "miniQuiz": {
-        "question": "假設你年收入 NT$ 250 萬，正在考慮要以「個人接案」還是「行號」身份經營。根據課程內容，選擇「行號」相比「個人接案」的主要好處是什麼？",
+        "question": "讓一人公司「走得久」，最核心的觀念是？",
         "options": [
           {
             "value": "a",
-            "label": "可以不用報稅，省去很多麻煩"
+            "label": "拚『久』不拚『大』——守好法律/財務/健康三條底線，並降低『你就是全部』的單點風險(留緩衝/降依賴)"
           },
           {
             "value": "b",
-            "label": "稅務負擔較輕，實拿金額更多，且設立費用很低"
+            "label": "全力衝成長，底線的事之後再說"
           },
           {
             "value": "c",
-            "label": "不用繳任何營業稅，客戶也不用開發票"
+            "label": "一個人不會有法律或財務風險，不用管"
           },
           {
             "value": "d",
-            "label": "可以完全避免二代健保補充保費的扣除"
+            "label": "做越大越安全，規模就是護城河"
           }
         ],
-        "answer": "b",
-        "explanation": "根據課程的稅率對比表，年入 NT$ 200 萬時，行號的稅 + 健保約 NT$ 35 萬，比個人的 NT$ 50 萬便宜，實拿多 NT$ 15 萬；且行號設立費在 NT$ 1k 內非常便宜。個人接案和行號都要報稅（a 錯），行號超過年 NT$ 240k 仍要繳營業稅 1%（c 錯），二代健保仍然適用（d 錯）。"
+        "answer": "a",
+        "explanation": "一人公司拚的是可持續(久)不是規模(大)。做大之前要先守三條不能破的底線：法律合規(授權/個資/合約)、財務(帳清楚+現金緩衝+收入多元)、健康心理(別 burnout)。而且『你就是公司的全部』是最大的單點風險——你出事事業就停，所以要留緩衝、降低對你個人的依賴、買對保險。只顧衝成長忽略底線，可能一夕崩盤。"
       }
     }
   ],
@@ -1715,24 +1733,24 @@
     "perfectBonus": 50
   },
   "summary": [
-    "一人公司時代來臨，因為工具便宜了、市場分散了、個人品牌值錢了",
-    "Freelance 快速賺錢但時間換金錢、SaaS 前期慢後期爆發、Creator 靠粉絲經濟但競爭大",
-    "找客戶靠冷聯絡 + 口碑、報價看市場行情、合約保護雙方，收款才算數",
-    "SaaS 核心是找對市場痛點、做快速迭代、從 100 個死忠用戶開始累積",
-    "一人公司要防 burnout，懂財務稅務，才能長期獲利而不是短期爆衝後崩潰"
+    "一人公司=刻意保持小換自主與可持續，AI 當各部門；三模式(接案快現金/SaaS複利/創作靠受眾)可組合演進。",
+    "接案實作：主動找第一個客戶、三階報價+合約+訂金自保、清楚流程換回頭客；痛點可長成產品。",
+    "產品：從真痛點出發+上線前驗證付費、MVP 最小最快、別賣太便宜、Build in Public 累積受眾。",
+    "成長：前100用不擴張的笨方法、100→1000找可重複管道、看 MRR 階段做對的事、LTV>CAC、降 churn。",
+    "長久：用槓桿(自動化/AI/外包)放大、想清要不要團隊、產品是可賣資產、守法律財務健康三底線、拚久不拚大。"
   ],
   "faq": [
     {
-      "q": "完全沒有經驗，適合一個人創業嗎？",
-      "a": "適合，但選錯路線會很辛苦。如果你沒有特定技能，建議先從 freelance 接案快速累積經驗和客戶，再考慮做 SaaS。不要盲目跟風直接做產品，會燒光積蓄。"
+      "q": "我沒有很厲害的點子，能做一人公司嗎？",
+      "a": "能。最好的點子常藏在『你自己也痛、或接案時大家都在手動做的麻煩事』裡(59.6、59.7)。重點不是天才點子，是找到真痛點、快速做 MVP 驗證有沒有人願付錢。"
     },
     {
-      "q": "一個人真的能把 SaaS 做到月入 5 位數嗎？",
-      "a": "能，但需要時間和正確策略。前 3-6 個月可能零收入，6-12 個月才到 MRR $1k，之後才會加速。關鍵是 product-market fit 和持續優化，不是靠運氣。"
+      "q": "接案好還是做產品好？",
+      "a": "沒有絕對。接案現金流快但天花板是時間；產品能複利但要熬。多數人先接案養活自己、同時用接案痛點做產品、產品收入再接手(59.2、59.6)。也可以三模式組合。"
     },
     {
-      "q": "台灣一人公司要繳多少稅？很複雜嗎？",
-      "a": "不複雜，但必須搞清楚。營業所得稅、營業稅、個人所得稅各有門檻，超過了才要繳。只要有完整記帳、定期報稅，大部分人都沒問題，不用害怕。"
+      "q": "一個人做，會不會撐不久？",
+      "a": "關鍵是守底線＋用槓桿。用自動化/AI/外包放大產能別硬撐(59.17)、守法律/財務/健康三條底線(59.25)、留現金緩衝、降低『你就是全部』的單點風險。一人公司拚的是把生意做久，不是做大。心理面見 ch60。"
     }
   ]
 }

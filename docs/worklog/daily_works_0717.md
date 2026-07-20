@@ -99,10 +99,12 @@
 - 定位「商業實作」（心理面歸 ch60）；去重(Build in Public/MRR/用戶各重複)、去收入保證。
 - Batch 1（13 課）：一人公司時代 / 三模式(接案·SaaS·創作) / 接案找客戶·報價合約·溝通交付·接案→產品 / 找SaaS idea·MVP·定價·Build in Public·前100用戶·100→1000·MRR階段論。
 - 互動：`DecisionQuiz` 掛 59.2「哪種模式適合你」。import 已 upsert（14-25 暫留舊、Batch 2 補）。tsc/vitest137/build 綠。
-- Batch 2 待做：59.14-59.25（Solo stack/創作者/多元收入/槓桿/團隊/Exit/台灣實務/案例/趨勢/指標/通路/財務）。
+- Batch 2（59.14-59.25，12 課）：Solo stack/創作者/多元收入/槓桿(自動化+AI+外包)/要不要團隊/Exit/台灣開業稅務/案例可複製原則/2026-30趨勢/SaaS指標(MRR/Churn/LTV/CAC)/獲客通路/風險底線。DecisionQuiz 掛 59.18「要不要組團隊」。章 outcomes/summary/faq 更新。tsc/vitest137/build 綠、import。**ch59 全 25 課完成。**
 
 ## 📊 內容重寫進度（本 session）
-- 已完成全深度重寫：**ch51~58 + ch60**（創作章 9 章）+ **ch59 Batch1（13/25 課）**。
+- 已完成全深度重寫：**ch51~60 全部 10 章**（創作/AI/商業叢集完成！寫作/設計/影音/音樂/行銷/虛擬IP/法律/職涯/一人公司(25課)/心法）。
+- 互動教具 11 種（全按章量身）。
+- 下一階段：ch03 UI/UX、ch13 SEO、ch43-45 PM（表面+壞罐頭），之後 ch01-50 技術章除罐頭+補 A Playground/B 元件（RegexTester/JsonTree/HttpInspector 等 6 個新 B 元件待技術章時建）。
 - 互動教具 11 種（全按章量身）：LayoutGallery/Flex/Grid/BoxModel/RwdRuler/PromptLab/PromptBuilder/FunnelSim/DecisionQuiz/ScenarioJudge/PriorityMatrix。
 - 待續：**ch59（25 課大章，獨立處理）**；之後 ch03/13/43-45 及技術章除罐頭（技術章時建 RegexTester/JsonTree/HttpInspector 等剩餘 B 元件）。
 
