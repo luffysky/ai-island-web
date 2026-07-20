@@ -58,6 +58,18 @@
 - 教具：PromptBuilder(53.1 keyframe) + PromptLab 影片版 config(53.4 text-vs-image 生片對照)。
 - tsc/vitest137/build 綠、已 import DB。
 
+## ✍️ ch54（AI 音樂）全深度重寫（0718）
+- 舊病：重複最嚴重（54.1/54.3 都工具、54.2/54.5 都接案）+ 滿滿收入掛保證 + 截斷。
+- 重構成 5 個不重複主題：54.1 生歌+寫描述 / 54.2 製作(後製去AI味) / 54.3 版權授權(誠實·自保) / 54.4 ElevenLabs配音+voice clone倫理 / 54.5 接案六問+三階報價。
+- 全面移除收入保證（改「現實面/不掛保證」）；題型：對照實作/實作/判斷/實作/情境報價。
+- 教具：PromptLab 音樂版 config（54.1 模糊 vs 具體風格描述）。
+- tsc/vitest137/build 綠、已 import DB。
+
+## 📊 內容重寫進度（本 session）
+- 已完成全深度重寫：**ch51 寫作、ch52 設計、ch53 影音、ch54 音樂**（創作章 4/9）。
+- 互動教具：LayoutGallery/Flex/Grid/BoxModel/RwdRuler/PromptLab/PromptBuilder（7 種）。
+- 待續創作章：ch55 行銷、ch56 虛擬IP、ch57 法律、ch58 職涯、ch60 心法；之後 ch03/13/43-45 及技術章除罐頭。
+
 ## ⏭ 待續
 - 林董線上驗收版面圖鑑手感（Claude 端 Chrome 擴充沒連、沒法目視截圖）。
 - 下一批：`prompt-lab`（餵 AI 全系列/創作章）、ch51 六課全深度內容重寫、`box-model`/`flex-playground` 補滿 ch02/03。
