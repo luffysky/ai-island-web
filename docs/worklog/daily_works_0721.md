@@ -69,3 +69,12 @@ ch49 + ch50（AI Agent / n8n 兩大旗艦章）完成。**教具庫新增 2 個�
 - **de-can 20 題** → 對得上 JSON 主題的應用題（手寫 5 型別物件、parse/stringify 方向與丟失、JSON Schema 註冊表單、Zod/Pydantic 執行期驗證、LLM 結構化輸出、REST vs GraphQL、五大地雷情境、JWT payload 為何不能放密碼、JSON Patch、tRPC 限制、一份 Zod schema 走全端…）。
 - **新教具 `JsonTree`（json-tree）**：`src/components/chapter/demos/JsonTree.tsx`。互動可展開/收合的 JSON 樹、型別配色、`overflow-x-auto`。掛 **6.1**（第一份 JSON——補足 6.1 原本沒有任何 JSON 範例的缺口）、**6.6**（巢狀結構、看 author 重複）。types union + 派發器接線。
 - 檢查：`tsc`/`vitest 137`/`next build` 全綠；`import ch06` 0 errors；DB 覆核 6.1/6.6 demos=json-tree、練習已換。**教具庫 +1（JsonTree）。**
+
+### ch11 行動裝置 App（25 節）
+- **de-can 20 題** → React Native/Expo 應用題（Expo Router 檔案路由設計、Zustand vs TanStack Query 分工、三種本地儲存選型＋token 為何不能放 AsyncStorage、拍照上傳流程、LBS 背景定位隱私、推播不濫發界線、為何別自刻 auth、Reanimated UI thread、deep link fallback、local-first 衝突處理、上架前準備、i18n 不只翻譯…）。變現題只談取捨、不掛收入保證。
+- 教具：mobile-specific 教具需另建、暫不硬塞（守寧缺勿濫），先只 de-can。
+
+### ch12 資安基礎（25 節）
+- **de-can 18 題** → 資安應用題（SQLi 參數化、XSS 三防禦、CSRF token/SameSite、bcrypt/argon2 慢雜湊+salt、JWT 地雷、HTTPS 中間人、rate limit 規則、CORS 誤解、security headers/CSP、供應鏈、log 不記密碼、攻擊者思維 IDOR 自測、WAF vs rate limit、金鑰輪替、container 非 root、Web3 不可改風險、App 反編譯、資安事件 SOP 三步）。
+- **教具＝複用 `ScenarioJudge`**（安全情境判斷 可以/有風險/不行，7 題）掛 **12.15**（Pentest 心法）。完美對題、零新元件。
+- 檢查（ch11+12 純資料、ScenarioJudge 已於 ch06 批次建置並 build 綠、無新 TS）：`import ch11/ch12` 各 0 errors；DB 覆核 12.15 demos=scenario-judge(7)、兩章練習已換。
