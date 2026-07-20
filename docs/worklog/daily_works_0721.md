@@ -92,4 +92,50 @@ ch49 + ch50（AI Agent / n8n 兩大旗艦章）完成。**教具庫新增 2 個�
 - **de-can 練習**：ch06(20)+ch11(20)+ch12(18)+ch14(13)+ch23(6)+ch25(8)+ch37(2)+ch42(4) = **91 題**罐頭全換成應用/設計/分析題。（ch15/ch24 本就 0 罐頭、跳過。）
 - **教具**：新增 `JsonTree`；複用 `ScenarioJudge`(ch12/ch42)、`WorkflowFlow`(ch14)。守寧缺勿濫——ch11 行動 App 無對味現成教具、暫不硬塞（待建 mobile 專屬教具）。
 - **本輪教具庫總計 +3 新元件**：AgentLoop、WorkflowFlow、JsonTree（＋ScenarioJudge 等複用）。
-- 下一步：辭典 seed-41 續寫、或手寫筆記/部落格種子 top-up（全手寫、不花 AI 錢）。
+
+---
+## 🗂️ 辭典 seed-41（工程師黑話）— 首版廢棄
+- 想加 31 條黑話/術語（bikeshedding/yak-shaving/rubber-duck…），跑 slug 去重掃描發現 **27/31 撞名**——辭典早期 seed（1/4/6/8/9/11/21/23）已收很多黑話。**首版作廢、刪檔**，避免 upsert 覆蓋既有整理過的條目。
+- 教訓寫進待辦：續辭典前**先跑去重**、改挑真正沒收的主題（資料庫術語/Git 進階/雲原生/LLM 名詞…）。辭典維持 **1773 條**。
+
+---
+## 📋 待辦大整合 — `todo_list_0721.md`（新現行主檔）
+- 用 3 組 subagent **逐項對照「程式碼 + git」核對**全部 10 個舊 todo 檔（MASTER_TODO/ROADMAP/0705/0713/0714/0715/TODO/BACKLOG/BEGINNER_FRIENDLY/REPORTS）。
+- 結論：**舊檔全歸檔為歷史**（0705 已 100% 關閉；0715 曾為主檔），未完項 deduped 併入新主檔，做完的劃線保留。5 層子任務編號（1/1.1/1.1.1/1.1.1.1/1.1.1.1.1）。
+- 結構：🅰林董手動 / 一·大眾變現四功能（含深層拆解）/ 二·分身島補完 / 三·機會島 / 四·內容辭典教具 / 五·首頁UI / 六·商業變現 / 七·安全合規技術債 / 八·Creator收尾 / 九·長線 / 十·0717–0721 完成劃線 / 附錄A 舊檔核對裁決表。
+- **核對修正**（避免重開已完成的工作）：PWA 192/512 icon **已完成**（勿再開，只缺 apple-touch）；TG/Discord 現有 webhook 是 **admin AI-chat、非 agent 入口**（仍待做）；社群 send adapter 是**最大半成品**（有表有 UI、零平台真的能發）。
+- CLAUDE.md「現行主檔」指標改指 0721、0715 加已歸檔橫幅。
+
+---
+## 🩺 收尾健檢（API / DB / UI / RWD 前後端接線）
+本輪程式異動集中在 3 個新教具元件（AgentLoop/WorkflowFlow/JsonTree）＋派發器接線，其餘為資料（章節/辭典）與文件（todo）。健檢：
+- **建置/型別**：`tsc --noEmit` ✓ · `next build` exit 0 ✓ · `vitest 137` ✓（多次）。
+- **DB 欄位審計**：`node scripts/audit-db-columns.mjs` — 441 支 route 皆有 export HTTP method；旗標多為 template-literal 誤判（動態欄位/路徑）。
+  - 真實問題確認 1 個（已在 todo §7.3）：**GDPR 匯出 `/api/user/gdpr/export/route.ts:81` 查 `user_settings` 表、但該表無 migration**（`safe()` 包住＝靜默略過、不 crash，但匯出漏這塊）。→ 建表或移除引用。
+  - `/api/og` 存在（`route.tsx`）＝誤判；`/api/health` 無 route（外部健檢用、低優先）。
+- **教具接線 DB 覆核**：ch49 49.3/49.6=agent-loop、ch50 50.4/50.11=workflow-flow、ch06 6.1/6.6=json-tree、ch12 12.15/ch42 42.5=scenario-judge、ch14 14.2=workflow-flow 皆有值、非空殼。
+- **RWD**：新教具皆垂直流 / flex-wrap 按鈕列 / payload `overflow-x-auto` / `break-words` / 無寫死寬 / 亮暗 token（Chrome 擴充未連、無法目視截圖，靠 code 級 RWD 紀律）。
+
+---
+## 🚀 下次開工建議（從 `todo_list_0721.md` 挑最要緊的）
+
+> 內容工作已到乾淨檢查點、樹乾淨、全部推上線。下次可從這裡直接接：
+
+### A. 變現功能開工（都無外部依賴、可直接做，林董最在意的缺口）
+1. **#1 每日運勢 / AI 命理 + LINE 推播**（todo §一.1）— TAM×黏著×好做最高。先做 `/fortune` 頁 + `fortune_profiles`/`fortune_daily` 表 + `/api/fortune/today`（星座/塔羅先行、八字標進階）+ 每日 cron 推播。**建議首選。**
+2. **#2 訊息軍師**（§一.2）— 最快落地，純情境模板 + LLM，`/message-coach`。
+3. **#4.1 生活助理範本庫**（§一.4.1）— 把 Agent 轉成普通人工具：`src/lib/agent/task-templates.ts` 分類日常範本 + 露出在普通人找得到處。
+
+### B. 修真實缺口 / 補假功能（健檢 + 核對確認的）
+4. **GDPR `user_settings` 表**（§7.3）— `/api/user/gdpr/export/route.ts:81` 查無此表、靜默漏資料。建表或移除引用。
+5. **真 CSP header**（§7.1）+ **Turnstile**（§7.2）+ **v1 key 輪替 UI**（§7.4）— 安全三缺口。
+6. **可驗證證書頁 `/verify/[certId]`**（§6.2）— 證書功能有發、無公開驗證頁。
+7. **社群發布 send adapter**（§2.3.2）— 最大半成品：有表有 UI、零平台真的能發。先接 LINE/TG/Discord。
+8. **TG / Discord agent 入口**（§2.2.2/3）— 現有 webhook 是 admin-chat、非 agent bridge。
+
+### C. 內容 / 辭典（手寫、不花 AI 錢）
+9. **剩餘技術章 de-can**（§4.1.1）：ch01/02/04/05/07–10/16/17/26–36/46… 罐頭練習；deep-rewrite tier ch15/24/32/34–36/40/41/63/68/72–75。
+10. **辭典 → 5000**（§4.2）：seed-41 **先跑 slug 去重**、改挑沒收主題（資料庫/Git/雲原生/LLM 名詞）。
+
+### 🔴 卡林董（做完解鎖）
+- Zeabur `ENABLE_SERVER_BROWSER=1`（L2 沙盒/瀏覽器）、cron #10 daily-brief、金流 Stripe 金鑰、**首頁 5 層 stage-layer 生圖素材**（首頁改版全卡這）、通路 bot token。詳 todo §🅰。
