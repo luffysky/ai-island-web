@@ -78,10 +78,18 @@
 - 題型：自我定位/實作/選型規劃/實作規劃/判斷/變現規劃；全移除收入保證。
 - tsc/vitest137/build 綠、已 import DB。
 
+## 🎨 互動教具總規劃定案（0718）
+- 四原型：A 即時Playground / B 概念模擬器 / C 比一比Lab / D 決策測驗。定案：12 新元件全做、跟每章一起做、每章都認真配互動（留白是少數例外）。詳 `docs/content/interactive_widgets_masterplan.md`。
+
+## ✍️ ch57（AI 法律/倫理）全深度重寫 + ScenarioJudge（0718）
+- 舊病：重複（57.1/57.3 著作權、57.2/57.4 倫理）+ 截斷 + 罐頭。重構 5 個不重複：57.1 著作權基礎 / 57.2 商用授權 / 57.3 偏見與幻覺 / 57.4 倫理自律 / 57.5 個資GDPR。
+- **量身互動** `ScenarioJudge`（情境判斷·config 可複用）：57.2 商用情境、57.5 個資情境各一組（判可以/風險/不行→揭曉）。RWD 嚴謹（按鈕 flex-wrap、文字 break-words）。
+- 題型：分析/情境判斷/案例分析/自律守則/合規檢核。非法律意見免責已註明。
+
 ## 📊 內容重寫進度（本 session）
-- 已完成全深度重寫：**ch51 寫作、ch52 設計、ch53 影音、ch54 音樂、ch55 行銷、ch56 虛擬IP**（創作章 6/9）。
-- 互動教具 9 種：LayoutGallery/Flex/Grid/BoxModel/RwdRuler/PromptLab/PromptBuilder/FunnelSim/**DecisionQuiz**（按章量身、非套 CSS 組）。
-- 待續創作章：ch57 法律、ch58 職涯、ch60 心法；之後 ch03/13/43-45 及技術章除罐頭。
+- 已完成全深度重寫：**ch51~57**（創作章 7/9：寫作/設計/影音/音樂/行銷/虛擬IP/法律）。
+- 互動教具 10 種：CSS家族5 + PromptLab/PromptBuilder + FunnelSim + DecisionQuiz + **ScenarioJudge**（按章量身）。
+- 待續創作章：ch58 職涯、ch59 一人公司、ch60 心法（ch58 起要建 PriorityMatrix）；之後 ch03/13/43-45 及技術章除罐頭。
 
 ## ⏭ 待續
 - 林董線上驗收版面圖鑑手感（Claude 端 Chrome 擴充沒連、沒法目視截圖）。

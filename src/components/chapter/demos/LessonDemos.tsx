@@ -10,8 +10,9 @@ import { BoxModel } from "./BoxModel";
 import { PromptBuilder } from "./PromptBuilder";
 import { FunnelSim } from "./FunnelSim";
 import { DecisionQuiz } from "./DecisionQuiz";
+import { ScenarioJudge } from "./ScenarioJudge";
 
-const SUPPORTED = new Set<LessonDemo["type"]>(["css-layout", "rwd-ruler", "flex-playground", "grid-playground", "prompt-lab", "box-model", "prompt-builder", "funnel-sim", "decision-quiz"]);
+const SUPPORTED = new Set<LessonDemo["type"]>(["css-layout", "rwd-ruler", "flex-playground", "grid-playground", "prompt-lab", "box-model", "prompt-builder", "funnel-sim", "decision-quiz", "scenario-judge"]);
 
 /**
  * 依 demo.type 派發到對應的互動教具元件。
@@ -37,6 +38,8 @@ function DemoRenderer({ demo }: { demo: LessonDemo }) {
       return <FunnelSim title={demo.title} note={demo.note} />;
     case "decision-quiz":
       return <DecisionQuiz title={demo.title} note={demo.note} config={demo.config} />;
+    case "scenario-judge":
+      return <ScenarioJudge title={demo.title} note={demo.note} config={demo.config} />;
     default:
       return null;
   }
