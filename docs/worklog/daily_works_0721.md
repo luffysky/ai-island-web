@@ -78,3 +78,18 @@ ch49 + ch50（AI Agent / n8n 兩大旗艦章）完成。**教具庫新增 2 個�
 - **de-can 18 題** → 資安應用題（SQLi 參數化、XSS 三防禦、CSRF token/SameSite、bcrypt/argon2 慢雜湊+salt、JWT 地雷、HTTPS 中間人、rate limit 規則、CORS 誤解、security headers/CSP、供應鏈、log 不記密碼、攻擊者思維 IDOR 自測、WAF vs rate limit、金鑰輪替、container 非 root、Web3 不可改風險、App 反編譯、資安事件 SOP 三步）。
 - **教具＝複用 `ScenarioJudge`**（安全情境判斷 可以/有風險/不行，7 題）掛 **12.15**（Pentest 心法）。完美對題、零新元件。
 - 檢查（ch11+12 純資料、ScenarioJudge 已於 ch06 批次建置並 build 綠、無新 TS）：`import ch11/ch12` 各 0 errors；DB 覆核 12.15 demos=scenario-judge(7)、兩章練習已換。
+
+### ch14 / ch23 / ch25 / ch37 / ch42 — 收尾批（de-can 33 題 + 複用教具 ×2）
+- **ch14 PWA（22 節）**：de-can 13 → PWA 應用題（SW 為何限 HTTPS、manifest 四欄、離線+Background Sync 合作、推播別一進站就要權限、iOS 加到主畫面引導、Capacitor 何時用、SW 生命週期更新坑、IndexedDB vs localStorage、Offline UX 誠實回報、部署快取失效、PWA 不是萬靈丹）。**複用 `WorkflowFlow`** 掛 **14.2**（Service Worker cache-first 攔 fetch 流程：if 查快取→命中回 cache→未命中打網路→存回，完美對映節點型別）。
+- **ch23 雲端架構（10 節）**：de-can 6 → Serverless 適/不適、K8s 編排三件事、CDN vs 源站、Serverless 隱藏成本、cache hit/miss + TTL、DR vs HA。
+- **ch25 網域+DNS+SSL（10 節）**：de-can 8 → A/CNAME 與 DNS 傳播、HTTPS 必要性、subdomain 策略、自有網域信箱、DNS 解析流程、Let's Encrypt 自動續期、選註冊商陷阱、SPF/DKIM/DMARC。
+- **ch37 WordPress（6 節）**：de-can 2 → 主題快速交付的好處與坑、自訂 block/主題的價值。
+- **ch42 接案流程（6 節）**：de-can 4 → 找客戶/報價/簽約、一次性變月費、合約三要件+訂金、月費維護方案價值溝通。**複用 `ScenarioJudge`** 掛 **42.5**（接案避雷 7 情境：該接/有風險/別接）。變現題全程只談價值與自保、不掛收入保證。
+- 檢查：`import` 五章各 0 errors；DB 覆核 14.2 workflow-flow、42.5 scenario-judge、各章練習已換；**`next build` exit 0**（收尾跑一次全綠）。
+
+---
+## ✅ 薄章補厚 — 完成盤點
+- **de-can 練習**：ch06(20)+ch11(20)+ch12(18)+ch14(13)+ch23(6)+ch25(8)+ch37(2)+ch42(4) = **91 題**罐頭全換成應用/設計/分析題。（ch15/ch24 本就 0 罐頭、跳過。）
+- **教具**：新增 `JsonTree`；複用 `ScenarioJudge`(ch12/ch42)、`WorkflowFlow`(ch14)。守寧缺勿濫——ch11 行動 App 無對味現成教具、暫不硬塞（待建 mobile 專屬教具）。
+- **本輪教具庫總計 +3 新元件**：AgentLoop、WorkflowFlow、JsonTree（＋ScenarioJudge 等複用）。
+- 下一步：辭典 seed-41 續寫、或手寫筆記/部落格種子 top-up（全手寫、不花 AI 錢）。
