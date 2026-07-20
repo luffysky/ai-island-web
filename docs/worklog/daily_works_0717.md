@@ -120,7 +120,7 @@
 - ch13 內容偏薄+重複兇(關鍵字/GEO/Local/接案/心法/連結各兩課)+罐頭 → 當 ch59 規模全重寫。
 - Batch 1（13 課·去重去保證加深）：SEO+GEO 總圖 / 引擎原理(爬取索引排名) / 關鍵字研究 / 搜尋意圖 / On-page / Technical SEO / 速度CWV / Schema結構化 / Content E-E-A-T / Pillar-Cluster / 內部連結 / 外部連結(賺不買) / Outreach客座。
 - 互動：`ScenarioJudge`掛 13.9「SEO 好壞習慣判斷」(關鍵字堆砌/買連結/重複內容=雷)。tsc/vitest137/build 綠、已 import。
-- Batch 2 待做：13.14-13.25（Local SOP/多語/GEO深入/GSC分析/內容更新/UX心理/AI時代變化/工具/內容SOP/接案報價/心法）。
+- Batch 2（13.14-13.25，12 課）：Local SEO/多語hreflang/GEO概念/GEO實作/GSC看數據+漏斗/內容更新/SEO+UX/AI時代變化/工具全景/內容SOP/接案(不保證排名)/心法。FunnelSim 掛 13.18 SEO 漏斗。章 outcomes/summary/faq 更新。**ch13 全 25 課完成。**
 
 ## 📊 內容重寫進度（本 session）
 - 創作叢集 ch51~60 全部 10 章完成；**ch03 UI/UX 除罐頭+加互動完成**。
