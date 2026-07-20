@@ -104,7 +104,16 @@
 ## 📊 內容重寫進度（本 session）
 - 已完成全深度重寫：**ch51~60 全部 10 章**（創作/AI/商業叢集完成！寫作/設計/影音/音樂/行銷/虛擬IP/法律/職涯/一人公司(25課)/心法）。
 - 互動教具 11 種（全按章量身）。
-- 下一階段：ch03 UI/UX、ch13 SEO、ch43-45 PM（表面+壞罐頭），之後 ch01-50 技術章除罐頭+補 A Playground/B 元件（RegexTester/JsonTree/HttpInspector 等 6 個新 B 元件待技術章時建）。
+## 🎨 ch03（UI/UX 25 課）除罐頭 + 加互動（0721）
+- 實讀發現 ch03 **內容其實紮實、miniQuiz 也好**（早先 audit 過度概化為「表面」）——真正問題只有：25 課練習題全罐頭、尾巴 3.22-3.25 與 3.4/3.5/3.6/3.16 重複、沒互動。
+- 處理：**保留好內容/miniQuiz**，只①換掉 25 個罐頭練習成真設計題（觀察/檢視/重設計/實作，每課不同）②讓重複尾(3.22-3.25)變「動手實戰版」。
+- **新互動教具 `ColorContrast`**（調色即時算 WCAG 對比、過不過 AA/AAA）掛 3.4/3.22；複用 BoxModel(3.6)/RwdRuler(3.15)/LayoutGallery(3.24)。
+- tsc/vitest137/build 綠、已 import。**教訓：技術/概念章多半內容有料，主要工作是除罐頭+加互動，不需整章改寫。**
+
+## 📊 內容重寫進度（本 session）
+- 創作叢集 ch51~60 全部 10 章完成；**ch03 UI/UX 除罐頭+加互動完成**。
+- 互動教具 12 種（+ColorContrast）。
+- 下一階段：ch13 SEO、ch43-45 PM、ch47-50 AI工程（同樣先判斷內容是否有料，再決定除罐頭 or 改寫）；技術章依需要建剩餘 B 元件（RegexTester/JsonTree/HttpInspector/CronBuilder/Tokenizer/SortingViz/GitGraph/NeuralForward/AuthFlow/MLBoundary）。
 - 互動教具 11 種（全按章量身）：LayoutGallery/Flex/Grid/BoxModel/RwdRuler/PromptLab/PromptBuilder/FunnelSim/DecisionQuiz/ScenarioJudge/PriorityMatrix。
 - 待續：**ch59（25 課大章，獨立處理）**；之後 ch03/13/43-45 及技術章除罐頭（技術章時建 RegexTester/JsonTree/HttpInspector 等剩餘 B 元件）。
 
