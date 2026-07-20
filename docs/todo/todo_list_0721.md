@@ -243,6 +243,10 @@
 - [ ] 7.12 測試：E2E + Smoke 擴充；3D 島嶼降耗
 - [ ] 7.13 N8N 12 workflow（🔴 external·self-host gated；部分被站內 agent/cron 取代）
 - [ ] 7.14 AI 草稿語意抽查（手動 QA）
+- [ ] 7.15 **清 dead endpoint / 補半成品 UI**（0721 接線掃描：無「UI 沒後端」，但有 ~14 支「後端沒前端」）
+  - [ ] 7.15.1 冗餘可刪（有 sibling 取代）：`api/me/checkout`（用 `payments/checkout`）、`api/store/inventory`、`api/review/list`、`api/me/learning-plan`(base)、`api/creator-island/assets/[id]/lineage`
+  - [ ] 7.15.2 真孤兒·多半是半成品 UI 要嘛接前端要嘛移除：`api/creator-island/{fruit, ai/runs, community/follow, series/[id] PATCH/DELETE}`、`api/me/recommended-chapters`、`api/forum/user/[userId]`、`api/ai/route-suggest`、`api/agent/threads`、`api/notify-leave`
+    - [ ] 7.15.2.1 優先：`creator-island/community/follow`（追蹤鈕似乎沒接）、`ai/runs`（前端缺、= §8.5）、`me/recommended-chapters`（= §9.2 推薦）
 
 ---
 

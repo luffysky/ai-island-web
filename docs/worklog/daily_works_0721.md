@@ -115,6 +115,11 @@ ch49 + ch50（AI Agent / n8n 兩大旗艦章）完成。**教具庫新增 2 個�
   - `/api/og` 存在（`route.tsx`）＝誤判；`/api/health` 無 route（外部健檢用、低優先）。
 - **教具接線 DB 覆核**：ch49 49.3/49.6=agent-loop、ch50 50.4/50.11=workflow-flow、ch06 6.1/6.6=json-tree、ch12 12.15/ch42 42.5=scenario-judge、ch14 14.2=workflow-flow 皆有值、非空殼。
 - **RWD**：新教具皆垂直流 / flex-wrap 按鈕列 / payload `overflow-x-auto` / `break-words` / 無寫死寬 / 亮暗 token（Chrome 擴充未連、無法目視截圖，靠 code 級 RWD 紀律）。
+- **全站前後端接線掃描**（subagent × 441 route vs 全站 fetch + 206 migration）：
+  - ✅ **「只有 UI 沒後端」＝ 0 個**：每個前端 `/api/...` fetch 都對得到真 route（未解析的都是外部 API/教學範例字串）。
+  - ✅ **本輪兩個新功能端到端接好**：章節教具（agent-loop/workflow-flow/json-tree 派發器+元件+DB）、創作島綠寶搜碎片寫歌（`/api/creator-island/fragments/search` ↔ `CreatorIslandClient` ↔ `searchFragmentsByQuery`）。
+  - 🟡 **「只有後端沒前端」＝ ~14 支 dead endpoint**（無前端呼叫）：其中 ~5 支冗餘/被 sibling 取代（`me/checkout`→`payments/checkout`、`store/inventory`、`review/list`、`me/learning-plan` base、`assets/[id]/lineage`），可刪；~9 支真孤兒、最可能是**半成品 UI**：`creator-island/{fruit, ai/runs, community/follow, series/[id]}`、`me/recommended-chapters`、`forum/user/[userId]`、`ai/route-suggest`、`agent/threads`、`notify-leave`。→ 已記進 todo §7.15 待清。
+  - 🔴 **唯一真 DB bug**：GDPR 匯出查無 `user_settings` 表（見上、todo §7.3）。
 
 ---
 ## 🚀 下次開工建議（從 `todo_list_0721.md` 挑最要緊的）
