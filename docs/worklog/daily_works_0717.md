@@ -95,8 +95,14 @@
 - 舊病：跟 ch59 重疊 + 內部重複(60.1/60.3、60.2/60.5) + 收入保證。聚焦「心態/心理」重構 6 個不重複：60.1 選對遊戲(Indie≠矽谷) / 60.2 孤獨 / 60.3 焦慮自我懷疑 / 60.4 burnout健康 / 60.5 長跑機制 / 60.6 定義自由。
 - 複用互動：`DecisionQuiz`(60.2 你最卡哪個心理關卡) + `PriorityMatrix`(60.5 重要vs緊急艾森豪矩陣)。題型：反思/自我檢測/焦慮日記/健康稽核/時間象限/願景寫作；移除收入保證。
 
+## ✍️ ch59（一人公司/Indie · 25 課大章）Batch 1：59.1-59.13（0718）
+- 定位「商業實作」（心理面歸 ch60）；去重(Build in Public/MRR/用戶各重複)、去收入保證。
+- Batch 1（13 課）：一人公司時代 / 三模式(接案·SaaS·創作) / 接案找客戶·報價合約·溝通交付·接案→產品 / 找SaaS idea·MVP·定價·Build in Public·前100用戶·100→1000·MRR階段論。
+- 互動：`DecisionQuiz` 掛 59.2「哪種模式適合你」。import 已 upsert（14-25 暫留舊、Batch 2 補）。tsc/vitest137/build 綠。
+- Batch 2 待做：59.14-59.25（Solo stack/創作者/多元收入/槓桿/團隊/Exit/台灣實務/案例/趨勢/指標/通路/財務）。
+
 ## 📊 內容重寫進度（本 session）
-- 已完成全深度重寫：**ch51~58 + ch60**（創作章 9 章，僅剩 ch59 一人公司 25 課大章）。
+- 已完成全深度重寫：**ch51~58 + ch60**（創作章 9 章）+ **ch59 Batch1（13/25 課）**。
 - 互動教具 11 種（全按章量身）：LayoutGallery/Flex/Grid/BoxModel/RwdRuler/PromptLab/PromptBuilder/FunnelSim/DecisionQuiz/ScenarioJudge/PriorityMatrix。
 - 待續：**ch59（25 課大章，獨立處理）**；之後 ch03/13/43-45 及技術章除罐頭（技術章時建 RegexTester/JsonTree/HttpInspector 等剩餘 B 元件）。
 
