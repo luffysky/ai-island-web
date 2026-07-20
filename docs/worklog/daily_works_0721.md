@@ -43,4 +43,19 @@ ch49（28 節）內容本身夠深（3000–5000 字＋架構圖），問題在*
 - **RWD / 亮暗**：AgentLoop 純垂直、無固定寬、按鈕 flex-wrap、文字 break-words、色彩用 token + dark: 變體。
 - **機密/PWA**：未動 `.env.local` / manifest / sw。
 
-ch49 完成。**下一章：ch50 n8n（27 節、56 罐頭）** — 同樣 de-can + 教具（規劃 CronBuilder 類）。
+ch49 完成。
+
+---
+
+## 📚 章節重寫：ch50 n8n 自動化 — de-can 練習 + 新教具 WorkflowFlow
+ch50（25 節）同型問題：17/25 節練習罐頭。內容夠深、只換練習 + 疊教具。
+
+- **de-can 17 題**：改成對得上 n8n 主題的設計/分析題。例：50.4 畫出你的 workflow（Trigger+Actions）、50.5 訂單流程加 IF 分支、50.9 AI 分類節點要求 JSON 輸出、50.10 為何不能寫死 key、50.13 客服 RAG『找不到別硬掰』、50.15 錯誤處理＋冪等（重跑不寄兩份）、50.18 純自動化 vs Agent 混合、50.23 self-host 上線三件事。變現題（50.17/25）只談問題與可行性、不掛收入保證。
+- **新教具 `WorkflowFlow`（workflow-flow）**：`src/components/chapter/demos/WorkflowFlow.tsx`。把 workflow 畫成 Trigger→Node→Node 節點鏈、按「資料流過下一個節點」逐格前進、每格顯示節點在做什麼＋payload 怎麼變；節點型別（http/ai/if/set/action/code/db）各自配色。掛 **50.4**（表單→記錄→通知 3 節點）、**50.11**（早安簡報：排程→抓天氣→讀行程→AI 整理→LINE 4 節點，含 AI Node）。
+  - 接線：`types.ts` union 加 `'workflow-flow'`；`LessonDemos.tsx` 派發器 + 白名單。RWD：垂直節點鏈、payload `overflow-x-auto`、按鈕 flex-wrap、亮暗 token。
+
+### 🚨 收尾檢查
+- **API/DB**：`import_chapters_to_db ch50` → 25 lessons / 0 errors；**DB 覆核** 50.4 workflow-flow(3nodes)、50.11 workflow-flow(4nodes)、50.7 無 demo（正確）、exercise 已換應用題。
+- **建置**：`tsc` ✓ · `vitest 137` ✓ · `next build` exit 0 ✓。RWD／亮暗 token 同 AgentLoop 規格。機密/PWA 未動。
+
+ch49 + ch50（AI Agent / n8n 兩大旗艦章）完成。**教具庫新增 2 個：AgentLoop、WorkflowFlow。** 下一步可續：ch06/11/12/14/15/23/24/25/37/42 薄章補厚，或辭典 seed-41 續寫。
