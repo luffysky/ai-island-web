@@ -63,10 +63,28 @@
 
 ## 四、內容 / 辭典 / 其他
 - 🆕 **更新法律頁**：`/privacy`、`/terms`、`/cookies` 內容重新檢視更新（對齊現況：AI/BYOK 金鑰、分身島對外動作、連結外部帳號、LINE 推播、機會島資料來源、@提及通知、個資保存等）。
-- 🚧 **程式辭典續寫到 5000**：現 **~1645 條**，從 `dictionary-seed-36.json` 接（一批約 40–48 條、author→`node scripts/import-dictionary.mjs`→commit）；新批次跑 `node scripts/translate-sync-all.mjs` 補 i18n。
+- 🚧 **程式辭典續寫到 5000**：現 **1773 條**（0721 加 seed 36–40＝Python 模組 128 個），從 `dictionary-seed-41.json` 接。⚠️ 續寫前先跑 slug 去重掃描（辭典已很滿、「工程師黑話」類早期 seed 已收很多，seed-41 首版 31 條有 27 條撞名已廢；改挑真正沒收的主題）。一批 author→`node scripts/import-dictionary.mjs`→commit；新批次跑 `node scripts/translate-sync-all.mjs` 補 i18n。
+- ~~**薄章補厚 ch06/11/12/14/15/23/24/25/37/42**~~ ✅ **0721 完成**：de-can 91 題罐頭練習→應用/設計題（ch15/ch24 本就 0 罐頭跳過）；新教具 JsonTree + 複用 ScenarioJudge(ch12/42)/WorkflowFlow(ch14)。旗艦章 ch49 AI Agent、ch50 n8n 也已 de-can+教具（AgentLoop/WorkflowFlow）。**教具庫 0721 新增 AgentLoop / WorkflowFlow / JsonTree 三元件。**
 - ⬜ **語言島**（英/日辭典，沿用 dictionary `domain='english'|'japanese'`）。
 - 🚧 **AI 成本記帳 P2–P4**（P0 ✅、P1 創作者綠寶軟上限 ✅）：P2 語意快取推廣、P3 路由統一、P4 RAG/vision 擴充。詳 `docs/product/ai_upgrade_plan.md`。
 - ⬜ 計畫書 ch2/ch6/ch7 + pitch-deck 對齊 `repositioning.md`；`PortfoliosClient.tsx` emoji picker；Z 幣 402 前端提示；島嶼刷幣 phase 2；E2E + Smoke tests；3D 島嶼降耗。
+
+---
+
+## 六、大眾變現功能 + Agent 補完（0721 新增 · **全做**，依序、先把現行內容工作做好再開工）
+
+> **戰略**：目前只有「創作者 / 學程式」兩種小眾會有興趣。要打到幾萬~幾百萬普通人＋願付費，要做**單一用途、情緒/剛需、有每日習慣、靠 LINE 推播**的輕工具（我們已有現成 LINE 推播＋每日 cron＋LLM 接入＝別人沒有的優勢）。這些輕工具＝**獲客漏斗**：普通人為運勢/訊息軍師進來→綁 LINE→養成每日習慣→再導流到創作島/學程式/Agent。同時它們本身就是 Agent 的「任務範本」，一石二鳥。四項全做，依下列順序、每項自己能獨立上線。
+
+- ⬜ **①每日運勢 / AI 命理 + LINE 每日推播（訂閱制）** — TAM×黏著×好做綜合最高。生日/時辰+提問→LLM 風格化運勢（整體/愛情/事業/財運）+塔羅抽牌+AI 解讀；綁 LINE→每天早上推今日運勢（用現有 daily-cron 那套）。免費看大方向、Z幣/訂閱解鎖深解與私人推播。**純 LLM prompt + 現成 LINE 推播、無外部依賴、可先做**。頁 `/fortune`。
+- ⬜ **②訊息軍師（幫你把難開口的話講好）** — 剛需最廣、人人可用、願付小錢。選情境（談加薪/拒絕/道歉/催款/給房東老師客戶前任）→填幾個要點+選語氣（客氣/強硬/幽默）→AI 產 2–3 個版本可挑可改。免費每天 3 則、付費無限+多語氣。**純情境模板+LLM、最快落地、無依賴**。可複用 prompt-lab 底子。
+- ⬜ **③AI 求職包（履歷+自傳+面試模擬+求職信）** — 痛點明確、有急迫性、願一次性付費或短訂閱。填經歷→產履歷/自傳/求職信+PDF 下載；AI 面試官對話模擬+回饋（用現成 agent 引擎）。**LLM 結構化輸出+現有 PDF 能力+agent 對話**。
+- 🚧 **④Agent 補完 + 生活助理範本**（本項＝把 Agent 從「工程師工具」轉成「普通人生活助理」）：
+  - ⬜ **一鍵生活助理範本庫**（**買便宜能先做的核心**）：普通人不會自己寫 prompt，要給一鍵範本——追蹤降價通知/每天整理信箱重點/行程規劃/旅遊規劃/查政府補助/比價/健康問答/育兒問答/翻譯潤稿/每日新聞摘要…。現有 `OfficeClient.tsx` 的 `QUICK_TASKS`（7 個、偏工程/創業）擴成分類的日常範本庫、放到普通人找得到的地方（非只在 `/agent/office`）。**無外部依賴、可先做**。
+  - 🔴 **外部工具 OAuth**（Gmail/Calendar/GitHub/Notion/Drive）：沒這個 agent 只能「講」不能真的「動你的東西」。`/settings/connections` 已有手動連結骨架、OAuth 待各平台註冊 app（**需林董操作**）。
+  - 🔴 **L2 程式沙盒**：跑 agent 產的 code（需先設 Zeabur `ENABLE_SERVER_BROWSER=1`，**需林董**）。
+  - ⬜ **成本 / ROI Dashboard**（per-user 用量記帳、省了多少）：省錢是賣點但目前沒讓使用者看到。
+  - ⬜ **TG / Discord 入口**（複用 LINE 回報模式，需 🔴 token）。**Credential Broker**、**生真圖**（需付費生圖 API）。
+- 🆕 **潛力池（之後評估）**：AI 陪伴角色（沿用島吉祥物+記憶、情感黏著）、AI 合約白話解讀（已有 PDF 解析 unpdf）、AI 老照片修復/證件照（需付費生圖 API、暫緩）、AI 交友/約會訊息軍師。
 
 ---
 
