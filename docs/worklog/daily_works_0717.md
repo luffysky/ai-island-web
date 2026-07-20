@@ -51,6 +51,13 @@
 - 專屬教具 **PromptBuilder**（圖像 prompt 積木、點 chip 依六格公式即時組 prompt，複用給生圖章）掛 52.2 / 52.4。
 - outcomes/summary/faq 同步；tsc/vitest137/build 綠、已 import DB。
 
+## ✍️ ch53（AI 導演/短影音）全深度重寫（0718）
+- 修六課截斷 + 除罐頭 + 軟化變現數字（不掛保證）+ 拆重複（53.2/53.5 都 SOP、53.3/53.6 都虛擬人 → 重新分工）。
+- 六課：53.1 image-to-video 工作流（先出圖再讓圖動·含 keyframe 走查）/ 53.2 Hook/Body/CTA 腳本（完整 30 秒範例）/ 53.3 虛擬人 SOP+誠實限制(恐怖谷) / 53.4 Runway/Pika/Luma 選型 / 53.5 6公式+月企劃+batching 量產 / 53.6 虛擬主播接案三階報價。
+- 題型差異化：規劃/實作/規劃/選型決策/企劃/情境報價。
+- 教具：PromptBuilder(53.1 keyframe) + PromptLab 影片版 config(53.4 text-vs-image 生片對照)。
+- tsc/vitest137/build 綠、已 import DB。
+
 ## ⏭ 待續
 - 林董線上驗收版面圖鑑手感（Claude 端 Chrome 擴充沒連、沒法目視截圖）。
 - 下一批：`prompt-lab`（餵 AI 全系列/創作章）、ch51 六課全深度內容重寫、`box-model`/`flex-playground` 補滿 ch02/03。
