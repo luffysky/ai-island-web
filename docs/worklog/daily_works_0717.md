@@ -130,6 +130,10 @@
 - 同 ch03/ch43：內容/miniQuiz 保留，換 25 罐頭練習成真 PdM 題(JTBD/PRD/優先序/A/B/GTM/onboarding/retention/競品/協作/growth loop…實作題)。
 - 互動：`PriorityMatrix`(44.6 影響×成本 quick wins) + `FunnelSim`(44.8 AARRR 漏斗) + `ScenarioJudge`(44.9 A/B測試別被假數據騙)。tsc/vitest137/build 綠、已 import。
 
+## 🗂️ ch45（跨職能協作 25 課）除罐頭 + 加互動（0721）
+- 同治法:內容/miniQuiz 保留,換 25 罐頭練習成真協作情境題(工程×設計/PM/業務/行銷/客服/法務/財會/HR/Data/高層/客戶、翻譯技術、衝突、影響力、困難對話、code review、async、post-mortem、on-call、1-on-1)。
+- 互動:`PriorityMatrix`(45.15 利害關係人 權力×關心) + `ScenarioJudge`(45.17 困難對話怎麼回應)。tsc/vitest137/build 綠、已 import。**PM 三兄弟 ch43/44/45 全部完成。**
+
 ## 📊 內容重寫進度（本 session）
 - 創作叢集 ch51~60 全部 10 章完成；**ch03 UI/UX 除罐頭+加互動完成**。
 - 互動教具 12 種（+ColorContrast）。
