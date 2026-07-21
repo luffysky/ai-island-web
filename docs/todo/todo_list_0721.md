@@ -187,8 +187,9 @@
 - [x] ~~**薄章補厚 ch06/11/12/14/23/25/37/42**：de-can 91 題 + JsonTree/複用 ScenarioJudge·WorkflowFlow~~ ✅ 0721（ch15/ch24 本就 0 罐頭）
 - [x] ~~ch03/13/43/44/45/47/48/51–60/33(Rust)/76(Angular) 深度重寫~~ ✅（0717 起陸續）
 - [~] 4.1.1 **剩餘技術章 de-can**（audit：ch01–60 曾 74% 罐頭練習，只清了旗艦+薄章）：ch01/02/04/05/07/08/09/10/16/17/26–32/34/35/36/46… 逐章 de-can + 視情況疊教具
-  - [x] ~~ch01 HTML 完整：25 節全 de-can~~ ✅ 0721（原本 1.2–1.25 全是同一句「打開 VS Code 做個人介紹頁」+同 hint+同 answer、且自動抽的標籤 fill 常壞〔`<Image>`/`${name}`/`@vercel/og`〕→ 換成各節量身的應用/設計/除錯/比較題〔head 載入除錯、div 湯改語意化、strong vs b、課表無障礙表格、表單原生驗證、OG 分享卡、JSON-LD 富結果、ARIA 按鈕、Web Component、PWA manifest、SVG inline 時機、字體/圖片效能、iframe sandbox、data-* …〕，已 import DB）
-  - [ ] 剩 ch02/04/05/07/08/09/10/16/17/26–32/34–36/46… 續 de-can
+  - [x] ~~ch01 HTML 完整：25 節全 de-can~~ ✅ 0721（原本 1.2–1.25 全同一句「做個人介紹頁」+同 hint/answer、標籤 fill 常壞→換各節量身題）
+  - [x] ~~ch02 CSS 完整：25 節全 de-can~~ ✅ 0721（原本 22/25 是「copy code 改 1-2 參數」罐頭→換各節量身題：選擇器/特異性排勝負/box-sizing 算寬/flex 導覽列/grid 相簿 auto-fill/position 五情境/HSL 深淺色/RWD mobile-first/CSS 變數切深色模式/transition vs animation/transform 效能/Sass mixin/Tailwind 取捨/CSS-in-JS/Design Token/動畫心理學/a11y 對比焦點/捲動效能/版面除錯三兇手/上線檢查表）
+  - [ ] 剩 ch04/05/07/08/09/10/16/17/26–32/34–36/46… 續 de-can
 - [ ] 4.1.2 **deep-rewrite tier 未動章**：ch15、ch24、ch32、ch34、ch35、ch36、ch40、ch41、ch63、ch68（strict-spec）、ch72–75、附錄 ch61–67/69–70
 - [ ] 4.1.3 教具庫擴充：mobile 專屬教具（給 ch11）、規劃 B 教具（RegexTester/CronBuilder/JsonInspector 進階/HttpInspector/Tokenizer/SortingViz/GitGraph/NeuralForward/AuthFlow/MLBoundary）——依技術章需要再建
 - [ ] 4.1.4 圖文解說圖：概念/B/D/E/F 區操作圖 110+ 張（🔴 等林董生圖；A 區 29 張 ✅）
@@ -201,7 +202,7 @@
   - [x] ~~4.2.1.1 ⚠️ 續寫前先跑 slug 去重掃描~~ ✅（已建流程：cat 全 seed 抽 slug → grep 候選 → python 驗證無 collision 才 author）
   - [x] ~~4.2.1.2 挑真正沒收的主題~~ ✅ seed-41 已用「資料庫/Git/K8s/LLM/分散式」；下批可挑前端框架黑話、TS 型別、測試、資安、網路協定
   - [ ] 4.2.1.3 每批 author → `node scripts/import-dictionary.mjs` → commit（持續）
-  - [ ] 4.2.1.4 新批次跑 `node scripts/translate-sync-all.mjs` 補 i18n（免費 Google、冪等）← seed-41 待補譯
+  - [~] 4.2.1.4 新批次跑 `node scripts/translate-sync-all.mjs` 補 i18n ✅ 跑了一輪（本次翻 1058 欄位×語言、dictionary 達 500 上限）；辭典/lesson 尚有 backlog、冪等重跑即可清完
 - [ ] 4.2.2 語言島（英/日辭典，沿用 `domain='english'|'japanese'`）
 
 ### 4.3 其他內容

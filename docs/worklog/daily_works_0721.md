@@ -337,3 +337,12 @@ ch49 + ch50（AI Agent / n8n 兩大旗艦章）完成。**教具庫新增 2 個�
   - 1.1 用比喻解釋 HTML/CSS/瀏覽器分工｜1.2 三個症狀（慢/標題空白/無預覽）對應 head 與 script 載入除錯｜1.3 div 湯改語意化骨架｜1.4 strong vs b、em vs i 判斷｜1.5 三種清單選 ul/ol/dl｜1.6 target=_blank 的 rel 安全 + img alt｜1.7 課表無障礙表格（th scope/caption）｜1.8 表單原生驗證（form/type/required/inputmode）｜1.9 社群分享卡 OG 標籤｜1.10 JSON-LD 富結果｜1.11 div 假按鈕→原生 button vs ARIA｜1.12 Web Component + attributeChangedCallback｜1.13 PWA manifest 為何要 192/512｜1.14 inline SVG vs img 時機｜1.15 font-display/fetchpriority 效能｜1.16 報名頁整合骨架｜1.17 article vs section 判斷｜1.18 自訂下拉的鍵盤無障礙清單｜1.19 fieldset/inputmode/readonly vs disabled｜1.20 新聞站 OG/Twitter 規劃｜1.21 商品頁 Product schema｜1.22 lazy/srcset/picture + 首屏別 lazy｜1.23 iframe sandbox 最小權限｜1.24 data-* 與全域屬性｜1.25 作品集頁上線前 8 點檢查表。
 - **收尾**：Python 改（json.dump ensure_ascii=False indent=2 + \n、格式一致）→ diff 剛好 75+/75-（25×3 欄、無整檔重排）→ `import_chapters_to_db.mjs ch01`（25 lessons、0 errors）→ `tsc` ✅ / `next build` exit 0 ✅。章節讀 DB、已生效。
 - 續攻：ch02/04/05/07–10/16/17/26–32/34–36/46…（§4.1.1）。
+
+---
+
+## 📚 章節 de-can：ch02 CSS 全 25 節 + 辭典 i18n 補譯一輪（0721）
+
+- **ch02（CSS）de-can**：原本 22/25 節是「打開編輯器、把 code copy 進去、改 1-2 參數」罐頭練習（同 hint/answer）。全 25 節換成各節量身題（應用/設計/除錯/比較/分析），對零基礎友善：CSS 分離好處、選擇器三需求、特異性排勝負、box-sizing 算實際寬、display 三態選用、flex 導覽列、grid 相簿 auto-fill/minmax、position 五情境、HSL 調同色系深淺、字型堆疊+行高、box-shadow 四值、RWD mobile-first、CSS 變數切深色模式、transition vs animation、transform 效能、Sass mixin、Tailwind 取捨、CSS-in-JS、Design Token、動畫心理學、a11y 對比/焦點、捲動效能、版面除錯三兇手、上線檢查表。
+  - Python 改（格式一致、diff 75+/75-）→ `import_chapters_to_db.mjs ch02`（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+- **辭典 i18n**：跑一輪 `translate-sync-all`（背景、免費 Google），本次翻 **1058 欄位×語言**（dictionary 達 500/輪上限 → seed-41/42 新詞已覆蓋、仍有 backlog；lesson 也有 backlog）。冪等、重跑即可清完。
+- 本日章節 de-can 累計：ch01 + ch02（各 25 節）。續攻 ch04/05/07–10/16/17/26–32/34–36/46…

@@ -65,9 +65,9 @@
         "explanation": "# 是 id 選擇器、. 是 class 選擇器。"
       },
       "exercise": {
-        "question": "找一個你身邊的例子、用「CSS 是什麼？為什麼需要它？」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "同一份 HTML，套不同 CSS 就能長得完全不一樣。用這點向朋友解釋：為什麼「內容」和「樣式」要分開寫？分開有什麼實際好處（想想改版、換主題、維護）？",
+        "hint": "HTML 管『有什麼』、CSS 管『長怎樣』。分開＝改樣式不用動內容，同一批內容能有日/夜間、手機/桌機不同外觀。",
+        "answer": "好處：①改版只改 CSS、HTML 不動 ②同內容可切多主題（深色模式只換一份 CSS）③多頁共用一份樣式、一改全站生效 ④無障礙/SEO 靠語意 HTML、外觀交給 CSS。分離＝關注點分離，維護與協作都輕鬆。"
       },
       "outline": [
         {
@@ -118,9 +118,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "給三個需求，各寫出對應的選擇器並說明為什麼：①所有 class=\"btn\" 的按鈕 ②某個 id=\"hero\" 的區塊 ③<nav> 裡面的所有 <a>。再說明「後代選擇器 nav a」和「直接子代 nav > a」差在哪。",
+        "hint": ". 選 class、# 選 id、空格是後代（任意層）、> 是直接子代（只有一層）。",
+        "answer": "①.btn ②#hero ③nav a（nav 內任意深度的 a）。nav a 會選到 nav 底下巢狀多層的 a；nav > a 只選 nav 的『直接子』a、更深的不算。需要精準控制層級時用 >，多數情況用後代即可。"
       },
       "outline": [
         {
@@ -186,9 +186,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "兩條規則都想設同一顆按鈕的顏色：`.btn { color: blue }` 和 `#save { color: red }`，按鈕同時有這兩個。最後是什麼色？為什麼？如果又多一條 inline style 或 !important 呢？請用特異性排出勝負。",
+        "hint": "特異性由高到低：!important > inline > id > class/屬性/偽類 > 標籤。分數高的贏，同分則後面的贏。",
+        "answer": "#save（id）比 .btn（class）特異性高 → 紅色。若加 inline style（style=\"color:green\"）→ 綠色贏過 id。若某條加 !important → 它最大、蓋過一切（除非另一條也 !important 且更後面/更高特異）。原則：少用 id 選色、避免 !important，改用 class 好維護。"
       },
       "outline": [
         {
@@ -284,9 +284,9 @@
         "explanation": "border-box 讓 width 包含 padding+border、所以你設 width=200 就是視覺 200px。"
       },
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "一個 width:300px 的盒子，加了 padding:20px、border:5px，實際佔了多寬？把 box-sizing 從預設改成 border-box 後又是多寬？哪一種寫版面比較不會爆？",
+        "hint": "預設 content-box：width 只算內容，padding/border 另外加上去。border-box：width 已含 padding/border。",
+        "answer": "content-box（預設）：300 + 20×2 + 5×2 = 350px 實際寬。改 border-box：實際就是 300px（padding/border 往內縮）。寫版面用 border-box 比較不爆（設多寬就是多寬），所以很多專案會 `*{box-sizing:border-box}` 全站統一。"
       },
       "outline": [
         {
@@ -329,9 +329,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "block、inline、inline-block 三者差在哪？給情境選一個：①想讓幾顆按鈕並排、又要能設寬高 ②想讓一段文字中的關鍵字上色但不換行 ③想讓一個 div 獨占一行。並說明 display:none 和 visibility:hidden 的差別。",
+        "hint": "block 獨占一行可設寬高；inline 隨文字排、不能設寬高；inline-block 兩者兼具。none 不佔空間、hidden 佔空間但看不到。",
+        "answer": "①按鈕並排且可設寬高→inline-block（或用 flex）②文字中關鍵字上色不換行→inline（如 <span>）③div 獨占一行→block（div 預設就是）。display:none 完全移除、不佔位、報讀器也讀不到；visibility:hidden 看不見但仍佔空間。"
       },
       "miniQuiz": {
         "question": "你在寫一個購物網站的「商品標籤」，希望標籤能排成一行（像 #優惠 #新品 #熱賣），同時想設定每個標籤的寬度和高度。下列哪個 display 值最適合？",
@@ -409,9 +409,9 @@
         "explanation": "justify-content 是主軸（預設水平）、align-items 是交叉軸（預設垂直）。"
       },
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "用 Flexbox 做一個導覽列：logo 靠左、選單靠右、垂直置中對齊。你會用哪些屬性（justify-content / align-items / gap）？如果要讓中間的搜尋框自動撐滿剩餘空間呢？",
+        "hint": "flex 主軸用 justify-content 分配、交叉軸用 align-items 對齊；要某項吃掉剩餘空間用 flex:1。",
+        "answer": "容器 display:flex; align-items:center（垂直置中）; justify-content:space-between（logo 與選單推到兩端）; gap 給間距。要搜尋框撐滿：給它 flex:1（其餘項不設），它就吃掉剩餘寬度。這是一維排版（一排）的最佳工具。"
       },
       "outline": [
         {
@@ -469,9 +469,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "什麼版面該用 Grid 而不是 Flexbox？請設計一個「相簿頁」：每行放 3 張、視窗變窄自動變 2 張再變 1 張、圖之間有間距。用 grid-template-columns 搭配什麼函式能做到自動換行？",
+        "hint": "Grid 擅長二維（同時管行與列）。自動響應可用 repeat(auto-fill, minmax(...))。",
+        "answer": "二維（同時要對齊行和列）用 Grid。相簿：display:grid; gap:16px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr))。意思是『每欄至少 200px、能塞幾欄塞幾欄、平分剩餘』，視窗變窄自動從 3 欄掉到 2、1 欄，不用寫死 media query。"
       },
       "outline": [
         {
@@ -548,9 +548,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "position 的 static/relative/absolute/fixed/sticky 各在什麼時候用？做這三個東西各選一個並說明：①永遠黏在畫面右下角的『回到頂部』鈕 ②捲動時吸附在頂端的標題列 ③相對父層定位的小紅點徽章。",
+        "hint": "fixed 相對視窗（捲動不動）；sticky 平常正常、到邊界就吸住；absolute 相對『最近的非 static 祖先』；徽章要父層 relative。",
+        "answer": "①右下角回頂部→position:fixed（相對視窗、捲動固定）②吸附標題→position:sticky; top:0（捲到頂就黏住）③小紅點徽章→父層 position:relative，徽章 position:absolute; top/right 定位。absolute 會找最近的 relative 祖先當基準，所以父層要設 relative。"
       },
       "outline": [
         {
@@ -608,9 +608,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "#FFFFFF、rgb()、hsl()、以及帶透明度的寫法，各適合什麼場景？想做「同一個色相、明度由深到淺的一組主題色」，用哪種色彩表示法最好調？為什麼？",
+        "hint": "HSL＝色相/飽和度/明度，改明度就能得到同色系深淺；rgba/hsla 帶 alpha 做半透明。",
+        "answer": "做同色系深淺用 HSL 最直覺：固定 H、S，只調 L（明度）就得到一整排協調的深淺色。#hex/rgb 適合精確指定單色、rgba()/hsla() 做半透明疊色（如陰影、遮罩）。現代還可用 CSS 變數存基準色再算深淺。"
       },
       "outline": [
         {
@@ -680,9 +680,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "為什麼要設 font-family 的『備援字型堆疊』而不是只寫一個字型？行高（line-height）設太小或太大會怎樣？請為一段長文設定易讀的字級與行高並說明理由。",
+        "hint": "使用者電腦不一定有你指定的字型，要有 fallback 到系統字。行高影響閱讀舒適度。",
+        "answer": "字型堆疊：font-family: 'Noto Sans TC', system-ui, sans-serif——指定字沒有就退到系統字、再退到通用類，避免變成醜預設字。長文可讀性：font-size 約 16–18px、line-height 約 1.5–1.7（太小擠、太大鬆散）、行寬控制在 45–75 字元。"
       },
       "outline": [
         {
@@ -752,9 +752,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "box-shadow 的四個值（x、y、模糊、擴散）各控制什麼？想做一個『輕柔浮起』的卡片陰影和一個『銳利貼近』的陰影，兩者參數會怎麼不同？border 和 outline 又差在哪（提示：佔不佔空間、會不會影響版面）？",
+        "hint": "陰影：offset 決定方向、blur 決定柔和度。outline 不佔盒模型空間、border 會。",
+        "answer": "box-shadow: x y blur spread color。輕柔浮起：小 offset、大 blur、低透明度（如 0 8px 24px rgba(0,0,0,.12)）。銳利貼近：小 blur、小 offset。border 佔空間會撐大盒子/影響版面；outline 畫在外面不佔空間、常用於 focus 樣式（不推走位）。"
       },
       "outline": [
         {
@@ -820,9 +820,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "RWD 的核心是「同一份 HTML 在不同螢幕都好用」。media query 的斷點該怎麼定（依裝置寫死 vs 依內容壞掉的點）？為什麼「mobile-first（先寫手機、再用 min-width 往上加）」通常比較好維護？",
+        "hint": "斷點別死背 iPhone 尺寸，改成『版面在哪個寬度開始不好看就在那設斷點』。mobile-first 用 min-width 疊加。",
+        "answer": "斷點依『內容何時壞掉』而非特定機型。mobile-first：基礎樣式寫手機版，再用 @media (min-width:...) 往大螢幕加東西——因為手機版最簡單、往上加比往下砍乾淨，且沒 CSS 時手機也能看。搭配 flex/grid 的 auto 特性可少寫很多斷點。"
       },
       "outline": [
         {
@@ -899,9 +899,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "CSS 變數（--color-primary）比起在很多地方重複寫同一個色碼，好處是什麼？做「深色模式」時，用 CSS 變數能怎麼一鍵切換整站顏色？和 Sass 變數的關鍵差別是什麼（提示：執行時能不能改）？",
+        "hint": "CSS 變數是『執行時活的』，能被 JS 改、能被子層覆蓋、能隨 :root[data-theme] 換一批。Sass 變數編譯後就固定了。",
+        "answer": "好處：一處定義多處引用、改一個變數全站生效。深色模式：在 :root 設一組變數，:root[data-theme=\"dark\"] 覆蓋成深色值，切 data-theme 就整站換色。關鍵差別：CSS 變數執行時可被 JS/選擇器動態改；Sass 變數在編譯階段就寫死、無法執行時切換。"
       },
       "outline": [
         {
@@ -967,9 +967,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "transition 和 @keyframes animation 差在哪？各舉一個適合的例子。為什麼動畫盡量只動 transform 和 opacity、少動 width/left/top（提示：reflow/repaint 與流暢度）？",
+        "hint": "transition＝A→B 狀態間的過渡（hover 變色）；animation＝可多階段、可循環、可自動播。動 transform/opacity 才吃得到 GPU 合成、不觸發重排。",
+        "answer": "transition 適合『兩個狀態間』的過渡（hover 放大、展開收合）；animation 適合多階段/循環/自動播（loading 轉圈、跑馬燈）。動 width/left/top 會觸發 reflow（重算版面）與 repaint，卡頓；transform（位移/縮放）和 opacity 走合成層、通常 60fps 順暢。"
       },
       "outline": [
         {
@@ -1039,9 +1039,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "transform 的 translate/scale/rotate 為什麼比改 margin/left 來做位移更順？transform-origin 是做什麼的？做一個 hover 時輕微放大並上浮的卡片效果，你會怎麼組合 transform 與 transition？",
+        "hint": "transform 不影響版面（不推擠別的元素）、走 GPU；origin 決定旋轉/縮放的基準點。",
+        "answer": "transform 不觸發 reflow、由合成層處理、通常更順且不推擠鄰居。transform-origin 設變形的中心（預設中心、可改成角落）。卡片 hover：.card{transition:transform .2s} .card:hover{transform:translateY(-4px) scale(1.03)}——上浮+放大，配 transition 讓它平滑。"
       },
       "outline": [
         {
@@ -1099,9 +1099,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Sass 的哪些功能是原生 CSS（早期）沒有、能減少重複的？舉例 巢狀、變數、mixin、@extend 各解決什麼。既然現在原生 CSS 也有變數了，什麼情況你還會想用 Sass？",
+        "hint": "Sass＝CSS 的預處理器：巢狀對應結構、mixin 打包可重用的一組宣告、@extend 共用。原生 CSS 變數是執行時、Sass 是編譯時。",
+        "answer": "巢狀（跟 HTML 結構呼應、少寫父選擇器）、變數（顏色/尺寸集中）、mixin（把一組常用宣告打包帶參數重用，如 flex-center）、@extend（多個選擇器共用一套規則）。即使有原生變數，仍會用 Sass 的 mixin/函式/迴圈/模組化與編譯期運算能力。"
       },
       "outline": [
         {
@@ -1179,9 +1179,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Tailwind 的 utility-first（class=\"flex items-center gap-4 p-4\"）相比自己寫 .card{...}，優缺點各是什麼？有人說「HTML 會很長很醜」，這個取捨換來了什麼？什麼專案適合、什麼不適合？",
+        "hint": "utility-first＝直接在 HTML 用小工具 class 組樣式，不用命名、不用切檔、不用想 CSS 該放哪。代價是 class 變長。",
+        "answer": "優點：不用命名/不用在 HTML 和 CSS 間跳、設計一致（受限的間距/色階）、少產生沒人用的死 CSS、改樣式就地改。缺點：class 冗長、初學門檻、跟設計稿強綁。適合：快速開發、團隊要一致性的產品；較不適合：需要大量高度客製藝術頁、或團隊排斥的情況。重複多時抽成元件即可。"
       },
       "outline": [
         {
@@ -1263,9 +1263,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Bootstrap 這種「元件庫＋網格系統」幫你省了什麼？又常被批評什麼（例如網站長得都一樣、要覆蓋預設樣式很煩）？在什麼專案你會選 Bootstrap 而不是 Tailwind 或自己寫？",
+        "hint": "Bootstrap 給現成元件（按鈕/導覽/Modal）與 12 欄網格，快但客製化與『撞臉』是代價。",
+        "answer": "省下：現成元件、響應式網格、跨瀏覽器相容，快速拼出可用介面。批評：預設風格明顯（容易撞臉）、深度客製要覆蓋一堆預設、打包體積。選它時機：後台/內部工具/MVP 要快、團隊熟悉、外觀不需高度差異化時。"
       },
       "outline": [
         {
@@ -1331,9 +1331,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "CSS-in-JS（把樣式寫在元件裡，如 styled-components）解決了什麼傳統 CSS 的痛點（全域污染、命名衝突、找不到哪段 CSS 屬於哪個元件）？它的代價（執行時開銷、SSR 複雜度）又是什麼？",
+        "hint": "CSS-in-JS 把樣式與元件綁在一起、自動產生獨一無二的 class 名、樣式隨元件生死。代價是多一層執行時處理。",
+        "answer": "解決：樣式作用域綁元件（不會全域互相污染）、自動產生唯一 class（免命名衝突）、能用 JS 邏輯/props 動態算樣式、刪元件連樣式一起走。代價：執行時產生樣式的效能開銷、SSR 需額外處理、除錯時類名不好認（零執行時方案如 vanilla-extract 可緩解）。"
       },
       "outline": [
         {
@@ -1403,9 +1403,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Design Token（如 color.primary、space.4、radius.md）和「直接在 CSS 到處寫 #3b82f6、16px」相比，為什麼設計系統要用 token？當設計師說「主色從藍改成綠」，有 token 和沒 token 的改法差多少？",
+        "hint": "token＝設計決策的『單一真相來源』，命名語意化，跨平台（Web/iOS/Android）共用一份。",
+        "answer": "token 把『設計決策』集中命名（語意而非數值），一處改、全站/跨平台生效。主色改綠：有 token 只改 color.primary 一個值；沒 token 要全專案搜 #3b82f6 一個個換（還可能漏、或誤換到剛好同色但語意不同的地方）。token 也讓深色模式/多品牌只換一套映射。"
       },
       "outline": [
         {
@@ -1471,9 +1471,9 @@
         }
       ],
       "exercise": {
-        "question": "找一個你身邊的例子、用「動畫心理學：為什麼按鈕該回彈」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "為什麼一顆按鈕點下去『微微回彈/縮放』會讓人覺得比較『有回應、好用』？從使用者心理說明動畫的三個目的（回饋、連續性、引導注意力），並各舉一個介面例子。",
+        "hint": "動畫不是裝飾，是溝通：告訴使用者『你的操作被接收了』『東西從哪來到哪去』『該看哪裡』。",
+        "answer": "①回饋：按鈕按下縮一下＝『我收到了』，減少不確定感。②連續性：Modal 從點擊處放大出現＝讓使用者理解它從哪來、不會突兀。③引導注意力：新訊息輕輕跳動吸引目光。原則：動畫要快（多在 150–300ms）、有意義、可被『減少動態』偏好關掉（prefers-reduced-motion）。"
       },
       "outline": [
         {
@@ -1539,9 +1539,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "純用顏色表達資訊（紅字＝錯誤）對色盲使用者有什麼問題？:focus 樣式被 outline:none 拿掉會害到誰？列出三個 CSS 層面能改善無障礙的做法（對比、焦點、動態偏好）。",
+        "hint": "別只靠顏色傳達；鍵盤使用者需要看得見焦點；有人會暈動畫。",
+        "answer": "①別只用顏色：錯誤同時加圖示/文字（不是只變紅）、確保文字對比達 WCAG（正文約 4.5:1）。②保留焦點樣式：別 outline:none 不補替代，鍵盤使用者要看得到現在在哪（可用 :focus-visible 只給鍵盤顯示）。③尊重 prefers-reduced-motion：偵測到就關/減弱動畫，避免前庭不適。"
       },
       "outline": [
         {
@@ -1611,9 +1611,9 @@
         }
       ],
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「效能優化」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（width / height / top / left、color / background、transform / opacity）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "一個頁面捲動時卡卡的。哪些 CSS 寫法會拖慢（大範圍 box-shadow/filter、動 layout 屬性、過度 will-change）？請說明「只動 transform/opacity」和「用 content-visibility 延後渲染離屏內容」為什麼能救效能。",
+        "hint": "卡頓多來自重排(reflow)/重繪(repaint)。合成層屬性(transform/opacity)最便宜；離屏內容可延後算。",
+        "answer": "拖慢：動 width/height/top/left（觸發 reflow）、大面積 filter/box-shadow（重繪貴）、濫用 will-change（吃記憶體）。救法：動畫只用 transform/opacity（走 GPU 合成、不重排）；離屏長列表用 content-visibility:auto 讓瀏覽器先不渲染看不到的部分。原則：先量測（DevTools Performance）再優化。"
       },
       "outline": [
         {
@@ -1683,9 +1683,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "版面『跑掉了』的三個常見兇手：①某元素莫名把版面撐出水平捲軸 ②垂直 margin 沒如預期（margin 合併）③z-index 設了卻沒蓋上去。各該怎麼用 DevTools 或 CSS 觀念定位與修好？",
+        "hint": "撐寬常是某元素超出（overflow）或 box-sizing；margin 上下會『合併』取大值；z-index 只對定位過(非 static)的元素有效、且受堆疊上下文影響。",
+        "answer": "①水平捲軸：用 DevTools 找超出的元素（常是寫死寬、圖片沒 max-width:100%、或負 margin），改 box-sizing/overflow。②margin 合併：相鄰垂直 margin 取較大值，非疊加；用 padding 或 flex/grid gap 避開。③z-index 沒效：確認元素 position 非 static，且沒被父層的堆疊上下文（opacity/transform 會建立）困住。"
       },
       "outline": [
         {
@@ -1738,9 +1738,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "整合整章，列一份『CSS 上線前檢查清單』（至少 8 點），涵蓋：box-sizing 策略、響應式、無障礙對比與焦點、動畫效能、深色模式、命名/維護性。並說明你會怎麼決定專案要用 Tailwind、Sass 還是純 CSS。",
+        "hint": "把前面各節的重點濃縮成可逐項打勾的清單，這就是團隊的 code review 標準。",
+        "answer": "清單：①全站 box-sizing:border-box ②mobile-first 響應、斷點依內容 ③文字對比達標、:focus-visible 保留 ④動畫只用 transform/opacity + 尊重 reduced-motion ⑤深色模式用 CSS 變數切換 ⑥顏色/間距用 token 或變數、不散落魔術數字 ⑦圖片 max-width:100% 不爆版 ⑧無死 CSS/命名一致。選型：快速產品用 Tailwind、需複雜編譯邏輯用 Sass、小專案或高度客製用純 CSS + 變數。"
       },
       "outline": [
         {
