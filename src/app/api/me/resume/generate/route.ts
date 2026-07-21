@@ -89,7 +89,7 @@ async function handle(req: Request) {
   if (lessons.length === 0 && (stats?.totalSolved ?? 0) === 0 && portfolioList.length === 0) {
     return NextResponse.json({
       ok: true,
-      markdown: `# ${userName}\n\n（還沒累積資料、來 AI 島學一課再生成、雪鑰才有東西寫）\n\n→ https://ai-island-web.snowrealm.pet/chapters`,
+      markdown: `# ${userName}\n\n還沒有可以寫進履歷的資料——雪鑰要有你完成的章節或作品才寫得出來。\n\n**[👉 來 AI 島上一課，再回來生成](/chapters)**`,
     });
   }
 

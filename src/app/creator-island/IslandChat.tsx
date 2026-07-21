@@ -18,6 +18,36 @@ type FocusFrag = { id: string; title: string; content: string };
 const BTN = 52; // 綠寶按鈕直徑(px)
 const GREETING: Msg = { role: "assistant", content: "嗨，我是綠寶 ✨ 想做什麼作品？丟碎片、貼圖、或直接問我都可以。" };
 
+/**
+ * 接入創作 / 存進工作室時，把綠寶回覆裡「非作品的寒暄」去掉——
+ * 只留真正的作品內容（歌詞含 Suno 提示詞、文案本體都保留），開場白/結尾閒聊/純表情不要跟著進去。
+ * 保守：只砍開頭最多 2 行、結尾最多 3 行明顯是對話的短行；中間一律不動、寧可多留不亂砍。
+ */
+function stripChatter(raw: string): string {
+  const bl = (raw || "").trim().split("\n");
+  const PRE = /^(好的?|好喔|沒問題|收到|來(囉|了)?[！!]?|根據你|依(照|據)你|我(幫|來|試|這就)|幫你|這(是|首|篇|份)|以下(是|為)?|來看看|試試看|完成(了|囉)?|如你所(願|想)|沒錯|太(好|棒)了?|OK|Okay|Sure|Here('s| is)|好[，,、])/i;
+  const CLOSE = /(希望(你)?(會)?(喜歡|滿意)|喜歡嗎|滿意嗎|覺得(如何|怎(麼|樣))|如何[?？]?$|需要(我)?(再)?(調整|修改|補充|改)|要(不要)?(我)?(幫你)?(再)?(調整|修改|改|試)|(告訴|跟)我|隨時(找|跟)?我|再(跟我|找我|說|試一次)|加油|祝(你|福)|期待你|有(什麼)?(問題|想法|需要)(嗎|再)|給我(回饋|意見)|feel free|let me know|hope you|enjoy)/i;
+  const short = (l: string) => { const s = l.trim(); return s.length > 0 && s.length <= 70; };
+  const pictOnly = (l: string) => { const s = l.trim(); return s.length > 0 && /^[\p{Extended_Pictographic}️‍\s~!！。.…、，,]+$/u.test(s); };
+  let n = 0;
+  while (bl.length && n < 2) {
+    const l = bl[0];
+    if (!l.trim()) { bl.shift(); continue; }
+    if (short(l) && PRE.test(l.trim())) { bl.shift(); n++; } else break;
+  }
+  n = 0;
+  while (bl.length && n < 3) {
+    const l = bl[bl.length - 1];
+    if (!l.trim()) { bl.pop(); continue; }
+    if (pictOnly(l) || (short(l) && CLOSE.test(l.trim()))) { bl.pop(); n++; } else break;
+  }
+  return bl.join("\n").trim();
+}
+
+function looksLikeSong(s: string): boolean {
+  return /\[(verse|chorus|bridge|pre-?chorus|intro|outro|hook|主歌|副歌|導歌|前奏|間奏|尾奏|橋段)/i.test(s) || /suno/i.test(s);
+}
+
 export function IslandChat({ workspaceId, focusFragments = [], onClearFocus }: { workspaceId: string; focusFragments?: FocusFrag[]; onClearFocus?: () => void }) {
   const router = useRouter();
   const toast = useToast();
@@ -187,9 +217,16 @@ export function IslandChat({ workspaceId, focusFragments = [], onClearFocus }: {
   async function weaveMsg(i: number, content: string) {
     setWeaving(i);
     try {
+      // 只把「作品本體」接進去（歌詞/文案 + Suno 提示詞保留），綠寶的開場白/結尾閒聊不帶入
+      const clean = stripChatter(content) || content;
+      const payload: Record<string, unknown> = {
+        workspaceId, title: firstLine(clean), body: clean,
+        fragmentIds: (focusFragments ?? []).map((f) => f.id), sourceType: "ai_assisted",
+      };
+      if (looksLikeSong(clean)) payload.workType = "song";
       const r = await fetch("/api/creator-island/works", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ workspaceId, title: firstLine(content), body: content, fragmentIds: (focusFragments ?? []).map((f) => f.id), sourceType: "ai_assisted" }),
+        body: JSON.stringify(payload),
       }).then((x) => x.json());
       if (r.work?.id) router.push(`/creator-island/works/${r.work.id}`);
       else { setWeaving(null); toast.error(r.message || t("chatWeaveFailed")); }
