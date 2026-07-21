@@ -2507,6 +2507,16 @@
       "shareLucky": "幸運色 {color}｜幸運數字 {number}",
       "shareFrom": "— 來自 AI 島每日運勢 ai-island-web.snowrealm.pet"
     },
+    "share": {
+      "title": "分享今日運勢",
+      "shareTo": "分享到其他 App",
+      "copyLink": "複製連結",
+      "linkCopied": "已複製連結",
+      "download": "下載圖卡",
+      "previewAlt": "今日運勢分享卡",
+      "note": "把你的專屬運勢卡分享給朋友（僅供參考娛樂）",
+      "close": "關閉"
+    },
     "form": {
       "title": "每日運勢",
       "subtitle": "填一次生日，之後每天為你占卜今日運勢",

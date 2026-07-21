@@ -10,7 +10,7 @@ export const runtime = "nodejs";
  *
  * 林董：不要把全部設定都暴露、只開特定 prefix key、不洩漏 API key 等敏感資料
  */
-const PUBLIC_PREFIXES = ["pet_lottie_", "home_hero_lottie_url", "chapter_hero_lottie_url", "login_lottie_url", "empty_state_lottie_url", "ai_chat_lottie_url", "loading_lottie_url", "celebration_lottie_url"];
+const PUBLIC_PREFIXES = ["pet_lottie_", "coach_lottie_", "home_hero_lottie_url", "chapter_hero_lottie_url", "login_lottie_url", "empty_state_lottie_url", "ai_chat_lottie_url", "loading_lottie_url", "celebration_lottie_url"];
 
 function isPublic(key: string): boolean {
   return PUBLIC_PREFIXES.some((p) => key === p || key.startsWith(p));

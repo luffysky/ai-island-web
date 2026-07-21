@@ -12,6 +12,34 @@ export type LottieSlot = {
   recommendedKeywords: string;
 };
 
+/**
+ * 訊息軍師 12 情境卡的動畫 icon（前端 /message-coach 情境選單 + 已選情境標題）。
+ * 每格獨立可換：後台貼 lottie.host URL 就生效；沒填 → fallback「會自己動的 lucide 線條 icon」。
+ * 因 LottieFiles 擋伺服器 fetch（403），無法自動填 URL；下方推薦搜尋連結一鍵挑。
+ */
+const COACH_SCENARIOS: { id: string; emoji: string; zh: string; kw: string }[] = [
+  { id: "raise", emoji: "📈", zh: "跟主管談加薪", kw: "salary raise, money growth, chart up, coins" },
+  { id: "decline", emoji: "🚫", zh: "婉拒邀約/請求", kw: "no thanks, decline, stop hand, cross" },
+  { id: "apology", emoji: "💗", zh: "道歉/認錯", kw: "apology heart, sorry, handshake, making up" },
+  { id: "collect", emoji: "🧾", zh: "催款/催進度", kw: "invoice, receipt, reminder bell, money due" },
+  { id: "leave", emoji: "🌴", zh: "請假/調班", kw: "vacation palm, beach, day off, calendar" },
+  { id: "landlord", emoji: "🏠", zh: "跟房東溝通", kw: "house, rent home, key door, apartment" },
+  { id: "teacher", emoji: "🎓", zh: "跟老師/教授", kw: "graduation cap, teacher, study book, school" },
+  { id: "client", emoji: "🤝", zh: "跟客戶溝通", kw: "handshake deal, business meeting, client" },
+  { id: "complaint", emoji: "📣", zh: "客訴/投訴回應", kw: "complaint, customer service, megaphone, warning chat" },
+  { id: "ex", emoji: "💬", zh: "難開口的私訊", kw: "chat bubble, message send, dm, texting" },
+  { id: "reject_confess", emoji: "🌷", zh: "婉拒告白/邀約", kw: "flower reject, gentle no, tulip, kind decline" },
+  { id: "boundary", emoji: "🛡️", zh: "設界線/拒絕情勒", kw: "shield boundary, protect, stop, self care" },
+];
+
+const COACH_SLOTS: LottieSlot[] = COACH_SCENARIOS.map((s) => ({
+  key: `coach_lottie_${s.id}_url`,
+  label: `💬 訊息軍師·${s.zh} ${s.emoji}`,
+  desc: `前端 /message-coach 情境卡「${s.zh}」的動畫 icon。沒填 → 會自己動的線條 icon。`,
+  scope: "frontend" as const,
+  recommendedKeywords: s.kw,
+}));
+
 export const LOTTIE_SLOTS: LottieSlot[] = [
   {
     key: "admin_lottie_url",
@@ -97,4 +125,5 @@ export const LOTTIE_SLOTS: LottieSlot[] = [
     scope: "frontend",
     recommendedKeywords: "bunny hopping, kawaii rabbit, rabbit ears, mochi rabbit",
   },
+  ...COACH_SLOTS,
 ];

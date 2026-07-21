@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import {
   MessageSquareHeart, Loader2, Copy, Check, Sparkles, ArrowLeft, RefreshCw, Wand2,
@@ -8,9 +8,10 @@ import {
   Handshake, MessageSquareWarning, HeartCrack, Flower2, ShieldAlert,
   type LucideIcon,
 } from "lucide-react";
+import { LottieIcon } from "@/components/ui/LottieIcon";
 import { SCENARIOS, TONES, type ToneId, type CoachVersion, MC_MAX_POINTS } from "@/lib/message-coach";
 
-// 情境 → 動態 line-icon（取代 emoji）＋配色
+// 情境 → line-icon（Lottie 沒設時的 fallback、會自己一直動）＋配色
 const SCENARIO_ICON: Record<string, { Icon: LucideIcon; cls: string }> = {
   raise: { Icon: TrendingUp, cls: "text-emerald-500 bg-emerald-500/12" },
   decline: { Icon: Ban, cls: "text-rose-500 bg-rose-500/12" },
@@ -25,13 +26,23 @@ const SCENARIO_ICON: Record<string, { Icon: LucideIcon; cls: string }> = {
   reject_confess: { Icon: Flower2, cls: "text-violet-500 bg-violet-500/12" },
   boundary: { Icon: ShieldAlert, cls: "text-cyan-500 bg-cyan-500/12" },
 };
-function ScenarioIcon({ id, size = "md" }: { id: string; size?: "md" | "sm" }) {
+
+const COACH_IDS = SCENARIOS.map((s) => s.id);
+const lottieKey = (id: string) => `coach_lottie_${id}_url`;
+
+/**
+ * 情境 icon：後台有設 Lottie URL（coach_lottie_<id>_url、/admin/lottie-settings）→ 用 Lottie 動畫（autoplay+loop）；
+ * 沒設 → fallback 用會自己一直動的 lucide 線條 icon（非 hover 觸發）。
+ */
+function ScenarioIcon({ id, size = "md", lottieUrl }: { id: string; size?: "md" | "sm"; lottieUrl?: string }) {
   const m = SCENARIO_ICON[id] ?? { Icon: MessageSquareHeart, cls: "text-indigo-500 bg-indigo-500/12" };
   const box = size === "sm" ? "w-9 h-9 rounded-lg" : "w-11 h-11 rounded-xl";
   const ic = size === "sm" ? "w-5 h-5" : "w-6 h-6";
+  const px = size === "sm" ? 20 : 24;
+  const glyph = <m.Icon className={`${ic} coach-icon-live`} strokeWidth={2} />;
   return (
-    <span className={`inline-flex items-center justify-center ${box} ${m.cls} transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6`}>
-      <m.Icon className={`${ic} transition-transform duration-300 group-hover:scale-110`} strokeWidth={2} />
+    <span className={`inline-flex items-center justify-center ${box} ${m.cls} transition-transform duration-300 group-hover:scale-110`}>
+      {lottieUrl ? <LottieIcon src={lottieUrl} size={px} fallback={glyph} /> : glyph}
     </span>
   );
 }
@@ -61,6 +72,16 @@ export function MessageCoach() {
   const [quota, setQuota] = useState<{ remaining: number | null; unlimited: boolean } | null>(null);
   const [err, setErr] = useState("");
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const [lottieMap, setLottieMap] = useState<Record<string, string>>({});
+
+  // 讀後台設定的情境 Lottie URL（/admin/lottie-settings，沒設就用會動的 lucide fallback）
+  useEffect(() => {
+    const keys = COACH_IDS.map(lottieKey).join(",");
+    fetch(`/api/app-settings?keys=${encodeURIComponent(keys)}`)
+      .then((r) => r.json())
+      .then((d) => setLottieMap(d?.settings ?? {}))
+      .catch(() => { /* 讀不到就維持 fallback */ });
+  }, []);
 
   const scenario = SCENARIOS.find((s) => s.id === scenarioId);
 
@@ -125,7 +146,7 @@ export function MessageCoach() {
           {SCENARIOS.map((s) => (
             <button key={s.id} onClick={() => pick(s.id)}
               className="group rounded-xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 p-4 text-left hover:border-indigo-400/50 hover:bg-indigo-500/5 transition active:scale-[0.98]">
-              <div className="mb-2"><ScenarioIcon id={s.id} /></div>
+              <div className="mb-2"><ScenarioIcon id={s.id} lottieUrl={lottieMap[lottieKey(s.id)]} /></div>
               <div className="text-sm font-semibold text-black/80 dark:text-white/85 leading-snug">{t(`scenarios.${s.id}`)}</div>
             </button>
           ))}
@@ -147,7 +168,7 @@ export function MessageCoach() {
 
       <div className="group rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-5">
         <div className="flex items-center gap-2.5 mb-3">
-          <ScenarioIcon id={scenario.id} size="sm" />
+          <ScenarioIcon id={scenario.id} size="sm" lottieUrl={lottieMap[lottieKey(scenario.id)]} />
           <h1 className="text-lg font-bold text-black/85 dark:text-white/90">{t(`scenarios.${scenario.id}`)}</h1>
         </div>
 

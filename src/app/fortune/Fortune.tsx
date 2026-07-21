@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import {
   Sparkles, Heart, Briefcase, Coins, Loader2, Star, Palette, Hash,
   Share2, Check, Cake, RefreshCw, ChevronDown, History, Clock,
+  Link2, Download, X,
 } from "lucide-react";
 import { TarotSection } from "./TarotSection";
 import { BaziSection } from "./BaziSection";
@@ -39,7 +40,7 @@ export function Fortune() {
   const t = useTranslations("fortune");
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<TodayResp | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -88,17 +89,17 @@ export function Fortune() {
     t("daily.shareFrom"),
   ].join("\n");
 
-  const share = async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share({ text: shareText });
-        return;
-      }
-      await navigator.clipboard.writeText(shareText);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch { /* 使用者取消分享 */ }
-  };
+  // 分享卡參數（OG 圖 + 落地頁共用）
+  const sp = new URLSearchParams();
+  sp.set("z", data?.zodiacZh ?? "");
+  sp.set("e", data?.zodiacEmoji ?? "✨");
+  if (typeof f.score === "number") sp.set("s", String(f.score));
+  sp.set("o", f.overall);
+  sp.set("c", f.luckyColor);
+  sp.set("n", String(f.luckyNumber));
+  sp.set("d", data?.date ?? "");
+  const ogUrl = `/api/og/fortune?${sp.toString()}`;
+  const sharePath = `/fortune/share?${sp.toString()}`;
 
   const aspects = [
     { key: "love", label: t("daily.love"), icon: Heart, text: f.love, cls: "text-rose-500" },
@@ -173,8 +174,8 @@ export function Fortune() {
 
       {/* 動作列 */}
       <div className="flex flex-wrap gap-3 pt-1">
-        <button onClick={share} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-violet-600 text-white font-medium hover:bg-violet-700 transition">
-          {copied ? <><Check className="w-4 h-4" /> {t("daily.copied")}</> : <><Share2 className="w-4 h-4" /> {t("daily.share")}</>}
+        <button onClick={() => setShareOpen(true)} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-violet-600 text-white font-medium hover:bg-violet-700 transition">
+          <Share2 className="w-4 h-4" /> {t("daily.share")}
         </button>
         <a href="/settings" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-black/15 dark:border-white/15 text-black/70 dark:text-white/70 hover:bg-black/5 dark:hover:bg-white/5 transition text-sm">
           <Star className="w-4 h-4" /> {t("daily.enableLinePush")}
@@ -183,6 +184,94 @@ export function Fortune() {
       <p className="text-center text-xs text-black/35 dark:text-white/35 pt-2">
         {t("daily.disclaimer")}
       </p>
+
+      {shareOpen && (
+        <ShareSheet ogUrl={ogUrl} sharePath={sharePath} shareText={shareText} onClose={() => setShareOpen(false)} />
+      )}
+    </div>
+  );
+}
+
+/** 分享面板：OG 圖卡預覽 + 分享到其他 App（Web Share）+ 複製連結 + 下載圖卡。 */
+function ShareSheet({ ogUrl, sharePath, shareText, onClose }: { ogUrl: string; sharePath: string; shareText: string; onClose: () => void }) {
+  const t = useTranslations("fortune");
+  const [copied, setCopied] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const shareUrl = (typeof window !== "undefined" ? window.location.origin : "") + sharePath;
+
+  const nativeShare = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      // 先試「連圖片一起分享」（手機分享面板會帶圖卡），不支援就退回分享連結
+      const nav = navigator as Navigator & { canShare?: (d?: unknown) => boolean };
+      try {
+        const blob = await fetch(ogUrl).then((r) => (r.ok ? r.blob() : null));
+        if (blob) {
+          const file = new File([blob], "fortune.png", { type: blob.type || "image/png" });
+          if (nav.canShare && nav.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], text: shareText, url: shareUrl });
+            return;
+          }
+        }
+      } catch { /* 圖片分享失敗 → 退回連結分享 */ }
+      if (navigator.share) {
+        await navigator.share({ text: shareText, url: shareUrl });
+        return;
+      }
+      await copyLink();
+    } catch { /* 使用者取消 */ } finally { setBusy(false); }
+  };
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch { /* clipboard 不可用 */ }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4" onClick={onClose}>
+      <div
+        className="w-full sm:max-w-md bg-white dark:bg-neutral-900 rounded-t-3xl sm:rounded-3xl border border-black/10 dark:border-white/10 shadow-2xl p-5 space-y-4 max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold text-black/85 dark:text-white/90">{t("share.title")}</h3>
+          <button onClick={onClose} aria-label={t("share.close")} className="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-black/50 dark:text-white/50">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* OG 圖卡預覽（跟分享出去/落地頁看到的一致） */}
+        <div className="rounded-2xl overflow-hidden border border-black/10 dark:border-white/10 bg-black/5">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={ogUrl} alt={t("share.previewAlt")} width={1200} height={630} className="w-full h-auto block" loading="lazy" />
+        </div>
+
+        <button onClick={nativeShare} disabled={busy}
+          className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-violet-600 text-white font-medium hover:bg-violet-700 disabled:opacity-60 transition">
+          {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Share2 className="w-4 h-4" />} {t("share.shareTo")}
+        </button>
+
+        {/* 連結 + 複製 */}
+        <div className="flex items-center gap-2 rounded-full border border-black/15 dark:border-white/15 bg-black/[0.03] dark:bg-white/5 pl-3 pr-1 py-1">
+          <Link2 className="w-4 h-4 text-black/40 dark:text-white/40 shrink-0" />
+          <span className="flex-1 min-w-0 truncate text-xs text-black/55 dark:text-white/55">{shareUrl}</span>
+          <button onClick={copyLink}
+            className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-violet-500/15 text-violet-600 dark:text-violet-300 text-xs font-medium hover:bg-violet-500/25 transition">
+            {copied ? <><Check className="w-3.5 h-3.5" /> {t("share.linkCopied")}</> : <><Link2 className="w-3.5 h-3.5" /> {t("share.copyLink")}</>}
+          </button>
+        </div>
+
+        <a href={ogUrl} download="fortune.png"
+          className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full border border-black/15 dark:border-white/15 text-black/70 dark:text-white/70 hover:bg-black/5 dark:hover:bg-white/5 transition text-sm">
+          <Download className="w-4 h-4" /> {t("share.download")}
+        </a>
+
+        <p className="text-center text-[11px] text-black/35 dark:text-white/35">{t("share.note")}</p>
+      </div>
     </div>
   );
 }

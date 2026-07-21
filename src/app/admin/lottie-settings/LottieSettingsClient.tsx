@@ -17,6 +17,12 @@ const PREVIEW_ROUTE: Record<string, { path: string; label: string }> = {
   loading_lottie_url:       { path: "/", label: "→ 看載入狀態" },
 };
 
+// coach_lottie_* 一律預覽訊息軍師頁
+function previewRoute(key: string): { path: string; label: string } | undefined {
+  if (key.startsWith("coach_lottie_")) return { path: "/message-coach", label: "→ 看訊息軍師情境卡" };
+  return PREVIEW_ROUTE[key];
+}
+
 // 林董要直接點的 LottieFiles 推薦動畫具體連結 (每個 slot 給 3 個有名作品)
 const SLOT_PICKS: Record<string, { title: string; url: string }[]> = {
   admin_lottie_url: [
@@ -280,14 +286,14 @@ export function LottieSettingsClient({ slots, initial }: { slots: Slot[]; initia
               </div>
 
               {/* 儲存後跳到對應頁看效果 */}
-              {hasUrl && PREVIEW_ROUTE[slot.key] && (
+              {hasUrl && previewRoute(slot.key) && (
                 <a
-                  href={PREVIEW_ROUTE[slot.key].path}
+                  href={previewRoute(slot.key)!.path}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:text-emerald-300 transition"
                 >
-                  <ArrowRight size={11} /> {PREVIEW_ROUTE[slot.key].label} (新分頁)
+                  <ArrowRight size={11} /> {previewRoute(slot.key)!.label} (新分頁)
                 </a>
               )}
 

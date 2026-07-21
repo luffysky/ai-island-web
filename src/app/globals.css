@@ -219,6 +219,18 @@ html[data-theme="light"] body::before {
 @keyframes softBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 .soft-bob { animation: softBob 3s ease-in-out infinite; }
 
+/* 訊息軍師情境 icon「會自己一直動」的 fallback（沒設 Lottie 時用；非 hover 觸發）。
+   多個 icon 用 nth-child 錯開相位，整排看起來活潑不呆板。 */
+@keyframes coachIconLive {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-2px) rotate(-4deg); }
+  60% { transform: translateY(-1px) rotate(3deg); }
+}
+.coach-icon-live { animation: coachIconLive 2.8s ease-in-out infinite; transform-origin: 50% 60%; }
+.coach-icon-live:nth-of-type(3n) { animation-duration: 3.4s; animation-delay: -0.6s; }
+.coach-icon-live:nth-of-type(3n+1) { animation-duration: 2.4s; animation-delay: -1.2s; }
+@media (prefers-reduced-motion: reduce) { .coach-icon-live { animation: none; } }
+
 /* ============================================================
    全站 scroll 預設規則（避免內容被切）
    ============================================================ */
