@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Loader2, Download, Copy, Printer, Sparkles, IdCard, Mic, FileText, Mail, ArrowRight } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 
@@ -26,6 +27,7 @@ function renderMarkdown(md: string): string {
 
 function DocActions({ md, model, filename }: { md: string; model: string; filename: string }) {
   const toast = useToast();
+  const t = useTranslations("jobKit");
   const download = () => {
     const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -35,10 +37,10 @@ function DocActions({ md, model, filename }: { md: string; model: string; filena
   };
   return (
     <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-border print:hidden">
-      <button onClick={() => navigator.clipboard.writeText(md).then(() => toast.success("已複製"))} className="btn-chip btn-chip-info"><Copy size={12} /> 複製</button>
-      <button onClick={download} className="btn-chip btn-chip-info"><Download size={12} /> 下載 .md</button>
-      <button onClick={() => window.print()} className="btn-chip btn-chip-info"><Printer size={12} /> 印 PDF</button>
-      {model && <span className="text-xs text-fg-muted ml-auto self-center">by {model}</span>}
+      <button onClick={() => navigator.clipboard.writeText(md).then(() => toast.success(t("actions.copied")))} className="btn-chip btn-chip-info"><Copy size={12} /> {t("actions.copy")}</button>
+      <button onClick={download} className="btn-chip btn-chip-info"><Download size={12} /> {t("actions.download")}</button>
+      <button onClick={() => window.print()} className="btn-chip btn-chip-info"><Printer size={12} /> {t("actions.printPdf")}</button>
+      {model && <span className="text-xs text-fg-muted ml-auto self-center">{t("actions.byModel", { model })}</span>}
     </div>
   );
 }
@@ -54,6 +56,7 @@ function DocPreview({ md }: { md: string }) {
 
 // ── 自傳 ───────────────────────────────
 function BioPanel() {
+  const t = useTranslations("jobKit");
   const [focus, setFocus] = useState("");
   const [md, setMd] = useState("");
   const [model, setModel] = useState("");
@@ -67,21 +70,21 @@ function BioPanel() {
         body: JSON.stringify({ focus: focus.trim() || undefined }),
       });
       const j = await r.json().catch(() => ({}));
-      if (r.status === 429) setMd(`❌ ${j.reason || "本月自傳額度用完了，升級 Premium 無限使用。"}`);
+      if (r.status === 429) setMd(`❌ ${j.reason || t("errors.bioQuota")}`);
       else if (j.markdown) { setMd(j.markdown); setModel(j.model ?? ""); }
-      else setMd(`❌ ${j.error ?? "產生失敗"}`);
-    } catch { setMd("❌ 網路不順，再試一次"); } finally { setLoading(false); }
+      else setMd(`❌ ${j.error ?? t("errors.genFailed")}`);
+    } catch { setMd(`❌ ${t("errors.network")}`); } finally { setLoading(false); }
   };
 
   return (
     <section className="bg-bg-card border border-border rounded-xl p-4 mb-4">
-      <h2 className="font-bold flex items-center gap-2 mb-1"><FileText className="w-4 h-4 text-accent" /> 自傳 / 自我介紹</h2>
-      <p className="text-xs text-fg-muted mb-3">依你的學習與作品資料生成，約 400–600 字。免費每月 3 次。</p>
+      <h2 className="font-bold flex items-center gap-2 mb-1"><FileText className="w-4 h-4 text-accent" /> {t("bio.title")}</h2>
+      <p className="text-xs text-fg-muted mb-3">{t("bio.desc")}</p>
       <textarea value={focus} onChange={(e) => setFocus(e.target.value.slice(0, 500))} rows={2}
-        placeholder="想特別強調的方向？（選填，例：想轉職前端、擅長自學）"
+        placeholder={t("bio.focusPlaceholder")}
         className="w-full px-3 py-2 rounded-lg border border-border bg-bg-elevated text-sm mb-2 resize-y print:hidden" />
       <button onClick={gen} disabled={loading} className="btn-chip btn-chip-success w-full justify-center py-2.5 text-sm font-bold disabled:opacity-50 print:hidden">
-        {loading ? <><Loader2 size={14} className="animate-spin" /> 撰寫中…</> : <><Sparkles size={14} /> 生成自傳</>}
+        {loading ? <><Loader2 size={14} className="animate-spin" /> {t("common.writing")}</> : <><Sparkles size={14} /> {t("bio.generate")}</>}
       </button>
       {md && <DocActions md={md} model={model} filename="ai-island-bio" />}
       <DocPreview md={md} />
@@ -91,6 +94,7 @@ function BioPanel() {
 
 // ── 求職信 ─────────────────────────────
 function CoverLetterPanel() {
+  const t = useTranslations("jobKit");
   const [company, setCompany] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [jd, setJd] = useState("");
@@ -100,7 +104,7 @@ function CoverLetterPanel() {
   const [loading, setLoading] = useState(false);
 
   const gen = async () => {
-    if (!company.trim() || !jobTitle.trim()) { setMd("❌ 請先填公司名稱和應徵職位"); return; }
+    if (!company.trim() || !jobTitle.trim()) { setMd(`❌ ${t("errors.coverRequired")}`); return; }
     setLoading(true); setMd("");
     try {
       const r = await fetch("/api/me/job-kit/cover-letter", {
@@ -108,25 +112,25 @@ function CoverLetterPanel() {
         body: JSON.stringify({ company: company.trim(), jobTitle: jobTitle.trim(), jd: jd.trim() || undefined, highlights: highlights.trim() || undefined }),
       });
       const j = await r.json().catch(() => ({}));
-      if (r.status === 429) setMd(`❌ ${j.reason || "本月求職信額度用完了，升級 Premium 無限使用。"}`);
+      if (r.status === 429) setMd(`❌ ${j.reason || t("errors.coverQuota")}`);
       else if (j.markdown) { setMd(j.markdown); setModel(j.model ?? ""); }
-      else setMd(`❌ ${j.message || j.error || "產生失敗"}`);
-    } catch { setMd("❌ 網路不順，再試一次"); } finally { setLoading(false); }
+      else setMd(`❌ ${j.message || j.error || t("errors.genFailed")}`);
+    } catch { setMd(`❌ ${t("errors.network")}`); } finally { setLoading(false); }
   };
 
   const field = "w-full px-3 py-2 rounded-lg border border-border bg-bg-elevated text-sm print:hidden";
   return (
     <section className="bg-bg-card border border-border rounded-xl p-4 mb-4">
-      <h2 className="font-bold flex items-center gap-2 mb-1"><Mail className="w-4 h-4 text-accent" /> 求職信 / Cover Letter</h2>
-      <p className="text-xs text-fg-muted mb-3">針對「這家公司這個職位」客製，約 300–450 字。免費每月 3 次。</p>
+      <h2 className="font-bold flex items-center gap-2 mb-1"><Mail className="w-4 h-4 text-accent" /> {t("coverLetter.title")}</h2>
+      <p className="text-xs text-fg-muted mb-3">{t("coverLetter.desc")}</p>
       <div className="grid sm:grid-cols-2 gap-2 mb-2">
-        <input value={company} onChange={(e) => setCompany(e.target.value)} placeholder="公司名稱 *" className={field} />
-        <input value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="應徵職位 *" className={field} />
+        <input value={company} onChange={(e) => setCompany(e.target.value)} placeholder={t("coverLetter.companyPlaceholder")} className={field} />
+        <input value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder={t("coverLetter.jobTitlePlaceholder")} className={field} />
       </div>
-      <textarea value={jd} onChange={(e) => setJd(e.target.value)} rows={2} placeholder="職缺描述 / 要求（選填，貼上 JD 效果更好）" className={`${field} mb-2 resize-y`} />
-      <textarea value={highlights} onChange={(e) => setHighlights(e.target.value)} rows={2} placeholder="想強調的亮點（選填，例：做過類似專案、相關經驗）" className={`${field} mb-2 resize-y`} />
+      <textarea value={jd} onChange={(e) => setJd(e.target.value)} rows={2} placeholder={t("coverLetter.jdPlaceholder")} className={`${field} mb-2 resize-y`} />
+      <textarea value={highlights} onChange={(e) => setHighlights(e.target.value)} rows={2} placeholder={t("coverLetter.highlightsPlaceholder")} className={`${field} mb-2 resize-y`} />
       <button onClick={gen} disabled={loading} className="btn-chip btn-chip-success w-full justify-center py-2.5 text-sm font-bold disabled:opacity-50 print:hidden">
-        {loading ? <><Loader2 size={14} className="animate-spin" /> 撰寫中…</> : <><Sparkles size={14} /> 生成求職信</>}
+        {loading ? <><Loader2 size={14} className="animate-spin" /> {t("common.writing")}</> : <><Sparkles size={14} /> {t("coverLetter.generate")}</>}
       </button>
       {md && <DocActions md={md} model={model} filename="ai-island-cover-letter" />}
       <DocPreview md={md} />
@@ -135,18 +139,19 @@ function CoverLetterPanel() {
 }
 
 export function JobKitClient() {
+  const t = useTranslations("jobKit");
   return (
     <div>
       {/* 既有工具入口 */}
       <div className="grid sm:grid-cols-2 gap-3 mb-4">
         <Link href="/me/resume" className="bg-bg-card border border-border rounded-xl p-4 flex items-center gap-3 hover:border-accent/50 transition">
           <IdCard className="w-6 h-6 text-accent shrink-0" />
-          <div className="flex-1 min-w-0"><div className="font-semibold">AI 履歷</div><div className="text-xs text-fg-muted">依學習資料自動生成</div></div>
+          <div className="flex-1 min-w-0"><div className="font-semibold">{t("tools.resumeTitle")}</div><div className="text-xs text-fg-muted">{t("tools.resumeDesc")}</div></div>
           <ArrowRight className="w-4 h-4 text-fg-muted" />
         </Link>
         <Link href="/me/mock-interview" className="bg-bg-card border border-border rounded-xl p-4 flex items-center gap-3 hover:border-accent/50 transition">
           <Mic className="w-6 h-6 text-accent shrink-0" />
-          <div className="flex-1 min-w-0"><div className="font-semibold">AI 模擬面試</div><div className="text-xs text-fg-muted">AI 面試官出題＋回饋報告</div></div>
+          <div className="flex-1 min-w-0"><div className="font-semibold">{t("tools.mockTitle")}</div><div className="text-xs text-fg-muted">{t("tools.mockDesc")}</div></div>
           <ArrowRight className="w-4 h-4 text-fg-muted" />
         </Link>
       </div>
@@ -155,7 +160,7 @@ export function JobKitClient() {
       <BioPanel />
       <CoverLetterPanel />
 
-      <p className="text-center text-xs text-fg-muted mt-2">內容依你的真實學習資料生成、僅供參考；送出前請自己再讀一遍、補上細節。</p>
+      <p className="text-center text-xs text-fg-muted mt-2">{t("meta.footnote")}</p>
 
       <style jsx global>{`
         @media print {

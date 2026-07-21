@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { Loader2, ScrollText, ChevronDown, Sparkles } from "lucide-react";
 
 type Pillar = { ganzhi: string; gan: string; zhi: string; wuxing: string; nayin: string; shishen: string | null };
@@ -20,11 +21,10 @@ function wuxingColored(wx: string) {
   return wx.split("").map((c, i) => <span key={i} className={WX_COLOR[c] ?? ""}>{c}</span>);
 }
 
-const PILLAR_LABELS: Array<[keyof Chart["pillars"], string]> = [
-  ["year", "年柱"], ["month", "月柱"], ["day", "日柱"], ["hour", "時柱"],
-];
+const PILLAR_KEYS: Array<keyof Chart["pillars"]> = ["year", "month", "day", "hour"];
 
 export function BaziSection() {
+  const t = useTranslations("fortune");
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -54,8 +54,8 @@ export function BaziSection() {
       <button onClick={toggle} className="w-full flex items-center gap-3 p-4 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition">
         <span className="text-2xl shrink-0">🀄</span>
         <div className="flex-1 text-left">
-          <div className="font-semibold text-black/80 dark:text-white/85">八字命盤</div>
-          <div className="text-xs text-black/50 dark:text-white/50">真・排盤（正統命理運算）+ AI 白話解讀</div>
+          <div className="font-semibold text-black/80 dark:text-white/85">{t("bazi.title")}</div>
+          <div className="text-xs text-black/50 dark:text-white/50">{t("bazi.subtitle")}</div>
         </div>
         <ChevronDown className={`w-5 h-5 text-black/35 dark:text-white/35 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
@@ -63,27 +63,27 @@ export function BaziSection() {
       {open && (
         <div className="px-4 pb-4">
           {loading ? (
-            <div className="flex items-center gap-2 text-sm text-black/50 dark:text-white/50 py-4"><Loader2 className="w-4 h-4 animate-spin" /> 排盤中…</div>
+            <div className="flex items-center gap-2 text-sm text-black/50 dark:text-white/50 py-4"><Loader2 className="w-4 h-4 animate-spin" /> {t("bazi.calculating")}</div>
           ) : !chart ? (
-            <p className="text-sm text-black/45 dark:text-white/45 py-4 text-center">排盤拿不到，稍後再試。</p>
+            <p className="text-sm text-black/45 dark:text-white/45 py-4 text-center">{t("bazi.unavailable")}</p>
           ) : (
             <div className="space-y-4">
               {/* 命盤四柱 */}
               <div className="grid grid-cols-4 gap-1.5 text-center">
-                {PILLAR_LABELS.map(([key, label]) => {
+                {PILLAR_KEYS.map((key) => {
                   const p = chart.pillars[key];
                   return (
                     <div key={key} className="rounded-xl bg-white/70 dark:bg-white/5 border border-black/10 dark:border-white/10 p-2">
-                      <div className="text-[10px] text-black/40 dark:text-white/40 mb-1">{label}</div>
+                      <div className="text-[10px] text-black/40 dark:text-white/40 mb-1">{t(`bazi.pillar.${key}`)}</div>
                       {p ? (
                         <>
                           <div className="text-lg font-bold text-black/85 dark:text-white/90 tracking-wide">{p.ganzhi}</div>
                           <div className="text-[11px] mt-0.5">{wuxingColored(p.wuxing)}</div>
-                          <div className="text-[10px] text-violet-500 mt-0.5">{p.shishen ?? "日主"}</div>
+                          <div className="text-[10px] text-violet-500 mt-0.5">{p.shishen ?? t("bazi.dayMasterShort")}</div>
                           <div className="text-[9px] text-black/35 dark:text-white/35 mt-0.5">{p.nayin}</div>
                         </>
                       ) : (
-                        <div className="text-[11px] text-black/30 dark:text-white/30 py-3">無時辰<br/>（略）</div>
+                        <div className="text-[11px] text-black/30 dark:text-white/30 py-3">{t("bazi.noHour")}<br/>{t("bazi.omitted")}</div>
                       )}
                     </div>
                   );
@@ -92,27 +92,27 @@ export function BaziSection() {
 
               {/* 命盤摘要 */}
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-black/55 dark:text-white/55 justify-center">
-                <span>日主 <b className={WX_COLOR[chart.dayMasterWuxing] ?? ""}>{chart.dayMaster}（{chart.dayMasterWuxing}）</b></span>
-                <span>生肖 {chart.shengXiao}</span>
-                <span>星座 {chart.xingZuo}</span>
+                <span>{t("bazi.dayMaster")} <b className={WX_COLOR[chart.dayMasterWuxing] ?? ""}>{t("bazi.dayMasterValue", { master: chart.dayMaster, wuxing: chart.dayMasterWuxing })}</b></span>
+                <span>{t("bazi.shengXiao", { v: chart.shengXiao })}</span>
+                <span>{t("bazi.xingZuo", { v: chart.xingZuo })}</span>
                 <span>{chart.lunarDate}</span>
               </div>
               {!chart.hasHour && (
-                <p className="text-[11px] text-amber-600 dark:text-amber-400 text-center">未填出生時辰，時柱從缺、解讀以年月日為主。回上一步補時辰可更完整。</p>
+                <p className="text-[11px] text-amber-600 dark:text-amber-400 text-center">{t("bazi.noHourWarning")}</p>
               )}
 
               {/* AI 解讀 */}
               {reading && (
                 <div className="space-y-2.5 pt-1">
-                  <div className="flex items-center gap-1.5 text-sm font-semibold text-black/70 dark:text-white/70"><ScrollText className="w-4 h-4 text-amber-500" /> 命盤解讀</div>
+                  <div className="flex items-center gap-1.5 text-sm font-semibold text-black/70 dark:text-white/70"><ScrollText className="w-4 h-4 text-amber-500" /> {t("bazi.readingTitle")}</div>
                   <p className="text-sm leading-relaxed text-black/75 dark:text-white/80">{reading.overview}</p>
                   <div className="grid sm:grid-cols-2 gap-2">
                     <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3">
-                      <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-1">✨ 天賦與優勢</div>
+                      <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-1">{t("bazi.strengths")}</div>
                       <p className="text-sm text-black/70 dark:text-white/75 leading-relaxed">{reading.strengths}</p>
                     </div>
                     <div className="rounded-xl bg-sky-500/10 border border-sky-500/20 p-3">
-                      <div className="text-xs font-semibold text-sky-600 dark:text-sky-400 mb-1">🧭 要留意的</div>
+                      <div className="text-xs font-semibold text-sky-600 dark:text-sky-400 mb-1">{t("bazi.watch")}</div>
                       <p className="text-sm text-black/70 dark:text-white/75 leading-relaxed">{reading.watch}</p>
                     </div>
                   </div>
@@ -122,7 +122,7 @@ export function BaziSection() {
                   </div>
                 </div>
               )}
-              <p className="text-center text-[11px] text-black/35 dark:text-white/35">八字是傳統文化的性格參考、僅供娛樂反思，不預言吉凶、不作醫療/投資/法律建議。</p>
+              <p className="text-center text-[11px] text-black/35 dark:text-white/35">{t("bazi.disclaimer")}</p>
             </div>
           )}
         </div>

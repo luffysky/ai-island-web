@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   MessageSquareHeart, Loader2, Copy, Check, Sparkles, ArrowLeft, RefreshCw, Wand2,
   TrendingUp, Ban, HeartHandshake, Receipt, Palmtree, Home, GraduationCap,
@@ -44,13 +45,14 @@ type GenResp = {
 };
 
 const REFINES = [
-  { key: "shorter", label: "再短一點", instr: "請把訊息再精簡、更短。" },
-  { key: "gentler", label: "再委婉", instr: "請講得更委婉、更留餘地。" },
-  { key: "firmer", label: "更堅定", instr: "請立場再明確、更堅定一點。" },
-  { key: "warmer", label: "更有溫度", instr: "請更溫暖、更照顧對方感受。" },
+  { key: "shorter", instr: "請把訊息再精簡、更短。" },
+  { key: "gentler", instr: "請講得更委婉、更留餘地。" },
+  { key: "firmer", instr: "請立場再明確、更堅定一點。" },
+  { key: "warmer", instr: "請更溫暖、更照顧對方感受。" },
 ];
 
 export function MessageCoach() {
+  const t = useTranslations("messageCoach");
   const [scenarioId, setScenarioId] = useState<string>("");
   const [points, setPoints] = useState("");
   const [tone, setTone] = useState<ToneId>("polite");
@@ -82,19 +84,19 @@ export function MessageCoach() {
       });
       const d: GenResp = await r.json();
       if (r.status === 429) {
-        setErr(d.message || "今天的免費次數用完了，明天再來，或升級無限使用。");
+        setErr(d.message || t("errors.quota"));
         setLoading(false);
         return;
       }
       if (!r.ok || !d.versions?.length) {
-        setErr(d.message || "產生失敗，換個說法再試一次。");
+        setErr(d.message || t("errors.failed"));
         setLoading(false);
         return;
       }
       setVersions(d.versions);
       setQuota({ remaining: d.remaining ?? null, unlimited: !!d.unlimited });
     } catch {
-      setErr("網路不太順，再試一次。");
+      setErr(t("errors.network"));
     } finally {
       setLoading(false);
     }
@@ -116,20 +118,20 @@ export function MessageCoach() {
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-indigo-500/15 text-indigo-500 mb-3">
             <MessageSquareHeart className="w-7 h-7" />
           </div>
-          <h1 className="text-2xl font-bold text-black/85 dark:text-white/90">訊息軍師</h1>
-          <p className="text-sm text-black/55 dark:text-white/55 mt-1">難開口的話，幫你講得得體又有效。先選一個情境</p>
+          <h1 className="text-2xl font-bold text-black/85 dark:text-white/90">{t("meta.title")}</h1>
+          <p className="text-sm text-black/55 dark:text-white/55 mt-1">{t("meta.subtitle")}</p>
         </header>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {SCENARIOS.map((s) => (
             <button key={s.id} onClick={() => pick(s.id)}
               className="group rounded-xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 p-4 text-left hover:border-indigo-400/50 hover:bg-indigo-500/5 transition active:scale-[0.98]">
               <div className="mb-2"><ScenarioIcon id={s.id} /></div>
-              <div className="text-sm font-semibold text-black/80 dark:text-white/85 leading-snug">{s.label}</div>
+              <div className="text-sm font-semibold text-black/80 dark:text-white/85 leading-snug">{t(`scenarios.${s.id}`)}</div>
             </button>
           ))}
         </div>
         <p className="text-center text-xs text-black/35 dark:text-white/35 pt-6">
-          軍師只給你參考版本、最終怎麼傳由你決定；不代發、不保證結果。
+          {t("meta.disclaimer")}
         </p>
       </div>
     );
@@ -140,34 +142,34 @@ export function MessageCoach() {
     <div className="max-w-2xl mx-auto px-4 py-6 sm:py-8 space-y-5">
       <button onClick={() => { setScenarioId(""); setPoints(""); setVersions(null); }}
         className="inline-flex items-center gap-1.5 text-sm text-black/50 dark:text-white/50 hover:text-indigo-500">
-        <ArrowLeft className="w-4 h-4" /> 換情境
+        <ArrowLeft className="w-4 h-4" /> {t("form.changeScenario")}
       </button>
 
       <div className="group rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-5">
         <div className="flex items-center gap-2.5 mb-3">
           <ScenarioIcon id={scenario.id} size="sm" />
-          <h1 className="text-lg font-bold text-black/85 dark:text-white/90">{scenario.label}</h1>
+          <h1 className="text-lg font-bold text-black/85 dark:text-white/90">{t(`scenarios.${scenario.id}`)}</h1>
         </div>
 
-        <label className="block text-sm font-medium text-black/70 dark:text-white/70 mb-1">你想表達的重點</label>
+        <label className="block text-sm font-medium text-black/70 dark:text-white/70 mb-1">{t("form.pointsLabel")}</label>
         <textarea value={points} onChange={(e) => setPoints(e.target.value.slice(0, MC_MAX_POINTS))}
-          rows={3} placeholder={scenario.hint}
+          rows={3} placeholder={t(`scenarios.${scenario.id}Desc`)}
           className="w-full px-3 py-2 rounded-lg border border-black/15 dark:border-white/15 bg-white dark:bg-white/5 text-black/80 dark:text-white/85 text-sm resize-y" />
         <div className="text-right text-[11px] text-black/35 dark:text-white/35">{points.length}/{MC_MAX_POINTS}</div>
 
-        <label className="block text-sm font-medium text-black/70 dark:text-white/70 mt-2 mb-1.5">語氣</label>
+        <label className="block text-sm font-medium text-black/70 dark:text-white/70 mt-2 mb-1.5">{t("form.toneLabel")}</label>
         <div className="flex flex-wrap gap-2">
-          {TONES.map((t) => (
-            <button key={t.id} type="button" onClick={() => setTone(t.id)} title={t.desc}
-              className={`px-3 py-1.5 rounded-full text-sm border transition ${tone === t.id ? "bg-indigo-600 text-white border-indigo-600" : "border-black/15 dark:border-white/15 text-black/60 dark:text-white/60 hover:border-indigo-400/50"}`}>
-              {t.label}
+          {TONES.map((tn) => (
+            <button key={tn.id} type="button" onClick={() => setTone(tn.id)} title={t(`tones.${tn.id}Desc`)}
+              className={`px-3 py-1.5 rounded-full text-sm border transition ${tone === tn.id ? "bg-indigo-600 text-white border-indigo-600" : "border-black/15 dark:border-white/15 text-black/60 dark:text-white/60 hover:border-indigo-400/50"}`}>
+              {t(`tones.${tn.id}`)}
             </button>
           ))}
         </div>
 
         <button onClick={() => generate()} disabled={!points.trim() || loading}
           className="mt-4 w-full py-2.5 rounded-full bg-indigo-600 text-white font-medium hover:bg-indigo-700 disabled:opacity-50 transition flex items-center justify-center gap-2">
-          {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> 軍師思考中…</> : <><Sparkles className="w-4 h-4" /> 幫我寫</>}
+          {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> {t("form.thinking")}</> : <><Sparkles className="w-4 h-4" /> {t("form.submit")}</>}
         </button>
         {err && <p className="mt-3 text-sm text-rose-500 text-center">{err}</p>}
       </div>
@@ -175,9 +177,9 @@ export function MessageCoach() {
       {versions && versions.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-black/70 dark:text-white/70">給你 {versions.length} 個版本</h2>
+            <h2 className="text-sm font-semibold text-black/70 dark:text-white/70">{t("result.versionCount", { n: versions.length })}</h2>
             {quota && !quota.unlimited && typeof quota.remaining === "number" && (
-              <span className="text-xs text-black/40 dark:text-white/40">今天還剩 {quota.remaining} 次</span>
+              <span className="text-xs text-black/40 dark:text-white/40">{t("result.remaining", { n: quota.remaining })}</span>
             )}
           </div>
           {versions.map((v, i) => (
@@ -185,7 +187,7 @@ export function MessageCoach() {
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-300">{v.style}</span>
                 <button onClick={() => copy(v.message, i)} className="inline-flex items-center gap-1 text-xs text-black/50 dark:text-white/50 hover:text-indigo-500">
-                  {copiedIdx === i ? <><Check className="w-3.5 h-3.5" /> 已複製</> : <><Copy className="w-3.5 h-3.5" /> 複製</>}
+                  {copiedIdx === i ? <><Check className="w-3.5 h-3.5" /> {t("result.copied")}</> : <><Copy className="w-3.5 h-3.5" /> {t("result.copy")}</>}
                 </button>
               </div>
               <p className="text-sm leading-relaxed text-black/80 dark:text-white/85 whitespace-pre-wrap">{v.message}</p>
@@ -194,16 +196,16 @@ export function MessageCoach() {
 
           {/* 微調 */}
           <div className="flex flex-wrap items-center gap-2 pt-1">
-            <span className="inline-flex items-center gap-1 text-xs text-black/45 dark:text-white/45"><Wand2 className="w-3.5 h-3.5" /> 微調：</span>
+            <span className="inline-flex items-center gap-1 text-xs text-black/45 dark:text-white/45"><Wand2 className="w-3.5 h-3.5" /> {t("refine.label")}</span>
             {REFINES.map((rf) => (
               <button key={rf.key} onClick={() => generate(rf.instr)} disabled={loading}
                 className="px-3 py-1 rounded-full text-xs border border-black/15 dark:border-white/15 text-black/60 dark:text-white/60 hover:border-indigo-400/50 disabled:opacity-50">
-                {rf.label}
+                {t(`refine.${rf.key}`)}
               </button>
             ))}
             <button onClick={() => generate()} disabled={loading}
               className="px-3 py-1 rounded-full text-xs border border-black/15 dark:border-white/15 text-black/60 dark:text-white/60 hover:border-indigo-400/50 disabled:opacity-50 inline-flex items-center gap-1">
-              <RefreshCw className="w-3 h-3" /> 換一批
+              <RefreshCw className="w-3 h-3" /> {t("refine.regenerate")}
             </button>
           </div>
         </div>

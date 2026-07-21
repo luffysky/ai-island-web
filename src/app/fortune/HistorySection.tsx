@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useTranslations } from "next-intl";
 import { History, Loader2, ChevronDown } from "lucide-react";
 
 type DailyPayload = { overall: string; luckyColor: string; luckyNumber: number; tip: string; score?: number };
 type HistItem = { date: string; daily?: DailyPayload; tarot?: { question: string; summary: string } };
 
 export function HistorySection() {
+  const t = useTranslations("fortune");
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -35,8 +37,8 @@ export function HistorySection() {
       <button onClick={toggle} className="w-full flex items-center gap-3 p-4 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition">
         <History className="w-5 h-5 text-violet-500 shrink-0" />
         <div className="flex-1 text-left">
-          <div className="font-semibold text-black/80 dark:text-white/85">歷史運勢</div>
-          <div className="text-xs text-black/50 dark:text-white/50">回顧過去的每日運勢與塔羅</div>
+          <div className="font-semibold text-black/80 dark:text-white/85">{t("history.title")}</div>
+          <div className="text-xs text-black/50 dark:text-white/50">{t("history.subtitle")}</div>
         </div>
         <ChevronDown className={`w-5 h-5 text-black/35 dark:text-white/35 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
@@ -44,9 +46,9 @@ export function HistorySection() {
       {open && (
         <div className="px-4 pb-4">
           {loading ? (
-            <div className="flex items-center gap-2 text-sm text-black/50 dark:text-white/50 py-4"><Loader2 className="w-4 h-4 animate-spin" /> 載入中…</div>
+            <div className="flex items-center gap-2 text-sm text-black/50 dark:text-white/50 py-4"><Loader2 className="w-4 h-4 animate-spin" /> {t("history.loading")}</div>
           ) : items.length === 0 ? (
-            <p className="text-sm text-black/45 dark:text-white/45 py-4 text-center">還沒有紀錄，之後每天回來看運勢就會累積在這裡 ✨</p>
+            <p className="text-sm text-black/45 dark:text-white/45 py-4 text-center">{t("history.empty")}</p>
           ) : (
             <div className="space-y-2">
               {items.map((it) => {
@@ -57,7 +59,7 @@ export function HistorySection() {
                       className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition text-left">
                       <span className="text-sm font-mono text-black/55 dark:text-white/55 shrink-0">{it.date}</span>
                       <span className="flex-1 text-xs text-black/50 dark:text-white/50 truncate">
-                        {it.daily?.overall ?? (it.tarot ? "🔮 塔羅占卜" : "")}
+                        {it.daily?.overall ?? (it.tarot ? t("history.tarotLabel") : "")}
                       </span>
                       {typeof it.daily?.score === "number" && (
                         <span className="text-xs font-semibold text-violet-500 shrink-0">{it.daily.score}</span>
@@ -79,7 +81,7 @@ export function HistorySection() {
                         )}
                         {it.tarot && (
                           <div className="rounded-lg bg-violet-500/5 border border-violet-500/15 p-2.5">
-                            <p className="text-xs text-black/45 dark:text-white/45 mb-1">🔮 塔羅：{it.tarot.question}</p>
+                            <p className="text-xs text-black/45 dark:text-white/45 mb-1">{t("history.tarotQuestion", { q: it.tarot.question })}</p>
                             <p className="text-black/70 dark:text-white/75 leading-relaxed text-[13px]">{it.tarot.summary}</p>
                           </div>
                         )}

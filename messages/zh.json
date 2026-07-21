@@ -2485,5 +2485,245 @@
     "reactLove": "愛",
     "reactCelebrate": "慶祝",
     "lessonPrompt": "這節課感覺如何？"
+  },
+  "fortune": {
+    "daily": {
+      "loading": "正在為你占卜今天的運勢…",
+      "unavailable": "運勢暫時拿不到，稍後再試一次。",
+      "refresh": "重新整理",
+      "title": "{zodiac} · 今日運勢",
+      "love": "愛情",
+      "career": "事業",
+      "wealth": "財運",
+      "luckyColor": "幸運色",
+      "luckyNumber": "幸運數字",
+      "copied": "已複製",
+      "share": "分享今日運勢",
+      "enableLinePush": "開啟每日 LINE 推播",
+      "disclaimer": "運勢僅供娛樂參考、正向陪你過每一天，不作醫療 / 投資 / 法律建議。",
+      "scoreTitle": "今日綜合分 {score}",
+      "shareTitle": "{emoji} {zodiac} {date} 今日運勢",
+      "shareOverall": "整體：{overall}",
+      "shareLucky": "幸運色 {color}｜幸運數字 {number}",
+      "shareFrom": "— 來自 AI 島每日運勢 ai-island-web.snowrealm.pet"
+    },
+    "form": {
+      "title": "每日運勢",
+      "subtitle": "填一次生日，之後每天為你占卜今日運勢",
+      "birthday": "生日",
+      "year": "年",
+      "month": "月",
+      "day": "日",
+      "monthOption": "{m} 月",
+      "dayOption": "{d} 日",
+      "birthTime": "出生時辰",
+      "birthTimeHint": "選填・八字用",
+      "birthTimeNone": "不知道 / 不填",
+      "calendar": "曆別",
+      "solar": "國曆",
+      "lunar": "農曆",
+      "gender": "性別",
+      "genderHint": "選填",
+      "male": "男",
+      "female": "女",
+      "other": "其他",
+      "errIncomplete": "請完整選擇生日的年、月、日",
+      "errSave": "儲存失敗，再試一次",
+      "casting": "占卜中…",
+      "submit": "看今天的運勢",
+      "footer": "填了生日就有西洋星座每日運勢；再填時辰，八字命盤更完整。",
+      "shichen": {
+        "zi": "子時（23–01）",
+        "chou": "丑時（01–03）",
+        "yin": "寅時（03–05）",
+        "mao": "卯時（05–07）",
+        "chen": "辰時（07–09）",
+        "si": "巳時（09–11）",
+        "wu": "午時（11–13）",
+        "wei": "未時（13–15）",
+        "shen": "申時（15–17）",
+        "you": "酉時（17–19）",
+        "xu": "戌時（19–21）",
+        "hai": "亥時（21–23）"
+      }
+    },
+    "tarot": {
+      "cardTitle": "抽張塔羅牌",
+      "cardSubtitle": "問一件心裡的事，三張牌陣為你指路（每日免費一次）",
+      "title": "塔羅占卜",
+      "shuffling": "洗牌中…",
+      "placeholder": "想問什麼？（例：這份工作適合我嗎？可留空）",
+      "sensing": "感應牌象中…",
+      "drawAgain": "再抽一次",
+      "drawThree": "抽三張牌",
+      "errDailyUsed": "今天抽過了。",
+      "errDrawFailed": "抽牌失敗，再試一次。",
+      "errNetwork": "網路不太順，再試一次。",
+      "asked": "你問：{q}",
+      "reversed": "逆位",
+      "upright": "正位",
+      "cardMeaningLabel": "{position}·{name}：",
+      "freeAgainTomorrow": "明天可以再免費抽一次",
+      "disclaimer": "塔羅是幫你換角度思考的工具、僅供參考，不預言吉凶。"
+    },
+    "bazi": {
+      "title": "八字命盤",
+      "subtitle": "真・排盤（正統命理運算）+ AI 白話解讀",
+      "calculating": "排盤中…",
+      "unavailable": "排盤拿不到，稍後再試。",
+      "dayMasterShort": "日主",
+      "noHour": "無時辰",
+      "omitted": "（略）",
+      "dayMaster": "日主",
+      "dayMasterValue": "{master}（{wuxing}）",
+      "shengXiao": "生肖 {v}",
+      "xingZuo": "星座 {v}",
+      "noHourWarning": "未填出生時辰，時柱從缺、解讀以年月日為主。回上一步補時辰可更完整。",
+      "readingTitle": "命盤解讀",
+      "strengths": "✨ 天賦與優勢",
+      "watch": "🧭 要留意的",
+      "disclaimer": "八字是傳統文化的性格參考、僅供娛樂反思，不預言吉凶、不作醫療/投資/法律建議。",
+      "pillar": {
+        "year": "年柱",
+        "month": "月柱",
+        "day": "日柱",
+        "hour": "時柱"
+      }
+    },
+    "iching": {
+      "title": "易經 · 梅花易數",
+      "subtitle": "問一件事，起一卦（正統起卦、免費本地算）",
+      "placeholder": "想問什麼？（例：這份工作適合我嗎？可留空問整體）",
+      "casting": "靜心起卦中…",
+      "castAgain": "再起一卦",
+      "cast": "起卦",
+      "asked": "所問：{q}",
+      "upper": "上卦",
+      "lower": "下卦",
+      "moving": "動",
+      "disclaimer": "易經是幫你換角度思考的工具、僅供參考，不預言吉凶。"
+    },
+    "history": {
+      "title": "歷史運勢",
+      "subtitle": "回顧過去的每日運勢與塔羅",
+      "loading": "載入中…",
+      "empty": "還沒有紀錄，之後每天回來看運勢就會累積在這裡 ✨",
+      "tarotLabel": "🔮 塔羅占卜",
+      "tarotQuestion": "🔮 塔羅：{q}"
+    }
+  },
+  "messageCoach": {
+    "meta": {
+      "title": "訊息軍師",
+      "subtitle": "難開口的話，幫你講得得體又有效。先選一個情境",
+      "disclaimer": "軍師只給你參考版本、最終怎麼傳由你決定；不代發、不保證結果。"
+    },
+    "scenarios": {
+      "raise": "跟主管談加薪",
+      "raiseDesc": "你的貢獻/成果、期望幅度、時機（例：接了兩個大專案、想談 15%）",
+      "decline": "婉拒邀約/請求",
+      "declineDesc": "誰邀你、要拒絕什麼、想不想留關係（例：同事約週末加班、想拒但不想尷尬）",
+      "apology": "道歉/認錯",
+      "apologyDesc": "對誰、做錯什麼、想怎麼補救（例：漏回客戶訊息、想道歉並補寄資料）",
+      "collect": "催款/催進度",
+      "collectDesc": "對象、欠什麼、期限（例：客戶尾款拖兩週、想禮貌催但要收到錢）",
+      "leave": "請假/調班",
+      "leaveDesc": "跟誰請、原因、天數（例：跟主管請三天、家裡有事、想講得體）",
+      "landlord": "跟房東溝通",
+      "landlordDesc": "要談什麼、你的訴求（例：熱水器壞了想請他修、或想談降租）",
+      "teacher": "跟老師/教授",
+      "teacherDesc": "身分、要談什麼（例：作業想延交、想約 office hour 問問題）",
+      "client": "跟客戶溝通",
+      "clientDesc": "案子狀況、要傳達什麼（例：交期要延、想解釋原因並給新時間）",
+      "complaint": "客訴/投訴回應",
+      "complaintDesc": "你是哪方、發生什麼、想達成什麼（例：收到瑕疵品想退換、或我是店家要回覆奧客）",
+      "ex": "難開口的私訊",
+      "exDesc": "對象與關係、想說什麼（例：想跟前任要回東西、或想跟朋友道歉和好）",
+      "reject_confess": "婉拒告白/邀約",
+      "reject_confessDesc": "對方是誰、你的想法（例：想拒絕但保住友情）",
+      "boundary": "設界線/拒絕情勒",
+      "boundaryDesc": "誰、越了什麼界、你的底線（例：親戚一直問薪水、想擋掉又不撕破臉）"
+    },
+    "tones": {
+      "polite": "客氣",
+      "politeDesc": "禮貌、留餘地、不失禮",
+      "professional": "專業",
+      "professionalDesc": "簡潔、有條理、像職場信",
+      "firm": "堅定",
+      "firmDesc": "立場清楚、不軟不兇",
+      "humorous": "幽默",
+      "humorousDesc": "輕鬆、化解尷尬",
+      "warm": "溫暖",
+      "warmDesc": "有溫度、照顧對方感受"
+    },
+    "form": {
+      "changeScenario": "換情境",
+      "pointsLabel": "你想表達的重點",
+      "toneLabel": "語氣",
+      "thinking": "軍師思考中…",
+      "submit": "幫我寫"
+    },
+    "refine": {
+      "label": "微調：",
+      "shorter": "再短一點",
+      "gentler": "再委婉",
+      "firmer": "更堅定",
+      "warmer": "更有溫度",
+      "regenerate": "換一批"
+    },
+    "result": {
+      "versionCount": "給你 {n} 個版本",
+      "remaining": "今天還剩 {n} 次",
+      "copied": "已複製",
+      "copy": "複製"
+    },
+    "errors": {
+      "quota": "今天的免費次數用完了，明天再來，或升級無限使用。",
+      "failed": "產生失敗，換個說法再試一次。",
+      "network": "網路不太順，再試一次。"
+    }
+  },
+  "jobKit": {
+    "tools": {
+      "resumeTitle": "AI 履歷",
+      "resumeDesc": "依學習資料自動生成",
+      "mockTitle": "AI 模擬面試",
+      "mockDesc": "AI 面試官出題＋回饋報告"
+    },
+    "actions": {
+      "copy": "複製",
+      "copied": "已複製",
+      "download": "下載 .md",
+      "printPdf": "印 PDF",
+      "byModel": "by {model}"
+    },
+    "common": {
+      "writing": "撰寫中…"
+    },
+    "bio": {
+      "title": "自傳 / 自我介紹",
+      "desc": "依你的學習與作品資料生成，約 400–600 字。免費每月 3 次。",
+      "focusPlaceholder": "想特別強調的方向？（選填，例：想轉職前端、擅長自學）",
+      "generate": "生成自傳"
+    },
+    "coverLetter": {
+      "title": "求職信 / Cover Letter",
+      "desc": "針對「這家公司這個職位」客製，約 300–450 字。免費每月 3 次。",
+      "companyPlaceholder": "公司名稱 *",
+      "jobTitlePlaceholder": "應徵職位 *",
+      "jdPlaceholder": "職缺描述 / 要求（選填，貼上 JD 效果更好）",
+      "highlightsPlaceholder": "想強調的亮點（選填，例：做過類似專案、相關經驗）",
+      "generate": "生成求職信"
+    },
+    "errors": {
+      "bioQuota": "本月自傳額度用完了，升級 Premium 無限使用。",
+      "coverQuota": "本月求職信額度用完了，升級 Premium 無限使用。",
+      "coverRequired": "請先填公司名稱和應徵職位",
+      "genFailed": "產生失敗",
+      "network": "網路不順，再試一次"
+    },
+    "meta": {
+      "footnote": "內容依你的真實學習資料生成、僅供參考；送出前請自己再讀一遍、補上細節。"
+    }
   }
 }
