@@ -405,3 +405,12 @@ meta-framework 章（原全 25 罐頭）。全 25 節換成量身題（很多直
 
 ### 🏁 里程碑：前端框架三章 de-can 完成
 **ch08 React + ch09 Vue + ch10 Next/Nuxt**（各 25 節、共 75 題）。加上核心四章，**本日 de-can 累計 8 章、203 題**罐頭練習全部換成量身題（ch01/02/04/05/07/08/09/10）。續攻 ch16/17/26–32/34–36/46…
+
+---
+
+## 📚 章節 de-can：ch16 後端世界全圖 全 25 節（0721）
+
+後端總覽章（原 22 罐頭）。全 25 節換成後端概念/設計/決策題（重複主題給不同深度）：請求生命週期與後端可信任側、HTTP GET/POST 冪等與狀態碼語意、REST/GraphQL/gRPC/WS 選型、單體/微服務/serverless 取捨與勿過早拆、後端語言選型 5 維、ORM vs QueryBuilder vs RawSQL 與 N+1、Session vs JWT 與 localStorage XSS、background queue 與重試冪等、三層快取與失效、限流三演算法與 key 選擇、WS/SSE/長輪詢、大檔預簽章直傳 S3/R2、logs/metrics/traces 各答什麼、效能四殺手先量測、Docker/env/health check、API 設計原則與版本化、Edge/Serverless/AI-native 用需求檢驗、Cache-Control 設錯洩漏、REST 資源設計、API Key/OAuth/JWT 選型、登入嚴格限流回 429+Retry-After、Redis cache stampede、多台 WS 靠 pub/sub、OpenAPI 文件與契約測試。
+
+- diff 75+/75- → import_chapters_to_db ch16（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+- 本日 de-can 累計 9 章、228 題。續攻 ch17 SQL（28/28 全罐頭）…
