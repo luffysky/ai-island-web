@@ -527,3 +527,17 @@ NoSQL 章原 17 罐頭。全 25 節換成選型/設計/取捨題：NoSQL 放寬 
 
 - import ch18（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
 - 本日 de-can 累計 **23 章、535 題**。續攻 ch19/20/21/22/24（後端小章）…
+
+---
+
+## 📚 章節 de-can：ch19/20/21/22/24 後端五章 54 節（0721）— 後端/DevOps 罐頭章清完 🏁
+
+一次批次 de-can 五個後端/DevOps 章(共 54 節、原多數罐頭)：
+- **ch19 DB 進階(14)**：索引型別 B-tree/GIN/GiST、EXPLAIN Seq Scan、交易隔離取捨、讀寫分離複寫延遲、分片是最後手段/分片鍵難改、連線池、多層快取 stampede、慢查詢看總影響、migration 漸進 expand-contract、備份要驗證還原、多租戶 RLS 漏過濾洩漏、CDC/Event Sourcing 多數不需要、搜尋 PG FTS/Meili/Algolia。
+- **ch20 API 設計(10)**：REST/GraphQL/tRPC 選型、RESTful 名詞+方法、GraphQL over-fetch 但 N+1/快取難、tRPC 綁 TS 內部、API 文件版本化向下相容、限流演算法/登入嚴格、webhook 驗簽章+冪等+回應、OpenAPI 契約測試。
+- **ch21 認證授權(10)**：認證 vs 授權混淆漏洞、OAuth 免保管密碼、Passkey 防釣魚、RBAC+RLS 歸屬檢查、Session vs JWT 撤銷、Cookie/HttpOnly/SameSite、OAuth 授權碼流程 state、最小權限、MFA 備援與簡訊較弱、bcrypt 加鹽慢單向。
+- **ch22 部署 Docker(10)**：dev→prod 鴻溝、Docker 多階段瘦身、PaaS 早期務實、edge runtime 限制、部署最佳實務(密鑰別烤 image/健康檢查/優雅關閉)、Dockerfile layer 快取非 root、CI/CD 擋 PR、零停機新舊並存要相容、K8s 小團隊過度、IaC 消除雪花伺服器。
+- **ch24 監控 Logs(10)**：三支柱 logs/metrics/traces、Sentry source map 依影響排序、結構化 log 集中別記敏感、Web Vitals RUM 真實非 lab、uptime+告警疲勞+on-call 止血、observability vs monitoring、request id 串請求、RED 指標看 p95 非平均、告警藝術要 actionable。
+
+- import 5 章（54 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+- **本日 de-can 累計 28 章、589 題。🏁 後端/DevOps 全罐頭章(ch15-22/24)清完。** 剩 ch06/11/12/14/23/25/37/38/39/40/41/42/49/50 各數題殘餘罐頭。
