@@ -98,8 +98,8 @@
   - [x] ~~4.1.4 RWD + 亮暗~~ ✅
   - ＊needsOAuth 範本（讀信箱/加行事曆）先標「即將開放」不誤導；OAuth 接完（§4.2）再解鎖。
 - [ ] 4.2 外部工具 OAuth 🔴（需林董各平台註冊 app）：Gmail/Calendar/Drive/GitHub/Notion 一鍵授權（`/settings/connections` 已有手動連結骨架、缺 OAuth）
-- [ ] 4.3 L2 程式沙盒 🔴（需 Zeabur `ENABLE_SERVER_BROWSER=1`）：跑 agent 產的 code（isolated-vm/容器、限時間/記憶體/網路）
-- [ ] 4.4 成本 / ROI Dashboard ⬜（per-user 用量記帳、省了多少、效率排行）
+- [x] ~~4.3 L2 程式沙盒~~ ✅ 0722（＝agent `code.run` 工具：抽 `src/lib/code-runner.ts`（Piston→Judge0→Wandbox 外部隔離沙盒、20+ 語言、限時間/輸出、playground 與 agent 共用）；tools.ts 加 `code.run`（risk=dangerous、逐次確認）。**不需 `ENABLE_SERVER_BROWSER`**（那只 gate browser.render）；用外部沙盒服務、非本機容器）
+- [x] ~~4.4 成本 / ROI Dashboard~~ ✅ 0722（**使用者端** `/me/ai-usage`：本月 tokens 已用/額度/剩餘 + 近 30 天呼叫/tokens/估計成本 recharts 圖 + KPI 磚，讀 `ai_usage_daily`（嚴格 user_id）＋`gateAiUsage`；MeSidebar 加「📊 AI 使用量」。＊成本標「估計、非帳單」不誤導。「效率排行」跨用戶＝admin 事、之後）
 - [x] ~~4.5 技術債：stale-task reaper~~ ✅ 早已存在（cron/agent-reaper 把 planning/running 逾時任務標 failed）——只差排程（🔴 加 cron job）
 
 🆕 潛力池（之後評估）：AI 陪伴角色（沿用島吉祥物+記憶、情感黏著）、AI 合約白話解讀（已有 PDF 解析 unpdf）、AI 老照片修復/證件照（需付費生圖 API·暫緩）、AI 交友/約會訊息軍師。
@@ -109,7 +109,7 @@
 ## 二、分身島 Agent（補完 · 承 0713/0714）
 
 ### 2.1 引擎 L1–L5 進階（核心 L1–L5 ✅ 已上線）
-- [ ] 2.1.1 L2 程式沙盒（isolated-vm/container）— 未實作，見 §4.3（需 🔴 env）
+- [x] ~~2.1.1 L2 程式沙盒~~ ✅ 0722（見 §4.3：agent `code.run` 工具＝外部隔離沙盒 Piston/Judge0/Wandbox、20+ 語言、限時間/輸出、dangerous 逐次確認。＊非 isolated-vm/本機容器，是外部沙盒服務、免 env）
 - [ ] 2.1.2 L2 互動式伺服器瀏覽器（`browser.render` code done、仍 stub、需 🔴 env 驗活）
 - [ ] 2.1.3 L4 執行中自動建 skill（現為事後手動 synthesize）
 - [ ] 2.1.4 L5 經理–專才階層調度（現只有平行 fan-out）
@@ -159,7 +159,7 @@
 ### 2.7 省 token（Snow Orchestrator）＆ MCP／技能
 - [ ] 2.7.1 Rule-filter 完整層；2.7.2 Agent 任務 Embedding RAG（站內有 embeddings、agent 未接）
 - [ ] 2.7.3 Diff 只讀變動；2.7.4 Event-driven + Sleep + per-agent daily budget
-- [~] 2.7.5 成本/ROI Dashboard（KPI/office 表現骨架 ✅；cost/efficiency 排行未做）＝同 §4.4
+- [~] 2.7.5 成本/ROI Dashboard＝同 §4.4：使用者端 `/me/ai-usage` ✅ 0722（本月額度+30天用量/成本圖）；跨用戶 efficiency 排行（admin）← 之後
 - [ ] 2.7.6 Cost-per-Task benchmark 實測；2.7.7 AI COO
 - [ ] 2.7.8 MCP 外部實戰測試；2.7.9 MCP Marketplace + 技能市集分享
 - [ ] 2.7.10 技能 YAML 完整規格；2.7.11 內建技能 workflow 補齊（GitHub管家/檔案整理師…）

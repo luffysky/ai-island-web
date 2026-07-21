@@ -2,6 +2,7 @@
 // 風險等級：read=自動、write=執行前確認、dangerous=強制逐次確認。
 // MVP：web.fetch / dictionary.lookup 走伺服器真的能跑；device.* 是 stub（Phase 1b 接 Electron Bridge 才真的動使用者的機器）。
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { runCode } from "@/lib/code-runner";
 
 export type RiskLevel = "read" | "write" | "dangerous";
 export type Platform = "web" | "windows" | "macos" | "android" | "ios" | "server";
@@ -259,6 +260,34 @@ export const TOOLS: AgentTool[] = [
       } catch (e: any) {
         return { ok: false, error: "伺服器瀏覽器尚未就緒或載入失敗（可改用 web.research / web.fetch）：" + String(e?.message ?? "").slice(0, 120) };
       } finally { try { await browser?.close(); } catch { /* ignore */ } }
+    },
+  },
+  {
+    name: "code.run",
+    description: "在隔離沙盒執行一段程式碼、回傳輸出（stdout / stderr / exit code）。支援 Python / JavaScript / TypeScript / Go / Rust / Java / C / C++ / C# / Ruby / PHP / Bash / SQL(SQLite) / Kotlin / Swift / Lua / Dart / R / Scala。**用來驗證你寫的程式、跑計算、測試邏輯、處理/轉換資料**——比用猜的可靠。沙盒是外部隔離環境、有時間與輸出上限、無法存取本站資料或做網路副作用；要算數用 math.eval 更省。",
+    args: {
+      language: "程式語言（python / javascript / typescript / go / rust / java / cpp / c / csharp / ruby / php / bash / sql …）",
+      code: "要執行的完整程式碼",
+      stdin: "（選填）標準輸入內容",
+    },
+    risk: "dangerous",
+    platforms: ["server"],
+    async execute(args) {
+      const language = String(args?.language ?? "").trim();
+      const code = String(args?.code ?? "");
+      if (!language || !code) return { ok: false, error: "需要 language 和 code" };
+      const r = await runCode({ language, code, stdin: args?.stdin ? String(args.stdin) : "" });
+      if (!r.ok) return { ok: false, error: r.error };
+      return {
+        ok: true,
+        data: {
+          via: r.via,
+          exitCode: r.exitCode,
+          stdout: String(r.stdout ?? "").slice(0, 4000),
+          stderr: String(r.stderr ?? "").slice(0, 2000),
+          compileError: r.compile?.stderr ? String(r.compile.stderr).slice(0, 1000) : undefined,
+        },
+      };
     },
   },
   {

@@ -39,6 +39,7 @@ const ME_LINKS: { href: string; icon: React.ReactNode; label: string }[] = [
   { href: "/me/dashboard", icon: <span>📊</span>, label: "學習儀表板" },
   { href: "/me/ledger", icon: <span>🪙</span>, label: "Z幣/經驗明細" },
   { href: "/me/energy", icon: <span>🔋</span>, label: "AI 能源中心" },
+  { href: "/me/ai-usage", icon: <span>📊</span>, label: "AI 使用量" },
   { href: "/settings/ai-keys", icon: <span>🔑</span>, label: "我的模型 Key (BYOK)" },
   { href: "/me/notes", icon: <StickyNote size={16} />, label: "我的筆記" },
   { href: "/notes/public", icon: <Globe size={16} />, label: "筆記公開牆" },
