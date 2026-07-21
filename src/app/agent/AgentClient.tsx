@@ -74,6 +74,7 @@ export function AgentClient() {
   const [costMode, setCostMode] = useState<"saver" | "balanced" | "quality">("balanced");  // 省錢模式三檔
   const [threadId, setThreadId] = useState<string>("");    // Phase A：目前對話串（延續脈絡）
   const [threadTurns, setThreadTurns] = useState<{ id: string; goal: string; summary: string }[]>([]); // 本串先前回合
+  const [threads, setThreads] = useState<{ id: string; title: string; created_at: string; last_message_at: string }[]>([]); // 歷史對話串
   const [plan, setPlan] = useState<string[]>([]);          // L1：目前任務的計畫（子任務 checklist）
   const [listening, setListening] = useState(false);
   const [skills, setSkills] = useState<SkillItem[]>([]);
@@ -288,6 +289,24 @@ export function AgentClient() {
         .map((t: any) => ({ id: t.id, goal: t.goal, summary: (typeof t.result === "string" ? t.result : t.result?.summary) || t.turn_summary || "" })));
     } catch { /* ignore */ }
   }, []);
+
+  // 歷史對話串列表（接 /api/agent/threads）
+  const loadThreads = useCallback(async () => {
+    try { const r = await fetch("/api/agent/threads"); if (r.ok) setThreads((await r.json()).threads ?? []); } catch { /* ignore */ }
+  }, []);
+  useEffect(() => { loadThreads(); }, [loadThreads]);
+
+  // 切到某段歷史對話（載入其脈絡）
+  const resumeThread = useCallback((tid: string) => {
+    setThreadId(tid); setSteps([]); setSummary(""); setStatus("");
+    loadThreadTurns(tid, "");
+  }, [loadThreadTurns]);
+
+  const deleteThread = useCallback(async (tid: string) => {
+    try { await fetch(`/api/agent/threads?id=${tid}`, { method: "DELETE" }); } catch {}
+    setThreads((ts) => ts.filter((t) => t.id !== tid));
+    if (threadId === tid) { setThreadId(""); setThreadTurns([]); }
+  }, [threadId]);
 
   // 開新對話（清掉延續脈絡）
   const newConversation = useCallback(() => {
@@ -618,6 +637,23 @@ export function AgentClient() {
 
         {/* 側欄 */}
         <aside className="space-y-4">
+          {/* 歷史對話 */}
+          {threads.length > 0 && (
+            <div className="rounded-2xl border border-black/10 dark:border-white/10 p-3.5">
+              <div className="flex items-center gap-1.5 text-sm font-semibold mb-2"><History className="w-4 h-4 text-violet-500" /> 歷史對話</div>
+              <div className="space-y-1 max-h-72 overflow-y-auto">
+                {threads.map((th) => (
+                  <div key={th.id} className={`group flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm transition ${threadId === th.id ? "bg-violet-500/10 text-violet-600 dark:text-violet-300" : "hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"}`}>
+                    <button onClick={() => resumeThread(th.id)} className="flex-1 min-w-0 text-left">
+                      <div className="truncate">{th.title || "未命名對話"}</div>
+                      <div className="text-[10px] text-black/40 dark:text-white/40">{new Date(th.last_message_at || th.created_at).toLocaleDateString("zh-TW")}</div>
+                    </button>
+                    <button onClick={() => deleteThread(th.id)} className="opacity-0 group-hover:opacity-100 text-black/30 hover:text-rose-500 dark:text-white/30 transition shrink-0" title="刪除對話"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           {/* 桌面助手 */}
           <div className="rounded-2xl border border-black/10 dark:border-white/10 p-3.5">
             <div className="flex items-center gap-1.5 text-sm font-semibold mb-2"><Laptop className="w-4 h-4 text-emerald-500" /> 桌面助手</div>

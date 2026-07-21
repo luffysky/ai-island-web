@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Banknote, ArrowLeft, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
@@ -26,6 +26,14 @@ export function PayoutClient({ balance, initialPayouts, cfg }: { balance: number
   const [bankName, setBankName] = useState("");
   const [bankAccount, setBankAccount] = useState("");
   const [busy, setBusy] = useState(false);
+  const [ledger, setLedger] = useState<{ id: string; amount: number; reason: string; created_at: string }[] | null>(null);
+
+  // 果實收支明細（接 /api/creator-island/fruit）
+  useEffect(() => {
+    (async () => {
+      try { const r = await fetch("/api/creator-island/fruit"); if (r.ok) setLedger((await r.json()).ledger ?? []); } catch { /* ignore */ }
+    })();
+  }, []);
 
   const fruitNum = Math.floor(Number(fruit) || 0);
   const gross = Math.floor(fruitNum / cfg.fruitPerNtd);
@@ -96,6 +104,30 @@ export function PayoutClient({ balance, initialPayouts, cfg }: { balance: number
                 </div>
               );
             })}
+          </div>
+        )}
+      </div>
+
+      {/* 果實收支明細 */}
+      <div className="surface p-4">
+        <div className="font-bold text-sm mb-2">🌰 果實收支明細</div>
+        {ledger === null ? (
+          <div className="text-xs text-fg-muted">載入中…</div>
+        ) : ledger.length === 0 ? (
+          <div className="text-xs text-fg-muted">還沒有果實收支紀錄。</div>
+        ) : (
+          <div className="space-y-1.5 max-h-80 overflow-y-auto">
+            {ledger.map((l) => (
+              <div key={l.id} className="flex items-center justify-between gap-2 text-sm bg-bg-elevated rounded-lg px-3 py-2">
+                <div className="min-w-0">
+                  <div className="truncate">{l.reason}</div>
+                  <div className="text-[11px] text-fg-muted">{new Date(l.created_at).toLocaleString("zh-TW")}</div>
+                </div>
+                <span className={`font-bold shrink-0 ${l.amount >= 0 ? "text-emerald-500" : "text-rose-500"}`}>
+                  {l.amount >= 0 ? "+" : ""}{l.amount.toLocaleString()} 🌰
+                </span>
+              </div>
+            ))}
           </div>
         )}
       </div>

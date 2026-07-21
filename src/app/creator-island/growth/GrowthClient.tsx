@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { TrendingUp, ArrowLeft, Dna, Palmtree, AlertTriangle, Sparkles, Target, CheckCircle2, Flag } from "lucide-react";
+import { TrendingUp, ArrowLeft, Dna, Palmtree, AlertTriangle, Sparkles, Target, CheckCircle2, Flag, Cpu } from "lucide-react";
 
 type Dna = { traits: any; confidence: number; updated_at: string } | null;
 type WsLite = { id: string; name: string; type: "personal" | "studio" };
@@ -142,7 +142,79 @@ export function GrowthClient({ stats, initialDna, workspaces = [], scope = "all"
         )}
       </div>
 
+      {/* AI 用量 / 成本 */}
+      <AiRunsSection workspaces={workspaces} />
+
       <p className="text-[11px] text-fg-muted">{tr("growthComingSoon")}</p>
+    </div>
+  );
+}
+
+type Run = { id: string; agent_type: string; model: string; provider: string; tokens_input: number; tokens_output: number; cost_usd: number; z_charged: number; status: string; created_at: string };
+
+function AiRunsSection({ workspaces }: { workspaces: WsLite[] }) {
+  const [wsId, setWsId] = useState(workspaces[0]?.id ?? "");
+  const [runs, setRuns] = useState<Run[] | null>(null);
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const load = useCallback(async (id: string, cur?: string) => {
+    if (!id) { setRuns([]); return; }
+    setLoading(true);
+    try {
+      const u = `/api/creator-island/ai/runs?workspaceId=${id}&limit=20${cur ? `&cursor=${encodeURIComponent(cur)}` : ""}`;
+      const r = await fetch(u);
+      const j = await r.json();
+      if (r.ok) { setRuns((prev) => (cur ? [...(prev ?? []), ...(j.items ?? [])] : (j.items ?? []))); setCursor(j.nextCursor ?? null); }
+    } catch { /* ignore */ } finally { setLoading(false); }
+  }, []);
+
+  useEffect(() => { if (wsId) { setRuns(null); setCursor(null); load(wsId); } }, [wsId, load]);
+
+  const totalCost = (runs ?? []).reduce((s, r) => s + (Number(r.cost_usd) || 0), 0);
+  const totalTok = (runs ?? []).reduce((s, r) => s + (r.tokens_input || 0) + (r.tokens_output || 0), 0);
+
+  return (
+    <div className="surface p-4">
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <div className="font-bold text-sm inline-flex items-center gap-1.5"><Cpu size={15} /> AI 用量 / 成本</div>
+        {workspaces.length > 1 && (
+          <select value={wsId} onChange={(e) => setWsId(e.target.value)} className="text-xs bg-bg-elevated border border-border rounded-lg px-2 py-1">
+            {workspaces.map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}
+          </select>
+        )}
+      </div>
+      {runs && runs.length > 0 && (
+        <div className="flex gap-4 text-xs text-fg-muted mb-2">
+          <span>本次載入 <b className="text-fg">{runs.length}</b> 筆</span>
+          <span>tokens <b className="text-fg">{totalTok.toLocaleString()}</b></span>
+          <span>成本 <b className="text-fg">${totalCost.toFixed(4)}</b></span>
+        </div>
+      )}
+      {runs === null ? (
+        <div className="text-xs text-fg-muted">載入中…</div>
+      ) : runs.length === 0 ? (
+        <div className="text-xs text-fg-muted">還沒有 AI 執行紀錄。</div>
+      ) : (
+        <>
+          <div className="space-y-1 max-h-80 overflow-y-auto">
+            {runs.map((r) => (
+              <div key={r.id} className="flex items-center justify-between gap-2 text-xs bg-bg-elevated rounded-lg px-2.5 py-1.5">
+                <div className="min-w-0">
+                  <div className="truncate"><span className="font-medium">{r.agent_type}</span> <span className="text-fg-muted">{r.model}</span></div>
+                  <div className="text-[10px] text-fg-muted">{new Date(r.created_at).toLocaleString("zh-TW")} · {(r.tokens_input + r.tokens_output).toLocaleString()} tok{r.z_charged ? ` · ${r.z_charged}Z` : ""}</div>
+                </div>
+                <span className={`shrink-0 ${r.status === "succeeded" ? "text-emerald-500" : r.status === "failed" ? "text-rose-500" : "text-fg-muted"}`}>${(Number(r.cost_usd) || 0).toFixed(4)}</span>
+              </div>
+            ))}
+          </div>
+          {cursor && (
+            <button onClick={() => load(wsId, cursor)} disabled={loading} className="mt-2 text-xs text-accent hover:underline disabled:opacity-50">
+              {loading ? "載入中…" : "載入更多"}
+            </button>
+          )}
+        </>
+      )}
     </div>
   );
 }

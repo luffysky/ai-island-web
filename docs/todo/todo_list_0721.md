@@ -285,7 +285,10 @@
     - [x] ~~notify-leave（VisitTracker 加 pagehide sendBeacon 回報停留）~~ ✅ 0722
     - [x] ~~community/follow（SocialFeed PostCard 加追蹤鈕）~~ ✅ 0722
     - [x] ~~series/[id] PATCH/DELETE（EngineWorkspace 加系列改名/刪除）~~ ✅ 0722
-    - [ ] fruit ledger（PayoutClient 果實收支明細）、agent/threads（AgentClient 歷史對話側欄）、ai/runs（GrowthClient AI 用量成本）續接
+    - [x] ~~fruit ledger（PayoutClient 果實收支明細）~~ ✅ 0722
+    - [x] ~~agent/threads（AgentClient 歷史對話側欄 + 切換/刪除）~~ ✅ 0722
+    - [x] ~~ai/runs（GrowthClient AI 用量/成本 分頁載入）~~ ✅ 0722
+    - [x] 🏁 6 支可接孤兒端點全接完（3 支 redundant 已另有 UI）
     - ＊已另有 UI 免接（redundant wrapper 可留可刪）：recommended-chapters（/me RecommendedChapters 已 server 直呼）、forum/user/[userId]（頁面已存在且 3 處連入）、ai/route-suggest（非強制 advisory、無人呼叫）
     - [ ] 7.15.2.1 優先：`creator-island/community/follow`（追蹤鈕似乎沒接）、`ai/runs`（前端缺、= §8.5）、`me/recommended-chapters`（= §9.2 推薦）
 
