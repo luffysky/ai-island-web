@@ -144,3 +144,39 @@ ch49 + ch50（AI Agent / n8n 兩大旗艦章）完成。**教具庫新增 2 個�
 
 ### 🔴 卡林董（做完解鎖）
 - Zeabur `ENABLE_SERVER_BROWSER=1`（L2 沙盒/瀏覽器）、cron #10 daily-brief、金流 Stripe 金鑰、**首頁 5 層 stage-layer 生圖素材**（首頁改版全卡這）、通路 bot token。詳 todo §🅰。
+
+---
+
+## 🔮 大眾變現 #1「每日運勢」— 第一刀 MVP 上線（0721 下午·休息後開工）
+
+休息後回頭做 todo §一（大眾變現四功能）。依「無外部依賴者先做」的順序，開 **#1 每日運勢**。先派 Explore 代理把全站慣例掃清楚（migration/RLS、API auth、`completeForUsage` 記帳、LINE 推播、cron、Z幣 gating、前端頁慣例），再照樣蓋，確保跟既有架構一致、不重造輪子。
+
+### 這一刀做了什麼（星座每日運勢跑通）
+- **DB**（`supabase/fortune_migration.sql`，已跑、DB 實測過）：
+  - `fortune_profiles`（生日資料、user_id 當主鍵、RLS 本人可讀寫、updated_at trigger）。
+  - `fortune_daily`（同人同日+kind 唯一鍵、payload jsonb ＝冪等快取、不重複燒 LLM）。
+  - `profiles.line_pref_fortune`（每日運勢 LINE 推播偏好、預設開、additive）。
+- **核心 lib**（純函式、8 支單元測試全綠）：
+  - `src/lib/fortune.ts`：`zodiacFromBirthDate`（純月/日算西洋星座、零外部庫）、`buildFortunePrompt`（護欄：不做醫療/投資/法律斷言、正向不製造焦慮）、`parseFortune`（容錯：切 markdown 圍欄、幸運數字越界收斂 1–9、score 越界丟棄、缺欄 fallback、無 overall→null）。
+  - `src/lib/fortune-service.ts`：`getOrCreateDailyFortune()` ＝快取優先/沒有才生成寫回，`/api/fortune/today` 與 cron **共用同一份生成邏輯**（不重複）。
+- **API**：
+  - `GET/PUT /api/fortune/profile`（存生日、自動算星座、改生日作廢今日快取）。
+  - `GET /api/fortune/today`（快取命中直接回；沒快取才對「生成」這條限流 + `completeForUsage("agent_core")` 記帳；生成/解析失敗 → 溫和 fallback 不寫快取、下次可重試）。
+  - `GET /api/cron/fortune-daily`（`verifyCronAuth`；inner-join 撈「綁 LINE + 開推播 + 有生日」者、生成今日運勢、`notifyUserLine({category:"fortune"})` 推、notifications 表 dedupe + 站內鈴鐺、cap 500）。
+- **前端** `/fortune`（`page.tsx` server + `Fortune.tsx` client，照 OpportunityBrowse 慣例）：
+  - 首次 → 生日/時辰/曆別/性別輸入精靈；之後 → 每日運勢卡：星座 emoji + score 進度環 + 整體 + 三面向卡（愛情/事業/財運）+ 幸運色色塊 + 幸運數字 + 今日提醒 + 分享（native share／複製、帶站點浮水印）+「開啟每日 LINE 推播」導 /settings。RWD + 亮暗 token 全帶、免責一行。
+- **入口**：`TopNav` NAV_LINKS 加「每日運勢」(Sparkles icon)、`nav.fortune` 補 4 語（zh/en/ja/ko）；`/settings` 通知偏好加「每日運勢」開關 + `notification-prefs` API 加 `line_pref_fortune`。
+
+### 🚨 收尾檢查（鐵規則、全綠）
+- **API/DB/資料表**：migration 已跑；node 實測 `fortune_profiles`/`fortune_daily`/`profiles.line_pref_fortune`/cron inner-join query 全 **OK**（0 rows＝還沒人設定、預期）。**非假功能、端到端接線實測過。**
+- **UI 接對**：/fortune 卡打 today API、精靈打 profile API、設定開關打 notification-prefs API，資料流通。
+- **RWD / 亮暗**：flex-wrap / grid / `max-w-2xl mx-auto` / 亮暗雙 token；無寫死寬。
+- **建置**：`tsc --noEmit` ✅ · `vitest run` **145 passed（+8）** ✅ · `next build` exit 0 ✅（/fortune、/api/fortune/{profile,today}、/api/cron/fortune-daily 都編出）。
+- **PWA / 機密**：未動 manifest/sw、未動 `.env.local`。
+
+### 下一刀（第二刀 fortune）
+1. 🔴 **cron-job.org 加 job #10**：`GET /api/cron/fortune-daily?secret=<CRON_SECRET>` 每天 00:00 UTC（=台灣 08:00）— 不加就不會自動推。
+2. **塔羅**：78 張牌庫 + 抽牌 + `/api/fortune/tarot` + 翻牌 UI（`kind='tarot'` 快取欄已留）。
+3. **付費/Z幣 gating**（§1.5）：免費看整體、付費解四面向深解+塔羅（沿用 `gateHighTierModel`/Z幣）。
+4. **八字/紫微**：裝 `lunar-javascript` 接農曆↔國曆 + 時辰（§1.1.1.2）。
+5. **首頁模式卡**入口（配 §🅰 生圖）、截圖分享圖卡（html-to-image）。

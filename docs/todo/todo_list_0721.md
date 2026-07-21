@@ -28,33 +28,34 @@
 > ＊**戰略**：目前只有「創作者/學程式」兩種小眾。要打到幾萬~幾百萬普通人＋願付費，做**單一用途、情緒/剛需、有每日習慣、靠 LINE 推播**的輕工具（我們有現成 LINE 推播＋每日 cron＋LLM＝優勢）。輕工具＝**獲客漏斗**：普通人為運勢/訊息軍師進來→綁 LINE→養成每日習慣→導流到創作島/學程式/Agent；且本身就是 Agent 的「任務範本」，一石二鳥。
 > ＊順序建議：1（運勢·黏著最高）或 4.1（生活助理範本·最省）先開工；2（訊息軍師·最快落地）次之；3（求職包）再接。
 
-### 1. 每日運勢 / AI 命理 + LINE 推播（訂閱制）⬜ 可先做·無外部依賴
-- [ ] 1.1 資料模型與後端
-  - [ ] 1.1.1 `fortune_profiles` 表（user_id, birth_date, birth_time, gender, calendar_type 陽/陰曆, zodiac）
-    - [ ] 1.1.1.1 migration `supabase/fortune_migration.sql`（RLS：本人可讀寫）
-    - [ ] 1.1.1.2 農曆↔國曆轉換（現成庫/查表；八字需時辰）
+### 1. 每日運勢 / AI 命理 + LINE 推播（訂閱制）🚧 **第一刀 MVP 已上線（0721）**：星座每日運勢＋profile＋前端卡＋LINE 推播 cron＋nav/settings 入口。塔羅、八字精算、付費門檻＝第二刀。
+- [~] 1.1 資料模型與後端
+  - [~] 1.1.1 `fortune_profiles` 表（user_id, birth_date, birth_time, gender, calendar_type 陽/陰曆, zodiac）
+    - [x] ~~1.1.1.1 migration `supabase/fortune_migration.sql`（RLS：本人可讀寫）~~ ✅ 已跑、DB 驗證過
+    - [ ] 1.1.1.2 農曆↔國曆轉換（現成庫/查表；八字需時辰）← 第二刀（裝 `lunar-javascript`）
       - [ ] 1.1.1.2.1 無時辰的 fallback（只算日主/星座、標示精度較低）
-  - [ ] 1.1.2 `fortune_daily` 快取表（唯一鍵 user_id+date、payload jsonb）＝同人同日只生一次、不重複燒 LLM（冪等）
-  - [ ] 1.1.3 API `/api/fortune/today`（GET：沒快取才生成+存、`completeForUsage("agent_core")` 記帳）
-  - [ ] 1.1.4 API `/api/fortune/tarot`（POST：抽牌+AI 解讀、Z幣/付費門檻）
-  - [ ] 1.1.5 API `/api/fortune/profile`（GET/PUT：生日資料）
-- [ ] 1.2 LLM 生成
-  - [ ] 1.2.1 運勢 prompt（四面向：整體/愛情/事業/財運 + 幸運色/數字 + 一句提醒）
-    - [ ] 1.2.1.1 護欄：不做醫療/投資/法律具體斷言（免責）、語氣正向不製造焦慮
-    - [ ] 1.2.1.2 結構化輸出 JSON `{overall,love,career,wealth,luckyColor,luckyNumber,tip}`
-  - [ ] 1.2.2 塔羅牌庫（78 張大小阿爾克那 + 正逆位含義）→ 抽牌 → 依牌+提問 LLM 解讀
-  - [ ] 1.2.3 命理輕量版：星座先行（好做）；八字/紫微標進階（需正確曆算、之後接）
-- [ ] 1.3 前端 `/fortune`
-  - [ ] 1.3.1 首次生日/時辰輸入頁 + 每日運勢卡（四面向 + 幸運色/數字）
-  - [ ] 1.3.2 塔羅抽牌互動（翻牌動畫、解讀）
-  - [ ] 1.3.3 分享卡（截圖分享今日運勢、帶站點浮水印做病毒擴散）
-  - [ ] 1.3.4 RWD + 亮暗；免費/付費分界 UI
-- [ ] 1.4 LINE 每日推播
-  - [ ] 1.4.1 cron `/api/cron/fortune-daily`（每天 08:00 撈綁 LINE + 訂閱者推運勢）
-    - [ ] 1.4.1.1 🔴 去 cron-job.org 手動加 job（寫進 `docs/setup/cron-setup.md`）
-  - [ ] 1.4.2 訂閱/退訂設定（沿用 `line_pref_*` category）
-- [ ] 1.5 變現：免費看整體大方向；付費/Z幣解鎖四面向深解+塔羅+每日私人推播（沿用創作者綠寶軟上限模式）
-- [ ] 1.6 收尾檢查（API/DB/UI/RWD/PWA/build/worklog 八項鐵規則）
+  - [x] ~~1.1.2 `fortune_daily` 快取表（唯一鍵 user_id+date+kind、payload jsonb）＝冪等不重複燒 LLM~~ ✅
+  - [x] ~~1.1.3 API `/api/fortune/today`（快取優先、沒快取才 `completeForUsage("agent_core")` 生成+存）~~ ✅（邏輯抽到 `lib/fortune-service.ts` 與 cron 共用）
+  - [ ] 1.1.4 API `/api/fortune/tarot`（POST：抽牌+AI 解讀、Z幣/付費門檻）← 第二刀
+  - [x] ~~1.1.5 API `/api/fortune/profile`（GET/PUT：生日資料、自動算西洋星座）~~ ✅
+- [~] 1.2 LLM 生成
+  - [x] ~~1.2.1 運勢 prompt（整體/愛情/事業/財運 + 幸運色/數字 + 一句提醒 + score）~~ ✅（`lib/fortune.ts`）
+    - [x] ~~1.2.1.1 護欄：不做醫療/投資/法律具體斷言、語氣正向不製造焦慮~~ ✅
+    - [x] ~~1.2.1.2 結構化輸出 JSON + 容錯解析 parseFortune（含越界收斂、fallback）~~ ✅（8 支單元測試）
+  - [ ] 1.2.2 塔羅牌庫（78 張大小阿爾克那 + 正逆位含義）→ 抽牌 → 依牌+提問 LLM 解讀 ← 第二刀
+  - [~] 1.2.3 命理輕量版：星座先行 ✅（純月/日運算、零外部庫）；八字/紫微標進階（之後接）
+- [~] 1.3 前端 `/fortune`
+  - [x] ~~1.3.1 首次生日/時辰輸入頁 + 每日運勢卡（三面向卡 + score 環 + 幸運色塊/數字 + 今日提醒）~~ ✅
+  - [ ] 1.3.2 塔羅抽牌互動（翻牌動畫、解讀）← 第二刀
+  - [~] 1.3.3 分享卡：native share / 複製文字（帶站點浮水印）✅；截圖圖卡（html-to-image）← 之後
+  - [~] 1.3.4 RWD + 亮暗 ✅；免費/付費分界 UI（MVP 全免費、gating ← 第二刀）
+- [~] 1.4 LINE 每日推播
+  - [x] ~~1.4.1 cron `/api/cron/fortune-daily`（撈綁 LINE + 開推播 + 有生日者、生成+推、dedupe、cap 500）~~ ✅
+    - [ ] 1.4.1.1 🔴 去 cron-job.org 手動加 job #10（每天 00:00 UTC=台灣08:00 `GET /api/cron/fortune-daily?secret=<CRON_SECRET>`）
+  - [x] ~~1.4.2 訂閱/退訂設定（`line_pref_fortune` 欄 + /settings 通知偏好開關 + notification-prefs API）~~ ✅
+- [ ] 1.5 變現：免費看整體大方向；付費/Z幣解鎖四面向深解+塔羅+每日私人推播（沿用創作者綠寶軟上限模式）← 第二刀
+- [x] ~~1.6 收尾檢查（tsc/vitest 145/next build 全綠 + DB 接線實測 + 4 語 nav i18n）~~ ✅ 0721 第一刀
+- 🆕 **入口**：nav「每日運勢」（4 語 i18n、桌機抽屜+手機選單）✅；首頁模式卡 ← 待接（配 §🅰 生圖）。
 
 ### 2. 訊息軍師（幫你把難開口的話講好）⬜ 可先做·最快落地
 - [ ] 2.1 情境模板資料

@@ -14,12 +14,13 @@ import { createSupabaseAdmin } from "./supabase-admin";
 const ENDPOINT = "https://api.line.me/v2/bot";
 
 // 通知分類 → 對應 profiles 的偏好欄（統一通知中心）。不給 category = 一律送（如綁定成功等系統訊息）。
-export type NotifCategory = "deadlines" | "subscriptions" | "agent" | "learning";
+export type NotifCategory = "deadlines" | "subscriptions" | "agent" | "learning" | "fortune";
 const PREF_COL: Record<NotifCategory, string> = {
   deadlines: "line_pref_deadlines",
   subscriptions: "line_pref_subscriptions",
   agent: "line_pref_agent",
   learning: "line_pref_learning",
+  fortune: "line_pref_fortune",
 };
 
 export type UserLineNotify = {

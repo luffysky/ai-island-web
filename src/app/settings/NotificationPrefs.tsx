@@ -8,6 +8,7 @@ const ROWS: { key: string; label: string; desc: string }[] = [
   { key: "line_pref_subscriptions", label: "機會訂閱符合", desc: "有新機會符合你訂閱的條件" },
   { key: "line_pref_agent", label: "分身島任務", desc: "任務完成 / 需要你確認的動作" },
   { key: "line_pref_learning", label: "學習提醒", desc: "完課 / 成就 / 連勝里程碑" },
+  { key: "line_pref_fortune", label: "每日運勢", desc: "每天早上把你的今日運勢推到 LINE" },
 ];
 
 function Toggle({ on, onClick, disabled }: { on: boolean; onClick: () => void; disabled?: boolean }) {
