@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { TarotSection } from "./TarotSection";
 import { BaziSection } from "./BaziSection";
+import { IChingSection } from "./IChingSection";
 import { HistorySection } from "./HistorySection";
 
 type FortunePayload = {
@@ -161,6 +162,9 @@ export function Fortune() {
 
       {/* 八字命盤 */}
       <BaziSection />
+
+      {/* 易經 · 梅花易數 */}
+      <IChingSection />
 
       {/* 歷史運勢 */}
       <HistorySection />
