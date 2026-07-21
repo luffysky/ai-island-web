@@ -35,6 +35,9 @@ export function OpportunityBrowse() {
   const [noPitch, setNoPitch] = useState(false);   // 免上台
   const [online, setOnline] = useState(false);      // 全程線上
   const [urgent, setUrgent] = useState(false);      // 14 天內截止
+  const [prizeOnly, setPrizeOnly] = useState(false); // 只看有獎金
+  const [soloOk, setSoloOk] = useState(false);       // 可個人參加（免組隊）
+  const [region, setRegion] = useState<"" | "tw" | "overseas">(""); // 地區
   // AI 幫我挑（V2）
   const [recOpen, setRecOpen] = useState(false);
   const [about, setAbout] = useState("");
@@ -172,6 +175,16 @@ export function OpportunityBrowse() {
     } catch { /* ignore；下次 load 會校正 */ }
   };
 
+  // 前端再篩：地區（台灣/海外）、有獎金、可個人參加
+  const isTW = (c?: string) => !!c && /台|臺|taiwan|tw/i.test(c);
+  const visibleOpps = opps.filter((o) => {
+    if (prizeOnly && !(o.prize_text && o.prize_text.trim())) return false;
+    if (soloOk && o.requires_team) return false;
+    if (region === "tw" && !isTW(o.country)) return false;
+    if (region === "overseas" && (!o.country || isTW(o.country))) return false;
+    return true;
+  });
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-6 sm:py-8">
       {/* Hero */}
@@ -277,6 +290,10 @@ export function OpportunityBrowse() {
           <button onClick={() => setOnline((v) => !v)} title="全程線上、不用到現場" className={`text-xs rounded-full px-2.5 py-1 border ${online ? "bg-emerald-600 border-emerald-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>🌐 線上</button>
           <button onClick={() => setStatus(status === "open" ? "" : "open")} className={`text-xs rounded-full px-2.5 py-1 border ${status === "open" ? "bg-emerald-600 border-emerald-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>開放中</button>
           <button onClick={() => setUrgent((v) => !v)} title="14 天內截止" className={`text-xs rounded-full px-2.5 py-1 border ${urgent ? "bg-rose-600 border-rose-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>⏰ 快截止</button>
+          <button onClick={() => setPrizeOnly((v) => !v)} title="有獎金 / 獎勵" className={`text-xs rounded-full px-2.5 py-1 border ${prizeOnly ? "bg-amber-600 border-amber-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>💰 有獎金</button>
+          <button onClick={() => setSoloOk((v) => !v)} title="可個人參加、不用組隊" className={`text-xs rounded-full px-2.5 py-1 border ${soloOk ? "bg-emerald-600 border-emerald-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>🙋 可個人</button>
+          <button onClick={() => setRegion((v) => (v === "tw" ? "" : "tw"))} title="台灣的機會" className={`text-xs rounded-full px-2.5 py-1 border ${region === "tw" ? "bg-sky-600 border-sky-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>🇹🇼 台灣</button>
+          <button onClick={() => setRegion((v) => (v === "overseas" ? "" : "overseas"))} title="海外 / 國際的機會" className={`text-xs rounded-full px-2.5 py-1 border ${region === "overseas" ? "bg-indigo-600 border-indigo-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>🌏 海外</button>
         </div>
       </div>
 
@@ -294,14 +311,14 @@ export function OpportunityBrowse() {
         ))}
       </div>
 
-      {/* 清單 */}
+      {/* 清單（地區/獎金/身分＝前端再篩，資料已含 country/prize_text/requires_team） */}
       {loading ? (
         <div className="space-y-3">{[1, 2, 3].map((i) => <div key={i} className="h-24 rounded-2xl bg-black/5 dark:bg-white/5 animate-pulse" />)}</div>
-      ) : opps.length === 0 ? (
+      ) : visibleOpps.length === 0 ? (
         <p className="text-sm text-black/50 dark:text-white/50 text-center py-10">找不到符合的機會，換個條件試試。</p>
       ) : (
         <ul className="space-y-3">
-          {opps.map((o) => {
+          {visibleOpps.map((o) => {
             const dl = daysLeft(o.application_deadline);
             const st = STATUS[o.status] ?? STATUS.open;
             const isSaved = saved.has(o.id);
