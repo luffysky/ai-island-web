@@ -1,0 +1,752 @@
+[
+  {
+    "slug": "tls-handshake",
+    "term": "TLS handshake",
+    "zh_name": "TLS 交握",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "瀏覽器和伺服器建立加密連線前的「握手」：交換憑證、協商加密方式、產生對稱金鑰。什麼時候在意：HTTPS 首次連線變慢、憑證錯誤時。TLS 1.3 把握手縮到 1 個來回、更快。",
+    "analogy": "見面先對暗號＋交換保險箱鑰匙，之後講話才用密語，別人聽不懂。",
+    "example": "# 瀏覽器 → 伺服器：ClientHello（支援的加密）\n# 伺服器 → 憑證 + ServerHello → 雙方算出 session key",
+    "related": [
+      "ssl",
+      "certificate",
+      "certificate-authority",
+      "public-key-crypto"
+    ]
+  },
+  {
+    "slug": "mtls",
+    "term": "mutual TLS (mTLS)",
+    "zh_name": "雙向 TLS",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "普通 TLS 只有伺服器出示憑證；mTLS 是「雙方都出示憑證」互相驗身分。什麼時候用：服務之間（微服務、zero-trust 內網）要確定對方是誰、不只加密。",
+    "analogy": "不只你要看店家證照，店家也要看你的會員卡，雙方都驗明正身。",
+    "example": "# 客戶端也帶 client cert\ncurl --cert client.pem --key client.key https://api",
+    "related": [
+      "tls-handshake",
+      "zero-trust",
+      "certificate-authority"
+    ]
+  },
+  {
+    "slug": "dns-resolution",
+    "term": "DNS resolution",
+    "zh_name": "DNS 解析",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把「網域名稱」查成「IP 位址」的過程：問 resolver → root → TLD → 權威伺服器，一層層問到答案，中間會快取。什麼時候在意：換主機後沒生效（DNS 還在快取／TTL 沒過）。",
+    "analogy": "打 165 查號台問某店的地址：不知道就層層轉問，問到給你門牌號。",
+    "example": "dig example.com   # 看解析結果與 TTL\nnslookup example.com",
+    "related": [
+      "dns-record",
+      "cname-record",
+      "ttl-dns",
+      "dns-over-https"
+    ]
+  },
+  {
+    "slug": "cname-record",
+    "term": "CNAME record",
+    "zh_name": "CNAME 記錄",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "DNS 裡的「別名」：把一個網域指向另一個網域（而非直接指 IP）。什麼時候用：把 www 指到主網域、或指到 CDN/雲端提供的網域。",
+    "analogy": "郵件轉寄地址：寄到 A 信箱自動轉去 B 信箱，B 搬家你不用改。",
+    "example": "www.example.com.  CNAME  example.com.\nshop.example.com. CNAME  myshop.myhost.net.",
+    "related": [
+      "dns-record",
+      "a-record",
+      "dns-resolution",
+      "cdn"
+    ]
+  },
+  {
+    "slug": "mx-record",
+    "term": "MX record",
+    "zh_name": "MX 記錄",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "DNS 裡指定「這個網域的信件送到哪台郵件伺服器」的記錄，可設多台加優先權。什麼時候用：設定網域收發 email（接 Google Workspace / 自架郵件）時。",
+    "analogy": "公司的收發室地址：寄給 @公司 的信都先送到這裡再分。",
+    "example": "example.com.  MX  10 mail1.example.com.\nexample.com.  MX  20 mail2.example.com.  (備援)",
+    "related": [
+      "dns-record",
+      "cname-record",
+      "smtplib-module"
+    ]
+  },
+  {
+    "slug": "http2",
+    "term": "HTTP/2",
+    "zh_name": "HTTP/2",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "HTTP 的第二代：一條連線上「多路複用」同時傳多個請求（不再排隊）、標頭壓縮、伺服器推送。什麼時候在意：想加速多資源網頁；現代 CDN 多半已開。",
+    "analogy": "從單線道（一次一台車）升級成多線道，一條路同時跑很多車不用排隊。",
+    "example": "# 大多由伺服器/CDN 開啟、應用層通常無感\n# 一條 TCP 連線並行多個 request",
+    "related": [
+      "http3",
+      "quic-protocol",
+      "keepalive-http"
+    ]
+  },
+  {
+    "slug": "http3",
+    "term": "HTTP/3",
+    "zh_name": "HTTP/3",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "HTTP 的第三代：底層改用 QUIC（跑在 UDP 上），避免 TCP 的「隊頭阻塞」，換網路（Wi-Fi↔4G）也不斷線。什麼時候在意：行動網路、弱網下的體驗。",
+    "analogy": "改走機動性更高的路線：一台車卡住不會塞住整條車道，換路也不用重來。",
+    "example": "# 由 QUIC 承載、UDP 之上\n# 瀏覽器與 CDN 自動協商、應用層無感",
+    "related": [
+      "http2",
+      "quic-protocol",
+      "tls-handshake"
+    ]
+  },
+  {
+    "slug": "quic-protocol",
+    "term": "QUIC",
+    "zh_name": "QUIC 協定",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "Google 發明、跑在 UDP 上的傳輸協定，內建加密、連線建立更快、支援連線遷移（換網路不斷）。什麼時候在意：它是 HTTP/3 的底層。",
+    "analogy": "自帶保全又能邊走邊換路的快遞：不用每次重新驗證、換路也不掉包。",
+    "example": "# HTTP/3 = HTTP over QUIC over UDP\n# 0-RTT 可在重連時省掉握手",
+    "related": [
+      "http3",
+      "tls-handshake",
+      "packet-loss"
+    ]
+  },
+  {
+    "slug": "mtu",
+    "term": "MTU",
+    "zh_name": "最大傳輸單元",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一個網路封包「最大能多大」（乙太網路常見 1500 bytes）。超過就要分片，設不對會造成莫名的連線卡頓/掉包。什麼時候在意：VPN、通道封裝後封包變大時要調小 MTU。",
+    "analogy": "貨車限高：超過就進不了隧道，得拆成小車分批運。",
+    "example": "ping -M do -s 1472 example.com  # 測不分片的最大 payload",
+    "related": [
+      "packet-loss",
+      "latency-network",
+      "tcp-handshake"
+    ]
+  },
+  {
+    "slug": "packet-loss",
+    "term": "packet loss",
+    "zh_name": "封包遺失",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "資料封包在網路傳輸中「掉了、沒到」。TCP 會重傳（變慢），UDP 可能直接丟（視訊/遊戲會卡頓花屏）。什麼時候在意：連線時好時壞、延遲抖動大時。",
+    "analogy": "寄了 10 個包裹，路上弄丟 2 個——TCP 會補寄、UDP 就當沒這回事。",
+    "example": "ping example.com   # 看 packet loss %\nmtr example.com    # 逐段找哪裡在掉",
+    "related": [
+      "latency-network",
+      "mtu",
+      "quic-protocol"
+    ]
+  },
+  {
+    "slug": "latency-network",
+    "term": "network latency",
+    "zh_name": "網路延遲",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "資料「來回一趟要花多久」（RTT，毫秒計）。跟頻寬不同——頻寬是「多寬」、延遲是「多久」。什麼時候在意：跨海服務、遊戲、即時互動；靠 CDN/就近部署降低。",
+    "analogy": "頻寬是水管多粗，延遲是水從打開到流出來要等多久——兩回事。",
+    "example": "ping example.com   # time=xx ms 就是 RTT\n# 台灣→美西大約 130~180ms",
+    "related": [
+      "bandwidth",
+      "packet-loss",
+      "cdn",
+      "edge-computing"
+    ]
+  },
+  {
+    "slug": "dns-over-https",
+    "term": "DNS over HTTPS (DoH)",
+    "zh_name": "加密 DNS",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把 DNS 查詢「藏在 HTTPS 裡」加密送出，避免被中間人偷看/竄改你查了哪些網站。什麼時候用：隱私、防 DNS 汙染；瀏覽器多半可開。",
+    "analogy": "查電話不用大聲問櫃檯（誰都聽得到），改用密封紙條遞進去。",
+    "example": "# 瀏覽器設定啟用 DoH\n# 例：https://cloudflare-dns.com/dns-query",
+    "related": [
+      "dns-resolution",
+      "tls-handshake",
+      "mitm-attack"
+    ]
+  },
+  {
+    "slug": "preflight-request",
+    "term": "CORS preflight",
+    "zh_name": "預檢請求",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "跨來源請求前，瀏覽器先發一個 OPTIONS「問伺服器准不准」，准了才發真正的請求。什麼時候遇到：前端呼叫跨網域 API 時 DevTools 多一個 OPTIONS；伺服器要回對 CORS 標頭。",
+    "analogy": "進場前先派人問「我這樣穿可以進嗎」，得到 OK 才整團進去。",
+    "example": "OPTIONS /api  → 伺服器回 Access-Control-Allow-*\n# 通過後才送真正的 POST",
+    "related": [
+      "cors",
+      "same-origin-policy",
+      "csp-header"
+    ]
+  },
+  {
+    "slug": "same-origin-policy",
+    "term": "same-origin policy",
+    "zh_name": "同源政策",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "瀏覽器的核心安全規則：預設「網頁只能存取同一個來源（協定+網域+埠都一樣）的資源」，擋跨站偷資料。什麼時候在意：跨網域請求被擋 → 需要 CORS 放行。",
+    "analogy": "你家鑰匙只能開自己家門，不能開隔壁——除非鄰居明確給你權限（CORS）。",
+    "example": "# https://a.com 的 JS 不能讀 https://b.com 的回應\n# 除非 b.com 回 Access-Control-Allow-Origin",
+    "related": [
+      "cors",
+      "preflight-request",
+      "xss",
+      "csrf"
+    ]
+  },
+  {
+    "slug": "csp-header",
+    "term": "Content-Security-Policy header",
+    "zh_name": "CSP 標頭",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一個 HTTP 標頭，告訴瀏覽器「只准載入哪些來源的 script/style/圖片」，是擋 XSS 的強力防線。什麼時候用：想降低 XSS 風險、鎖死可執行的來源。",
+    "analogy": "門禁白名單：只有名單上的廠商能進大樓送貨，其他一律擋。",
+    "example": "Content-Security-Policy: default-src 'self';\n  script-src 'self' https://cdn.trusted.com",
+    "related": [
+      "content-security-policy",
+      "xss",
+      "subresource-integrity"
+    ]
+  },
+  {
+    "slug": "keepalive-http",
+    "term": "HTTP keep-alive",
+    "zh_name": "連線保持",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "同一條 TCP 連線「重複用來送多個請求」，不用每次重新握手。什麼時候在意：預設就開；短連線大量請求時它省很多握手成本。",
+    "analogy": "跟同一個櫃檯辦很多事，不用每件事都重新排隊抽號碼牌。",
+    "example": "Connection: keep-alive\n# HTTP/1.1 預設開啟、HTTP/2 更進一步多路複用",
+    "related": [
+      "http2",
+      "tcp-handshake",
+      "latency-network"
+    ]
+  },
+  {
+    "slug": "chunked-transfer",
+    "term": "chunked transfer encoding",
+    "zh_name": "分塊傳輸",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "伺服器「一塊一塊」把回應送出、不用先知道總長度。什麼時候用：串流、邊產生邊回傳（如 AI 逐字輸出、大檔）。",
+    "analogy": "餐點好一道上一道，不用等整桌做完才一次端出。",
+    "example": "Transfer-Encoding: chunked\n# 每塊前面標長度、0 表示結束",
+    "related": [
+      "server-sent-events",
+      "http2",
+      "sse"
+    ]
+  },
+  {
+    "slug": "etag-http",
+    "term": "ETag",
+    "zh_name": "實體標籤",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "伺服器給資源的「版本指紋」。瀏覽器下次帶著它問「還是這版嗎」，沒變就回 304 不重傳。什麼時候用：HTTP 快取驗證、省頻寬。",
+    "analogy": "書的版次編號：跟書店說「我有第 3 版」，沒出新版就不用重買。",
+    "example": "ETag: \"abc123\"\n# 下次 If-None-Match: \"abc123\" → 沒變回 304",
+    "related": [
+      "cache",
+      "cdn",
+      "keepalive-http"
+    ]
+  },
+  {
+    "slug": "sni-tls",
+    "term": "SNI (Server Name Indication)",
+    "zh_name": "伺服器名稱指示",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "TLS 握手時，客戶端「先講出要連哪個網域」，好讓一台 IP 上多個 HTTPS 網站給對的憑證。什麼時候在意：共用 IP 的虛擬主機、CDN 都靠它。",
+    "analogy": "到綜合大樓櫃檯先報「我找 3 樓的 A 公司」，才知道給你哪張門禁卡。",
+    "example": "# ClientHello 內含 server_name = example.com\n# 伺服器據此選對應憑證",
+    "related": [
+      "tls-handshake",
+      "certificate",
+      "reverse-proxy"
+    ]
+  },
+  {
+    "slug": "mitm-attack",
+    "term": "man-in-the-middle attack",
+    "zh_name": "中間人攻擊",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "攻擊者「夾在你和伺服器中間」偷看或竄改往來的資料。什麼時候會中：連了假 Wi-Fi、憑證被忽略時。防禦：全程 HTTPS/TLS、憑證固定（pinning）。",
+    "analogy": "郵差偷拆你的信看完再封回去，甚至改內容——你和收件人都沒發現。",
+    "example": "# 防禦：驗憑證、HSTS 強制 HTTPS、憑證 pinning\n# 別忽略瀏覽器的憑證警告",
+    "related": [
+      "tls-handshake",
+      "dns-over-https",
+      "certificate-authority"
+    ]
+  },
+  {
+    "slug": "idor",
+    "term": "IDOR",
+    "zh_name": "不安全的直接物件參照",
+    "category": "error",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把網址/參數裡的 id 換成別人的就能看到/改到別人的資料——因為後端「沒驗這筆到底是不是你的」。什麼時候中：只看有沒有登入、卻沒檢查「這筆屬不屬於你」。",
+    "analogy": "旅館房卡能開所有房間的門，因為門鎖只認「有卡」不認「是不是你的房」。",
+    "example": "GET /orders/1002  → 改成 /orders/1003 就看到別人訂單\n# 修：後端加 where user_id = 你",
+    "related": [
+      "privilege-escalation",
+      "session-hijacking",
+      "path-traversal"
+    ]
+  },
+  {
+    "slug": "ssrf",
+    "term": "SSRF",
+    "zh_name": "伺服器端請求偽造",
+    "category": "error",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "騙「伺服器」去打一個攻擊者指定的內部網址，藉此戳到內網/雲端中繼資料等外部碰不到的東西。什麼時候中：讓使用者填 URL 讓後端去抓時。防禦：白名單、擋內網位址。",
+    "analogy": "叫大樓警衛（有內部通行權）幫你去某個房間拿東西——你自己進不去、他能。",
+    "example": "# 使用者填 image_url=http://169.254.169.254/... (雲端 metadata)\n# 後端照抓 → 洩漏憑證。修：擋內網 IP + 白名單",
+    "related": [
+      "path-traversal",
+      "idor",
+      "waf"
+    ]
+  },
+  {
+    "slug": "path-traversal",
+    "term": "path traversal",
+    "zh_name": "路徑遍歷",
+    "category": "error",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "用 ../ 之類把檔案路徑「跳出預期資料夾」，讀到不該給的系統檔（如 /etc/passwd）。什麼時候中：用使用者輸入直接拼檔案路徑時。防禦：正規化路徑、白名單、別信任輸入。",
+    "analogy": "旅客照著房號找路，卻用「往上一層、再往上一層」溜進員工專用區。",
+    "example": "GET /download?file=../../etc/passwd\n# 修：正規化並確認仍在允許目錄內",
+    "related": [
+      "idor",
+      "ssrf",
+      "privilege-escalation"
+    ]
+  },
+  {
+    "slug": "privilege-escalation",
+    "term": "privilege escalation",
+    "zh_name": "權限提升",
+    "category": "error",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "從低權限「爬到高權限」（一般使用者變管理員）。分垂直（升級角色）與水平（拿到同級別人的權限）。什麼時候中：權限檢查有漏洞、預設帳號、設定錯誤時。",
+    "analogy": "拿到員工證後想辦法弄到主管的萬能鑰匙，開到本來不該開的門。",
+    "example": "# 例：改請求裡的 role=user → role=admin 而後端沒驗\n# 修：伺服器端才是權限真相、別信前端",
+    "related": [
+      "idor",
+      "session-hijacking",
+      "zero-trust"
+    ]
+  },
+  {
+    "slug": "session-hijacking",
+    "term": "session hijacking",
+    "zh_name": "工作階段劫持",
+    "category": "error",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "偷到你的 session token / cookie 就能「冒充你登入」。什麼時候中：token 走明文、XSS 偷 cookie、不換 token 時。防禦：HTTPS、HttpOnly/Secure cookie、登入後換 token。",
+    "analogy": "撿到你的門禁卡就能大搖大擺進你家——系統只認卡不認人。",
+    "example": "# 防禦：Secure + HttpOnly cookie、TLS、\n# 登入/提權後 rotate session id",
+    "related": [
+      "httponly-cookie",
+      "access-token",
+      "replay-attack",
+      "xss"
+    ]
+  },
+  {
+    "slug": "replay-attack",
+    "term": "replay attack",
+    "zh_name": "重放攻擊",
+    "category": "error",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "攔截一個「合法的請求」原封不動再送一次，達成重複轉帳、重複下單等。什麼時候中：請求沒有一次性標記時。防禦：nonce、時間戳、idempotency key。",
+    "analogy": "錄下你說的通關密語，之後原音重播就矇混過關。",
+    "example": "# 防禦：每次帶一次性 nonce + timestamp\n# 伺服器記住用過的、拒絕重複",
+    "related": [
+      "nonce-crypto",
+      "idempotency",
+      "hmac"
+    ]
+  },
+  {
+    "slug": "argon2",
+    "term": "Argon2",
+    "zh_name": "Argon2",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "現代最推薦的「密碼雜湊」演算法（2015 密碼雜湊競賽冠軍），刻意吃記憶體+運算，讓暴力破解很貴。什麼時候用：存使用者密碼的首選（優於舊的 MD5/SHA）。",
+    "analogy": "把密碼鎖進一個「開起來很耗時耗料」的保險箱，小偷試一次成本超高。",
+    "example": "from argon2 import PasswordHasher\nph = PasswordHasher(); h = ph.hash(\"pw\")",
+    "related": [
+      "bcrypt",
+      "pbkdf2",
+      "salt",
+      "password-hashing"
+    ]
+  },
+  {
+    "slug": "pbkdf2",
+    "term": "PBKDF2",
+    "zh_name": "PBKDF2 金鑰導出",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把密碼「重複雜湊上萬次」變成金鑰的老牌演算法，靠迭代次數拖慢破解。什麼時候用：相容性需求高的密碼儲存/金鑰導出；新專案多改用 Argon2。",
+    "analogy": "同一道門鎖反覆上鎖一萬遍，開的人得一遍遍解、非常花時間。",
+    "example": "import hashlib\nhashlib.pbkdf2_hmac('sha256', pw, salt, 100_000)",
+    "related": [
+      "argon2",
+      "bcrypt",
+      "salt",
+      "hmac"
+    ]
+  },
+  {
+    "slug": "hmac",
+    "term": "HMAC",
+    "zh_name": "雜湊訊息驗證碼",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "用「共享密鑰 + 雜湊」產生一段簽章，證明訊息「沒被竄改、且來自知道密鑰的人」。什麼時候用：驗 webhook 來源（如 Stripe/LINE 簽章）、API 簽名。",
+    "analogy": "在信封上蓋只有你和對方會的專屬火漆印，別人改內容就對不上印。",
+    "example": "import hmac, hashlib\nsig = hmac.new(secret, body, hashlib.sha256).hexdigest()",
+    "related": [
+      "digital-signature",
+      "replay-attack",
+      "public-key-crypto"
+    ]
+  },
+  {
+    "slug": "certificate-authority",
+    "term": "Certificate Authority (CA)",
+    "zh_name": "憑證頒發機構",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "受信任的「發證單位」，簽發並擔保 TLS 憑證上的身分（如 Let's Encrypt）。瀏覽器內建信任的 CA 清單。什麼時候在意：憑證錯誤、自簽憑證不被信任時。",
+    "analogy": "政府監理所核發駕照：大家信任這個單位，才信這張證是真的。",
+    "example": "# Let's Encrypt 免費簽發\ncertbot --nginx -d example.com",
+    "related": [
+      "certificate",
+      "tls-handshake",
+      "public-key-crypto",
+      "mtls"
+    ]
+  },
+  {
+    "slug": "public-key-crypto",
+    "term": "public-key cryptography",
+    "zh_name": "公開金鑰加密",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一對鑰匙：公鑰加密只有私鑰能解、私鑰簽名只有公鑰能驗。什麼時候用：TLS、SSH、簽章的基礎（非對稱加密）。私鑰絕不外流。",
+    "analogy": "郵筒：投信口（公鑰）人人可投，只有你手上的鑰匙（私鑰）能開來拿信。",
+    "example": "# 產一對金鑰\nssh-keygen -t ed25519\n# 公鑰給對方、私鑰自己留",
+    "related": [
+      "asymmetric-encryption",
+      "digital-signature",
+      "certificate-authority"
+    ]
+  },
+  {
+    "slug": "totp",
+    "term": "TOTP",
+    "zh_name": "時間型一次性密碼",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "手機驗證器（Google Authenticator 等）每 30 秒換一組 6 位數的原理：用共享密鑰＋當前時間算出來。什麼時候用：兩步驟驗證（2FA）的動態碼。",
+    "analogy": "跟對方對好同一支會走的時鐘，各自照時間算出當下的暗號，永遠一致。",
+    "example": "import pyotp\ntotp = pyotp.TOTP(secret); totp.now()  # 6 位動態碼",
+    "related": [
+      "mfa",
+      "hmac",
+      "otp"
+    ]
+  },
+  {
+    "slug": "httponly-cookie",
+    "term": "HttpOnly cookie",
+    "zh_name": "HttpOnly Cookie",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "標了 HttpOnly 的 cookie「JavaScript 讀不到」，就算被 XSS 也偷不走。什麼時候用：存 session token 的 cookie 一定要加，擋 XSS 竊取。",
+    "analogy": "把重要文件鎖進只有系統能開的抽屜，網頁上的腳本連碰都碰不到。",
+    "example": "Set-Cookie: sid=abc; HttpOnly; Secure; SameSite=Lax",
+    "related": [
+      "samesite-cookie",
+      "secure-cookie",
+      "session-hijacking",
+      "xss"
+    ]
+  },
+  {
+    "slug": "samesite-cookie",
+    "term": "SameSite cookie",
+    "zh_name": "SameSite Cookie",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "控制 cookie 「跨站時要不要一起送」的屬性（Strict/Lax/None）。什麼時候用：設 Lax/Strict 能擋掉大部分 CSRF。",
+    "analogy": "門禁卡設成「只在自家大樓刷得過」，別人拿去別的大樓刷不動。",
+    "example": "Set-Cookie: sid=abc; SameSite=Strict; Secure",
+    "related": [
+      "httponly-cookie",
+      "secure-cookie",
+      "csrf"
+    ]
+  },
+  {
+    "slug": "secure-cookie",
+    "term": "Secure cookie",
+    "zh_name": "Secure Cookie",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "標了 Secure 的 cookie「只在 HTTPS 才會被送」，避免走明文被竊。什麼時候用：所有敏感 cookie 都該加，配 HttpOnly + SameSite。",
+    "analogy": "貴重物品只走保全押運的路線，不走沒人看管的巷子。",
+    "example": "Set-Cookie: sid=abc; Secure; HttpOnly; SameSite=Lax",
+    "related": [
+      "httponly-cookie",
+      "samesite-cookie",
+      "tls-handshake"
+    ]
+  },
+  {
+    "slug": "subresource-integrity",
+    "term": "Subresource Integrity (SRI)",
+    "zh_name": "子資源完整性",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "在載入外部 CDN 的 script/style 時附上「內容雜湊」，瀏覽器比對不符就拒載，防 CDN 被下毒。什麼時候用：引用第三方 CDN 資源時。",
+    "analogy": "收快遞前先核對包裹的封條指紋，被動過就拒收。",
+    "example": "<script src=\"https://cdn/x.js\"\n  integrity=\"sha384-...\" crossorigin=\"anonymous\"></script>",
+    "related": [
+      "csp-header",
+      "content-security-policy",
+      "hmac"
+    ]
+  },
+  {
+    "slug": "zero-trust",
+    "term": "zero trust",
+    "zh_name": "零信任",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "資安思維：「預設誰都不信」，不管在不在內網，每次存取都要驗身分＋權限。什麼時候用：現代雲端/遠端辦公，取代「進了內網就放行」的舊城牆思維。",
+    "analogy": "不因為人已經進了大樓就放行，每道門都還要再刷卡驗證。",
+    "example": "# 每個請求都驗 identity + device + policy\n# 常配 mTLS、短期 token、最小權限",
+    "related": [
+      "mtls",
+      "mfa",
+      "privilege-escalation",
+      "secrets-management"
+    ]
+  },
+  {
+    "slug": "key-rotation",
+    "term": "key rotation",
+    "zh_name": "金鑰輪替",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "定期「換掉」金鑰/密碼/token，縮短一把鑰匙外洩後的危害時間。什麼時候用：API key、加密金鑰、憑證都該定期換；洩漏後更要立刻換。",
+    "analogy": "定期換家裡的門鎖，就算舊鑰匙被複製過也很快失效。",
+    "example": "# 支援新舊金鑰並存一段時間 → 全部切到新的 → 停用舊的\n# 別硬編、放 secrets manager",
+    "related": [
+      "secrets-management",
+      "access-token",
+      "certificate-authority"
+    ]
+  },
+  {
+    "slug": "secrets-management",
+    "term": "secrets management",
+    "zh_name": "機密管理",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把 API key、密碼、憑證等「機密」集中安全保存、控管存取、可輪替，而不是硬寫在程式或 .env 到處放。什麼時候用：一有正式金鑰就該用（工具＝Vault、AWS Secrets Manager、Doppler）。",
+    "analogy": "貴重物品放銀行保險庫＋借用登記，而不是塞在辦公室抽屜。",
+    "example": "# 別 commit .env！\n# 執行時從 secrets manager 注入環境變數",
+    "related": [
+      "key-rotation",
+      "environment-variable",
+      "zero-trust"
+    ]
+  },
+  {
+    "slug": "waf",
+    "term": "Web Application Firewall (WAF)",
+    "zh_name": "Web 應用防火牆",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "擋在網站前面「過濾惡意流量」的防火牆，攔 SQL injection、XSS、掃描、部分 DDoS。什麼時候用：對外服務加一層防護（如 Cloudflare WAF）。注意：是輔助、不能取代把程式寫安全。",
+    "analogy": "大樓門口的保全＋金屬探測門：先擋掉明顯有問題的人，但室內該鎖的還是要鎖。",
+    "example": "# Cloudflare / AWS WAF 規則\n# 擋常見攻擊特徵，但仍要修根本漏洞",
+    "related": [
+      "ssrf",
+      "sql-injection",
+      "ddos",
+      "rate-limiting"
+    ]
+  },
+  {
+    "slug": "nonce-crypto",
+    "term": "nonce",
+    "zh_name": "一次性隨機值",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "「只用一次的隨機數」，防重放、保證每次請求/加密都獨一無二。什麼時候用：CSP 內聯 script 授權、簽章防重放、加密初始向量。",
+    "analogy": "一次性密碼紙條：用過就作廢，同一張再拿來用不認帳。",
+    "example": "# CSP 用 nonce 授權特定 inline script\n<script nonce=\"r4nd0m\">...</script>",
+    "related": [
+      "replay-attack",
+      "csp-header",
+      "hmac"
+    ]
+  }
+]

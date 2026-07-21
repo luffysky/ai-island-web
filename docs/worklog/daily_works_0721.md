@@ -309,3 +309,20 @@ ch49 + ch50（AI Agent / n8n 兩大旗艦章）完成。**教具庫新增 2 個�
 - **import 1806、失敗 0**；DB 實測 total=1806、新 slug 抽查 7/7 present。**辭典 1773 → 1806 / 目標 5000。**
 - CLAUDE.md 進度指標更新（續寫從 seed-42 接、附 41 批主題）。
 - 待辦：seed-41 之後跑 `translate-sync-all.mjs` 補 i18n（免費 Google、冪等）。
+
+---
+
+## 📖 辭典 seed-42：網路協定 / Web / 資安 / 加密驗證 41 條（0721·手寫零 API）
+
+接續 seed-41、續攻辭典縫隙。發現網路/資安主題比前端/TS 更多沒收，挑真正的缺口（同樣先 cat 全 seed 抽 slug 驗無 collision）。
+
+- **seed-42（41 條、0 衝突、欄位齊全）**：
+  - 網路/協定：tls-handshake / mtls / dns-resolution / cname-record / mx-record / http2 / http3 / quic-protocol / mtu / packet-loss / latency-network / dns-over-https
+  - Web/HTTP：preflight-request / same-origin-policy / csp-header / keepalive-http / chunked-transfer / etag-http / sni-tls
+  - 資安/攻擊：mitm-attack / idor / ssrf / path-traversal / privilege-escalation / session-hijacking / replay-attack（category=error）
+  - 加密/驗證：argon2 / pbkdf2 / hmac / certificate-authority / public-key-crypto / totp
+  - Cookie/加固：httponly-cookie / samesite-cookie / secure-cookie / subresource-integrity
+  - 營運資安：zero-trust / key-rotation / secrets-management / waf / nonce-crypto
+- 每條 plain（功能＋何時用＋常見防禦）＋生活比喻＋可跑/可貼範例＋related。
+- **import 1847、失敗 0**。**辭典 1806 → 1847 / 目標 5000。** CLAUDE.md 續寫指標→ seed-43。
+- 本日辭典兩批共 +74 條（seed-41 33 + seed-42 41），皆手寫零 AI 花費。
