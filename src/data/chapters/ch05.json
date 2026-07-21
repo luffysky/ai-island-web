@@ -42,9 +42,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（any）寫一段小 code 解決一個實際問題。",
-        "hint": "關鍵概念可以從 lesson 內出現的這些關鍵字入手：any。畫完不要光放著、試著用自己的話講一次。",
-        "answer": "心智圖三步：(1) 中心 = lesson 主題 (2) 第一圈 = 主要分類（通常 3-5 個）(3) 第二圈 = 具體例子或工具。畫完拿給朋友看、能講通 = 真懂。常見錯誤：抄關鍵字當分類、應該用自己理解後的歸納。"
+        "question": "同一段 JS：`function total(items){return items.reduce((s,i)=>s+i.price,0)}`，如果有人傳進來的物件沒有 price、或 price 是字串，會怎樣？TypeScript 能在『什麼時候』抓到這個問題？用一句話說服一個只寫 JS 的朋友為什麼值得學 TS。",
+        "hint": "JS 的型別錯誤要『執行到那行』才炸；TS 在你打字/編譯時就標紅。",
+        "answer": "JS 裡這種錯要等執行到、資料剛好壞掉才爆（可能已經上線）。TS 在『寫的當下/編譯時』就標紅——你打錯欄位名、傳錯型別，IDE 立刻提醒，還有自動補全。一句話：TS＝把一大類低級 bug 從『上線後使用者踩到』提前到『你寫的當下就發現』。"
       },
       "outline": [
         {
@@ -118,9 +118,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（npx tsc --init, npm install -D typescript tsx @types/node, npx tsx hello.ts, Hi ${name}, you are ${age}）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "TS 檔不能直接被瀏覽器/Node 執行，中間發生了什麼？`tsc`、`ts-node`、以及打包工具（Vite/esbuild）在『把 TS 變成能跑的 JS』這件事上各扮演什麼角色？型別在執行時還存在嗎？",
+        "hint": "TS 要先『編譯（type check + 去掉型別）』成 JS 才能跑。型別是編譯期的、執行時被抹掉。",
+        "answer": "TS 先經編譯：①型別檢查 ②把型別註記抹掉、轉成純 JS。tsc 是官方編譯器（可只檢查或產出 JS）；ts-node 讓你直接跑 TS（開發方便）；Vite/esbuild 用超快的轉譯把 TS→JS（通常只轉譯不做完整型別檢查，型別檢查交給 tsc/IDE）。執行時型別完全不存在——所以不能靠型別做執行期驗證（那要靠 Zod 等）。"
       },
       "outline": [
         {
@@ -198,9 +198,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（${greeting}, ${name}, Hello, ${name}, ${greeting || \"Hello\"}, ${name}）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "什麼時候該明確標型別、什麼時候讓 TS『自動推論』就好？`let x = 5` 和 `let x: number = 5` 差在哪、哪個較好？`any`、`unknown`、`never` 三者各代表什麼、為什麼 any 是『逃生門但別濫用』？",
+        "hint": "能推論就別多寫（let x=5 已是 number）。any 關掉檢查、unknown 是安全版 any（用前要縮型別）、never 是不可能發生。",
+        "answer": "初始化就有值時讓它自動推論（let x=5 已是 number，多標反而囉嗦）；函式參數、公開 API 邊界則明確標。any＝關閉型別檢查（會傳染、失去 TS 的意義，盡量別用）；unknown＝安全版 any，拿來用前必須先縮小型別（型別守衛），逼你處理；never＝永遠不會發生的型別（如 exhaustive 檢查、拋錯函式的回傳）。"
       },
       "outline": [
         {
@@ -274,9 +274,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（published at ${post.publishedAt},   ${c.author.name}: ${c.content}, by ${post.author.name}）寫一段小 code 解決一個實際問題。",
-        "hint": "關鍵概念可以從 lesson 內出現的這些關鍵字入手：by ${post.author.name}、published at ${post.publishedAt}、  ${c.author.name}: ${c.content}。畫完不要光放著、試著用自己的話講一次。",
-        "answer": "心智圖三步：(1) 中心 = lesson 主題 (2) 第一圈 = 主要分類（通常 3-5 個）(3) 第二圈 = 具體例子或工具。畫完拿給朋友看、能講通 = 真懂。常見錯誤：抄關鍵字當分類、應該用自己理解後的歸納。"
+        "question": "描述一個 User 物件（id、name、可選 avatar），用 type 寫一次、用 interface 寫一次。這節情境下兩者幾乎等價——那什麼時候比較適合用 interface、什麼時候只能用 type？可選屬性 `avatar?` 和 `avatar: string | undefined` 差在哪？",
+        "hint": "interface 可宣告合併、擅長描述物件/被 class implements；type 能表達 union/交叉/映射等 interface 做不到的。",
+        "answer": "type User = { id:number; name:string; avatar?:string }；interface User { … } 幾乎等價。用 interface：描述物件形狀、要被 class implements、想利用宣告合併/擴充（公開 API 常用）。只能用 type：union（A|B）、交叉、條件型別、映射型別、給原始型別取別名。`avatar?` 表示可以『不存在這個 key』；`avatar: string|undefined` 表示 key 必須在、但值可為 undefined——前者更寬鬆。"
       },
       "outline": [
         {
@@ -358,9 +358,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "一個訂單狀態只可能是 'pending'|'paid'|'shipped'|'done'。用 union of literal types 定義它，比用 string 好在哪？搭配 switch 做『窮盡檢查（exhaustive）』時，用 never 怎麼讓『漏處理某個狀態』變成編譯錯誤？",
+        "hint": "字面量 union 只允許那幾個值、打錯會標紅、有自動補全。default 分支把值賦給 never 可強制窮盡。",
+        "answer": "type Status='pending'|'paid'|'shipped'|'done'。比 string 好：只准這四個值、打錯 'payed' 立刻標紅、switch 有補全。窮盡檢查：在 switch 的 default 寫 `const _x: never = status`——若之後新增了狀態卻忘了處理，該值不是 never、就編譯報錯，逼你補上。這讓『新增狀態』不會默默漏掉分支。"
       },
       "outline": [
         {
@@ -434,9 +434,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（${title} ${name}, /api/users/${id}, Unknown: ${_exhaustive}, type FnName = (a: number) => string）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "函式型別的三種寫法（行內註記、type 別名、interface 的呼叫簽章）各適合什麼？替一個 `onRetry(attempt: number): boolean` 的回呼參數標型別。可選參數 `?`、預設值、rest 參數 `...args` 的型別怎麼寫？",
+        "hint": "回呼型別用 type 別名最常見：type Retry=(attempt:number)=>boolean。可選 param? 要在必填之後。",
+        "answer": "type OnRetry = (attempt: number) => boolean；用在 `function run(cb: OnRetry)`。三寫法：行內（(n:number)=>void 直接標）、type 別名（可重用、最常見）、interface 呼叫簽章（少見，適合同時有屬性的可呼叫物件）。可選參數 `(a:number, b?:string)`（b 可不傳，須排必填後）、預設值 `(a=1:...)`、rest `(...ids:number[])`。"
       },
       "outline": [
         {
@@ -514,9 +514,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "要存『slug → 文章物件』的對照，用 `Record<string, Article>` 和用 `Map<string, Article>` 在型別與使用上差在哪？陣列 `Article[]` 和 `Array<Article>` 有差嗎？什麼時候該用 Record 而不是一堆可選欄位的 interface？",
+        "hint": "Record 是『物件』的型別糖（編譯後就是普通物件）；Map 是執行時的資料結構。T[] 與 Array<T> 等價。",
+        "answer": "Record<string,Article> 描述『鍵是字串、值是 Article 的物件』，執行時就是普通 {}；Map<string,Article> 是真的 Map 實例（有 .get/.set/.size、key 可非字串、保序）。Article[] 與 Array<Article> 完全等價（風格差異）。當『鍵是動態、數量不定的一堆同型別值』用 Record；當『固定已知欄位』用 interface。"
       },
       "outline": [
         {
@@ -590,9 +590,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（T extends { length: number }）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "為什麼 `function first(arr: any[]): any` 不好、`function first<T>(arr: T[]): T` 好？用泛型寫一個 `identity` 和一個 `pluck(objs, key)`（取每個物件某欄位）。泛型解決了什麼『重複寫很多份幾乎一樣的函式』的問題？",
+        "hint": "泛型＝型別的參數：呼叫時才決定 T，讓輸入與輸出型別連動、保留精確型別。",
+        "answer": "any 版會丟失型別（回傳 any、之後沒補全沒檢查）；<T> 版讓回傳型別跟著輸入走（傳 number[] 回 number）。identity: `<T>(x:T):T=>x`。pluck: `<T, K extends keyof T>(objs:T[], key:K):T[K][] => objs.map(o=>o[key])`。泛型讓你寫『一份能適用各種型別、又不失精確度』的函式，取代為每種型別各複製一份。"
       },
       "outline": [
         {
@@ -666,9 +666,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 10 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "有一個完整的 User 型別，你需要：①做表單時所有欄位可選 ②回傳時隱藏 password ③只挑 id 和 name。分別用哪個 Utility Type（Partial / Omit / Pick / Required / Readonly）？為什麼用 Utility 比手寫新型別好？",
+        "hint": "Partial 全可選、Required 全必填、Pick 挑幾個、Omit 排除幾個、Readonly 全唯讀。",
+        "answer": "①表單全可選→Partial<User> ②隱藏密碼→Omit<User,'password'> ③只要 id/name→Pick<User,'id'|'name'>。好處：這些型別會『跟著 User 自動更新』——User 加了欄位，Partial/衍生型別自動包含，不會像手寫型別那樣忘了同步而 drift。組合可疊（如 Readonly<Pick<...>>）。"
       },
       "outline": [
         {
@@ -758,9 +758,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（type Status = \"a\" | \"b\", as const）寫一段小 code 解決一個實際問題。",
-        "hint": "關鍵概念可以從 lesson 內出現的這些關鍵字入手：type Status = \"a\" | \"b\"、as const。畫完不要光放著、試著用自己的話講一次。",
-        "answer": "心智圖三步：(1) 中心 = lesson 主題 (2) 第一圈 = 主要分類（通常 3-5 個）(3) 第二圈 = 具體例子或工具。畫完拿給朋友看、能講通 = 真懂。常見錯誤：抄關鍵字當分類、應該用自己理解後的歸納。"
+        "question": "`enum Status{...}` 和 `const Status = {...} as const` 兩種表達『一組固定選項』的方式，各有什麼優缺點（執行時產物、tree-shaking、型別）？為什麼很多現代專案偏好 as const 物件或字面量 union 而不用 enum？",
+        "hint": "enum 會產生執行時程式碼（尤其數字 enum 有反向映射）；as const 物件更輕、值即型別。",
+        "answer": "enum 會編譯出額外執行時物件（數字 enum 還有反向對應），較不利 tree-shaking，且行為有些陷阱。`as const` 物件（或純字面量 union）不產生多餘執行期碼、值就是字面量型別、可搭配 keyof/typeof 取值域。現代偏好 union/as const：更輕、更可預測、和 JS 相容好。若團隊已大量用 enum 亦可，但新程式常選 as const。"
       },
       "outline": [
         {
@@ -838,9 +838,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "承 5.4，再深入：interface 的『宣告合併』是什麼、什麼場景用得到（如擴充第三方型別）？type 能做而 interface 不能的三件事各是什麼？團隊該怎麼定一個簡單好記的選用準則？",
+        "hint": "同名 interface 會自動合併；type 能 union/交叉/條件/映射/給原始型別別名。",
+        "answer": "宣告合併：同名 interface 自動併成一個——可用來擴充第三方或全域型別（如給 window 加屬性、擴充 Express Request）。type 專屬：union（A|B）、條件型別（T extends...）、映射型別（{[K in ...]}）、給原始型別/元組取別名。準則：『描述物件形狀、可能被擴充/implements → interface；需要 union/組合/型別運算 → type』，兩者混用沒關係，一致即可。"
       },
       "outline": [
         {
@@ -914,9 +914,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（Hello, I'm ${this.name}, ${this.color} shape with area ${this.area()}, ${this.name} 在吃, ${this.name} 汪汪）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "用 class 寫一個 Timer：startTime 建立後不可改（readonly）、內部 tick 計數外部不可見（private）、有個抽象基底規定子類必須實作 onTick。public/private/protected/readonly/abstract 各在這裡做什麼？TS 的 private 和 JS 的 #private 差在哪？",
+        "hint": "readonly 只能建構時設、private 外部不可存取、protected 子類可、abstract 不能被 new 且規定子類實作。",
+        "answer": "readonly startTime＝建構後不可再改；private #tick 或 private tick＝外部拿不到；protected＝自己與子類可用；abstract class＝不能被 new、abstract onTick() 強制子類實作。TS 的 private 只在『編譯期』檢查（執行時仍可被存取/繞過）；JS 原生 #private 是『執行時真正私有』——要真正封裝用 #。"
       },
       "outline": [
         {
@@ -994,9 +994,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（import type, @/*, ../../../）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "`import type { User } from './types'` 和一般 `import { User }` 差在哪、為什麼加 type 有好處？預設匯出（default）和具名匯出各適合什麼？為什麼很多團隊規定『少用 default export』？",
+        "hint": "import type 只匯入型別、編譯後整行消失（不影響執行期依賴/打包）。具名匯出重新命名一致、利於自動匯入。",
+        "answer": "import type 明確表示『只要型別』，編譯後這行被完全移除、不會產生執行期匯入（避免多餘依賴、利於打包與循環依賴）。default 適合一個模組就一個主角（如一個 React 元件）；具名匯出名稱固定、IDE 自動匯入與重構友善。少用 default 的理由：default 可被隨意改名造成不一致、不利自動匯入與 grep。"
       },
       "outline": [
         {
@@ -1074,9 +1074,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（Unknown shape: ${_exhaustive}）寫一段小 code 解決一個實際問題。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（Unknown shape: ${_exhaustive}）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "一個參數型別是 `string | number | null`，你要對它分別處理。用 typeof、`=== null`、in 運算子、以及自訂型別守衛（value is X）各怎麼『縮小型別』讓 TS 知道當下確切是哪種？寫一個判斷 `isArticle(x): x is Article` 的守衛。",
+        "hint": "TS 會依你的 if 判斷自動縮型別（narrowing）。自訂守衛用回傳 `x is T` 告訴 TS。",
+        "answer": "typeof v==='string'（縮成 string）、v===null（排除 null）、'title' in obj（有此鍵）、Array.isArray(v)。自訂守衛：`function isArticle(x:unknown): x is Article { return typeof x==='object' && x!==null && 'title' in x }`——回傳 `x is Article` 讓 TS 在 if 內把 x 當 Article。縮小後就有正確的補全與檢查，不用到處 as。"
       },
       "outline": [
         {
@@ -1158,9 +1158,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（esModuleInterop: true, outDir + declaration, noEmit: true, strict: true, skipLibCheck: true）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "tsconfig 裡 target、module、strict、moduleResolution、paths 各控制什麼？如果專案『能跑但 import 路徑很長很醜（../../../）』，用哪個設定改善？改了 tsconfig 為什麼有時要重啟 TS server 才生效？",
+        "hint": "paths + baseUrl 設路徑別名（@/…）。target 決定編譯到哪代 JS、strict 開嚴格檢查。",
+        "answer": "target＝輸出的 JS 版本；module＝模組格式（ESM/CommonJS）；strict＝一鍵開啟嚴格檢查群；moduleResolution＝如何找模組；paths+baseUrl＝路徑別名（把 ../../../utils 變成 @/utils）。長路徑用 paths 設 @/* 對應 src/*。改 tsconfig 後 IDE 的 TS 服務有快取，重啟 TS server 讓新設定（尤其 paths）生效。"
       },
       "outline": [
         {
@@ -1242,9 +1242,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（strict: true）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "開了 strict 後專案冒出一堆紅線，其中 strictNullChecks 最常見。為什麼 `user.name.toUpperCase()` 在 strict 下會被標紅（user 可能是 null）？這種『被逼著處理 null』其實幫你避免了什麼線上 bug？該關掉 strict 圖個清靜嗎？",
+        "hint": "strictNullChecks 讓 null/undefined 不再能悄悄混進任何型別，逼你先判空。",
+        "answer": "strict 下 null/undefined 不再自動屬於每個型別，所以若 user 可能是 null，直接 .name 就標紅——逼你先判空（if(user) 或 user?.name）。這正好擋掉 JS 最常見的線上錯誤『Cannot read properties of null』。不該為省事關掉 strict：短期少幾條紅線、長期換來執行期崩潰。新專案一開始就開 strict 最省事。"
       },
       "outline": [
         {
@@ -1318,9 +1318,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（export {}, declare module \"name\", declare global, .d.ts）寫一段小 code 解決一個實際問題。",
-        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
-        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+        "question": "你 import 了一個沒附型別的 JS 套件，TS 報『找不到型別宣告』。有哪幾種解法（裝 @types/xxx、自己寫 .d.ts、declare module）？寫一個最小的 .d.ts 給一個 `function greet(name: string): string` 的套件。",
+        "hint": "很多套件的型別在 @types/ 社群包裡；沒有就自己用 declare 補一份 .d.ts。",
+        "answer": "順序：①先裝官方或社群型別 `npm i -D @types/該套件` ②沒有就自己寫 .d.ts：`declare module 'that-lib' { export function greet(name: string): string }` ③臨時擋一下可 `declare module 'that-lib'`（型別為 any，不建議長期）。.d.ts 只描述型別、不含實作，讓 TS 認得該套件的 API。"
       },
       "outline": [
         {
@@ -1398,9 +1398,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（useFetch, /api/users/${id}, React.MouseEvent）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "在 React+TS 裡，一個接收 title(必填) 和 onClose(可選回呼) 的元件，props 型別怎麼寫？useState 什麼時候要手動給泛型（如 useState<User|null>(null)）、什麼時候能自動推論？事件參數 e 的型別怎麼來（別用 any）？",
+        "hint": "props 用 type/interface；useState 初值能推論就不用標、初值是 null/空陣列常要標泛型；事件用 React.XxxEvent。",
+        "answer": "type Props = { title: string; onClose?: () => void }。useState(0) 能推論成 number；useState<User|null>(null) 初值 null 無法推出實際型別、要手動給泛型；useState<Item[]>([]) 同理。事件別 any：用 React 提供的型別如 (e: React.ChangeEvent<HTMLInputElement>)、(e: React.MouseEvent)——IDE 會補全 e.target.value 等。"
       },
       "outline": [
         {
@@ -1482,9 +1482,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（/api/users/${id}）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "TS 的型別只在編譯期，那『從 API 回來的 JSON』TS 根本無法保證形狀對——為什麼？Zod 這類執行期驗證怎麼補這個洞（parse 後同時得到『驗證過的資料＋自動推出的型別』）？tRPC 又怎麼讓前後端型別自動連動？",
+        "hint": "外部資料在執行期才到，TS 管不到；Zod 在執行期驗證、並用 z.infer 產出型別，一份 schema 兩用。",
+        "answer": "API 回來的資料是執行期才進來的、TS 編譯期不可能檢查它真的長對——你 as User 只是『騙自己』。Zod：定義 schema、執行期 schema.parse(json) 真的驗證（錯就丟），並用 type T = z.infer<typeof schema> 自動得到型別——驗證與型別同一份來源。tRPC：前端直接呼叫後端 router 的型別、後端改了前端立刻型別報錯，不用手寫/同步 API 型別。"
       },
       "outline": [
         {
@@ -1558,9 +1558,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "坑通常是「你以為很簡單但其實有暗雷」。本節列的常見錯誤、80% 的新手都會中。",
-        "answer": "預防勝於治療：把本節列的所有「常見錯誤」存成個人 checklist、每次寫類似 code 前過一遍。當 senior 不是因為比較聰明、是因為踩過的坑比較多、所以會避開。"
+        "question": "看到 `Type 'string | undefined' is not assignable to type 'string'`，通常代表什麼、怎麼修（收窄/預設值/斷言）？`Property 'x' does not exist on type` 和 `Object is possibly 'null'` 又各是什麼？為什麼『用 as 硬轉』常是把問題藏起來而不是解決？",
+        "hint": "第一個是『可能沒值卻當有值用』；讀錯誤訊息的『左邊要什麼、右邊給了什麼』最快定位。",
+        "answer": "'string|undefined' not assignable to 'string'＝你可能拿到 undefined 卻用在需要 string 的地方 → 修法：先判空、給預設 `x ?? ''`、或確定有值時處理。'Property x does not exist'＝欄位名打錯或型別沒這欄。'possibly null'＝要先判 null。as 硬轉只是叫 TS 閉嘴、執行期照樣可能炸——它把『編譯期就能發現的問題』延後到線上，除非你 100% 確定，否則別用。"
       },
       "outline": [
         {
@@ -1626,9 +1626,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（Hi ${name}, you are ${age}）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "要把一個純 JS 老專案『漸進式』改成 TS，而不是一次全改爆炸。合理的步驟順序是什麼（allowJs、把檔案一個個 .js→.ts、先寬鬆後 strict、補關鍵型別）？為什麼一開始就開 full strict 反而會讓人放棄？",
+        "hint": "allowJs 讓 JS 與 TS 共存，先讓專案能編譯，再逐檔遷移、逐步收緊 strict。",
+        "answer": "步驟：①裝 TS、tsconfig 開 allowJs（JS/TS 共存、先能跑）②從『葉子/工具函式』開始一個個改 .ts、補型別③先不開全部 strict（或先開 noImplicitAny），讓紅線可控④逐檔清乾淨後再打開更多 strict 檢查⑤核心資料模型優先補好型別。一開始就 full strict 會一次噴上千條錯、士氣崩潰——漸進才走得完。"
       },
       "outline": [
         {
@@ -1701,9 +1701,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "與其問『TS 還要學什麼』，不如自我盤點：面對一個真實需求（如『這個函式要能吃多種型別又保持精確』），你會怎麼判斷該用泛型、union、還是 utility type？列出你自己的『TS 卡關時的三步排查法』。",
+        "hint": "把『學路徑』變成『遇到問題怎麼查』：讀錯誤訊息→縮小重現→查 handbook/型別工具。",
+        "answer": "選型直覺：輸入輸出型別要連動→泛型；就那幾個固定值→字面量 union；從既有型別衍生→utility type。卡關三步：①仔細讀錯誤訊息（左要什麼右給什麼、hover 看推論出的型別）②把問題縮到最小可重現（TS Playground 貼一小段）③查官方 handbook / 用 utility type 或型別守衛，而不是直接 as any 蓋掉。持續練＝看好專案的型別怎麼寫。"
       },
       "outline": [
         {
@@ -1781,9 +1781,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "進階泛型：`keyof`、`extends` 約束、以及條件型別。寫一個 `getProp(obj, key)` 讓回傳型別精確等於該欄位型別（用 K extends keyof T）。再解釋 `T extends U ? X : Y` 條件型別能做什麼（如 Utility Types 就是這樣實作的）。",
+        "hint": "K extends keyof T 把 key 限制成 obj 真的有的鍵；條件型別依 T 是否符合 U 選型別。",
+        "answer": "`function getProp<T, K extends keyof T>(obj:T, key:K): T[K] { return obj[key] }`——key 只能是 obj 有的鍵、回傳精確是那欄的型別（傳錯 key 直接標紅）。條件型別 `T extends U ? X : Y`：依 T 是否可指派給 U 選結果，是型別層的 if。很多 utility type 靠它實作（如 NonNullable<T> = T extends null|undefined ? never : T）。搭配映射型別可做出強大的型別轉換。"
       },
       "outline": [
         {
@@ -1830,9 +1830,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
-        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+        "question": "承 5.9，挑戰組合技：用 Utility Types 表達『把 User 的 id/createdAt 設唯讀、其餘可選』或『取出某函式的回傳型別（ReturnType）/參數型別（Parameters）』。為什麼 ReturnType 這種能『從既有程式反推型別』特別實用？",
+        "hint": "utility 可疊：Readonly<Pick<...>> & Partial<Omit<...>>。ReturnType<typeof fn> 反推函式回傳型別。",
+        "answer": "組合例：`Readonly<Pick<User,'id'|'createdAt'>> & Partial<Omit<User,'id'|'createdAt'>>`。反推：`type R = ReturnType<typeof createUser>`、`type P = Parameters<typeof fn>`。實用在：型別跟著實作走——函式改了回傳，用 ReturnType 的地方自動更新，不用手寫也不會 drift。這讓『資料的型別』有單一真相來源（常配 Zod 的 z.infer、tRPC 一起用）。"
       },
       "outline": [
         {
@@ -1922,9 +1922,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（on${\"Click\" | \"Hover\" | \"Focus\"}, /users/${string}, /posts/${number}, Hello, ${string}!）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "挑 TS 4.9+ 的 `satisfies`：`const config = {...} satisfies Config` 和 `const config: Config = {...}` 差在哪（前者保留精確字面量型別又檢查符合）？再各舉一個 `as const` 和 template literal type（如 `type Route = \\`/api/${string}\\``）的實用場景。",
+        "hint": "satisfies 檢查符合某型別、但不放寬你的實際型別（保留字面量/更精確的推論）。",
+        "answer": "`: Config` 會把 config 的型別『放寬成 Config』（失去具體字面量）；`satisfies Config` 檢查它符合 Config、但保留你寫的精確型別（例如某欄仍是字面量 union，可繼續精確使用/補全）——兩全其美。as const 場景：把物件/陣列凍成字面量（做 route 表、選項清單）。template literal type：限制字串形狀，如 `/api/${string}`、事件名 `on${Capitalize<Event>}`，讓字串也型別安全。"
       },
       "outline": [
         {

@@ -356,3 +356,14 @@ JS 職責、var/let/const 選用、值 vs 參照預測、`0==''` 等 == 陷阱�
 
 - Python 改（diff 75+/75-）→ `import_chapters_to_db.mjs ch04`（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
 - **本日章節 de-can 累計：ch01 HTML + ch02 CSS + ch04 JavaScript（各 25 節、共 75 題重寫）。** 續攻 ch05 TypeScript…
+
+---
+
+## 📚 章節 de-can：ch05 TypeScript 全 25 節 — 核心四章完成 🏁（0721）
+
+ch05（TypeScript）25 節全 de-can，換成各節量身題（除錯/選型/預測/設計）：TS 何時抓錯、編譯流程（型別執行時被抹）、any/unknown/never、type vs interface、字面量 union 窮盡檢查（never）、函式型別三寫法、Record vs Map、泛型 pluck（K extends keyof T）、Utility Types 選用、enum vs as const、宣告合併、class 修飾詞 vs #private、import type、type narrowing 自訂守衛、tsconfig paths、strict null 擋線上 bug、.d.ts 補型別、React+TS props/useState 泛型、Zod/tRPC 補執行期型別洞、常見錯誤訊息對策、漸進式遷移、進階泛型條件型別、ReturnType 反推、satisfies/template literal。
+
+- Python 改（diff 75+/75-）→ `import_chapters_to_db.mjs ch05`（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+
+### 🏁 里程碑：核心 Web 基礎四章 de-can 完成
+**ch01 HTML + ch02 CSS + ch04 JavaScript + ch05 TypeScript**，各 25 節、共 **100 題**罐頭練習全部換成扣主題、零基礎友善、題型多樣（應用/設計/除錯/預測/比較/分析）的量身練習。全部 import DB、tsc/build 綠、章節讀 DB 已生效。續攻 ch07/08/09/10/16/17/26–32/34–36/46…
