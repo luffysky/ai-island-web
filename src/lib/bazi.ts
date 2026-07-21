@@ -32,6 +32,22 @@ const GAN_WUXING: Record<string, string> = {
 };
 
 /**
+ * 把輸入生日轉成國曆 YYYY-MM-DD（calendarType='lunar' 才轉、否則原樣回）。
+ * 給「西洋星座」用——星座依國曆月/日，農曆生日一定要先轉、否則星座算錯。失敗回 null。
+ */
+export function toSolarDate(birthDate: string, calendarType: "solar" | "lunar" = "solar"): string | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(birthDate);
+  if (!m) return null;
+  if (calendarType !== "lunar") return birthDate;
+  const y = Number(m[1]), mo = Number(m[2]), d = Number(m[3]);
+  try {
+    const solar = Lunar.fromYmdHms(y, mo, d, 12, 0, 0).getSolar();
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${solar.getYear()}-${pad(solar.getMonth())}-${pad(solar.getDay())}`;
+  } catch { return null; }
+}
+
+/**
  * 算八字命盤。calendarType='lunar' 時 birthDate 視為農曆。
  * birthTime 為 "HH:MM"，沒有則缺時柱（hasHour=false）。
  * 失敗（日期不合法等）回 null。

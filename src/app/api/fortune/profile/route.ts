@@ -3,6 +3,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { rateLimit } from "@/lib/rate-limit";
 import { zodiacFromBirthDate } from "@/lib/fortune";
+import { toSolarDate } from "@/lib/bazi";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -36,13 +37,16 @@ export async function PUT(req: NextRequest) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) {
     return NextResponse.json({ error: "invalid_birth_date" }, { status: 400 });
   }
-  const zodiac = zodiacFromBirthDate(birthDate);
+  const calendarType = body.calendarType === "lunar" ? "lunar" : "solar";
+
+  // 西洋星座依「國曆」月/日算：農曆生日先轉國曆、否則星座會錯。
+  const solarDate = toSolarDate(birthDate, calendarType);
+  const zodiac = solarDate ? zodiacFromBirthDate(solarDate) : null;
   if (!zodiac) return NextResponse.json({ error: "invalid_birth_date" }, { status: 400 });
 
   const birthTime = typeof body.birthTime === "string" && /^\d{2}:\d{2}$/.test(body.birthTime)
     ? body.birthTime : null;
   const gender = ["male", "female", "other"].includes(body.gender) ? body.gender : null;
-  const calendarType = body.calendarType === "lunar" ? "lunar" : "solar";
 
   const admin = createSupabaseAdmin();
   const { error } = await admin

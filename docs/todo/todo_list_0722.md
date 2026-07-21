@@ -32,8 +32,8 @@
 - [~] 1.1 資料模型與後端
   - [~] 1.1.1 `fortune_profiles` 表（user_id, birth_date, birth_time, gender, calendar_type 陽/陰曆, zodiac）
     - [x] ~~1.1.1.1 migration `supabase/fortune_migration.sql`（RLS：本人可讀寫）~~ ✅ 已跑、DB 驗證過
-    - [ ] 1.1.1.2 農曆↔國曆轉換（現成庫/查表；八字需時辰）← 第二刀（裝 `lunar-javascript`）
-      - [ ] 1.1.1.2.1 無時辰的 fallback（只算日主/星座、標示精度較低）
+    - [x] ~~1.1.1.2 農曆↔國曆轉換~~ ✅ 0722（`lunar-javascript`：八字 `computeBazi` 農曆→國曆 `Lunar.fromYmdHms().getSolar()`；**修 bug**：西洋星座原本從 raw 生日算、農曆會錯 → 新增 `toSolarDate()`、profile PUT 先轉國曆再算星座）
+      - [x] ~~1.1.1.2.1 無時辰的 fallback（只算年月日三柱/星座、時柱從缺、prompt 標示精度較低）~~ ✅ 0722（`hasHour` flag）
   - [x] ~~1.1.2 `fortune_daily` 快取表（唯一鍵 user_id+date+kind、payload jsonb）＝冪等不重複燒 LLM~~ ✅
   - [x] ~~1.1.3 API `/api/fortune/today`（快取優先、沒快取才 `completeForUsage("agent_core")` 生成+存）~~ ✅（邏輯抽到 `lib/fortune-service.ts` 與 cron 共用）
   - [x] ~~1.1.4 API `/api/fortune/tarot`（GET 回顯今日/POST 抽 3 張+AI 解讀、免費每日 1 次、付費無限、server 抽牌防作弊）~~ ✅（第二刀 0721）
@@ -51,7 +51,7 @@
   - [~] 1.3.4 RWD + 亮暗 ✅；付費分界：塔羅 ✅ + 易經 AI 深解 ✅（免費每日 1 次·付費無限、鎖住顯示升級卡→/pricing、0722）；八字排盤 AI 免費（快取自然收斂）
 - [~] 1.4 LINE 每日推播
   - [x] ~~1.4.1 cron `/api/cron/fortune-daily`（撈綁 LINE + 開推播 + 有生日者、生成+推、dedupe、cap 500）~~ ✅
-    - [ ] 1.4.1.1 🔴 去 cron-job.org 手動加 job #10（每天 00:00 UTC=台灣08:00 `GET /api/cron/fortune-daily?secret=<CRON_SECRET>`）
+    - [x] ~~1.4.1.1 cron-job.org job #10（運勢每日推播）~~ ✅ 0722 林董已設好
   - [x] ~~1.4.2 訂閱/退訂設定（`line_pref_fortune` 欄 + /settings 通知偏好開關 + notification-prefs API）~~ ✅
 - [~] 1.5 變現：星座每日免費（零 AI）✅；塔羅免費 1/日·付費無限 ✅；易經 AI 深解免費 1/日·付費無限 ✅（`src/lib/fortune-gate.ts` 統一 gate `getFortuneGate`、擋掉 iching 無限免費燒 LLM 的漏洞、0722）；Z幣單次購買/每日私人推播 ← 之後
 - [x] ~~1.6 收尾檢查（tsc/vitest 145/next build 全綠 + DB 接線實測 + 4 語 nav i18n）~~ ✅ 0721 第一刀
