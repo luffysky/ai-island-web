@@ -479,3 +479,12 @@ JS 爬蟲章原 24 罐頭。全 25 節換成量身題，延續 ch28 的合法合
 
 - diff 75+/75- → import_chapters_to_db ch31（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
 - 本日 de-can 累計 **16 章、419 題**。續攻 ch32 Go…
+
+---
+
+## 📚 章節 de-can：ch32 Go 完整 全 25 節（0721）
+
+Go 章原 22 罐頭。全 25 節換成 Go 量身題：Go 設計哲學(簡單/單一二進位/雲原生)、靜態型別零值與未用變數嚴格、只有一個 for/switch 免 break、多回傳值 (值,error) 慣例、Array vs Slice 共享底層陣列坑與 map 要 make、struct+method 值 vs 指標接收者、指標無運算比 C 安全、interface 隱式實作小介面、goroutine 輕量與洩漏防範、channel 用溝通共享記憶體、select+context 取消/逾時、error wrapping(%w)/errors.Is vs panic 界線、go.mod/go.sum 供應鏈校驗、標準庫 json tag/大寫匯出/時區、net/http 免框架寫 server 與 1.22 mux、Gin/Fiber(fasthttp 相容代價)/Chi 選型、GORM/sqlx/sqlc 取向與 N+1、JWT middleware 放 context 併發安全、table-driven test 與 benchmark 先量再優、單一靜態二進位+交叉編譯+scratch image 幾 MB、分層 handler/service/repo 好測、worker pool 限併發與 WaitGroup 協調、panic/recover 故障隔離非例外控制流、go.mod replace/vendor/依賴升級要測、覆蓋率是參考非目標。
+
+- diff 75+/75- → import_chapters_to_db ch32（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+- 本日 de-can 累計 **17 章、444 題**（ch01/02/04/05/07/08/09/10/16/17/26/27/28/29/30/31/32）。續攻 ch34–36/46…

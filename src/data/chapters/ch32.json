@@ -42,9 +42,9 @@
         }
       ],
       "exercise": {
-        "question": "找一個你身邊的例子、用「為什麼是 Go？2026 安裝」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "Go 的設計哲學是『簡單、明確、快速編譯、易部署(單一二進位)』。為什麼它特別適合『高併發的網路服務、CLI 工具、雲原生基礎設施』？相比 Python/Node,Go 用少數幾個概念(goroutine/channel/interface)換來什麼、又放棄了什麼(泛型晚才有、表達力較樸素)？",
+        "hint": "Go 簡單快編譯、單一二進位、高併發;刻意樸素少魔法。",
+        "answer": "Go 適合高併發網路服務(goroutine 輕量)、CLI(編成單一無依賴二進位、跨平台)、雲原生(Docker/K8s 本身就是 Go 寫的)。它刻意用少數概念、少語法糖:goroutine 讓併發簡單、channel 讓溝通清楚、interface 做隱式多型——換來的是好讀、好維護、編譯快、部署超簡單(一個檔丟上去就跑)、團隊上手快。放棄的:語言表達力較樸素(泛型 1.18 才有、沒有很多高階抽象)、寫起來較囉嗦(如錯誤處理)——這是刻意的取捨:用『無聊但明確』換長期可維護。"
       },
       "outline": [
         {
@@ -126,9 +126,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Go 是靜態強型別,`var x int` 和 `x := 10` 差在哪、何時用哪個？為什麼 Go 有『零值(zero value)』設計(int 是 0、string 是 \"\"、pointer 是 nil)、這對『少一類未初始化 bug』有什麼幫助？未使用的變數/import 會編譯錯誤,這種嚴格是好是壞？",
+        "hint": ":= 短宣告推型別;零值免未初始化;嚴格逼你保持乾淨。",
+        "answer": "var x int 明確宣告(可只宣告不賦值,得零值);x := 10 短宣告+型別推導(函數內用,簡潔)。零值設計:每個型別都有明確初始值(int→0、string→\"\"、bool→false、pointer/slice/map→nil),不會有『未初始化的垃圾值』,少一類 bug、也讓 struct 建立即可用。未使用變數/import 編譯錯:強制你保持程式乾淨(沒有死 import 與沒用到的變數)——初看嚴格惱人,但長期讓程式碼庫不累積垃圾、diff 乾淨,是刻意的紀律。"
       },
       "outline": [
         {
@@ -190,9 +190,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Go 只有 for 一種迴圈(能當 while、無限迴圈、range)——為什麼『少即是多』？for range 走 slice 和走 map 各給你什麼、走 map 的順序為什麼不保證？switch 在 Go 不用 break(預設不 fallthrough)相比 C 少了什麼坑？",
+        "hint": "一個 for 涵蓋所有;range 給 index/value;map 無序;switch 免 break。",
+        "answer": "Go 只有 for:for i:=0;i<n;i++、for cond {}(當 while)、for {}(無限)、for i,v:=range xs——一個關鍵字涵蓋所有迴圈,少記語法、風格統一。range slice 給 (index, value);range map 給 (key, value) 但『順序不保證』(Go 故意隨機化,逼你別依賴 map 順序)。switch 預設每個 case 跑完就結束、不會像 C 那樣掉到下一個 case(要串接才用 fallthrough)——少了 C 最經典的『忘了 break 導致意外貫穿』的坑,更安全。"
       },
       "outline": [
         {
@@ -254,9 +254,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Go 函數的多回傳值最常見的用途是什麼(值 + error)？命名回傳值有什麼好處與陷阱？為什麼 Go 慣例是『回傳 (result, error) 讓呼叫端立刻檢查 err』而不是拋例外？寫一個 divide(a,b) 回傳結果與可能的除零 error。",
+        "hint": "多回傳值常是 (值,error);命名回傳可讀但易混;錯誤當值回傳。",
+        "answer": "多回傳值最常見 (result, error):讓呼叫端立刻 if err!=nil 處理。命名回傳(func f()(n int, err error))好處是文件性強、可 naked return;陷阱是容易在大函數裡不小心用到/覆蓋。Go 用『錯誤當值回傳』而非例外:讓錯誤處理顯式在型別上(呼叫端被迫面對 err)、控制流清楚可預測、不會有隱形的例外往上竄。範例:func divide(a,b float64)(float64,error){ if b==0 {return 0, errors.New(\"divide by zero\")}; return a/b, nil }——呼叫端 r,err:=divide(x,y); if err!=nil {...}。"
       },
       "outline": [
         {
@@ -334,9 +334,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Array(固定長度)和 Slice(動態、常用)差在哪？slice 的 len 和 cap 是什麼、append 超過 cap 時發生什麼(重新配置、可能與原底層陣列脫鉤)？為什麼『兩個 slice 可能共享同一底層陣列、改一個影響另一個』是常見坑？map 用前為什麼要 make？",
+        "hint": "array 定長、slice 動態;append 可能重配;slice 共享底層陣列;map 要 make。",
+        "answer": "array [3]int 長度固定屬型別一部分;slice []int 動態、最常用(底層指向一個陣列 + len + cap)。append 超過 cap:配置更大的新底層陣列、複製過去——此後這個 slice 與原本共享的底層陣列脫鉤。坑:s2:=s1[1:3] 兩者共享同一底層陣列,改 s2[0] 會改到 s1——要獨立就 copy。map 用前要 make(map[string]int) 或字面量初始化:對 nil map 寫入會 panic(讀 nil map 回零值不 panic,但寫會炸)。"
       },
       "outline": [
         {
@@ -405,9 +405,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Go 沒有 class,用 struct + method 做物件——method 的接收者用『值(T)』還是『指標(*T)』差在哪(能不能改到原物件、複製成本)？什麼時候該用指標接收者？struct 嵌入(embedding)怎麼做到類似繼承的組合、跟真繼承有何不同？",
+        "hint": "值接收者改副本、指標接收者改本體;大 struct/要改用指標;嵌入是組合。",
+        "answer": "值接收者 func(t T) 操作的是副本(改不到原物件、每次複製整個 struct);指標接收者 func(t *T) 能改到原物件、且不複製。該用指標接收者:要修改本體、struct 較大(避免複製成本)、或為了一致性(同型別的方法接收者最好統一)。struct 嵌入:type Dog struct{ Animal } 讓 Dog 直接擁有 Animal 的欄位與方法(組合、可覆寫)——像繼承但本質是『組合+方法提升』,沒有型別階層與 is-a 的僵化,符合 Go『組合優於繼承』。"
       },
       "outline": [
         {
@@ -476,9 +476,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Go 有指標但沒有指標運算(比 C 安全)——什麼時候需要用指標(改到原物件、避免大 struct 複製、共享狀態)？nil pointer 解參考會 panic,怎麼防？為什麼『傳 struct 進函數預設是複製(值傳遞)』,要改到原本就得傳指標？",
+        "hint": "指標=改本體/免複製;nil 解參考 panic 要先判;Go 值傳遞。",
+        "answer": "需要指標時:要在函數內改到呼叫端的原物件、避免複製大 struct、多處共享同一份狀態。Go 是值傳遞:傳 struct 進函數是複製一份,函數內改的是副本、改不到原本——要改原本就傳 *T(指標)。nil pointer 解參考(*p 當 p 是 nil)會 panic:防法是使用前確認不為 nil(if p!=nil)、或用零值/明確初始化避免 nil。Go 沒有指標運算(不能 p++ 亂跳位址)所以比 C 安全,但仍要注意 nil 與『指標指向的東西何時被改』。"
       },
       "outline": [
         {
@@ -543,9 +543,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Go 的 interface 是『隱式實作(duck typing)』——一個型別只要有某些方法就自動滿足介面,不用 implements 宣告。這相比 Java 的顯式 implements 好在哪(解耦、可對既有型別補介面)？為什麼『介面應該小(如 io.Reader 只有一個方法)』、由使用方定義？空介面 interface{} / any 是什麼、為什麼要小心用？",
+        "hint": "隱式實作解耦;小介面好組合;any 失去型別安全。",
+        "answer": "隱式實作:型別有對應方法就自動滿足介面,不用宣告 implements——解耦(定義介面的一方不用知道實作者)、可對第三方/既有型別套介面。小介面(io.Reader 只有 Read)好在:容易被滿足、好組合、好 mock——Go 慣例『介面由使用方定義、越小越好』(只要求你真正需要的方法)。空介面 interface{}/any(能裝任何值)要小心:失去型別安全(拿出來要型別斷言/switch、可能 panic)、像 TS 的 any——只在真的需要泛型容器/未知型別時用,現在很多場景可改用泛型(1.18+)更安全。"
       },
       "outline": [
         {
@@ -606,9 +606,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "goroutine 相比作業系統執行緒為什麼『輕量到能開幾十萬個』(由 Go runtime 排程、堆疊小可增長)？`go f()` 一行就開一個併發——但為什麼『開了 goroutine 卻沒等它、main 就結束』會讓它沒跑完？goroutine 洩漏(開了永遠不結束)怎麼發生、怎麼避免？",
+        "hint": "goroutine 輕由 runtime 排程;main 結束全跑光;沒有出口就洩漏。",
+        "answer": "goroutine 由 Go runtime 在少數 OS 執行緒上排程、初始堆疊很小(可增長)、切換成本低——所以能開幾十萬個而不像 OS 執行緒那麼貴。go f() 開一個併發執行。但 main 函數結束時整個程式退出、所有 goroutine 不管跑完沒都被砍——所以要用 sync.WaitGroup 或 channel 等它們完成。goroutine 洩漏:開了一個 goroutine 卡在等一個永遠不會來的 channel/沒有結束條件→它永遠不退出、佔記憶體。避免:用 context 給取消訊號、確保每個 goroutine 有明確結束路徑、select 加 ctx.Done()。"
       },
       "outline": [
         {
@@ -665,9 +665,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "挑 lesson 內某一個小節（基本 channel）、自己動手做一個對應的小範例。",
-        "hint": "從最小可運作版開始（HelloWorld 級）、確認能跑、再慢慢加東西。一次只加一個 feature。",
-        "answer": "MVP 心法：能跑通 > 寫得漂亮。先有最簡單的版本（10 行就好）、確認 input → 預期 output、再開始重構 / 加錯誤處理 / 加 UI。先求有、再求好。"
+        "question": "channel 是 goroutine 間『用溝通共享狀態』的方式——為什麼 Go 說『不要用共享記憶體溝通,要用溝通共享記憶體』能避免一整類競態 bug？無緩衝 channel(送了要有人收才繼續)和有緩衝 channel 差在哪？往已關閉/nil channel 送資料會怎樣？",
+        "hint": "channel 傳訊免共享鎖;無緩衝同步、有緩衝解耦;送到關閉的會 panic。",
+        "answer": "channel 讓 goroutine 靠傳遞資料溝通,而非多方共享一塊記憶體再加鎖——沒有共享就沒有競態、不用煩惱鎖與死鎖(這就是『用溝通共享記憶體』的意思)。無緩衝 channel:送方會阻塞直到有收方接(同步交接、天然同步點);有緩衝 channel(make(chan T, n)):緩衝未滿可先送不阻塞(解耦生產消費速度)。往已關閉的 channel 送資料會 panic(所以慣例『由送方關閉、且只關一次』);從關閉的 channel 收會拿到零值+ok=false;往 nil channel 送/收會永遠阻塞。"
       },
       "outline": [
         {
@@ -728,9 +728,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "挑 lesson 內某一個小節（select：多 channel 等待）、自己動手做一個對應的小範例。",
-        "hint": "從最小可運作版開始（HelloWorld 級）、確認能跑、再慢慢加東西。一次只加一個 feature。",
-        "answer": "MVP 心法：能跑通 > 寫得漂亮。先有最簡單的版本（10 行就好）、確認 input → 預期 output、再開始重構 / 加錯誤處理 / 加 UI。先求有、再求好。"
+        "question": "select 讓一個 goroutine『同時等多個 channel、哪個先好處理哪個』——這對『同時等資料 + 逾時 + 取消』有什麼用？context 怎麼把『取消/逾時』訊號傳遞給一串 goroutine(ctx.Done())？為什麼幾乎每個會阻塞或長跑的函數都該接收 context？",
+        "hint": "select 多路等待;context 傳取消/逾時;長跑函數要能被取消。",
+        "answer": "select { case v:=<-ch1: ...; case <-time.After(t): 逾時; case <-ctx.Done(): 取消 } 讓 goroutine 同時等多個事件、誰先來處理誰——優雅處理『等資料但也要能逾時/被取消』。context 把取消/逾時訊號沿呼叫鏈傳下去:上層 cancel() 或逾時,所有接收該 ctx 的 goroutine 都能透過 <-ctx.Done() 收到並收手、釋放資源。幾乎每個會阻塞(等 I/O)或長跑的函數第一個參數都該是 ctx.Context:這樣使用者(如 HTTP 請求被取消、逾時)能一路把取消傳進去,避免 goroutine 洩漏與白做工——這是 Go 服務的標配。"
       },
       "outline": [
         {
@@ -787,9 +787,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Go 沒有 try-catch,靠回傳 error 值 + `if err != nil` 顯式處理——支持者說這讓錯誤處理明確、反對者嫌囉嗦,你怎麼看這個取捨？error wrapping(fmt.Errorf(\"...: %w\", err) + errors.Is/As)解決什麼(保留錯誤鏈、能判斷根因)？什麼時候才該用 panic(而非回傳 error)？",
+        "hint": "顯式錯誤明確但囉嗦;wrap 保留鏈;panic 只給不可恢復。",
+        "answer": "取捨:if err!=nil 到處寫確實囉嗦,但強迫你在每個可能失敗處『當下就面對錯誤』、控制流清楚可預測、不會有隱形例外從深處竄出——對可靠性有價值(Go 選明確勝過簡潔)。error wrapping:fmt.Errorf(\"load config: %w\", err) 把底層錯包起來附上情境、保留錯誤鏈,呼叫端用 errors.Is(err, ErrNotFound)/errors.As 判斷根因或取出特定錯誤型別。panic 只給『不可恢復、代表 bug 或不變條件被破壞』的情況(如程式初始化必要資源失敗、陣列越界)——一般可預期的錯誤(找不到、輸入不合法)一律回 error,別用 panic 當例外控制流。"
       },
       "outline": [
         {
@@ -858,9 +858,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Go module(go.mod/go.sum)怎麼管依賴與版本、go.sum 在校驗什麼(下載的套件內容沒被竄改)？為什麼 Go 的『匯入路徑就是套件位置(如 github.com/x/y)』設計讓依賴透明？語意化版本與 go get 升級要注意什麼(破壞式改動走大版本)？",
+        "hint": "go.mod 記依賴、go.sum 校驗完整性;匯入路徑即位置;大版本破壞式。",
+        "answer": "go.mod 記錄模組名與依賴及其版本;go.sum 記每個依賴的雜湊、下載時校驗『拿到的內容和當初一致、沒被竄改』(供應鏈安全)。匯入路徑就是套件來源(github.com/gin-gonic/gin):依賴一目了然、去哪找也清楚、無需中央 registry 命名。語意化版本:v1.2.3,破壞式改動走大版本(v2 的匯入路徑要帶 /v2)——所以升級 minor/patch 相對安全、跨大版本要留意破壞式改動。go get 升級後跑測試確認沒壞、commit go.mod/go.sum 讓團隊與 CI 一致。"
       },
       "outline": [
         {
@@ -929,9 +929,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Go 標準庫很強,net/http、encoding/json、time、os 讓你『不裝第三方就能做很多事』——這對『減少依賴、減供應鏈風險、穩定』有什麼價值？encoding/json 用 struct tag(`json:\"name\"`)對應欄位、大寫欄位才會被匯出序列化,這兩個規則各為什麼？time 處理時區為什麼要小心？",
+        "hint": "標準庫強減依賴;json tag 對應、大寫才匯出;時區易錯。",
+        "answer": "標準庫強大且穩定:net/http(完整 HTTP client/server)、encoding/json、time、os、io——很多需求不裝第三方就能做,減少依賴=減維護、減供應鏈風險、更穩(官方長期維護)。encoding/json:struct 欄位必須『大寫開頭(匯出)』才會被序列化(因為 json 套件在別的 package、只能存取匯出欄位);用 tag `json:\"name,omitempty\"` 指定 JSON 鍵名與選項(小寫鍵、省略空值)。time 時區要小心:一律用帶時區的時間、明確 Location、存 UTC 顯示再轉當地——混用會產生差幾小時的詭異 bug(和本站台北日邏輯同理)。"
       },
       "outline": [
         {
@@ -984,9 +984,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "用 Go 標準庫 net/http 就能寫出正式可用的 web server(不用框架)——寫一個註冊路由、回 JSON 的最小 server。既然標準庫夠,什麼時候才需要 Gin/Fiber 這類框架(路由參數、中介層、更少樣板)？Go 1.22+ 的 http.ServeMux 增強(方法+路徑模式)補了什麼？",
+        "hint": "net/http 已可用;框架給路由/中介便利;1.22 mux 支援方法與路徑參數。",
+        "answer": "最小 server:http.HandleFunc(\"/hi\", func(w,r){ json.NewEncoder(w).Encode(map...) }); http.ListenAndServe(\":8080\",nil)。標準庫已能寫正式服務(很多 Go 服務就純標準庫)。需要框架時:要方便的路徑參數(/user/:id)、分組路由、豐富中介層、參數綁定/驗證、更少樣板時,Gin(快、生態大)/Fiber(Express 風)/Chi(貼近標準庫、輕)幫你省事。Go 1.22+ 的 http.ServeMux 增強:原生支援『方法+路徑模式』(如 \"GET /user/{id}\")與路徑參數——把以前要框架才有的基本路由能力補進標準庫,小專案更常可不靠框架。"
       },
       "outline": [
         {
@@ -1047,9 +1047,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Gin / Fiber / Chi 各的取向是什麼(Gin 生態最大最快、Fiber 仿 Express 但基於 fasthttp、Chi 貼近標準庫最輕)？Fiber 基於 fasthttp(非標準 net/http)帶來效能但也有什麼相容性代價？替一個團隊選 Go web 框架你會看哪些因素？",
+        "hint": "Gin 主流、Fiber 快但非標準、Chi 輕貼標準;看生態/相容/團隊。",
+        "answer": "Gin:最主流、生態大、效能好、中介層豐富——安全牌。Fiber:API 仿 Express(Node 轉來的人親切)、基於 fasthttp 效能高,但 fasthttp 不是標準 net/http,某些依賴標準介面的中介層/工具不相容、行為有差異(相容性代價)。Chi:貼近標準庫 net/http、輕量、慣用法純正——想要標準相容又要好路由時的好選擇。選擇因素:生態與中介層成熟度、是否要與標準 net/http 生態相容、團隊熟悉度、效能需求是否真的到要 fasthttp、長期維護活躍度。多數情況 Gin 或 Chi 都是穩妥選擇。"
       },
       "outline": [
         {
@@ -1106,9 +1106,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "GORM(ORM)、sqlx(輕量、貼近 SQL)、sqlc(從 SQL 產型別安全的 Go 程式碼)各代表什麼取向(方便 vs 可控 vs 型別安全+手寫 SQL)？為什麼有人偏好 sqlc/sqlx 而非全能 ORM(可控、無隱藏效能、SQL 透明)？ORM 的 N+1 在 Go 也一樣要小心嗎？",
+        "hint": "GORM 方便、sqlx 貼 SQL、sqlc 產型別;可控 vs 便利;N+1 一樣要防。",
+        "answer": "GORM:全功能 ORM,開發快、有關聯/遷移/hook,但抽象藏 SQL 與效能、有學習曲線。sqlx:在標準 database/sql 上加便利(把 rows 掃進 struct),你仍寫 SQL——可控、透明。sqlc:你寫 SQL,它產出型別安全的 Go 函數——兼得手寫 SQL 的可控與編譯期型別檢查(很受歡迎)。偏好 sqlc/sqlx 的理由:SQL 透明(看得到實際查詢)、可控效能、沒有 ORM 的隱藏行為與魔法。N+1 在 Go 用 ORM 一樣要小心(對每筆各查一次關聯)——用 JOIN/預載/一次 IN 查解決,和其他語言同理。"
       },
       "outline": [
         {
@@ -1177,9 +1177,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "在 Go web 服務實作 JWT 認證 middleware:它在請求鏈的哪個位置、驗什麼、驗過後怎麼把使用者資訊往下傳(context)？為什麼把使用者放 context 而不是全域變數(每個請求獨立、併發安全)？密碼一樣要 bcrypt 雜湊、JWT 一樣別放不安全的地方,這些跨語言原則在 Go 也適用嗎？",
+        "hint": "middleware 前置驗 token、放 context 傳下;context 併發安全;安全原則跨語言。",
+        "answer": "JWT middleware 放在業務 handler『之前』:從 Authorization header 取 token、驗簽章與到期、失敗回 401;驗過就把使用者資訊放進 request 的 context(r.WithContext(...)),下游 handler 用 ctx 取用。用 context 而非全域變數:每個請求有自己的 context、goroutine/併發安全(Go 每個請求各自處理,全域變數會被多請求同時讀寫→競態)。跨語言安全原則在 Go 完全適用:密碼用 bcrypt/argon2 雜湊加鹽、JWT 密鑰保管好、敏感 token 別暴露、驗證在伺服器端——語言不改變資安底線。"
       },
       "outline": [
         {
@@ -1244,9 +1244,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Go 內建 testing 就很夠用——寫一個 table-driven test(用一組 case 表跑同一邏輯)為什麼是 Go 的慣用法、好在哪(涵蓋多情境、易加 case)？Benchmark(func BenchmarkX)測的是什麼、為什麼『先量測再優化』在 Go 也成立？測試檔命名與 go test 怎麼運作？",
+        "hint": "table-driven 一表多 case;benchmark 測效能;先量再優;_test.go。",
+        "answer": "table-driven test:定義一個 case 切片(輸入+期望),用 for range 跑同一段驗證邏輯——涵蓋多情境、加新 case 只是多一列、失敗訊息帶 case 名好定位,是 Go 慣用法。Benchmark(func BenchmarkX(b *testing.B){ for i:=0;i<b.N;i++ {...} })測某段程式的執行效能(ns/op、記憶體配置),go test -bench 跑——讓你用數據找熱點,先量測再優化(別憑感覺優化,Go 也一樣)。測試檔放 xxx_test.go、測試函數 TestXxx(t *testing.T),go test ./... 跑全部;內建就有覆蓋率(-cover)。標準庫夠強,多數專案不用第三方測試框架。"
       },
       "outline": [
         {
@@ -1315,9 +1315,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Go 編成單一靜態二進位、且能『交叉編譯(在 Mac 上編出 Linux 執行檔,GOOS/GOARCH)』——這對部署(Docker image 超小、不用裝 runtime)有什麼巨大好處？為什麼 Go 的 Docker image 可以用 scratch/distroless 做到幾 MB？跨平台編譯讓 CLI 工具發布多方便？",
+        "hint": "單一靜態二進位;交叉編譯;image 極小;CLI 一鍵多平台。",
+        "answer": "Go 編成單一靜態二進位(把依賴都連進去、不需要外部 runtime)——部署超簡單:丟一個檔上去就跑。Docker:因為只需要那個二進位,可以用 scratch(空)或 distroless 基底,image 只有幾 MB(不像 Node/Python 要背整個 runtime 與一堆依賴)、啟動快、攻擊面小。交叉編譯:GOOS=linux GOARCH=amd64 go build 在任何機器上編出目標平台執行檔——CLI 工具可一次編出 Windows/Mac/Linux/ARM 各版本發布,使用者下載即用、不用裝任何東西。這是 Go 在雲原生與工具領域大受歡迎的關鍵之一。"
       },
       "outline": [
         {
@@ -1387,9 +1387,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "承 32.15/32.16:一個真實 Go API 服務,你會用純 net/http(1.22+ mux)還是框架(Gin/Chi)、依什麼決定(路由複雜度、中介層需求、團隊)？把 handler、middleware、路由組織成可維護的結構,你會怎麼分層(handler→service→repository)？為什麼分層有助測試與維護？",
+        "hint": "簡單用標準庫、複雜用框架;分層 handler/service/repo;好測好換。",
+        "answer": "依需求:路由簡單、要標準相容、想少依賴→net/http(1.22 mux 已夠)或 Chi;路由/中介層複雜、要快速開發與豐富生態→Gin。組織:分層 handler(解析請求/回應、驗參數)→service(商業邏輯)→repository(資料存取)。好處:各層職責單一、可獨立測試(service 邏輯用 mock repo 測、不碰真 DB)、可替換(換 DB 只改 repo)、依賴方向清楚(handler 依賴 service、service 依賴 repo 介面)。中介層(log/auth/recover)集中在路由註冊處。這種分層讓服務隨規模成長仍好維護與測試。"
       },
       "outline": [
         {
@@ -1467,9 +1467,9 @@
         }
       ],
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「Go Concurrency：goroutine + channel 進階」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（go run -race、sync.Map）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "承 32.9-11:設計一個『worker pool(固定 N 個 goroutine 從 job channel 取工作處理)』相比『每個任務開一個 goroutine』好在哪(限制併發、避免資源爆掉)？用 channel + WaitGroup 怎麼協調『發完所有工作、等全部做完、優雅關閉』？常見併發 bug(競態、死鎖、goroutine 洩漏)各怎麼預防？",
+        "hint": "worker pool 限併發;channel+WaitGroup 協調;競態用 channel/鎖、死鎖看順序、洩漏給出口。",
+        "answer": "worker pool:開固定 N 個 goroutine 都從同一個 jobs channel 取工作——限制同時併發數(不會因為任務多就開幾十萬 goroutine 把記憶體/下游打爆),適合控制對資源(DB/外部 API)的壓力。協調:main 把工作送進 jobs channel、送完 close(jobs)(通知 worker 沒更多了);每個 worker range jobs 直到關閉,用 sync.WaitGroup 等所有 worker 做完再收 results/退出。併發 bug 預防:競態(多 goroutine 讀寫同一變數)→用 channel 傳遞或 sync.Mutex 保護、跑 -race 偵測;死鎖(互相等)→固定取鎖順序、別在持鎖時做阻塞操作;goroutine 洩漏→每個 goroutine 有明確結束路徑、用 context 傳取消。"
       },
       "outline": [
         {
@@ -1559,9 +1559,9 @@
         }
       ],
       "exercise": {
-        "question": "回想你過去做過的專案、有沒有踩過本節提到的坑？如果沒有、想一個你最近做的事、評估會不會踩。",
-        "hint": "坑通常是「你以為很簡單但其實有暗雷」。本節列的常見錯誤、80% 的新手都會中。",
-        "answer": "預防勝於治療：把本節列的所有「常見錯誤」存成個人 checklist、每次寫類似 code 前過一遍。當 senior 不是因為比較聰明、是因為踩過的坑比較多、所以會避開。"
+        "question": "承 32.12:panic 和 error 的界線是什麼(可預期的錯用 error、程式 bug/不可恢復用 panic)？recover 只能在 defer 裡用來『攔住 panic 避免整個程式崩』——在 web server 裡用 recover middleware 攔住單一請求的 panic 有什麼價值？為什麼『到處用 panic/recover 當例外控制流』是反 Go 慣例？",
+        "hint": "error 給可預期、panic 給 bug;recover 在 defer 攔崩潰;別當例外用。",
+        "answer": "界線:可預期、呼叫端該處理的錯(找不到、輸入不合法、網路失敗)一律回 error;真正不可恢復、代表 bug 或不變條件被破壞的(必要初始化失敗、不該發生的狀態)才 panic。recover 只在 defer 函數裡有效,用來攔住 panic 讓程式不整個崩。web server 的 recover middleware 價值:某個請求的 handler panic 時(如 nil 解參考),攔住它、回 500 給那個請求、記錄堆疊,而不是整台伺服器崩掉害所有使用者——故障隔離。到處用 panic/recover 當 try-catch 是反 Go 慣例:破壞了『錯誤顯式回傳、控制流清楚』的設計、讓錯誤變隱形、難追——recover 是安全網(攔意外崩潰),不是常規錯誤處理手段。"
       },
       "outline": [
         {
@@ -1655,9 +1655,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 15 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "承 32.13:go.mod 的 require/replace/exclude 各做什麼？團隊協作時 go.sum 為什麼一定要 commit(重現+安全)？vendor 目錄(把依賴複製進專案)在什麼情況有用(離線建置、完全掌控依賴)？升級依賴前後為什麼要跑測試？",
+        "hint": "require 宣告、replace 換來源、go.sum 校驗要 commit;vendor 離線可控;升級後測試。",
+        "answer": "go.mod:require(宣告依賴與版本)、replace(把某依賴換成本地路徑或 fork,用於開發中或修補)、exclude(排除有問題的版本)。go.sum 一定要 commit:它記每個依賴的雜湊,讓團隊與 CI 下載到『完全一致且未被竄改』的依賴(可重現+供應鏈安全)。vendor 目錄:go mod vendor 把所有依賴複製進專案——用於離線/隔離環境建置、對依賴完全掌控(不依賴外部下載)、稽核依賴內容;代價是 repo 變大。升級依賴前後跑測試:新版可能有破壞式改動或行為變化,測試綠才能確認沒弄壞——依賴升級是常見的『看起來沒動我的程式卻壞了』來源。"
       },
       "outline": [
         {
@@ -1763,9 +1763,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 12 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "承 32.19:Go 內建 testing/benchmark 已很強,為什麼多數 Go 專案不太需要第三方測試框架(相比其他語言)？table-driven + 標準庫 + testify(斷言輔助)的組合夠用在哪？測試覆蓋率(-cover)該當『目標』還是『參考』——為什麼追求 100% 覆蓋率可能是錯的重點？",
+        "hint": "內建夠強;table-driven+testify;覆蓋率是參考非目標。",
+        "answer": "Go 內建 testing 提供測試、benchmark、覆蓋率、範例測試(Example)、平行測試——功能完整,加上 table-driven 慣用法,多數專案標準庫就夠,頂多加 testify 做更好讀的斷言(assert.Equal)。這種文化讓 Go 測試簡單一致、不用學一堆框架。覆蓋率(-cover)當『參考』而非『目標』:它告訴你哪些程式碼沒被測到(找漏洞用),但追求 100% 常是錯的重點——為湊數字寫沒意義的測試(測 getter/setter、測不會壞的東西)浪費力氣,還給人虛假安全感。重點是『測到關鍵邏輯與邊界情況、且測試在驗真正的行為』,而非數字漂亮——高覆蓋率不等於高品質測試。"
       },
       "outline": [
         {
