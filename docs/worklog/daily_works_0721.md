@@ -500,3 +500,12 @@ Go 章原 22 罐頭。全 25 節換成 Go 量身題：Go 設計哲學(簡單/單
 
 - import ch34/35/36（18 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
 - **本日 de-can 累計 20 章、462 題**（新增 ch34/35/36）。續攻 ch46 + 其餘技術章…
+
+---
+
+## 📚 章節 de-can：ch46 AI/ML 原理 全 25 節（0721·on-brand 核心章）
+
+站的核心主題章(AI/ML 原理，原 24/25 罐頭)。全 25 節換成 AI/ML 概念/設計/判斷題(很多直接呼應本站 AI 功能實作)：AI/ML/DL/GenAI 同心圓與判別 vs 生成、三大學習與資料決定上限、神經網路非線性/反向傳播、Transformer 自注意力解長距離依賴、LLM 是預測 token 故會幻覺(生成非查詢)、模型選型看任務/成本/延遲/隱私別追榜、token/context window/成本估算、prompt 要素(模糊進模糊出)、zero/few-shot/CoT/ReAct、function calling/tool use 補 LLM 不會的事、結構化輸出 JSON mode/schema 仍要容錯(本站 fortune/msg-coach)、串流體感與可中止、RAG 原理與檢索品質決定成敗、embedding 語意向量與不同模型不通用、向量庫 pgvector/ANN 取捨、Agent 架構(ReAct/Plan-Execute/Multi-agent)與必要護欄(本站分身島 L1-L5)、LangChain 抽象代價 vs 直接呼叫、Vercel AI SDK 統一介面與金鑰必後端、LlamaIndex chunking/混合檢索/rerank、fine-tune vs RAG vs prompt 由簡到繁順序、開源自架(Ollama/vLLM)取捨、成本優化快取(本站每日運勢快取)、多模態與 deepfake 負責任、AI Eval 先建才敢改、AI 治理與 prompt injection(輸入是資料非指令)。
+
+- diff 75+/75- → import_chapters_to_db ch46（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+- 本日 de-can 累計 **21 章、487 題**。剩：ch15/18/19/20/21/22/24（後端/DevOps 全罐頭）+ 數章殘餘罐頭。
