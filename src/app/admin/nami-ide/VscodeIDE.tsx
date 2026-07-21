@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Play, Loader2, X, Download, Upload, FolderPlus, FilePlus, Save, ChevronRight, Maximize2, Minimize2 } from "lucide-react";
+import { Play, Loader2, X, Download, Upload, FolderPlus, FilePlus, Save, ChevronRight, Maximize2, Minimize2, Copy, Check } from "lucide-react";
 import { usePyodide } from "@/hooks/usePyodide";
 import { CodeEditor } from "@/components/ui/CodeEditor";
 import { AskAI } from "@/components/nami/AskAI";
@@ -17,6 +17,26 @@ import {
 } from "./fs";
 
 type RunMode = "python" | "web" | "javascript" | "sql" | "unsupported";
+
+/** 小複製鈕：複製傳入文字、按下顯示「已複製」。 */
+function CopyBtn({ text, label = "複製", title, className = "" }: { text: string; label?: string; title?: string; className?: string }) {
+  const [done, setDone] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={async (e) => {
+        e.stopPropagation();
+        if (!text) return;
+        try { await navigator.clipboard.writeText(text); setDone(true); setTimeout(() => setDone(false), 1500); } catch { /* clipboard 不可用 */ }
+      }}
+      disabled={!text}
+      title={title ?? label}
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md border border-border text-fg-muted hover:text-fg hover:border-purple-400 disabled:opacity-40 transition text-[10px] shrink-0 ${className}`}
+    >
+      {done ? <Check size={11} /> : <Copy size={11} />} {done ? "已複製" : label}
+    </button>
+  );
+}
 
 function runModeForPath(path: string): RunMode {
   const ext = getExt(path);
@@ -380,10 +400,10 @@ ${activeFile.content}
         {status === "error" && <span className="text-red-400">⚠️ {error}</span>}
       </div>
 
-      {/* Main IDE layout */}
-      <div className="grid gap-2" style={{ gridTemplateColumns: sidebarCollapsed ? "30px 1fr" : "260px 1fr" }}>
+      {/* Main IDE layout — 手機單欄堆疊、md+ 才側欄+編輯器並排（不然編輯器會被切掉） */}
+      <div className={`grid gap-2 grid-cols-1 ${sidebarCollapsed ? "md:grid-cols-[36px_minmax(0,1fr)]" : "md:grid-cols-[260px_minmax(0,1fr)]"}`}>
         {/* Sidebar */}
-        <div className="bg-bg-card border border-border rounded-2xl overflow-hidden flex flex-col" style={{ minHeight: "600px" }}>
+        <div className="bg-bg-card border border-border rounded-2xl overflow-hidden flex flex-col md:min-h-[600px]">
           {sidebarCollapsed ? (
             <button
               onClick={() => setSidebarCollapsed(false)}
@@ -460,10 +480,13 @@ ${activeFile.content}
 
           {/* Editor */}
           <div className="bg-bg-card border border-border rounded-2xl overflow-hidden">
-            <div className="px-3 py-1.5 border-b border-border bg-bg-elevated text-[10px] text-fg-muted font-mono flex items-center gap-1">
-              <ChevronRight size={9} />
-              <span>{activePath || "(沒選擇檔案)"}</span>
-              {activeFile && <span className="ml-auto">{activeFile.content.length} 字</span>}
+            <div className="px-3 py-1.5 border-b border-border bg-bg-elevated text-[10px] text-fg-muted font-mono flex items-center gap-2">
+              <ChevronRight size={9} className="shrink-0" />
+              <span className="truncate">{activePath || "(沒選擇檔案)"}</span>
+              <div className="ml-auto flex items-center gap-2 shrink-0">
+                {activeFile && <span>{activeFile.content.length} 字</span>}
+                {activeFile && <CopyBtn text={activeFile.content} label="複製程式碼" title="複製這個檔案的完整程式碼" />}
+              </div>
             </div>
             <div style={{ minHeight: "400px" }}>
               {activeFile ? (
@@ -485,12 +508,17 @@ ${activeFile.content}
 
           {/* Output */}
           <div className="bg-bg-card border border-border rounded-2xl overflow-hidden">
-            <div className="px-3 py-1.5 border-b border-border bg-bg-elevated text-[10px] text-fg-muted">
-              {mode === "python" && "💬 Python output"}
-              {mode === "sql" && "💬 SQL 結果"}
-              {mode === "web" && "🌐 iframe 預覽 + console.log"}
-              {mode === "javascript" && "📜 JS 執行結果"}
-              {mode === "unsupported" && `${getExt(activePath) || "—"} 不支援執行`}
+            <div className="px-3 py-1.5 border-b border-border bg-bg-elevated text-[10px] text-fg-muted flex items-center gap-2">
+              <span className="truncate">
+                {mode === "python" && "💬 Python output"}
+                {mode === "sql" && "💬 SQL 結果"}
+                {mode === "web" && "🌐 iframe 預覽 + console.log"}
+                {mode === "javascript" && "📜 JS 執行結果"}
+                {mode === "unsupported" && `${getExt(activePath) || "—"} 不支援執行`}
+              </span>
+              {(output || stderr) && (
+                <CopyBtn text={[output, stderr].filter(Boolean).join("\n")} label="複製輸出" title="複製執行結果 / 錯誤訊息" className="ml-auto" />
+              )}
             </div>
             {(mode === "web" || mode === "javascript") && previewSrcDoc && (
               <iframe

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { TerminalSquare, Trash2, RotateCcw, Loader2, ChevronDown } from "lucide-react";
+import { TerminalSquare, Trash2, RotateCcw, Loader2, ChevronDown, Copy, Check } from "lucide-react";
 import { usePyodide } from "@/hooks/usePyodide";
 
 /**
@@ -33,6 +33,7 @@ export function VirtualTerminal({
   const [busy, setBusy] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
   const [histIdx, setHistIdx] = useState(-1);
+  const [copied, setCopied] = useState(false);
 
   // shell session replay 狀態
   const committedRef = useRef<string[]>([]); // 先前成功執行的指令
@@ -185,6 +186,17 @@ export function VirtualTerminal({
               className={`px-2 py-0.5 ${mode === "shell" ? "bg-emerald-500/30 text-emerald-100" : "text-emerald-400/70 hover:bg-white/5"}`}
             >$ Shell</button>
           </div>
+          <button
+            onClick={async () => {
+              const t = lines.map((l) => l.text).join("\n");
+              if (!t) return;
+              try { await navigator.clipboard.writeText(t); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch { /* clipboard 不可用 */ }
+            }}
+            title="複製終端機內容"
+            className="p-1 rounded hover:bg-white/10 text-emerald-300/80"
+          >
+            {copied ? <Check size={13} /> : <Copy size={13} />}
+          </button>
           <button onClick={() => setLines([])} title="清畫面" className="p-1 rounded hover:bg-white/10 text-emerald-300/80">
             <Trash2 size={13} />
           </button>
