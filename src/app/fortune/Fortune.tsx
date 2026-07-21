@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   Sparkles, Heart, Briefcase, Coins, Loader2, Star, Palette, Hash,
-  Share2, Check, Cake, RefreshCw,
+  Share2, Check, Cake, RefreshCw, ChevronDown, History, Clock,
 } from "lucide-react";
 import { TarotSection } from "./TarotSection";
+import { HistorySection } from "./HistorySection";
 
 type FortunePayload = {
   overall: string; love: string; career: string; wealth: string;
@@ -157,6 +158,9 @@ export function Fortune() {
       {/* 塔羅占卜 */}
       <TarotSection />
 
+      {/* 歷史運勢 */}
+      <HistorySection />
+
       {/* 動作列 */}
       <div className="flex flex-wrap gap-3 pt-1">
         <button onClick={share} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-violet-600 text-white font-medium hover:bg-violet-700 transition">
@@ -188,16 +192,54 @@ function ScoreRing({ score }: { score: number }) {
   );
 }
 
+// 十二時辰 → 代表時間（HH:MM），給八字用；「不知道」= 空
+const SHICHEN: Array<{ label: string; value: string }> = [
+  { label: "子時（23–01）", value: "23:00" },
+  { label: "丑時（01–03）", value: "01:00" },
+  { label: "寅時（03–05）", value: "03:00" },
+  { label: "卯時（05–07）", value: "05:00" },
+  { label: "辰時（07–09）", value: "07:00" },
+  { label: "巳時（09–11）", value: "09:00" },
+  { label: "午時（11–13）", value: "11:00" },
+  { label: "未時（13–15）", value: "13:00" },
+  { label: "申時（15–17）", value: "15:00" },
+  { label: "酉時（17–19）", value: "17:00" },
+  { label: "戌時（19–21）", value: "19:00" },
+  { label: "亥時（21–23）", value: "21:00" },
+];
+
+/** 好看的原生 select（帶 chevron、亮暗、RWD）。 */
+function Select({ value, onChange, children, className = "" }: {
+  value: string; onChange: (v: string) => void; children: React.ReactNode; className?: string;
+}) {
+  return (
+    <div className={`relative ${className}`}>
+      <select value={value} onChange={(e) => onChange(e.target.value)}
+        className="w-full appearance-none px-3 py-2.5 pr-9 rounded-xl border border-black/15 dark:border-white/15 bg-white dark:bg-white/5 text-black/80 dark:text-white/85 text-sm cursor-pointer hover:border-violet-400/60 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/20 transition">
+        {children}
+      </select>
+      <ChevronDown className="w-4 h-4 text-black/35 dark:text-white/35 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+    </div>
+  );
+}
+
 function BirthForm({ onSaved }: { onSaved: () => void }) {
-  const [birthDate, setBirthDate] = useState("");
+  const nowYear = new Date().getFullYear();
+  const [year, setYear] = useState("");
+  const [month, setMonth] = useState("");
+  const [day, setDay] = useState("");
   const [birthTime, setBirthTime] = useState("");
   const [gender, setGender] = useState("");
   const [calendarType, setCalendarType] = useState<"solar" | "lunar">("solar");
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
 
+  // 依年月算當月天數（含閏年），日下拉只顯示有效日
+  const daysInMonth = year && month ? new Date(Number(year), Number(month), 0).getDate() : 31;
+
   const save = async () => {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) { setErr("請填寫生日"); return; }
+    if (!year || !month || !day) { setErr("請完整選擇生日的年、月、日"); return; }
+    const birthDate = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
     setSaving(true); setErr("");
     try {
       const r = await fetch("/api/fortune/profile", {
@@ -219,41 +261,67 @@ function BirthForm({ onSaved }: { onSaved: () => void }) {
         <h1 className="text-2xl font-bold text-black/85 dark:text-white/90">每日運勢</h1>
         <p className="text-sm text-black/55 dark:text-white/55 mt-1">填一次生日，之後每天為你占卜今日運勢</p>
       </div>
-      <div className="space-y-4 rounded-2xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 p-5">
-        <label className="block">
-          <span className="flex items-center gap-1.5 text-sm font-medium text-black/70 dark:text-white/70 mb-1"><Cake className="w-4 h-4" /> 生日 <span className="text-rose-500">*</span></span>
-          <input type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} max="2025-12-31"
-            className="w-full px-3 py-2 rounded-lg border border-black/15 dark:border-white/15 bg-white dark:bg-white/5 text-black/80 dark:text-white/85" />
-        </label>
-        <label className="block">
-          <span className="text-sm font-medium text-black/70 dark:text-white/70 mb-1 block">出生時辰（選填，八字用）</span>
-          <input type="time" value={birthTime} onChange={(e) => setBirthTime(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg border border-black/15 dark:border-white/15 bg-white dark:bg-white/5 text-black/80 dark:text-white/85" />
-        </label>
+      <div className="space-y-5 rounded-2xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 p-5 sm:p-6">
+        {/* 生日：年 / 月 / 日 下拉（不用日曆、選生日更順手） */}
         <div>
-          <span className="text-sm font-medium text-black/70 dark:text-white/70 mb-1 block">曆別</span>
+          <span className="flex items-center gap-1.5 text-sm font-medium text-black/70 dark:text-white/70 mb-1.5"><Cake className="w-4 h-4 text-violet-500" /> 生日 <span className="text-rose-500">*</span></span>
+          <div className="grid grid-cols-3 gap-2">
+            <Select value={year} onChange={setYear}>
+              <option value="">年</option>
+              {Array.from({ length: 100 }, (_, i) => nowYear - i).map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </Select>
+            <Select value={month} onChange={(v) => { setMonth(v); if (day && Number(day) > new Date(Number(year) || 2000, Number(v), 0).getDate()) setDay(""); }}>
+              <option value="">月</option>
+              {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                <option key={m} value={m}>{m} 月</option>
+              ))}
+            </Select>
+            <Select value={day} onChange={setDay}>
+              <option value="">日</option>
+              {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((dd) => (
+                <option key={dd} value={dd}>{dd} 日</option>
+              ))}
+            </Select>
+          </div>
+        </div>
+
+        {/* 出生時辰：十二時辰下拉（八字用、選填） */}
+        <div>
+          <span className="flex items-center gap-1.5 text-sm font-medium text-black/70 dark:text-white/70 mb-1.5"><Clock className="w-4 h-4 text-violet-500" /> 出生時辰 <span className="text-xs font-normal text-black/40 dark:text-white/40">選填・八字用</span></span>
+          <Select value={birthTime} onChange={setBirthTime}>
+            <option value="">不知道 / 不填</option>
+            {SHICHEN.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+          </Select>
+        </div>
+
+        <div>
+          <span className="text-sm font-medium text-black/70 dark:text-white/70 mb-1.5 block">曆別</span>
           <div className="flex gap-2">
             {([["solar", "國曆"], ["lunar", "農曆"]] as const).map(([v, l]) => (
               <button key={v} onClick={() => setCalendarType(v)} type="button"
-                className={`flex-1 py-2 rounded-lg text-sm border transition ${calendarType === v ? "bg-violet-600 text-white border-violet-600" : "border-black/15 dark:border-white/15 text-black/60 dark:text-white/60"}`}>{l}</button>
+                className={`flex-1 py-2.5 rounded-xl text-sm border transition ${calendarType === v ? "bg-violet-600 text-white border-violet-600 shadow-sm" : "border-black/15 dark:border-white/15 text-black/60 dark:text-white/60 hover:border-violet-400/60"}`}>{l}</button>
             ))}
           </div>
         </div>
+
         <div>
-          <span className="text-sm font-medium text-black/70 dark:text-white/70 mb-1 block">性別（選填）</span>
+          <span className="text-sm font-medium text-black/70 dark:text-white/70 mb-1.5 block">性別 <span className="text-xs font-normal text-black/40 dark:text-white/40">選填</span></span>
           <div className="flex gap-2">
             {([["male", "男"], ["female", "女"], ["other", "其他"]] as const).map(([v, l]) => (
               <button key={v} onClick={() => setGender(gender === v ? "" : v)} type="button"
-                className={`flex-1 py-2 rounded-lg text-sm border transition ${gender === v ? "bg-violet-600 text-white border-violet-600" : "border-black/15 dark:border-white/15 text-black/60 dark:text-white/60"}`}>{l}</button>
+                className={`flex-1 py-2.5 rounded-xl text-sm border transition ${gender === v ? "bg-violet-600 text-white border-violet-600 shadow-sm" : "border-black/15 dark:border-white/15 text-black/60 dark:text-white/60 hover:border-violet-400/60"}`}>{l}</button>
             ))}
           </div>
         </div>
-        {err && <p className="text-sm text-rose-500">{err}</p>}
+
+        {err && <p className="text-sm text-rose-500 text-center">{err}</p>}
         <button onClick={save} disabled={saving}
-          className="w-full py-2.5 rounded-full bg-violet-600 text-white font-medium hover:bg-violet-700 disabled:opacity-60 transition flex items-center justify-center gap-2">
+          className="w-full py-3 rounded-full bg-violet-600 text-white font-medium hover:bg-violet-700 disabled:opacity-60 transition flex items-center justify-center gap-2 shadow-sm">
           {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> 占卜中…</> : <><Sparkles className="w-4 h-4" /> 看今天的運勢</>}
         </button>
-        <p className="text-xs text-black/40 dark:text-white/40 text-center">農曆 / 八字精算之後上線；目前先用西洋星座為你占卜。</p>
+        <p className="text-xs text-black/40 dark:text-white/40 text-center leading-relaxed">農曆 / 八字精算之後上線；目前先用西洋星座為你占卜。</p>
       </div>
     </div>
   );
