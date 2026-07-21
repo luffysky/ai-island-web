@@ -222,7 +222,7 @@
 ## 六、商業 / 變現 / 社群
 
 - [ ] 6.1 Z幣經濟：⬜ 商城 sink（寵物配件/主題）、⬜ 儲值 4 套餐、⬜ 訂閱付款監測 dashboard、⬜ Z幣綁 Agent 動作、⬜ 點數代管方案
-- [ ] 6.2 **可驗證證書**：`/verify/[certId]` 公開驗證頁（**驗證不存在**）+ 市集收尾
+- [x] ~~6.2 **可驗證證書**：公開驗證頁~~ ✅ 0721（原審計誤判「不存在」）：`/certificates/[code]` 本就是公開驗證頁（admin 讀繞 RLS、依 verification_code、含 OG 圖）→ 補「✓ 已通過 AI 島官方驗證」badge（4 語）+ 新增 `/verify`（驗證碼輸入 portal）與 `/verify/[code]`→證書頁 redirect。市集收尾另計。
 - [ ] 6.3 學習社群 / Cohort 使用者端（只有 `admin/cohort` 分析、無 `study_groups` 表/使用者頁）：期數制、組隊 Boss、讀書會
 - [ ] 6.4 SRS 間隔複習、每週學習週報自動化、賽季排行榜
 - [ ] 6.5 直播/即時答疑（`live_sessions` 表/頁不存在）

@@ -1215,6 +1215,7 @@
     "issuedTo": "此證書頒發給",
     "issuedOn": "發出於 {date}",
     "verificationCode": "驗證碼：{code}",
+    "verifiedBadge": "此證書已通過 AI 島官方驗證",
     "shareTitle": "{name} 的完課證書：{title}",
     "shareText": "我在 AI 島完成了「{title}」🎓",
     "shareLabel": "炫耀這張證書",

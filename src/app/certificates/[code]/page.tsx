@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Award } from "lucide-react";
+import { Award, BadgeCheck } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { ShareButton } from "@/components/share/ShareButton";
@@ -86,6 +86,9 @@ export default async function CertificatePage({ params }: { params: Promise<{ co
           {cert.verification_code && (
             <div className="mt-1 text-xs font-mono text-fg-muted">{t("verificationCode", { code: cert.verification_code })}</div>
           )}
+          <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
+            <BadgeCheck size={14} /> {t("verifiedBadge")}
+          </div>
         </div>
       </div>
 

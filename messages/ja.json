@@ -1215,6 +1215,7 @@
     "issuedTo": "この証明書は次の方に授与されます",
     "issuedOn": "発行日 {date}",
     "verificationCode": "確認コード：{code}",
+    "verifiedBadge": "この証明書は AI 島が認証済みです",
     "shareTitle": "{name}さんの修了証明書：{title}",
     "shareText": "AI島で「{title}」を修了しました🎓",
     "shareLabel": "この証明書を自慢する",

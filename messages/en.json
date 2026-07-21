@@ -1215,6 +1215,7 @@
     "issuedTo": "This certificate is awarded to",
     "issuedOn": "Issued on {date}",
     "verificationCode": "Verification code: {code}",
+    "verifiedBadge": "Verified by AI Island",
     "shareTitle": "{name}'s completion certificate: {title}",
     "shareText": "I completed \"{title}\" on AI Island 🎓",
     "shareLabel": "Show off this certificate",
