@@ -42,9 +42,9 @@
         }
       ],
       "exercise": {
-        "question": "找一個你身邊的例子、用「Java 為什麼仍是主流」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "Java 誕生近 30 年為什麼仍是企業後端主流(JVM 成熟穩定、生態龐大、強型別、跨平台、人才多)？『JVM 一次編譯到處執行』的真正價值在企業環境是什麼？相比新語言,Java 的『無聊但可靠』對大型長期系統為什麼是優點？",
+        "hint": "JVM 成熟、生態大、人才多;穩定可靠勝過潮。",
+        "answer": "Java 主流因:JVM 極成熟穩定(調校/監控工具完備)、生態龐大(Spring 等企業框架、無數函式庫)、強型別利於大團隊維護、跨平台(一次編譯到處跑)、人才市場大好招募。企業價值:同一份 bytecode 跑在各種伺服器/OS、有成熟的效能調校與可觀測性。『無聊但可靠』對大型長期系統是優點:系統要跑十幾年、要能找到人維護、要有踩過坑的成熟方案——穩定、可預測、生態厚的技術長期成本低,勝過新潮但未知的選擇。"
       },
       "outline": [
         {
@@ -130,9 +130,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 10 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Spring Boot 的『約定優於配置 + 自動配置 + 內嵌伺服器』讓你幾行就跑起一個 REST API——它幫你省掉了傳統 Java/Spring 的什麼繁瑣(XML 配置、手動組裝、外部容器)？@RestController/@GetMapping 這種註解驅動的好處與『魔法太多不知背後發生什麼』的代價各是什麼？",
+        "hint": "Boot 自動配置+內嵌 server 省繁瑣;註解方便但藏行為。",
+        "answer": "Spring Boot 用自動配置(依 classpath 猜你要什麼並配好)、內嵌 Tomcat(不用另裝部署到外部容器)、starter 依賴(一個依賴帶齊一組)——省掉傳統 Spring 的大量 XML 配置與手動組裝 bean。@RestController+@GetMapping 註解驅動:宣告式、程式碼少、聚焦業務。代價:自動配置與註解是『魔法』——出問題或要客製時,不了解背後(它幫你配了什麼、bean 怎麼組)會難除錯;所以方便之外仍要理解 Spring 的核心機制(DI、bean 生命週期)才能駕馭。"
       },
       "outline": [
         {
@@ -222,9 +222,9 @@
         }
       ],
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「Spring Boot 進階」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "Spring 的核心是『依賴注入(DI)/控制反轉(IoC)』——為什麼把物件的建立與組裝交給容器、而不是自己 new,能讓程式解耦、好測試(可注入 mock)？@Service/@Repository 分層與建構子注入(相比 field 注入)為什麼是推薦做法？",
+        "hint": "DI 解耦、可注入 mock;建構子注入明確可測。",
+        "answer": "DI/IoC:物件需要的依賴由容器注入,而非自己 new——你的類別只宣告『我需要什麼』,不管誰給、怎麼建。好處:解耦(依賴介面而非具體實作,可替換)、好測試(測試時注入 mock 依賴,不碰真 DB/外部)。@Service(商業邏輯)/@Repository(資料存取)分層讓職責清楚、可各自測。建構子注入(把依賴當建構子參數)優於 field 注入:依賴明確(一看建構子就知道要什麼)、可設 final(不可變)、測試時直接 new 傳入 mock 不需容器、且避免循環依賴悄悄成立。"
       },
       "outline": [
         {
@@ -306,9 +306,9 @@
         "text": "Java 工作多但 Indie 不推、選 stack 看目標。"
       },
       "exercise": {
-        "question": "找一個你身邊的例子、用「Spring Boot 是什麼」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "JVM 有垃圾回收,但 Java 服務仍會遇到記憶體問題(記憶體洩漏、OOM、GC 停頓)——洩漏在有 GC 的語言怎麼發生(還被參照著就不回收,如靜態集合只增不減、忘了移除的監聽)？為什麼調 heap 大小與選 GC 對高吞吐/低延遲服務重要？",
+        "hint": "GC 只回收沒人參照的;洩漏=忘了放手;heap/GC 調校影響延遲。",
+        "answer": "GC 只回收『再也連不到』的物件;洩漏是『你以為不用了、但還有引用鏈連著』——如靜態 Map/List 只加不刪、快取無上限成長、忘了反註冊的監聽器/回呼,這些讓物件一直被參照、GC 收不掉,最終 OOM。調校重要:heap 太小頻繁 GC/OOM、太大 GC 停頓長;不同 GC(如低延遲的 ZGC/G1)在『高吞吐 vs 低停頓』間取捨——對延遲敏感服務要選對 GC 並調 heap,才不會因 GC 停頓造成請求卡頓。用 heap dump/profiler 定位洩漏。"
       },
       "id": "34.4",
       "number": "LESSON 34.4",
@@ -398,9 +398,9 @@
         "text": "Spring 找工作必懂、自己 side project 不推。"
       },
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「Spring Security + JPA 進階」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "Spring Security 的認證(你是誰)與授權(你能做什麼)是分開的——用它保護 API 時,filter chain 在請求鏈哪個位置攔截、驗 token/session？JPA/Hibernate(ORM)方便但 N+1 與 lazy loading 陷阱怎麼發生、怎麼避免？為什麼『在 view 層才觸發 lazy 載入』會出 LazyInitializationException？",
+        "hint": "Security filter 前置驗證;JPA N+1/lazy 陷阱;session 關了就載不到。",
+        "answer": "Spring Security 用一串 filter 在請求到達 controller『之前』攔截:驗證身分(session/JWT)、再依角色/權限授權,失敗回 401/403。JPA/Hibernate N+1:查一組實體再對每個存取關聯各發一次查詢→用 fetch join 或 @EntityGraph 一次載入。lazy loading 陷阱:關聯設 lazy(用到才查),若在 transaction/session 關閉後(如已到 view 層)才存取,Hibernate 無 session 可查→LazyInitializationException;避免:在 service 層(session 還開著)就取好需要的資料、用 DTO 回傳、或明確 fetch。ORM 方便但要懂它何時發查詢。"
       },
       "id": "34.5",
       "number": "LESSON 34.5",
@@ -486,9 +486,9 @@
         "text": "Java 工作多 = 找全職好、Indie 不推。"
       },
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "部署 Spring Boot(內嵌伺服器→打成可執行 jar→Docker)相比傳統丟 war 到外部容器簡化了什麼？為什麼測試分層(單元測 service、@WebMvcTest 測 controller、@SpringBootTest 整合測)別全用最重的整合測？Spring 的 profile(dev/prod 不同設定)解決什麼？",
+        "hint": "可執行 jar 免外部容器;測試分層別全整合;profile 分環境。",
+        "answer": "Spring Boot 打成含內嵌 Tomcat 的可執行 jar(java -jar 就跑)、再包 Docker——不用再裝外部 Tomcat/部署 war,部署大幅簡化、環境一致。測試分層:單元測 service 邏輯(快、mock 依賴)、@WebMvcTest 只載 web 層測 controller(不啟整個 context)、@SpringBootTest 啟完整 context 做整合測(慢、少用)——別全用最重的整合測(慢、脆),用金字塔。profile(application-dev/prod.yml):同一份程式碼依環境載不同設定(DB 連線、log level、密鑰來源),用 spring.profiles.active 切換——dev/staging/prod 各自設定、不用改程式。"
       },
       "id": "34.6",
       "number": "LESSON 34.6",

@@ -208,7 +208,8 @@
   - [x] ~~ch31 Node.js 完整：25 節全 de-can~~ ✅ 0721（event loop I/O vs CPU、nvm 版本管理、內建 http vs Express、dep vs devDep/lockfile、ESM vs CJS 坑、pnpm 硬連結、TS 開發 vs 編譯部署、微任務順序/阻塞卡全部、Express middleware/next、Hono/Fastify 選型、Prisma N+1、Zod 邊界驗證、bcrypt/JWT HttpOnly、WS 多台 pub/sub、BullMQ 冪等、Redis 快取 stampede、Vitest 金字塔、Pino 結構化 log、部署 serverless 限制、runtime 之爭穩定優先、tRPC 內部 vs REST 對外、AI SDK 串流金鑰後端、Node 22 內建減依賴、Hono 跨 runtime、Stream pipeline 大檔）
   - [x] ~~ch32 Go 完整：25 節全 de-can~~ ✅ 0721（Go 哲學單一二進位、零值/未用變數嚴格、一個 for/switch 免 break、多回傳值 error、slice 共享底層陣列、struct 值 vs 指標接收者、指標無運算、interface 隱式小介面、goroutine 輕量與洩漏、channel 用溝通共享、select+context 取消、error wrapping vs panic、go.mod/go.sum 校驗、標準庫 json tag/時區、net/http 免框架、Gin/Fiber/Chi 選型、GORM/sqlx/sqlc、JWT middleware+context、table-driven test、單一二進位交叉編譯 scratch image、分層 handler/service/repo、worker pool 限併發、panic/recover 隔離、vendor/依賴、覆蓋率是參考非目標）
   - [x] 🏁 **後端語言雙章 de-can**：ch31 Node.js + ch32 Go
-  - [ ] 剩 ch34–36/46… 續 de-can
+  - [x] ~~ch34 Java+Spring Boot / ch35 C#+.NET / ch36 PHP+Laravel（各 6 節）全 de-can~~ ✅ 0721（生態總覽章：JVM 穩定/Spring Boot 自動配置/DI 建構子注入/JVM 洩漏/Spring Security+JPA N+1 lazy/部署測試分層 · .NET 跨平台/minimal API/AOT/C# record NRT/Blazor Server vs WASM/Unity 物件池 · PHP 8 現代化/Laravel Eloquent N+1/廣播佇列排程/facade 隱藏依賴/Livewire Filament/資安框架防護但自己開洞）
+  - [ ] 剩 ch46… + 其餘技術章續 de-can
 - [ ] 4.1.2 **deep-rewrite tier 未動章**：ch15、ch24、ch32、ch34、ch35、ch36、ch40、ch41、ch63、ch68（strict-spec）、ch72–75、附錄 ch61–67/69–70
 - [ ] 4.1.3 教具庫擴充：mobile 專屬教具（給 ch11）、規劃 B 教具（RegexTester/CronBuilder/JsonInspector 進階/HttpInspector/Tokenizer/SortingViz/GitGraph/NeuralForward/AuthFlow/MLBoundary）——依技術章需要再建
 - [ ] 4.1.4 圖文解說圖：概念/B/D/E/F 區操作圖 110+ 張（🔴 等林董生圖；A 區 29 張 ✅）

@@ -42,9 +42,9 @@
         }
       ],
       "exercise": {
-        "question": "找一個你身邊的例子、用「C# + .NET 為什麼選」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "C#+.NET 從『Windows 專屬』變成『跨平台開源(.NET Core 之後)』對它的定位有什麼改變？.NET 的『一個平台涵蓋 web(ASP.NET)、桌面(WPF/WinUI)、行動(MAUI)、遊戲(Unity)』對團隊技能複用有什麼價值？C# 的語言設計(強型別、現代語法、async 一等公民)適合什麼？",
+        "hint": ".NET 現在跨平台;一語言多領域;C# 現代強型別。",
+        "answer": ".NET Core 之後 .NET 跨平台開源(可跑 Linux/Mac、部署雲原生)——不再綁 Windows,能與 Java 一樣做跨平台後端、進雲。一平台多領域(web/桌面/行動/遊戲/雲)的價值:團隊學一套 C#+.NET 就能跨 web、桌面 app、行動、Unity 遊戲——技能與程式碼(共用邏輯/型別)複用、招募一種人才。C# 設計:強型別、現代語法(LINQ、pattern matching、record、async/await 一等公民)、效能好——適合企業後端、桌面、遊戲、以及要型別安全與生產力兼具的大型系統。"
       },
       "outline": [
         {
@@ -134,9 +134,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 12 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "ASP.NET Core 的 minimal API(幾行寫一個端點)和傳統 MVC controller 各適合什麼(小服務/微服務 vs 大型有結構的應用)？middleware pipeline 與 Java/Node 的中介層概念相通嗎？內建的 DI 容器讓你怎麼組裝服務？",
+        "hint": "minimal API 輕、MVC 有結構;middleware pipeline 通用;內建 DI。",
+        "answer": "minimal API:app.MapGet(\"/hi\",()=>...) 幾行一個端點,適合小服務/微服務/原型——少樣板。傳統 MVC/controller:有明確結構(controller/action/model)、適合大型有組織的應用。middleware pipeline 概念和 Java(filter)/Node(Express middleware)相通:請求依序經過一串中介層(認證、log、錯誤處理)再到端點——跨框架的通用模式。內建 DI:在 Program.cs 用 builder.Services.AddScoped/Singleton 註冊服務,建構子注入取用——和 Spring 類似,解耦、可測試,不用第三方 DI 容器。"
       },
       "outline": [
         {
@@ -230,9 +230,9 @@
         }
       ],
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「.NET 進階 + 接案」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（${user}: ${msg}）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "部署 .NET 應用的選項(自包含 vs 依賴框架、跨平台編譯、Docker、AOT 編譯成原生)各有什麼取捨(體積 vs 免裝 runtime vs 啟動速度)？.NET 的效能近年大幅提升,對『高吞吐服務』選 .NET 相比其他有什麼考量？",
+        "hint": "self-contained 免裝 runtime;AOT 快啟動小;.NET 效能已很強。",
+        "answer": "部署選項:依賴框架(小,但目標機要裝 .NET runtime)、自包含(把 runtime 打進去,大但免裝、可攜)、AOT(Native AOT 編成原生二進位,啟動超快、體積小、無 JIT,適合 serverless/CLI,但有反射等限制)。跨平台編譯+Docker 讓它像 Go/Java 一樣進雲原生。.NET 效能近年大幅提升(常在各語言 benchmark 前段):對高吞吐服務,.NET 提供強型別+高效能+完整生態+好工具(Visual Studio)——若團隊熟 C#/微軟生態、或要整合既有 .NET 系統,是有力選擇。"
       },
       "outline": [
         {
@@ -322,9 +322,9 @@
         "text": ".NET 性能逼近 Go、學習比 Java 平。"
       },
       "exercise": {
-        "question": "把本節「.NET Core / 9 完整心法」的核心心法、轉成一個具體的「我今天 / 這週要做」的小行動。",
-        "hint": "心法 ≠ 知識、心法要落地。「我從今天起、每天 ___」這種格式。",
-        "answer": "好行動 = 小（5-10 分鐘以內）+ 具體（不模糊）+ 可量化（有沒有做得出來）。例：『每天起床先列 3 件最重要的事再開電腦』比『更專注』可執行 100 倍。配合 streak（連續紀錄）讓自己上癮。"
+        "question": "C# 近年的新語法(record、pattern matching、nullable reference types、top-level statements)各解決什麼痛(不可變資料、複雜分支、null 安全、樣板)？nullable reference types 開啟後,編譯器幫你抓可能的 null 存取——這和 TS 的 strictNullChecks 是同一種價值嗎？",
+        "hint": "record 不可變、pattern match 分支、NRT null 安全;類似 TS strict null。",
+        "answer": "record:一行定義不可變資料類別(自動產 建構/相等/ToString),省樣板、適合 DTO/值物件。pattern matching:更強的 switch/is 判斷,優雅處理複雜分支與解構。nullable reference types(NRT):開啟後編譯器區分『可為 null(string?)vs 不可 null(string)』,對可能 null 的存取發警告——逼你先判空。top-level statements:小程式免寫 class Main 樣板。NRT 和 TS strictNullChecks 是同一種價值:把『null 引用』這個最常見的執行期崩潰(NullReferenceException),用型別系統提前到編譯期抓到、逼你處理——大幅減少線上 null 錯誤。"
       },
       "id": "35.4",
       "number": "LESSON 35.4",
@@ -418,9 +418,9 @@
         "text": "Blazor 適合 C# 全棧、但市場小於 React。"
       },
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Blazor(用 C# 寫 web 前端)、WPF/WinUI(Windows 桌面)、MAUI(跨平台行動/桌面)讓 C# 開發者用同一語言做各種 UI——這種『一種語言全平台』的取捨是什麼(團隊複用 vs 各平台原生體驗/生態)？Blazor 的兩種模式(Server 靠 SignalR 即時 vs WebAssembly 在瀏覽器跑)各適合什麼？",
+        "hint": "一語言全平台複用;但未必比原生生態強;Blazor Server vs WASM。",
+        "answer": "用 C# 做 web/桌面/行動 UI:團隊技能與程式碼(邏輯/型別/驗證)複用、一種人才涵蓋全平台——對已在 .NET 生態的團隊生產力高。取捨:未必比各平台原生(如 web 的 React 生態、iOS 的 Swift)更成熟/體驗更好,要看生態與需求。Blazor 兩模式:Server(UI 邏輯在伺服器跑、透過 SignalR 即時同步到瀏覽器——首屏快、但每次互動要往返、需連線)vs WebAssembly(把 .NET 執行時下載到瀏覽器、C# 直接在前端跑——離線可用、無往返延遲,但初次下載較大、啟動較慢)。依延遲/離線/初載需求選。"
       },
       "id": "35.5",
       "number": "LESSON 35.5",
@@ -514,9 +514,9 @@
         "text": "會 C# 順便會 Unity = Indie 2 條路。"
       },
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Unity 用 C# 做遊戲開發——遊戲程式相比一般後端,在『每幀更新(Update loop)、效能(避免每幀配置記憶體觸發 GC 卡頓)、狀態管理』上有什麼不同思維？為什麼遊戲特別在意 GC 停頓、要用物件池(object pool)重用而非一直 new？",
+        "hint": "遊戲每幀跑;GC 卡頓毀順暢;物件池重用避免配置。",
+        "answer": "遊戲是即時、每秒 60 幀的 Update 迴圈:每幀都要在極短時間(約 16ms)內算完,思維和請求-回應的後端不同(要持續、即時、可預測)。GC 停頓在遊戲特別致命:一次 GC 卡頓就掉幀、畫面頓一下,毀了流暢體驗——所以要避免在每幀 Update 裡 new 大量短命物件(製造垃圾觸發 GC)。物件池(object pool):預先建好一批物件(子彈、敵人)重複回收再用,而非一直 new/銷毀——減少配置與 GC 壓力,維持穩定幀率。遊戲效能思維:預算每幀時間、減少配置、重用、避免卡頓。"
       },
       "id": "35.6",
       "number": "LESSON 35.6",

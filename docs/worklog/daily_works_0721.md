@@ -488,3 +488,15 @@ Go 章原 22 罐頭。全 25 節換成 Go 量身題：Go 設計哲學(簡單/單
 
 - diff 75+/75- → import_chapters_to_db ch32（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
 - 本日 de-can 累計 **17 章、444 題**（ch01/02/04/05/07/08/09/10/16/17/26/27/28/29/30/31/32）。續攻 ch34–36/46…
+
+---
+
+## 📚 章節 de-can：ch34 Java+Spring / ch35 C#+.NET / ch36 PHP+Laravel（各 6 節，共 18 節）（0721）
+
+三個生態總覽薄章(各 6 節)一起 de-can，換成生態/架構/決策題：
+- **ch34 Java+Spring Boot**：JVM 為何仍主流(穩定/生態/人才)、Spring Boot 自動配置與註解魔法代價、DI/IoC 建構子注入好測、JVM 有 GC 仍會洩漏(靜態集合只增)、Spring Security filter + JPA N+1/lazy loading 陷阱、可執行 jar 部署與測試分層/profile。
+- **ch35 C#+.NET**：.NET Core 跨平台化、一語言全平台(web/桌面/行動/遊戲)複用、minimal API vs MVC、AOT/自包含部署、C# record/pattern matching/NRT(如 TS strict null)、Blazor Server vs WASM、Unity 每幀/GC 卡頓/物件池。
+- **ch36 PHP+Laravel**：PHP 撐大半網路+PHP 8 現代化、Laravel 電池全包+Eloquent N+1、廣播/佇列冪等/排程集中、facade 隱藏依賴、Livewire/Filament 少寫 JS 天花板、資安框架防護但 raw/未跳脫自己開洞。
+
+- import ch34/35/36（18 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+- **本日 de-can 累計 20 章、462 題**（新增 ch34/35/36）。續攻 ch46 + 其餘技術章…

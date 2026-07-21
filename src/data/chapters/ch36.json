@@ -42,9 +42,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "PHP 常被唱衰,但它在 2026 仍撐起大半個網路(WordPress、大量網站)為什麼？現代 PHP(8.x:型別宣告、JIT、效能大增、attributes)相比舊 PHP 印象改善了什麼？為什麼『某語言不潮』不代表『不該用它』(生態、人才、既有系統)？",
+        "hint": "PHP 佔網路大半;PHP 8 現代化;實用勝潮度。",
+        "answer": "PHP 撐起大半網路:WordPress 就佔全球網站四成多、加上大量既有 PHP 網站與 Laravel 生態——需求與人才市場巨大。現代 PHP 8.x 大幅改善舊印象:加了型別宣告(參數/回傳/屬性型別)、JIT 與整體效能大增、attributes(註解)、enum、readonly、match——寫起來更現代、更安全、更快。『不潮≠不該用』:選語言看生態成熟度、人才好不好找、要不要整合既有系統、能不能快速交付——PHP+Laravel 在做網站這件事上生產力高、生態完整、人才多,對很多專案是務實選擇,潮度不是重點。"
       },
       "outline": [
         {
@@ -134,9 +134,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 15 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Laravel 的『開發者體驗(優雅語法、電池全包:路由/ORM/認證/佇列/排程)』為什麼讓它成為 PHP 框架首選？Eloquent ORM 的 Active Record 風格(User::find(1)、$user->posts)方便,但一樣要小心什麼(N+1、大量資料)？Laravel 的 migration/seeder 解決什麼？",
+        "hint": "Laravel 電池全包+優雅;Eloquent 方便但 N+1;migration 版控 schema。",
+        "answer": "Laravel 首選因:優雅的表達式語法、電池全包(路由、Eloquent ORM、認證、佇列、排程、快取、郵件、驗證都內建且整合好)、開發者體驗佳、生態(套件/教學)豐富——快速做出完整網站。Eloquent(Active Record):User::find(1)、$user->posts 直覺方便,但一樣要小心 N+1(對每筆各查關聯→用 with() 預載)、大量資料的記憶體(用 chunk/cursor 分批)。migration:用程式定義 schema 變更、版控、團隊同步、可回滾(別手動改正式庫);seeder:填測試/初始資料——讓資料庫結構與種子資料可重現。"
       },
       "outline": [
         {
@@ -226,9 +226,9 @@
         }
       ],
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「Laravel 進階 + 接案變現」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "Laravel 加即時功能(廣播/WebSocket,如聊天、通知)的思路是什麼(事件廣播 → 前端訂閱)？佇列(queue)在 Laravel 怎麼把慢工作(寄信、通知)丟背景、為什麼要冪等？排程(scheduler)相比一堆 cron 好在哪(集中在程式碼裡定義、版控)？",
+        "hint": "事件廣播即時;queue 丟背景要冪等;scheduler 集中版控。",
+        "answer": "即時:Laravel 用事件廣播(broadcast 事件到 channel,配 Reverb/Pusher/WebSocket),前端訂閱該 channel 收到即時更新(聊天、通知)。佇列:把慢工作(寄信、產報表、通知)dispatch 到 queue 背景處理,請求先快速回應;因為佇列任務失敗會重試,有副作用的要冪等(帶唯一鍵、做過就跳過)避免重複寄信/扣款。排程:在 app 的 schedule 方法裡用程式碼定義定時任務(->daily()、->everyMinute()),只需一條系統 cron 觸發 Laravel scheduler——比在系統散落一堆 crontab 好:集中、版控、可讀、好維護。"
       },
       "outline": [
         {
@@ -346,9 +346,9 @@
         "text": "Laravel 約定優於設定，照它的目錄結構走能省很多力；artisan 指令能生大半樣板、別手刻。"
       },
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 11 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Laravel 的架構(MVC + service container 依賴注入 + facade + middleware)如何組織一個應用？facade(如 Cache::get())方便但為什麼有人說它是『隱藏依賴』、可能不利測試與明確性？service container/DI 在 Laravel 扮演什麼(和 Spring/.NET 的 DI 同理)？",
+        "hint": "MVC+DI+facade+middleware;facade 方便但藏依賴;container 管相依。",
+        "answer": "組織:路由→middleware(認證/限流)→controller(MVC 的 C)→呼叫 service(商業邏輯)→model(Eloquent,MVC 的 M)→回 view/JSON(V)。service container 做依賴注入:綁定介面到實作、自動解析建構子依賴——和 Spring/.NET DI 同理,解耦、可測、可替換。facade(Cache::get()、DB::table())是靜態代理、寫起來簡潔,但被批評『隱藏依賴』:類別實際依賴了什麼從簽章看不出來(不像建構子注入明確)、單元測試較不直觀(要用 facade 的 mock 機制)。所以要明確性/好測時,傾向用建構子注入依賴而非到處 facade。"
       },
       "id": "36.4",
       "number": "LESSON 36.4",
@@ -458,9 +458,9 @@
         "text": "Livewire / Filament 讓你少寫前端就有互動後台；但複雜互動還是該交給專門前端、別硬撐。"
       },
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「Laravel 進階：Livewire + Filament + 部署」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "Livewire(用 PHP 寫互動 UI 免寫太多 JS)、Filament(快速做後台管理介面)這類工具讓 Laravel 開發者少寫前端就能做動態介面——這種『全端一種語言(PHP 為主)』的取捨是什麼(生產力 vs 複雜前端的天花板)？部署 Laravel 要注意什麼(佇列 worker、排程 cron、快取設定、環境變數)？",
+        "hint": "Livewire/Filament 少寫 JS 高生產力;複雜前端有天花板;部署要顧 worker/cron。",
+        "answer": "Livewire:元件狀態在伺服器、互動透過 AJAX 往返更新 DOM,讓 PHP 開發者用少量 JS 就做出動態介面;Filament:基於它快速生出功能完整的後台(CRUD、表單、表格)。取捨:對 PHP 團隊生產力極高(不用另學/維護重前端框架)、適合後台/內容/中等互動;但非常複雜、高互動、離線的前端仍有天花板(那時該用 React/Vue)。部署注意:佇列要跑常駐 worker(php artisan queue:work,配 supervisor 保活)、排程要設一條系統 cron 觸發 scheduler、正式環境開設定/路由/view 快取(artisan optimize)、.env 環境變數與密鑰安全注入、migration 上線流程。"
       },
       "id": "36.5",
       "number": "LESSON 36.5",
@@ -566,9 +566,9 @@
         "text": "舊 PHP 是漏洞庫、升 8.x + Laravel 一勞永逸。"
       },
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "PHP web 常見資安風險(SQL injection、XSS、CSRF、檔案上傳漏洞)各怎麼發生、Laravel 內建了哪些防護(Eloquent/query builder 參數化、Blade 自動跳脫、CSRF token)？為什麼『框架幫你擋很多,但你仍可能自己開洞』(用 raw SQL 拼字串、用 {!! !!} 輸出未跳脫、關掉防護)？設計模式在 PHP 的實用價值？",
+        "hint": "Laravel 內建參數化/跳脫/CSRF;但 raw/未跳脫仍會開洞;模式解耦。",
+        "answer": "風險與 Laravel 防護:SQL injection→Eloquent/Query Builder 自動參數化(別用 DB::raw 拼使用者輸入);XSS→Blade 的 {{ }} 自動 HTML 跳脫(別用 {!! !!} 輸出未跳脫的使用者內容);CSRF→表單自動帶 CSRF token 驗證;檔案上傳→驗型別/大小、存非公開目錄、別信任檔名。框架擋很多但你仍會開洞:用 raw SQL 手拼字串繞過參數化、用 {!! !!} 輸出未消毒的使用者輸入、關掉 CSRF middleware、把上傳檔存進可執行目錄——這些是自己把框架的防護拆掉。設計模式(如 Repository 解耦資料存取、Strategy 換演算法、Observer 事件)在 PHP 一樣有價值:解耦、可測、可維護,但同樣別過度設計。"
       },
       "id": "36.6",
       "number": "LESSON 36.6",
