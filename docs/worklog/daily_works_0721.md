@@ -180,3 +180,28 @@ ch49 + ch50（AI Agent / n8n 兩大旗艦章）完成。**教具庫新增 2 個�
 3. **付費/Z幣 gating**（§1.5）：免費看整體、付費解四面向深解+塔羅（沿用 `gateHighTierModel`/Z幣）。
 4. **八字/紫微**：裝 `lunar-javascript` 接農曆↔國曆 + 時辰（§1.1.1.2）。
 5. **首頁模式卡**入口（配 §🅰 生圖）、截圖分享圖卡（html-to-image）。
+
+---
+
+## 💬 大眾變現 #2「訊息軍師」— 完整上線（0721·接著 #1 一路做）
+
+依 §一順序「2 訊息軍師·最快落地」，一刀做完（無外部依賴、無 🔴 卡點）。先派 Explore 代理查「有沒有現成的每日用量計數 / 付費判斷 / 最像的 AI 工具頁可抄」，結論：**全站只有月配額、沒有日計數** → 採「COUNT 今日列數」最簡路徑。
+
+### 做了什麼
+- **lib**（`src/lib/message-coach.ts`，純資料+邏輯、8 支單元測試）：
+  - 12 情境（加薪/婉拒/道歉/催款/請假/房東/老師/客戶/難開口私訊/客訴/婉拒告白/設界線），每情境 emoji + hint + 預設語氣；5 語氣（客氣/專業/堅定/幽默/溫暖）。
+  - `buildCoachPrompt`（護欄：直接給可抄本文、3 版層次、顧對方感受、不捏造、不寫違法脅迫辱罵、支援 refine 微調）、`parseCoachVersions`（切 `[...]`、容忍圍欄、純字串陣列、上限 3、空訊息略過）。
+- **DB**（`supabase/message_coach_migration.sql`，已跑、DB 驗證）：`message_coach_logs`（**刻意不存訊息內容**顧隱私、只記 user/scenario/tone/time 做每日計數與分析、RLS 本人可讀）。
+- **API** `POST /api/message-coach`：auth + rateLimit；驗 scenario/tone/points；**付費判斷**（`hasAiUnlimited || getUserSubTier`）→ 付費/特權無限、免費 `COUNT(今台北日) >= 3` 回 429；`completeForUsage("message_coach")` 生成 → 解析 → 記一列 → 回 `{versions, remaining, unlimited}`。
+- **前端** `/message-coach`：情境卡格 → 填要點（含 hint placeholder、800 字上限）→ 語氣 chips → 產 3 版（每版標籤+複製）→ 微調 chips（再短/再委婉/更堅定/更有溫度/換一批）；剩餘次數顯示、429 顯示升級提示；RWD + 亮暗。
+- **接線**：nav「訊息軍師」(MessageSquareHeart、4 語 i18n)；`message_coach` 註冊進 `AiUsageKey` + `USAGE_LABELS`（後台 /admin/ai/usage-models 可配模型）。
+
+### 🚨 收尾檢查（全綠）
+- **API/DB**：migration 已跑；node 實測 `message_coach_logs` + COUNT-since-台北午夜 query = **OK**。付費 bypass 走既有 `hasAiUnlimited`/`getUserSubTier`（非新造）。
+- **UI 接對**：情境/語氣資料由 lib 單一來源、前後端共用；前端打 API、資料流通、非空殼。
+- **建置**：`tsc` ✅ · `vitest` **153 passed（+8）** ✅ · `next build` exit 0（/message-coach、/api/message-coach 都編出）✅。
+- **RWD/亮暗/機密**：grid/flex-wrap/亮暗雙 token；未動 manifest/sw/.env.local。
+
+### 本日大眾變現進度
+- ✅ #1 每日運勢（第一刀）、✅ #2 訊息軍師（完整）。
+- 下一個：**#4.1 一鍵生活助理範本庫**（無依賴、把 Agent 轉成普通人生活助理）或 **#3 AI 求職包**（履歷/面試模擬、可沿用現有 resume + PDF）。#1 第二刀（塔羅/八字/付費）之後補。

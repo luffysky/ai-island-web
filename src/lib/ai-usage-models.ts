@@ -26,7 +26,8 @@ export type AiUsageKey =
   | "embedding"          // 全站 embedding（site search / RAG / 章節索引）
   | "rewrite_lessons"    // 批次 AI 改寫 chapter.analogy / content
   | "pet"                // 寵物 AI 對話（Haiku 級）
-  | "agent_core";         // 行動代理系統 — 任務規劃/工具決策 loop
+  | "agent_core"          // 行動代理系統 — 任務規劃/工具決策 loop
+  | "message_coach";      // 訊息軍師 — 情境 → 多版本訊息
 
 export const USAGE_LABELS: Record<AiUsageKey, string> = {
   line_admin:         "LINE admin bot 對話 / tool use",
@@ -44,6 +45,7 @@ export const USAGE_LABELS: Record<AiUsageKey, string> = {
   rewrite_lessons:    "批次 AI 改寫 chapter 內容",
   pet:                "寵物 AI 對話",
   agent_core:         "行動代理系統（任務規劃 / 工具決策）",
+  message_coach:      "訊息軍師（情境 → 多版本訊息）",
 };
 
 /**
