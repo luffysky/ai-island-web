@@ -414,3 +414,12 @@ meta-framework 章（原全 25 罐頭）。全 25 節換成量身題（很多直
 
 - diff 75+/75- → import_chapters_to_db ch16（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
 - 本日 de-can 累計 9 章、228 題。續攻 ch17 SQL（28/28 全罐頭）…
+
+---
+
+## 📚 章節 de-can：ch17 SQL 資料庫 全 28 節（0721）
+
+SQL 章原 28/28 全罐頭。全部換成含『真實可跑 SQL』的量身題（除錯/設計/預測/效能）：SQL 宣告式為何威力大、連線串與密鑰、建表 UUID vs 整數、CHECK/UNIQUE/FK 約束為何比程式檢查可靠、SELECT 別用 *、WHERE 的 NULL/LIKE 前置% 坑、LIMIT/OFFSET 大偏移慢與 cursor 分頁、GROUP BY 非聚合欄與 HAVING/COUNT NULL、視窗函式 RANK/PARTITION 保留列、CTE 拆解與遞迴階層、INSERT 批次/RETURNING/upsert 冪等、UPDATE 忘 WHERE 全表災難、硬刪 vs 軟刪除唯一鍵陷阱、INNER JOIN 笛卡兒積、LEFT JOIN 找沒下單客戶與 WHERE/ON 陷阱、SELF/CROSS/LATERAL Top-N per group、UNION/INTERSECT/EXCEPT、EXISTS vs IN 的 NULL 安全、索引最左前綴與寫入代價、EXPLAIN 看 Seq Scan、交易 ACID 與轉帳隔離等級、View vs Materialized View、Trigger 取捨、JSONB/GIN 索引、全文搜尋 tsvector、SQL injection 與參數化根治、Supabase RLS policy、Todo 後端資料層檢查清單。
+
+- diff 84+/84- → import_chapters_to_db ch17（28 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+- 本日 de-can 累計 **10 章、256 題**（ch01/02/04/05/07/08/09/10/16/17）。續攻 ch26–32 Python 系列…

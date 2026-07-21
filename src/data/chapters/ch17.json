@@ -43,9 +43,9 @@
         }
       ],
       "exercise": {
-        "question": "找一個你身邊的例子、用「什麼是 SQL？為什麼學了 50 年還在用？」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "SQL 是『宣告式』——你說『要什麼』，資料庫決定『怎麼拿』。這跟自己寫迴圈一筆筆撈資料相比好在哪（最佳化、可讀、跨引擎）？為什麼一個訂了 50 年的標準到現在還是資料處理的主力？",
+        "hint": "宣告式讓 DB 的查詢最佳化器選最快執行計畫；你只描述結果。",
+        "answer": "你寫 SELECT ... WHERE ... 只描述『想要的結果』，資料庫的查詢最佳化器自己決定用不用索引、怎麼 JOIN、掃描順序——通常比你手寫迴圈更快且免煩惱。好處：可讀、跨引擎大致通用、最佳化交給引擎。歷久不衰因為：關聯模型(表+關係)貼合大量真實資料、宣告式威力大、生態與人才成熟、且不斷擴充(JSON、視窗函式)跟上新需求。"
       },
       "outline": [
         {
@@ -111,9 +111,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "連線字串 postgresql://user:pass@host:5432/dbname 每一段是什麼？為什麼『把密碼寫進程式或 commit 進 git』很危險、該怎麼放？psql 和 GUI(TablePlus/pgAdmin) 各適合什麼時候用？",
+        "hint": "連線串含帳密/主機/埠/庫名；密碼走環境變數；psql 快、GUI 直覺。",
+        "answer": "格式：協定://使用者:密碼@主機:埠/資料庫名。密碼別寫死/commit：git 歷史會永久留存、洩漏就等於資料庫大門開著——放環境變數或 secrets manager，程式從 env 讀。psql(命令列)適合快速查詢、跑腳本、自動化、遠端;GUI(TablePlus/pgAdmin)適合視覺瀏覽表結構、看資料、拉關係圖、給不熟指令的人。"
       },
       "outline": [
         {
@@ -187,9 +187,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "設計一張 users 表：要存 id、email、名字、建立時間。id 該用自增整數還是 UUID(各有何取捨)？email 該設什麼型別與約束？為什麼幾乎每張表都該有 created_at？寫出你的 CREATE TABLE。",
+        "hint": "UUID 不可猜/分散好、整數小又有序；email 要 UNIQUE；時間戳用 timestamptz。",
+        "answer": "CREATE TABLE users ( id uuid primary key default gen_random_uuid(), email text unique not null, name text, created_at timestamptz not null default now() );。id 取捨:自增整數小、有序、易讀但可被猜(/users/2→/users/3)且分散式難;UUID 不可猜、可在客戶端先產、分散友善但較大。email 用 text + UNIQUE(防重複註冊) + not null。created_at(timestamptz)幾乎必備:排序、稽核、除錯『這筆何時進來的』都要它。"
       },
       "outline": [
         {
@@ -255,9 +255,9 @@
         }
       ],
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「建表進階：CHECK / UNIQUE / FOREIGN KEY 約束」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（amount > 0）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "約束(constraint)是『把規則交給資料庫守』。給一張 orders 表加：金額不能為負(CHECK)、每個 email 每天只能有一筆某活動(UNIQUE 複合)、user_id 必須對應真實使用者(FOREIGN KEY)。為什麼『在 DB 設約束』比只在程式檢查更可靠？",
+        "hint": "約束在資料庫層強制，任何來源的寫入都擋得住。",
+        "answer": "CHECK (amount >= 0);複合唯一 UNIQUE (email, event_date);外鍵 user_id uuid references users(id) on delete cascade。DB 約束比只在程式檢查可靠:因為資料可能從多個來源寫入(不同服務、手動 SQL、批次匯入、未來的新程式)，程式檢查只擋『經過那段程式』的;約束在資料庫層強制、任何路徑都擋得住，是資料正確性的最後防線(程式檢查給好體驗、DB 約束保證不變條件)。"
       },
       "outline": [
         {
@@ -323,9 +323,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "為什麼『SELECT *』在正式程式裡是壞習慣(效能、脆弱、傳太多)？只要 id 和 email 該怎麼寫？欄位別名(AS)、算出來的欄位(如全名串接)怎麼寫？DISTINCT 做什麼、什麼時候該小心用它？",
+        "hint": "明確列欄位;AS 取別名;DISTINCT 去重但可能藏設計問題/變慢。",
+        "answer": "SELECT * 壞在:傳回不需要的欄位(浪費頻寬/記憶體)、加了欄位就悄悄多傳、順序依賴脆弱。明確寫 SELECT id, email FROM users。別名/計算:SELECT first_name || ' ' || last_name AS full_name。DISTINCT 去掉重複列;要小心因為它常是『JOIN 出現重複、用 DISTINCT 蓋掉』的徵兆(該修 JOIN 而非硬去重)、且對大結果集要排序/雜湊較慢——先問『為什麼會重複』。"
       },
       "outline": [
         {
@@ -383,9 +383,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "WHERE 常見坑:用 = NULL 為什麼永遠查不到(要用 IS NULL)？LIKE '%字%' 為什麼可能很慢(用不到索引)？IN vs 一堆 OR、BETWEEN 的邊界含不含？寫一個『找出 2026 年、金額 100~500、狀態不是 cancelled』的 WHERE。",
+        "hint": "NULL 要 IS NULL;前置萬用字元的 LIKE 走不了索引;BETWEEN 含兩端。",
+        "answer": "WHERE created_at >= '2026-01-01' AND created_at < '2027-01-01' AND amount BETWEEN 100 AND 500 AND status <> 'cancelled'。坑:NULL 的比較永遠是 unknown，= NULL 查不到、要 IS NULL / IS NOT NULL。LIKE '%x%'(前置 %)用不到一般索引→全表掃描(要模糊搜改用全文/trigram 索引)。IN (...) 比一長串 OR 清楚;BETWEEN 含兩端(<= 500)，若要不含要改 < 。"
       },
       "outline": [
         {
@@ -463,9 +463,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "分頁用 LIMIT/OFFSET 在資料量大時為什麼會越翻越慢(OFFSET 100000 要先跳過十萬列)？『keyset/cursor 分頁(WHERE id > 上一頁最後一筆)』怎麼解決？ORDER BY 沒指定時順序為什麼不保證、分頁為何一定要穩定排序？",
+        "hint": "OFFSET 大要掃過並丟棄前面全部;cursor 用上次邊界直接定位。無 ORDER BY 順序不定。",
+        "answer": "OFFSET N 要先產生並丟棄前 N 列，翻到很後面越來越慢。Cursor 分頁:ORDER BY created_at, id;下一頁 WHERE (created_at, id) < (上頁最後值) LIMIT 20——直接用索引定位、恆定快(但不能任意跳頁)。ORDER BY 沒寫時，資料庫不保證回傳順序(依儲存/計畫而定)，所以分頁一定要有『穩定且唯一』的排序鍵(如 created_at + id)，否則同一筆可能重複出現或漏掉。"
       },
       "outline": [
         {
@@ -531,9 +531,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "用 GROUP BY 做『每個使用者的訂單數與總金額』，寫出 SQL。為什麼 SELECT 裡非聚合的欄位一定要出現在 GROUP BY？HAVING 和 WHERE 差在哪(過濾時機)？COUNT(*) 和 COUNT(欄位) 對 NULL 的處理差在哪？",
+        "hint": "GROUP BY 分組、聚合每組;HAVING 過濾『分組後』;COUNT(欄位)不算 NULL。",
+        "answer": "SELECT user_id, COUNT(*) AS orders, SUM(amount) AS total FROM orders GROUP BY user_id。非聚合欄位要在 GROUP BY:因為每組只回一列，沒分組的欄位在一組內可能有多值、無法決定顯示哪個。WHERE 在分組『前』過濾原始列;HAVING 在分組『後』過濾聚合結果(如 HAVING SUM(amount) > 1000)。COUNT(*) 算所有列(含 NULL);COUNT(col) 只算 col 非 NULL 的列——想算『有填某欄的筆數』用後者。"
       },
       "outline": [
         {
@@ -603,9 +603,9 @@
         }
       ],
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「Window Functions：超越 GROUP BY 的進階分析」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "視窗函式和 GROUP BY 差在哪(GROUP BY 會把多列縮成一列、視窗函式保留每一列還附上統計)？寫一個『每個部門內，員工薪資排名(RANK) 與佔部門總薪比例』。ROW_NUMBER / RANK / DENSE_RANK 差在哪？",
+        "hint": "OVER (PARTITION BY ...) 保留列;RANK 並列會跳號、DENSE_RANK 不跳、ROW_NUMBER 強制唯一。",
+        "answer": "SELECT name, dept, salary, RANK() OVER (PARTITION BY dept ORDER BY salary DESC) AS rnk, salary::numeric / SUM(salary) OVER (PARTITION BY dept) AS pct FROM emp。視窗函式保留每一列、再依 PARTITION 算組內統計(不像 GROUP BY 塌成一列)。ROW_NUMBER:每列唯一序號(並列也不同);RANK:並列同名次、之後跳號(1,1,3);DENSE_RANK:並列同名次、不跳號(1,1,2)。用途:抓每組前 N、去重取一筆、算移動平均/累計。"
       },
       "outline": [
         {
@@ -675,9 +675,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "一段巢狀好幾層的子查詢很難讀。用 CTE(WITH ... AS) 把它拆成有名字的步驟好在哪(可讀、可重用、可測)？寫一個用 CTE 先算『每人月消費』再篩出『高消費者』的查詢。遞迴 CTE 能做什麼(如組織階層/樹)？",
+        "hint": "CTE 把子查詢命名成步驟、由上往下讀;遞迴 CTE 走層級。",
+        "answer": "WITH monthly AS ( SELECT user_id, date_trunc('month', created_at) m, SUM(amount) spent FROM orders GROUP BY 1,2 ) SELECT * FROM monthly WHERE spent > 10000。CTE 好處:把複雜查詢拆成命名步驟、像讀故事一樣由上往下、同一 CTE 可被下面多次引用、好單獨驗證。遞迴 CTE(WITH RECURSIVE):處理階層/樹狀資料——如展開『某主管底下所有層級的下屬』、物料清單、留言的巢狀回覆。"
       },
       "outline": [
         {
@@ -743,9 +743,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "批次一次 INSERT 多列比一列一條 INSERT 快在哪(少往返/少交易開銷)？RETURNING 子句能做什麼(拿到剛插入的 id)？『INSERT ... ON CONFLICT DO UPDATE(upsert)』解決什麼(存在就更新、不存在就新增)？",
+        "hint": "多列一句省往返;RETURNING 拿產生的值;upsert 冪等寫入。",
+        "answer": "多列一句 INSERT INTO t (a,b) VALUES (1,2),(3,4),(5,6);比逐條快(一次網路往返、一個交易)。RETURNING:INSERT ... RETURNING id 直接拿到自動產生的主鍵/預設值，免再查一次。Upsert:INSERT ... ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name——鍵已存在就更新、不存在就新增,達成冪等寫入(重跑不會爆唯一鍵、也不會重複),同步資料/匯入時超實用(本站的 import 腳本正是靠 upsert 冪等)。"
       },
       "outline": [
         {
@@ -815,9 +815,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "UPDATE 最危險的錯是什麼(忘了 WHERE→整表被改)？寫『把某訂單狀態改成 shipped 並記錄更新時間』並說你會怎麼先確認影響範圍。用 UPDATE ... FROM 依另一張表的值更新怎麼寫？為什麼正式環境改資料前要先 SELECT / 開交易？",
+        "hint": "忘 WHERE 全表遭殃;先用 SELECT 同條件確認筆數;交易可回滾。",
+        "answer": "UPDATE orders SET status='shipped', updated_at=now() WHERE id = 123。危險:漏 WHERE 會把整張表所有列都改掉、不可逆。安全流程:先用相同 WHERE 跑 SELECT 看『會動到幾筆、是不是預期那些』;正式環境包在交易裡(BEGIN; UPDATE ...; 確認筆數對 → COMMIT，不對 → ROLLBACK)。依他表更新:UPDATE orders o SET total = s.total FROM sums s WHERE o.id = s.order_id。"
       },
       "outline": [
         {
@@ -887,9 +887,9 @@
         }
       ],
       "exercise": {
-        "question": "找一個你身邊的例子、用「DELETE：刪除資料 / 軟刪除 vs 硬刪除」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "硬刪除(DELETE)和軟刪除(加 deleted_at 標記)各適合什麼？為什麼很多系統偏好軟刪除(可復原、稽核、外鍵不斷)？軟刪除後，查詢與唯一約束會多出什麼要處理的麻煩(要記得過濾、唯一鍵要含條件)？",
+        "hint": "硬刪真的移除;軟刪留著標記。軟刪要處處過濾 deleted_at。",
+        "answer": "硬刪除:真的移除、省空間、乾淨,適合真的不需要的暫存資料。軟刪除:UPDATE ... SET deleted_at=now(),資料還在→可復原、可稽核『誰刪的』、不破壞外鍵參照。麻煩:①之後每個查詢都要記得 WHERE deleted_at IS NULL(漏了就查到已刪的)——常用 view 或預設 scope 統一過濾;②唯一約束要改成部分索引(CREATE UNIQUE INDEX ... WHERE deleted_at IS NULL)，否則刪掉再新增同 email 會撞唯一鍵。"
       },
       "outline": [
         {
@@ -955,9 +955,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "INNER JOIN 的本質是什麼(只留兩表都對得上的列)？寫『訂單 + 下單客戶名』的 JOIN。JOIN 條件寫錯(漏 ON 或條件不對)會發生什麼災難(笛卡兒積、列數暴增)？為什麼 JOIN 的欄位通常要有索引？",
+        "hint": "INNER 取交集;漏 ON 變 CROSS JOIN 爆量;JOIN 鍵要索引才快。",
+        "answer": "SELECT o.id, o.amount, u.name FROM orders o JOIN users u ON u.id = o.user_id——只回『訂單的 user_id 有對應到 users』的列(交集)。漏 ON 或條件錯:退化成笛卡兒積(每列配每列)，1000×1000=一百萬列，記憶體/時間爆炸、結果也錯。JOIN 欄位要索引:資料庫用它快速配對兩表(否則每列都要全表找對應→O(n×m))，外鍵欄位加索引通常大幅加速 JOIN。"
       },
       "outline": [
         {
@@ -1023,9 +1023,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "LEFT JOIN 和 INNER JOIN 差在哪(LEFT 保留左表全部、右邊沒對到補 NULL)？用 LEFT JOIN + WHERE ... IS NULL 找出『從沒下過單的客戶』怎麼寫？為什麼把右表的過濾條件放 WHERE 而不是 ON，會意外把 LEFT JOIN 變回 INNER？",
+        "hint": "LEFT 留左表全部;找沒對到用 right.id IS NULL;右表條件放 WHERE 會濾掉 NULL 列。",
+        "answer": "LEFT JOIN 保留左表所有列，右表沒對到的欄位補 NULL。找沒下單的客戶:SELECT u.* FROM users u LEFT JOIN orders o ON o.user_id = u.id WHERE o.id IS NULL(右邊配不到→o.id 是 NULL→就是沒訂單的人)。陷阱:若把右表條件寫在 WHERE(如 WHERE o.status='paid')，那些右邊為 NULL 的列會被這個條件濾掉→LEFT 實質變 INNER;要對右表過濾又保留左表全部，條件要放進 ON(... AND o.status='paid')。"
       },
       "outline": [
         {
@@ -1095,9 +1095,9 @@
         }
       ],
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「JOIN 進階：CROSS JOIN / SELF JOIN / LATERAL」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "SELF JOIN(表跟自己 JOIN) 能解什麼(如員工找自己的主管、找同一天的其他訂單)？CROSS JOIN(笛卡兒積) 什麼時候是『故意要的』(產生所有組合、日期×分類補零)？LATERAL JOIN 讓右邊子查詢能引用左邊每一列，適合什麼(每個使用者的最近 3 筆訂單)？",
+        "hint": "SELF 表配自己;CROSS 全組合;LATERAL 右邊依左邊每列算(Top-N per group)。",
+        "answer": "SELF JOIN:同一表用不同別名 JOIN,如 emp e JOIN emp m ON e.manager_id = m.id 拿到每人主管名。CROSS JOIN 故意用:要所有組合(如 每個日期 × 每個分類 補零做完整報表格線)。LATERAL:右邊子查詢可引用左表當前列，最經典是『每組 Top-N』——SELECT u.name, o.* FROM users u CROSS JOIN LATERAL (SELECT * FROM orders WHERE user_id=u.id ORDER BY created_at DESC LIMIT 3) o(拿每個使用者最近 3 筆),一般 JOIN 難優雅做到。"
       },
       "outline": [
         {
@@ -1163,9 +1163,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "UNION / UNION ALL / INTERSECT / EXCEPT 各做什麼集合運算？UNION 和 UNION ALL 差在哪(去重 vs 不去重)、為什麼確定不重複時該用 ALL(效能)？給『把 A 表和 B 表的 email 合起來、且找出只在 A 沒在 B 的』寫 SQL。",
+        "hint": "UNION 去重(要排序、較慢)、UNION ALL 直接接;EXCEPT 取差集。",
+        "answer": "UNION:合併並『去重』(要排序/雜湊去重、較慢);UNION ALL:直接串接不去重(確定不會重或允許重時用它、快);INTERSECT:兩者都有的(交集);EXCEPT:在前者不在後者(差集)。合併 email:SELECT email FROM a UNION SELECT email FROM b(去重合併)。只在 A 沒在 B:SELECT email FROM a EXCEPT SELECT email FROM b。要求:各 SELECT 的欄位數與型別要對齊。"
       },
       "outline": [
         {
@@ -1235,9 +1235,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "子查詢的三種用法:當值(=)、當清單(IN)、當存在判斷(EXISTS)。為什麼『EXISTS 常比 IN 對大資料更快、且對 NULL 更安全』？寫『找出有下過單的客戶』用 EXISTS 和用 IN 兩種。關聯子查詢(引用外層)要注意什麼(可能每列都跑一次很慢)？",
+        "hint": "EXISTS 找到一筆就停、不受 NULL 干擾;IN 對含 NULL 的子查詢有陷阱。",
+        "answer": "EXISTS:SELECT * FROM users u WHERE EXISTS (SELECT 1 FROM orders o WHERE o.user_id=u.id)(找到一筆就短路停止、快)。IN:SELECT * FROM users WHERE id IN (SELECT user_id FROM orders)。EXISTS 常較快(可提前停)且對 NULL 安全;IN 的陷阱:若子查詢結果含 NULL，NOT IN 會整個回空/怪結果(NULL 比較是 unknown)——所以 NOT EXISTS 比 NOT IN 安全。關聯子查詢引用外層列時，可能對外層每一列都執行一次(N 次)→大表要小心，常可改寫成 JOIN。"
       },
       "outline": [
         {
@@ -1307,9 +1307,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "索引為什麼能把查詢從全表掃描變成快速定位(像書的目錄)？既然這麼好，為什麼不『每個欄位都加索引』(寫入變慢、佔空間)？複合索引 (a,b) 的『最左前綴』規則是什麼(能加速 WHERE a、WHERE a AND b，但單獨 WHERE b 用不到)？",
+        "hint": "索引加速讀、拖慢寫、佔空間;複合索引看最左前綴。",
+        "answer": "索引是排好序的查找結構,讓 WHERE/JOIN/ORDER 能直接定位而非掃全表(O(log n) vs O(n))。不全加的原因:每次 INSERT/UPDATE 都要維護所有相關索引→寫入變慢、且佔額外空間——索引是『用寫入成本換讀取速度』,要對常被查的欄位加。複合索引 (a,b):能加速以 a 開頭的條件(WHERE a、WHERE a AND b、ORDER BY a,b),但單獨 WHERE b 用不到它(像電話簿按姓再按名排,只知道名字很難查)——所以欄位順序要放最常被單獨/前綴查詢的在前。"
       },
       "outline": [
         {
@@ -1375,9 +1375,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "查詢很慢時，EXPLAIN(ANALYZE) 幫你看什麼(執行計畫、真實耗時、是否走索引)？看到 'Seq Scan'(全表掃描) 在大表上通常代表什麼、怎麼改善？estimated rows 和 actual rows 差很多代表什麼(統計過期)？",
+        "hint": "EXPLAIN 看計畫;Seq Scan 大表=沒用索引;估算差很多=該 ANALYZE 更新統計。",
+        "answer": "EXPLAIN ANALYZE 顯示資料庫實際怎麼執行:掃描方式(Seq Scan 全表 / Index Scan 走索引)、JOIN 方法、各步驟的估算與『真實』列數和耗時。大表上出現 Seq Scan 常代表沒用到索引(WHERE 欄位缺索引、或條件寫法讓索引失效如函式包住欄位、前置 %)→加對索引或改寫。estimated 與 actual 列數差很大:表示最佳化器的統計過期、選錯計畫→跑 ANALYZE 更新統計、或考慮重寫查詢。先 EXPLAIN 找瓶頸再動手，別瞎猜。"
       },
       "outline": [
         {
@@ -1443,9 +1443,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "轉帳(A 扣款、B 加款)為什麼一定要放同一個交易(要嘛都成功、要嘛都不做)？ACID 各保證什麼？隔離等級太低會出什麼(髒讀、不可重複讀、幻讀)、太高又有什麼代價(鎖競爭)？寫一個轉帳交易骨架。",
+        "hint": "交易保原子性;隔離等級是一致性與併發的權衡。",
+        "answer": "BEGIN; UPDATE acc SET bal=bal-100 WHERE id=A; UPDATE acc SET bal=bal+100 WHERE id=B; COMMIT;(中間任一步失敗就 ROLLBACK)。同一交易保證原子性:不會發生 A 扣了、B 沒加(錢憑空消失)。ACID:原子(全或無)、一致(不違反約束)、隔離(併發像各自跑)、持久(commit 後不丟)。隔離太低:髒讀(讀到別人未提交)、不可重複讀、幻讀;太高(Serializable):最一致但鎖競爭多、吞吐降。實務依需求選,金流用較高、一般讀用預設,並縮短交易時間減少鎖衝突。"
       },
       "outline": [
         {
@@ -1519,9 +1519,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "把一段複雜、到處重用的查詢包成 VIEW 有什麼好處(命名、複用、封裝、權限)？普通 View(每次查即時算) 和 Materialized View(把結果存起來、要手動/定時 refresh) 各適合什麼？用 MV 做報表的取捨是什麼(快 vs 資料有延遲)？",
+        "hint": "View 是存起來的查詢;MV 存的是結果、要 refresh。",
+        "answer": "View:把複雜查詢命名成『虛擬表』,呼叫端 SELECT * FROM active_users 即可——複用、隱藏複雜度、可對 view 授權(只給看某些欄/列)。普通 View 每次查詢即時執行底層 SQL(永遠最新、但複雜的每次都算)。Materialized View 把結果實體存下來(查它超快,適合昂貴的報表/聚合),代價是資料會過期、要 REFRESH MATERIALIZED VIEW(手動或排程)才更新。取捨:即時性要求高用 View;讀很多、算很貴、能容忍幾分鐘延遲的儀表板/報表用 MV。"
       },
       "outline": [
         {
@@ -1587,9 +1587,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Trigger(某事件自動觸發) 能做什麼(自動更新 updated_at、寫稽核日誌、維護衍生欄)？把邏輯放 DB trigger/function 的好處(靠近資料、任何來源都生效)與壞處(隱藏、難除錯、難版本控管)各是什麼？你會把什麼放 trigger、什麼寧可放應用層？",
+        "hint": "Trigger 自動、集中在 DB;但是隱形魔法、難追。",
+        "answer": "Trigger 常見:BEFORE UPDATE 自動設 updated_at=now()、寫 audit_log 記錄誰改了什麼、維護計數/衍生欄。好處:靠近資料、不管從哪個服務/手動 SQL 寫入都會生效、集中一致。壞處:是『隱形邏輯』(呼叫端不知道背後發生什麼)、難除錯、難納入程式碼版控與 review、跨 DB 移植性差。取捨:單純、與資料完整性強相關、必須任何來源都生效的(updated_at、稽核)放 trigger;複雜商業邏輯、會頻繁改、要測試與版控的寧可放應用層(較透明可維護)。"
       },
       "outline": [
         {
@@ -1655,9 +1655,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Postgres 的 JSONB 讓你在關聯式資料庫裡塞半結構化資料。什麼欄位適合用 JSONB(彈性、schema 常變的 metadata)、什麼還是該正規化成欄位(要查詢/約束/JOIN 的)？怎麼查 JSONB 內某個鍵、怎麼對它建索引(GIN)？",
+        "hint": "JSONB 存彈性 metadata;常查/要約束的還是拆欄位;GIN 索引加速。",
+        "answer": "JSONB 適合:結構彈性或常變、整包存取的 metadata(如各種設定、第三方回應、事件 payload)。仍該正規化的:需要頻繁 WHERE/排序/約束/JOIN 的核心欄位(塞 JSON 裡難加約束、查詢也較笨)。查鍵:SELECT data->>'name' FROM t WHERE data->>'type'='vip'(->> 取文字、-> 取 JSON)。索引:對 JSONB 建 GIN 索引 CREATE INDEX ON t USING gin (data)(加速 @>、鍵存在等查詢)。原則:核心欄位正規化、附屬彈性資料放 JSONB(本站 fortune_daily.payload、lessons.demos 就是 JSONB)。"
       },
       "outline": [
         {
@@ -1727,9 +1727,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "為什麼 LIKE '%關鍵字%' 做站內搜尋既慢又笨(用不到索引、不懂分詞與相關度)？Postgres 內建全文搜尋(tsvector/tsquery + GIN 索引)怎麼解？寫一個對文章 body 做全文搜尋的查詢。什麼時候該升級到專門的搜尋引擎(Elasticsearch/Meilisearch)？",
+        "hint": "LIKE 前置% 全表掃、無排序;tsvector 分詞+GIN 索引+相關度排序。",
+        "answer": "LIKE '%x%' 用不到一般索引(全表掃)、且只是字面比對(不懂詞形、無相關度排序)。Postgres 全文搜尋:CREATE INDEX ON posts USING gin (to_tsvector('simple', body));查詢 SELECT * FROM posts WHERE to_tsvector('simple', body) @@ plainto_tsquery('資料庫') ORDER BY ts_rank(...)——分詞、走 GIN 索引、可依相關度排序。何時升級專門引擎:資料量非常大、要進階功能(容錯/同義詞/facet/即時打字建議/多語分詞/超低延遲)時,用 Elasticsearch/Meilisearch。中小站 Postgres 內建通常夠。"
       },
       "outline": [
         {
@@ -1799,9 +1799,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "SQL Injection 是怎麼發生的(把使用者輸入直接字串拼進 SQL)？示範一個危險的拼接與它會被怎麼利用(' OR '1'='1)。為什麼『參數化查詢/prepared statement』能根治它(把資料和指令分開)？ORM 幫你做了什麼、什麼時候仍可能中招？",
+        "hint": "字串拼接讓輸入變指令;參數化把值當純資料傳。",
+        "answer": "危險:query('SELECT * FROM users WHERE email = \\'' + input + '\\'')——輸入 ' OR '1'='1 就變成永真、甚至 '; DROP TABLE users;-- 直接毀庫。根治:參數化查詢 query('... WHERE email = $1', [input])——資料庫把 $1 當『純資料』處理、絕不解讀成 SQL 指令,輸入再怎麼寫都只是一個字串值。ORM/Query Builder 預設就參數化幫你擋掉;但若你用它的 raw SQL 又手動拼字串、或拼欄位/表名(這些不能參數化)就仍可能中招——動態欄位名要用白名單。"
       },
       "outline": [
         {
@@ -1871,9 +1871,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Supabase 在 Postgres 上加了什麼讓你『幾乎不寫後端就有 API』(自動 REST/即時、Auth、Storage、RLS)？Row Level Security(RLS) 是什麼、為什麼開了它前端才能安全地直接連資料庫？寫一個『使用者只能讀寫自己資料』的 RLS policy。",
+        "hint": "Supabase=Postgres+自動 API+Auth+RLS;RLS 在資料列層強制權限。",
+        "answer": "Supabase 在 Postgres 上提供:自動生成的 REST/Realtime API、內建 Auth、Storage,讓前端可直接連。關鍵是 RLS(Row Level Security):在『資料列層級』用政策決定誰能讀寫哪些列——開了它,即使前端直接查表,資料庫也只回/只准動符合政策的列。policy:ALTER TABLE todos ENABLE ROW LEVEL SECURITY; CREATE POLICY own ON todos FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);(只能存取 user_id=自己的列)。沒 RLS 就開放直連=大門洞開;有 RLS 才能安全地讓前端直接操作(本站 fortune/message_coach 等表都靠 RLS)。"
       },
       "outline": [
         {
@@ -1943,9 +1943,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "設計一個 Todo App 的完整後端(Supabase + Next.js):todos 表要哪些欄位與約束、RLS 怎麼設、前端新增/完成/刪除各對應什麼操作、哪些檢查一定要在 DB/RLS 而不能只靠前端？列出你的『資料層設計檢查清單』。",
+        "hint": "表+約束+RLS+索引;敏感檢查在 DB;前端只管體驗。",
+        "answer": "todos:id uuid pk、user_id uuid references profiles(id) on delete cascade、title text not null check(length>0)、done bool default false、created_at timestamptz default now()、updated_at(trigger 自動)。RLS:ENABLE + policy FOR ALL USING(auth.uid()=user_id) WITH CHECK(同)。索引:(user_id, done)。前端:新增→insert、完成→update done、刪除→delete(或軟刪)。必須在 DB/RLS 的:『這筆是不是你的』(RLS,前端擋不住直接打 API)、not null/長度/外鍵(約束,任何來源都守)。清單:①每張使用者資料表都開 RLS ②關鍵約束在 DB ③常查欄位加索引 ④updated_at 用 trigger ⑤敏感操作伺服器/RLS 再驗一次,前端只負責好體驗。"
       },
       "outline": [
         {

@@ -198,7 +198,8 @@
   - [x] ~~ch10 Next.js / Nuxt 完整：25 節全 de-can~~ ✅ 0721（meta-framework 補 SPA 不足、五種渲染模式選型、App Router 特殊檔、Server vs Client 界線、generateMetadata SEO/OG、Server Actions 要驗權限、Route Handler 何時用、fetch 三層快取與 revalidate、Streaming/Suspense、error vs not-found、Middleware edge 限制、next/image·font 優化、Parallel/Intercepting Routes、i18n 路由前綴、認證多層防禦、Nuxt 約定自動匯入、useFetch vs $fetch 雙抓、Nitro server、routeRules 混合渲染、Nuxt Modules、Next vs Nuxt 選型、部署三產物 zbpack 雷、效能檢查清單、App Router 架構決策、Vercel/CF/self-host 取捨）
   - [x] 🏁 **前端框架三章 de-can 完成**：ch08 React + ch09 Vue + ch10 Next/Nuxt（共 75 題）
   - [x] ~~ch16 後端世界全圖：25 節全 de-can~~ ✅ 0721（請求生命週期、HTTP 方法/狀態碼、REST/GraphQL/gRPC/WS 選型、單體/微服務/serverless 取捨、後端語言選型 5 維、ORM vs Raw SQL 與 N+1、Session vs JWT 與 XSS、background queue 冪等、三層快取失效、限流演算法與 key、WS/SSE/長輪詢、大檔預簽章直傳、logs/metrics/traces、效能四殺手先量測、Docker/env/health check、API 設計原則版本化、Edge/Serverless/AI-native 用需求檢驗、Cache-Control 安全、REST 資源設計、三種認證選型、登入嚴格限流 429、Redis stampede、多台 WS pub/sub、OpenAPI 契約測試）
-  - [ ] 剩 ch17/26–32/34–36/46… 續 de-can
+  - [x] ~~ch17 SQL 資料庫：28 節全 de-can~~ ✅ 0721（含真實 SQL：宣告式威力、連線密鑰、建表約束、SELECT 別 *、WHERE NULL/LIKE 坑、cursor 分頁、GROUP BY/HAVING、視窗函式 RANK、CTE/遞迴、upsert 冪等、UPDATE 忘 WHERE、軟刪除、INNER/LEFT JOIN 找沒下單、SELF/CROSS/LATERAL Top-N、UNION/EXCEPT、EXISTS vs IN NULL、索引最左前綴、EXPLAIN Seq Scan、交易 ACID 轉帳、View/MV、Trigger 取捨、JSONB/GIN、全文搜尋、SQL injection 參數化、Supabase RLS policy、Todo 後端資料層清單）
+  - [ ] 剩 ch26–32/34–36/46… 續 de-can
 - [ ] 4.1.2 **deep-rewrite tier 未動章**：ch15、ch24、ch32、ch34、ch35、ch36、ch40、ch41、ch63、ch68（strict-spec）、ch72–75、附錄 ch61–67/69–70
 - [ ] 4.1.3 教具庫擴充：mobile 專屬教具（給 ch11）、規劃 B 教具（RegexTester/CronBuilder/JsonInspector 進階/HttpInspector/Tokenizer/SortingViz/GitGraph/NeuralForward/AuthFlow/MLBoundary）——依技術章需要再建
 - [ ] 4.1.4 圖文解說圖：概念/B/D/E/F 區操作圖 110+ 張（🔴 等林董生圖；A 區 29 張 ✅）
