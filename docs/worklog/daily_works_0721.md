@@ -557,29 +557,6 @@ NoSQL 章原 17 罐頭。全 25 節換成選型/設計/取捨題：NoSQL 放寬 
 
 ---
 
-## 0722 · #3 i18n 掃（運勢/軍師/求職包）+ 運勢 OG 分享 + 軍師 Lottie（後台可換）
+## 0722 → 見 `docs/worklog/daily_works_0722.md`
 
-### #3 新功能頁 UI i18n（可切外文）
-- **抽 3 命名空間進 messages/zh.json**：`fortune`(108)、`messageCoach`(55)、`jobKit`(27)。中文寫死→`t()`；scenario/tone 用穩定 id 動態 `t(\`scenarios.${id}\`)`、id 與 icon map 不動；ICU 佔位保留。
-- **譯 en/ja/ko**：`sync-ui-messages.mjs`（免費 Google）翻好 fortune 主區塊/messageCoach/jobKit（+720 行、只增不刪）。
-- ⚠️ `fortune.share` 8 顆因 Google **今日擋量（單日第 4 次跑、100% 失敗）** 未譯 → 暫 fallback 中文；**改天重跑 `node scripts/sync-ui-messages.mjs` 冪等補上**（已 kill 壞跑、hash 未被污染、下次會抓到這 8 顆）。
-- commit：i18n 接線 / 譯文 / 分兩筆。tsc ✅ / next build exit 0 ✅。
-
-### 每日運勢分享（原本只丟純文字 → 正式 OG 卡）
-- `/api/og/fortune`：運勢渲染成 1200x630 OG 圖卡（星座/分數/整體/幸運色數，CJK 子集字型、CDN 快取）。
-- `/fortune/share`：HTML 落地頁 `generateMetadata`→`og:image`（LINE/FB/Threads 抓得到預覽卡）。
-- Fortune 分享面板：圖卡預覽 +「分享到其他 App」(Web Share、手機帶圖檔) + 連結顯示 + 複製連結 + 下載圖卡。
-
-### 訊息軍師情境 icon 改 Lottie（林董：要 Lottie 會自己動、不是 hover 才動）
-- 12 情境接 `LottieIcon`（autoplay+loop）；沒設 URL → fallback **會自己一直動的 lucide 線條 icon**（`coach-icon-live` keyframe、非 hover、reduce-motion 關）。
-- **全部後台可換**：`/admin/lottie-settings` 加 12 個 `coach_lottie_<id>_url` slot（label 標明「前端 /message-coach 哪個情境卡」+ 推薦搜尋連結 + 存後預覽 /message-coach）；`/api/app-settings` 公開讀 whitelist 加 `coach_lottie_` 前綴。
-- ⚠️ **LottieFiles/lottie.host 擋伺服器 fetch（403）確認**，無法自動填 URL；故留可編輯 slot、由林董去 LottieFiles 挑免費可商用動畫貼 lottie.host URL。
-
-### 🔴 待林董手動
-- 想要真 Lottie icon：`/admin/lottie-settings` → 找「💬 訊息軍師·…」12 格、貼 lottie.host URL（沒貼也會動、是線條 icon）。
-- 改天幫 `fortune.share` 補譯：`node scripts/sync-ui-messages.mjs`（Google 擋量退了再跑）。
-
-### ⏳ 「A→B→C→D 照順序」剩下
-- **B**：#4 付費 gating（把變現接起來）
-- **C**：#4 章節深寫 ch40/63/68/72–75
-- **D**：#4 互動教具
+（0722 起改用當日獨立檔。當天完整紀錄：#3 i18n 三頁、命理套件（八字/易經）+ 付費 gate、運勢 OG 分享、軍師 Lottie、§1 收尾、§4.3 沙盒、§4.4 ROI、footer/env/Nami-IDE/IP/在線狀態/履歷/創作島 一連串修正 + 收尾健檢。）
