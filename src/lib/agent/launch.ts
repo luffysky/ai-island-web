@@ -116,12 +116,17 @@ export async function launchAgentTask(opts: {
 
   const priorContext = [memoryBlock, turnsBlock, ragBlock].filter(Boolean).join("\n\n");
 
+  const costMode: CostMode = opts.costMode === "saver" || opts.costMode === "quality" ? opts.costMode : "balanced";
+  // 每任務成本硬上限：用「步數上限」把單一任務能燒的量封頂（每步 maxTokens 已受限）。
+  // 省錢檔封更低、平衡預設、品質檔放寬。防單一任務失控燒錢（配 skill/使用者指定取小者）。
+  const STEP_CAP: Record<CostMode, number> = { saver: 12, balanced: 40, quality: 80 };
+  maxSteps = Math.min(maxSteps, STEP_CAP[costMode]);
+
   const { data: task, error } = await admin.from("agent_tasks")
     .insert({ user_id: userId, goal, max_steps: maxSteps, status: "planning", skill_id: skillId, thread_id: threadId, embedding: goalVec })
     .select("id").single();
   if (error || !task) return { error: error?.message ?? "建任務失敗" };
 
-  const costMode: CostMode = opts.costMode === "saver" || opts.costMode === "quality" ? opts.costMode : "balanced";
   runAgentTaskDetached(task.id, userId, goal, maxSteps, skill, undefined, priorContext, costMode);
   return { taskId: task.id, threadId };
 }

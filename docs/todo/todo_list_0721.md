@@ -96,7 +96,7 @@
 - [ ] 4.2 外部工具 OAuth 🔴（需林董各平台註冊 app）：Gmail/Calendar/Drive/GitHub/Notion 一鍵授權（`/settings/connections` 已有手動連結骨架、缺 OAuth）
 - [ ] 4.3 L2 程式沙盒 🔴（需 Zeabur `ENABLE_SERVER_BROWSER=1`）：跑 agent 產的 code（isolated-vm/容器、限時間/記憶體/網路）
 - [ ] 4.4 成本 / ROI Dashboard ⬜（per-user 用量記帳、省了多少、效率排行）
-- [ ] 4.5 技術債：stale-task reaper（Zeabur process 重啟會孤兒化進行中任務）
+- [x] ~~4.5 技術債：stale-task reaper~~ ✅ 早已存在（cron/agent-reaper 把 planning/running 逾時任務標 failed）——只差排程（🔴 加 cron job）
 
 🆕 潛力池（之後評估）：AI 陪伴角色（沿用島吉祥物+記憶、情感黏著）、AI 合約白話解讀（已有 PDF 解析 unpdf）、AI 老照片修復/證件照（需付費生圖 API·暫緩）、AI 交友/約會訊息軍師。
 
@@ -111,7 +111,7 @@
 - [ ] 2.1.4 L5 經理–專才階層調度（現只有平行 fan-out）
 - [ ] 2.1.5 真串流部分成果（partial results streaming）
 - [ ] 2.1.6 工具自動發現（OpenAPI → tools）
-- [~] 2.1.7 預算感知硬上限（free-first + 每日上限 + 省錢三檔 ✅；per-task hard cap 部分）
+- [x] ~~2.1.7 預算感知硬上限（free-first + 每日上限 + 省錢三檔 ✅；per-task 步數硬上限 STEP_CAP saver12/balanced40/quality80 ✅ 0722）~~
 - [~] 2.1.8 主動代理（daily-brief ✅；opt-in 主動 push 待補）
 
 ### 2.2 通路 Inbound（訊息→建 task→回填）
