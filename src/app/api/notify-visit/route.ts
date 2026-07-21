@@ -40,16 +40,44 @@ function parseDevice(ua: string): string {
   return `${browser} on ${os}`;
 }
 
-async function fetchGeo(ip: string): Promise<{ location: string; org?: string; ipText: string; mapsUrl?: string }> {
+type GeoOut = { location: string; org?: string; ipText: string; mapsUrl?: string };
+// 同 IP 24 小時快取（省 ipapi.co 額度 1000/天 + 加速；warm instance 內共用）
+const geoCache = new Map<string, { v: GeoOut; ts: number }>();
+const GEO_TTL = 24 * 3600 * 1000;
+
+async function fetchGeo(ip: string): Promise<GeoOut> {
   if (!ip || ip === "0.0.0.0" || ip.startsWith("127.") || ip.startsWith("10.") || ip.startsWith("192.168.")) {
     return { location: "本機", ipText: ip };
   }
-  // ＊來源選擇是實測出來的：對台灣凱擘(KBT)/中華等 IP，ipinfo.io 會把某些 IP 標錯城市
-  //   （實測 203.204.74.176 → ipinfo 標「台中」，但 ip-api / ipapi.co 正確標「新北市」）。
-  //   所以主來源用 ip-api.com（含 regionName 縣市 + city + district，實測較準），ipwho.is 次之、ipinfo 墊底。
-  //   要「精準到區」還是得靠使用者授權 GPS（🎯 GPS，見 preciseLocation）。
+  const hit = geoCache.get(ip);
+  if (hit && Date.now() - hit.ts < GEO_TTL) return hit.v;
+  const out = await lookupGeo(ip);
+  if (out.location && out.location !== "?") {
+    if (geoCache.size > 2000) for (const [k, e] of geoCache) if (Date.now() - e.ts > GEO_TTL) geoCache.delete(k);
+    geoCache.set(ip, { v: out, ts: Date.now() });
+  }
+  return out;
+}
 
-  // 1. ip-api.com（免費免 key、含 regionName/city/district；免費版走 http、rate limit 45/min，訪問通知量夠用）
+// 來源優先序（實測 203.204.74.176 凱擘 IP）：
+//   ipapi.co 到「區」樹林(最接近鶯歌) > ip-api 縣市(新北) > ipwho.is > ipinfo(會誤標台中、墊底)。
+//   ＊要精準到區仍靠使用者授權 GPS（🎯 GPS，見 preciseLocation）。
+async function lookupGeo(ip: string): Promise<GeoOut> {
+  // 1. ipapi.co（https 免 key、最細到區；免費 1000/天，超額回 429/error 就往下退）
+  try {
+    const r = await fetch(`https://ipapi.co/${ip}/json/`, { signal: AbortSignal.timeout(3000), headers: { "User-Agent": "ai-island" } });
+    if (r.ok) {
+      const d = await r.json() as any;
+      if (d && !d.error && d.city) {
+        const parts = [d.country_name, d.region, d.city].filter(Boolean);
+        const location = [...new Set(parts as string[])].join(" · ") || "?";
+        const mapsUrl = d.latitude != null && d.longitude != null ? `https://www.google.com/maps?q=${d.latitude},${d.longitude}` : undefined;
+        return { location, org: d.org ? String(d.org).slice(0, 60) : undefined, ipText: ip, mapsUrl };
+      }
+    }
+  } catch { /* 換下一個來源 */ }
+
+  // 2. ip-api.com（免費 45/min 額度大、含 regionName/city/district；免費版走 http）
   try {
     const r = await fetch(`http://ip-api.com/json/${ip}?fields=status,country,regionName,city,district,zip,lat,lon,isp,as&lang=zh-TW`, { signal: AbortSignal.timeout(3000) });
     if (r.ok) {
@@ -64,7 +92,7 @@ async function fetchGeo(ip: string): Promise<{ location: string; org?: string; i
     }
   } catch { /* 換下一個來源 */ }
 
-  // 2. ipwho.is（https、免費免 key、含 region 縣市）
+  // 3. ipwho.is（https、免費免 key、含 region 縣市）
   try {
     const r = await fetch(`https://ipwho.is/${ip}?lang=zh-TW`, { signal: AbortSignal.timeout(3000), headers: { "User-Agent": "ai-island" } });
     if (r.ok) {
@@ -79,7 +107,7 @@ async function fetchGeo(ip: string): Promise<{ location: string; org?: string; i
     }
   } catch { /* 換下一個來源 */ }
 
-  // 3. 墊底：ipinfo.io（註：對部分凱擘 IP 會標錯城市，只當最後手段；有 IPINFO_TOKEN 較準）
+  // 4. 墊底：ipinfo.io（對部分凱擘 IP 會標錯城市，只當最後手段；有 IPINFO_TOKEN 較準）
   const token = process.env.IPINFO_TOKEN;
   try {
     const url = token ? `https://ipinfo.io/${ip}/json?token=${token}` : `https://ipinfo.io/${ip}/json`;

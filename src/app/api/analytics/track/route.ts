@@ -44,10 +44,29 @@ function getClientIp(req: NextRequest): string | null {
 
 type GeoLookup = { country: string | null; region: string | null; city: string | null };
 
-// IP geo lookup — fallback chain: ip-api.com → ipwho.is
-// ＊實測台灣凱擘/中華某些 IP，ip-api 標得比 ipwho.is/ipinfo 準（ipinfo 甚至把新北標成台中）。
+// IP geo lookup — fallback chain: ipapi.co → ip-api.com → ipwho.is
+// ＊實測台灣凱擘 IP 203.204.74.176：ipapi.co 到區(樹林,最近鶯歌) > ip-api 縣市(新北) > ipwho.is；
+//   ipinfo 會誤標台中故不用。有 24h geoCache、ipapi.co 免費 1000/天 額度夠。
 async function lookupCityByIp(ip: string): Promise<GeoLookup | null> {
-  // 1. ip-api.com（免費 45 req/min、IPv6 完整、含 regionName 縣市；免費版 http only）
+  // 1. ipapi.co（https 免 key、最細到區；免費 1000/天，429/error 就往下退）
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 3000);
+    const res = await fetch(`https://ipapi.co/${encodeURIComponent(ip)}/json/`, { signal: ctrl.signal, headers: { "User-Agent": "ai-island" } });
+    clearTimeout(timer);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && !data.error && data.city) {
+        return {
+          country: data.country_code ?? null,
+          region: data.region ?? null,
+          city: data.city ?? null,
+        };
+      }
+    }
+  } catch {}
+
+  // 2. ip-api.com（免費 45 req/min、IPv6 完整、含 regionName 縣市；免費版 http only）
   try {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 3000);
@@ -68,7 +87,7 @@ async function lookupCityByIp(ip: string): Promise<GeoLookup | null> {
     }
   } catch {}
 
-  // 2. ipwho.is fallback（免費 10k/月、不需 key、支援 IPv4/v6）
+  // 3. ipwho.is fallback（免費 10k/月、不需 key、支援 IPv4/v6）
   try {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 3000);
