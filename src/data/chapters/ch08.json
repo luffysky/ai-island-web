@@ -44,9 +44,9 @@
         }
       ],
       "exercise": {
-        "question": "找一個你身邊的例子、用「為什麼 React？前端框架戰史」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "用純 JS 手動操作 DOM 做一個『計數器隨資料更新的列表』會遇到什麼麻煩（要自己找節點、手動同步畫面與資料）？React 的『宣告式 UI（畫面＝狀態的函式）』怎麼解掉這個麻煩？",
+        "hint": "命令式：一步步告訴瀏覽器怎麼改 DOM；宣告式：你描述『這個狀態該長怎樣』，React 幫你算差異更新。",
+        "answer": "純 JS 要自己 querySelector 找節點、手動 textContent/appendChild、還要記得資料變了哪些畫面要跟著改——狀態一多就同步地獄。React 讓你寫 UI=f(state)：你只描述『某狀態下畫面長怎樣』，狀態一改 React 自動重新算並只更新有變的部分（virtual DOM diff）。你不再手動操作 DOM，心智負擔大降。"
       },
       "outline": [
         {
@@ -136,9 +136,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "現在建 React 專案為什麼多用 Vite 而不是舊的 CRA？一個新專案跑起來後，index.html、main.tsx、App.tsx 的關係與『React 從哪裡掛上頁面』是怎麼串的？",
+        "hint": "Vite 啟動快、HMR 快。root DOM 節點 + createRoot(...).render(<App/>) 是掛載點。",
+        "answer": "Vite 用原生 ESM + esbuild，啟動與熱更新（HMR）比 CRA（webpack）快很多、設定也少。串接：index.html 有個 <div id=\"root\">；main.tsx 用 createRoot(document.getElementById('root')).render(<App/>) 把 App 掛上那個節點；App.tsx 是你的根元件、往下組合其他元件。整條就是『HTML 提供掛載點 → JS 進入點掛上 React 樹』。"
       },
       "outline": [
         {
@@ -216,9 +216,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "JSX 看起來像 HTML 但不是——為什麼要用 className 而不是 class、為什麼 style 要傳物件？`{}` 裡能放什麼、不能放什麼（if 陳述式）？把一段『有條件顯示』和『渲染陣列』的需求用 JSX 表達。",
+        "hint": "JSX 編譯成 JS 函式呼叫；class/for 是 JS 保留字。{} 放運算式不放陳述式。",
+        "answer": "JSX 會被編譯成 React.createElement/JS，所以用 className（class 是 JS 保留字）、htmlFor；style 傳物件（{color:'red'}）因為那是 JS。{} 裡放『運算式』（值、三元、map、函式呼叫），不能放 if/for 陳述式。條件顯示：{isOpen && <Panel/>} 或 {ok ? <A/> : <B/>}；渲染陣列：{items.map(i => <li key={i.id}>{i.name}</li>)}。"
       },
       "outline": [
         {
@@ -300,9 +300,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "為什麼 props 是『唯讀、由上往下傳』、子元件不能改父層傳來的 props？要讓子元件影響父層資料，正確做法是什麼（傳 callback 下去）？把一個大元件拆成小元件的判斷準則是什麼？",
+        "hint": "單向資料流：資料往下、事件往上。改父層狀態要靠父層傳下來的函式。",
+        "answer": "props 唯讀維持『單向資料流』：資料只從父往子流，畫面才可預測、好追蹤誰改了什麼。子要影響父：父把一個 callback（如 onChange）當 prop 傳下去，子在事件時呼叫它、由父更新自己的 state。拆元件準則：一個元件做一件事、可重用、或當它太大/重複出現時就抽出——但別過度拆到到處傳 props（prop drilling）。"
       },
       "outline": [
         {
@@ -388,9 +388,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "為什麼 `count = count + 1`（直接改變數）不會更新畫面、要用 setCount？連續呼叫三次 setCount(count+1) 為什麼可能只加一次、該怎麼寫（函式式更新）？state 是物件時為什麼要用新物件（展開）而不是改原物件？",
+        "hint": "React 靠 setState 觸發重繪；同一輪的 count 是快照；state 要不可變才偵測到變化。",
+        "answer": "直接改變數 React 不知道、不會重繪，且下次渲染又被重設——要用 setCount 告訴 React 狀態變了。連呼三次 setCount(count+1)：count 是這輪渲染的『快照』都同一個值，結果只 +1；要用函式式 setCount(c=>c+1) 每次拿最新值 → +3。物件 state 要用新物件（setUser({...user, name})）因為 React 靠『參照有沒有變』判斷要不要更新，改原物件參照沒變就不重繪。"
       },
       "outline": [
         {
@@ -476,9 +476,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "React 的 onClick={handleClick} 和 onClick={handleClick()} 差在哪（後者立刻執行的坑）？要傳參數給事件處理器怎麼寫才不會每次渲染都亂呼叫？表單送出為什麼常要 e.preventDefault()？",
+        "hint": "傳函式參照 vs 立刻呼叫。要帶參用箭頭包一層。preventDefault 擋瀏覽器預設重整。",
+        "answer": "onClick={handleClick} 傳的是『函式本身』等點了才跑；onClick={handleClick()} 是『渲染當下立刻執行』把回傳值當處理器——常見錯誤（畫面一渲染就觸發）。要帶參：onClick={() => handleClick(id)}（用箭頭包一層延後執行）。表單 onSubmit 常要 e.preventDefault() 阻止瀏覽器預設『送出並重新整理頁面』，改由 JS 接手處理。"
       },
       "outline": [
         {
@@ -560,9 +560,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "渲染列表時 React 為什麼一定要 key？用『陣列 index 當 key』在『列表會重排/中間增刪』時會出什麼 bug（狀態錯位）？什麼才是好 key？",
+        "hint": "key 讓 React 對應前後兩次哪個是同一項。index 在順序變動時會張冠李戴。",
+        "answer": "key 讓 React 在重繪時辨認『這次的第 3 項和上次的哪一項是同一個』，才能正確重用/移動而非全部重建。用 index 當 key：若列表重排或中間插入/刪除，index 對應的項目變了，React 會把舊項的狀態（如輸入框內容、勾選）套到錯的項上→狀態錯位。好 key＝穩定且唯一的識別（資料的 id），不是 index、不是隨機值。"
       },
       "outline": [
         {
@@ -652,9 +652,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "useEffect 的依賴陣列 [] / [x] / 省略 各代表什麼時機執行？為什麼『抓資料、訂閱、計時器』要放 useEffect、且常需要 cleanup（return 一個函式）？漏了依賴或漏了 cleanup 各會出什麼經典 bug？",
+        "hint": "[]=掛載一次、[x]=x 變才跑、省略=每次渲染都跑。cleanup 在重跑前/卸載時清掉上一次。",
+        "answer": "[] 只在掛載跑一次；[x] 在 x 變化時跑；省略依賴每次渲染都跑（常是 bug/無窮迴圈）。副作用（fetch、addEventListener、setInterval）放 useEffect 因為它們不該在渲染中做。cleanup（return ()=>{...}）在下次執行前或卸載時清掉上一次的訂閱/計時器。漏依賴：effect 用到的值過期（拿到舊 state）；漏 cleanup：監聽/計時器重複疊加、記憶體洩漏、卸載後 setState 警告。"
       },
       "outline": [
         {
@@ -740,9 +740,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "useRef 的兩個用途（存 DOM 節點、存『不觸發重繪的可變值』）各是什麼？為什麼把『不需要顯示的值』（如上一次的值、計時器 id）放 useRef 而不是 useState？改 ref.current 為什麼不會重繪？",
+        "hint": "ref 是一個穩定的盒子，.current 可變但改它不觸發渲染。",
+        "answer": "用途一：綁 DOM（<input ref={inputRef}> 後 inputRef.current.focus()）。用途二：存跨渲染保留、但改了『不需要重繪』的值（計時器 id、前一次的值、旗標）。放 useRef 而非 useState：因為那些值變動不需要更新畫面，用 state 會多餘重繪。改 ref.current 不觸發渲染正是它的特性——所以別拿 ref 存『該顯示在畫面上的資料』（那要用 state）。"
       },
       "outline": [
         {
@@ -820,9 +820,9 @@
         }
       ],
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「useMemo + useCallback：性能優化」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "useMemo 和 useCallback 各快取什麼（值 vs 函式）？為什麼『到處包 useMemo』反而可能更慢？什麼情況真的需要它們（昂貴計算、傳給 memo 子元件的 props、effect 依賴穩定）？",
+        "hint": "useMemo 記算好的值、useCallback 記函式參照。快取本身也有成本。",
+        "answer": "useMemo 快取『計算結果』（避免每次重算昂貴運算）；useCallback 快取『函式參照』（讓傳下去的函式在依賴沒變時保持同一個）。到處包更慢：快取要存與比較依賴、本身有成本，對便宜計算是淨負擔、還讓程式更難讀。真正需要：①計算真的昂貴 ②函式/物件要當 props 傳給 React.memo 的子元件（否則每次新參照害它重繪）③要當其他 hook 的穩定依賴。先量測再優化。"
       },
       "outline": [
         {
@@ -904,9 +904,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "什麼訊號代表『該把邏輯抽成 custom hook』（兩個元件有重複的 useState+useEffect 邏輯）？寫一個 useLocalStorage 或 useDebounce 的介面（回傳什麼）。custom hook 和普通函式差在哪（為什麼名字要 use 開頭）？",
+        "hint": "重複的有狀態邏輯就抽 hook。hook 內可用其他 hook，名字 use 開頭讓 lint 檢查規則。",
+        "answer": "訊號：多個元件重複同一套『有狀態/副作用』的邏輯（如都在讀寫 localStorage、都在 debounce）。useLocalStorage(key, initial) → 回傳 [value, setValue]（像 useState 但同步到 localStorage）。custom hook 和普通函式差別：hook 內部可以呼叫其他 hook（useState/useEffect），普通函式不行；名字 use 開頭讓 React 的 lint 能檢查 hook 規則（不可在條件/迴圈中呼叫）。它抽的是『邏輯』不是 UI。"
       },
       "outline": [
         {
@@ -984,9 +984,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Context 解決了什麼痛點（prop drilling 一路往下傳）？為什麼『把所有東西都塞進一個大 Context』是反模式（任何一項變全部訂閱者重繪）？主題/登入使用者這種資料為什麼適合 Context？",
+        "hint": "Context 跨層共享；但 value 一變、所有消費者重繪。適合『少變、多處要』的資料。",
+        "answer": "Context 讓深層元件不用一層層接力傳 props（prop drilling）就能拿到共享資料。反模式：一個大 Context 塞很多東西，只要 value 物件一變，所有用到它的元件全部重繪→效能差、耦合高。適合放 Context 的：改動不頻繁、很多地方要用的『環境級』資料——主題（深/淺色）、目前登入使用者、語言。頻繁變動的伺服器資料/複雜狀態，改用 React Query / 狀態管理庫更合適。"
       },
       "outline": [
         {
@@ -1068,9 +1068,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "什麼時候 useReducer 比多個 useState 好（多個互相關聯的狀態、複雜轉移邏輯）？把一個『購物車（加/減/移除/清空）』用 reducer 的 action 設計出來。reducer 為什麼要是純函數？",
+        "hint": "狀態轉移集中在一個純函數、用 action 描述『發生了什麼』。",
+        "answer": "當多個狀態互相關聯、更新邏輯複雜或散落各處時，useReducer 把所有轉移集中在一個 reducer(state, action) 更好維護與測試。購物車 actions：{type:'add',item}、{type:'remove',id}、{type:'changeQty',id,delta}、{type:'clear'}；reducer 依 type 回傳新的 cart。reducer 要純（同 state+action 必得同結果、不改原 state、無副作用）：這樣可預測、可測試、支援時間旅行除錯，也符合 React 靠新參照偵測變化。"
       },
       "outline": [
         {
@@ -1148,9 +1148,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Error Boundary 攔的是什麼（子樹渲染時丟出的錯），又攔不到什麼（事件處理器裡的錯、非同步錯）？Suspense 的 fallback 在做什麼？為什麼『整個 App 只包一個 Error Boundary』體驗不好？",
+        "hint": "Error Boundary 防某塊崩掉拖垮全站；Suspense 顯示載入中。要分區包。",
+        "answer": "Error Boundary 攔『渲染/生命週期中丟出的錯』，顯示備援 UI 而不是整頁白掉；但攔不到事件處理器內、非同步、SSR 之外的錯（那些要自己 try/catch）。Suspense 在等待（如某元件的資料/lazy 載入）時顯示 fallback（載入動畫）。只包一個 Error Boundary：任何小地方壞就整站掛掉備援畫面。該分區包（如每個主要區塊各一個），讓故障隔離、其他區塊照常用。"
       },
       "outline": [
         {
@@ -1236,9 +1236,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "為什麼『每個 input 都用 useState + onChange』在大表單會很囉嗦又易重繪？React Hook Form 這類庫靠什麼減少重繪（非受控 + ref）？搭配 Zod 做驗證的好處是什麼（schema 一份、型別+驗證同源）？",
+        "hint": "受控元件每打一字重繪；RHF 用 ref 收集、少重繪。Zod schema 兼型別與驗證。",
+        "answer": "每個 input 各一個 useState：字打多了每次都重繪整個表單、程式冗長。RHF 用非受控（ref 收集值）＋訂閱制，只在需要時重繪、效能好、程式短。搭 Zod：用一份 schema 同時做『執行期驗證』和『推導 TS 型別（z.infer）』——驗證規則與型別同源、不會 drift，錯誤訊息也集中。整體：少 boilerplate、少重繪、型別安全。"
       },
       "outline": [
         {
@@ -1316,9 +1316,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "自己用 useEffect+fetch 抓資料，要手動處理 loading/error/快取/重取/競態，很容易漏。React Query 幫你接管了哪些（快取、背景重取、去重、狀態）？『伺服器狀態』和『UI 狀態』為什麼該分開管理？",
+        "hint": "Server state 有快取/過期/同步問題，和本地 UI 狀態性質不同。",
+        "answer": "手寫 fetch 要自己管 loading/error、避免競態（舊請求晚回蓋掉新的）、快取、重取、去重——很容易出漏洞。React Query 內建：快取（同 key 共用）、背景自動重取與過期、請求去重、統一的 loading/error/data 狀態、失效重抓。分開管理的原因：伺服器狀態是『遠端的、會過期、要同步』的資料（適合 React Query）；UI 狀態是本地暫時的（開關、輸入）→ 用 useState/Zustand。混在一起會又亂又難維護。"
       },
       "outline": [
         {
@@ -1400,9 +1400,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "什麼時候 useState/Context 就夠、什麼時候才需要 Zustand/Redux 這類全域狀態庫？Redux 的『單向資料流 + 不可變 + action』帶來什麼好處與樣板成本？為什麼很多新專案選更輕的 Zustand/Jotai？",
+        "hint": "跨多元件共享、複雜互動才需全域庫。Redux 嚴謹但囉嗦，Zustand 輕。",
+        "answer": "本地或少數層級共享→useState/Context 就夠。當『很多不相鄰元件要共享且頻繁互動』、需要可預測與除錯工具時，才上全域庫。Redux：嚴格的單向流、不可變、action/reducer——可預測、時間旅行除錯、生態成熟，但樣板多。Zustand/Jotai 更輕：少樣板、直接 hook 取用、心智負擔低，適合多數中小專案。原則：先用最簡單能解決的，真的痛了再升級。"
       },
       "outline": [
         {
@@ -1472,9 +1472,9 @@
         }
       ],
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「React Performance 優化」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "一個列表打字就整頁卡。診斷 React 效能問題的思路是什麼（用 Profiler 找『誰重繪、為什麼』）？常見兇手（父重繪連累子、傳新物件/函式當 props、沒虛擬化的長列表）各怎麼解？",
+        "hint": "先量（React DevTools Profiler），再對症：memo、穩定 props、列表虛擬化。",
+        "answer": "先用 React DevTools Profiler 找出『哪些元件重繪、重繪原因』別瞎猜。兇手與解法：①父一變子全重繪→把純展示子元件用 React.memo、狀態下放到真正需要的子樹 ②每次傳新的物件/函式當 props 害 memo 失效→useMemo/useCallback 穩定它們 ③長列表（上千項）→虛擬化（只渲染看得到的，如 react-window）。原則：量測定位 > 盲目 memo。"
       },
       "outline": [
         {
@@ -1560,9 +1560,9 @@
         }
       ],
       "exercise": {
-        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
-        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
-        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+        "question": "測 React 元件該測『使用者看得到/操作得到的行為』還是『內部 state』？Testing Library 為什麼鼓勵用『畫面上的文字/角色』來找元素、而不是 class/id？寫一個『點按鈕後出現訊息』的測試大概怎麼組（arrange/act/assert）？",
+        "hint": "測行為不測實作；用 getByRole/getByText 貼近使用者。",
+        "answer": "測『行為』（使用者做什麼、看到什麼），不測內部 state——這樣重構實作只要行為不變測試就綠。Testing Library 用 getByRole/getByText/getByLabelText 貼近真實使用者怎麼找元素，比綁 class/id 更穩（改樣式不會弄壞測試、也順便驗無障礙）。測試組成：render(<Comp/>)（arrange）→ userEvent.click(getByRole('button'))（act）→ expect(getByText('成功')).toBeInTheDocument()（assert）。"
       },
       "outline": [
         {
@@ -1648,9 +1648,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "React Server Components（RSC）和傳統元件最大的不同是什麼（在伺服器跑、可直接讀 DB/檔案、不進 client bundle）？RSC 為什麼能減少送到瀏覽器的 JS？哪些事 RSC 做不了、要交給 Client Component？",
+        "hint": "Server Component 在伺服器算好、不含互動；要 useState/事件/瀏覽器 API 就得 client。",
+        "answer": "RSC 在伺服器執行、可以直接 await 讀資料庫/檔案、且它的程式碼不會被送到瀏覽器（減少 client JS、加快載入）。它送到前端的是算好的 UI 描述而非一堆邏輯。做不到的：用 useState/useEffect、綁事件（onClick）、用瀏覽器 API（localStorage、window）——這些互動性的要標 'use client' 當 Client Component。實務：預設 Server、需要互動的葉子才 client。"
       },
       "outline": [
         {
@@ -1736,9 +1736,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "『Next.js + Tailwind + shadcn/ui』這個組合各解決什麼（框架/樣式/元件）？為什麼 shadcn 是『複製元件原始碼到你專案』而不是裝成 npm 套件——這種模式的優缺點是什麼？",
+        "hint": "Next=全端框架、Tailwind=樣式、shadcn=可擁有的元件源碼。",
+        "answer": "Next.js：路由/SSR/RSC/API 一站式全端框架；Tailwind：utility-first 快速一致的樣式；shadcn/ui：用 Radix+Tailwind 打造的元件，但『把原始碼複製進你的專案』而非裝套件。優點：元件是你的、可任意改、無版本鎖死與黑箱、bundle 只含你用到的。缺點：更新元件要自己同步、初期要拉進來。適合想要高度掌控 UI 的團隊。"
       },
       "outline": [
         {
@@ -1811,9 +1811,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "與其問『React 還要學什麼』，做個自我盤點：拿到一個新需求（如『這個資料要跨很多頁共享又會即時變』），你如何判斷該用 useState / Context / React Query / 全域庫？寫下你自己的『選狀態方案決策樹』。",
+        "hint": "問三題：是伺服器資料嗎？要跨多遠共享？變動多頻繁？",
+        "answer": "決策樹：①是『伺服器來的資料』嗎？是→React Query（管快取/同步）。②否（本地 UI 狀態）→只在一個元件用？用 useState。③要跨幾層共享但不常變（主題/使用者）？用 Context。④很多不相鄰元件頻繁互動的複雜狀態？用 Zustand/Jotai（或 Redux）。原則：從最簡單的開始，痛點（prop drilling、重繪、同步）出現再升級，別一開始就上重機具。"
       },
       "outline": [
         {
@@ -1887,9 +1887,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "React 19 的 Actions（表單直接綁 async function）與 useActionState 簡化了什麼（以前要自己管 pending/error/optimistic）？`use()` 能做什麼（在渲染中讀 promise/context）？這些新特性把哪些樣板收掉了？",
+        "hint": "Actions 內建 pending/error/樂觀更新；use() 讓讀非同步資源更直接。",
+        "answer": "Actions：表單的 action 可直接是 async function，React 內建處理『送出中(pending)、錯誤、樂觀更新』——以前要自己一堆 useState 管這些。useActionState 給你 [state, formAction, isPending]。use(): 在渲染中直接讀一個 promise（配 Suspense）或有條件地讀 context，讓資料讀取更直覺。整體把大量『手動管非同步 UI 狀態』的樣板收進框架。"
       },
       "outline": [
         {
@@ -1955,9 +1955,9 @@
         }
       ],
       "exercise": {
-        "question": "用一張紙、把「React Server Components vs Client Components」的核心概念畫成心智圖。中心是這節的主題、第一圈放 3-5 個關鍵詞（如 Hi ${name}）、第二圈延伸細節。",
-        "hint": "關鍵概念可以從 lesson 內出現的這些關鍵字入手：Hi ${name}。畫完不要光放著、試著用自己的話講一次。",
-        "answer": "心智圖三步：(1) 中心 = lesson 主題 (2) 第一圈 = 主要分類（通常 3-5 個）(3) 第二圈 = 具體例子或工具。畫完拿給朋友看、能講通 = 真懂。常見錯誤：抄關鍵字當分類、應該用自己理解後的歸納。"
+        "question": "承 8.20，畫一條界線：一個頁面裡『文章內容、留言列表』和『按讚鈕、留言輸入框』哪些該是 Server、哪些該是 Client？把互動的部分留在小小的 client 葉子有什麼好處？'use client' 加在哪一層會影響什麼？",
+        "hint": "靜態/讀資料→Server；要事件/狀態→Client 葉子。'use client' 會讓該檔及其 import 的都進 client。",
+        "answer": "文章內容、留言列表（讀資料、不互動）→Server Component（直接讀 DB、不佔 client JS）；按讚鈕、留言輸入框（要 useState/onClick）→Client Component。把互動留在小葉子的好處：大部分頁面是 Server（少 JS、快、SEO 好），只有真正需要互動的一小塊才載 JS。'use client' 標在哪一層，那一層及其向下 import 的元件都會被算進 client bundle——所以標得越低（越接近葉子）越好。"
       },
       "outline": [
         {
@@ -2027,9 +2027,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "承 8.10，給三個情境判斷要不要用 memo/useMemo/useCallback：①一個只顯示文字的子元件、父很常重繪 ②一個每次渲染都跑的 O(n²) 過濾 ③一個傳給普通 DOM onClick 的行內函式。為什麼第三個通常不用包？",
+        "hint": "memo 給常被父連累重繪的純子；useMemo 給昂貴計算；傳給原生 DOM 的函式通常不必 useCallback。",
+        "answer": "①純顯示子＋父常重繪→React.memo（讓 props 沒變時跳過重繪）有幫助。②每次跑 O(n²)→useMemo 快取結果（依賴沒變不重算）值得。③傳給原生 <button onClick={fn}> 的行內函式→通常不用 useCallback：原生 DOM 不會因為函式是新的就『重繪變慢』，包了反而多餘。原則：memo 家族是『針對量測到的重繪/昂貴計算問題』的工具，不是預設到處加。"
       },
       "outline": [
         {

@@ -376,3 +376,12 @@ ch05（TypeScript）25 節全 de-can，換成各節量身題（除錯/選型/預
 
 - diff 84+/84-（28×3）→ `import_chapters_to_db.mjs ch07`（28 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
 - 本日 de-can 累計：ch01/02/04/05/07（4×25 + 28 = **128 題**）。續攻 ch08 React…
+
+---
+
+## 📚 章節 de-can：ch08 React 全 25 節（0721）
+
+原 23 罐頭。全 25 節換成 React 除錯/預測/設計題：命令式 vs 宣告式 UI、Vite 掛載鏈、JSX 為何 className/{} 放運算式、props 唯讀單向流與 callback 上拋、setState 快照與函式式更新與不可變物件、onClick 傳參照 vs 立即執行、list key 用 index 的狀態錯位、useEffect 依賴陣列與 cleanup 漏掉的 bug、useRef 兩用途與不觸發重繪、useMemo/useCallback 別濫用、何時抽 custom hook、Context 大物件反模式、useReducer 純函數與購物車 action、Error Boundary 攔什麼要分區、RHF+Zod 少重繪同源型別、React Query 接管 server state、狀態方案決策樹、效能先 Profiler 再對症、Testing Library 測行為不測 state、RSC 減 client JS、shadcn 複製源碼模式、React 19 Actions/useActionState/use()、RSC vs Client 界線畫在哪、memo 家族三情境何時用。
+
+- diff 75+/75-（25×3）→ import_chapters_to_db ch08（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+- 本日 de-can 累計：ch01/02/04/05/07/08（**153 題**）。續攻 ch09 Vue…
