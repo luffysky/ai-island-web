@@ -10,7 +10,7 @@ import { BlogEditor } from "@/components/blog/BlogEditor";
 import { IslandChat } from "../../IslandChat";
 import { getType, type Tool } from "../engine-types";
 import { useDraftCollab } from "@/lib/collab/use-draft-collab";
-import { usePrompt } from "@/components/ui/ConfirmDialog";
+import { usePrompt, useConfirm } from "@/components/ui/ConfirmDialog";
 
 type Fragment = { id: string; title: string; content: string; source_type: string };
 type Draft = {
@@ -41,6 +41,7 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
   const editorRef = useRef<Editor | null>(null);
   const first = useRef(true);
   const prompt = usePrompt();
+  const confirm = useConfirm();
 
   // 即時共編（opt-in / 特性旗標 flag_collab）。realtime 失敗會優雅退回單人。
   const { collab, status: collabStatus, peers, seedEditor } = useDraftCollab({
@@ -69,6 +70,25 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
     try {
       const r = await fetch("/api/creator-island/series", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ workspaceId: draft.workspace_id, kind: seriesKind, title: title.trim(), category }) }).then((x) => x.json());
       if (r.series) { setSeriesList((p) => [r.series, ...p]); assignSeries(r.series.id); }
+    } catch (e: any) { setErr(e.message); }
+  }
+
+  async function renameSeries() {
+    const cur = seriesList.find((s) => s.id === seriesId); if (!cur) return;
+    const title = await prompt({ title: tr("createNewSeriesNamePrompt", { noun: seriesNoun }), defaultValue: cur.title }); if (!title?.trim()) return;
+    try {
+      const r = await fetch(`/api/creator-island/series/${seriesId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: title.trim() }) }).then((x) => x.json());
+      if (r.series) setSeriesList((p) => p.map((s) => (s.id === seriesId ? { ...s, title: title.trim() } : s)));
+    } catch (e: any) { setErr(e.message); }
+  }
+
+  async function deleteSeries() {
+    const cur = seriesList.find((s) => s.id === seriesId); if (!cur) return;
+    if (!(await confirm({ title: `刪除「${cur.title}」？作品不會被刪、只是移出這個${seriesNoun}。`, destructive: true }))) return;
+    try {
+      await fetch(`/api/creator-island/series/${seriesId}`, { method: "DELETE" });
+      setSeriesList((p) => p.filter((s) => s.id !== seriesId));
+      assignSeries(null);
     } catch (e: any) { setErr(e.message); }
   }
 
@@ -250,7 +270,15 @@ export function EngineWorkspace({ draft, fragments, currentUser }: { draft: Draf
               <option value="">{tr("createNotInAnySeries", { noun: seriesNoun })}</option>
               {seriesList.map((s) => <option key={s.id} value={s.id}>{s.category ? `[${s.category}] ` : ""}{s.title}</option>)}
             </select>
-            <button onClick={newSeries} className="mt-2 inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border border-dashed border-border text-fg-muted hover:text-accent"><Plus size={12} /> {tr("createNewSeriesBtn", { noun: seriesNoun })}</button>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <button onClick={newSeries} className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border border-dashed border-border text-fg-muted hover:text-accent"><Plus size={12} /> {tr("createNewSeriesBtn", { noun: seriesNoun })}</button>
+              {seriesId && (
+                <>
+                  <button onClick={renameSeries} className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border border-border text-fg-muted hover:text-accent">改名</button>
+                  <button onClick={deleteSeries} className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border border-border text-fg-muted hover:text-red-400">刪除</button>
+                </>
+              )}
+            </div>
             <div className="text-[10px] text-fg-muted mt-2">{tr("createSeriesHint", { noun: seriesNoun })}</div>
           </div>
 

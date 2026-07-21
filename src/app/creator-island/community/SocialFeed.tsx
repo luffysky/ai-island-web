@@ -177,6 +177,8 @@ function PostCard({ p, meId, onDelete }: { p: Post; meId: string; onDelete: () =
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(p.likes_count);
   const [saved, setSaved] = useState(false);
+  const [following, setFollowing] = useState(false);
+  const [followBusy, setFollowBusy] = useState(false);
   const [showC, setShowC] = useState(false);
   const [comments, setComments] = useState<any[] | null>(null);
   const [cbody, setCbody] = useState("");
@@ -187,6 +189,7 @@ function PostCard({ p, meId, onDelete }: { p: Post; meId: string; onDelete: () =
 
   async function like() { try { const r = await call(`/api/creator-island/social/posts/${p.id}/like`, "POST"); setLiked(r.on); setLikes((n) => n + (r.on ? 1 : -1)); } catch {} }
   async function bookmark() { try { const r = await call(`/api/creator-island/social/posts/${p.id}/bookmark`, "POST"); setSaved(r.on); } catch {} }
+  async function follow() { if (followBusy) return; setFollowBusy(true); try { const r = await call(`/api/creator-island/community/follow`, "POST", { targetType: "creator", targetId: p.user_id }); setFollowing(r.on); } catch {} finally { setFollowBusy(false); } }
   async function loadComments() { setShowC((s) => !s); if (comments) return; try { const j = await call(`/api/creator-island/social/posts/${p.id}/comments`, "GET"); setComments(j.comments ?? []); } catch {} }
   async function addComment() { if (!cbody.trim()) return; const body = resolveMentions(cbody.trim(), cmentions); try { const j = await call(`/api/creator-island/social/posts/${p.id}/comments`, "POST", { body }); setComments((c) => [...(c ?? []), j.comment]); setCbody(""); setCmentions([]); } catch {} }
   async function del() { if (!(await confirm({ title: t("communityDeletePostConfirm"), confirmLabel: t("communityDelete"), destructive: true }))) return; try { await call(`/api/creator-island/social/posts/${p.id}`, "DELETE"); onDelete(); } catch {} }
@@ -201,6 +204,12 @@ function PostCard({ p, meId, onDelete }: { p: Post; meId: string; onDelete: () =
       <div className="flex items-center gap-2">
         {p.author?.avatar_url ? <img src={p.author.avatar_url} className="w-8 h-8 rounded-full object-cover" /> : <div className="w-8 h-8 rounded-full bg-accent/20 grid place-items-center text-xs">{name(p.author)[0]}</div>}
         <div className="text-sm font-bold">{name(p.author)}</div>
+        {p.user_id !== meId && (
+          <button onClick={follow} disabled={followBusy}
+            className={`text-[11px] px-2 py-0.5 rounded-full border transition disabled:opacity-50 ${following ? "border-border text-fg-muted" : "border-accent/50 text-accent hover:bg-accent/10"}`}>
+            {following ? "追蹤中" : "＋ 追蹤"}
+          </button>
+        )}
         {p.type === "reel" && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-pink-500/15 text-pink-300">{t("communityReelBadge")}</span>}
         <span className="ml-auto text-[10px] text-fg-muted">{new Date(p.created_at).toLocaleString("zh-TW")}</span>
         {p.user_id === meId && <button onClick={del} className="text-fg-muted hover:text-red-400 text-xs">{t("communityDeleteShort")}</button>}

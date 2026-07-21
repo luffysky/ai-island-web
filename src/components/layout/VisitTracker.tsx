@@ -29,5 +29,31 @@ export function VisitTracker() {
     }).catch(() => {});
   }, [pathname]);
 
+  // 離開通知：記錄進入時間，離開/切走路徑時用 sendBeacon 回報停留時長（配 /api/notify-leave）
+  useEffect(() => {
+    if (!pathname) return;
+    const enter = Date.now();
+    const fire = () => {
+      const durationMs = Date.now() - enter;
+      if (durationMs < 5000) return; // 太短不報（與 server 端一致）
+      try {
+        const body = JSON.stringify({ path: pathname, durationMs });
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon("/api/notify-leave", new Blob([body], { type: "application/json" }));
+        } else {
+          fetch("/api/notify-leave", { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true, credentials: "include" }).catch(() => {});
+        }
+      } catch {}
+    };
+    const onHide = () => { if (document.visibilityState === "hidden") fire(); };
+    window.addEventListener("pagehide", fire);
+    document.addEventListener("visibilitychange", onHide);
+    return () => {
+      window.removeEventListener("pagehide", fire);
+      document.removeEventListener("visibilitychange", onHide);
+      fire(); // SPA 路徑切換時也回報上一頁停留
+    };
+  }, [pathname]);
+
   return null;
 }

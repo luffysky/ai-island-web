@@ -281,7 +281,12 @@
 - [ ] 7.14 AI 草稿語意抽查（手動 QA）
 - [ ] 7.15 **清 dead endpoint / 補半成品 UI**（0721 接線掃描：無「UI 沒後端」，但有 ~14 支「後端沒前端」）
   - [ ] 7.15.1 冗餘可刪（有 sibling 取代）：`api/me/checkout`（用 `payments/checkout`）、`api/store/inventory`、`api/review/list`、`api/me/learning-plan`(base)、`api/creator-island/assets/[id]/lineage`
-  - [ ] 7.15.2 真孤兒·多半是半成品 UI 要嘛接前端要嘛移除：`api/creator-island/{fruit, ai/runs, community/follow, series/[id] PATCH/DELETE}`、`api/me/recommended-chapters`、`api/forum/user/[userId]`、`api/ai/route-suggest`、`api/agent/threads`、`api/notify-leave`
+  - [~] 7.15.2 真孤兒接前端（subagent 盤點：6 可接、3 已另有 UI 免接）：
+    - [x] ~~notify-leave（VisitTracker 加 pagehide sendBeacon 回報停留）~~ ✅ 0722
+    - [x] ~~community/follow（SocialFeed PostCard 加追蹤鈕）~~ ✅ 0722
+    - [x] ~~series/[id] PATCH/DELETE（EngineWorkspace 加系列改名/刪除）~~ ✅ 0722
+    - [ ] fruit ledger（PayoutClient 果實收支明細）、agent/threads（AgentClient 歷史對話側欄）、ai/runs（GrowthClient AI 用量成本）續接
+    - ＊已另有 UI 免接（redundant wrapper 可留可刪）：recommended-chapters（/me RecommendedChapters 已 server 直呼）、forum/user/[userId]（頁面已存在且 3 處連入）、ai/route-suggest（非強制 advisory、無人呼叫）
     - [ ] 7.15.2.1 優先：`creator-island/community/follow`（追蹤鈕似乎沒接）、`ai/runs`（前端缺、= §8.5）、`me/recommended-chapters`（= §9.2 推薦）
 
 ---
