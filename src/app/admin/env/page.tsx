@@ -361,17 +361,21 @@ function Section({ group, children }: { group: EnvGroup; children: React.ReactNo
 
 function Row({ entry, children }: { entry: EnvEntry; children: React.ReactNode }) {
   return (
-    <li className="px-4 py-3 flex items-start gap-3 flex-wrap">
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <code className="font-mono text-xs text-accent break-all">{entry.key}</code>
-          {entry.required && (
-            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-warning/20 text-warning font-bold">必要</span>
-          )}
-        </div>
+    <li className="px-4 py-3 flex items-start justify-between gap-4">
+      {/* 左：變數名 + 說明 */}
+      <div className="min-w-0 flex-1">
+        <code className="font-mono text-xs text-accent break-all">{entry.key}</code>
         {entry.description && <div className="text-[11px] text-fg-muted mt-0.5 leading-snug">{entry.description}</div>}
       </div>
-      <div className="flex-shrink-0">{children}</div>
+      {/* 右：必不必要 + 有沒有設定（靠右直排） */}
+      <div className="shrink-0 flex flex-col items-end gap-1.5 text-right max-w-[48%]">
+        {entry.required ? (
+          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-warning/20 text-warning font-bold">必要</span>
+        ) : (
+          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-fg-muted/10 text-fg-muted">選填</span>
+        )}
+        <div className="flex flex-wrap items-center justify-end gap-1">{children}</div>
+      </div>
     </li>
   );
 }
