@@ -292,3 +292,20 @@ ch49 + ch50（AI Agent / n8n 兩大旗艦章）完成。**教具庫新增 2 個�
 - **詞條頁 metadata**：`generateMetadata` 補 `openGraph` + `twitter`（summary_large_image）指向 OG 圖 → 貼到 LINE/FB/X/Threads 有漂亮預覽卡。
 - **分享按鈕**：詞條標題列右上加 `ShareButton`（既有元件：手機原生分享 + 桌機 LINE/X/FB/複製連結 modal）。
 - **收尾**：`tsc` ✅ · `next build` exit 0（92 頁、/api/og/dict + /dictionary/[slug] 編出）✅；RWD（標題列 flex justify-between、按鈕 shrink-0）。
+
+---
+
+## 📖 辭典 seed-41：DB/Git/K8s/LLM/分散式系統 33 條（0721·手寫零 API）
+
+承林董「辭典優先」+ todo §4.2（→5000）。辭典已很滿（1773），先建**去重流程**再 author：cat 全 40 個 seed 抽 slug → grep 候選主題 → python 驗證無 collision 才寫。發現 DB/Git/雲原生/LLM 主幹詞多半已收，挑真正的縫隙。
+
+- **seed-41（33 條、全查過 0 衝突、欄位齊全）**：
+  - DB查詢：n-plus-1 / query-optimization / full-text-search
+  - Git：detached-head / fast-forward
+  - K8s雲原生：pod-k8s / container-orchestration / sidecar-pattern / k8s-namespace / horizontal-scaling / vertical-scaling / blue-green-deploy / rolling-update / infrastructure-as-code / ci-cd-pipeline / liveness-probe / readiness-probe
+  - LLM：top-p-sampling / semantic-search / lora-finetune / mcp-protocol / tool-calling / function-calling
+  - 分散式系統：idempotency / exponential-backoff / message-queue / pub-sub / two-phase-commit / bloom-filter / consistent-hashing / quorum / leader-election / gossip-protocol
+- 每條：plain（功能＋**何時用**）＋生活比喻 analogy ＋可跑 example ＋ related 交叉連結，difficulty 2–3。
+- **import 1806、失敗 0**；DB 實測 total=1806、新 slug 抽查 7/7 present。**辭典 1773 → 1806 / 目標 5000。**
+- CLAUDE.md 進度指標更新（續寫從 seed-42 接、附 41 批主題）。
+- 待辦：seed-41 之後跑 `translate-sync-all.mjs` 補 i18n（免費 Google、冪等）。

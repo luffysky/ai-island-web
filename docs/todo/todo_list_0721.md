@@ -193,11 +193,12 @@
 
 ### 4.2 程式辭典（→ 5000）
 - [x] ~~seed 36–40：Python 模組 128 個（stdlib+外部）→ 1773 條~~ ✅ 0721
-- [ ] 4.2.1 續寫到 5000（現 **1773**，從 `dictionary-seed-41.json` 接）
-  - [ ] 4.2.1.1 ⚠️ 續寫前先跑 slug 去重掃描（辭典已很滿；「工程師黑話」早期 seed 已收很多、seed-41 首版 31 條撞名 27 條已廢）
-  - [ ] 4.2.1.2 挑真正沒收的主題（可考慮：資料庫術語、Git 進階、雲原生/K8s 術語、前端框架黑話、AI/LLM 名詞）
-  - [ ] 4.2.1.3 每批 author → `node scripts/import-dictionary.mjs` → commit
-  - [ ] 4.2.1.4 新批次跑 `node scripts/translate-sync-all.mjs` 補 i18n（免費 Google、冪等）
+- [x] ~~seed 41：DB查詢/Git/K8s雲原生/LLM/分散式系統 33 條 → **1806 條**（import 1806、失敗 0；33 條全查過無 slug 衝突）~~ ✅ 0721
+- [ ] 4.2.1 續寫到 5000（現 **1806**，從 `dictionary-seed-42.json` 接）
+  - [x] ~~4.2.1.1 ⚠️ 續寫前先跑 slug 去重掃描~~ ✅（已建流程：cat 全 seed 抽 slug → grep 候選 → python 驗證無 collision 才 author）
+  - [x] ~~4.2.1.2 挑真正沒收的主題~~ ✅ seed-41 已用「資料庫/Git/K8s/LLM/分散式」；下批可挑前端框架黑話、TS 型別、測試、資安、網路協定
+  - [ ] 4.2.1.3 每批 author → `node scripts/import-dictionary.mjs` → commit（持續）
+  - [ ] 4.2.1.4 新批次跑 `node scripts/translate-sync-all.mjs` 補 i18n（免費 Google、冪等）← seed-41 待補譯
 - [ ] 4.2.2 語言島（英/日辭典，沿用 `domain='english'|'japanese'`）
 
 ### 4.3 其他內容

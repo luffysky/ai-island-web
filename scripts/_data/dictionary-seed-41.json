@@ -1,0 +1,605 @@
+[
+  {
+    "slug": "n-plus-1",
+    "term": "N+1 query",
+    "zh_name": "N+1 查詢問題",
+    "category": "concept",
+    "langs": [
+      "sql"
+    ],
+    "difficulty": 2,
+    "plain": "一個常見的效能地雷：先查一次拿到 N 筆資料，再對每一筆各發一次查詢（總共 1+N 次）。資料一多就慢到爆。用 JOIN 或「預先載入（eager load / IN 查詢）」一次撈完解決。什麼時候會遇到：ORM 裡對每個物件的關聯欄位存取時最常中招。",
+    "analogy": "去市場買 10 樣菜，卻分 10 趟、一次只買一樣走回家——該一次列清單一趟買完。",
+    "example": "-- 壞：先查作者、再對每個作者各查一次書\n-- 好：JOIN 一次撈\nSELECT a.*, b.* FROM authors a JOIN books b ON b.author_id = a.id;",
+    "related": [
+      "orm",
+      "join",
+      "query-optimization",
+      "eager-loading"
+    ]
+  },
+  {
+    "slug": "query-optimization",
+    "term": "query optimization",
+    "zh_name": "查詢優化",
+    "category": "concept",
+    "langs": [
+      "sql"
+    ],
+    "difficulty": 3,
+    "plain": "讓 SQL 查詢跑更快的功夫：加對索引、少撈欄位（別 SELECT *）、避免 N+1、看執行計畫（EXPLAIN）找全表掃描。什麼時候用：某頁面/API 變慢，通常先從最慢的查詢下手。",
+    "analogy": "找書：有目錄（索引）就翻到頁碼直接拿，沒目錄只能整櫃一本本翻。",
+    "example": "EXPLAIN ANALYZE SELECT * FROM orders WHERE user_id = 42;\n-- 看有沒有走 index、是不是 Seq Scan 全表掃",
+    "related": [
+      "index",
+      "n-plus-1",
+      "full-text-search",
+      "database"
+    ]
+  },
+  {
+    "slug": "full-text-search",
+    "term": "full-text search",
+    "zh_name": "全文搜尋",
+    "category": "concept",
+    "langs": [
+      "sql"
+    ],
+    "difficulty": 3,
+    "plain": "在大量文字裡「依關鍵字找內容」的搜尋，比 LIKE '%字%' 快又聰明（懂分詞、相關度排序）。什麼時候用：站內文章/商品搜尋。Postgres 有內建（tsvector），大規模常用 Elasticsearch / Meilisearch。",
+    "analogy": "書後面的「索引頁」：直接查詞condition跳到相關段落，不用整本讀。",
+    "example": "-- Postgres 內建全文搜尋\nSELECT * FROM posts\nWHERE to_tsvector('simple', body) @@ to_tsquery('資料庫');",
+    "related": [
+      "index",
+      "semantic-search",
+      "query-optimization"
+    ]
+  },
+  {
+    "slug": "detached-head",
+    "term": "detached HEAD",
+    "zh_name": "分離的 HEAD",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "Git 裡 HEAD 沒指在某個分支、而是直接指在某個 commit 的狀態。此時做的新 commit 不屬於任何分支，切走就「找不到」了。什麼時候遇到：checkout 一個 commit hash 或 tag 時。要保留就先開分支。",
+    "analogy": "站在半空中沒踩在任何一階樓梯上——想留下腳印得先踏回一階（開分支）。",
+    "example": "git checkout a1b2c3d      # 進入 detached HEAD\ngit switch -c fix-branch  # 想保留就開一條分支接住",
+    "related": [
+      "commit",
+      "branch",
+      "git-reflog"
+    ]
+  },
+  {
+    "slug": "fast-forward",
+    "term": "fast-forward merge",
+    "zh_name": "快轉合併",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "合併時如果目標分支從分叉點後「沒有新 commit」，Git 直接把指標往前挪、不產生合併 commit，歷史保持直線。什麼時候用：合併還沒被別人動過的功能分支。想強制留合併紀錄用 --no-ff。",
+    "analogy": "你去買東西這段時間家裡沒任何變化，回來直接接上、不用「對帳」。",
+    "example": "git merge feature          # 可 fast-forward 時直接快轉\ngit merge --no-ff feature  # 強制留一個 merge commit",
+    "related": [
+      "merge",
+      "git-rebase",
+      "commit"
+    ]
+  },
+  {
+    "slug": "pod-k8s",
+    "term": "Pod (Kubernetes)",
+    "zh_name": "Pod",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "Kubernetes 裡「最小的部署單位」：包住一個（或幾個緊密相關的）容器，共享網路和儲存。什麼時候用：在 K8s 上，你部署的其實是 Pod，不是直接跑容器；Pod 掛了會被自動重建。",
+    "analogy": "一個貨櫃屋單位：裡面可能不只一台機器，但一起搬、一起管。",
+    "example": "apiVersion: v1\nkind: Pod\nmetadata: { name: web }\nspec:\n  containers:\n    - { name: app, image: nginx }",
+    "related": [
+      "kubernetes",
+      "container",
+      "k8s-namespace"
+    ]
+  },
+  {
+    "slug": "container-orchestration",
+    "term": "container orchestration",
+    "zh_name": "容器編排",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "自動管理「一大堆容器」的排程、擴縮、健康檢查、網路、更新——不用人工一台台顧。什麼時候用：容器多到手動管不動時（代表工具＝Kubernetes、Nomad）。",
+    "analogy": "大型餐廳的排班系統：自動安排幾個廚師上工、誰請假就補人、忙時加開。",
+    "example": "# Kubernetes 就是最常見的容器編排系統\nkubectl scale deployment web --replicas=5",
+    "related": [
+      "kubernetes",
+      "pod-k8s",
+      "autoscaling",
+      "container"
+    ]
+  },
+  {
+    "slug": "sidecar-pattern",
+    "term": "sidecar pattern",
+    "zh_name": "邊車模式",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "在主容器旁邊「附掛一個小容器」幫它做雜事（收 log、量測、代理流量），不改主程式。什麼時候用：想加共用功能又不想動業務程式；service mesh 的 proxy 就是 sidecar。",
+    "analogy": "摩托車旁邊掛的邊車：主車照跑，額外功能掛在旁邊一起走。",
+    "example": "# 一個 Pod 內：app 主容器 + log-collector 邊車容器\n# 兩者共享網路與磁碟",
+    "related": [
+      "pod-k8s",
+      "service-mesh",
+      "reverse-proxy"
+    ]
+  },
+  {
+    "slug": "k8s-namespace",
+    "term": "Namespace (Kubernetes)",
+    "zh_name": "命名空間（K8s）",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "在同一個叢集裡「切出多個彼此隔離的虛擬空間」，讓不同團隊/環境的資源分開、名稱不打架。什麼時候用：dev/staging/prod 或多團隊共用一個叢集時。",
+    "analogy": "同一棟辦公大樓分成不同樓層公司：地址同棟、彼此不干擾。",
+    "example": "kubectl create namespace staging\nkubectl get pods -n staging",
+    "related": [
+      "kubernetes",
+      "pod-k8s",
+      "environment-variable"
+    ]
+  },
+  {
+    "slug": "horizontal-scaling",
+    "term": "horizontal scaling",
+    "zh_name": "水平擴展",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "靠「加更多台機器」來扛更多流量（scale out）。什麼時候用：無狀態服務、要高可用時的首選；配 load balancer 分流。相對於垂直擴展。",
+    "analogy": "客人變多就多開幾張桌子、多請幾個服務生，而不是把一張桌子做大。",
+    "example": "kubectl scale deployment web --replicas=10  # 從 1 台變 10 台",
+    "related": [
+      "vertical-scaling",
+      "load-balancer",
+      "autoscaling"
+    ]
+  },
+  {
+    "slug": "vertical-scaling",
+    "term": "vertical scaling",
+    "zh_name": "垂直擴展",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "靠「把單一台機器升級（更多 CPU/RAM）」來扛更多負載（scale up）。什麼時候用：有狀態、難拆的服務（如單體資料庫）。缺點：有上限、升級常要重啟。",
+    "analogy": "把一張桌子換成更大的——簡單，但一張桌子總有極限。",
+    "example": "# 把 DB 主機從 4 核 8G 換成 16 核 64G\n# 簡單但有天花板、且常需停機",
+    "related": [
+      "horizontal-scaling",
+      "scaling",
+      "database"
+    ]
+  },
+  {
+    "slug": "blue-green-deploy",
+    "term": "blue-green deployment",
+    "zh_name": "藍綠部署",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "同時養「藍」「綠」兩套一模一樣的環境，新版先上到閒置那套、測好再把流量整個切過去；出事就秒切回。什麼時候用：要零停機、可快速回滾的上線。",
+    "analogy": "兩間一樣的店面，新裝潢先弄好另一間，開幕當天直接換門牌，客人無感。",
+    "example": "# 綠環境部署新版 → 測 → LB 把流量從藍切到綠\n# 有問題把流量切回藍即可",
+    "related": [
+      "rolling-update",
+      "canary-deploy",
+      "deploy",
+      "load-balancer"
+    ]
+  },
+  {
+    "slug": "rolling-update",
+    "term": "rolling update",
+    "zh_name": "滾動更新",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "更新時「一批一批」替換舊實例（換掉幾台、確認健康、再換下一批），全程還有實例在服務。什麼時候用：K8s 部署新版的預設策略，追求不中斷。",
+    "analogy": "換一整排燈泡時一顆一顆換，房間始終有燈亮著、不會全黑。",
+    "example": "kubectl set image deployment/web app=web:v2\n# K8s 預設滾動更新、逐批替換 Pod",
+    "related": [
+      "blue-green-deploy",
+      "canary-deploy",
+      "readiness-probe",
+      "deploy"
+    ]
+  },
+  {
+    "slug": "infrastructure-as-code",
+    "term": "Infrastructure as Code",
+    "zh_name": "基礎設施即程式碼",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "用「程式碼/設定檔」來定義伺服器、網路、資料庫等基礎設施，版本控管、可重複建立，而不是手動點雲端主控台。什麼時候用：想讓環境可複製、可審查、少手滑（代表工具＝Terraform、Pulumi、CloudFormation）。",
+    "analogy": "蓋房子用一份可重印的藍圖，而不是每次憑記憶手工蓋。",
+    "example": "# Terraform：宣告要一台機器\nresource \"aws_instance\" \"web\" {\n  ami = \"ami-123\"; instance_type = \"t3.micro\"\n}",
+    "related": [
+      "terraform",
+      "ci-cd-pipeline",
+      "ansible",
+      "deploy"
+    ]
+  },
+  {
+    "slug": "ci-cd-pipeline",
+    "term": "CI/CD pipeline",
+    "zh_name": "CI/CD 管線",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把「檢查→測試→建置→部署」串成一條自動流水線：push 程式就自動跑，綠燈才上線。什麼時候用：想讓上線又快又不出包（工具＝GitHub Actions、GitLab CI）。",
+    "analogy": "工廠輸送帶：原料（程式）進去，經過每一關檢驗，最後成品（上線）出來。",
+    "example": "# .github/workflows/ci.yml\non: [push]\njobs:\n  test: { steps: [ {run: npm test}, {run: npm run build} ] }",
+    "related": [
+      "ci-cd",
+      "deploy",
+      "infrastructure-as-code"
+    ]
+  },
+  {
+    "slug": "liveness-probe",
+    "term": "liveness probe",
+    "zh_name": "存活探針",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "K8s 定期戳容器問「你還活著嗎？」，連續失敗就把它重啟。什麼時候用：程式可能卡死但沒退出（deadlock、無限迴圈）時，靠它自動救活。",
+    "analogy": "護理站定時巡房確認病人有沒有反應，沒反應就急救（重啟）。",
+    "example": "livenessProbe:\n  httpGet: { path: /healthz, port: 8080 }\n  periodSeconds: 10",
+    "related": [
+      "readiness-probe",
+      "health-check",
+      "pod-k8s"
+    ]
+  },
+  {
+    "slug": "readiness-probe",
+    "term": "readiness probe",
+    "zh_name": "就緒探針",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "K8s 問容器「你準備好接流量了嗎？」，沒就緒就先不把流量導進來（但不重啟）。什麼時候用：程式啟動要暖機/連 DB 時，避免還沒好就被打流量。",
+    "analogy": "餐廳開門前先確認廚房備好料才帶客人進場，不然客人白等。",
+    "example": "readinessProbe:\n  httpGet: { path: /ready, port: 8080 }\n  initialDelaySeconds: 5",
+    "related": [
+      "liveness-probe",
+      "health-check",
+      "rolling-update"
+    ]
+  },
+  {
+    "slug": "top-p-sampling",
+    "term": "top-p (nucleus) sampling",
+    "zh_name": "top-p 採樣",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "控制 LLM 輸出隨機性的旋鈕：只從「機率累積到 p（如 0.9）」的候選字裡挑下一個字，砍掉長尾亂選。什麼時候用：跟 temperature 一起調——要穩定降 p、要有創意升 p。",
+    "analogy": "點餐只從「最受歡迎、加起來占九成」的菜裡選，不點那些幾乎沒人點的怪菜。",
+    "example": "# OpenAI / Claude API\nresponse = client.chat(..., top_p=0.9, temperature=0.7)",
+    "related": [
+      "temperature-llm",
+      "llm",
+      "system-prompt"
+    ]
+  },
+  {
+    "slug": "semantic-search",
+    "term": "semantic search",
+    "zh_name": "語意搜尋",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "依「意思」而不是「字面」找資料：把查詢和文件都轉成向量（embedding），找語意最接近的。什麼時候用：關鍵字對不上但意思相近時（RAG、推薦、FAQ）。",
+    "analogy": "你問「肚子餓去哪」，它懂你要找「餐廳」，而不是死找「肚子餓」三個字。",
+    "example": "# 查詢轉向量 → 在向量庫找最近的\nhits = vector_db.search(embed(\"如何退款\"), top_k=5)",
+    "related": [
+      "embedding",
+      "vector-database",
+      "rag",
+      "cosine-similarity"
+    ]
+  },
+  {
+    "slug": "lora-finetune",
+    "term": "LoRA",
+    "zh_name": "LoRA 低秩微調",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一種「省錢省算力」的微調法：不動原模型的巨大權重，只外掛一小組可訓練的低秩矩陣。什麼時候用：想用少量資料把大模型微調成特定風格/任務，又不想全量重訓。",
+    "analogy": "不改整台車的引擎，只加裝一個小晶片就調出想要的性能。",
+    "example": "# Hugging Face PEFT\nfrom peft import LoraConfig\ncfg = LoraConfig(r=8, target_modules=[\"q_proj\",\"v_proj\"])",
+    "related": [
+      "fine-tuning",
+      "llm",
+      "quantization"
+    ]
+  },
+  {
+    "slug": "mcp-protocol",
+    "term": "MCP (Model Context Protocol)",
+    "zh_name": "模型情境協定",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一套「讓 AI 模型連到外部工具/資料源」的開放標準：用統一介面接檔案、資料庫、API，模型就能安全地讀資料、呼叫工具。什麼時候用：想給 AI agent 接上你的工具而不用每個都客製串接。",
+    "analogy": "像 USB 標準插孔：不同裝置用同一種接口，插上就能用。",
+    "example": "# MCP server 暴露工具，AI client 透過標準協定呼叫\n# 例：檔案讀取、DB 查詢、Web 搜尋",
+    "related": [
+      "tool-calling",
+      "agent-ai",
+      "function-calling"
+    ]
+  },
+  {
+    "slug": "tool-calling",
+    "term": "tool calling",
+    "zh_name": "工具呼叫",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "讓 LLM 不只出文字、還能「決定要呼叫哪個外部工具、帶什麼參數」（查天氣、算數、查 DB），拿到結果再繼續。什麼時候用：要 AI 做真事而不只聊天（agent 的核心能力）。",
+    "analogy": "廚師不會的就打電話叫外送/請專人——自己判斷該找誰、給什麼需求。",
+    "example": "# 模型回傳「要呼叫 get_weather(city='台北')」\n# 程式執行後把結果餵回、模型再作答",
+    "related": [
+      "function-calling",
+      "mcp-protocol",
+      "agent-ai"
+    ]
+  },
+  {
+    "slug": "function-calling",
+    "term": "function calling",
+    "zh_name": "函式呼叫（LLM）",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "tool calling 的具體形式：你用 JSON schema 描述有哪些函式可用，模型會回傳「要呼叫哪個函式＋結構化參數」讓你的程式執行。什麼時候用：要把 LLM 的自由文字接到確定的程式邏輯時。",
+    "analogy": "點餐單有固定欄位（品項、數量、備註），客人照格子填，廚房才好照做。",
+    "example": "tools = [{\"name\": \"get_weather\",\n  \"parameters\": {\"city\": \"string\"}}]\n# 模型回：{\"name\":\"get_weather\",\"arguments\":{\"city\":\"台北\"}}",
+    "related": [
+      "tool-calling",
+      "mcp-protocol",
+      "json-schema"
+    ]
+  },
+  {
+    "slug": "idempotency",
+    "term": "idempotency",
+    "zh_name": "冪等性",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "同一個操作「做一次和做多次結果一樣」的性質。什麼時候用：付款、送出訂單這種怕重複的操作——用 idempotency key，網路重試也不會重複扣款。",
+    "analogy": "電梯按鈕按一次和按五次都是同一部電梯來，不會來五部。",
+    "example": "# 帶 idempotency key，重送同一 key 不重複建立\nPOST /charges  Idempotency-Key: order-8891",
+    "related": [
+      "rate-limiting",
+      "exponential-backoff",
+      "message-queue"
+    ]
+  },
+  {
+    "slug": "exponential-backoff",
+    "term": "exponential backoff",
+    "zh_name": "指數退避",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "重試失敗操作時「每次等待時間翻倍」（1s、2s、4s、8s…），常再加隨機抖動避免大家同時重試。什麼時候用：呼叫外部 API 遇到 429/暫時錯誤時的正確重試姿勢。",
+    "analogy": "打電話佔線，不要每秒狂撥（越撥越塞），而是隔越來越久再試。",
+    "example": "delay = base * (2 ** attempt) + random_jitter\ntime.sleep(delay)",
+    "related": [
+      "rate-limiting",
+      "circuit-breaker",
+      "idempotency"
+    ]
+  },
+  {
+    "slug": "message-queue",
+    "term": "message queue",
+    "zh_name": "訊息佇列",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "服務之間「非同步傳訊」的中介：生產者把訊息丟進佇列，消費者慢慢拿來處理，兩邊不用同時在線。什麼時候用：削峰、解耦、背景工作（工具＝RabbitMQ、Kafka、SQS）。",
+    "analogy": "餐廳的出單機：外場貼單、內場照順序做，兩邊不用面對面等。",
+    "example": "# 生產者\nqueue.publish(\"emails\", {\"to\": \"a@b.c\"})\n# 消費者另一支程式慢慢拿來寄",
+    "related": [
+      "pub-sub",
+      "dead-letter-queue",
+      "backpressure",
+      "celery-module"
+    ]
+  },
+  {
+    "slug": "pub-sub",
+    "term": "publish/subscribe",
+    "zh_name": "發布訂閱",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一種訊息模式：發布者把訊息丟到「主題（topic）」，所有訂閱該主題的人都收到，彼此不知道對方存在。什麼時候用：一個事件要通知多個下游（如「訂單成立」→ 出貨＋寄信＋積分）。",
+    "analogy": "廣播電台：電台播一次，所有轉到這台的收音機都聽得到。",
+    "example": "broker.publish(\"order.created\", order)\n# 出貨服務、通知服務、積分服務各自訂閱處理",
+    "related": [
+      "message-queue",
+      "event-driven",
+      "dead-letter-queue"
+    ]
+  },
+  {
+    "slug": "two-phase-commit",
+    "term": "two-phase commit (2PC)",
+    "zh_name": "兩階段提交",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "跨多個資料庫/服務要「全部成功或全部回滾」時的協調法：先問大家「準備好了嗎（prepare）」，全 yes 才叫大家「提交（commit）」。什麼時候用：強一致的分散式交易。缺點：慢、協調者掛了會卡。",
+    "analogy": "婚禮宣誓：先各問雙方「你願意嗎」，兩邊都願意才一起說「我願意」正式成立。",
+    "example": "# Phase 1: coordinator → 各節點 prepare?\n# Phase 2: 全 yes → commit；有 no → rollback",
+    "related": [
+      "transaction",
+      "saga-pattern",
+      "eventual-consistency"
+    ]
+  },
+  {
+    "slug": "bloom-filter",
+    "term": "Bloom filter",
+    "zh_name": "布隆過濾器",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "超省記憶體的機率型資料結構，快速判斷「這個東西『一定不在』或『可能在』集合裡」。會有偽陽性、不會偽陰性。什麼時候用：先擋掉大量不存在的查詢（如快取穿透、爬蟲去重）。",
+    "analogy": "門口保全的黑名單速查：說「不在名單」一定對；說「可能在」再進去細查。",
+    "example": "bf = BloomFilter(capacity=100000)\nbf.add(\"user123\")\n\"user999\" in bf   # False = 一定沒有",
+    "related": [
+      "cache",
+      "hashing",
+      "consistent-hashing"
+    ]
+  },
+  {
+    "slug": "consistent-hashing",
+    "term": "consistent hashing",
+    "zh_name": "一致性雜湊",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把資料分散到多台節點的聰明做法：增減節點時「只有一小部分資料要搬」，而不是全部重新分配。什麼時候用：分散式快取/資料庫的分片、負載平衡（如 Redis Cluster、CDN）。",
+    "analogy": "把客人依姓氏排到不同櫃檯，新增一個櫃檯時只挪一小段字母，不用全部重排。",
+    "example": "# 節點與 key 都雜湊到一個環上\n# key 順時針找到的第一個節點就是歸屬",
+    "related": [
+      "sharding",
+      "hashing",
+      "load-balancer",
+      "bloom-filter"
+    ]
+  },
+  {
+    "slug": "quorum",
+    "term": "quorum",
+    "zh_name": "法定數量",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "分散式系統做決定時「要多少票才算數」的門檻（通常過半）。什麼時候用：多副本讀寫一致性——寫要 W 票、讀要 R 票，W+R > N 就能讀到最新。",
+    "analogy": "董事會表決要過半數出席同意才通過，不是一個人說了算。",
+    "example": "# N=3 副本、W=2、R=2 → W+R>N，保證讀到最新\n# 常見於 Raft / Dynamo 類系統",
+    "related": [
+      "leader-election",
+      "eventual-consistency",
+      "cap-theorem"
+    ]
+  },
+  {
+    "slug": "leader-election",
+    "term": "leader election",
+    "zh_name": "領導者選舉",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一群節點自動「選出一個帶頭的」來負責協調，帶頭的掛了就重選。什麼時候用：需要單一協調者又要高可用時（如 Raft、ZooKeeper、K8s 控制平面）。",
+    "analogy": "小組推派一位組長發言，組長請假就臨時再推一位，事情不會停擺。",
+    "example": "# Raft：節點沒收到 leader 心跳就發起選舉\n# 拿到多數票（quorum）者當新 leader",
+    "related": [
+      "quorum",
+      "gossip-protocol",
+      "eventual-consistency"
+    ]
+  },
+  {
+    "slug": "gossip-protocol",
+    "term": "gossip protocol",
+    "zh_name": "八卦協定",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "節點之間「像傳八卦一樣」隨機把資訊傳給幾個鄰居，很快就擴散到全體，不需要中央協調。什麼時候用：大規模叢集的成員狀態/故障偵測傳播（如 Cassandra、Consul）。",
+    "analogy": "辦公室傳八卦：不用開全體大會，幾個人隨口一傳，全公司很快都知道。",
+    "example": "# 每個節點週期性隨機挑幾個鄰居\n# 交換彼此已知的節點狀態，最終全體一致",
+    "related": [
+      "leader-election",
+      "eventual-consistency",
+      "quorum"
+    ]
+  }
+]
