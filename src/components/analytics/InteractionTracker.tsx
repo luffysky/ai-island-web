@@ -50,6 +50,7 @@ function InteractionTrackerInner() {
   const startedAt = useRef<number>(Date.now());
   const maxScroll = useRef<number>(0);
   const districtRef = useRef<string | null>(null);
+  const lastActivity = useRef<number>(Date.now()); // 最後一次真人互動時間（idle 判斷用）
 
   useEffect(() => {
     const query = searchParams?.toString();
@@ -105,16 +106,30 @@ function InteractionTrackerInner() {
     };
 
     send("page_view");
+    lastActivity.current = Date.now();
 
-    const heartbeat = window.setInterval(() => send("heartbeat"), 15_000);
+    // 「在線」＝真的在用，不是「開著分頁」：心跳只在「分頁可見 + 近期有真人互動」時才送。
+    // 不然公司電腦把分頁開著沒關、背景每 15 秒還在打 → 後台一直顯示「幾秒前還在用」。
+    const IDLE_MS = 90_000; // 逾 90 秒沒互動 → 視為離開、停止心跳（last_active_at 就不再被推新）
+    const heartbeat = window.setInterval(() => {
+      if (document.visibilityState === "visible" && Date.now() - lastActivity.current < IDLE_MS) {
+        send("heartbeat");
+      }
+    }, 15_000);
+
+    const bump = () => { lastActivity.current = Date.now(); };
     const onScroll = () => {
       maxScroll.current = Math.max(maxScroll.current, maxScrollPct());
+      bump();
     };
     const onHidden = () => {
       if (document.visibilityState === "hidden") send("page_exit", "hidden", true);
+      else bump(); // 切回前景＝回來用了
     };
     const onBeforeUnload = () => send("page_exit", "unload", true);
 
+    const activityEvents: Array<keyof WindowEventMap> = ["pointerdown", "keydown", "mousemove", "touchstart"];
+    activityEvents.forEach((ev) => window.addEventListener(ev, bump, { passive: true }));
     window.addEventListener("scroll", onScroll, { passive: true });
     document.addEventListener("visibilitychange", onHidden);
     window.addEventListener("beforeunload", onBeforeUnload);
@@ -122,6 +137,7 @@ function InteractionTrackerInner() {
     return () => {
       send("page_exit", "route_change", true);
       window.clearInterval(heartbeat);
+      activityEvents.forEach((ev) => window.removeEventListener(ev, bump));
       window.removeEventListener("scroll", onScroll);
       document.removeEventListener("visibilitychange", onHidden);
       window.removeEventListener("beforeunload", onBeforeUnload);
