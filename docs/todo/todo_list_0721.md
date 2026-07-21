@@ -83,13 +83,14 @@
 - [ ] 3.5 收尾檢查
 
 ### 4. Agent 補完 + 生活助理範本
-- [ ] 4.1 **一鍵生活助理範本庫** ⬜ 可先做·無依賴（把 Agent 從工程師工具轉成普通人生活助理的核心）
-  - [ ] 4.1.1 範本資料 `src/lib/agent/task-templates.ts`（分類：生活/工作/財務/學習/家庭）
-    - [ ] 4.1.1.1 範本項（追蹤降價通知/每天整理信箱重點/行程規劃/旅遊規劃/查政府補助/比價/健康問答/育兒問答/翻譯潤稿/每日新聞摘要…）
-      - [ ] 4.1.1.1.1 每範本欄位：emoji / title / hint / goal 模板 / 是否需裝置 / 是否需 OAuth
-  - [ ] 4.1.2 `OfficeClient.tsx` 的 `QUICK_TASKS`（現 7 個偏工程）換成引用範本庫、不重複定義
-  - [ ] 4.1.3 在普通人找得到處露出（`/agent` 首屏範本庫 or 獨立 `/agent/templates`、分類 tab）
-  - [ ] 4.1.4 RWD + 亮暗
+- [x] ~~4.1 **一鍵生活助理範本庫** ✅ 已上線（0721）~~（把 Agent 從工程師工具轉成普通人生活助理）
+  - [x] ~~4.1.1 範本資料 `src/lib/agent/task-templates.ts`（5 分類：生活/工作/財務/學習/家庭、共 31 範本、4 支測試）~~ ✅
+    - [x] ~~4.1.1.1 範本項（每日新聞/旅遊/菜單/送禮/讀網頁/翻譯潤稿/健康QA/查資料/寫文案/email/會議記錄/比較決策/簡報/整理檔案/信箱/查補助/比價/追蹤降價/預算/合約白話/解釋術語/學習計畫/推薦課/出題/長文摘要/育兒QA/行程/長照資源/親子活動/加行事曆）~~ ✅
+      - [x] ~~4.1.1.1.1 每範本欄位：id/emoji/title/hint/goal 模板/category/needsDevice/needsOAuth/popular~~ ✅
+  - [x] ~~4.1.2 `OfficeClient.tsx` 的 `QUICK_TASKS` 改引用 `popularTemplates()`、不重複定義；加 needsOAuth「即將開放」badge + 「看全部範本」連結~~ ✅
+  - [x] ~~4.1.3 獨立 `/agent/templates` 頁（全部/生活/工作/財務/學習/家庭 分類 tab、卡片點擊 → `/agent?goal=` 預填）~~ ✅
+  - [x] ~~4.1.4 RWD + 亮暗~~ ✅
+  - ＊needsOAuth 範本（讀信箱/加行事曆）先標「即將開放」不誤導；OAuth 接完（§4.2）再解鎖。
 - [ ] 4.2 外部工具 OAuth 🔴（需林董各平台註冊 app）：Gmail/Calendar/Drive/GitHub/Notion 一鍵授權（`/settings/connections` 已有手動連結骨架、缺 OAuth）
 - [ ] 4.3 L2 程式沙盒 🔴（需 Zeabur `ENABLE_SERVER_BROWSER=1`）：跑 agent 產的 code（isolated-vm/容器、限時間/記憶體/網路）
 - [ ] 4.4 成本 / ROI Dashboard ⬜（per-user 用量記帳、省了多少、效率排行）

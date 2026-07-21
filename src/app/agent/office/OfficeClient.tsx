@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Bot, Laptop, LaptopMinimal, ArrowRight, Store, ChevronLeft, Sparkles, CheckCircle2, Loader2, Clock, XCircle, CalendarClock, Plus, Trash2, Power, ShieldAlert, Check, X } from "lucide-react";
 import { describeSchedule, type Frequency } from "@/lib/agent/schedule";
+import { popularTemplates } from "@/lib/agent/task-templates";
 
 interface SkillItem { id: string; name: string; description?: string; emoji: string; category: string; is_builtin: boolean; installed: boolean; usage?: { used: number; succeeded: number }; }
 interface DeviceItem { id: string; name: string; platform: string; online: boolean; last_seen_at?: string | null; }
@@ -22,16 +23,9 @@ const STATUS: Record<string, { label: string; cls: string; Icon: any }> = {
 };
 
 // 熱門任務（對標 Genspark「熱門任務」）——用預填、讓使用者看過再送出，不自動燒 API。
-// 需電腦的任務（本機檔案）標 needsDevice。
-const QUICK_TASKS: { emoji: string; title: string; hint: string; goal: string; needsDevice?: boolean }[] = [
-  { emoji: "📚", title: "查資料做摘要", hint: "讀多個來源、白話摘要附出處", goal: "幫我查「（在這裡填主題）」的最新重點，讀 2–3 個來源後用白話摘要，並附上出處連結。" },
-  { emoji: "🔍", title: "找機會 / 比賽 / 補助", hint: "列名稱、截止日、獎金、來源", goal: "幫我找適合我的免費競賽或補助，列出名稱、截止日、獎金和來源連結，優先近期截止的。" },
-  { emoji: "✍️", title: "寫貼文 / 文案", hint: "口語有 hook、附標籤", goal: "幫我把「（在這裡填主題）」寫成一則社群貼文草稿，口語、開頭有 hook，最後附 3 個標籤。（先給我看過再決定要不要發）" },
-  { emoji: "📖", title: "解釋程式術語", hint: "白話＋生活比喻＋小範例", goal: "用白話加一個生活比喻解釋「（在這裡填術語）」，並給一個超簡單的小範例。" },
-  { emoji: "🌐", title: "讀網頁重點", hint: "抓一個網址整理成重點", goal: "抓（在這裡貼上網址）的主要內容，整理成 5 個重點給我。" },
-  { emoji: "🎓", title: "找適合我的課", hint: "依你的程度推薦下一步", goal: "根據我的學習程度，推薦我接下來該學哪幾節課，並簡短說明每一節為什麼適合我。" },
-  { emoji: "🗂️", title: "整理本機檔案", hint: "先列清單、不直接動手", goal: "幫我看（在這裡填資料夾路徑）裡的檔案，列出可以整理或刪除的清單。先別動手，列給我看再說。", needsDevice: true },
-];
+// 資料來源＝生活助理範本庫（`@/lib/agent/task-templates`），office 只取 popular 子集、不重複定義。
+// 全部範本（分類 tab）在 /agent/templates。needsDevice=需本機電腦、needsOAuth=需連外部帳號（即將開放）。
+const QUICK_TASKS = popularTemplates();
 
 function isToday(iso: string) {
   const d = new Date(iso); const n = new Date();
@@ -288,16 +282,23 @@ export function OfficeClient() {
 
       {/* 熱門任務 */}
       <section className="mb-7">
-        <h2 className="text-sm font-semibold mb-2.5 flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-violet-500" /> 熱門任務 <span className="text-[11px] font-normal text-black/40 dark:text-white/40">· 點一下＝預填指令，看過再送出</span></h2>
+        <div className="flex items-center justify-between mb-2.5">
+          <h2 className="text-sm font-semibold flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-violet-500" /> 熱門任務 <span className="text-[11px] font-normal text-black/40 dark:text-white/40">· 點一下＝預填指令，看過再送出</span></h2>
+          <Link href={"/agent/templates" as any} className="inline-flex items-center gap-1 text-[11px] text-violet-500 hover:underline shrink-0">看全部範本 <ArrowRight className="w-3.5 h-3.5" /></Link>
+        </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
           {QUICK_TASKS.map((q) => {
-            const disabled = q.needsDevice && !onlineDevice;
+            const deviceBlocked = q.needsDevice && !onlineDevice;
+            const disabled = deviceBlocked || q.needsOAuth;
             const inner = (
               <>
                 <div className="flex items-start gap-2.5">
                   <span className="text-2xl leading-none">{q.emoji}</span>
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium flex items-center gap-1.5">{q.title}{q.needsDevice && <span className="text-[9px] px-1 py-0.5 rounded bg-amber-500/15 text-amber-600 dark:text-amber-400">需電腦</span>}</div>
+                    <div className="text-sm font-medium flex items-center gap-1.5">{q.title}
+                      {q.needsDevice && <span className="text-[9px] px-1 py-0.5 rounded bg-amber-500/15 text-amber-600 dark:text-amber-400">需電腦</span>}
+                      {q.needsOAuth && <span className="text-[9px] px-1 py-0.5 rounded bg-sky-500/15 text-sky-600 dark:text-sky-400">即將開放</span>}
+                    </div>
                     <div className="text-[11px] text-black/50 dark:text-white/50 mt-0.5">{q.hint}</div>
                   </div>
                   {!disabled && <ArrowRight className="w-4 h-4 text-black/25 dark:text-white/25 shrink-0 mt-0.5" />}
@@ -306,13 +307,13 @@ export function OfficeClient() {
             );
             if (disabled) {
               return (
-                <div key={q.title} title="先連結你的電腦（回下令列 → 連結電腦）" className="rounded-xl border border-black/10 dark:border-white/10 p-3 opacity-50 cursor-not-allowed">
+                <div key={q.id} title={q.needsOAuth ? "需連結外部帳號（Gmail / 行事曆），即將開放" : "先連結你的電腦（回下令列 → 連結電腦）"} className="rounded-xl border border-black/10 dark:border-white/10 p-3 opacity-50 cursor-not-allowed">
                   {inner}
                 </div>
               );
             }
             return (
-              <Link key={q.title} href={`/agent?goal=${encodeURIComponent(q.goal)}` as any} className="rounded-xl border border-black/10 dark:border-white/10 p-3 hover:border-violet-400 dark:hover:border-violet-500 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition">
+              <Link key={q.id} href={`/agent?goal=${encodeURIComponent(q.goal)}` as any} className="rounded-xl border border-black/10 dark:border-white/10 p-3 hover:border-violet-400 dark:hover:border-violet-500 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition">
                 {inner}
               </Link>
             );
