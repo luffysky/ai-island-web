@@ -2485,5 +2485,245 @@
     "reactLove": "Love",
     "reactCelebrate": "Celebrate",
     "lessonPrompt": "How was this lesson?"
+  },
+  "fortune": {
+    "daily": {
+      "loading": "Divining your fortune today...",
+      "unavailable": "Luck is not available for now, please try again later.",
+      "refresh": "rearrange",
+      "title": "{zodiac} · Today’s fortune",
+      "love": "love",
+      "career": "business",
+      "wealth": "fortune",
+      "luckyColor": "lucky color",
+      "luckyNumber": "lucky number",
+      "copied": "Copied",
+      "share": "Share today's fortune",
+      "enableLinePush": "Start daily LINE push",
+      "disclaimer": "The fortune is for entertainment reference only, to accompany you every day, and does not provide medical/investment/legal advice.",
+      "scoreTitle": "Today’s comprehensive score {score}",
+      "shareTitle": "{emoji} {zodiac} {date} Today’s fortune",
+      "shareOverall": "Overall:{overall}",
+      "shareLucky": "Lucky color {color}｜Lucky number {number}",
+      "shareFrom": "— From AI Island Daily Fortune ai-island-web.snowrealm.pet"
+    },
+    "form": {
+      "title": "daily fortune",
+      "subtitle": "Fill in your birthday once and we will predict your fortune every day.",
+      "birthday": "Birthday",
+      "year": "Year",
+      "month": "moon",
+      "day": "day",
+      "monthOption": "{m} months",
+      "dayOption": "{d} days",
+      "birthTime": "time of birth",
+      "birthTimeHint": "Optional/for horoscopes",
+      "birthTimeNone": "Don't know/don't fill in",
+      "calendar": "farewell",
+      "solar": "National calendar",
+      "lunar": "lunar calendar",
+      "gender": "gender",
+      "genderHint": "Optional",
+      "male": "male",
+      "female": "female",
+      "other": "other",
+      "errIncomplete": "Please select the year, month and day of birthday completely",
+      "errSave": "Save failed, try again",
+      "casting": "Divination in progress…",
+      "submit": "Look at today’s fortune",
+      "footer": "Fill in the birthday and you will get the daily fortune of Western zodiac signs; fill in the time again and the horoscope will be more complete.",
+      "shichen": {
+        "zi": "Kotoki (23–01)",
+        "chou": "Chou Shi (01–03)",
+        "yin": "Toratoki (03–05)",
+        "mao": "Utoki (05–07)",
+        "chen": "Tatsutoki (07–09)",
+        "si": "Sishi (09–11)",
+        "wu": "Noon (11–13)",
+        "wei": "No time (13–15)",
+        "shen": "Shen Shi (15–17)",
+        "you": "Rooster time (17–19)",
+        "xu": "Xu Shi (19–21)",
+        "hai": "Haishi (21–23)"
+      }
+    },
+    "tarot": {
+      "cardTitle": "draw tarot cards",
+      "cardSubtitle": "Ask something on your mind, and the three-card array will guide you (free once a day)",
+      "title": "tarot divination",
+      "shuffling": "Shuffling…",
+      "placeholder": "What do you want to ask? (Example: Is this job suitable for me? You can leave it blank)",
+      "sensing": "Sensing the card image...",
+      "drawAgain": "Smoke it again",
+      "drawThree": "draw three cards",
+      "errDailyUsed": "I smoked it today.",
+      "errDrawFailed": "Failed to draw a card, try again.",
+      "errNetwork": "The network is not smooth, please try again.",
+      "asked": "You asked:{q}",
+      "reversed": "Reversed",
+      "upright": "Upright position",
+      "cardMeaningLabel": "{position}·{name}：",
+      "freeAgainTomorrow": "You can draw again for free tomorrow",
+      "disclaimer": "Tarot is a tool to help you think from different perspectives. It is for reference only and does not predict good or bad luck."
+    },
+    "bazi": {
+      "title": "horoscope",
+      "subtitle": "True numerology calculation (orthodox numerology calculation) + AI vernacular interpretation",
+      "calculating": "Arranged…",
+      "unavailable": "Unable to get the plate, please try again later.",
+      "dayMasterShort": "Lord of Japan",
+      "noHour": "No time",
+      "omitted": "(slightly)",
+      "dayMaster": "Lord of Japan",
+      "dayMasterValue": "{master}（{wuxing}）",
+      "shengXiao": "Zodiac {v}",
+      "xingZuo": "Constellation {v}",
+      "noHourWarning": "If the birth time is not filled in, the hour column will be left blank, and the interpretation will be based on the year, month and day. Going back to the previous step to make up the time can make it more complete.",
+      "readingTitle": "horoscope interpretation",
+      "strengths": "✨Talents and Advantages",
+      "watch": "🧭 Things to pay attention to",
+      "disclaimer": "The horoscope is a reference for character in traditional culture. It is only for entertainment and reflection. It does not predict good or bad luck, and does not provide medical/investment/legal advice.",
+      "pillar": {
+        "year": "year pillar",
+        "month": "moon pillar",
+        "day": "day pillar",
+        "hour": "hour column"
+      }
+    },
+    "iching": {
+      "title": "I Ching · Plum Blossoms Easy to Count",
+      "subtitle": "Ask one thing and get a hexagram (orthodox hexagram, free local arithmetic)",
+      "placeholder": "What do you want to ask? (Example: Is this job suitable for me? You can leave a blank to ask the overall question)",
+      "casting": "Calm down and start the hexagram...",
+      "castAgain": "Another hexagram",
+      "cast": "Qi Gua",
+      "asked": "Asked:{q}",
+      "upper": "Shang Gua",
+      "lower": "Xia Gua",
+      "moving": "move",
+      "disclaimer": "The I Ching is a tool to help you think from a different perspective. It is for reference only and does not predict good or bad luck."
+    },
+    "history": {
+      "title": "historical fortune",
+      "subtitle": "Review past daily fortunes and tarot",
+      "loading": "loading…",
+      "empty": "There is no record yet. Come back every day to see your fortune and it will be accumulated here ✨",
+      "tarotLabel": "🔮 Tarot Divination",
+      "tarotQuestion": "🔮 Tarot:{q}"
+    }
+  },
+  "messageCoach": {
+    "meta": {
+      "title": "message strategist",
+      "subtitle": "If it’s difficult to speak, I’ll help you say it appropriately and effectively. Choose a situation first",
+      "disclaimer": "The military advisor only gives you a reference version, and it is up to you to decide how to upload it in the end; it does not distribute it on your behalf and does not guarantee the results."
+    },
+    "scenarios": {
+      "raise": "Negotiate a salary increase with your supervisor",
+      "raiseDesc": "Your contribution/results, expected range, timing (for example: I have taken on two large projects and want to discuss 15%)",
+      "decline": "Decline invitation/request",
+      "declineDesc": "Who invited you, what should you refuse, and whether you want to keep the relationship (for example: a colleague asked you to work overtime on weekends, you want to refuse but don’t want to be embarrassed)",
+      "apology": "Apologize/admit mistake",
+      "apologyDesc": "To whom, what I did wrong, how I want to make amends (for example: I missed a customer message, I want to apologize and send additional information)",
+      "collect": "Dunning/Dunning Progress",
+      "collectDesc": "The object, what is owed, and the deadline (for example: the customer is two weeks behind on the final payment, and wants to politely pay but needs to receive the money)",
+      "leave": "Asking for leave/shift",
+      "leaveDesc": "Who to ask for, the reason, and the number of days (for example: asking the supervisor for three days, having something to do at home, and wanting to speak appropriately)",
+      "landlord": "Communicate with landlord",
+      "landlordDesc": "What do you want to talk about and your demands (for example: the water heater is broken and you want to ask him to fix it, or you want to negotiate a rent reduction)",
+      "teacher": "Talk to teacher/professor",
+      "teacherDesc": "Who you are, what you want to talk about (for example: I want to postpone my homework, I want to make an office hour appointment to ask questions)",
+      "client": "Communicate with customers",
+      "clientDesc": "Case status and what to convey (for example: the delivery date is postponed and I want to explain the reason and give a new time)",
+      "complaint": "Customer complaint/complaint response",
+      "complaintDesc": "Who are you, what happened, and what you want to achieve (for example: I received a defective product and want to return it, or I am a store and want to reply to Aoke)",
+      "ex": "A private message that’s hard to say",
+      "exDesc": "Object and relationship, what you want to say (for example: you want to get something back from your ex, or you want to apologize and reconcile with a friend)",
+      "reject_confess": "Decline confession/invitation",
+      "reject_confessDesc": "Who is the other party and what do you think (eg: want to reject but keep friendship)",
+      "boundary": "Setting boundaries/rejecting feelings",
+      "boundaryDesc": "Who, what boundary has been crossed, and your bottom line (for example: a relative keeps asking about salary and wants to block it without breaking out)"
+    },
+    "tones": {
+      "polite": "polite",
+      "politeDesc": "Be polite, leave room, and not be rude",
+      "professional": "major",
+      "professionalDesc": "Concise, organized, like a workplace letter",
+      "firm": "firm",
+      "firmDesc": "Have a clear stance, neither soft nor aggressive",
+      "humorous": "humor",
+      "humorousDesc": "Relax and resolve embarrassment",
+      "warm": "warmth",
+      "warmDesc": "Be warm and considerate of each other’s feelings"
+    },
+    "form": {
+      "changeScenario": "Change situation",
+      "pointsLabel": "the point you want to express",
+      "toneLabel": "Tone",
+      "thinking": "The military advisor is thinking...",
+      "submit": "help me write"
+    },
+    "refine": {
+      "label": "Fine-tuning:",
+      "shorter": "shorter",
+      "gentler": "More euphemistic",
+      "firmer": "more determined",
+      "warmer": "More warm",
+      "regenerate": "Change a batch"
+    },
+    "result": {
+      "versionCount": "Give you {n} versions",
+      "remaining": "There are {n} times left today",
+      "copied": "Copied",
+      "copy": "clone"
+    },
+    "errors": {
+      "quota": "The free times are used up today, come back tomorrow, or upgrade to unlimited use.",
+      "failed": "If a failure occurs, try again with another word.",
+      "network": "The network is not smooth, please try again."
+    }
+  },
+  "jobKit": {
+    "tools": {
+      "resumeTitle": "AI resume",
+      "resumeDesc": "Automatically generated based on learning materials",
+      "mockTitle": "AI mock interview",
+      "mockDesc": "AI interviewer questions + feedback report"
+    },
+    "actions": {
+      "copy": "clone",
+      "copied": "Copied",
+      "download": "Download .md",
+      "printPdf": "Print PDF",
+      "byModel": "by {model}"
+    },
+    "common": {
+      "writing": "Writing…"
+    },
+    "bio": {
+      "title": "Autobiography/self-introduction",
+      "desc": "Generated based on your study and work information, about 400–600 words. Free 3 times a month.",
+      "focusPlaceholder": "Any direction you want to highlight? (Optional, for example: want to switch to front-end career, good at self-study)",
+      "generate": "Generate autobiography"
+    },
+    "coverLetter": {
+      "title": "Cover Letter / Cover Letter",
+      "desc": "Customized for \"this position in this company\", about 300-450 words. Free 3 times a month.",
+      "companyPlaceholder": "Company Name *",
+      "jobTitlePlaceholder": "Apply for positions *",
+      "jdPlaceholder": "Job vacancy description/requirements (optional, affixing JD will be more effective)",
+      "highlightsPlaceholder": "Highlights you want to highlight (optional, for example: similar projects, related experience)",
+      "generate": "Generate cover letter"
+    },
+    "errors": {
+      "bioQuota": "The autobiography quota has been used up this month, upgrade to Premium for unlimited use.",
+      "coverQuota": "The cover letter quota has been used up this month, upgrade to Premium for unlimited use.",
+      "coverRequired": "Please fill in the company name and the position you are applying for first",
+      "genFailed": "generate failure",
+      "network": "The network is not smooth, try again"
+    },
+    "meta": {
+      "footnote": "The content is generated based on your real learning materials and is for reference only; please read it again and fill in the details before sending it out."
+    }
   }
 }
