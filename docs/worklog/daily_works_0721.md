@@ -326,3 +326,14 @@ ch49 + ch50（AI Agent / n8n 兩大旗艦章）完成。**教具庫新增 2 個�
 - 每條 plain（功能＋何時用＋常見防禦）＋生活比喻＋可跑/可貼範例＋related。
 - **import 1847、失敗 0**。**辭典 1806 → 1847 / 目標 5000。** CLAUDE.md 續寫指標→ seed-43。
 - 本日辭典兩批共 +74 條（seed-41 33 + seed-42 41），皆手寫零 AI 花費。
+
+---
+
+## 📚 章節 de-can：ch01 HTML 全 25 節（0721·林董排第一優先）
+
+盤點 ch01：**1.2–1.25 全是同一句罐頭練習**「打開 VS Code、建 HTML 檔、用本節標籤做個人介紹頁」+ 完全一樣的 hint（「課程內有 N 段 code 範例、先跑通再改」）+ 完全一樣的 answer（「三階段：完整 copy / 小改觀察 / 重寫」）。更糟的是自動抽的「標籤 fill」常是壞的——1.9=`@vercel/og`、1.12=`${name}: ${oldVal}`、1.22=`<Image>`（React 不是 HTML）、1.4/1.11 直接是亂碼片段。等於 24 節共用一題假練習。
+
+- **全 25 節換成各節量身題**、題型刻意變化（應用/設計/除錯/比較/分析），每題 question/hint/answer 都扣該節主題、對零基礎友善：
+  - 1.1 用比喻解釋 HTML/CSS/瀏覽器分工｜1.2 三個症狀（慢/標題空白/無預覽）對應 head 與 script 載入除錯｜1.3 div 湯改語意化骨架｜1.4 strong vs b、em vs i 判斷｜1.5 三種清單選 ul/ol/dl｜1.6 target=_blank 的 rel 安全 + img alt｜1.7 課表無障礙表格（th scope/caption）｜1.8 表單原生驗證（form/type/required/inputmode）｜1.9 社群分享卡 OG 標籤｜1.10 JSON-LD 富結果｜1.11 div 假按鈕→原生 button vs ARIA｜1.12 Web Component + attributeChangedCallback｜1.13 PWA manifest 為何要 192/512｜1.14 inline SVG vs img 時機｜1.15 font-display/fetchpriority 效能｜1.16 報名頁整合骨架｜1.17 article vs section 判斷｜1.18 自訂下拉的鍵盤無障礙清單｜1.19 fieldset/inputmode/readonly vs disabled｜1.20 新聞站 OG/Twitter 規劃｜1.21 商品頁 Product schema｜1.22 lazy/srcset/picture + 首屏別 lazy｜1.23 iframe sandbox 最小權限｜1.24 data-* 與全域屬性｜1.25 作品集頁上線前 8 點檢查表。
+- **收尾**：Python 改（json.dump ensure_ascii=False indent=2 + \n、格式一致）→ diff 剛好 75+/75-（25×3 欄、無整檔重排）→ `import_chapters_to_db.mjs ch01`（25 lessons、0 errors）→ `tsc` ✅ / `next build` exit 0 ✅。章節讀 DB、已生效。
+- 續攻：ch02/04/05/07–10/16/17/26–32/34–36/46…（§4.1.1）。

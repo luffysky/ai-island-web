@@ -63,9 +63,9 @@
         "explanation": "`<!DOCTYPE html>` 告訴瀏覽器這份文件用 HTML5 規範解析。"
       },
       "exercise": {
-        "question": "找一個你身邊的例子、用「HTML 是什麼？為什麼網頁長那樣？」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "不看程式碼，向一個完全沒碰過網頁的朋友解釋：瀏覽器拿到一份 HTML 後，為什麼畫面會長成那樣？用「一份說明書＋照著擺」的比喻講清楚 HTML、CSS、瀏覽器三者的分工。",
+        "hint": "HTML＝內容與結構（有什麼、誰是標題誰是段落）；CSS＝長相；瀏覽器＝照著說明書把東西擺出來的人。別急著講標籤名。",
+        "answer": "重點：HTML 是「純文字的結構說明書」，用標籤標出「這是標題、這是段落、這是圖片」；瀏覽器讀這份說明書，把每個標籤畫成對應的東西；CSS 再決定它們長怎樣。同一份 HTML 換 CSS 就能完全變樣，正說明兩者分工。"
       },
       "outline": [
         {
@@ -127,9 +127,9 @@
         "explanation": "沒這行手機看你的網頁會像縮小的桌機版、不會自適應。"
       },
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（defer, script, async）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "給你一個頁面：載入很慢、切到別的 app 再回來標題還是空白、分享到 LINE 沒有預覽圖。這三個問題各該在 <head> 放什麼、或怎麼調整 <script> 的載入方式來解決？",
+        "hint": "想 <head> 裡三類東西：給瀏覽器的設定（charset/viewport）、給機器看的資訊（title/meta/og）、控制 script 何時執行（defer/async）。慢通常跟 script 卡住解析有關。",
+        "answer": "① 載入慢：把 <script> 加 defer（等 HTML 解析完再依序執行、不擋畫面），或非關鍵的用 async。② 標題空白：確認有 <title> 且不是靠 JS 才補上。③ 沒預覽圖：補 og:title/og:description/og:image。charset 與 viewport 也應在最前面。"
       }
     },
     {
@@ -177,9 +177,9 @@
         "explanation": "`<header>` 是 HTML5 語意標籤、SEO + 無障礙友善、優於 div。"
       },
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "有人整頁都用 <div> 排版（<div class=\"header\">、<div class=\"nav\">…）。請指出這樣會踩到哪些問題（SEO、無障礙、可讀性），並把它改寫成語意化標籤的骨架。",
+        "hint": "語意化標籤＝用「標籤名本身就說明角色」。想搜尋引擎和螢幕報讀器怎麼理解你的頁面：一堆 div 對它們來說全是「不知道是什麼的盒子」。",
+        "answer": "問題：搜尋引擎/報讀器無法辨識主結構、無障礙差、程式難維護。改寫骨架：<header>（頁首）→ <nav>（導覽）→ <main>（主內容，內含 <article>/<section>）→ <aside>（側欄）→ <footer>（頁尾）。語意標籤讓機器和人都讀得懂結構。"
       },
       "outline": [
         {
@@ -214,9 +214,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（，要斜用 ,  跟 , （雖然合法）— 它們**只有視覺意義沒有語意**。要粗就用 ）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "同樣要把一段字變粗，<strong> 和 <b> 差在哪？<em> 和 <i> 呢？舉一個「該用 strong」和一個「該用 b」的實際情境，說明你的判斷。",
+        "hint": "關鍵不是外觀（都可能是粗體），而是「有沒有語意」。strong/em 帶重要性/強調的語意，b/i 只是視覺。",
+        "answer": "<strong>＝這段內容很重要（報讀器會加重念）；<b>＝只是想讓它視覺上粗、沒有額外重要性。例：警告文字「請勿關機」用 <strong>；文章裡標示一個產品名只想加粗用 <b>。<em>（語氣強調）vs <i>（術語/外語/船名等慣例斜體）同理。"
       },
       "outline": [
         {
@@ -286,9 +286,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "設計三份清單各該用哪種列表標籤，並說明原因：①手搖飲菜單品項 ②食譜的步驟 ③名詞解釋（詞→解釋）。若順序不重要卻用了 <ol> 會有什麼問題？",
+        "hint": "ul＝順序不重要；ol＝順序有意義（會顯示編號）；dl＝成對的「詞＋描述」。",
+        "answer": "①菜單→<ul>（順序不重要）②食譜步驟→<ol>（順序即意義，第 2 步不能先做）③名詞解釋→<dl>（<dt>詞 + <dd>解釋）。順序不重要卻用 <ol>：會誤導讀者以為有先後、也讓報讀器念出無意義的編號。"
       },
       "miniQuiz": {
         "question": "你要做一個網站導覽列，包含「首頁」、「產品」（有子選單）、「聯絡我們」。根據業界慣例，應該用哪個 HTML 標籤來標記這個導覽列結構？",
@@ -359,9 +359,9 @@
         "explanation": "rel=\"noopener\" 防止新分頁透過 window.opener 控制原網頁。"
       },
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（alt=\"\", target=\"_blank\", rel=\"noopener noreferrer\"）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "一個 <a target=\"_blank\"> 的外部連結被資安工具標記為風險，一張 <img> 在圖載不出來時整頁看起來壞掉。這兩個問題分別要補什麼屬性？為什麼 target=\"_blank\" 要配 rel？",
+        "hint": "新分頁開啟有個經典安全與效能問題（新頁能透過 window.opener 動你原頁）；圖片壞掉時要有替代文字。",
+        "answer": "① 連結：target=\"_blank\" 要配 rel=\"noopener noreferrer\"，避免新分頁透過 window.opener 反向操作你的頁面、也不外洩來源。② 圖片：一定要寫 alt=\"...\"，圖載不出來時顯示替代文字、且對報讀器/SEO 友善（純裝飾圖用 alt=\"\"）。"
       },
       "outline": [
         {
@@ -408,9 +408,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "把一張「課表」做成無障礙表格：需要標題、欄位表頭（星期）、列表頭（節次）。請說明 <th> 的 scope 屬性在這裡為什麼重要，以及 <caption> 的作用。",
+        "hint": "表格對螢幕報讀器最難念。scope 告訴它「這個表頭是管一整欄還是一整列」，念資料格時才能連上正確的表頭。",
+        "answer": "結構：<table> 內 <caption>課表</caption>；表頭列用 <th scope=\"col\">星期一…</th>；每列第一格用 <th scope=\"row\">第一節</th>；資料用 <td>。scope 讓報讀器念「週三第二節：數學」而不是孤零零念「數學」。caption 給整張表一個標題。"
       },
       "miniQuiz": {
         "question": "下列哪一種情況「最適合」使用 <table> 標籤？",
@@ -457,9 +457,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "一個登入表單：按 Enter 不會送出、手機鍵盤跳出來是一般英文鍵盤（而不是 email 鍵盤）、必填沒填也能送。用 HTML（先不寫 JS）能怎麼改善這三點？",
+        "hint": "很多驗證與體驗 HTML 原生就有：type、required、把 input 包在 <form> 裡、label 綁定。",
+        "answer": "① 送出：把欄位包在 <form> 內、有一個 submit 按鈕，Enter 就能送。② 鍵盤：email 欄用 type=\"email\"（手機跳出 @ 鍵盤）、數字用 inputmode。③ 必填：加 required，瀏覽器原生擋空值。再用 <label for> 綁定提升可點擊區與無障礙。"
       },
       "outline": [
         {
@@ -565,9 +565,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（@vercel/og）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "你寫了一篇文章要分享到社群，但貼到 Facebook/LINE 只顯示網址、沒有標題縮圖。列出要在 <head> 補的最關鍵 meta / Open Graph 標籤，並說明 og:image 有什麼尺寸與絕對網址的注意事項。",
+        "hint": "社群平台是抓 og:* 標籤來組預覽卡；title/description 的 meta 給搜尋引擎。圖片網址不能用相對路徑。",
+        "answer": "關鍵：<meta name=\"description\">、og:title、og:description、og:image、og:url、og:type，Twitter 再加 twitter:card=summary_large_image。og:image 要用「絕對網址」（https://...）、建議 1200×630、且圖真的可公開存取，否則平台抓不到。"
       },
       "outline": [
         {
@@ -606,9 +606,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "同一篇食譜，為什麼除了給人看的 HTML，還要多放一段 JSON-LD？它能讓 Google 多顯示什麼？請說明它和一般 meta 標籤的差別。",
+        "hint": "JSON-LD＝用結構化格式再描述一次頁面內容給機器，讓 Google 認得「這是一份食譜、有幾分鐘、幾大卡」。",
+        "answer": "JSON-LD 用 Schema.org 詞彙把內容結構化（@type: Recipe、cookTime、calories…），Google 據此顯示「富結果」——星等、時間、縮圖等。meta 標籤只描述整頁的少數欄位；JSON-LD 能描述複雜實體與關係，是拿到富片段的關鍵。"
       },
       "outline": [
         {
@@ -682,9 +682,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（ 也是。用 ,  自帶鍵盤支援、focus 狀態，）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "一個用 <div onclick> 做成的「按鈕」：滑鼠能點，但用鍵盤 Tab 過不去、螢幕報讀器也不念它是按鈕。要嘛改標籤、要嘛補 ARIA——兩種做法各怎麼做？哪個比較好？",
+        "hint": "原生 <button> 自帶焦點、鍵盤 Enter/Space、報讀器語意。ARIA 是「補語意」的最後手段、不是首選。",
+        "answer": "首選：直接改用 <button>（免費得到焦點、鍵盤操作、role=button 語意）。若非得用 div：加 role=\"button\" + tabindex=\"0\" +（用 JS 補 Enter/Space 觸發）。原則：能用原生語意標籤就別用 ARIA 硬補——『No ARIA is better than bad ARIA』。"
       },
       "outline": [
         {
@@ -758,9 +758,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（${name}: ${oldVal} → ${newVal}）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "你想做一個能重複使用的 <user-card> 元素（頭像＋名字），到處 <user-card name=\"...\"> 就能用。用 Web Components 大致需要哪幾步？attributeChangedCallback 的用途是什麼？",
+        "hint": "自訂元素＝繼承 HTMLElement、用 customElements.define 註冊；想在屬性改變時更新畫面，要宣告 observedAttributes 並實作對應 callback。",
+        "answer": "步驟：① class UserCard extends HTMLElement ② 在 connectedCallback 產生內部 DOM（可用 Shadow DOM 隔離樣式）③ customElements.define('user-card', UserCard)。想讓 name 改了畫面跟著變：靜態 observedAttributes 回傳 ['name']，並在 attributeChangedCallback(name, oldVal, newVal) 裡更新內容。"
       },
       "outline": [
         {
@@ -822,9 +822,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "要讓一個網站能「加到主畫面、像 app 一樣開、離線也能開」，最少需要哪兩個東西？manifest 裡至少要有哪些欄位、為什麼一定要 192 和 512 兩種圖示？",
+        "hint": "PWA 兩大件：manifest（描述 app 的名字/圖示/顯示方式）+ service worker（攔請求做離線快取）。",
+        "answer": "兩件：① manifest.json（name、short_name、start_url、display: standalone、icons 含 192×192 與 512×512——前者給主畫面圖示、後者給啟動畫面/大圖）。② 註冊 service worker 做離線快取。缺圖示或缺 sw 就不符合可安裝條件。"
       },
       "outline": [
         {
@@ -882,9 +882,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "什麼時候該用 inline SVG（直接寫在 HTML）而不是 <img src=\"icon.svg\">？請各舉一個適合的情境，並說明 inline SVG 能做到而 <img> 做不到的事。",
+        "hint": "inline＝SVG 節點進了 DOM，能用 CSS 改顏色、能被 JS 操作、能加 aria；<img> 是黑盒圖片。",
+        "answer": "inline 適合：需要用 CSS 換色（icon 隨主題變色）、要動畫或互動、要無障礙標記的圖示。<img> 適合：純展示、可快取、重複用的大圖。inline 能 currentColor 跟文字同色、能 hover 變色、能 JS 操作路徑——這些 <img> 都做不到。"
       },
       "outline": [
         {
@@ -942,9 +942,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（font-display: swap, fetchpriority, fetchpriority=\"high\"）做出一個簡單的個人介紹頁。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（fetchpriority=\"high\"、font-display: swap、fetchpriority）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "頁面首屏文字要等字體下載完才出現（白屏一秒）、主視覺大圖很晚才載。用哪些 HTML/CSS 原生手法能改善？分別解決什麼？",
+        "hint": "字體閃爍看 font-display；資源優先權看 fetchpriority / preload；別對首屏圖用 lazy。",
+        "answer": "① 字體白屏：CSS font-display: swap（先用系統字顯示、字體到了再換），避免 FOIT。② 首屏大圖太慢：<img fetchpriority=\"high\">（或 <link rel=\"preload\">）提高優先權，且首屏圖『不要』用 loading=\"lazy\"。原則：先量 baseline 再套、沒變好就不套。"
       },
       "outline": [
         {
@@ -1016,9 +1016,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "把前面學過的東西整合成一頁「活動報名頁」的 HTML 骨架（先不寫 CSS）：要有語意化結構、一個無障礙表單、正確的 meta、和一張帶 alt 的主視覺。列出你的標籤大綱與每一塊的重點。",
+        "hint": "從外到內：<head>（meta/og）→ <body>（header→main（article + form）→footer）。每個互動元件想無障礙。",
+        "answer": "大綱：<head> 放 charset/viewport/title/description/og。<body>：<header> 標題+<nav>；<main> 內 <article> 活動說明 + <img alt> 主視覺 + <form>（每欄 <label for> 綁定、type/required 正確、submit 按鈕）；<footer> 版權。檢查點：語意標籤、alt、表單可鍵盤操作、meta 齊全。"
       },
       "miniQuiz": {
         "question": "這份完整網頁範本的主要目的是什麼？",
@@ -1066,9 +1066,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<article>, <section>, <nav>, <header>, <main>）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "<article> 和 <section> 常被搞混。給三個內容：①一則獨立的部落格貼文 ②文章裡的「留言區」 ③首頁上「最新消息」這一段。各該用哪個？判斷準則是什麼？",
+        "hint": "準則：<article> 是『能單獨拿出去也成立』的內容（可被訂閱、可轉貼）；<section> 是『主題性的一段』，通常有標題。",
+        "answer": "①部落格貼文→<article>（可獨立存在/被 RSS 抓）。②留言區→<section>（是文章的一段主題），每一則留言又可各自是 <article>。③首頁「最新消息」→<section>（有標題的一段）。準則：問『這塊單獨拿去別的地方還完整嗎』，是→article。"
       },
       "outline": [
         {
@@ -1154,9 +1154,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（aria-describedby, aria-*, tabindex=\"0\", aria-labelledby, aria-label）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "一個自訂的下拉選單（用 div 做）鍵盤完全操作不了。列出讓它可用的檢查清單：焦點、鍵盤鍵、狀態通知報讀器，各要哪些 aria 屬性或做法？",
+        "hint": "想三件事：能不能 Tab 到（tabindex）、按鍵有沒有反應（Enter/Space/方向鍵）、報讀器知不知道它展開了沒（aria-expanded）。",
+        "answer": "清單：① 觸發鈕 tabindex=\"0\" 可聚焦、aria-haspopup、aria-expanded=\"true/false\" 反映開合。② 鍵盤：Enter/Space 開關、方向鍵移動選項、Esc 關閉。③ 選項用 role=\"option\"、容器 role=\"listbox\"、目前項 aria-selected。最佳解仍是盡量用原生 <select>。"
       },
       "outline": [
         {
@@ -1238,9 +1238,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（enterkeyhint=\"send\", autofocus, inputmode=\"decimal\", readonly, disabled）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "一個結帳表單想改善輸入體驗：手機輸入金額要跳數字鍵盤、密碼欄唯讀的說明文字、把「收件資訊」相關欄位視覺與語意上分組。用哪些 HTML 屬性/標籤達成？",
+        "hint": "inputmode 控鍵盤、fieldset+legend 做分組、readonly vs disabled 差在會不會被送出。",
+        "answer": "① 數字鍵盤：inputmode=\"decimal\"（或 type=\"number\"）。② 分組：用 <fieldset> 包一組欄位 + <legend>收件資訊</legend>，語意與視覺都成群。③ readonly（可讀不可改、會被送出）vs disabled（灰掉、不會被送出）——依需求選。搭配 autocomplete 提升自動填入。"
       },
       "outline": [
         {
@@ -1314,9 +1314,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "你負責一個新聞網站，每篇文章分享到社群都要有對的標題、描述、縮圖，而且 Facebook 和 Twitter 顯示略有不同。請規劃這套 meta/OG/Twitter Card 標籤，並說明如何讓每篇文章自動帶入自己的值。",
+        "hint": "og:* 給多數社群、twitter:* 補 Twitter 專屬（card 類型）。每篇不同→由後端/樣板把文章資料填進去。",
+        "answer": "每篇動態產生：<title>、meta description、og:title/description/image/url/type=article、article:published_time；Twitter 補 twitter:card=summary_large_image、twitter:title/description/image。做法：模板用文章資料（標題、摘要、首圖絕對網址）填空，每頁輸出各自的值。"
       },
       "outline": [
         {
@@ -1390,9 +1390,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<script>）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "一個電商商品頁想在 Google 搜尋結果顯示「價格、庫存、星等」。要放哪種 Schema.org 類型的 JSON-LD？大致要哪些欄位？放錯或亂標會有什麼後果？",
+        "hint": "商品→Product，內含 offers(價格/幣別/庫存) 與 aggregateRating(星等)。標記要與頁面實際內容一致。",
+        "answer": "用 JSON-LD @type: Product，欄位 name、image、description、offers{@type: Offer, price, priceCurrency, availability}、aggregateRating{ratingValue, reviewCount}。後果：標記與畫面不符（假評價/假價格）會被 Google 判為濫用、移除富結果甚至懲罰。務必真實對應。"
       },
       "outline": [
         {
@@ -1474,9 +1474,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<Image>）做出一個簡單的個人介紹頁。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（<Image>）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "一頁有 30 張圖，首屏只看到 2 張，但一打開 30 張全下載、超慢。而且不同裝置該給不同解析度的圖。用 loading、srcset/sizes、<picture> 各解決什麼？首屏圖能不能 lazy？",
+        "hint": "loading=\"lazy\" 延後載入非首屏圖；srcset/sizes 讓瀏覽器挑合適解析度；<picture> 換格式(WebP)或藝術裁切。首屏圖別 lazy。",
+        "answer": "① 非首屏圖加 loading=\"lazy\"（進視窗才載）。② <img srcset=\"a.jpg 400w, b.jpg 800w\" sizes=\"...\"> 讓瀏覽器依螢幕挑檔。③ <picture> 用 <source type=\"image/webp\"> 提供 WebP、舊瀏覽器 fallback。首屏主圖『不要』lazy（會延後 LCP），反而該提高優先權。"
       },
       "outline": [
         {
@@ -1554,9 +1554,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（allow-same-origin, allow-forms, allow-scripts, allow-popups, allow-modals）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "你要嵌入一個第三方的互動小工具（別人的網站），但擔心它亂跑腳本、開彈窗、動你的頁面。用 <iframe> 的哪個屬性能把它關進沙盒？逐一放行需要的能力的思路是什麼？",
+        "hint": "sandbox 預設『什麼都不准』，再用 allow-* 一項項開回來——最小權限原則。",
+        "answer": "用 <iframe sandbox>：預設禁用腳本、表單、彈窗、同源等，再依需要逐項放行：allow-scripts（准跑 JS）、allow-forms（准送表單）、allow-popups、allow-same-origin（謹慎，給了等於失去隔離）。思路：先全關、只開真正需要的，能不開就不開。"
       },
       "outline": [
         {
@@ -1630,9 +1630,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<header>, <main>, <footer> 等）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 12 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "你想存一些「跟這個元素相關的資料」給 JS 用（例如每個商品卡上的商品 id），不想亂塞 class 或看不懂的屬性。data-* 怎麼用？和 contenteditable、draggable 這類全域屬性有什麼共通點？",
+        "hint": "data-* 是合法的自訂資料屬性，JS 用 dataset 讀；全域屬性＝幾乎任何標籤都能加的屬性。",
+        "answer": "<div data-product-id=\"123\" data-price=\"99\">，JS 用 el.dataset.productId 讀（駝峰對應）。好處：合法、語意清楚、不污染 class。共通點：data-*/contenteditable/draggable 都是『全域屬性』，幾乎所有元素都能加；contenteditable 讓元素可直接編輯、draggable 開啟拖曳。"
       },
       "outline": [
         {
@@ -1718,9 +1718,9 @@
         }
       ],
       "exercise": {
-        "question": "打開 VS Code、建一個 HTML 檔、用本節介紹的標籤（<html lang=\"zh-Hant\">）做出一個簡單的個人介紹頁。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "把整章整合，設計（先用文字列大綱、再寫 HTML 骨架）一頁可以真的發佈的個人作品集頁：要能被搜尋到、分享有預覽卡、無障礙、圖片不拖慢速度。列出你的自我檢查清單（至少 8 點）。",
+        "hint": "把 SEO/OG、語意結構、表單（聯絡）、圖片優化、無障礙、效能全串起來。這就是一份『上線前檢查表』。",
+        "answer": "檢查清單：①語意化結構(header/main/section/footer) ②<title>+description+og+twitter 齊全 ③主圖 fetchpriority、其餘 loading=lazy + srcset/WebP ④所有 img 有 alt ⑤聯絡表單用 label 綁定、type/required 正確、鍵盤可操作 ⑥外部連結 rel=noopener ⑦色彩對比/焦點可見 ⑧lang 屬性、viewport ⑨（可選）JSON-LD Person。逐項打勾就是能發佈的品質。"
       },
       "outline": [
         {

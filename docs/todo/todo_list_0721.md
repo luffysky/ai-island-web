@@ -186,7 +186,9 @@
 - [x] ~~**旗艦章 ch49 AI Agent / ch50 n8n**：de-can + 新教具 AgentLoop/WorkflowFlow~~ ✅ 0721
 - [x] ~~**薄章補厚 ch06/11/12/14/23/25/37/42**：de-can 91 題 + JsonTree/複用 ScenarioJudge·WorkflowFlow~~ ✅ 0721（ch15/ch24 本就 0 罐頭）
 - [x] ~~ch03/13/43/44/45/47/48/51–60/33(Rust)/76(Angular) 深度重寫~~ ✅（0717 起陸續）
-- [ ] 4.1.1 **剩餘技術章 de-can**（audit：ch01–60 曾 74% 罐頭練習，只清了旗艦+薄章）：ch01/02/04/05/07/08/09/10/16/17/26–32/34/35/36/46… 逐章 de-can + 視情況疊教具
+- [~] 4.1.1 **剩餘技術章 de-can**（audit：ch01–60 曾 74% 罐頭練習，只清了旗艦+薄章）：ch01/02/04/05/07/08/09/10/16/17/26–32/34/35/36/46… 逐章 de-can + 視情況疊教具
+  - [x] ~~ch01 HTML 完整：25 節全 de-can~~ ✅ 0721（原本 1.2–1.25 全是同一句「打開 VS Code 做個人介紹頁」+同 hint+同 answer、且自動抽的標籤 fill 常壞〔`<Image>`/`${name}`/`@vercel/og`〕→ 換成各節量身的應用/設計/除錯/比較題〔head 載入除錯、div 湯改語意化、strong vs b、課表無障礙表格、表單原生驗證、OG 分享卡、JSON-LD 富結果、ARIA 按鈕、Web Component、PWA manifest、SVG inline 時機、字體/圖片效能、iframe sandbox、data-* …〕，已 import DB）
+  - [ ] 剩 ch02/04/05/07/08/09/10/16/17/26–32/34–36/46… 續 de-can
 - [ ] 4.1.2 **deep-rewrite tier 未動章**：ch15、ch24、ch32、ch34、ch35、ch36、ch40、ch41、ch63、ch68（strict-spec）、ch72–75、附錄 ch61–67/69–70
 - [ ] 4.1.3 教具庫擴充：mobile 專屬教具（給 ch11）、規劃 B 教具（RegexTester/CronBuilder/JsonInspector 進階/HttpInspector/Tokenizer/SortingViz/GitGraph/NeuralForward/AuthFlow/MLBoundary）——依技術章需要再建
 - [ ] 4.1.4 圖文解說圖：概念/B/D/E/F 區操作圖 110+ 張（🔴 等林董生圖；A 區 29 張 ✅）
