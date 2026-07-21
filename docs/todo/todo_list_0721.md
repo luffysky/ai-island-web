@@ -199,7 +199,8 @@
   - [x] 🏁 **前端框架三章 de-can 完成**：ch08 React + ch09 Vue + ch10 Next/Nuxt（共 75 題）
   - [x] ~~ch16 後端世界全圖：25 節全 de-can~~ ✅ 0721（請求生命週期、HTTP 方法/狀態碼、REST/GraphQL/gRPC/WS 選型、單體/微服務/serverless 取捨、後端語言選型 5 維、ORM vs Raw SQL 與 N+1、Session vs JWT 與 XSS、background queue 冪等、三層快取失效、限流演算法與 key、WS/SSE/長輪詢、大檔預簽章直傳、logs/metrics/traces、效能四殺手先量測、Docker/env/health check、API 設計原則版本化、Edge/Serverless/AI-native 用需求檢驗、Cache-Control 安全、REST 資源設計、三種認證選型、登入嚴格限流 429、Redis stampede、多台 WS pub/sub、OpenAPI 契約測試）
   - [x] ~~ch17 SQL 資料庫：28 節全 de-can~~ ✅ 0721（含真實 SQL：宣告式威力、連線密鑰、建表約束、SELECT 別 *、WHERE NULL/LIKE 坑、cursor 分頁、GROUP BY/HAVING、視窗函式 RANK、CTE/遞迴、upsert 冪等、UPDATE 忘 WHERE、軟刪除、INNER/LEFT JOIN 找沒下單、SELF/CROSS/LATERAL Top-N、UNION/EXCEPT、EXISTS vs IN NULL、索引最左前綴、EXPLAIN Seq Scan、交易 ACID 轉帳、View/MV、Trigger 取捨、JSONB/GIN、全文搜尋、SQL injection 參數化、Supabase RLS policy、Todo 後端資料層清單）
-  - [ ] 剩 ch26–32/34–36/46… 續 de-can
+  - [x] ~~ch26 Python 基礎：38 節全 de-can~~ ✅ 0721（基礎→資料→ML→深度學習→FastAPI→部署全線量身題：虛擬環境、名字綁物件、浮點/Decimal、字串不可變、四容器選型、拆包、comprehension、關鍵字參數/可變預設坑、作用域閉包、import 機制、with 檔案、try 抓具體例外、dataclass/super、decorator/generator、型別提示 mypy、NumPy 向量化、Pandas 別逐列、選圖表、監督/非監督/RL、sklearn 流程、特徵工程/資料洩漏、precision vs recall 情境、過擬合/交叉驗證、神經網路/反向傳播、PyTorch 訓練迴圈、CNN/RNN/Transformer、HF 微調 vs zero-shot、FastAPI/ASGI、Pydantic 邊界驗證、async I/O vs CPU、SQLAlchemy/Alembic、JWT/密碼雜湊/OAuth、Celery 冪等、FastAPI vs Django 選型、Gunicorn/Docker/密鑰別進 image）
+  - [ ] 剩 ch27–32/34–36/46… 續 de-can
 - [ ] 4.1.2 **deep-rewrite tier 未動章**：ch15、ch24、ch32、ch34、ch35、ch36、ch40、ch41、ch63、ch68（strict-spec）、ch72–75、附錄 ch61–67/69–70
 - [ ] 4.1.3 教具庫擴充：mobile 專屬教具（給 ch11）、規劃 B 教具（RegexTester/CronBuilder/JsonInspector 進階/HttpInspector/Tokenizer/SortingViz/GitGraph/NeuralForward/AuthFlow/MLBoundary）——依技術章需要再建
 - [ ] 4.1.4 圖文解說圖：概念/B/D/E/F 區操作圖 110+ 張（🔴 等林董生圖；A 區 29 張 ✅）

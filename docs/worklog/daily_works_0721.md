@@ -423,3 +423,12 @@ SQL 章原 28/28 全罐頭。全部換成含『真實可跑 SQL』的量身題�
 
 - diff 84+/84- → import_chapters_to_db ch17（28 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
 - 本日 de-can 累計 **10 章、256 題**（ch01/02/04/05/07/08/09/10/16/17）。續攻 ch26–32 Python 系列…
+
+---
+
+## 📚 章節 de-can：ch26 Python 基礎 全 38 節（0721）
+
+最大單章(38 節、涵蓋 Python 基礎→資料科學→ML→深度學習→FastAPI→部署)。全部換成各節量身題(除錯/預測/設計/取捨)：虛擬環境隔離、變數是名字綁物件(list 共享陷阱)、浮點誤差與 Decimal、字串不可變、List/Tuple/Set/Dict 選型與 O(1)、拆包星號、comprehension 何時用、關鍵字參數與可變預設值坑、global/nonlocal/閉包、import 機制與 * 汙染、with 檔案逐行、try 抓具體例外別空吞、dataclass/super、decorator/generator/context manager、型別提示與 mypy、NumPy 向量化為何快、Pandas 別逐列迴圈、選對圖表、監督/非監督/RL 歸類與資料品質、sklearn 五步流程與測試集、特徵工程與資料洩漏、accuracy 騙人與 precision vs recall 情境(癌篩 vs 垃圾信)、過擬合/欠擬合/交叉驗證、神經網路/反向傳播/激活/學習率、PyTorch 訓練迴圈與 zero_grad/train-eval、CNN/RNN/Transformer 選型、HF 預訓練微調 vs zero-shot、FastAPI/ASGI/自動文件、Pydantic 邊界驗證、async 對 I/O 有效與阻塞坑、SQLAlchemy/Alembic migration、JWT vs session/密碼雜湊/OAuth、Celery 背景冪等、FastAPI vs Django 選型、Gunicorn 多 worker/Docker/密鑰別進 image。
+
+- diff 118+/110- → import_chapters_to_db ch26（38 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+- 本日 de-can 累計 **11 章、294 題**。續攻 ch27 Python 資料分析…
