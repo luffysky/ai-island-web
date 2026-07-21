@@ -367,3 +367,12 @@ ch05（TypeScript）25 節全 de-can，換成各節量身題（除錯/選型/預
 
 ### 🏁 里程碑：核心 Web 基礎四章 de-can 完成
 **ch01 HTML + ch02 CSS + ch04 JavaScript + ch05 TypeScript**，各 25 節、共 **100 題**罐頭練習全部換成扣主題、零基礎友善、題型多樣（應用/設計/除錯/預測/比較/分析）的量身練習。全部 import DB、tsc/build 綠、章節讀 DB 已生效。續攻 ch07/08/09/10/16/17/26–32/34–36/46…
+
+---
+
+## 📚 章節 de-can：ch07 程式邏輯共通 全 28 節（0721）
+
+跨語言的程式基礎章（28 節、原 21 罐頭）。因是語言無關的觀念，題目走概念/設計/分析/取捨型：編譯 vs 直譯、可變/不可變、浮點誤差與金額該用整數、短路求值、switch/查表與窮盡、迴圈 off-by-one/無窮、函數單一職責與副作用、陣列 vs 其他結構的取捨、HashMap 碰撞與鍵不可變、Stack/Queue/Set/Graph 對症選用、OOP 封裝/多型少寫 if、組合優於繼承、純函數好測、動靜態型別取捨、Stack/Heap/指標/GC 洩漏、Result/Option vs 例外與空 catch、模組化與循環依賴、命名與 linter、設計模式先痛再用、執行緒/鎖/競態/死鎖、async 為何適合 I/O 不適合 CPU、共享記憶體 vs 訊息傳遞、Big O 成長趨勢、排序/遞迴/DP、字串編碼與正則貪婪、I/O 慢與串流、測試金字塔、系統化除錯四步。
+
+- diff 84+/84-（28×3）→ `import_chapters_to_db.mjs ch07`（28 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+- 本日 de-can 累計：ch01/02/04/05/07（4×25 + 28 = **128 題**）。續攻 ch08 React…
