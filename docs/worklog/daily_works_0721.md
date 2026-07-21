@@ -518,3 +518,12 @@ DevOps 章原 16 罐頭。全 23 節換成流程/實務/決策題：DevOps 循�
 
 - import ch15（23 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
 - 本日 de-can 累計 **22 章、510 題**。續攻 ch18 NoSQL…
+
+---
+
+## 📚 章節 de-can：ch18 NoSQL 資料庫 全 25 節（0721）
+
+NoSQL 章原 17 罐頭。全 25 節換成選型/設計/取捨題：NoSQL 放寬 schema/一致換擴展/彈性、文件模型嵌入 vs 引用、Firebase 前端直連要 security rules、Redis 記憶體風險與五種資料結構選對、向量 DB 相似搜與傳統 DB 不擅長、SQL vs NoSQL 問存取模式非優劣、query-first 設計(和關聯式正規化相反)、Mongo CRUD 無 schema 要自律用操作子原子更新、aggregation 下推 DB 算、Firestore onSnapshot 即時但查詢受限與計費爆點、Redis TTL 是快取/限流核心、pgvector metadata filtering 與維度度量一致、Supabase Postgres 全家桶 RLS、NoSQL 也要索引避免無界成長/熱點、polyglot 混用代價、DynamoDB 先定 access pattern/single-table、Cassandra 多數用不到、Neo4j 關係一等公民深度查詢、時序庫優化、ES/Meili 搜尋索引要與主資料同步、備份沒驗證還原=沒備份/異地離線防勒索、connection pool 與 serverless pooler、migration 漸進 expand-contract、選型框架預設關聯式有痛點才加、懂取捨原理可遷移。
+
+- import ch18（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+- 本日 de-can 累計 **23 章、535 題**。續攻 ch19/20/21/22/24（後端小章）…
