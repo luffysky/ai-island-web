@@ -450,3 +450,12 @@ SQL 章原 28/28 全罐頭。全部換成含『真實可跑 SQL』的量身題�
 
 - diff 75+/75- → import_chapters_to_db ch28（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
 - 本日 de-can 累計 **13 章、344 題**。續攻 ch29 JavaScript 進階…
+
+---
+
+## 📚 章節 de-can：ch29 JavaScript 爬蟲 全 25 節（0721·合規優先、反偵測導向正途）
+
+JS 爬蟲章原 24 罐頭。全 25 節換成量身題，延續 ch28 的合法合規貫穿；**特別處理反偵測類 lesson（29.14 反 fingerprint、29.15 TLS 指紋）：不寫惡意規避 how-to，改成「需要對抗到這程度＝對方明確不歡迎、該停下改走官方 API/授權/開放資料」的判斷題**，並列出「該放棄硬抓的訊號」。其餘：Node vs Python 合規標準相同、fetch+Cheerio 輕量與判斷靜態動態、Puppeteer/Playwright 先找 API 再開瀏覽器、Crawlee 框架省基建但合規仍你負責、完整專案增量去重監控、耐改版選擇器與容錯、抓自己有權資料 vs 繞登入抓他人非公開、Puppeteer/Playwright 選型別過度糾結、Bun 瓶頸在網路 I/O 非 runtime（先量測）、攔截 network 的正當用途 vs 竄改繞存取控制、edge 排程 vs 拿來繞封鎖、RSS/sitemap 官方入口優先、Apify/scraping API 合規責任仍在使用者、TS 型別+Zod 執行期驗證不可信網頁資料、監控 0 筆是警訊、serverless 限制、比價工具優先官方 API/聯盟（不保證商業成果）、AI 爬蟲不改變合規邊界且要限制 agent 動作與成本、OCR 抽查與「刻意圖片化＝防抓意圖」、「能不爬就不爬」決策樹與心法。
+
+- diff 75+/75- → import_chapters_to_db ch29（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+- 本日 de-can 累計 **14 章、369 題**。續攻 ch30…
