@@ -65,9 +65,9 @@
         "explanation": "const = 常數（指向不變）、let = 可變區塊變數、var 舊式不推薦。"
       },
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（typeof null === \"object\", 。**絕對不要**放 ,  (3) 不需要動 DOM 的 polyfill：, 0.1 + 0.2 !== 0.3, （自帶 defer + ESM） (2) 第三方追蹤碼（GA、Pixel）：）寫一段小 code 解決一個實際問題。",
-        "hint": "關鍵概念可以從 lesson 內出現的這些關鍵字入手：typeof null === \"object\"、0.1 + 0.2 !== 0.3、（自帶 defer + ESM） (2) 第三方追蹤碼（GA、Pixel）：、 (3) 不需要動 DOM 的 polyfill：。畫完不要光放著、試著用自己的話講一次。",
-        "answer": "心智圖三步：(1) 中心 = lesson 主題 (2) 第一圈 = 主要分類（通常 3-5 個）(3) 第二圈 = 具體例子或工具。畫完拿給朋友看、能講通 = 真懂。常見錯誤：抄關鍵字當分類、應該用自己理解後的歸納。"
+        "question": "JavaScript 一開始只是為了讓網頁「動起來」，現在卻能寫後端、桌面、手機 app。用一句話向朋友解釋 JS 在瀏覽器裡到底負責什麼（相對 HTML/CSS）？並說一個你每天用到的、背後一定有 JS 的功能。",
+        "hint": "HTML 是內容、CSS 是外觀、JS 是『行為/互動』：按了會怎樣、資料怎麼變、跟伺服器要資料。",
+        "answer": "JS 負責網頁的『行為與互動』：處理點擊、驗證表單、跟伺服器要資料再更新畫面、做動畫邏輯。例子：按讚數即時 +1、搜尋框自動補全、無限捲動載入更多——這些都是 JS 在監聽事件、改 DOM、發請求。"
       },
       "outline": [
         {
@@ -113,9 +113,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "什麼時候用 const、什麼時候用 let、為什麼幾乎不該用 var？給三個宣告，各選對關鍵字並說原因：①一個不會重新指派的 API 網址 ②一個迴圈計數器 ③一個之後會累加的總和。const 宣告的物件還能不能改內容？",
+        "hint": "預設 const，需要重新指派才用 let。var 有函式作用域與提升的坑。const 鎖的是『綁定』不是內容。",
+        "answer": "①API 網址→const（不重指派）②迴圈計數器→let（會變）③累加總和→let。原則：預設 const、要重新賦值才 let、別用 var（它是函式作用域、會提升成 undefined、易出 bug）。const 物件仍可改屬性（const obj={}；obj.x=1 可以），因為 const 鎖的是變數綁定、不是物件內容。"
       },
       "outline": [
         {
@@ -181,9 +181,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（if (count !== undefined), count = 0, if (count), hello, ${name}, if (count != null)）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "為什麼 `a = b` 對數字和對物件，行為不一樣？請預測：`let x=1; let y=x; y=2;` 之後 x 是多少？`let o={n:1}; let p=o; p.n=2;` 之後 o.n 是多少？用『值 vs 參照』解釋。",
+        "hint": "原始型別（number/string/boolean…）複製的是值；物件複製的是『參照（指向同一個東西的地址）』。",
+        "answer": "x 還是 1（原始型別複製值，y 改不影響 x）。o.n 變成 2（物件是參照，p 和 o 指向同一個物件，改 p 就是改 o）。這是很多 bug 的根源：想複製物件內容要用淺拷貝（{...o}）或深拷貝（structuredClone）。"
       },
       "outline": [
         {
@@ -249,9 +249,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（x == null）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "`0 == ''`、`0 == '0'`、`null == undefined`、`[] == false` 這些用 == 各是 true 還 false？為什麼團隊幾乎都規定只用 ===？舉一個「用 == 出 bug」的實際情境。",
+        "hint": "== 會做型別轉換（強制轉型）規則很繞；=== 不轉型、型別不同直接 false。",
+        "answer": "== 會強制轉型導致反直覺結果（0=='' 為 true、0=='0' 為 true、[]==false 為 true），規則難記易出錯。=== 不轉型、更可預測。實務 bug：`if (userInput == 0)` 使用者傳空字串也會進去。規則：一律用 ===，需要判空用明確條件（=== null || === undefined 或 ?? ）。"
       },
       "outline": [
         {
@@ -340,9 +340,9 @@
         "explanation": "map = 每個元素做轉換、回傳新陣列。"
       },
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（this, ${hour} 時, 哈囉 ${name}）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "函式宣告 `function f(){}`、函式運算式、箭頭函式 `()=>{}` 有什麼差？箭頭函式的 this 跟一般函式最大的不同是什麼？寫一個回呼（callback）時，為什麼常選箭頭函式？",
+        "hint": "箭頭函式沒有自己的 this（沿用外層），也沒有 arguments、不能當建構子。宣告會提升、運算式不會。",
+        "answer": "宣告會被提升（可先呼叫後宣告）、運算式與箭頭不會。最大差別：箭頭函式沒有自己的 this、this 沿用定義它的外層作用域——所以在物件方法/事件回呼裡用箭頭，就不會發生 this 跑掉指到 window/undefined 的經典坑。回呼常用箭頭正因它保留外層 this、又簡潔。"
       },
       "outline": [
         {
@@ -388,9 +388,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "map / filter / reduce 各解決什麼？給一個訂單陣列，用這三個分別做：①取出每筆的金額 ②只留下金額 > 100 的 ③加總全部金額。為什麼這些比 for 迴圈『更好讀』？forEach 和 map 差在哪？",
+        "hint": "map=一對一轉換、filter=篩選、reduce=多變一（累加）。它們回傳新陣列/值、不改原陣列（宣告式）。",
+        "answer": "①orders.map(o=>o.amount) ②orders.filter(o=>o.amount>100) ③orders.reduce((sum,o)=>sum+o.amount,0)。好讀因為『說要做什麼』而非『怎麼一步步跑』，且回傳新資料不改原陣列。forEach 只是跑一遍（無回傳、做副作用）；map 回傳轉換後的新陣列——要結果用 map、只跑動作用 forEach。"
       },
       "outline": [
         {
@@ -452,9 +452,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "什麼時候用普通物件 {}、什麼時候用 Map？Set 解決什麼問題（去重）？WeakMap 的『弱』是什麼意思、拿來做什麼？各給一個適用情境。",
+        "hint": "Map 的 key 可任意型別、有序、好取 size；Set 自動去重；WeakMap 的 key 是弱參照、key 被回收時自動清、不擋 GC。",
+        "answer": "①key 是字串/固定結構、當設定/紀錄→物件 {}。②key 不是字串、要頻繁增刪/取 size、要保序→Map。③要一堆值去重或判存在→Set（new Set(arr) 去重）。④WeakMap：用物件當 key 存『附加資料』，當那物件沒人用被 GC，關聯資料自動清掉——適合快取/私有資料，不造成記憶體洩漏。"
       },
       "outline": [
         {
@@ -520,9 +520,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（Hello, I'm ${this.name}）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "用 class 寫一個 BankAccount：有餘額、能存款/提款、提款不能超過餘額。哪些該是私有欄位（#balance）？為什麼要私有？constructor、方法、static 方法各在什麼時候用？",
+        "hint": "#balance 私有＝外部不能直接亂改，只能透過方法。static 是『屬於類別本身』不是實例的方法/屬性。",
+        "answer": "餘額用私有 #balance（外部不能 acc.#balance=999 亂改，只能經 deposit/withdraw 且 withdraw 檢查不超額），保護不變條件。constructor 初始化每個帳戶；一般方法操作該實例；static 適合工具或工廠（如 BankAccount.fromJSON(...)、共用常數），不需 new 就能用、也不能存取實例欄位。"
       },
       "outline": [
         {
@@ -580,9 +580,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（Object.create(null), Object.prototype, Hi, I'm ${this.name}）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "`arr.map` 這個方法明明沒寫在你的陣列裡，為什麼能用？用『原型鏈』解釋物件找方法的過程。class 的繼承底層其實也是原型——這對理解 JS 有什麼幫助？",
+        "hint": "找不到的屬性會沿著 __proto__ 一路往上找（實例→Array.prototype→Object.prototype→null）。",
+        "answer": "存取 arr.map 時，自身沒有就沿原型鏈往上找：arr → Array.prototype（map 在這）→ Object.prototype → null。找到就用、找到 null 還沒有就 undefined。class extends 底層就是把子類原型的 __proto__ 指向父類原型。理解這點就懂了 JS 的繼承、為什麼改 prototype 會影響所有實例、以及 instanceof 怎麼運作。"
       },
       "outline": [
         {
@@ -644,9 +644,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "為什麼 `console.log('A'); setTimeout(()=>console.log('B'),0); Promise.resolve().then(()=>console.log('C')); console.log('D');` 的輸出順序是 A D C B，而不是 A B C D？用事件迴圈、宏任務/微任務解釋。",
+        "hint": "同步先跑完；然後清空『微任務』(Promise.then)；再取一個『宏任務』(setTimeout)。微任務優先於宏任務。",
+        "answer": "順序 A D C B。先跑同步：A、D。同步結束後清微任務佇列：Promise.then 的 C。再從宏任務佇列取一個：setTimeout 的 B（即使延遲 0，也要等同步與微任務跑完）。重點：微任務（Promise）優先於宏任務（setTimeout）；JS 單執行緒靠事件迴圈調度，別在同步流程裡『等』非同步。"
       },
       "outline": [
         {
@@ -712,9 +712,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（/api/users/${id}, arr.forEach(async fn)）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "把巢狀 callback（callback hell）改寫成 Promise 鏈、再改成 async/await，說明每一步好在哪。`await` 在迴圈裡『一個一個等』和用 `Promise.all` 『同時發』差在哪？什麼時候該用哪個？",
+        "hint": "async/await 讓非同步讀起來像同步。序列 await 會累加等待時間；Promise.all 並行、總時間≈最慢那個。",
+        "answer": "Promise 鏈解決巢狀難讀；async/await 更進一步像同步好讀好除錯（try/catch 抓錯）。序列 `for(...) await f()` 會一個等完才下一個（總時間相加）；彼此獨立時用 `await Promise.all(items.map(f))` 並行、總時間約等於最慢一個。有相依才序列、無相依就並行。"
       },
       "outline": [
         {
@@ -771,9 +771,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "從最小可運作版開始（HelloWorld 級）、確認能跑、再慢慢加東西。一次只加一個 feature。",
-        "answer": "MVP 心法：能跑通 > 寫得漂亮。先有最簡單的版本（10 行就好）、確認 input → 預期 output、再開始重構 / 加錯誤處理 / 加 UI。先求有、再求好。"
+        "question": "for...of 能遍歷陣列、Map、Set，是因為它們都『可迭代』。Generator（function*）和 yield 能做什麼一般函式做不到的事？舉一個用 generator 產生『無限序列』或『分頁懶載入』的例子。",
+        "hint": "可迭代＝實作了 Symbol.iterator。generator 能『暫停/繼續』、按需產值（lazy），不用一次算完全部。",
+        "answer": "generator 能在 yield 處暫停、下次呼叫 next() 再繼續，按需產值。無限序列：`function* ids(){let i=1;while(true) yield i++}`——要幾個拿幾個、不會爆記憶體。分頁懶載入：generator 每次 yield 下一頁、需要才抓。一般函式必須一次回傳全部，做不到這種『無限/懶惰』的產出。"
       },
       "outline": [
         {
@@ -827,9 +827,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "要在一個有 1000 筆的列表上加點擊事件，為每一項都 addEventListener 有什麼問題？用『事件委派（把監聽掛在父層、靠 e.target 判斷）』怎麼解決？querySelector 和 getElementById 何時用哪個？",
+        "hint": "1000 個監聽耗記憶體、動態新增的項還沒監聽。事件會冒泡到父層，監聽父層即可。",
+        "answer": "為每項掛監聽浪費記憶體、且之後動態新增的項不會有監聽。事件委派：在父容器掛一個監聽，靠事件冒泡，用 e.target.closest('.item') 判斷點到哪一項——一個監聽搞定全部、新增項也自動生效。getElementById 最快用於單一 id；querySelector/All 用 CSS 選擇器更彈性（選 class/巢狀）。"
       },
       "outline": [
         {
@@ -891,9 +891,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（HTTP ${r.status}）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "用 fetch 抓一個 API：要處理『網路失敗』和『HTTP 400/500 但請求本身成功』兩種不同的錯誤。為什麼 fetch 遇到 404 不會 reject？寫出正確的錯誤處理骨架（含 res.ok 檢查與 try/catch）。",
+        "hint": "fetch 只有網路層失敗才 reject；HTTP 錯誤碼（4xx/5xx）仍算『成功收到回應』，要自己看 res.ok。",
+        "answer": "fetch 只在網路/CORS 等層級失敗才 reject；404/500 它視為『成功拿到回應』，所以要自己檢查。骨架：try { const res=await fetch(url); if(!res.ok) throw new Error('HTTP '+res.status); const data=await res.json(); } catch(e){ /* 網路錯或上面 throw 的 HTTP 錯都到這 */ }。加逾時可用 AbortController。"
       },
       "outline": [
         {
@@ -955,9 +955,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（httpOnly cookie）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "localStorage、sessionStorage、cookie、IndexedDB 各適合存什麼？把使用者的登入 token 存 localStorage 有什麼資安風險？存『主題偏好（深/淺色）』用哪個最合適、為什麼？",
+        "hint": "localStorage 永久、同源、純字串、JS 可讀（XSS 可偷）；sessionStorage 關分頁就沒；cookie 會自動帶去伺服器；IndexedDB 存大量結構化資料。",
+        "answer": "偏好設定（主題）→localStorage（小、永久、純前端用）。大量結構化資料/離線→IndexedDB。需要每次請求帶給後端的→cookie。token 存 localStorage 的風險：任何 XSS 都能 JS 讀走它 → 建議放 HttpOnly cookie（JS 讀不到）。原則：敏感憑證別放 JS 讀得到的地方。"
       },
       "outline": [
         {
@@ -1011,9 +1011,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "頁面在做一個很重的計算（如處理大圖）時整個卡住、按鈕點不動，為什麼？Web Worker 怎麼解決？Worker 裡為什麼不能直接操作 DOM，主執行緒和 Worker 之間怎麼溝通？",
+        "hint": "JS 主執行緒同時只做一件事，重計算會卡住 UI。Worker 是另一條執行緒、但沒有 DOM 存取、靠 postMessage 傳訊。",
+        "answer": "因為 JS 主執行緒單一、重計算佔住它 UI 就卡。Web Worker 把計算丟到另一條執行緒跑、主執行緒繼續回應互動。Worker 不能碰 DOM（DOM 非執行緒安全），只能透過 postMessage / onmessage 跟主執行緒傳資料（結構化複製，大資料可用 Transferable 轉移所有權避免複製）。"
       },
       "outline": [
         {
@@ -1075,9 +1075,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "WebAssembly（Wasm）在什麼場景比 JS 快很多、值得用？它是要『取代』JS 嗎？舉兩個實務上用 Wasm 的例子，並說明 JS 和 Wasm 如何分工協作。",
+        "hint": "Wasm 是接近原生速度的二進位格式，適合 CPU 密集運算；但操作 DOM/生態仍靠 JS。兩者互補。",
+        "answer": "適合 CPU 密集：影像/影片編解碼、遊戲引擎、3D、加密、編譯器、把 C/C++/Rust 既有程式搬上網。它不取代 JS——DOM 操作、事件、生態仍是 JS 的強項。分工：JS 管介面與膠水、把重運算交給 Wasm 模組跑再拿結果回來。例：Figma（繪圖）、線上影音剪輯。"
       },
       "outline": [
         {
@@ -1135,9 +1135,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "ESM（import/export）和 CommonJS（require/module.exports）差在哪？為什麼 ESM 能做『tree-shaking（搖掉沒用到的程式碼）』而 CommonJS 較難？在瀏覽器和 Node 現在各偏好哪種？",
+        "hint": "ESM 是靜態的（編譯期就知道 import 了什麼）、CommonJS 是動態的（執行時 require）。靜態才好分析與搖樹。",
+        "answer": "ESM 語法靜態、import 在頂層、編譯期就能分析用了哪些匯出→打包工具能 tree-shake 掉沒用到的。CommonJS 的 require 是執行時動態呼叫、難靜態分析。現在瀏覽器原生支援 ESM、Node 也全面支援 ESM（現代專案首選 ESM），CommonJS 主要見於舊套件與相容需求。"
       },
       "outline": [
         {
@@ -1195,9 +1195,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "挑兩個設計模式（如 Module 封裝私有、Observer 訂閱通知、Singleton 單例），各說一個 JS 前端會用到的真實場景。為什麼『不是每個地方都要套模式』——過度設計有什麼壞處？",
+        "hint": "模式是為了解決特定問題（解耦、封裝、共用狀態），不是拿來炫技。用錯地方反而更複雜。",
+        "answer": "Observer：事件系統/狀態管理——資料變了通知所有訂閱的 UI 更新（如 store.subscribe）。Module：用閉包封裝私有變數、只暴露公開 API。Singleton：全站共用一份設定/連線池。過度設計壞處：多餘抽象讓程式更難讀、更難改、除錯成本上升。原則：先用最簡單能動的寫法，痛點出現再引入模式。"
       },
       "outline": [
         {
@@ -1271,9 +1271,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "一個列表捲動很卡、輸入框每打一個字就發一次搜尋請求。用 debounce / throttle 分別解決什麼？大量 DOM 更新為什麼要『批次』或用 DocumentFragment？請對症下藥。",
+        "hint": "debounce=停下來才做（搜尋）；throttle=固定頻率做（捲動/resize）。頻繁改 DOM 會多次 reflow。",
+        "answer": "搜尋輸入用 debounce（使用者停止打字 300ms 才發請求，少發很多次）。捲動/resize 用 throttle（固定間隔執行一次）。大量 DOM 更新：先在 DocumentFragment 或字串裡組好、一次插入，避免每次 append 都觸發 reflow/repaint。原則：先量測熱點，別盲目優化。"
       },
       "outline": [
         {
@@ -1339,9 +1339,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（constructor, Set-Cookie: token=xxx; SameSite=Strict, prototype, __proto__, Object.create(null)）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "使用者留言直接用 innerHTML 塞進頁面，為什麼是 XSS 大洞？該怎麼安全地顯示使用者輸入？CSRF 和 XSS 的攻擊面差在哪？『Prototype Pollution』又是怎麼發生的？",
+        "hint": "innerHTML 會執行內含的 <script>/事件；用 textContent 或消毒。CSRF 是借你的登入狀態發請求。原型污染是往 __proto__ 塞東西污染所有物件。",
+        "answer": "innerHTML 會把使用者輸入當 HTML 執行（含 <img onerror> 之類）→ XSS。安全做法：顯示純文字用 textContent、需要 HTML 就用消毒庫（DOMPurify）。CSRF：攻擊者網站借你已登入的 cookie 發請求（防禦：SameSite cookie、CSRF token）。Prototype Pollution：把 __proto__/constructor 當 key 合併進物件，污染 Object.prototype 影響全部物件（防禦：驗證 key、用 Map、凍結原型）。"
       },
       "outline": [
         {
@@ -1407,9 +1407,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
-        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+        "question": "為一個 `formatPrice(n)` 函式寫測試，要涵蓋哪些案例（正常、邊界、異常）？單元/整合/E2E 測試各測什麼層級？為什麼有人說『測試最大的價值是敢放心重構』？",
+        "hint": "邊界：0、負數、超大、小數、非數字。單元測函式、整合測模組協作、E2E 測整條使用者流程。",
+        "answer": "formatPrice 案例：一般值、0、負數、很大值、小數進位、null/NaN/字串等異常。層級：單元（單一函式邏輯）→整合（幾個模組一起，如 API+DB）→E2E（模擬使用者從點擊到結果整條流程）。測試最大價值：有測試護網，你改內部實作（重構）只要測試還綠就知道沒改壞行為，敢動、迭代更快。"
       },
       "outline": [
         {
@@ -1479,9 +1479,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "JS 有垃圾回收，為什麼還會『記憶體洩漏』？列出三個常見洩漏來源（忘了移除的事件監聽、閉包抓住大物件、全域變數/快取只增不減），並各說怎麼避免。",
+        "hint": "GC 只回收『沒人再參照』的東西。只要還有引用鏈連著，就不會被回收——洩漏往往是『忘了放手』。",
+        "answer": "GC 回收的是『再也連不到』的物件；只要還被參照就留著。常見洩漏：①事件監聽/計時器忘了移除（元件卸載要 removeEventListener/clearInterval）②閉包長期抓住大物件（用完設 null 或縮小捕獲範圍）③全域變數或快取無上限成長（設容量上限、用 WeakMap 讓 key 消失時自動清）。定位工具：DevTools Memory 快照比對。"
       },
       "outline": [
         {
@@ -1543,9 +1543,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "寫一個正規表示式驗證『台灣手機號（09 開頭共 10 碼）』並說明每一段的意思。為什麼正則要小心『災難性回溯』拖垮效能？擷取群組 () 和非擷取群組 (?:) 差在哪？",
+        "hint": "^09\\d{8}$ 就夠。巢狀量詞（(a+)+）在不匹配時會爆炸性回溯。() 會記住擷取、(?:) 只分組不擷取。",
+        "answer": "台灣手機：`/^09\\d{8}$/`——^ 開頭、09 固定、\\d{8} 再 8 個數字、$ 結尾（共 10 碼）。災難性回溯：像 (a+)+$ 這種巢狀量詞遇到長字串不匹配時會嘗試指數量級組合、卡死→避免巢狀/重疊量詞。() 會把匹配內容存進群組（可回頭引用/取值）；(?:) 只做分組不佔擷取編號、稍快也更清楚。"
       },
       "outline": [
         {
@@ -1599,9 +1599,9 @@
         }
       ],
       "exercise": {
-        "question": "開 Chrome F12 console、用本節介紹的語法（相關 API）寫一段小 code 解決一個實際問題。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "挑兩個近年的 JS 新特性（如可選鏈 ?.、空值合併 ??、頂層 await、Array.at()、structuredClone），各說它解決了以前什麼痛點、以及一個用得到的實際情境。學新特性時該怎麼判斷『現在能不能用』（相容性）？",
+        "hint": "?. 免去層層 && 判空；?? 只在 null/undefined 才給預設（比 || 精準）；structuredClone 原生深拷貝。相容性查 caniuse / Node 版本。",
+        "answer": "?.（可選鏈）：a?.b?.c 免去 a && a.b && a.b.c 一長串判空。??（空值合併）：`x ?? 預設` 只有 x 是 null/undefined 才給預設，不像 || 會把 0/''/false 也當假。structuredClone：一行原生深拷貝，取代 JSON.parse(JSON.stringify)（後者會丟 Date/undefined）。判斷能不能用：查 caniuse（瀏覽器）、Node 版本、或看有沒有 build 工具轉譯（Babel）。"
       },
       "miniQuiz": {
         "question": "根據這課所說，為什麼 2026 年寫 JS 程式時「一定要認識這些新特性」？",

@@ -189,7 +189,8 @@
 - [~] 4.1.1 **剩餘技術章 de-can**（audit：ch01–60 曾 74% 罐頭練習，只清了旗艦+薄章）：ch01/02/04/05/07/08/09/10/16/17/26–32/34/35/36/46… 逐章 de-can + 視情況疊教具
   - [x] ~~ch01 HTML 完整：25 節全 de-can~~ ✅ 0721（原本 1.2–1.25 全同一句「做個人介紹頁」+同 hint/answer、標籤 fill 常壞→換各節量身題）
   - [x] ~~ch02 CSS 完整：25 節全 de-can~~ ✅ 0721（原本 22/25 是「copy code 改 1-2 參數」罐頭→換各節量身題：選擇器/特異性排勝負/box-sizing 算寬/flex 導覽列/grid 相簿 auto-fill/position 五情境/HSL 深淺色/RWD mobile-first/CSS 變數切深色模式/transition vs animation/transform 效能/Sass mixin/Tailwind 取捨/CSS-in-JS/Design Token/動畫心理學/a11y 對比焦點/捲動效能/版面除錯三兇手/上線檢查表）
-  - [ ] 剩 ch04/05/07/08/09/10/16/17/26–32/34–36/46… 續 de-can
+  - [x] ~~ch04 JavaScript 完整：25 節全 de-can~~ ✅ 0721（罐頭→各節量身題：var/let/const 選用、值 vs 參照、== vs === 陷阱、箭頭函式 this、map/filter/reduce、Map/Set/WeakMap、class 私有欄位、原型鏈找方法、事件迴圈 A-D-C-B、Promise.all vs 序列 await、generator 無限序列、事件委派、fetch 錯誤處理、儲存選型與 token 風險、Web Worker、Wasm 分工、ESM vs CJS tree-shaking、設計模式取捨、debounce/throttle、XSS/CSRF/原型污染、測試三層、記憶體洩漏三來源、正則手機驗證/回溯、2026 新特性）
+  - [ ] 剩 ch05/07/08/09/10/16/17/26–32/34–36/46… 續 de-can
 - [ ] 4.1.2 **deep-rewrite tier 未動章**：ch15、ch24、ch32、ch34、ch35、ch36、ch40、ch41、ch63、ch68（strict-spec）、ch72–75、附錄 ch61–67/69–70
 - [ ] 4.1.3 教具庫擴充：mobile 專屬教具（給 ch11）、規劃 B 教具（RegexTester/CronBuilder/JsonInspector 進階/HttpInspector/Tokenizer/SortingViz/GitGraph/NeuralForward/AuthFlow/MLBoundary）——依技術章需要再建
 - [ ] 4.1.4 圖文解說圖：概念/B/D/E/F 區操作圖 110+ 張（🔴 等林董生圖；A 區 29 張 ✅）

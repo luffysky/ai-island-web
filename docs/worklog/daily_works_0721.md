@@ -346,3 +346,13 @@ ch49 + ch50（AI Agent / n8n 兩大旗艦章）完成。**教具庫新增 2 個�
   - Python 改（格式一致、diff 75+/75-）→ `import_chapters_to_db.mjs ch02`（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
 - **辭典 i18n**：跑一輪 `translate-sync-all`（背景、免費 Google），本次翻 **1058 欄位×語言**（dictionary 達 500/輪上限 → seed-41/42 新詞已覆蓋、仍有 backlog；lesson 也有 backlog）。冪等、重跑即可清完。
 - 本日章節 de-can 累計：ch01 + ch02（各 25 節）。續攻 ch04/05/07–10/16/17/26–32/34–36/46…
+
+---
+
+## 📚 章節 de-can：ch04 JavaScript 全 25 節（0721）
+
+原本 ~20/25 罐頭練習。全 25 節換成各節量身題（多為除錯/預測/設計/分析型，貼近真實 JS 開發）：
+JS 職責、var/let/const 選用、值 vs 參照預測、`0==''` 等 == 陷阱、箭頭函式 this、map/filter/reduce 三招、Map/Set/WeakMap 選用、class 私有欄位保護、原型鏈找方法、事件迴圈 A-D-C-B 排序、Promise.all vs 序列 await、generator 無限序列、事件委派省監聽、fetch 為何 404 不 reject、儲存選型與 token XSS 風險、Web Worker 不能碰 DOM、Wasm 適用場景、ESM vs CommonJS tree-shaking、設計模式勿過度、debounce/throttle 對症、XSS/CSRF/原型污染防禦、測試三層價值、記憶體洩漏三來源、正則手機驗證+災難性回溯、2026 新特性（?./??/structuredClone）。
+
+- Python 改（diff 75+/75-）→ `import_chapters_to_db.mjs ch04`（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+- **本日章節 de-can 累計：ch01 HTML + ch02 CSS + ch04 JavaScript（各 25 節、共 75 題重寫）。** 續攻 ch05 TypeScript…
