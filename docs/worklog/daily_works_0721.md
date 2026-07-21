@@ -509,3 +509,12 @@ Go 章原 22 罐頭。全 25 節換成 Go 量身題：Go 設計哲學(簡單/單
 
 - diff 75+/75- → import_chapters_to_db ch46（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
 - 本日 de-can 累計 **21 章、487 題**。剩：ch15/18/19/20/21/22/24（後端/DevOps 全罐頭）+ 數章殘餘罐頭。
+
+---
+
+## 📚 章節 de-can：ch15 前端 DevOps 全 23 節（0721）
+
+DevOps 章原 16 罐頭。全 23 節換成流程/實務/決策題：DevOps 循環與快速回滾同等重要、feature branch/PR/conflict、CI 擋 PR 且要快否則被繞、部署平台便利與取捨(靜態 vs 需 server)、secrets 絕不 commit/前端 env 會公開/金鑰後端、preview deploy 每 PR 可看/staging 別在 prod 試/用假資料、Sentry 監控與 source map/告警對症別吵、feature flag 先部署後發布+灰度縮爆炸半徑+A/B 嚴謹、上線 SOP 別週五下午、pnpm 硬連結/統一+lockfile、GitHub Flow vs Git Flow 短分支少衝突、code review 對事不對人格式交工具、SemVer+changelog 契約、monorepo Turborepo 快取只建受影響、品質工具鏈自動化勝自律/Prettier ESLint 分工、Storybook 隔離開發活文件、README 讓新人自助/文件會過期、測試金字塔別全 E2E/視覺回歸、performance budget/CWV/真實裝置量、a11y 是法規+語意 HTML+鍵盤+對比/工具抓部分、SaaS 樣板省重造但要懂底層、開源貢獻禮節與 License 沒授權=保留所有權利、on-call 止血+blameless postmortem 追根因防再犯。
+
+- import ch15（23 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+- 本日 de-can 累計 **22 章、510 題**。續攻 ch18 NoSQL…
