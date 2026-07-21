@@ -72,15 +72,17 @@
 - [x] ~~2.5 收尾檢查（tsc/vitest 153(+8 msg-coach)/next build 全綠 + DB 接線實測 + 4 語 nav i18n）~~ ✅
 - 🆕 **入口**：nav「訊息軍師」(4 語 i18n) ✅；`message_coach` 已註冊進 AiUsageKey（後台可配模型）✅。
 
-### 3. AI 求職包（履歷+自傳+面試模擬+求職信）⬜
-- [ ] 3.1 `resume_profiles` 表（經歷/技能/目標職位）
-- [ ] 3.2 後端
-  - [ ] 3.2.1 產履歷/自傳/求職信（結構化輸出）
-  - [ ] 3.2.2 PDF 產出（沿用現有 PDF 能力）
-  - [ ] 3.2.3 面試模擬（agent 對話：AI 面試官出題→答→回饋報告）
-- [ ] 3.3 前端 `/job-kit`：填經歷精靈→產文件→下載 PDF；面試模擬對話 + 回饋
-- [ ] 3.4 變現：一次性產包付費 / 短訂閱
-- [ ] 3.5 收尾檢查
+### 3. AI 求職包（履歷+自傳+面試模擬+求職信）✅ **已上線（0721）** — 一站式 `/me/job-kit` hub
+> 盤點發現大半已存在（履歷 `/me/resume`、面試模擬 `/me/mock-interview` + 評分/歷史、`/me/career-path` 求職閉環）。本次補齊「自傳」「求職信」+ 統整 hub。
+- [~] 3.1 `resume_profiles` 表（經歷/技能/目標職位）— **刻意不落地**：履歷/自傳從學習資料即時生成（沿用現況、career-path 註解已載明）；求職信經歷由使用者當場填。之後要存文件再加 `job_kit_documents` 表。
+- [x] ~~3.2 後端~~ ✅
+  - [x] ~~3.2.1 產履歷（既有）/自傳(`/api/me/job-kit/bio`)/求職信(`/api/me/job-kit/cover-letter`) — `lib/job-kit.ts` 共用 loadCareerData（兩段查穩、不靠脆弱 embed）+ prompt builders + AI runner；requireAiAction 月配額 bio/cover_letter 各 3/月~~ ✅
+  - [x] ~~3.2.2 PDF 產出（沿用既有 `window.print()` + `@media print`；專案無真 PDF 生成庫、unpdf 只是 parser）~~ ✅（要像素級 PDF 再加 @react-pdf）
+  - [x] ~~3.2.3 面試模擬（既有 `/me/mock-interview` 多輪對話+評分+`mock_interview_sessions` 歷史，5 模式 14 角色）~~ ✅ 沿用不重造
+- [x] ~~3.3 前端 `/me/job-kit`（不另開 top-level /job-kit；留在 /me 內共用 auth/sidebar/quota）：履歷+面試入口卡 + 自傳/求職信產生器（表單→產文件→複製/下載.md/印PDF）~~ ✅
+- [ ] 3.4 變現：一次性產包付費 / 短訂閱（現：免費各 3/月、Premium 無限；付費產包 ← 之後）
+- [x] ~~3.5 收尾檢查（tsc/vitest 164/next build 全綠 + DB 接線實測〔loadCareerData 兩段查、check_ai_action bio/cover_letter〕+ MeSidebar 入口）~~ ✅
+- 🆕 **入口**：`MeSidebar` 加「🎒 AI 求職包」；AI_ACTION_CAPS 加 `bio:3`/`cover_letter:3`（generic RPC、免 migration）。
 
 ### 4. Agent 補完 + 生活助理範本
 - [x] ~~4.1 **一鍵生活助理範本庫** ✅ 已上線（0721）~~（把 Agent 從工程師工具轉成普通人生活助理）

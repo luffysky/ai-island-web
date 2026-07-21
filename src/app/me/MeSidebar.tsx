@@ -62,6 +62,7 @@ const ME_LINKS: { href: string; icon: React.ReactNode; label: string }[] = [
   { href: "/me/api-keys", icon: <span>🔑</span>, label: "對外 API Key" },
   { href: "/me/assignments", icon: <span>📋</span>, label: "作業" },
   { href: "/me/portfolios", icon: <span>🎨</span>, label: "作品集" },
+  { href: "/me/job-kit", icon: <span>🎒</span>, label: "AI 求職包" },
   { href: "/me/resume", icon: <span>🪪</span>, label: "AI 履歷" },
   { href: "/me/mock-interview", icon: <span>🎤</span>, label: "AI 模擬面試" },
   { href: "/me/support", icon: <span>💬</span>, label: "客服中心" },

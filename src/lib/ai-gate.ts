@@ -99,6 +99,8 @@ export const AI_ACTION_CAPS = {
   tutor_thread: 10,
   resume: 3,
   interview: 3,
+  bio: 3,
+  cover_letter: 3,
   challenge: 3,
   subscription_rec: 5,
   blog_write: 3,

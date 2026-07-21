@@ -246,3 +246,27 @@ ch49 + ch50（AI Agent / n8n 兩大旗艦章）完成。**教具庫新增 2 個�
 
 ### #1 剩餘（之後）
 - 付費/Z幣 gating（§1.5，運勢四面向深解、塔羅無限）、八字/紫微（裝 lunar-javascript §1.1.1.2）、cron job #10🔴、首頁模式卡、截圖分享圖卡。
+
+---
+
+## 🎒 大眾變現 #3「AI 求職包」— 上線（0721）
+
+先派 Explore 代理盤點「求職相關現有功能」，發現 **#3 大半已存在**：履歷(`/me/resume` 依學習資料即時生成)、面試模擬(`/me/mock-interview` 多輪對話+評分+`mock_interview_sessions` 歷史、5 模式 14 角色)、`/me/career-path` 求職閉環 funnel。**只缺自傳、求職信、以及一個統整 hub。** → 只補這三塊，不重造。
+
+### 做了什麼
+- **共用 lib** `src/lib/job-kit.ts`：`loadCareerData`（撈 profiles/lesson_progress/portfolios/certificates；**改兩段查 chapters 標題、不靠 PostgREST embed**——實測發現 lesson_progress↔chapters 無 FK relationship、resume 舊 code 是靜默降級成空章節，這裡修穩）、`buildBioPrompt`/`buildCoverLetterPrompt`（護欄：只依真實資料、不捏造）、`generateJobKitMarkdown`（模型解析 + callAI + 回 tokens）。
+- **API**（鏡像 resume 的 requireAiAction 月配額 + admin_assistant 模型 + consumeAiTokens）：
+  - `POST /api/me/job-kit/bio`（自傳、依學習資料 + 可選 focus、`bio` 3/月）。
+  - `POST /api/me/job-kit/cover-letter`（求職信、需 company/jobTitle + 可選 jd/highlights、`cover_letter` 3/月）。
+  - `AI_ACTION_CAPS` 加 `bio:3`/`cover_letter:3`（`consume_ai_action` RPC 是 generic text-keyed、**免 migration**、已實測 check_ai_action 兩型都 OK）。
+- **前端** `/me/job-kit`（留在 /me 內、共用 auth/sidebar/quota，不另開 top-level）：履歷+面試入口卡 + 自傳/求職信兩個產生器（表單→生成→markdown 預覽→複製/下載.md/印 PDF，沿用 ResumeClient 的 renderMarkdown + `window.print()`）。
+- **入口**：`MeSidebar` 加「🎒 AI 求職包」（置於履歷/面試上方）。
+
+### 收尾檢查（全綠）
+- **PDF**：專案無真 PDF 生成庫（`unpdf` 只是 parser）→ 沿用既有 `window.print()` + `@media print`（零新依賴）。要像素級再加 @react-pdf。
+- **DB 接線實測**：loadCareerData 四查（profiles/lesson_progress/portfolios/certificates）+ chapters `.in()` 兩段查 = OK；`check_ai_action(bio/cover_letter)` = OK。
+- **建置**：`tsc` ✅ · `vitest` **164 passed** ✅ · `next build` exit 0（/me/job-kit、/api/me/job-kit/{bio,cover-letter} 編出）✅。
+
+### 大眾變現總進度（0721）
+- ✅ #1 每日運勢（第一刀星座 + 第二刀塔羅） · ✅ #2 訊息軍師 · ✅ #3 AI 求職包 · ✅ #4.1 生活助理範本庫。
+- 四大功能主幹全部落地。剩：各功能的付費 gating（#1.5/#2.4/#3.4）、#1 八字精算、#4.2 OAuth🔴/#4.3 沙盒🔴/#4.4 ROI、cron job #10🔴、首頁模式卡入口。
