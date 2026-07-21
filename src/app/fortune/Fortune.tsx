@@ -6,6 +6,7 @@ import {
   Share2, Check, Cake, RefreshCw, ChevronDown, History, Clock,
 } from "lucide-react";
 import { TarotSection } from "./TarotSection";
+import { BaziSection } from "./BaziSection";
 import { HistorySection } from "./HistorySection";
 
 type FortunePayload = {
@@ -157,6 +158,9 @@ export function Fortune() {
 
       {/* 塔羅占卜 */}
       <TarotSection />
+
+      {/* 八字命盤 */}
+      <BaziSection />
 
       {/* 歷史運勢 */}
       <HistorySection />
@@ -321,7 +325,7 @@ function BirthForm({ onSaved }: { onSaved: () => void }) {
           className="w-full py-3 rounded-full bg-violet-600 text-white font-medium hover:bg-violet-700 disabled:opacity-60 transition flex items-center justify-center gap-2 shadow-sm">
           {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> 占卜中…</> : <><Sparkles className="w-4 h-4" /> 看今天的運勢</>}
         </button>
-        <p className="text-xs text-black/40 dark:text-white/40 text-center leading-relaxed">農曆 / 八字精算之後上線；目前先用西洋星座為你占卜。</p>
+        <p className="text-xs text-black/40 dark:text-white/40 text-center leading-relaxed">填了生日就有西洋星座每日運勢；再填時辰，八字命盤更完整。</p>
       </div>
     </div>
   );

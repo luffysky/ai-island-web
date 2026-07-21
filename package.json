@@ -79,6 +79,7 @@
     "highlight.js": "^11.10.0",
     "lowlight": "^3.3.0",
     "lucide-react": "^0.469.0",
+    "lunar-javascript": "^1.7.7",
     "next": "^15.0.0",
     "next-intl": "^3.26.5",
     "nipplejs": "^1.0.3",
