@@ -44,14 +44,33 @@ async function fetchGeo(ip: string): Promise<{ location: string; org?: string; i
   if (!ip || ip === "0.0.0.0" || ip.startsWith("127.") || ip.startsWith("10.") || ip.startsWith("192.168.")) {
     return { location: "本機", ipText: ip };
   }
+  // ＊IP 定位本來就不精準：台灣 ISP/手機 IP 常被歸到區域機房（台中/台北），跟實際位置可能差幾十公里。
+  // 精準位置要靠使用者授權 GPS（🎯 GPS，見 preciseLocation）。這裡盡量用較準的來源。
+
+  // 1. ipwho.is（https、免費免 key、含 region 縣市，台灣通常比 ipinfo 準一點）
+  try {
+    const r = await fetch(`https://ipwho.is/${ip}?lang=zh-TW`, { signal: AbortSignal.timeout(3000), headers: { "User-Agent": "ai-island" } });
+    if (r.ok) {
+      const d = await r.json() as any;
+      if (d?.success) {
+        const parts = [d.country, d.region, d.city].filter(Boolean);
+        const location = parts.length ? [...new Set(parts as string[])].join(" · ") : "?";
+        const mapsUrl = d.latitude != null && d.longitude != null ? `https://www.google.com/maps?q=${d.latitude},${d.longitude}` : undefined;
+        const org = d.connection?.isp || d.connection?.org;
+        return { location, org: org ? String(org).slice(0, 60) : undefined, ipText: ip, mapsUrl };
+      }
+    }
+  } catch { /* 換下一個來源 */ }
+
+  // 2. fallback：ipinfo.io（有 IPINFO_TOKEN 更準）
   const token = process.env.IPINFO_TOKEN;
   try {
     const url = token ? `https://ipinfo.io/${ip}/json?token=${token}` : `https://ipinfo.io/${ip}/json`;
     const r = await fetch(url, { signal: AbortSignal.timeout(3000), headers: { "User-Agent": "ai-island" } });
     if (!r.ok) return { location: "?", ipText: ip };
     const d = await r.json() as any;
-    const parts = [d.country, d.city, d.postal].filter(Boolean);
-    const location = parts.length ? parts.join(" · ") : "?";
+    const parts = [d.country, d.region, d.city, d.postal].filter(Boolean);
+    const location = parts.length ? [...new Set(parts as string[])].join(" · ") : "?";
     const mapsUrl = d.loc ? `https://www.google.com/maps?q=${d.loc}` : undefined;
     return { location, org: d.org ? String(d.org).slice(0, 60) : undefined, ipText: ip, mapsUrl };
   } catch {
