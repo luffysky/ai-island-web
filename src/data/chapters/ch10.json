@@ -43,9 +43,9 @@
         }
       ],
       "exercise": {
-        "question": "找一個你身邊的例子、用「為什麼純 React / Vue 不夠？」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "純 React/Vue 做出來的 SPA，在『首屏速度、SEO、資料抓取、路由、後端』上各有什麼先天不足？Next/Nuxt 這種『meta-framework』把哪些原本要自己拼裝的東西內建了？",
+        "hint": "SPA 首屏空殼、爬蟲看不到、要自己接路由/SSR/後端。Meta-framework 一站式。",
+        "answer": "純 SPA：首屏是空殼要等 JS（慢）、爬蟲看不到內容（SEO 差）、路由/SSR/資料抓取/後端都要自己拼。Next/Nuxt 內建：SSR/SSG/ISR（伺服器先產 HTML）、檔案即路由、資料抓取與快取、API 路由（免另起後端）、圖片/字型優化、部署最佳化——把一堆『每個專案都要自己搭』的基建收成約定與內建，讓你專注寫功能。"
       },
       "outline": [
         {
@@ -107,9 +107,9 @@
         }
       ],
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「五種渲染模式深入」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "CSR / SSR / SSG / ISR / RSC 五種渲染各在『何時產生 HTML、快不快、內容多新』上如何取捨？給三個頁面選模式並說原因：①每天更新的部落格文章 ②即時股價儀表板 ③關於我們靜態頁。",
+        "hint": "SSG build 時產、SSR 每請求產、ISR 定期再生、CSR 瀏覽器產、RSC 伺服器元件。",
+        "answer": "CSR：瀏覽器才渲染（首屏慢、SEO 差、適合登入後的私有互動頁）；SSR：每次請求伺服器現產（內容最新、稍慢、適合個人化/即時）；SSG：build 時就產靜態（最快最省、內容到下次 build 才變）；ISR：SSG + 定期背景再生（靜態的快又能定時更新）；RSC：伺服器元件在伺服器算好、減 client JS。選：①部落格文章→SSG 或 ISR（快、偶爾更新）②即時股價→SSR/CSR（要最新）③關於我們→SSG（純靜態）。"
       },
       "outline": [
         {
@@ -183,9 +183,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "App Router 的 app/ 目錄裡，page/layout/loading/error/route 這幾個特殊檔各是什麼角色？layout 為什麼在切頁時『不重繪、保留狀態』？資料夾結構怎麼對應網址（巢狀、group、動態段）？",
+        "hint": "page=頁面、layout=共用外框(不隨子頁重繪)、loading=Suspense fallback、error=錯誤邊界、route=API。",
+        "answer": "page.tsx＝該路由的頁面內容；layout.tsx＝包住子頁的共用外框（導覽/側欄），切子頁時 layout 不重繪、狀態保留（如展開的選單）；loading.tsx＝該段的 Suspense fallback（載入中）；error.tsx＝該段的錯誤邊界；route.ts＝API 端點。網址映射：資料夾即路徑、[id] 動態段、(group) 只分組不進網址、巢狀資料夾＝巢狀路由與 layout 疊加。"
       },
       "outline": [
         {
@@ -259,9 +259,9 @@
         }
       ],
       "exercise": {
-        "question": "找一個你身邊的例子、用「Server Components vs Client Components」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "App Router 預設元件是 Server Component——它能直接 await 讀 DB、但不能做什麼？什麼時候才加 'use client'？把 'use client' 標在越靠近葉子越好，為什麼（bundle 大小）？一個 Server Component 能不能 import 並渲染 Client Component？反過來呢？",
+        "hint": "Server 不能 useState/事件/瀏覽器 API。'use client' 影響該檔及其 import。",
+        "answer": "Server Component 可直接 await fetch/讀 DB、不進 client bundle；但不能用 useState/useEffect/事件/瀏覽器 API。需要互動（onClick、狀態、window）才在該葉子加 'use client'。標越靠葉子越好：'use client' 會讓該檔＋它 import 的元件都進 client bundle，標太上層等於把一大片都送去瀏覽器。Server 可以 import 並渲染 Client（常見）；Client 不能 import Server Component 當子元件直接用，但可透過 children/props 把 Server 內容傳進去。"
       },
       "outline": [
         {
@@ -331,9 +331,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "App Router 用 generateMetadata 動態產每頁的 title/description/OG 有什麼 SEO 與分享好處？動態路由 [slug] 怎麼在 generateMetadata 拿到參數去查資料？為什麼 OG 圖網址要用絕對路徑？（本站辭典/證書頁就是這樣做的）",
+        "hint": "generateMetadata 依 params 產每頁 meta；OG 用絕對網址社群才抓得到。",
+        "answer": "generateMetadata({params}) 依該頁資料動態產 <title>/description/openGraph——每篇文章有自己的標題與分享預覽卡，利於搜尋收錄與社群點擊率。動態路由：async generateMetadata({params}) 裡 await params 拿 slug、再查 DB 取那筆資料填 meta。OG 圖要絕對網址（https://…）因為社群平台是從外部抓圖，相對路徑它解不到。（本站 /dictionary/[slug]、/certificates/[code] 正是這個模式。）"
       },
       "outline": [
         {
@@ -411,9 +411,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Server Action（'use server' 的 async 函式）讓表單不用自己寫 API 端點就能改後端資料，是怎麼運作的？它相比手寫 fetch API route 少了什麼樣板？用 Server Action 時為什麼一定要在函式內『自己驗證權限與輸入』（別以為它安全）？",
+        "hint": "Server Action 在伺服器跑、可綁 form action、免手寫 API + fetch。但它是公開端點。",
+        "answer": "Server Action 是標了 'use server' 的伺服器函式，可直接綁 <form action={fn}> 或在 client 呼叫——Next 幫你在背後產生端點與傳輸，你不用自己寫 API route + fetch + 序列化。少掉：手寫路由、fetch、loading/error 樣板（配 useActionState 更省）。但務必在函式內驗權限與輸入：Server Action 編譯後其實是個可被任何人呼叫的公開端點，別假設只有你的表單會呼叫它——當成 API 一樣做 auth 與驗證。"
       },
       "outline": [
         {
@@ -479,9 +479,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "什麼時候用 Route Handler（app/api/.../route.ts）而不是 Server Action 或直接在 Server Component 抓資料？route.ts 裡怎麼分 GET/POST、怎麼讀認證使用者、回 JSON？（本站 /api/fortune、/api/message-coach 就是這樣）為什麼要設 runtime/dynamic？",
+        "hint": "API route 適合給外部/client fetch、webhook、非表單的端點。export GET/POST。",
+        "answer": "用 Route Handler 當：要給前端 fetch 的 JSON API、第三方 webhook、檔案/串流回應、需要標準 HTTP 方法的端點（Server Action 較適合表單 mutation）。route.ts：export async function GET/POST(req)，用 supabase.auth.getUser() 讀登入者、NextResponse.json(...) 回傳。設 export const dynamic='force-dynamic'（不要被靜態快取、每次即時跑）、runtime='nodejs'（要用 node API）——否則可能被預渲染或跑在 edge 缺 API。（本站 /api/fortune/*、/api/message-coach 正是此模式。）"
       },
       "outline": [
         {
@@ -547,9 +547,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "App Router 的 fetch 有『請求記憶化、資料快取、full route cache』多層。為什麼同一次渲染裡 fetch 同一個 URL 兩次只會真的打一次？想要『這筆資料每次都最新』和『快取但每 60 秒更新』各怎麼設（no-store / revalidate）？",
+        "hint": "同渲染去重；cache: 'no-store' 不快取；next:{revalidate:60} 定時再生。",
+        "answer": "同一次渲染中 fetch 同 URL 會被『請求記憶化』去重（只真打一次、多處共用結果）——所以可以在多個元件各自 fetch 同資料不怕重複。要每次最新：fetch(url,{cache:'no-store'})（或 export const dynamic='force-dynamic'）。要快取但定時更新：fetch(url,{next:{revalidate:60}})（ISR 式，最多 60 秒舊）。改了資料要主動失效：revalidatePath/revalidateTag。理解這幾層才不會遇到『改了 DB 頁面卻沒變』或『每次都慢』。"
       },
       "outline": [
         {
@@ -611,9 +611,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Streaming + Suspense 讓頁面『先送出已好的部分、慢的部分之後補上』——這對首屏體感有什麼幫助？loading.tsx 和自己包 <Suspense> 差在哪？為什麼把慢查詢包在 Suspense 裡比『整頁等最慢的資料』好？",
+        "hint": "Streaming 邊產邊送；Suspense 邊界內未就緒顯示 fallback，其餘先出。",
+        "answer": "Streaming 讓伺服器把已渲染好的區塊先送到瀏覽器、慢的部分（如某個慢 API）用 Suspense 邊界標記、就緒後再串流補上——使用者更快看到內容而非整頁空白等最慢那塊。loading.tsx 是『整個路由段』的自動 Suspense fallback；手動 <Suspense> 可精細包某個慢元件、其餘先顯示。好處：把慢查詢隔離在自己的 Suspense，頁面其他部分不被它拖住，首屏體感快很多。"
       },
       "outline": [
         {
@@ -675,9 +675,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "App Router 的 error.tsx（區段錯誤邊界）和 not-found.tsx 各處理什麼？為什麼 error.tsx 必須是 Client Component、且提供一個 reset() ？『可預期的找不到』（該回 404）和『真的出錯』（該進 error）為什麼要分開處理？",
+        "hint": "error.tsx 攔渲染錯、給 reset 重試；notFound() 觸發 not-found.tsx。",
+        "answer": "error.tsx 攔該段渲染時丟出的錯、顯示備援 UI（必須 'use client' 因為要有互動的 reset 按鈕，reset() 讓使用者重試該段）；not-found.tsx 是呼叫 notFound() 或找不到時的 404 頁。分開的原因：查無此資料是『可預期、該回 404、對 SEO 也正確』——用 notFound()；程式真的爆掉是『非預期錯誤』——用 error 邊界隔離、不要整站白掉。混用會讓找不到的頁回 500、或真錯誤被當 404 蓋掉。"
       },
       "outline": [
         {
@@ -739,9 +739,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Middleware 在『請求到達頁面之前』跑，適合做什麼（重導、A/B、地區、驗 cookie 擋未登入）、不適合做什麼（重運算、查 DB）？為什麼 Middleware 通常跑在 edge、要注意 API 限制？matcher 是做什麼的？",
+        "hint": "Middleware 攔每個請求、要快、edge 環境。matcher 限定它作用的路徑。",
+        "answer": "Middleware 在請求進到路由前執行，適合輕量攔截：依 cookie 判斷未登入就 redirect、地區/語言導向、A/B 分流、加/改 header。不適合：重運算、連 DB、慢 I/O——它在每個請求的關鍵路徑上、且常跑在 edge（受限的 API、無 node 全套）。matcher 設定它只作用於哪些路徑（如只管 /dashboard/*），避免對靜態資源/所有請求都跑白費效能。"
       },
       "outline": [
         {
@@ -799,9 +799,9 @@
         }
       ],
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「圖片字型優化」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "next/image 相比 <img> 幫你自動做了什麼（尺寸、格式、lazy、防位移）？為什麼首屏主圖要加 priority、其餘不要？next/font 把字型『自架/內嵌』解決了什麼（隱私、CLS、少一次外部請求）？",
+        "hint": "next/image 自動最佳化＋佔位防跳；priority 給首屏；next/font 自託管字型。",
+        "answer": "next/image 自動：依裝置產合適尺寸、轉現代格式(WebP/AVIF)、預設 lazy、用寬高比預留空間防止版面跳動(CLS)。首屏主圖加 priority（提早載、不 lazy，改善 LCP）；非首屏不要 priority（讓它 lazy）。next/font 在 build 時把字型自託管/內嵌：不再向 Google 發外部請求（隱私＋少一次往返）、且用 size-adjust 減少字型交換造成的位移(CLS)。"
       },
       "outline": [
         {
@@ -871,9 +871,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Parallel Routes（同一版面同時渲染多個獨立區塊，如儀表板的多個面板）和 Intercepting Routes（點縮圖用 Modal 開圖、但網址仍可直接分享）各解決什麼真實 UX 問題？為什麼這些用傳統路由很難漂亮地做到？",
+        "hint": "Parallel＝一個 layout 多個 slot 各自載入/錯誤；Intercepting＝攔導航用 Modal 呈現但保留可分享網址。",
+        "answer": "Parallel Routes：一個版面同時掛多個獨立路由 slot（@team、@analytics），各自有自己的 loading/error、可獨立導航——適合儀表板多面板。Intercepting Routes：從列表點圖時『攔截』該導航、用 Modal 疊在當前頁呈現，但網址變成該圖的真實路徑（可直接分享/重整看到完整頁）——兼得 Modal 體驗與可分享 URL。傳統路由難做：要嘛整頁跳走失去情境、要嘛 Modal 沒有真網址不能分享/重整；這兩個功能用檔案約定優雅解決。"
       },
       "outline": [
         {
@@ -931,9 +931,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "多語網站的兩難：網址要不要帶語言前綴（/en /zh）？怎麼依使用者偏好/瀏覽器語言決定預設語言又不傷 SEO？把 UI 字串抽成『翻譯檔（messages/xx.json）』而不是寫死在元件，長期維護好在哪？（本站就是 next-intl + messages/{zh,en,ja,ko}）",
+        "hint": "路由前綴利於 SEO/分享；字串外置利於協作與新增語言。",
+        "answer": "帶語言前綴（/zh、/en）讓每個語言有各自可被搜尋/分享的網址、SEO 清楚（配 hreflang）。預設語言：用 middleware 依 cookie/Accept-Language 決定並 redirect，但保留使用者可切換與記憶。字串外置到 messages/xx.json（如 next-intl）好處：翻譯與程式分離、非工程師也能改、新增語言只是多一個檔、沒譯到可 fallback——比字串寫死在元件裡好維護太多。（本站正是 next-intl + messages/{zh,en,ja,ko}。）"
       },
       "outline": [
         {
@@ -987,9 +987,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "App Router 下，『用 cookie/session 判斷登入』該在哪幾層做（middleware 粗擋、layout/page 細查、Server Action/route 內再驗）？為什麼『只在前端隱藏按鈕』不算安全？把敏感檢查放伺服器端有什麼不可繞過的保證？",
+        "hint": "多層防禦：middleware 導向、伺服器端才是真檢查。前端只是 UX。",
+        "answer": "分層：middleware 做粗略導向（沒 session cookie 就 redirect 登入）；layout/page（Server Component）讀使用者、決定顯示與提早擋；每個 Server Action / route handler 內『再驗一次』權限與擁有權（別信呼叫端）。只在前端隱藏按鈕不安全：任何人可直接打 API/Action、改 client 程式——前端隱藏只是 UX。伺服器端檢查不可被繞過（使用者控制不了伺服器邏輯），敏感操作的授權一定要在伺服器做。"
       },
       "outline": [
         {
@@ -1051,9 +1051,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Nuxt 3 的 pages/ 檔案路由、components/ 自動匯入、composables/ 自動可用——這種『約定優於配置』替你省了什麼？和 Next App Router 比，Nuxt 的心智模型有哪些相似與不同？",
+        "hint": "Nuxt 大量自動匯入與目錄約定；概念上與 Next 的檔案路由/SSR 相通。",
+        "answer": "Nuxt 3：pages/ 自動生成路由、components/ 的元件不用 import 直接用、composables/ 的 useXxx 自動可用、layouts/ 自動套——大量約定與自動匯入讓樣板極少、專注寫功能。與 Next 相似：檔案即路由、SSR/SSG/混合渲染、伺服器端資料抓取、內建後端。不同：Nuxt 更多『自動』（免 import）、基於 Vue 與 Nitro 伺服器引擎；Next 基於 React 與 RSC、'use client'/'use server' 界線更顯式。兩者解決同一類問題、風格隨底層框架而異。"
       },
       "outline": [
         {
@@ -1119,9 +1119,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Nuxt 的 useFetch、useAsyncData、$fetch 三者差在哪、各在什麼情境用？為什麼在元件 setup 直接用 $fetch 抓資料在 SSR 下可能『抓兩次』、而 useFetch 不會？",
+        "hint": "useFetch=元件級含快取/SSR 傳輸；$fetch=底層請求工具；useAsyncData=自訂 key/邏輯。",
+        "answer": "$fetch：底層的請求函式（像 fetch 的加強版），用於事件處理/Server API 內／已知不需 SSR 去重的呼叫。useFetch(url)：元件級封裝，SSR 時伺服器抓好、把資料序列化帶到 client 不重抓、含快取/狀態，是頁面抓資料首選。useAsyncData(key, fn)：更彈性（自訂 key 與抓取邏輯，包一段含 $fetch 的邏輯）。直接在 setup 用 $fetch 在 SSR 會伺服器抓一次、hydration 後 client 又抓一次（雙抓＋閃動）；useFetch/useAsyncData 有 payload 傳輸機制避免重抓。"
       },
       "outline": [
         {
@@ -1187,9 +1187,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Nuxt 的 server/ 目錄（Nitro 引擎）讓你在同一專案寫後端 API，什麼場景這樣做比另起一個後端服務好？Nitro『一份程式碼可部署到 Node/Edge/Serverless 各平台』的可攜性帶來什麼好處？",
+        "hint": "server/api 內建端點、藏密鑰/連 DB；Nitro 抽象部署目標。",
+        "answer": "server/api/xxx.ts 讓你直接寫端點（連 DB、藏 API 密鑰、做 webhook）——中小專案不用另起/維運一個獨立後端、前後端同倉共用型別、部署一次搞定。Nitro 的可攜性：同一份 server 程式碼可打包部署到 Node server、Edge、各家 Serverless（Vercel/CF/Netlify）——不被單一平台綁死，換平台幾乎不用改程式、也方便本地與雲端一致。"
       },
       "outline": [
         {
@@ -1247,9 +1247,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 1 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Nuxt 的 routeRules 讓你『不同路徑用不同渲染策略』（首頁 SSG、儀表板 SSR、部落格 ISR、API 加 CORS）在一處集中設定——這種『混合渲染』相比整站一種模式好在哪？舉例替一個含行銷頁+App+API 的站設 routeRules。",
+        "hint": "一站不必單一模式；按路徑各取所需，集中在 nuxt.config 的 routeRules。",
+        "answer": "整站一種渲染模式常常顧此失彼（全 SSR 慢又貴、全 SSG 無法個人化）。routeRules 讓你按路徑各取所需、集中管理。例：{ '/': { prerender: true }（行銷首頁 SSG 最快）, '/blog/**': { isr: 3600 }（部落格 ISR 每小時再生）, '/app/**': { ssr: true }（App 動態 SSR）, '/api/**': { cors: true } }。好處：每條路徑用最適合的策略、成本與體驗都最佳化、且一目了然好維護。"
       },
       "outline": [
         {
@@ -1303,9 +1303,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Nuxt Module 生態（@nuxt/image、@nuxtjs/i18n、@pinia/nuxt 等）為什麼能『裝上就自動整合』而不用一堆手動設定？這種模組化對『快速搭一個功能完整的站』有什麼幫助？裝很多模組又有什麼要留意（bundle、相依、維護）？",
+        "hint": "Nuxt module 會自動注入設定/自動匯入/hook。方便但每個都是依賴。",
+        "answer": "Nuxt Module 能在安裝時透過 Nuxt 的 hook 自動做設定、注入 composable/元件、改建置流程——所以 @nuxt/image、i18n、pinia 裝上加一行 modules 就整合好，不用手動接線。對快速搭站幫助大：常見需求（圖片優化、多語、狀態、SEO、內容）都有現成模組即插即用。留意：每個模組都是相依與 bundle 成本、可能彼此衝突或疏於維護——按真實需要裝、評估活躍度，別因為方便就全裝。"
       },
       "outline": [
         {
@@ -1362,9 +1362,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "找一個你身邊的例子、用「Next vs Nuxt 完整對照」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "Next 和 Nuxt 解決同一類問題，差別多在底層（React vs Vue）與風格。列出你會用來替團隊選擇的關鍵因素（既有技能、生態規模、RSC vs Vue 響應式、招募），並說明『為什麼沒有一個是絕對比較好』。",
+        "hint": "底層框架偏好、生態、團隊、招募決定，不是技術優劣。",
+        "answer": "關鍵因素：①團隊已熟 React 還是 Vue（最大權重）②生態規模與元件庫（React 更大）③喜歡 RSC + 顯式 client/server 界線（Next）還是 Vue 的自動響應式 + 更多約定自動匯入（Nuxt）④招募市場⑤特定需求的模組成熟度。沒有絕對優劣：兩者渲染能力、效能、部署都成熟且互相借鏡，選錯的成本主要來自『團隊不熟』而非框架本身——所以選團隊能長期寫好、生態撐得住的那個。"
       },
       "outline": [
         {
@@ -1418,9 +1418,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "部署 Next/Nuxt 時，『純靜態(SSG)』『需 Node server(SSR/API)』『Edge』三種產物對部署環境的要求各不同——為什麼把一個有 API route 的 Next 誤當純靜態部署會導致 /api 全 404？（本站正踩過這雷、改用預建 image 繞開）",
+        "hint": "SSR/API 需要跑 server；當成純靜態就沒有 server 處理動態請求。",
+        "answer": "SSG 產出純檔案、丟 CDN 即可；但有 SSR/Route Handler 的 App 需要一個『會跑 node server 的環境』來處理動態請求。若部署工具誤把它當純靜態（只起靜態伺服器如 Caddy、不起 node server），所有 /api 與動態頁就沒有東西處理→被回 404/靜態化失敗。解法：確保用 node server 執行（standalone + node server.js），或改用預建 Docker image 繞開會誤判的 buildpack。（本站 CLAUDE.md 記的正是這個 zbpack 誤判、改 GHCR 預建 image 的雷。）"
       },
       "outline": [
         {
@@ -1489,9 +1489,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「效能優化清單」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "替一個 Next/Nuxt 專案列一份『上線前效能檢查清單』（至少 8 點）：渲染策略選對、快取設對、圖片/字型優化、bundle 分析、Suspense 串流、避免不必要的 client 元件、避免 waterfalls（並行抓取）、監測 Core Web Vitals。挑三點說怎麼實作。",
+        "hint": "把各節重點濃縮成可打勾清單；重點是量測(CWV/bundle analyzer)後對症。",
+        "answer": "清單：①每條路徑選對渲染(SSG/ISR/SSR)②fetch 快取/revalidate 設對、改資料 revalidate③next/image + priority、next/font④用 bundle analyzer 找肥依賴、動態 import 大元件⑤慢區塊包 Suspense 串流⑥能 Server Component 就別 'use client'⑦資料抓取並行(Promise.all)避免瀑布式串接⑧用真實裝置/CWV(LCP/CLS/INP)量測。三點實作：慢查詢用 <Suspense> 包→首屏先出；把只顯示的元件留在 Server 減 client JS；多個獨立資料用 Promise.all 一起抓而非一個等一個。"
       },
       "outline": [
         {
@@ -1545,9 +1545,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "綜合 App Router：從一個需求（如『文章頁：內容 SSG、留言即時、按讚要登入』）出發，你會怎麼分配 Server/Client 元件、渲染策略、資料抓取與 mutation（Server Action vs API）？畫出你的架構決策。",
+        "hint": "靜態內容 Server+SSG/ISR、即時區塊 Suspense/Client、mutation 用 Server Action 並驗權限。",
+        "answer": "決策：①文章內容→Server Component + ISR(revalidate)（快、SEO、偶爾更新）②留言列表→Server Component 抓、或包 Suspense 串流；要即時更新的話留言區用 Client + 輪詢/實時訂閱③按讚鈕/留言框→Client Component 葉子('use client')④送出留言/按讚→Server Action（內部驗登入與擁有權）、成功後 revalidatePath 或樂觀更新⑤metadata 用 generateMetadata 動態產（含 OG）。原則：預設 Server、互動葉子才 Client、mutation 走 Server Action 且伺服器端驗權限。"
       },
       "outline": [
         {
@@ -1617,9 +1617,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "同一個 Next App 部署到 Vercel、Cloudflare、或 self-host（Docker/自己的 server）各有什麼取捨（零設定 vs 成本 vs 掌控度 vs edge 限制）？為什麼有些用到 node API 的功能在純 Edge 環境會壞、要注意 runtime？",
+        "hint": "Vercel 最省事貴些；CF edge 限制多；self-host 最自由要自己維運。Edge 無完整 node API。",
+        "answer": "Vercel：官方最佳整合、零設定、ISR/Edge/影像都順，但規模大成本高、綁平台。Cloudflare：edge 全球快、便宜，但 edge runtime 沒有完整 node API（fs、部分套件不能用）、要挑相容寫法。Self-host（Docker + node server.js）：最自由、成本可控、資料自主，但要自己顧部署/擴縮/監控。runtime 注意：標 runtime='edge' 的程式不能用 node 專屬 API（Buffer 某些、fs、原生模組），用到就要 runtime='nodejs'——否則在 edge 環境會壞。依團隊維運能力與需求選。"
       },
       "outline": [
         {

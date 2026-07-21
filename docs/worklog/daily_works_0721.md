@@ -394,3 +394,14 @@ ch05（TypeScript）25 節全 de-can，換成各節量身題（除錯/選型/預
 
 - diff 75+/75- → import_chapters_to_db ch09（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
 - 本日 de-can 累計：ch01/02/04/05/07/08/09（**178 題**）。續攻 ch10 Next.js/Nuxt（前端框架三章收官）…
+
+---
+
+## 📚 章節 de-can：ch10 Next.js/Nuxt 全 25 節 — 前端框架三章收官 🏁（0721）
+
+meta-framework 章（原全 25 罐頭）。全 25 節換成量身題（很多直接呼應本站架構）：純 SPA 不足與 meta-framework 內建、五種渲染模式(CSR/SSR/SSG/ISR/RSC)選型、App Router 的 page/layout/loading/error/route、Server vs Client 元件界線與 'use client' 靠葉子、generateMetadata 動態 SEO/OG(絕對網址)、Server Action 是公開端點要自驗權限、Route Handler 何時用與 runtime/dynamic、fetch 請求去重與三層快取與 revalidate/no-store、Streaming+Suspense 隔離慢查詢、error.tsx vs not-found()、Middleware 在 edge 該做/不該做、next/image priority 與 next/font 自託管、Parallel/Intercepting Routes 解的 UX、i18n 路由前綴與字串外置、認證多層防禦(前端只是 UX)、Nuxt 約定自動匯入、useFetch/useAsyncData/$fetch 雙抓問題、Nitro server/api、routeRules 混合渲染、Nuxt Modules、Next vs Nuxt 選型、部署三產物與 zbpack 誤判 404 雷(本站踩過)、效能上線清單、App Router 架構決策、Vercel/CF/self-host 取捨與 edge runtime 限制。
+
+- diff 75+/75- → import_chapters_to_db ch10（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+
+### 🏁 里程碑：前端框架三章 de-can 完成
+**ch08 React + ch09 Vue + ch10 Next/Nuxt**（各 25 節、共 75 題）。加上核心四章，**本日 de-can 累計 8 章、203 題**罐頭練習全部換成量身題（ch01/02/04/05/07/08/09/10）。續攻 ch16/17/26–32/34–36/46…
