@@ -148,16 +148,27 @@ gtag('config', '${gaId}');`}
               <main id="main-content" className="flex-1" tabIndex={-1}>{children}</main>
               <OnboardingWizard />
               <OnboardingTour />
-              {/* pb 在手機多留 MobileBottomNav(h-14=3.5rem)+安全區 的高度，法律連結才不被底部 nav 擋住 */}
-              <footer className="border-t border-border mt-16 pt-8 pb-[calc(2rem+3.5rem+env(safe-area-inset-bottom,0px))] md:pb-8">
-                <div className="max-w-6xl mx-auto px-6">
-                  <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-fg-muted">
-                    <div>{t("footer.madeBy")}</div>
-                    <nav className="flex gap-4">
-                      <Link href="/privacy" className="hover:text-fg transition">{t("footer.privacy")}</Link>
-                      <Link href="/terms" className="hover:text-fg transition">{t("footer.terms")}</Link>
-                      <Link href="/cookies" className="hover:text-fg transition">{t("footer.cookies")}</Link>
-                    </nav>
+              {/* 霧面玻璃 + 炫光 footer。pb 在手機多留 MobileBottomNav(h-14)+安全區、法律連結不被擋。 */}
+              <footer className="relative mt-16">
+                <div className="relative overflow-hidden border-t border-black/10 dark:border-white/10 bg-white/55 dark:bg-white/[0.035] backdrop-blur-xl backdrop-saturate-150">
+                  {/* 炫光：頂部漸層細線 + 兩顆柔光暈 + 緩慢掃過的高光 */}
+                  <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/70 to-transparent" />
+                  <div aria-hidden className="pointer-events-none absolute -top-28 left-[18%] h-52 w-52 rounded-full bg-accent/25 blur-3xl" />
+                  <div aria-hidden className="pointer-events-none absolute -bottom-28 right-[18%] h-52 w-52 rounded-full bg-sky-400/20 blur-3xl" />
+                  <div aria-hidden className="footer-shine pointer-events-none absolute inset-0" />
+
+                  <div className="relative max-w-6xl mx-auto px-6 pt-9 pb-[calc(2.25rem+3.5rem+env(safe-area-inset-bottom,0px))] md:pb-9">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-5">
+                      <div className="flex items-center gap-2.5 text-sm text-fg-muted text-center md:text-left">
+                        <span className="grid place-items-center w-9 h-9 rounded-2xl bg-gradient-to-br from-accent/25 to-sky-400/15 border border-white/20 text-lg shadow-sm shrink-0">🏝️</span>
+                        <span className="leading-relaxed">{t("footer.madeBy")}</span>
+                      </div>
+                      <nav className="flex flex-wrap items-center justify-center gap-1.5 text-sm">
+                        <Link href="/privacy" className="px-3.5 py-1.5 rounded-full text-fg-muted hover:text-fg hover:bg-black/[0.04] dark:hover:bg-white/10 border border-transparent hover:border-black/10 dark:hover:border-white/10 transition">{t("footer.privacy")}</Link>
+                        <Link href="/terms" className="px-3.5 py-1.5 rounded-full text-fg-muted hover:text-fg hover:bg-black/[0.04] dark:hover:bg-white/10 border border-transparent hover:border-black/10 dark:hover:border-white/10 transition">{t("footer.terms")}</Link>
+                        <Link href="/cookies" className="px-3.5 py-1.5 rounded-full text-fg-muted hover:text-fg hover:bg-black/[0.04] dark:hover:bg-white/10 border border-transparent hover:border-black/10 dark:hover:border-white/10 transition">{t("footer.cookies")}</Link>
+                      </nav>
+                    </div>
                   </div>
                 </div>
               </footer>

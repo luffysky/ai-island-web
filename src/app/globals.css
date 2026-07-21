@@ -219,6 +219,16 @@ html[data-theme="light"] body::before {
 @keyframes softBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 .soft-bob { animation: softBob 3s ease-in-out infinite; }
 
+/* footer 霧面玻璃上緩慢掃過的高光（炫光） */
+.footer-shine {
+  background: linear-gradient(115deg, transparent 34%, rgba(255,255,255,0.10) 50%, transparent 66%);
+  background-size: 260% 100%;
+  animation: footerShine 9s ease-in-out infinite;
+  mix-blend-mode: overlay;
+}
+@keyframes footerShine { 0%, 100% { background-position: 160% 0; } 50% { background-position: -60% 0; } }
+@media (prefers-reduced-motion: reduce) { .footer-shine { animation: none; } }
+
 /* 訊息軍師情境 icon「會自己一直動」的 fallback（沒設 Lottie 時用；非 hover 觸發）。
    多個 icon 用 nth-child 錯開相位，整排看起來活潑不呆板。 */
 @keyframes coachIconLive {
