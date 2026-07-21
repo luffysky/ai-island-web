@@ -432,3 +432,12 @@ SQL 章原 28/28 全罐頭。全部換成含『真實可跑 SQL』的量身題�
 
 - diff 118+/110- → import_chapters_to_db ch26（38 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
 - 本日 de-can 累計 **11 章、294 題**。續攻 ch27 Python 資料分析…
+
+---
+
+## 📚 章節 de-can：ch27 Python 資料分析 全 25 節（0721）
+
+原 25/25 罐頭。全部換成資料分析量身題(除錯/設計/取捨/判讀，與 ch26 重疊主題改走『分析工作流』角度)：80% 時間清理理解、Notebook 隱藏狀態與 Restart&RunAll、NumPy 向量化標準化、loc/iloc 與 SettingWithCopyWarning、探索 vs 報告畫圖與截斷軸誤導、時序 resample/rolling 不洩漏未來、分析流程先定義問題、Pandas 五操作與 merge 列數暴增、矩陣 * vs @ 與 broadcasting、seaborn vs matplotlib、Plotly 互動代價、Streamlit 每次重跑要 cache、read_sql 下推別全撈、Notebook 交付前整理重跑、Prophet 趨勢季節/預測給區間/walk-forward、A/B test 因果與 p 值誤解/peeking/效果量、PySpark 惰性求值與何時不需要、Polars 取捨、DuckDB in-process 列式、清理三類與異常值別亂刪、特徵工程常勝過換模型、流失預測不平衡、Geo 空間思維、中文斷詞與情感分析侷限、資料職涯分工與溝通是核心。
+
+- diff 75+/75- → import_chapters_to_db ch27（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+- 本日 de-can 累計 **12 章、319 題**。續攻 ch28…
