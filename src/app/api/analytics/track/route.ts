@@ -44,30 +44,10 @@ function getClientIp(req: NextRequest): string | null {
 
 type GeoLookup = { country: string | null; region: string | null; city: string | null };
 
-// IP geo lookup — fallback chain: ipwho.is → ip-api.com
-// 之前單用 ipwho.is、Zeabur 環境下 region/city 命中 0%（疑 IPv6 / 路由問題）
+// IP geo lookup — fallback chain: ip-api.com → ipwho.is
+// ＊實測台灣凱擘/中華某些 IP，ip-api 標得比 ipwho.is/ipinfo 準（ipinfo 甚至把新北標成台中）。
 async function lookupCityByIp(ip: string): Promise<GeoLookup | null> {
-  // 1. ipwho.is（免費 10k/月、不需 key、支援 IPv4/v6）
-  try {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 3000);
-    const res = await fetch(`https://ipwho.is/${encodeURIComponent(ip)}`, {
-      signal: ctrl.signal,
-    });
-    clearTimeout(timer);
-    if (res.ok) {
-      const data = await res.json();
-      if (data?.success) {
-        return {
-          country: data.country_code ?? null,
-          region: data.region ?? null,
-          city: data.city ?? null,
-        };
-      }
-    }
-  } catch {}
-
-  // 2. ip-api.com fallback（免費 45 req/min、IPv6 完整支援、注意是 http only）
+  // 1. ip-api.com（免費 45 req/min、IPv6 完整、含 regionName 縣市；免費版 http only）
   try {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 3000);
@@ -82,6 +62,26 @@ async function lookupCityByIp(ip: string): Promise<GeoLookup | null> {
         return {
           country: data.countryCode ?? null,
           region: data.regionName ?? null,
+          city: data.city ?? null,
+        };
+      }
+    }
+  } catch {}
+
+  // 2. ipwho.is fallback（免費 10k/月、不需 key、支援 IPv4/v6）
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 3000);
+    const res = await fetch(`https://ipwho.is/${encodeURIComponent(ip)}`, {
+      signal: ctrl.signal,
+    });
+    clearTimeout(timer);
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.success) {
+        return {
+          country: data.country_code ?? null,
+          region: data.region ?? null,
           city: data.city ?? null,
         };
       }

@@ -44,10 +44,27 @@ async function fetchGeo(ip: string): Promise<{ location: string; org?: string; i
   if (!ip || ip === "0.0.0.0" || ip.startsWith("127.") || ip.startsWith("10.") || ip.startsWith("192.168.")) {
     return { location: "本機", ipText: ip };
   }
-  // ＊IP 定位本來就不精準：台灣 ISP/手機 IP 常被歸到區域機房（台中/台北），跟實際位置可能差幾十公里。
-  // 精準位置要靠使用者授權 GPS（🎯 GPS，見 preciseLocation）。這裡盡量用較準的來源。
+  // ＊來源選擇是實測出來的：對台灣凱擘(KBT)/中華等 IP，ipinfo.io 會把某些 IP 標錯城市
+  //   （實測 203.204.74.176 → ipinfo 標「台中」，但 ip-api / ipapi.co 正確標「新北市」）。
+  //   所以主來源用 ip-api.com（含 regionName 縣市 + city + district，實測較準），ipwho.is 次之、ipinfo 墊底。
+  //   要「精準到區」還是得靠使用者授權 GPS（🎯 GPS，見 preciseLocation）。
 
-  // 1. ipwho.is（https、免費免 key、含 region 縣市，台灣通常比 ipinfo 準一點）
+  // 1. ip-api.com（免費免 key、含 regionName/city/district；免費版走 http、rate limit 45/min，訪問通知量夠用）
+  try {
+    const r = await fetch(`http://ip-api.com/json/${ip}?fields=status,country,regionName,city,district,zip,lat,lon,isp,as&lang=zh-TW`, { signal: AbortSignal.timeout(3000) });
+    if (r.ok) {
+      const d = await r.json() as any;
+      if (d?.status === "success") {
+        const parts = [d.country, d.regionName, d.city, d.district].filter(Boolean);
+        const location = parts.length ? [...new Set(parts as string[])].join(" · ") : "?";
+        const mapsUrl = d.lat != null && d.lon != null ? `https://www.google.com/maps?q=${d.lat},${d.lon}` : undefined;
+        const org = d.isp || d.as;
+        return { location, org: org ? String(org).slice(0, 60) : undefined, ipText: ip, mapsUrl };
+      }
+    }
+  } catch { /* 換下一個來源 */ }
+
+  // 2. ipwho.is（https、免費免 key、含 region 縣市）
   try {
     const r = await fetch(`https://ipwho.is/${ip}?lang=zh-TW`, { signal: AbortSignal.timeout(3000), headers: { "User-Agent": "ai-island" } });
     if (r.ok) {
@@ -62,7 +79,7 @@ async function fetchGeo(ip: string): Promise<{ location: string; org?: string; i
     }
   } catch { /* 換下一個來源 */ }
 
-  // 2. fallback：ipinfo.io（有 IPINFO_TOKEN 更準）
+  // 3. 墊底：ipinfo.io（註：對部分凱擘 IP 會標錯城市，只當最後手段；有 IPINFO_TOKEN 較準）
   const token = process.env.IPINFO_TOKEN;
   try {
     const url = token ? `https://ipinfo.io/${ip}/json?token=${token}` : `https://ipinfo.io/${ip}/json`;
