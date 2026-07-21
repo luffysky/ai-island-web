@@ -36,17 +36,17 @@
       - [ ] 1.1.1.2.1 無時辰的 fallback（只算日主/星座、標示精度較低）
   - [x] ~~1.1.2 `fortune_daily` 快取表（唯一鍵 user_id+date+kind、payload jsonb）＝冪等不重複燒 LLM~~ ✅
   - [x] ~~1.1.3 API `/api/fortune/today`（快取優先、沒快取才 `completeForUsage("agent_core")` 生成+存）~~ ✅（邏輯抽到 `lib/fortune-service.ts` 與 cron 共用）
-  - [ ] 1.1.4 API `/api/fortune/tarot`（POST：抽牌+AI 解讀、Z幣/付費門檻）← 第二刀
+  - [x] ~~1.1.4 API `/api/fortune/tarot`（GET 回顯今日/POST 抽 3 張+AI 解讀、免費每日 1 次、付費無限、server 抽牌防作弊）~~ ✅（第二刀 0721）
   - [x] ~~1.1.5 API `/api/fortune/profile`（GET/PUT：生日資料、自動算西洋星座）~~ ✅
 - [~] 1.2 LLM 生成
   - [x] ~~1.2.1 運勢 prompt（整體/愛情/事業/財運 + 幸運色/數字 + 一句提醒 + score）~~ ✅（`lib/fortune.ts`）
     - [x] ~~1.2.1.1 護欄：不做醫療/投資/法律具體斷言、語氣正向不製造焦慮~~ ✅
     - [x] ~~1.2.1.2 結構化輸出 JSON + 容錯解析 parseFortune（含越界收斂、fallback）~~ ✅（8 支單元測試）
-  - [ ] 1.2.2 塔羅牌庫（78 張大小阿爾克那 + 正逆位含義）→ 抽牌 → 依牌+提問 LLM 解讀 ← 第二刀
+  - [x] ~~1.2.2 塔羅牌庫（`src/lib/tarot.ts` 78 張=22 大+56 小、正逆位關鍵字、drawCards/buildTarotPrompt/parseTarotReading、7 支測試）→ 三張牌陣（過去/現在/未來）依提問 LLM 解讀~~ ✅
   - [~] 1.2.3 命理輕量版：星座先行 ✅（純月/日運算、零外部庫）；八字/紫微標進階（之後接）
 - [~] 1.3 前端 `/fortune`
   - [x] ~~1.3.1 首次生日/時辰輸入頁 + 每日運勢卡（三面向卡 + score 環 + 幸運色塊/數字 + 今日提醒）~~ ✅
-  - [ ] 1.3.2 塔羅抽牌互動（翻牌動畫、解讀）← 第二刀
+  - [x] ~~1.3.2 塔羅抽牌互動（`/fortune` 展開式 TarotSection：提問輸入→抽牌→三張牌陣+逐張解讀+總結+建議、回顯今日、付費可再抽）~~ ✅
   - [~] 1.3.3 分享卡：native share / 複製文字（帶站點浮水印）✅；截圖圖卡（html-to-image）← 之後
   - [~] 1.3.4 RWD + 亮暗 ✅；免費/付費分界 UI（MVP 全免費、gating ← 第二刀）
 - [~] 1.4 LINE 每日推播

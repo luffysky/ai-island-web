@@ -227,3 +227,22 @@ ch49 + ch50（AI Agent / n8n 兩大旗艦章）完成。**教具庫新增 2 個�
 ### 本日大眾變現進度（累計）
 - ✅ #1 每日運勢（第一刀） · ✅ #2 訊息軍師（完整） · ✅ #4.1 生活助理範本庫（完整）。
 - 剩：#3 AI 求職包（可沿用現有 resume + PDF + agent 面試模擬）、#1 第二刀（塔羅/八字/付費）、#4.2 OAuth🔴/#4.3 沙盒🔴/#4.4 ROI dashboard。
+
+---
+
+## 🔮 #1 每日運勢 第二刀 — 塔羅占卜上線（0721）
+
+延續 #1 第一刀，補上塔羅（§1.1.4/1.2.2/1.3.2）。無新 migration（沿用 `fortune_daily` 的 `kind='tarot'` 唯一鍵當每日快取/計數）。
+
+### 做了什麼
+- **牌庫 lib** `src/lib/tarot.ts`（純資料/函式、7 支測試）：78 張（22 大阿爾克那手寫正逆位關鍵字 + 56 小阿爾克那＝4 花色×14 階、依花色主題關鍵字）；`drawCards(n, rand)`（server 抽、可注入亂數決定論、各張獨立正逆位、去重）、`describeDraw`、`buildTarotPrompt`（三張牌陣＝過去/現在/未來、護欄：不預言吉凶/不做醫投法斷言）、`parseTarotReading`（容錯 JSON）。
+- **API** `/api/fortune/tarot`：GET 回顯今日已抽 + canDraw；POST 抽 3 張（**server 決定防作弊**）+ LLM 解讀 + upsert 存 `fortune_daily(kind=tarot)`。免費**每日 1 抽**（已抽回 429 + 附既有解讀）、付費/特權（`hasAiUnlimited`/`getUserSubTier`）當日可覆蓋再抽。
+- **UI** `/fortune` 加展開式 `TarotSection`：提問輸入（可留空）→ 抽牌 → 三張牌卡（位置/牌名/正逆位）+ 逐張解讀 + 總結 + 一句建議；回顯今日、免費用完顯示「明天再抽」、付費可再抽。RWD + 亮暗。
+
+### 🚨 收尾檢查（全綠）
+- **API/DB**：無新表；`fortune_daily` 唯一鍵 `UNIQUE(user_id,date,kind)` 已用 pg 實測確認 → upsert `onConflict:"user_id,date,kind"` 正確解析。
+- **建置**：`tsc` ✅ · `vitest` **164 passed（+7 tarot）** ✅ · `next build` exit 0（/api/fortune/tarot 編出）✅。
+- **RWD/亮暗/機密**：grid/亮暗雙 token；未動 manifest/sw/.env.local。
+
+### #1 剩餘（之後）
+- 付費/Z幣 gating（§1.5，運勢四面向深解、塔羅無限）、八字/紫微（裝 lunar-javascript §1.1.1.2）、cron job #10🔴、首頁模式卡、截圖分享圖卡。

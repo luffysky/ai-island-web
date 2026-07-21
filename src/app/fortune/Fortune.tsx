@@ -5,6 +5,7 @@ import {
   Sparkles, Heart, Briefcase, Coins, Loader2, Star, Palette, Hash,
   Share2, Check, Cake, RefreshCw,
 } from "lucide-react";
+import { TarotSection } from "./TarotSection";
 
 type FortunePayload = {
   overall: string; love: string; career: string; wealth: string;
@@ -152,6 +153,9 @@ export function Fortune() {
         <Sparkles className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
         <p className="text-sm leading-relaxed text-black/75 dark:text-white/80">{f.tip}</p>
       </div>
+
+      {/* 塔羅占卜 */}
+      <TarotSection />
 
       {/* 動作列 */}
       <div className="flex flex-wrap gap-3 pt-1">
