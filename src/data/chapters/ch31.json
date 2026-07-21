@@ -43,9 +43,9 @@
         }
       ],
       "exercise": {
-        "question": "找一個你身邊的例子、用「Node.js 是什麼？為什麼後端用 JS」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "Node.js 讓 JS 跑在瀏覽器外(後端)——它的『單執行緒 + 非阻塞 I/O + event loop』模型為什麼特別適合『高併發但 I/O 密集(等 DB/網路)』的服務、卻不適合『CPU 密集重算』？前後端同一語言(JS)帶來什麼實務好處？",
+        "hint": "事件迴圈善用等待、I/O 密集受惠;CPU 重算會卡;前後端同語言共用。",
+        "answer": "Node 單執行緒靠 event loop:遇到 I/O(等 DB/檔案/網路)就把控制權讓出去處理別的請求,所以能用少少資源同時服務很多『在等待』的連線——I/O 密集(API/即時)超受惠。但純 CPU 重算沒有等待空檔、會卡住 event loop 拖垮所有請求(要丟 worker thread)。前後端同語言好處:共用型別/驗證/工具、招募一種人才、心智切換少、程式碼可共用(如 Zod schema 前後端共用)。"
       },
       "outline": [
         {
@@ -119,9 +119,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "為什麼要用 nvm/fnm 管理多個 Node 版本、而不是系統只裝一個？不同專案要求不同 Node 版本時會出什麼問題？.nvmrc / engines 欄位怎麼幫團隊統一版本、避免『在我電腦可以你的不行』？",
+        "hint": "多專案多版本;版本不符會裝不動/行為不同;.nvmrc 鎖版本。",
+        "answer": "不同專案可能要求不同 Node 版本(舊專案卡在 16、新專案要 20),系統只裝一個就沒法同時滿足、且升級會弄壞舊專案。nvm/fnm 讓你每個專案切到對的版本。問題:版本不符會導致某些語法/API 不支援、套件裝不起來、行為不一致。.nvmrc(寫上專案要的版本)+ package.json 的 engines 欄位:讓團隊 nvm use 自動切到對的版本、engines 在裝套件時警告版本不符——統一環境、減少『我這台可以』的差異。"
       },
       "outline": [
         {
@@ -203,9 +203,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "用 Node 內建 http 模組寫一個最小 server,和用 Express 相比差在哪(手動處理路由/解析 vs 框架幫你)？既然框架方便,理解底層 http(req/res 是什麼、怎麼收 body、怎麼設 header)為什麼仍重要？Node 內建的 fs/path/crypto 等模組讓你不裝套件就能做什麼？",
+        "hint": "內建 http 手動、框架自動;懂底層才會除錯;內建模組已很強。",
+        "answer": "內建 http:你要自己判斷 req.url/method 做路由、手動收 request body(串流片段拼起來)、手動設 res header 與 statusCode;Express 把這些包成 app.get/req.body/res.json。懂底層仍重要:框架出問題、要調效能、處理串流/上傳時,得知道 req/res 本質是串流、header 何時能設——才會除錯。內建模組:fs(讀寫檔)、path(跨平台路徑)、crypto(雜湊/加密/隨機)、os、url、stream——很多事不裝套件就能做,先看內建有沒有。"
       },
       "outline": [
         {
@@ -291,9 +291,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "package.json 的 dependencies 和 devDependencies 差在哪、為什麼要分(正式環境不裝 dev)？npm scripts 讓你把常用指令(build/test/lint/dev)標準化有什麼好處？^1.2.3 這種版本範圍與 lockfile 各在管什麼、為什麼 lockfile 要 commit？",
+        "hint": "dev 只開發用;scripts 統一指令;lockfile 鎖確切版本要進版控。",
+        "answer": "dependencies=正式執行需要的;devDependencies=只在開發/建置用(測試、linter、型別)——正式環境 npm install --production 不裝 dev,image 更小。npm scripts 把 npm run dev/build/test 標準化:團隊不用記一長串指令、CI 也用同一套。^1.2.3 允許相容的次要更新(到 <2.0.0);lockfile(package-lock/pnpm-lock)鎖住『實際裝的每個套件的確切版本』——要 commit,這樣每個人/CI 裝到完全一樣的依賴樹,避免『同樣 package.json 卻裝出不同版本』的詭異 bug。"
       },
       "outline": [
         {
@@ -371,9 +371,9 @@
         }
       ],
       "exercise": {
-        "question": "用一張紙、把「ES Modules vs CommonJS」的核心概念畫成心智圖。中心是這節的主題、第一圈放 3-5 個關鍵詞（如 \"type\": \"module\"、import / export、require / module.exports、__dirname）、第二圈延伸細節。",
-        "hint": "關鍵概念可以從 lesson 內出現的這些關鍵字入手：\"type\": \"module\"、import / export、require / module.exports、__dirname。畫完不要光放著、試著用自己的話講一次。",
-        "answer": "心智圖三步：(1) 中心 = lesson 主題 (2) 第一圈 = 主要分類（通常 3-5 個）(3) 第二圈 = 具體例子或工具。畫完拿給朋友看、能講通 = 真懂。常見錯誤：抄關鍵字當分類、應該用自己理解後的歸納。"
+        "question": "ESM(import/export)和 CommonJS(require/module.exports)在 Node 混用常出的錯是什麼(ERR_REQUIRE_ESM、__dirname 在 ESM 不存在)？package.json 的 \"type\":\"module\" 做什麼？為什麼新專案建議用 ESM、但要注意某些舊套件只出 CommonJS？",
+        "hint": "混用會報錯;type:module 切 ESM;ESM 沒 __dirname;新專案用 ESM。",
+        "answer": "混用常見錯:在 ESM 裡 require 一個 ESM-only 套件、或反過來;__dirname/__filename 在 ESM 不存在(要用 import.meta.url 轉);頂層 await 只有 ESM 有。package.json \"type\":\"module\" 讓 .js 檔被當 ESM 解析(否則預設 CommonJS)。新專案建議 ESM(是標準、瀏覽器/Node 都支援、tree-shaking 友善),但要注意:有些舊套件只出 CommonJS,或 ESM/CJS 互操作有坑——遇到再用動態 import 或看套件文件處理。"
       },
       "outline": [
         {
@@ -422,9 +422,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
-        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
-        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+        "question": "npm / pnpm / yarn / bun 都是套件管理,pnpm 的『用硬連結共用全域 store』為什麼省磁碟又快、還能避免幽靈依賴(用到沒宣告的套件)？為什麼團隊要『統一用同一個 + commit 對應的 lockfile』、別混用？",
+        "hint": "pnpm 硬連結省空間/嚴格;團隊要統一一種避免 lockfile 打架。",
+        "answer": "pnpm 把套件存在一個全域 store,各專案用硬連結指過去——省磁碟(不用每個專案各存一份)、安裝快、且它的 node_modules 結構嚴格,只能存取『你有宣告的』依賴(避免幽靈依賴:用到某個沒寫進 package.json 卻剛好被別的套件裝進來的東西,哪天它消失就爆)。團隊要統一一種套件管理器並 commit 對應 lockfile:混用(有人 npm 有人 yarn)會產生不同的 lockfile 互相打架、裝出不同依賴樹、CI 與本地不一致——統一才可重現。"
       },
       "outline": [
         {
@@ -493,9 +493,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "在 Node 專案加 TypeScript,開發時怎麼跑 TS(tsx/ts-node 直接跑 vs 先 tsc 編譯成 JS 再跑)？正式部署常『先 build 成 JS』而非在正式環境跑 ts-node,為什麼(效能、少依賴、型別檢查與執行分離)？tsconfig 的 target/module 對 Node 該怎麼設？",
+        "hint": "開發直接跑 TS、正式先編譯;tsconfig 對齊 Node 版本與模組。",
+        "answer": "開發:用 tsx 或 ts-node 直接跑 .ts(免手動編譯、快速迭代),或 tsc --watch 邊編邊跑。正式部署:先 tsc build 成 JS 再用 node 跑——因為執行純 JS 更快、不用在正式環境背 TS 工具鏈依賴、且把『型別檢查(build 時)』和『執行』分開(build 沒過就不部署)。tsconfig 對 Node:target 設到你的 Node 支援的 ES 版本(如 ES2022)、module 設 NodeNext/ESNext(配合 ESM)或 CommonJS(視專案)、outDir 放編譯結果、開 strict。"
       },
       "outline": [
         {
@@ -564,9 +564,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Node 的 event loop 為什麼 `console.log('A'); setTimeout(f,0); Promise.resolve().then(g); console.log('B')` 印出 A B g f？(微任務優先於 setTimeout) 在 Node 裡一個『阻塞的同步操作(如同步讀大檔、CPU 重算)』會怎樣影響所有連線？該怎麼處理 CPU 密集工作？",
+        "hint": "同步先、微任務(Promise)次、宏任務(timer)後;阻塞卡全部;CPU 丟 worker。",
+        "answer": "順序 A B g f:先跑同步(A、B),再清微任務佇列(Promise.then 的 g),最後才取宏任務(setTimeout 的 f,即使延遲 0)。阻塞的同步操作(fs.readFileSync 大檔、跑一個很久的迴圈)會佔住單一執行緒的 event loop→在它跑完前,所有其他請求都卡住無法處理(整個服務卡死)。CPU 密集工作該:丟到 worker_threads(另一條執行緒)、或拆成小塊讓出、或交給獨立服務/佇列處理——別在主執行緒同步硬算。I/O 要用非同步版(fs.promises)。"
       },
       "outline": [
         {
@@ -639,9 +639,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Express 的 middleware(req→res 之間串起來的處理鏈)是它的核心——寫出一個『記錄請求時間』和一個『驗證登入』的 middleware,並說 next() 的作用。錯誤處理 middleware(四參數)為什麼要放最後？為什麼順序很重要(如驗證要在處理前)？",
+        "hint": "middleware 串鏈、next 傳給下一個;錯誤處理四參放最後;順序決定流程。",
+        "answer": "middleware 是 (req,res,next)=>{}:做完自己的事呼叫 next() 交給下一個。記錄時間:const t=Date.now(); res.on('finish',()=>log(Date.now()-t)); next()。驗證登入:if(!req.user) return res.status(401)...; next()。錯誤處理 middleware 是四參 (err,req,res,next),要放所有路由『最後』——Express 靠參數數量辨認它,且錯誤是往後傳的,放最後才攔得到前面拋的錯。順序重要:middleware 依註冊順序執行,驗證要在業務處理『之前』註冊才擋得住未授權請求;body parser 要在讀 req.body 的路由之前。"
       },
       "outline": [
         {
@@ -710,9 +710,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Hono / Fastify 相比 Express 的賣點是什麼(更快、原生 TS、Fastify 的 schema 驗證、Hono 跨 runtime 跑 edge)？既然 Express 最普及,什麼情況值得換到現代框架、什麼情況 Express 就夠(生態、團隊熟悉)？框架換來換去的成本是什麼？",
+        "hint": "Hono/Fastify 快+TS+edge;Express 生態大;別為潮硬換。",
+        "answer": "Fastify:高效能、內建 JSON schema 驗證與序列化、外掛生態成熟;Hono:超輕、原生 TS、能跑在多種 runtime(Node/Bun/Deno/Cloudflare Workers edge)——適合 edge 與現代型別驅動開發。Express 最普及、範例最多、團隊最熟、外掛最全,多數 CRUD 服務它就夠。值得換:要極致效能、要跑 edge、要現代 TS 體驗、綠地新專案時。別為潮硬換:換框架要重學 API、遷移既有中介層/生態、團隊重新適應——除非有明確痛點或新專案,否則穩定運作的 Express 不用為了新而換。"
       },
       "outline": [
         {
@@ -773,9 +773,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Prisma 這種現代 ORM 幫你做了什麼(型別安全的查詢、migration、直覺 API)、又要小心什麼(生成的 SQL、N+1、大量資料的效能)？為什麼『schema.prisma 當單一資料模型真相來源、自動產型別』對前後端一致很有幫助？什麼查詢還是該下沉到 raw SQL？",
+        "hint": "Prisma 型別安全+migration;小心 N+1/效能;複雜查詢用 raw。",
+        "answer": "Prisma:用 schema.prisma 定義模型、自動產生型別安全的 client(查詢有補全、傳錯欄位編譯就報錯)、內建 migration(schema 版控)、API 直覺。小心:關聯查詢可能 N+1(用 include/select 一次取)、複雜聚合/報表生成的 SQL 未必最優、超大量資料要注意效能與批次。schema 當單一真相:改一次 schema,型別、migration、client 都跟著更新,前後端(尤其配 tRPC)拿到一致型別、少 drift。仍該用 raw SQL:非常複雜的查詢、需要 DB 特定功能、或效能熱點——Prisma 也支援 $queryRaw。"
       },
       "outline": [
         {
@@ -836,9 +836,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "承 ch05 的 Zod:在 Node API 的『邊界』(收到的 request body、環境變數、外部 API 回應)用 Zod 驗證為什麼比信任它安全？用 z.infer 從 schema 產型別、一份 schema 兼『執行期驗證+編譯期型別』解決了什麼 drift 問題？驗證失敗該回什麼給客戶端？",
+        "hint": "外部資料不可信;schema 兩用免 drift;失敗回 400+清楚訊息。",
+        "answer": "API 收到的 body、process.env、第三方回應都是執行期才進來的外部資料,TS 型別管不到、可能缺欄/型別錯/惡意——在邊界用 zod schema.parse 真正驗證、轉成乾淨型別化物件,內部才能安心用、也擋掉一類攻擊。z.infer<typeof schema> 從同一份 schema 產 TS 型別:驗證規則與型別同源、改一處兩邊都對,不會像手寫兩份那樣 drift。驗證失敗回 400(客戶端錯誤)+結構化錯誤訊息(哪個欄位錯、為什麼),別回 500(那是伺服器錯)、也別默默吞掉。"
       },
       "outline": [
         {
@@ -907,9 +907,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "實作登入:為什麼密碼一定要用 bcrypt(或 argon2)雜湊儲存、絕不能存明文或可逆加密？bcrypt 的『加鹽』與『慢』各在防什麼(彩虹表、暴力破解)？JWT 登入後,把 token 放 HttpOnly cookie 相比放 localStorage 為什麼較安全(防 XSS 竊取)？",
+        "hint": "密碼單向雜湊+鹽+慢;JWT 放 HttpOnly cookie 防 XSS。",
+        "answer": "密碼用 bcrypt/argon2 單向雜湊:即使資料庫外洩也還原不出原密碼(存明文/可逆加密一洩漏就全曝光,且很多人重用密碼)。加鹽:每個密碼配隨機鹽,讓相同密碼雜湊結果不同,防彩虹表(預算好的對照表);刻意慢(高成本因子):讓暴力逐一試的代價極高。JWT token 放 HttpOnly cookie(JS 讀不到)+Secure+SameSite:任何 XSS 都偷不走它;放 localStorage 則 JS 可讀,一有 XSS 就被竊取冒充登入。敏感憑證放 JS 拿不到的地方。"
       },
       "outline": [
         {
@@ -974,9 +974,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Node 做 WebSocket 即時服務(聊天/通知),單台伺服器 OK,但擴展到多台時為什麼訊息推不到(連線分散在不同機器)？用 Redis pub/sub 當中介怎麼解？何時其實用 SSE(伺服器單向推)比 WebSocket 更省事？",
+        "hint": "WS 連線黏單台;跨機用 pub/sub;單向推用 SSE。",
+        "answer": "WebSocket 連線是有狀態、黏在某台伺服器;多台時 A 的連線在機器1、B 在機器2,A 要推給 B 卻不在同一台→推不到。解法:用 Redis pub/sub(或訊息匯流排)當中介——任一台收到要廣播的訊息就 publish、所有機器 subscribe 後推給自己手上的連線,達成跨機廣播。若需求只是『伺服器單向推給客戶端』(通知、即時報價、AI 逐字輸出),用 SSE 更省事:走一般 HTTP、瀏覽器自動重連、實作與擴展心智更單純,不需要 WS 的雙向複雜度。"
       },
       "outline": [
         {
@@ -1045,9 +1045,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "為什麼『寄信、產報表、影像處理』要用 BullMQ 丟背景佇列而不是在請求裡同步做？佇列帶來什麼(削峰、重試、解耦、可監控)？任務失敗會自動重試,為什麼有副作用的任務(寄信/扣款)必須冪等？",
+        "hint": "慢工作丟背景;佇列削峰重試;重試要冪等防重複副作用。",
+        "answer": "慢工作同步做會拖住請求、逾時、佔連線——用 BullMQ 丟背景:請求先快速回應、任務由 worker 非同步處理、可削平流量尖峰、失敗自動重試、有儀表板監控。BullMQ 靠 Redis 管佇列。重試意味同一任務可能執行多次:所以有副作用的(寄信、扣款、發貨)必須冪等——帶唯一 job/訂單 id、執行前檢查『做過沒』做過就跳過,否則重試會重複寄信/重複扣款。也要設好重試上限與失敗佇列(dead-letter)處理最終失敗的任務。"
       },
       "outline": [
         {
@@ -1116,9 +1116,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "用 Redis(ioredis) 快取熱門查詢能大幅加速,但『快取失效』要怎麼設(TTL vs 主動失效)？快取了會變的資料(如庫存)沒失效會出什麼 bug？cache stampede(熱門 key 一過期大量請求同時打 DB)是什麼、怎麼緩解？為什麼快取不是加了就一定變快？",
+        "hint": "TTL/主動失效;沒失效看到舊值;stampede 用鎖/隨機 TTL;命中率低反而慢。",
+        "answer": "失效策略:容忍短暫舊資料用 TTL(定時過期,簡單);要即時一致(庫存、餘額)在寫入時主動 DEL 相關 key。沒失效的 bug:使用者改了資料卻一直看到舊值、或不同人看到不一致。stampede:熱門 key 一過期,瞬間大量請求同時 miss 一起打 DB(可能壓垮)——緩解:互斥鎖(只讓一個重建其餘等)、提前背景刷新、TTL 加隨機抖動避免同時過期。快取不一定變快:命中率低(每次都 miss 還多一次 Redis 往返)、序列化成本、失效邏輯複雜易錯——要對『讀多寫少、算得貴、命中率高』的資料才划算,且要量測。"
       },
       "outline": [
         {
@@ -1191,9 +1191,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "用 Vitest 測 Node 後端,單元測(純函數/邏輯)和整合測(API+DB)各測什麼、為什麼別全寫慢的整合測？測會碰外部(DB/第三方 API)的程式時,mock 和『用測試資料庫』各適合什麼？為什麼『測試最大價值是讓你敢重構』？",
+        "hint": "單元快、整合真;金字塔;mock 隔離外部或用測試 DB;測試護網。",
+        "answer": "單元測:純函數/單一模組邏輯(快、量多、易定位);整合測:API 端點 + DB + 中介層一起(真、但慢、較脆)。別全寫整合測:太慢、易因無關變動壞、定位難——用測試金字塔(大量單元+少量整合/E2E)。碰外部:mock 適合隔離不可控/慢的第三方(模擬回應、測各種情境);用『測試資料庫』(每次重置)適合要驗真的 DB 行為(查詢/約束)的整合測。測試最大價值:有測試護網,改內部實作(重構)只要測試還綠就知道沒破壞行為→敢動、迭代快、少回歸。"
       },
       "outline": [
         {
@@ -1266,9 +1266,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "為什麼正式服務要用 Pino 這種『結構化(JSON)log』而不是到處 console.log？結構化 log 帶 request id、關鍵欄位,在事後排查線上問題時好在哪(可查詢、可關聯一整條請求)？log level(debug/info/warn/error) 該怎麼用、正式環境為什麼別狂印 debug？",
+        "hint": "JSON log 可查詢聚合;帶 request id 關聯;分 level 控制量。",
+        "answer": "結構化 log(JSON)可被日誌系統查詢、過濾、聚合、告警,遠勝滿地 console.log(純文字難查、無結構、同步阻塞)。帶 request id/user id/關鍵欄位:能把一個請求跨多個 log 串起來、重建『當時發生什麼』,線上排查超有用。level:debug(開發細節)、info(正常事件)、warn(可疑但不致命)、error(錯誤)。正式環境設 info 以上、別狂印 debug:量太大會拖慢、吃儲存、淹沒重要訊息、還可能不小心記到敏感資料——用 level 控制,需要時才臨時調高。"
       },
       "outline": [
         {
@@ -1341,9 +1341,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "部署 Node 服務,Docker(自己控環境)、Railway/Render(PaaS 省事)、Vercel(適合 serverless/前端整合)各適合什麼？為什麼有長連線(WebSocket)、背景任務、或要常駐的服務,不適合塞進 serverless function？環境變數與密鑰在部署時該怎麼安全注入？",
+        "hint": "Docker 可控、PaaS 省事、Vercel serverless;常駐/長連線別用 function;密鑰走 env。",
+        "answer": "Docker:自己完全控制環境、可部到任何地方、適合要掌控與可攜;Railway/Render:PaaS,推 git 就部署、省運維,適合中小服務快速上線;Vercel:適合 serverless、與前端(Next)整合、按用量。長連線(WebSocket)、背景常駐任務、要維持記憶體狀態的服務不適合 serverless function:function 執行有時間上限、無狀態、會冷啟動、連線會斷——那要常駐服務(容器/PaaS)。密鑰:用平台的環境變數/secrets 注入,別 commit 進 repo、別烤進 Docker image(image 會被分發=洩漏),.env 不進版控。"
       },
       "outline": [
         {
@@ -1416,9 +1416,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "找一個你身邊的例子、用「Bun vs Node vs Deno：2026 runtime 戰」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "Bun / Node / Deno 的『runtime 之爭』——Bun 快、Deno 安全預設與原生 TS、Node 生態最大最穩。對一個要『長期營運的正式服務』,選 runtime 時穩定性/生態成熟度 vs 效能/新特性該怎麼權衡？為什麼『追最新最快』對正式服務不一定是對的？",
+        "hint": "Node 穩生態大、Bun 快、Deno 安全 TS;正式服務重穩定生態。",
+        "answer": "Node:生態最大、最成熟、部署與工具鏈最穩、資料最多——正式長期服務的安全牌。Bun:啟動與執行快、內建工具多,但較新、生態與邊角案例還在成熟。Deno:安全預設(明確授權)、原生 TS,但生態較小。正式服務權衡:穩定性與生態成熟度通常比帳面效能重要——服務要跑很久、要能找到人維護、要有大量套件與範例、要踩過的坑有人填過。追最新最快對正式服務的風險:新 runtime 的未知坑、套件相容性、招募困難——除非有明確效能瓶頸且驗證過,否則穩健的選擇(Node)長期成本更低;新 runtime 適合先在非關鍵專案試水溫。"
       },
       "outline": [
         {
@@ -1483,9 +1483,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "tRPC 讓前後端『共享型別、前端像呼叫本地函式一樣呼叫後端』——它省掉了什麼(手寫 API 型別、手動同步、REST 樣板)？為什麼它綁定 TypeScript 全端(前後端同一 repo/型別)、不適合給第三方或非 TS 客戶端的公開 API？何時該用 tRPC、何時該用 REST/GraphQL？",
+        "hint": "tRPC 端到端型別安全免手寫;綁 TS 全端內部用;對外用 REST/GraphQL。",
+        "answer": "tRPC:後端定義 router,前端直接呼叫、型別自動端到端共享——後端改了回傳,前端立刻型別報錯,不用手寫/同步 API 型別、免 REST 的樣板與序列化模板。但它綁 TypeScript 全端(前後端共用型別、通常同 monorepo):所以不適合給『第三方、行動 App、非 TS、或需要穩定公開契約』的 API——那些要語言中立的 REST/GraphQL(有明確版本化契約、任何客戶端可接)。用 tRPC:自己的 TS 前端 ↔ 自己的 TS 後端、內部快速迭代;用 REST/GraphQL:對外公開 API、多種客戶端、要版本化契約時。"
       },
       "outline": [
         {
@@ -1558,9 +1558,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
-        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
-        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+        "question": "用 Vercel AI SDK 做『串流回應(AI 逐字吐出)』相比等整段生成完再回,對使用者體感有什麼差別？串流在後端與前端各要處理什麼(SSE/stream、逐塊更新 UI)？呼叫 LLM 的 API 金鑰為什麼絕不能放前端、要在後端代理？",
+        "hint": "串流即時看到字、體感快;金鑰放後端;前端逐塊渲染。",
+        "answer": "串流(逐字吐)讓使用者『馬上看到開始有回應』並持續增長,體感快、不用盯著轉圈等十幾秒才一次跳出整段——大幅改善 AI 應用體驗。後端:向 LLM 發串流請求、透過 SSE/ReadableStream 把每個 token/chunk 即時轉發給前端;前端:逐塊接收、append 到 UI(AI SDK 的 useChat 幫你處理)。LLM API 金鑰絕不能放前端:前端程式任何人可看原始碼/攔請求,金鑰一曝光會被盜用刷爆你的帳單——一定在後端代理(前端呼叫你的後端、後端帶金鑰呼叫 LLM),並在後端做速率限制與用量控管。"
       },
       "outline": [
         {
@@ -1642,9 +1642,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Node 22+ 內建了 test runner、fetch、WebSocket 等——這對『減少第三方依賴』有什麼好處(少裝套件、少維護、少供應鏈風險)？但既有專案已用 Jest/axios/ws,該為了用內建的而全換嗎？怎麼判斷『採用新內建功能』的時機？",
+        "hint": "內建減依賴/供應鏈風險;別為換而換;新專案或有痛點才採用。",
+        "answer": "Node 內建這些好處:少一個依賴就少一份維護、少一個潛在的供應鏈風險(被入侵的套件)、少 node_modules 體積、官方維護較穩。但既有專案已穩定用 Jest/axios/ws:全換要投入遷移與重測,除非有明確理由(減依賴、內建功能夠用且更好)否則不划算——別為了『用內建的』而換。判斷採用時機:新專案可直接用內建(fetch/test runner)少裝東西;既有專案在『剛好要升級該功能、或該依賴出問題、或想精簡依賴』時再漸進換;先確認內建版功能夠你用(內建 test runner 對複雜需求可能不如 Vitest 生態)。"
       },
       "outline": [
         {
@@ -1718,9 +1718,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "承 31.10:Hono 能跑在 Node/Bun/Deno/Cloudflare Workers 等多種 runtime——這種『可攜性』對『想部署到 edge 或未來換 runtime』有什麼價值？Hono 的輕量與原生 TS 相比 Express 適合什麼新場景？既有 Express 專案要不要遷移,你會怎麼判斷？",
+        "hint": "Hono 跨 runtime/edge/輕/TS;新專案或要 edge 值得;既有別硬遷。",
+        "answer": "Hono 可攜:同一份程式碼能跑在 Node、Bun、Deno、Cloudflare Workers(edge)——不被單一 runtime 綁死,想部到 edge(全球低延遲)或未來換 runtime 時彈性大。輕量+原生 TS 適合:edge 函數、新的型別驅動專案、要極小 bundle 與快啟動的場景。既有 Express 專案要不要遷移:若運作良好、生態依賴 Express 中介層、沒有 edge/效能痛點,就別為潮硬遷(遷移成本+重測+團隊重學);若正好要上 edge、或新服務、或想要現代 TS 體驗,才值得用 Hono。判斷準則同 31.10:有明確痛點或綠地才換。"
       },
       "outline": [
         {
@@ -1790,9 +1790,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "處理『幾 GB 的大檔』(讀取、轉換、上傳)為什麼不能一次 readFile 全載進記憶體(會 OOM)？Node Stream(可讀/可寫/轉換流 + pipe/pipeline)怎麼讓記憶體恆定地邊讀邊處理邊寫？pipeline 相比手動 pipe 在錯誤處理上好在哪？",
+        "hint": "大檔全載會爆;stream 分塊恆定記憶體;pipeline 統一錯誤/清理。",
+        "answer": "一次 fs.readFile 大檔會把整個檔案載進記憶體→GB 級直接 OOM 或吃光資源。Node Stream 分塊處理:可讀流(來源)→轉換流(邊處理,如解壓/解析/壓縮)→可寫流(目的),用 pipe/pipeline 串起來,一次只在記憶體裡放一小塊、處理完就流走——記憶體恆定、能處理比記憶體大的檔、還能邊讀邊產出。pipeline(stream.pipeline / promises 版)比手動 a.pipe(b).pipe(c) 好:它統一處理錯誤傳播與資源清理(任一環出錯會正確銷毀所有流、不洩漏),手動 pipe 容易漏掉錯誤處理導致洩漏或吞錯。大資料/檔案處理用 stream + pipeline。"
       },
       "outline": [
         {

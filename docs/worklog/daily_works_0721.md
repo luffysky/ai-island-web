@@ -470,3 +470,12 @@ JS 爬蟲章原 24 罐頭。全 25 節換成量身題，延續 ch28 的合法合
 
 ### 🏁 里程碑：爬蟲系列三章 de-can 完成
 **ch28 Python 爬蟲 + ch29 JS 爬蟲 + ch30 跨語言爬蟲**（各 25 節、共 75 題），全程堅守合法合規、對反偵測/規避類主題一律導向「該停下、走官方 API/授權/開放資料」的判斷，不提供惡意規避 how-to、不對收入做保證。**本日 de-can 累計 15 章、394 題。** 續攻 ch31 Node.js / ch32 Go…
+
+---
+
+## 📚 章節 de-can：ch31 Node.js 完整 全 25 節（0721）
+
+原 22 罐頭。全 25 節換成 Node 後端量身題：event loop 適合 I/O 不適合 CPU、nvm/fnm 版本管理與 .nvmrc、內建 http vs Express、dependencies vs devDependencies 與 lockfile 要 commit、ESM vs CommonJS 混用坑與 type:module、pnpm 硬連結省空間防幽靈依賴、TS 開發直跑 vs 部署先編譯、微任務順序 A-B-g-f 與阻塞卡全部連線、Express middleware 順序與 next/錯誤四參、Hono/Fastify 選型別為潮硬換、Prisma 型別安全但小心 N+1、Zod 邊界驗證免 drift、bcrypt 加鹽慢與 JWT HttpOnly cookie、WebSocket 多台靠 Redis pub/sub、BullMQ 背景任務冪等、Redis 快取失效與 stampede、Vitest 測試金字塔 mock vs 測試 DB、Pino 結構化 log 帶 request id、部署 Docker/PaaS/serverless 與長連線別用 function、Bun/Node/Deno runtime 之爭正式服務重穩定生態、tRPC 內部型別安全 vs REST 對外、AI SDK 串流與金鑰必放後端、Node 22 內建 test/fetch 減依賴、Hono 跨 runtime edge、Stream pipeline 處理大檔不爆記憶體。
+
+- diff 75+/75- → import_chapters_to_db ch31（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+- 本日 de-can 累計 **16 章、419 題**。續攻 ch32 Go…
