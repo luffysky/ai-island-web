@@ -441,3 +441,12 @@ SQL 章原 28/28 全罐頭。全部換成含『真實可跑 SQL』的量身題�
 
 - diff 75+/75- → import_chapters_to_db ch27（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
 - 本日 de-can 累計 **12 章、319 題**。續攻 ch28…
+
+---
+
+## 📚 章節 de-can：ch28 Python 爬蟲 全 25 節（0721·強調合規）
+
+爬蟲章原 24 罐頭。全 25 節換成量身題，**貫穿合法合規與道德底線、且不對收入做任何保證**（遵守 CLAUDE.md「不掛保證」）：開爬前 robots/ToS/個資/著作權檢查、requests+BS 設禮貌 UA/間隔與判斷靜態動態、Playwright 等元素勝盲等/有 API 就別開瀏覽器、Scrapy 大規模更要限速守 robots、七種反爬是網站表達「別自動抓」、proxy/IP 池的正當性界線(別繞合理封鎖)、完整專案增量去重監控架構、耐改版選擇器與取值容錯、Item/Pipeline/Spider 分離、無限捲動與省資源、UA/cookie「讓請求正常」vs「假冒繞過」、CSS vs XPath、CSV/JSON/DB upsert 與編碼、httpx async 必限併發、抓自己資料 vs 大量抓他人非公開、排程要告警、直接打 JSON API、raw 先落地再分析、Selenium vs Playwright、授權管道勝對抗式爬蟲、失敗處理與 0 筆是警訊、PDF 文字層 vs OCR 抽查、負責任爬蟲守則、合規優先的應用(不保證收入)、「能不爬就不爬」決策樹。
+
+- diff 75+/75- → import_chapters_to_db ch28（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+- 本日 de-can 累計 **13 章、344 題**。續攻 ch29 JavaScript 進階…
