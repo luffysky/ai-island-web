@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { getLocale } from "next-intl/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { getCachedTranslations } from "@/lib/content-i18n";
+import { ShareButton } from "@/components/share/ShareButton";
 
 export const dynamic = "force-dynamic";
 
@@ -28,12 +29,34 @@ async function getTerm(slug: string): Promise<Term | null> {
   return (data as Term) ?? null;
 }
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://ai-island-web.snowrealm.pet";
+
+function ogImageUrl(t: Pick<Term, "term" | "zh_name" | "category" | "plain" | "langs">): string {
+  const q = new URLSearchParams({
+    term: t.term,
+    zh: t.zh_name ?? "",
+    cat: t.category,
+    plain: t.plain.slice(0, 90),
+    langs: (t.langs ?? []).filter((l) => l !== "general").join(","),
+  });
+  return `${SITE_URL}/api/og/dict?${q.toString()}`;
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const t = await getTerm(slug);
   if (!t) return { title: "找不到這個詞 — AI 島程式辭典" };
   const title = `${t.term}${t.zh_name ? `（${t.zh_name}）` : ""}是什麼？ — AI 島程式辭典`;
-  return { title, description: t.plain.slice(0, 150), alternates: { canonical: `/dictionary/${t.slug}` } };
+  const description = t.plain.slice(0, 150);
+  const url = `${SITE_URL}/dictionary/${t.slug}`;
+  const ogImg = ogImageUrl(t);
+  return {
+    title,
+    description,
+    alternates: { canonical: `/dictionary/${t.slug}` },
+    openGraph: { title, description, url, images: [{ url: ogImg, width: 1200, height: 630 }], type: "article", siteName: "AI 島" },
+    twitter: { card: "summary_large_image", title, description, images: [ogImg] },
+  };
 }
 
 export default async function TermPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -84,8 +107,19 @@ export default async function TermPage({ params }: { params: Promise<{ slug: str
               <span key={l} className="text-xs px-2 py-0.5 rounded-full bg-bg-elevated text-fg-muted">{l}</span>
             ))}
           </div>
-          <h1 className="mt-2 text-3xl font-extrabold break-all">{t.term}</h1>
-          {t.zh_name && <p className="text-lg text-fg-muted mt-0.5">{t.zh_name}</p>}
+          <div className="mt-2 flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="text-3xl font-extrabold break-all">{t.term}</h1>
+              {t.zh_name && <p className="text-lg text-fg-muted mt-0.5">{t.zh_name}</p>}
+            </div>
+            <ShareButton
+              url={`${SITE_URL}/dictionary/${t.slug}`}
+              title={`${t.term}${t.zh_name ? `（${t.zh_name}）` : ""} — AI 島程式辭典`}
+              text={`${t.term}${t.zh_name ? `（${t.zh_name}）` : ""}是什麼？${t.plain.slice(0, 60)}`}
+              label="分享"
+              className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-bg-card text-sm hover:border-accent/50 hover:text-accent transition"
+            />
+          </div>
         </header>
 
         <section>

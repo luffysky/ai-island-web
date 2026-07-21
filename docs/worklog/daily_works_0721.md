@@ -281,3 +281,14 @@ ch49 + ch50（AI Agent / n8n 兩大旗艦章）完成。**教具庫新增 2 個�
 - 對齊首頁既有 section 樣式（`max-w-7xl mx-auto px-6 py-16 border-b border-border`）、RWD（1/2/4 欄）、亮暗 token。
 - **收尾**：`tsc` ✅ · `next build` exit 0（91 靜態頁生成、`/` 正常）✅。
 - 記憶：新增 `mass-market-features` memory（四功能位置/資料表/gating/待補），供下次開工不必重查。
+
+---
+
+## 📖 程式辭典每個詞條加「分享 + OG 圖」（0721·林董指定）
+
+林董要「程式辭典每個幫我加上可以分享的功能 要 og」。因分享/OG 都掛在共用的 `/dictionary/[slug]` 頁，**一次改、1773 個詞條全部生效**。
+
+- **OG 圖產生器** `src/app/api/og/dict/route.tsx`（edge runtime `ImageResponse`、鏡像既有 `/api/og/cert`）：分類色光暈 + 「📖 AI 島程式辭典」品牌 + 分類 chip + 大詞名 + 中文名 + plain 摘要 + langs + 站點；含 SVG fallback（Satori 失敗也不 500）。參數 `?term=&zh=&cat=&plain=&langs=`。
+- **詞條頁 metadata**：`generateMetadata` 補 `openGraph` + `twitter`（summary_large_image）指向 OG 圖 → 貼到 LINE/FB/X/Threads 有漂亮預覽卡。
+- **分享按鈕**：詞條標題列右上加 `ShareButton`（既有元件：手機原生分享 + 桌機 LINE/X/FB/複製連結 modal）。
+- **收尾**：`tsc` ✅ · `next build` exit 0（92 頁、/api/og/dict + /dictionary/[slug] 編出）✅；RWD（標題列 flex justify-between、按鈕 shrink-0）。
