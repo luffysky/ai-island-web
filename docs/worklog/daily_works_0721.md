@@ -385,3 +385,12 @@ ch05（TypeScript）25 節全 de-can，換成各節量身題（除錯/選型/預
 
 - diff 75+/75-（25×3）→ import_chapters_to_db ch08（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
 - 本日 de-can 累計：ch01/02/04/05/07/08（**153 題**）。續攻 ch09 Vue…
+
+---
+
+## 📚 章節 de-can：ch09 Vue 全 25 節（0721）
+
+原 24 罐頭。全 25 節換成 Vue 量身題（重複主題給不同角度）：漸進式/響應式省什麼、createApp 掛載與 SFC、模板 {{}}/:/@ 與 :class、ref vs reactive 與 template 免 .value、computed 快取、props/emit/provide 選用與單向流、生命週期 mounted/unmounted 清理、Pinia state/getters/actions、Vue Router 前端路由與 beforeEach 守衛、Nuxt SSR/SSG 補 SEO、Vue vs React 選型準則、setup 解構失響應與 toRefs、v-if vs v-show 與 v-model 糖、slots/作用域 slot、巢狀路由 lazy load、生命週期洩漏對照清單、composable vs mixin、Teleport/Transition/Suspense、Nuxt useFetch hydration 免雙抓、Vue+TS defineProps 泛型、scoped CSS 與 :deep()、Vite HMR 為何快、Vue↔React 心智對照（自動追蹤 vs 明講依賴）、Todo App+Pinia+Supabase 樂觀更新、生態選型問句清單。
+
+- diff 75+/75- → import_chapters_to_db ch09（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+- 本日 de-can 累計：ch01/02/04/05/07/08/09（**178 題**）。續攻 ch10 Next.js/Nuxt（前端框架三章收官）…

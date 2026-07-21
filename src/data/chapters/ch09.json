@@ -44,9 +44,9 @@
         }
       ],
       "exercise": {
-        "question": "找一個你身邊的例子、用「Vue 是什麼？為什麼選 Vue？」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "Vue 常被說『漸進式框架、好上手』——這具體指什麼（可以只用一點、也能全套）？跟直接操作 DOM 相比，Vue 的『響應式（資料變，畫面自動更新）』替你省掉了什麼？什麼專案適合選 Vue？",
+        "hint": "漸進式＝可從一個 <script> 標籤慢慢用到全套 SPA。響應式＝你改資料、它算差異更新畫面。",
+        "answer": "漸進式：可以只在一個既有頁面引入 Vue 管一小塊，也能用全套（Router/Pinia/Nuxt）做大型 SPA——按需採用、遷移門檻低。響應式省下手動 querySelector 改 DOM、手動同步資料與畫面：你只改資料、Vue 追蹤依賴自動更新有變的部分。適合：想快速上手、模板直覺、中小到大型都可；團隊偏好 HTML 模板風格時尤其順手。"
       },
       "outline": [
         {
@@ -108,9 +108,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "一個最小 Vue 應用怎麼掛上頁面（createApp(App).mount('#app')）？SFC（單檔元件 .vue）把 template / script / style 放一起有什麼好處？和把 HTML/JS/CSS 拆三個檔比，各自的取捨是什麼？",
+        "hint": "createApp 掛到某個 DOM 節點。SFC 把一個元件的三件事聚在一個檔。",
+        "answer": "createApp(App).mount('#app')：把根元件掛到 id=app 的節點。SFC（.vue）把 <template>/<script>/<style> 放同一檔：一個元件的結構、邏輯、樣式聚在一起、好找好維護、style 可 scoped 只作用於此元件。取捨：聚在一起（關注一個元件時很方便，Vue/元件化思維）vs 拆三檔（傳統分離，但一個元件的東西散在三處）——元件化開發下 SFC 通常更順。"
       },
       "outline": [
         {
@@ -172,9 +172,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 3 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Vue 模板的 `{{ }}` 插值、`v-bind`(:) 綁屬性、`v-on`(@) 綁事件各做什麼？`:class` 動態套 class 怎麼寫？為什麼模板裡『指令』比自己寫 JS 操作 DOM 好維護？",
+        "hint": "{{}} 顯示值、:綁屬性、@綁事件。指令是宣告式，跟著資料走。",
+        "answer": "{{ msg }} 顯示變數；:href=\"url\"（v-bind）把屬性綁到資料；@click=\"fn\"（v-on）綁事件。動態 class：:class=\"{ active: isActive, error: hasError }\"（物件語法，true 才套）。指令好維護因為是宣告式：你描述『這個屬性/class 綁哪個資料』，資料一變畫面自動同步，不用自己找節點手動 setAttribute/classList——邏輯跟著資料、不易漏更新。"
       },
       "outline": [
         {
@@ -236,9 +236,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 5 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "ref 和 reactive 差在哪、各適合包什麼（原始值 vs 物件）？為什麼 template 裡用 ref 不用 .value、script 裡卻要？computed 和『在 template 裡寫一長串運算』相比好在哪（快取、只在依賴變時重算）？",
+        "hint": "ref 包任意值（.value 存取）、reactive 包物件。computed 有快取、依賴不變不重算。",
+        "answer": "ref(x) 包任意值（原始值也行），script 裡用 x.value、template 自動解包不用 .value；reactive(obj) 包物件（直接 obj.a 用，但不能整個重指派、解構會失去響應）。多數情況用 ref 較一致。computed：把衍生資料（如篩選後的清單、總價）包起來，會快取、只有依賴變才重算，template 也乾淨——比在模板裡寫一長串運算好（那每次重繪都算、又難讀）。"
       },
       "outline": [
         {
@@ -312,9 +312,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "父傳子用 props、子通知父用 emit、跨多層用 provide/inject——給三個情境各選一個並說原因：①卡片元件顯示標題 ②按鈕點了要父層關 Modal ③深層元件要拿到主題設定。為什麼 props 不該被子元件直接改？",
+        "hint": "props 下、emit 上、provide/inject 跨層。單向資料流。",
+        "answer": "①卡片標題→props（父給子顯示）②子要父關 Modal→emit（子 emit('close')，父監聽 @close 改狀態）③深層拿主題→provide/inject（祖先 provide、任意深後代 inject，免一層層傳）。props 不該被子改：Vue 是單向資料流，資料源在父；子直接改 props 會讓『到底誰是真相』混亂、且下次父重繪會蓋掉——要改就 emit 請父改，或用本地副本。"
       },
       "outline": [
         {
@@ -384,9 +384,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "onMounted / onUnmounted 這些生命週期鉤子各在什麼時機跑？『在 onMounted 訂閱、在 onUnmounted 取消』為什麼重要（不然會怎樣）？Composition API 的 setup 相比 Options API 的 data/methods，在『組織邏輯』上好在哪？",
+        "hint": "mounted＝掛好了（可碰 DOM/訂閱）、unmounted＝要走了（清理）。Composition 依邏輯聚合而非依選項分散。",
+        "answer": "onMounted：元件掛到 DOM 後（可存取 DOM、發請求、加訂閱/計時器）；onUnmounted：卸載前（清理）。要在 onUnmounted 取消訂閱/清計時器，否則元件走了監聽還在→記憶體洩漏、重複觸發、對已卸載元件操作。Composition API：同一個功能的 ref+computed+watch+生命週期可以寫在一起（依『邏輯』聚合），不像 Options API 把同一功能拆散在 data/methods/computed 各區塊——大元件更好讀、邏輯好抽成 composable。"
       },
       "outline": [
         {
@@ -448,9 +448,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "為什麼 SPA 需要一個『集中的狀態管理』（多個不相鄰元件要共享同一份資料）？Pinia 的 store（state/getters/actions）分別對應什麼？相比用一堆 provide/inject 或全域變數，Pinia 好在哪（devtools、型別、模組化）？",
+        "hint": "跨元件共享狀態集中一處。state=資料、getters=衍生、actions=改的方法。",
+        "answer": "多個分散元件要讀寫同一份資料（購物車、登入者）時，散在各處會難同步——集中到 store 單一真相來源。Pinia：state（資料）、getters（像 computed 的衍生值）、actions（修改 state 的方法、可含非同步）。比全域變數/provide 好：有 Vue Devtools 追蹤變化與時間旅行、TypeScript 型別推導好、模組化（多個 store）、SSR 友善——可維護性高很多。"
       },
       "outline": [
         {
@@ -508,9 +508,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 4 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Vue Router 讓 SPA『換頁不重新載入整頁』是怎麼運作的（攔住連結、換元件、改網址）？動態路由 /user/:id 怎麼拿參數？路由守衛（beforeEach）常拿來做什麼（如未登入擋轉登入頁）？",
+        "hint": "前端路由：URL 變→對應元件切換，不整頁重載。守衛可攔截導航。",
+        "answer": "Router 攔住 <router-link>/導航，依 URL 對應到某個元件、只換 <router-view> 內容而非整頁重載（快、狀態保留）。動態路由 /user/:id 用 route.params.id 拿值。beforeEach 全域守衛在每次導航前跑：常用來做權限檢查（未登入就 redirect 到 /login）、記錄、關閉開著的 Modal、設頁面標題等。它是控制『能不能去這頁』的關卡。"
       },
       "outline": [
         {
@@ -564,9 +564,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 6 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "純 Vue SPA 在『首屏空白、SEO 差』上有什麼問題？Nuxt 用 SSR/SSG 怎麼補（伺服器先產好 HTML）？Nuxt 的『檔案即路由（pages/ 目錄自動生成路由）』省了什麼設定？",
+        "hint": "SPA 首屏要等 JS 下載執行才有內容；SSR 先送 HTML。pages/ 自動變路由。",
+        "answer": "純 SPA 首屏是空殼、要等 JS 下載執行才渲染→首屏慢、爬蟲看不到內容（SEO 差）。Nuxt 用 SSR（伺服器先算好 HTML 送出，秒見內容、可被搜尋）或 SSG（build 時就產靜態頁）補這兩點。檔案即路由：在 pages/ 放 about.vue 就自動有 /about、user/[id].vue 自動是動態路由——不用手寫 router 設定，約定優於配置。"
       },
       "outline": [
         {
@@ -623,9 +623,9 @@
       },
       "xp": 10,
       "exercise": {
-        "question": "找一個你身邊的例子、用「Vue vs React 怎麼選？」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "Vue 和 React 都能做同樣的事，選擇常看『團隊與偏好』而非優劣。列出兩者風格上的關鍵差異（模板指令 vs JSX、內建響應式 vs 手動 setState、官方全家桶 vs 生態拼裝），並說你會用什麼準則替一個團隊做選擇。",
+        "hint": "沒有絕對優劣；看團隊熟悉度、生態、招募、專案型態。",
+        "answer": "差異：Vue 用模板+指令(v-if/v-for)、內建響應式（改資料自動追蹤）、官方成套（Router/Pinia/Nuxt）；React 用 JSX（就是 JS）、手動 setState+明確重繪心智、生態百家爭鳴自由拼裝。選擇準則：團隊已熟哪個？招募市場？要不要大量既有元件庫（React 生態更大）？偏好模板還是 JS-first？專案規模與長期維護者是誰？沒有標準答案——選團隊能長期寫好、且生態撐得住需求的那個。"
       },
       "outline": [
         {
@@ -691,9 +691,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "承 9.4，深入 setup：為什麼從 reactive 物件『解構』會失去響應性、要用 toRefs 解？script setup 語法糖幫你省掉了什麼（不用 return、元件自動註冊）？watch 和 computed 該怎麼選（要副作用 vs 要衍生值）？",
+        "hint": "解構 reactive 斷開追蹤；toRefs 保住。watch 做副作用、computed 算衍生值。",
+        "answer": "reactive 的響應性靠 proxy 攔截屬性存取，解構出來的變數是普通值、斷了追蹤→改了不更新；用 toRefs(obj) 把每個屬性轉成 ref 保住響應。<script setup> 讓你不用 return 綁定、import 的元件自動可用、更簡潔。選擇：要『依賴變就重算出一個值』用 computed（有快取、無副作用）；要『依賴變就做一件事』（發請求、存 localStorage、操作 DOM）用 watch。"
       },
       "outline": [
         {
@@ -779,9 +779,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 10 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "v-if 和 v-show 差在哪（真的移除 vs 只是隱藏）、什麼時候用哪個？v-for 為什麼要配 :key（同 React 的理由）？v-model 在 input 上做了什麼『雙向綁定』的糖（背後其實是 :value + @input）？",
+        "hint": "v-if 增刪節點、v-show 切 display。v-model = 綁值 + 監聽更新。",
+        "answer": "v-if 真的建立/移除 DOM（切換成本高、適合很少切換或初始不顯示）；v-show 只切 CSS display（一直在 DOM、切換便宜、適合頻繁開關）。v-for 配 :key 讓 Vue 正確辨認每項、避免重排時狀態錯位（跟 React key 同理，別用 index 當 key）。v-model 是語法糖：<input v-model=\"name\"> ≈ :value=\"name\" @input=\"name=$event.target.value\"——幫你把『綁值』和『更新值』一次搞定的雙向綁定。"
       },
       "outline": [
         {
@@ -867,9 +867,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "承 9.5，slots 解決什麼（讓父層決定子元件某塊要放什麼內容）？具名 slot 和作用域 slot（子把資料傳回給 slot 用）各適合什麼？設計一個可重用的 Card 元件，哪些部分該開成 slot？",
+        "hint": "slot＝內容插槽，父填內容。作用域 slot 讓子把資料交給父的模板用。",
+        "answer": "slot 讓子元件保留『版面/行為』、把某塊內容交給父決定（如 Card 的內文由使用方填）。具名 slot：一個元件多個插槽（#header、#footer）。作用域 slot：子把資料透過 slot props 傳回，父的模板能用（如 List 元件把每個 item 交給父決定怎麼渲染）。Card 設計：外框/陰影/padding 固定，開 #header（標題區）、預設 slot（內文）、#actions（按鈕區）給使用方填——既統一又彈性。"
       },
       "outline": [
         {
@@ -963,9 +963,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "承 9.7，設計一個『使用者登入狀態』的 Pinia store：要有哪些 state、哪個 action 做登入/登出、哪個 getter 判斷 isLoggedIn？為什麼修改 state 要透過 action 而不是元件裡到處直接改？",
+        "hint": "state: user/token；action: login/logout（可含 async）；getter: isLoggedIn。",
+        "answer": "state：{ user: null, token: null }。actions：async login(cred)（打 API、設 user/token、存 storage）、logout()（清空）。getter：isLoggedIn: (s) => !!s.token。透過 action 改而非到處直接改的原因：修改邏輯集中一處（好維護、好測、好加驗證/日誌）、Devtools 能追蹤每個 action、避免同一份狀態被四散的程式各自亂改導致難以追查的 bug。"
       },
       "outline": [
         {
@@ -1047,9 +1047,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 9 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "巢狀路由（一個頁面裡再切子頁，如設定頁的分頁）怎麼用 children + 巢狀 <router-view> 做？路由的 lazy load（() => import(...)）為什麼能加快首屏？程式化導航（router.push）和 <router-link> 各在什麼時候用？",
+        "hint": "children 定義子路由、巢狀 router-view 顯示。lazy 讓路由按需載入。",
+        "answer": "巢狀：父路由設 children、父元件模板放一個 <router-view> 顯示子路由——如 /settings 底下 /settings/profile、/settings/security 切在同一版面內。lazy load：component: () => import('./Page.vue') 讓該頁的程式碼分割成獨立 chunk、進到那頁才下載→首屏只載必要的、更快。<router-link> 用於使用者可點的連結（可預抓、無障礙）；router.push 用於程式邏輯觸發的導航（登入成功後跳轉、送出後導向）。"
       },
       "outline": [
         {
@@ -1131,9 +1131,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 7 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "承 9.6，一個元件在 onMounted 開了 setInterval、又在別處用 watch 監聽 route 變化——卸載時若都不清會怎樣？請列出『這個元件生命週期內我開了什麼、就要在哪裡關什麼』的對照清單。為什麼這是最常見的記憶體洩漏來源？",
+        "hint": "開了訂閱/計時器/監聽就要對應清。清理漏了＝洩漏。",
+        "answer": "不清的後果：元件卸載後 setInterval 還在跑、watch/事件監聽還在、對已消失的元件操作→記憶體洩漏、重複觸發、詭異 bug。對照清單：setInterval/setTimeout→onUnmounted clearInterval/Timeout；addEventListener→removeEventListener；第三方庫實例(圖表/地圖)→destroy；手動 watch/effect→保存停止函式並呼叫。這是最常見洩漏來源因為『開』很順手、『關』常被忘——養成開的當下就寫好清理。"
       },
       "outline": [
         {
@@ -1215,9 +1215,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "什麼時候把邏輯抽成 composable（use 開頭的函式，如 useMouse、useFetch）？它和 Options API 的 mixin 相比好在哪（來源清楚、不會命名衝突）？寫一個 useCounter 的介面（回傳什麼）。",
+        "hint": "composable＝把有響應狀態的邏輯抽成可重用函式，回傳 ref/方法。",
+        "answer": "當多個元件重複同一套『有響應狀態＋生命週期』的邏輯（滑鼠位置、抓資料、計時）就抽成 composable。比 mixin 好：composable 明確 import 且回傳值有名字（一眼知道哪來的、不會像 mixin 那樣多個混入互相蓋掉屬性、來源不明）。useCounter(initial=0) → 回傳 { count, increment, decrement, reset }（count 是 ref、其餘是方法）。它抽的是邏輯不是模板。"
       },
       "outline": [
         {
@@ -1295,9 +1295,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Teleport 解決什麼（把 Modal/Toast『傳送』到 body 底下，脫離父層 overflow/z-index 牢籠）？Transition 幫你在『元素進出場』時做動畫是怎麼運作的（加/移過渡 class）？Suspense 配非同步元件顯示 fallback 的用途是什麼？",
+        "hint": "Teleport 換 DOM 掛載位置、不換邏輯歸屬；Transition 在進出場套 class；Suspense 等非同步。",
+        "answer": "Teleport：把內容渲染到指定節點（如 <body>），讓 Modal/下拉不被父層的 overflow:hidden 裁切或 z-index 困住，但邏輯上仍屬於原元件。Transition：包住元素，在它進場/離場時自動加上 v-enter-*/v-leave-* class，配 CSS 過渡做淡入淡出/滑動。Suspense：包住含非同步 setup 的元件，等它就緒前顯示 #fallback（載入中），就緒後換成內容——統一處理非同步元件的等待狀態。"
       },
       "outline": [
         {
@@ -1375,9 +1375,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 11 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "承 9.9，Nuxt 3 的 useFetch/useAsyncData 在 SSR 下怎麼避免『伺服器抓一次、瀏覽器又抓一次』（資料 hydration）？server/ 目錄的 API 路由讓你不用另開後端做什麼？什麼頁面適合 SSG、什麼適合 SSR？",
+        "hint": "useFetch 會把伺服器抓的資料帶到 client 不重抓。server/ 內建 API。SSG 靜態、SSR 動態。",
+        "answer": "useFetch/useAsyncData 在伺服器抓好資料後，把結果序列化隨 HTML 送到瀏覽器，hydration 時直接用、不重抓（避免雙重請求與畫面閃動）。server/api/ 讓你在同一個 Nuxt 專案寫後端端點（連 DB、藏密鑰）→ 小專案免另起後端。選型：內容不常變、人人看一樣（部落格、文件、行銷頁）→SSG（build 時產靜態、最快最省）；每次請求內容不同或即時（儀表板、個人化）→SSR。"
       },
       "outline": [
         {
@@ -1471,9 +1471,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 12 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "在 <script setup lang=\"ts\"> 裡，defineProps 怎麼加型別（用泛型 defineProps<{...}>()）？ref 什麼時候要手動給泛型（如 ref<User|null>(null)）？TS 幫 Vue 專案擋掉哪些常見錯（傳錯 prop 型別、用了不存在的欄位）？",
+        "hint": "defineProps<Props>() 給型別；ref 初值 null 常要標泛型。",
+        "answer": "型別化 props：defineProps<{ title: string; count?: number }>()（或用 withDefaults 給預設）。ref(0) 能推論；ref<User|null>(null) 初值 null 推不出，要手動給泛型。TS 在 Vue 擋掉：傳錯 prop 型別（父傳 number 給 string prop 立刻標紅）、用了不存在的欄位（user.nmae 打錯）、emit 事件名/payload 對不上、store 取值型別錯——把一堆執行期才炸的錯提前到編譯期。"
       },
       "outline": [
         {
@@ -1567,9 +1567,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 11 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "Vue 的 <style scoped> 怎麼做到『樣式只作用於此元件、不外洩』（背後加 data 屬性）？scoped、CSS Modules、Tailwind 三種在 Vue 專案各適合什麼？想改子元件內部的樣式，為什麼 scoped 下要用 :deep()？",
+        "hint": "scoped 給元件節點加獨特屬性選擇器隔離；:deep 穿透到子元件。",
+        "answer": "<style scoped> 編譯時給此元件的元素加一個獨特 data 屬性、並把選擇器綁上它→樣式只中這個元件、不污染別處。適用：scoped 適合元件私有樣式（最常用）；CSS Modules 適合要用 JS 引用 class 名/更嚴格隔離；Tailwind 適合 utility-first 快速一致、跨元件共用設計。改子元件內部：scoped 預設穿不進子元件，用 :deep(.child-class) 明確表示『我要穿透影響子元件』（謹慎用，別破壞封裝）。"
       },
       "outline": [
         {
@@ -1679,9 +1679,9 @@
         }
       ],
       "exercise": {
-        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
-        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
-        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+        "question": "Vite 為什麼開發啟動快（原生 ESM 按需編譯，不像 webpack 先打包全部）？HMR（熱模組替換）在你存檔時做了什麼、為什麼比整頁重載體驗好（保留狀態）？production build 為什麼還是要打包（tree-shaking、壓縮）？",
+        "hint": "dev 用瀏覽器原生 ESM 免全量打包；HMR 只換改動的模組、保留狀態；prod 要優化。",
+        "answer": "Dev：Vite 用瀏覽器原生 ESM，只在你請求某模組時即時編譯它（用超快的 esbuild），不用像 webpack 一開始就打包整個專案→啟動秒開、專案再大也快。HMR：存檔時只把『改動的那個模組』替換進執行中的頁面、保留當前狀態（表單填的、開著的分頁不重置），比整頁重載順暢。Prod build：仍打包做 tree-shaking（搖掉沒用到的）、壓縮、分割 chunk、指紋快取——上線要的是最小最快的產物。"
       },
       "outline": [
         {
@@ -1771,9 +1771,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 2 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "承 9.10，做一個更具體的對照：同樣『一個計數器＋一個依 count 衍生的訊息』，Vue（ref+computed）和 React（useState+直接算/useMemo）寫起來心智上差在哪？為什麼說『Vue 幫你追蹤依賴、React 要你明講依賴』？",
+        "hint": "Vue 自動追蹤誰用了哪個響應值；React 要你手寫依賴陣列/明確 setState。",
+        "answer": "Vue：count 是 ref、msg 是 computed(()=>`共 ${count.value} 個`)——Vue 自動追蹤 computed 用到 count、count 變就重算，你不用列依賴。React：const [count,setCount]=useState(0)，衍生值直接在渲染算（或 useMemo(()=>...,[count]) 要自己列依賴陣列），更新要 setCount。差別：Vue 的響應式『自動追蹤依賴』（少寫、但魔法多）；React『明確、資料流一眼可循』（多寫依賴、但可預測）。兩種心智各有擁護者。"
       },
       "outline": [
         {
@@ -1891,9 +1891,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "要做一個 Todo App（新增/完成/刪除/篩選）配 Pinia + Supabase，資料流該怎麼設計（元件只呼叫 store action、store 負責跟 Supabase 同步）？為什麼『樂觀更新（先改本地再送伺服器，失敗再回滾）』能讓體驗更順？",
+        "hint": "元件→store action→Supabase；UI 綁 store state。樂觀更新＝先給即時回饋。",
+        "answer": "設計：元件只呼叫 store 的 action（addTodo/toggle/remove/setFilter），store 負責更新自己的 state 並跟 Supabase 同步（insert/update/delete）；UI 綁 store 的 getters（如過濾後清單）。分層清楚：元件不直接碰 Supabase。樂觀更新：使用者一點『完成』就先改本地 state（畫面立刻反應），同時背景送 Supabase；若失敗再回滾並提示——避免每個操作都轉圈等網路，體驗更即時流暢。"
       },
       "outline": [
         {
@@ -1974,9 +1974,9 @@
       "number": "LESSON 9.25",
       "xp": 10,
       "exercise": {
-        "question": "找一個你身邊的例子、用「Vue 生態 + 學習資源」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "與其背『Vue 生態有哪些庫』，做自我盤點：拿到一個需求（如『要 SSR + 內容站 + 少量互動』），你會怎麼從 Vue 生態選型（Nuxt？純 Vue+Vite？要不要 Pinia？）？寫下你判斷『這個專案需不需要某個庫』的問句清單。",
+        "hint": "從需求反推：要 SSR/SEO 嗎？狀態跨元件多嗎？路由複雜嗎？",
+        "answer": "判斷問句：①要 SSR/SEO 或檔案路由/後端端點嗎？要→Nuxt；純前端 SPA→Vue+Vite。②有多個不相鄰元件共享複雜狀態嗎？有→Pinia；只有局部→ref/composable 就好。③路由多且要守衛/巢狀嗎？→Vue Router（Nuxt 內建）。④表單複雜要驗證？→VeeValidate/Zod。⑤要 UI 元件庫嗎？→按設計需求選。原則：從『需求』反推要不要某個庫，別因為流行就全裝——每個依賴都是長期維護成本。"
       },
       "outline": [
         {

@@ -194,7 +194,8 @@
   - [x] 🏁 **核心 Web 基礎四章 de-can 完成**：ch01 HTML + ch02 CSS + ch04 JS + ch05 TS（各 25 節、共 **100 題**全量身重寫）
   - [x] ~~ch07 程式邏輯共通：28 節全 de-can~~ ✅ 0721（跨語言概念題：編譯 vs 直譯、可變/不可變、浮點誤差與金額、短路求值、switch/查表窮盡、迴圈 off-by-one、函數副作用、陣列 vs 其他結構、HashMap 碰撞、Stack/Queue/Set/Graph 選用、OOP 封裝/多型、組合優於繼承、純函數、型別系統取捨、Stack/Heap/GC 洩漏、Result vs 例外、模組循環依賴、命名/linter、設計模式勿過度、執行緒/鎖/死鎖、async vs 平行、actor/channel、Big O、排序/遞迴/DP、字串編碼/正則貪婪、I/O 串流、測試金字塔、系統化除錯）
   - [x] ~~ch08 React 完整：25 節全 de-can~~ ✅ 0721（宣告式 UI/Vite 掛載/JSX 規則/props 單向流/useState 快照與函式更新/事件參照坑/list key 錯位/useEffect 依賴與 cleanup/useRef 兩用途/useMemo 別濫用/custom hook/Context 反模式/useReducer 純函數/Error Boundary 分區/RHF+Zod/React Query server state/狀態方案選型/效能 Profiler/Testing Library 測行為/RSC/shadcn 源碼模式/React 19 Actions·use()/RSC vs Client 界線/memo 家族何時用）
-  - [ ] 剩 ch09/10/16/17/26–32/34–36/46… 續 de-can
+  - [x] ~~ch09 Vue 完整：25 節全 de-can~~ ✅ 0721（漸進式/響應式、SFC、模板指令、ref vs reactive、computed 快取、props/emit/provide、生命週期清理、Pinia store、Vue Router 守衛、Nuxt SSR/SSG、Vue vs React 選型、setup/toRefs、v-if vs v-show、slots、巢狀路由 lazy、洩漏對照清單、composable vs mixin、Teleport/Transition/Suspense、Nuxt useFetch hydration、Vue+TS、scoped/:deep、Vite HMR、Vue↔React 對照、Todo+Pinia+Supabase 樂觀更新、生態選型問句）
+  - [ ] 剩 ch10/16/17/26–32/34–36/46… 續 de-can
 - [ ] 4.1.2 **deep-rewrite tier 未動章**：ch15、ch24、ch32、ch34、ch35、ch36、ch40、ch41、ch63、ch68（strict-spec）、ch72–75、附錄 ch61–67/69–70
 - [ ] 4.1.3 教具庫擴充：mobile 專屬教具（給 ch11）、規劃 B 教具（RegexTester/CronBuilder/JsonInspector 進階/HttpInspector/Tokenizer/SortingViz/GitGraph/NeuralForward/AuthFlow/MLBoundary）——依技術章需要再建
 - [ ] 4.1.4 圖文解說圖：概念/B/D/E/F 區操作圖 110+ 張（🔴 等林董生圖；A 區 29 張 ✅）
