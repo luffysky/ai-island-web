@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
  *   profile / lesson_progress / quiz_attempts / bookmarks / notes / playgrounds
  *   blog_articles / blog_comments / forum_threads / forum_replies / forum_reactions
  *   xp_events / coin_transactions / user_achievements / ai_conversations
- *   todos / pet / settings 等
+ *   todos / pet / blog_settings / email_subscriptions 等
  *
  * 大表（ai_messages、analytics_*）只 summary count、不全 dump（避免炸 memory）。
  */
@@ -58,7 +58,8 @@ export async function GET() {
     achievements,
     todos,
     pet,
-    settings,
+    blogSettings,
+    emailSubscriptions,
     aiConvos,
     aiMessagesCount,
     analyticsCount,
@@ -78,7 +79,10 @@ export async function GET() {
     safe(admin.from("user_achievements").select("*").eq("user_id", uid)),
     safe(admin.from("todos").select("*").eq("user_id", uid)),
     safe(admin.from("pets").select("*").eq("user_id", uid).maybeSingle()),
-    safe(admin.from("user_settings").select("*").eq("user_id", uid).maybeSingle()),
+    // 使用者設定：通知/LINE 偏好在 profiles（上面已 dump）；這裡補真的有的兩張 per-user 設定表
+    // （原本查的 user_settings 表不存在、被 safe() 靜默吞掉、導致設定沒進匯出）。
+    safe(admin.from("user_blog_settings").select("*").eq("user_id", uid).maybeSingle()),
+    safe(admin.from("email_subscriptions").select("*").eq("user_id", uid)),
     safe(admin.from("ai_conversations").select("id, title, model:model_id, created_at, updated_at").eq("user_id", uid)),
     safeCount(admin.from("ai_messages").select("id, ai_conversations!inner(user_id)", { count: "exact", head: true }).eq("ai_conversations.user_id", uid)),
     safeCount(admin.from("analytics_sessions").select("*", { count: "exact", head: true }).eq("user_id", uid)),
@@ -107,7 +111,8 @@ export async function GET() {
     achievements,
     todos,
     pet,
-    settings,
+    blog_settings: blogSettings,
+    email_subscriptions: emailSubscriptions,
     ai_conversations: aiConvos,
     ai_messages_count: aiMessagesCount,
     analytics_sessions_count: analyticsCount,
