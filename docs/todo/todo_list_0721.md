@@ -214,7 +214,8 @@
   - [x] ~~ch18 NoSQL 資料庫：25 節全 de-can~~ ✅ 0721（NoSQL 放寬什麼換什麼、文件嵌入 vs 引用、Firebase security rules、Redis 記憶體風險/五結構、向量 DB 相似搜、SQL vs NoSQL 問存取模式、query-first 設計、Mongo CRUD 無 schema 要自律、aggregation 下推、Firestore 即時但查詢受限計費、Redis TTL、pgvector metadata filter、Supabase RLS、NoSQL 也要索引、混用 polyglot、DynamoDB access pattern、Cassandra 多數用不到、Neo4j 關係一等公民、時序庫、ES/Meili 搜尋索引同步、備份要驗證還原、connection pool、migration 漸進、選型框架預設關聯式、原理可遷移）
   - [x] ~~ch19 DB進階 / ch20 API設計 / ch21 認證授權 / ch22 部署Docker / ch24 監控Logs（54 節）全 de-can~~ ✅ 0721（DB進階：索引型別/EXPLAIN/交易隔離/讀寫分離延遲/分片是最後手段/連線池/多層快取/慢查詢/migration 漸進/備份驗證/多租戶 RLS/CDC·Event Sourcing/搜尋 · API：REST/GraphQL/tRPC 選型/RESTful/GraphQL N+1/API 文件版本/限流/webhook 驗簽冪等/OpenAPI 契約測試 · 認證：認證 vs 授權/OAuth/Passkey 防釣魚/RBAC+RLS/Session vs JWT/Cookie/OAuth 授權碼/最小權限/MFA 備援/bcrypt 加鹽慢 · 部署：dev→prod 鴻溝/Docker 多階段/PaaS 務實/edge 限制/密鑰別烤 image/Dockerfile layer 快取/CI-CD/零停機/K8s 過度/IaC · 監控：三支柱/Sentry source map/結構化 log/Web Vitals RUM/uptime 告警/observability/request id/RED p95/告警藝術）
   - [ ] 🏁 **後端/DevOps 全罐頭章清完**（ch15/16/17/18/19/20/21/22/24）
-  - [ ] 剩 ch06/11/12/14/23/25/37/38/39/40/41/42/49/50 殘餘罐頭（各數題）續 de-can
+  - [x] ~~ch06/11/12/14/23/25/37/38/39/40/41/42/49/50 殘餘罐頭 63 題全 de-can~~ ✅ 0721（JSON/行動App/資安OWASP/PWA/後端架構/CDN-DNS/WordPress/電商/LINE生態/Kotlin-Dart/遊戲/接案型態/AI Agent/n8n；接案/職涯/變現題一律不掛收入保證）
+  - [x] 🏁🏁 **全站章節 de-can 完成 — 掃全 chapters JSON『canned remaining: 0』**（罐頭練習全數清零）
 - [ ] 4.1.2 **deep-rewrite tier 未動章**：ch15、ch24、ch32、ch34、ch35、ch36、ch40、ch41、ch63、ch68（strict-spec）、ch72–75、附錄 ch61–67/69–70
 - [ ] 4.1.3 教具庫擴充：mobile 專屬教具（給 ch11）、規劃 B 教具（RegexTester/CronBuilder/JsonInspector 進階/HttpInspector/Tokenizer/SortingViz/GitGraph/NeuralForward/AuthFlow/MLBoundary）——依技術章需要再建
 - [ ] 4.1.4 圖文解說圖：概念/B/D/E/F 區操作圖 110+ 張（🔴 等林董生圖；A 區 29 張 ✅）

@@ -541,3 +541,16 @@ NoSQL 章原 17 罐頭。全 25 節換成選型/設計/取捨題：NoSQL 放寬 
 
 - import 5 章（54 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
 - **本日 de-can 累計 28 章、589 題。🏁 後端/DevOps 全罐頭章(ch15-22/24)清完。** 剩 ch06/11/12/14/23/25/37/38/39/40/41/42/49/50 各數題殘餘罐頭。
+
+---
+
+## 🏁🏁 章節 de-can 全部完成 — 殘餘 14 章 63 題（0721）
+
+清掉最後散落在 14 個章節的殘餘罐頭 lesson（多是各章的「總覽/選型/變現」型 lesson、早期 de-can 因非薄章而略過）：
+- ch06 JSON(4:標準/JSONL/大檔串流/GraphQL) · ch11 行動App(5:三路線選型/Expo/FlatList/效能/職涯) · ch12 資安(7:OWASP/Session-JWT-OAuth/認證vs授權/供應鏈/Zero Trust/滲透授權/GDPR) · ch14 PWA(9:是什麼/快取策略/測試/選型/manifest/Capacitor/黏著/總結) · ch23 後端架構(4:雲端/微服務vs單體/三雲比較/架構決策) · ch25 CDN-DNS(2) · ch37 WordPress(4:仍主流/WooCommerce/headless/效能) · ch38 電商(2:架構/自建vs平台) · ch39 LINE生態(8:OA/Bot/webhook驗簽/Flex/RichMenu/LIFF身分後端驗/經營) · ch40 Kotlin-Dart(5:選型/Compose/Flutter自繪/協程Flow/狀態管理) · ch41 遊戲(3:迴圈思維/Godot/發行) · ch42 接案型態(2) · ch49 AI Agent(3:什麼是agent/進化史/框架) · ch50 n8n(5:自動化/工具比較/expression/custom node/總結)。
+
+- **接案/職涯/變現相關題（ch11.22/39.11/41/42）一律不對收入或成果做任何保證**（遵 CLAUDE.md）。
+- import 14 章（211 lessons、0 err）→ **掃全 chapters JSON『canned remaining: 0』** → tsc ✅ / next build exit 0 ✅。
+
+### 🏁🏁 里程碑：全站章節 de-can 完成
+**本日共 de-can 42 章、約 652 題**罐頭練習全部換成扣主題、零基礎友善、題型多樣（應用/設計/除錯/預測/比較/分析/決策）的量身練習——**全站 chapters 罐頭練習清零**。全部 import DB、每批 tsc/build 綠、章節讀 DB 即時生效。爬蟲/資安題守合規、反規避導向正途；接案/職涯/變現題不掛收入保證。

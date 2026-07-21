@@ -42,9 +42,9 @@
         }
       ],
       "exercise": {
-        "question": "找一個你身邊的例子、用「Kotlin vs Dart：兩大 Mobile 語言」的概念解釋它。例如：你常用的 app、新聞看到的事件、生活遇到的問題。",
-        "hint": "概念不是用來背、是用來看世界的鏡子。找一個具體場景、套用這節的觀點分析、能套通就是會了。",
-        "answer": "三步：(1) 挑一個具體場景（不要太抽象）(2) 列出這節提到的關鍵概念 (3) 用每個概念分析這個場景的某個面向。寫成 300 字內、放進你的學習筆記。"
+        "question": "做行動 App 的兩大現代路線 Kotlin(Android 原生,也能跨平台 KMP)和 Dart+Flutter(一套跨 iOS/Android)各的取捨是什麼(原生體驗/生態 vs 一套多平台/自繪 UI)？替『主要做 Android 且要最原生』和『要快速一套雙平台且 UI 高度自訂』各選一個。為什麼團隊技能與專案需求比『哪個語言比較好』更該主導選擇？",
+        "hint": "Kotlin 原生/Android、Flutter 一套跨平台自繪;依需求與團隊。",
+        "answer": "Kotlin:Android 官方語言、原生體驗與生態最佳、可存取所有 Android 功能(且 KMP 能跨平台共享邏輯);Dart+Flutter:一套程式碼跑 iOS/Android(甚至 web/桌面)、自繪 UI(各平台一致、高度可自訂)、開發快與熱重載體驗好。取捨:Kotlin 原生體驗與 Android 生態強但雙平台要各做;Flutter 一套多平台省成本、UI 一致可自訂,但自繪 UI 未必處處感覺最原生、且是另一套生態。選:①主要 Android 要最原生→Kotlin ②要快速一套雙平台且 UI 高度自訂一致→Flutter。團隊技能與需求主導:團隊已會 Kotlin/Android 還是想一套雙平台、要不要極致原生、要不要 web 也共用——這些比『語言本身好壞』更決定該選哪個(選團隊寫得好、需求對得上的)。"
       },
       "outline": [
         {
@@ -138,9 +138,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 8 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "用 Kotlin 開發 Android,相比舊的 Java,Kotlin 帶來什麼(null 安全、簡潔語法、coroutines 協程處理非同步、與 Java 互通)？為什麼『null 安全(區分可空 String? 與不可空 String)』能消除 Android 最常見的 NullPointerException 崩潰？Jetpack Compose(宣告式 UI)相比舊的 XML 佈局改變了什麼？",
+        "hint": "Kotlin null 安全+簡潔+協程;消除 NPE;Compose 宣告式 UI。",
+        "answer": "Kotlin 相比 Java:①null 安全(型別區分可空 String? 與不可空 String,編譯器逼你處理可能的 null)②語法簡潔(少樣板,data class、擴充函式等)③coroutines 協程(用近似同步的寫法處理非同步/併發,比 callback/Thread 好懂好管)④與 Java 完全互通(可漸進遷移)。null 安全消除 NPE:NullPointerException 是 Android 最常見的崩潰,Kotlin 把『可能為 null』寫進型別、存取可空值要明確處理(?. / ?: / 判空),把這類錯從執行期崩潰提前到編譯期擋掉(和 TS strict null、C# NRT 同理)。Jetpack Compose(宣告式 UI)相比 XML 佈局:用 Kotlin 程式碼宣告『這個狀態下 UI 長怎樣』、狀態變自動重組——取代寫 XML+手動 findViewById 更新視圖,更簡潔、少樣板、狀態與 UI 同步更可靠(和 React 的宣告式同理)。"
       },
       "outline": [
         {
@@ -238,9 +238,9 @@
         }
       ],
       "exercise": {
-        "question": "打開編輯器、把本節 lesson 內的 code 範例 copy 進去、自己跑一次。然後改 1-2 個參數、觀察結果變化。",
-        "hint": "課程內有 10 段 code 範例。先確保能跑得通、再開始改。改的時候一次只改一個變數、才能看出因果。",
-        "answer": "三階段：(1) **完整 copy**：先確保環境能跑（裝套件、設環境變數、解錯）(2) **小改觀察**：改字串 / 數字、看輸出 (3) **重寫**：把整段 code 闔起來、靠自己重寫一次、卡住再打開看。重寫一次 = 抄 10 次。"
+        "question": "用 Dart+Flutter 開發,Flutter 的『自繪 UI(不用各平台原生元件,自己畫)』帶來什麼(跨平台 UI 高度一致、可完全自訂、熱重載開發快)？這個設計的取捨是什麼(一致可控 vs 未必處處感覺最原生、要跟上各平台的設計語言)？Widget(一切皆 widget 的組合)與宣告式的心智模型是什麼？",
+        "hint": "Flutter 自繪 UI 一致可控+熱重載;未必最原生;一切皆 widget。",
+        "answer": "Flutter 自繪 UI:不用各平台的原生元件,而是用自己的渲染引擎把 UI 畫出來——帶來跨平台 UI 高度一致(iOS/Android 長一樣、你完全掌控外觀)、可完全自訂(不受原生元件限制)、熱重載(改了立刻看到、開發極快)。取捨:一致可控,但『自繪』未必處處感覺最原生(某些平台特有的細膩互動/元件行為要自己模擬)、且要自己跟上各平台的設計語言更新。心智模型:一切皆 Widget——UI 由 widget 組合而成(佈局、樣式、甚至 padding 都是 widget),用宣告式(描述『這個狀態下 UI 由哪些 widget 組成』、狀態變就重建對應部分,和 React/Compose 同理)——你組合 widget 樹來描述介面,而非命令式地一步步操作視圖。"
       },
       "outline": [
         {
@@ -354,9 +354,9 @@
         "text": "Kotlin Coroutine + Flow = Android 現代寫法。"
       },
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「Kotlin 進階：Coroutines + Flow」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "Kotlin 的 coroutines(協程)+ Flow 怎麼優雅處理『非同步(網路/DB)與資料串流(即時更新的資料)』、相比 callback/RxJava 好在哪(近似同步的寫法、結構化併發)？為什麼『結構化併發(協程綁定生命週期,畫面關了自動取消)』能避免 Android 的記憶體洩漏與白做工？suspend 函式是什麼概念？",
+        "hint": "協程近似同步寫非同步;Flow 串流;結構化併發綁生命週期免洩漏。",
+        "answer": "coroutines:用近似同步的寫法處理非同步(suspend 函式在等 I/O 時掛起、不阻塞執行緒,回來繼續)——比巢狀 callback 或 RxJava 好懂好維護、錯誤處理也用一般 try/catch。Flow:處理『會持續發出多個值的非同步資料串流』(如即時更新的資料、感測器、DB 觀察)——宣告式地轉換與收集。結構化併發:協程綁定在一個 scope(通常對應畫面/ViewModel 的生命週期),當畫面關閉/ViewModel 清除時,它啟動的協程自動取消——避免『畫面沒了協程還在跑』(對已消失的畫面 setState、白做工、記憶體洩漏)這個 Android 經典問題。suspend 函式:標了 suspend 的函式可以『掛起(暫停等非同步完成)再繼續』而不阻塞執行緒,只能在協程或其他 suspend 函式裡呼叫——是協程的基本單位。"
       },
       "id": "40.4",
       "number": "LESSON 40.4",
@@ -546,9 +546,9 @@
         "text": "Flutter 2026 仍是 indie 跨平台 #1。"
       },
       "exercise": {
-        "question": "挑一個你做過的舊專案、用本節「Dart 進階 + Flutter 心法」介紹的進階技術重構它。",
-        "hint": "進階技術不是非用不可、而是知道何時該用。本節提到的工法（相關技術）通常在效能 / 維護性 / 擴展性卡住時才登場。",
-        "answer": "重構 SOP：(1) 跑現有 code 記下 baseline（測試是否會壞、效能多少）(2) 套用新工法 (3) 比較前後（測試還過嗎、效能 / 可讀性如何）。如果新工法沒讓事情更好、就不要套。"
+        "question": "Dart+Flutter 的進階與心法：狀態管理(Flutter 有 Provider/Riverpod/Bloc 等方案)為什麼是 Flutter App 架構的核心議題(UI 是狀態的函式、狀態怎麼管決定可維護性)？為什麼『別把所有邏輯塞進 widget、要分離狀態/邏輯與 UI』？選狀態管理方案該看什麼(複雜度、團隊、專案規模)?",
+        "hint": "狀態管理是核心;分離邏輯與 UI;方案依複雜度選。",
+        "answer": "Flutter 的 UI 是狀態的函式(狀態變 UI 重建),所以『狀態怎麼管』是架構核心:小 App 用內建 setState 就好,大 App 需要更結構化的方案(Provider/Riverpod/Bloc)來管跨 widget 的共享狀態、把狀態邏輯從 UI 抽離。別把所有邏輯塞進 widget:widget 應該專注『依狀態渲染 UI』,商業邏輯/資料存取/狀態管理該分離(如放進 ViewModel/Controller/Bloc)——這樣好測(邏輯可獨立測)、好維護(UI 與邏輯各自演進)、可重用。選方案看:專案複雜度與規模(小用 setState/Provider、大用 Riverpod/Bloc)、團隊熟悉度、要不要嚴謹的架構(Bloc 較結構化但樣板多、Riverpod 較彈性現代)——沒有絕對最好,依複雜度與團隊選,別為小 App 上重方案(過度)也別為大 App 硬用 setState(會亂)。"
       },
       "id": "40.6",
       "number": "LESSON 40.6",
