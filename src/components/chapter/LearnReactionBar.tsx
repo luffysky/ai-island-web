@@ -66,7 +66,7 @@ export function LearnReactionBar({ lessonId, chapterId }: { lessonId: string; ch
               className={`relative px-2.5 py-1 rounded-full border text-xs transition flex items-center gap-1 ${active ? "border-accent bg-accent/15" : "border-border bg-bg-card hover:border-accent"}`}
             >
               <AnimatedEmoji emoji={r.emoji} code={r.code} size={18} play={active || burst === r.key} />
-              <span className="hidden sm:inline">{t(r.labelKey)}</span>
+              <span>{t(r.labelKey)}</span>
               {count > 0 && <span className="font-bold">{count}</span>}
               {burst === r.key && (
                 <span className="pointer-events-none absolute -top-1 left-1/2 -translate-x-1/2 text-sm animate-[learnBurst_.7s_ease-out]">{r.emoji}</span>

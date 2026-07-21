@@ -39,6 +39,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { href: "/admin/kpi", label: "📊 KPI 報表" },
       { href: "/admin/analytics", label: "📈 站內數據" },
       { href: "/admin/analytics/learning-events", label: "🧪 學習行為事件" },
+      { href: "/admin/lesson-feedback", label: "💬 課程反饋（表情）", ownerOnly: true },
       { href: "/admin/cohort", label: "📈 Cohort 留存" },
       { href: "/admin/ab", label: "🧪 A/B 測試" },
       { href: "/admin/web-vitals", label: "⚡ Web Vitals" },

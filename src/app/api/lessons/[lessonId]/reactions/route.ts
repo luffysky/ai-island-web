@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase";
+import { createSupabaseServer } from "@/lib/supabase-server";
 import { LEARN_REACTIONS } from "@/lib/reactions";
 
 export const dynamic = "force-dynamic";
@@ -33,6 +34,14 @@ export async function POST(
     return NextResponse.json({ error: "invalid" }, { status: 400 });
   }
 
+  // 登入者記下 user_id（後台看得出「是誰」）；未登入維持只有 fingerprint
+  let userId: string | null = null;
+  try {
+    const supa = await createSupabaseServer();
+    const { data: { user } } = await supa.auth.getUser();
+    userId = user?.id ?? null;
+  } catch { /* 匿名 */ }
+
   const admin = createSupabaseAdmin();
   const { data: existing } = await admin
     .from("lesson_reactions")
@@ -47,7 +56,13 @@ export async function POST(
     await admin.from("lesson_reactions").delete().eq("id", (existing as any).id);
     active = false;
   } else {
-    await admin.from("lesson_reactions").insert({ lesson_id: lessonId, chapter_id: chapterId, fingerprint: fp, reaction_key: reactionKey });
+    const row: Record<string, unknown> = { lesson_id: lessonId, chapter_id: chapterId, fingerprint: fp, reaction_key: reactionKey };
+    if (userId) row.user_id = userId;
+    // 若 user_id 欄位還沒 migrate（尚未跑 migration）→ 退回不帶 user_id 再插一次，反饋照常運作
+    const { error } = await admin.from("lesson_reactions").insert(row);
+    if (error && userId) {
+      await admin.from("lesson_reactions").insert({ lesson_id: lessonId, chapter_id: chapterId, fingerprint: fp, reaction_key: reactionKey });
+    }
     active = true;
   }
   return NextResponse.json({ ok: true, reactionKey, active });

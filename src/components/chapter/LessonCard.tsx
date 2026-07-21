@@ -77,26 +77,27 @@ export function LessonCard({
       viewport={{ once: true }}
       className={`relative rounded-xl border ${completed ? "border-accent/40 bg-accent/5" : "border-border bg-bg-card"} p-4 sm:p-6 min-w-0 overflow-hidden`}
     >
-      <header className="flex items-start justify-between mb-3">
-        <div>
+      {/* 手機：標題整行在上、徽章列在下換行；sm+ 才並排（不然標題擠成 4 行、右側徽章被壓） */}
+      <header className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
+        <div className="min-w-0">
           <div className="text-xs text-fg-muted mb-1">{lesson.number}</div>
-          <h3 className="text-xl font-bold">{lesson.title}</h3>
+          <h3 className="text-xl font-bold break-words">{lesson.title}</h3>
         </div>
-        <div className="flex items-center gap-1 relative">
+        <div className="flex flex-wrap items-center gap-1 sm:justify-end shrink-0 relative">
           {mastery && !completed && (
-            <span className={`text-[10px] px-1.5 py-1 rounded mr-1 inline-flex items-center gap-0.5 ${MASTERY_BADGE[mastery].cls}`} title="依你的閱讀/測驗推估">
+            <span className={`text-[10px] px-1.5 py-1 rounded inline-flex items-center gap-0.5 ${MASTERY_BADGE[mastery].cls}`} title="依你的閱讀/測驗推估">
               {mastery === "mastered" && <Check size={11} />}{MASTERY_BADGE[mastery].label}
             </span>
           )}
           {readingMinutes > 0 && (
-            <span className="text-[10px] px-1.5 py-1 rounded bg-bg-elevated text-fg-muted mr-1 flex items-center gap-1" title="預估閱讀時間">
+            <span className="text-[10px] px-1.5 py-1 rounded bg-bg-elevated text-fg-muted flex items-center gap-1" title="預估閱讀時間">
               <Clock size={10} /> {formatReadingTime(readingMinutes)}
             </span>
           )}
-          <span className="text-xs px-2 py-1 rounded bg-bg-elevated text-warning mr-1">+{lesson.xp} XP</span>
+          <span className="text-xs px-2 py-1 rounded bg-bg-elevated text-warning">+{lesson.xp} XP</span>
           <BookmarkButton lessonId={lesson.id} chapterId={chapterId} lessonTitle={lesson.title} isLoggedIn={isLoggedIn} />
           <NotePanel lessonId={lesson.id} chapterId={chapterId} isLoggedIn={isLoggedIn} />
-          {completed && <span className="w-7 h-7 rounded-full bg-accent flex items-center justify-center ml-1"><Check size={16} className="text-black" /></span>}
+          {completed && <span className="w-7 h-7 rounded-full bg-accent flex items-center justify-center"><Check size={16} className="text-black" /></span>}
         </div>
       </header>
 
