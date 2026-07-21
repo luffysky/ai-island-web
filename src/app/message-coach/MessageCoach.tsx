@@ -3,8 +3,37 @@
 import { useState } from "react";
 import {
   MessageSquareHeart, Loader2, Copy, Check, Sparkles, ArrowLeft, RefreshCw, Wand2,
+  TrendingUp, Ban, HeartHandshake, Receipt, Palmtree, Home, GraduationCap,
+  Handshake, MessageSquareWarning, HeartCrack, Flower2, ShieldAlert,
+  type LucideIcon,
 } from "lucide-react";
 import { SCENARIOS, TONES, type ToneId, type CoachVersion, MC_MAX_POINTS } from "@/lib/message-coach";
+
+// 情境 → 動態 line-icon（取代 emoji）＋配色
+const SCENARIO_ICON: Record<string, { Icon: LucideIcon; cls: string }> = {
+  raise: { Icon: TrendingUp, cls: "text-emerald-500 bg-emerald-500/12" },
+  decline: { Icon: Ban, cls: "text-rose-500 bg-rose-500/12" },
+  apology: { Icon: HeartHandshake, cls: "text-pink-500 bg-pink-500/12" },
+  collect: { Icon: Receipt, cls: "text-amber-500 bg-amber-500/12" },
+  leave: { Icon: Palmtree, cls: "text-teal-500 bg-teal-500/12" },
+  landlord: { Icon: Home, cls: "text-orange-500 bg-orange-500/12" },
+  teacher: { Icon: GraduationCap, cls: "text-sky-500 bg-sky-500/12" },
+  client: { Icon: Handshake, cls: "text-indigo-500 bg-indigo-500/12" },
+  complaint: { Icon: MessageSquareWarning, cls: "text-red-500 bg-red-500/12" },
+  ex: { Icon: HeartCrack, cls: "text-fuchsia-500 bg-fuchsia-500/12" },
+  reject_confess: { Icon: Flower2, cls: "text-violet-500 bg-violet-500/12" },
+  boundary: { Icon: ShieldAlert, cls: "text-cyan-500 bg-cyan-500/12" },
+};
+function ScenarioIcon({ id, size = "md" }: { id: string; size?: "md" | "sm" }) {
+  const m = SCENARIO_ICON[id] ?? { Icon: MessageSquareHeart, cls: "text-indigo-500 bg-indigo-500/12" };
+  const box = size === "sm" ? "w-9 h-9 rounded-lg" : "w-11 h-11 rounded-xl";
+  const ic = size === "sm" ? "w-5 h-5" : "w-6 h-6";
+  return (
+    <span className={`inline-flex items-center justify-center ${box} ${m.cls} transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6`}>
+      <m.Icon className={`${ic} transition-transform duration-300 group-hover:scale-110`} strokeWidth={2} />
+    </span>
+  );
+}
 
 type GenResp = {
   versions?: CoachVersion[];
@@ -88,13 +117,13 @@ export function MessageCoach() {
             <MessageSquareHeart className="w-7 h-7" />
           </div>
           <h1 className="text-2xl font-bold text-black/85 dark:text-white/90">訊息軍師</h1>
-          <p className="text-sm text-black/55 dark:text-white/55 mt-1">難開口的話，幫你講得得體又有效。先選一個情境 👇</p>
+          <p className="text-sm text-black/55 dark:text-white/55 mt-1">難開口的話，幫你講得得體又有效。先選一個情境</p>
         </header>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {SCENARIOS.map((s) => (
             <button key={s.id} onClick={() => pick(s.id)}
-              className="rounded-xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 p-4 text-left hover:border-indigo-400/50 hover:bg-indigo-500/5 transition active:scale-[0.98]">
-              <div className="text-2xl mb-1.5">{s.emoji}</div>
+              className="group rounded-xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 p-4 text-left hover:border-indigo-400/50 hover:bg-indigo-500/5 transition active:scale-[0.98]">
+              <div className="mb-2"><ScenarioIcon id={s.id} /></div>
               <div className="text-sm font-semibold text-black/80 dark:text-white/85 leading-snug">{s.label}</div>
             </button>
           ))}
@@ -114,9 +143,9 @@ export function MessageCoach() {
         <ArrowLeft className="w-4 h-4" /> 換情境
       </button>
 
-      <div className="rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-5">
+      <div className="group rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-5">
         <div className="flex items-center gap-2.5 mb-3">
-          <span className="text-2xl">{scenario.emoji}</span>
+          <ScenarioIcon id={scenario.id} size="sm" />
           <h1 className="text-lg font-bold text-black/85 dark:text-white/90">{scenario.label}</h1>
         </div>
 

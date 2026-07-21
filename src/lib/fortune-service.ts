@@ -8,6 +8,11 @@ import {
   buildFortunePrompt, parseFortune, zodiacFromBirthDate,
   ZODIAC_ZH, ZODIAC_EMOJI, type Zodiac, type FortunePayload,
 } from "./fortune";
+import { generateFreeFortune } from "./fortune-free";
+
+// 預設用「免費・零 AI 決定性生成」（大量每日推播也零成本）。
+// 想改回 AI 生成（較個人化但每人每日燒一次 LLM）：設 env FORTUNE_USE_AI=1。
+const USE_AI = process.env.FORTUNE_USE_AI === "1";
 
 export function taipeiToday(): string {
   return new Date(Date.now() + 8 * 3600_000).toISOString().slice(0, 10);
@@ -21,14 +26,6 @@ export type FortuneResult = {
   date: string;
   cached: boolean;
   degraded?: boolean;
-};
-
-const DEGRADED_FALLBACK: FortunePayload = {
-  overall: "今天先照自己的節奏走，穩穩的就很好。",
-  love: "對在乎的人多一點耐心。",
-  career: "把手上的事一件一件收好。",
-  wealth: "小額開銷留意，別衝動消費。",
-  luckyColor: "天空藍", luckyNumber: 7, tip: "深呼吸，今天也會好好的。",
 };
 
 /**
@@ -63,19 +60,19 @@ export async function getOrCreateDailyFortune(
     return { fortune: cached.payload as FortunePayload, ...meta, cached: true };
   }
 
-  // 生成
+  // 生成：預設免費決定性生成（零 AI）；env 開了才用 AI
   let fortune: FortunePayload | null = null;
-  try {
-    const { system, user } = buildFortunePrompt({ zodiac, gender: prof.gender, date });
-    const res = await completeForUsage("agent_core", { system, user, maxTokens: 700, temperature: 0.8 });
-    fortune = parseFortune(res.text);
-  } catch {
-    fortune = null;
-  }
-
-  if (!fortune) {
-    // 不寫快取、下次可重試
-    return { fortune: DEGRADED_FALLBACK, ...meta, cached: false, degraded: true };
+  if (USE_AI) {
+    try {
+      const { system, user } = buildFortunePrompt({ zodiac, gender: prof.gender, date });
+      const res = await completeForUsage("agent_core", { system, user, maxTokens: 700, temperature: 0.8 });
+      fortune = parseFortune(res.text);
+    } catch {
+      fortune = null;
+    }
+    if (!fortune) fortune = generateFreeFortune(zodiac, date); // AI 失敗 → 退回免費版
+  } else {
+    fortune = generateFreeFortune(zodiac, date);
   }
 
   await admin.from("fortune_daily")
