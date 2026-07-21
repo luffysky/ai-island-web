@@ -9,6 +9,7 @@ import { Hero } from "@/components/home/Hero";
 import { WorldZone } from "@/components/home/world";
 import { CareerPathSection } from "@/components/home/CareerPathSection";
 import { MascotIntro } from "@/components/home/MascotIntro";
+import { FreeToolsSection } from "@/components/home/FreeToolsSection";
 import { StageMap } from "@/components/home/StageMap";
 import { MissionDungeons } from "@/components/home/MissionDungeons";
 import { TrapBosses } from "@/components/home/TrapBosses";
@@ -52,6 +53,7 @@ export default async function HomePage() {
         <StageMap chapters={chapters} />
       </WorldZone>
       <MascotIntro />
+      <FreeToolsSection />
       <section className="max-w-7xl mx-auto px-6 py-16 border-b border-border">
         <h2 className="text-3xl font-bold mb-2 inline-flex w-full items-center justify-center gap-2"><Map size={28} className="text-accent" /> {t("chapterMapHeading")}</h2>
         <p className="text-center text-fg-muted mb-8">{t("chapterMapSubtitle", { chapters: totalChapters, lessons: totalLessons })}</p>

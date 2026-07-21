@@ -270,3 +270,14 @@ ch49 + ch50（AI Agent / n8n 兩大旗艦章）完成。**教具庫新增 2 個�
 ### 大眾變現總進度（0721）
 - ✅ #1 每日運勢（第一刀星座 + 第二刀塔羅） · ✅ #2 訊息軍師 · ✅ #3 AI 求職包 · ✅ #4.1 生活助理範本庫。
 - 四大功能主幹全部落地。剩：各功能的付費 gating（#1.5/#2.4/#3.4）、#1 八字精算、#4.2 OAuth🔴/#4.3 沙盒🔴/#4.4 ROI、cron job #10🔴、首頁模式卡入口。
+
+---
+
+## 🏠 首頁「免費 AI 小工具」獲客區塊 — 上線（0721）
+
+四功能主幹做完後、補上**首頁討喜的入口**（獲客漏斗的關鍵——這些工具就是要讓一般人從首頁點進來）。刻意做成**獨立 section**、不動 Hero/WorldZone 那套 5 層視差組合（那塊卡在生圖）。
+
+- `src/components/home/FreeToolsSection.tsx`（server component、純 Link）：4 張漸層卡＝每日運勢🔮 / 訊息軍師💬 / AI 求職包🎒 / 生活助理🤖，各一句白話說明 + hover 動效。放在 `MascotIntro` 之後、章節地圖之前（顯眼但不搶 Hero）。
+- 對齊首頁既有 section 樣式（`max-w-7xl mx-auto px-6 py-16 border-b border-border`）、RWD（1/2/4 欄）、亮暗 token。
+- **收尾**：`tsc` ✅ · `next build` exit 0（91 靜態頁生成、`/` 正常）✅。
+- 記憶：新增 `mass-market-features` memory（四功能位置/資料表/gating/待補），供下次開工不必重查。
