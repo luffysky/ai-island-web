@@ -459,3 +459,14 @@ JS 爬蟲章原 24 罐頭。全 25 節換成量身題，延續 ch28 的合法合
 
 - diff 75+/75- → import_chapters_to_db ch29（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
 - 本日 de-can 累計 **14 章、369 題**。續攻 ch30…
+
+---
+
+## 📚 章節 de-can：ch30 跨語言爬蟲 全 25 節 — 爬蟲系列收官 🏁（0721）
+
+跨語言爬蟲章原 24 罐頭。全 25 節換成量身題，延續合規貫穿；**反偵測 30.18「fingerprint 全修」與 30.19「瀏覽器叢集」同樣導向正途（需對抗到這程度＝該停、改走官方 API/授權；叢集是昂貴最後手段非繞封鎖武器）**。其餘：Go/Rust 何時值得（瓶頸在網路非語言）、Colly 高併發必配 per-domain 限速（能力越大越要克制）、Rust 長跑穩定 vs 探索殺雞、cron/GitHub Actions/Temporal 排程與密鑰、Redis Queue 多 worker 規模化服務廣度非繞單站、千萬級靠合規與授權策略、Python/Node/Go 選型看團隊、JVM/PHP/Ruby 看既有生態、curl 探索除錯、Sheets IMPORTHTML 免程式、AI 爬蟲不改合規邊界且要限 agent 動作/成本、OCR 抽查與破解防抓不可、streaming checkpoint 續跑、分散式冪等、去重驗證防垃圾進出、ETL raw 保留與冪等重跑、CSV/Parquet/DB 儲存選型、交付附來源/時間/口徑、總決策樹、四句心法（能不爬就不爬/能輕量就別開瀏覽器/能授權就別對抗/能不碰個資就別碰）。
+
+- diff 75+/75- → import_chapters_to_db ch30（25 lessons、0 err）→ tsc ✅ / next build exit 0 ✅。
+
+### 🏁 里程碑：爬蟲系列三章 de-can 完成
+**ch28 Python 爬蟲 + ch29 JS 爬蟲 + ch30 跨語言爬蟲**（各 25 節、共 75 題），全程堅守合法合規、對反偵測/規避類主題一律導向「該停下、走官方 API/授權/開放資料」的判斷，不提供惡意規避 how-to、不對收入做保證。**本日 de-can 累計 15 章、394 題。** 續攻 ch31 Node.js / ch32 Go…
