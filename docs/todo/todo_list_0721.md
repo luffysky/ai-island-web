@@ -43,18 +43,19 @@
     - [x] ~~1.2.1.1 護欄：不做醫療/投資/法律具體斷言、語氣正向不製造焦慮~~ ✅
     - [x] ~~1.2.1.2 結構化輸出 JSON + 容錯解析 parseFortune（含越界收斂、fallback）~~ ✅（8 支單元測試）
   - [x] ~~1.2.2 塔羅牌庫（`src/lib/tarot.ts` 78 張=22 大+56 小、正逆位關鍵字、drawCards/buildTarotPrompt/parseTarotReading、7 支測試）→ 三張牌陣（過去/現在/未來）依提問 LLM 解讀~~ ✅
-  - [~] 1.2.3 命理輕量版：星座先行 ✅（純月/日運算、零外部庫）；八字/紫微標進階（之後接）
+  - [x] ~~1.2.3 命理：星座 ✅ + 八字排盤 ✅（lunar-javascript 正統四柱/五行/十神/納音、0722）+ 易經·梅花易數 ✅（本地公有領域 64 卦查表+起卦、0722）~~；紫微 ← 之後
 - [~] 1.3 前端 `/fortune`
   - [x] ~~1.3.1 首次生日/時辰輸入頁 + 每日運勢卡（三面向卡 + score 環 + 幸運色塊/數字 + 今日提醒）~~ ✅
   - [x] ~~1.3.2 塔羅抽牌互動（`/fortune` 展開式 TarotSection：提問輸入→抽牌→三張牌陣+逐張解讀+總結+建議、回顯今日、付費可再抽）~~ ✅
-  - [~] 1.3.3 分享卡：native share / 複製文字（帶站點浮水印）✅；截圖圖卡（html-to-image）← 之後
-  - [~] 1.3.4 RWD + 亮暗 ✅；免費/付費分界 UI（MVP 全免費、gating ← 第二刀）
+  - [x] ~~1.3.3 分享卡：OG 圖卡（`/api/og/fortune` 1200x630、CJK 子集字型）+ 分享面板（Web Share 帶圖檔/複製連結/下載圖卡）+ `/fortune/share` 落地頁 og:image（LINE/FB 抓得到預覽）~~ ✅ 0722
+  - [~] 1.3.4 RWD + 亮暗 ✅；付費分界：塔羅 ✅ + 易經 AI 深解 ✅（免費每日 1 次·付費無限、鎖住顯示升級卡→/pricing、0722）；八字排盤 AI 免費（快取自然收斂）
 - [~] 1.4 LINE 每日推播
   - [x] ~~1.4.1 cron `/api/cron/fortune-daily`（撈綁 LINE + 開推播 + 有生日者、生成+推、dedupe、cap 500）~~ ✅
     - [ ] 1.4.1.1 🔴 去 cron-job.org 手動加 job #10（每天 00:00 UTC=台灣08:00 `GET /api/cron/fortune-daily?secret=<CRON_SECRET>`）
   - [x] ~~1.4.2 訂閱/退訂設定（`line_pref_fortune` 欄 + /settings 通知偏好開關 + notification-prefs API）~~ ✅
-- [ ] 1.5 變現：免費看整體大方向；付費/Z幣解鎖四面向深解+塔羅+每日私人推播（沿用創作者綠寶軟上限模式）← 第二刀
+- [~] 1.5 變現：星座每日免費（零 AI）✅；塔羅免費 1/日·付費無限 ✅；易經 AI 深解免費 1/日·付費無限 ✅（`src/lib/fortune-gate.ts` 統一 gate `getFortuneGate`、擋掉 iching 無限免費燒 LLM 的漏洞、0722）；Z幣單次購買/每日私人推播 ← 之後
 - [x] ~~1.6 收尾檢查（tsc/vitest 145/next build 全綠 + DB 接線實測 + 4 語 nav i18n）~~ ✅ 0721 第一刀
+- [x] ~~1.7 全頁 i18n（0722）：`/fortune` 六區塊 UI 字串抽進 `messages.fortune`（108 keys）→ 切語言真的變外文；en/ja/ko 免費 Google 譯好（fortune.share 8 顆待補譯）~~ ✅
 - 🆕 **入口**：nav「每日運勢」（4 語 i18n、桌機抽屜+手機選單）✅；**首頁「免費 AI 小工具」區塊**（4 功能卡、`FreeToolsSection`）✅；5 層生圖 hero 模式卡 ← 仍待（配 §🅰 生圖）。
 
 ### 2. 訊息軍師（幫你把難開口的話講好）✅ **已上線（0721）** — 選情境→填要點→選語氣→3 版本可抄
@@ -70,6 +71,8 @@
   - [x] ~~2.3.2 RWD + 亮暗~~ ✅
 - [~] 2.4 變現：免費每日 3 則 ✅ + 付費無限 ✅；Z幣單次購買 / 進階語氣包 ← 之後
 - [x] ~~2.5 收尾檢查（tsc/vitest 153(+8 msg-coach)/next build 全綠 + DB 接線實測 + 4 語 nav i18n）~~ ✅
+- [x] ~~2.6 全頁 i18n（0722）：12 情境 label/desc + 5 語氣 + 潤飾/結果/錯誤抽進 `messages.messageCoach`（55 keys、依 scenario id 動態 t()）；en/ja/ko 譯好~~ ✅
+- [x] ~~2.7 情境 icon 改 Lottie（0722）：12 情境接 `LottieIcon`（autoplay+loop、會自己動）；沒設 URL → fallback 會自己動的 lucide（`coach-icon-live`、非 hover）；**全部後台可換** `/admin/lottie-settings` 加 12 個 `coach_lottie_<id>_url` slot（標明前端 UI+推薦連結）~~ ✅ 🔴 林董去貼 lottie.host URL（沒貼也會動）
 - 🆕 **入口**：nav「訊息軍師」(4 語 i18n) ✅；`message_coach` 已註冊進 AiUsageKey（後台可配模型）✅。
 
 ### 3. AI 求職包（履歷+自傳+面試模擬+求職信）✅ **已上線（0721）** — 一站式 `/me/job-kit` hub
@@ -82,6 +85,7 @@
 - [x] ~~3.3 前端 `/me/job-kit`（不另開 top-level /job-kit；留在 /me 內共用 auth/sidebar/quota）：履歷+面試入口卡 + 自傳/求職信產生器（表單→產文件→複製/下載.md/印PDF）~~ ✅
 - [ ] 3.4 變現：一次性產包付費 / 短訂閱（現：免費各 3/月、Premium 無限；付費產包 ← 之後）
 - [x] ~~3.5 收尾檢查（tsc/vitest 164/next build 全綠 + DB 接線實測〔loadCareerData 兩段查、check_ai_action bio/cover_letter〕+ MeSidebar 入口）~~ ✅
+- [x] ~~3.6 全頁 i18n（0722）：自傳/求職信/DocActions/錯誤抽進 `messages.jobKit`（27 keys）；en/ja/ko 譯好~~ ✅
 - 🆕 **入口**：`MeSidebar` 加「🎒 AI 求職包」；AI_ACTION_CAPS 加 `bio:3`/`cover_letter:3`（generic RPC、免 migration）。
 
 ### 4. Agent 補完 + 生活助理範本

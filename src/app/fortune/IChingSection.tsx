@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Loader2, ChevronDown, Sparkles } from "lucide-react";
+import { Loader2, ChevronDown, Sparkles, Lock } from "lucide-react";
 
 type Gua = { name: string; meaning: string; upper: string; lower: string; movingYao: string; question: string };
 type Reading = { summary: string; advice: string };
@@ -13,6 +13,7 @@ export function IChingSection() {
   const [question, setQuestion] = useState("");
   const [gua, setGua] = useState<Gua | null>(null);
   const [reading, setReading] = useState<Reading | null>(null);
+  const [locked, setLocked] = useState(false);
   const [casting, setCasting] = useState(false);
 
   const cast = async () => {
@@ -24,7 +25,7 @@ export function IChingSection() {
         body: JSON.stringify({ question: question.trim() || undefined }),
       });
       const d = await r.json();
-      setGua(d.gua ?? null); setReading(d.reading ?? null);
+      setGua(d.gua ?? null); setReading(d.reading ?? null); setLocked(!!d.locked);
     } catch { /* ignore */ } finally { setCasting(false); }
   };
 
@@ -70,6 +71,14 @@ export function IChingSection() {
                     <Sparkles className="w-4 h-4 shrink-0 mt-0.5" />{reading.advice}
                   </p>
                 </div>
+              )}
+              {locked && !reading && (
+                <a href="/pricing" className="block rounded-xl bg-amber-500/10 border border-amber-500/25 p-3 hover:bg-amber-500/15 transition">
+                  <div className="flex items-center gap-2 text-sm font-medium text-amber-700 dark:text-amber-300">
+                    <Lock className="w-4 h-4 shrink-0" /> {t("iching.lockedTitle")}
+                  </div>
+                  <p className="mt-1 text-xs text-black/60 dark:text-white/60 leading-relaxed">{t("iching.lockedDesc")}</p>
+                </a>
               )}
             </div>
           )}
