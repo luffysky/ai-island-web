@@ -228,7 +228,8 @@
 - [x] ~~seed 36–40：Python 模組 128 個（stdlib+外部）→ 1773 條~~ ✅ 0721
 - [x] ~~seed 41：DB查詢/Git/K8s雲原生/LLM/分散式系統 33 條 → **1806 條**~~ ✅ 0721
 - [x] ~~seed 42：網路協定/Web/資安/加密驗證 41 條 → **1847 條**（全查過無 slug 衝突）~~ ✅ 0721
-- [ ] 4.2.1 續寫到 5000（現 **2094**，從 `dictionary-seed-53.json` 接）
+- [ ] 4.2.1 續寫到 5000（現 **2114**，從 `dictionary-seed-54.json` 接）
+  - [x] ~~seed 53：敏捷協作 + 遊戲/圖形 + CS 理論 20 條 → **2114**~~ ✅ 0723（每日站會/燃盡圖/泳道/程式凍結/發布列車 · delta-time/tick-rate/物理引擎/ECS/shader/光柵化/光線追蹤/z-buffer · 有限狀態機/圖靈機/NP完全/圖走訪/位元運算/雜湊碰撞/regex引擎ReDoS）
   - [x] ~~seed 52：函數式編程 + 網頁平台 API + 無障礙 19 條 → **2094**~~ ✅ 0723（宣告式vs命令式/不可變/記憶化/pipe-compose/ADT · Fetch/AbortController/Web-Share/Clipboard/Notification/Geolocation/History API · aria-label/報讀器/鍵盤導覽/焦點管理/對比度/WCAG/prefers-reduced-motion）
   - [x] ~~seed 51：編譯器/語言實作 + 行動 App + 網路底層 18 條 → **2075**~~ ✅ 0723（AST/lexer/parser/JIT/transpiler/linker/符號表/IR/靜態vs動態型別 · 程式碼簽章/OTA更新/生物辨識/背景抓取/App沙盒/原生橋接 · TCP-vs-UDP/base64/NAT穿透）
   - [x] ~~seed 50：資料庫深入 + API/整合 + 工程師黑話/Web3/可靠性 22 條 → **2057**~~ ✅ 0723（複合索引/分區/VACUUM/代理鍵/ER圖/連線字串 · offset-cursor分頁/REST-vs-RPC/OpenAPI/SSE/HTTP快取 · cargo-cult/footgun/NIH/蛇油/nitpick/golden-path/容錯/共識機制/L2擴容/區塊鏈預言機）

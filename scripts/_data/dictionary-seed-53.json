@@ -1,0 +1,362 @@
+[
+  {
+    "slug": "stand-up",
+    "term": "Daily Stand-up",
+    "zh_name": "每日站會",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "團隊每天短短（15 分內）同步『昨天做了什麼、今天要做什麼、有沒有卡住』的會。什麼時候在意：敏捷開發的日常。重點是『快、站著開（逼你短）、暴露障礙』，不是進度報告大會——卡住的細節會後再談。",
+    "analogy": "像球隊每天賽前的圍圈喊話——快速對齊今天戰術、誰受傷，不是開檢討大會。",
+    "example": "『昨天做完登入、今天做註冊、卡在 SMTP 設定』",
+    "related": [
+      "scrum",
+      "sprint",
+      "retrospective"
+    ]
+  },
+  {
+    "slug": "burndown-chart",
+    "term": "Burndown Chart",
+    "zh_name": "燃盡圖",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "一張圖顯示 sprint 內『剩餘工作量隨時間下降』的趨勢，理想是一路降到零。什麼時候在意：看團隊進度健不健康——線降太慢代表要延、平的代表卡住、突升代表加了新工作（scope creep）。",
+    "analogy": "像減肥的體重曲線——每天量、看有沒有照計畫往目標降，偏離就早知道。",
+    "example": "sprint 剩 5 天卻還剩一半點數 → 該調整",
+    "related": [
+      "sprint",
+      "velocity",
+      "scrum"
+    ]
+  },
+  {
+    "slug": "swimlane",
+    "term": "Swimlane",
+    "zh_name": "泳道",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "看板（Kanban）上『橫向或縱向的分組欄』，把卡片依人/類型/優先度分道。什麼時候在意：看板太多卡片時用泳道分類（如『緊急/一般』或『前端/後端』），一眼看清各線進度。",
+    "analogy": "像游泳池的水道線——每個人在自己的道游，不會混在一起看不清誰是誰。",
+    "example": "看板加『Bug / Feature / 技術債』三條泳道",
+    "related": [
+      "kanban",
+      "wip-limit",
+      "user-story"
+    ]
+  },
+  {
+    "slug": "code-freeze",
+    "term": "Code Freeze",
+    "zh_name": "程式凍結",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "發版前一段時間『只准修 bug、不准加新功能/大改動』，讓版本穩定下來好測試。什麼時候在意：重大發布前——凍結期讓 QA 有穩定目標測，避免最後一刻改東西又引入新問題。",
+    "analogy": "像考卷印刷前的定稿——截止後只准改錯字，不准再加新題，免得又出包。",
+    "example": "上線前 3 天 code freeze，只收 hotfix",
+    "related": [
+      "release-train",
+      "semantic-versioning",
+      "hotfix"
+    ]
+  },
+  {
+    "slug": "release-train",
+    "term": "Release Train",
+    "zh_name": "發布列車",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "固定週期發版（如每兩週一班），功能趕上這班車就上、趕不上就等下一班——不為單一功能延遲整車。什麼時候在意：多團隊協作時穩定節奏——別讓一個沒做完的功能卡住所有人的發布。",
+    "analogy": "像捷運班車——時間到就開，你沒上車就搭下一班，不會為你一個人延發車。",
+    "example": "每兩週固定發版，功能沒好就搭下一班",
+    "related": [
+      "code-freeze",
+      "ci-cd-pipeline",
+      "semantic-versioning"
+    ]
+  },
+  {
+    "slug": "delta-time",
+    "term": "Delta Time",
+    "zh_name": "幀間隔時間",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "上一幀到這一幀『經過了多少時間』。什麼時候在意：讓移動速度不受幀率影響——用『速度 × dt』算位移，快的機器和慢的機器物件移動速度一致，不會 fps 高就跑超快。",
+    "analogy": "像走路算距離用『速度×時間』——不管你走幾步（幀），時間對了距離就對。",
+    "example": "pos += speed * dt;（不同 fps 移動速度一致）",
+    "related": [
+      "game-loop",
+      "frame-rate",
+      "tick-rate"
+    ]
+  },
+  {
+    "slug": "tick-rate",
+    "term": "Tick Rate",
+    "zh_name": "更新頻率",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "伺服器每秒『更新遊戲狀態幾次』（如 64 tick）。什麼時候在意：多人連線遊戲——tick 越高越即時精準（射擊判定），但越吃伺服器；跟畫面 fps 是兩回事（fps 是客戶端渲染）。",
+    "analogy": "像裁判每秒看幾次場上狀況——看得越勤判得越準，但也越累（吃資源）。",
+    "example": "CS 伺服器 64 tick/128 tick 影響命中判定",
+    "related": [
+      "game-loop",
+      "delta-time",
+      "frame-rate"
+    ]
+  },
+  {
+    "slug": "physics-engine",
+    "term": "Physics Engine",
+    "zh_name": "物理引擎",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "幫遊戲算『重力、碰撞反彈、摩擦、剛體運動』的函式庫（Box2D、Rapier、PhysX）。什麼時候在意：不想自己刻物理——引擎讓物件『掉下來會彈、推了會滑、疊起來會倒』符合直覺。",
+    "analogy": "像請一位物理老師接管——你只擺好物件，它負責讓一切照真實物理動起來。",
+    "example": "角色跳躍拋物線、箱子堆疊倒塌都交給物理引擎",
+    "related": [
+      "collision-detection",
+      "game-loop",
+      "entity-component-system"
+    ]
+  },
+  {
+    "slug": "entity-component-system",
+    "term": "Entity-Component-System (ECS)",
+    "zh_name": "實體-元件-系統",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "遊戲架構模式：Entity（純 id）+ Component（純資料，如位置/血量）+ System（處理邏輯）。什麼時候在意：大型遊戲——用組合（掛哪些 component）取代深繼承，資料連續存放對 cache 友善、效能好、好擴充。",
+    "analogy": "像積木——角色不是繼承一個大類別，而是掛上『能移動』『有血量』『會發光』等零件組成。",
+    "example": "Entity#5 有 [Position][Velocity][Sprite] → 移動系統處理",
+    "related": [
+      "composition-over-inheritance",
+      "physics-engine",
+      "game-loop"
+    ]
+  },
+  {
+    "slug": "shader",
+    "term": "Shader",
+    "zh_name": "著色器",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "跑在 GPU 上、決定『每個像素/頂點怎麼算顏色與位置』的小程式。什麼時候在意：做特效、光影、濾鏡、3D 渲染——vertex shader 處理頂點、fragment shader 處理像素。GPU 平行跑幾百萬像素超快。",
+    "analogy": "像幾百萬個小畫工同時上色——每人只管自己那一格，一起瞬間畫完整張圖。",
+    "example": "fragment shader 算每個像素的最終顏色/光照",
+    "related": [
+      "rasterization",
+      "texture-mapping",
+      "z-buffer"
+    ]
+  },
+  {
+    "slug": "rasterization",
+    "term": "Rasterization",
+    "zh_name": "光柵化",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把 3D 的幾何（三角形）『轉成螢幕上的像素』的過程。什麼時候在意：即時 3D 渲染的主流方法（遊戲用）——快，但陰影/反射要另外近似。對比 ray-tracing（光線追蹤）：更真實但更貴。",
+    "analogy": "像把立體模型『拍扁投影到方格紙上』——決定每個格子（像素）該畫什麼。",
+    "example": "GPU 把三角形網格光柵化成一格格像素",
+    "related": [
+      "shader",
+      "ray-tracing",
+      "z-buffer"
+    ]
+  },
+  {
+    "slug": "ray-tracing",
+    "term": "Ray Tracing",
+    "zh_name": "光線追蹤",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "模擬『光線怎麼從眼睛射出、碰到物體反射折射』來算出超真實的光影、反射、陰影。什麼時候在意：追求擬真畫面（電影、高階遊戲）——比光柵化真實太多，但極吃算力（要專用硬體 RTX 才即時）。",
+    "analogy": "像真的追蹤每一道光走的路——光碰到鏡子會反射、碰到玻璃會折射，算得跟現實一樣。",
+    "example": "遊戲開 RTX 光追：水面/金屬反射超真實",
+    "related": [
+      "rasterization",
+      "shader",
+      "texture-mapping"
+    ]
+  },
+  {
+    "slug": "z-buffer",
+    "term": "Z-Buffer (Depth Buffer)",
+    "zh_name": "深度緩衝",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "記錄每個像素『離鏡頭多遠』，用來決定『誰擋住誰』——近的蓋過遠的。什麼時候在意：3D 渲染正確處理遮擋——沒有它，後面的物體會亂畫到前面。",
+    "analogy": "像疊照片——每個點記住深度，只留最靠近鏡頭的那層，後面被擋的就不畫。",
+    "example": "渲染時比 z 值，近的像素覆蓋遠的",
+    "related": [
+      "rasterization",
+      "shader",
+      "viewport-camera"
+    ]
+  },
+  {
+    "slug": "finite-state-machine",
+    "term": "Finite State Machine (FSM)",
+    "zh_name": "有限狀態機",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "一個東西『只能處於有限幾種狀態之一，依事件在狀態間轉移』的模型。什麼時候在意：建模流程/UI/遊戲 AI——訂單(待付款→已付款→出貨→完成)、紅綠燈、角色(待機→走→跳)。畫成狀態圖，非法轉移一目了然。",
+    "analogy": "像紅綠燈——只有紅/黃/綠三態，按固定規則輪轉，不會冒出『紫燈』。",
+    "example": "訂單狀態機：pending→paid→shipped→done",
+    "related": [
+      "turing-machine",
+      "workflow-flow",
+      "regular-expression-engine"
+    ]
+  },
+  {
+    "slug": "turing-machine",
+    "term": "Turing Machine",
+    "zh_name": "圖靈機",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一個理論上『只有一條紙帶 + 讀寫頭 + 規則』卻能算出任何可計算問題的抽象機器。什麼時候在意：計算理論的基石——『圖靈完備』代表一個系統的計算能力等同它（連 Excel、部分卡牌遊戲都圖靈完備）。",
+    "analogy": "像一台超簡陋卻萬能的機器——只會在紙帶上讀、寫、移動，卻能算出任何電腦能算的東西。",
+    "example": "『這語言圖靈完備』= 理論上能算任何可計算的事",
+    "related": [
+      "finite-state-machine",
+      "np-complete",
+      "bitwise-operation"
+    ]
+  },
+  {
+    "slug": "np-complete",
+    "term": "NP-Complete",
+    "zh_name": "NP 完全",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一類『答案好驗證、但找答案極難（沒已知快速解法）』的問題，且彼此可互相轉換。什麼時候在意：遇到旅行推銷員、排班、裝箱這類問題——別想找完美最優解（會爆炸慢），改用近似/啟發式『夠好就好』。",
+    "analogy": "像拼超大拼圖——給你拼好的能一眼驗證對不對（快），但要你從零拼出來難如登天。",
+    "example": "旅行推銷員、背包問題 → 用近似解而非硬求最優",
+    "related": [
+      "turing-machine",
+      "greedy-algorithm",
+      "big-o-notation"
+    ]
+  },
+  {
+    "slug": "graph-traversal",
+    "term": "Graph Traversal (BFS/DFS)",
+    "zh_name": "圖走訪",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "系統化『走遍圖上所有節點』的兩招：BFS 廣度優先（一層層擴散、找最短路）、DFS 深度優先（一路走到底再回頭、找路徑/連通）。什麼時候在意：找關係、找路、爬蟲、依賴解析——選 BFS 還 DFS 看你要最短還是要走透。",
+    "analogy": "BFS 像水波紋一圈圈擴出去；DFS 像走迷宮一路撞到底再退回換路。",
+    "example": "最短路用 BFS；找所有連通/拓撲排序用 DFS",
+    "related": [
+      "graph-data-structure",
+      "queue-data-structure",
+      "np-complete"
+    ]
+  },
+  {
+    "slug": "bitwise-operation",
+    "term": "Bitwise Operation",
+    "zh_name": "位元運算",
+    "category": "syntax",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "直接對數字的『二進位位元』做 AND/OR/XOR/位移。什麼時候在意：權限旗標（用一個整數存多個開關）、效能優化、底層協定、雜湊。如 `x << 1` = ×2、`x & 1` 判奇偶。",
+    "analogy": "像一排開關——每個 bit 是一個開關，用位元運算一次操作整排的開/關。",
+    "example": "權限：READ|WRITE（合併）、flags & READ（檢查）",
+    "related": [
+      "endianness",
+      "hashing-collision",
+      "stack-vs-heap"
+    ]
+  },
+  {
+    "slug": "hashing-collision",
+    "term": "Hash Collision",
+    "zh_name": "雜湊碰撞",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "兩個不同的輸入算出『同一個雜湊值』。什麼時候在意：HashMap 效能（碰撞多會退化成鏈結串列變慢）、資安（密碼學雜湊被找到碰撞＝該淘汰，如 MD5/SHA-1）。好的雜湊函式讓碰撞盡量少且均勻。",
+    "analogy": "像兩個人被分到同一個櫃子號碼——得想辦法讓他們共用一格（鏈結）或另找位置。",
+    "example": "HashMap 碰撞用鏈結/開放定址處理；MD5 已被找到碰撞",
+    "related": [
+      "hash-table",
+      "bitwise-operation",
+      "argon2"
+    ]
+  },
+  {
+    "slug": "regular-expression-engine",
+    "term": "Regex Engine",
+    "zh_name": "正規表達式引擎",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "執行正規表達式比對的底層。什麼時候在意：理解為何某些 regex 會『災難性回溯』(catastrophic backtracking)——像 `(a+)+$` 遇到不匹配會爆炸慢，甚至被拿來 DoS（ReDoS）。寫 regex 要避開巢狀量詞。",
+    "analogy": "像一個照規則找字的機器——規則寫得刁鑽（巢狀重複），它會鑽牛角尖試到天荒地老。",
+    "example": "❌ (a+)+ 對長字串不匹配時指數級爆慢（ReDoS）",
+    "related": [
+      "finite-state-machine",
+      "regex",
+      "rate-limiting"
+    ]
+  }
+]
