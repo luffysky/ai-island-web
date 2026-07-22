@@ -220,8 +220,8 @@
   - [ ] 🏁 **後端/DevOps 全罐頭章清完**（ch15/16/17/18/19/20/21/22/24）
   - [x] ~~ch06/11/12/14/23/25/37/38/39/40/41/42/49/50 殘餘罐頭 63 題全 de-can~~ ✅ 0721（JSON/行動App/資安OWASP/PWA/後端架構/CDN-DNS/WordPress/電商/LINE生態/Kotlin-Dart/遊戲/接案型態/AI Agent/n8n；接案/職涯/變現題一律不掛收入保證）
   - [x] 🏁🏁 **全站章節 de-can 完成 — 掃全 chapters JSON『canned remaining: 0』**（罐頭練習全數清零）
-- [ ] 4.1.2 **deep-rewrite tier 未動章** ＝「A→B→C→D 回原路線」的 **C**（大量內容重寫、**建議每章開專注 session 品質才穩**）：~~ch40~~ ✅ 0722（修 40.1 截斷 + 換 40.5 罐頭題 + 深寫 40.2/40.3/40.5/40.6，已 import DB）；**續做優先 ch63、ch68（strict-spec）、ch72–75**；其餘 ch15、ch24、ch32、ch34、ch35、ch36、ch41、附錄 ch61–67/69–70
-- [ ] 4.1.3 教具庫擴充 ＝「回原路線」的 **D**（互動教具）：mobile 專屬教具（給 ch11）、規劃 B 教具（RegexTester/CronBuilder/JsonInspector 進階/HttpInspector/Tokenizer/SortingViz/GitGraph/NeuralForward/AuthFlow/MLBoundary）——依技術章需要再建
+- [~] 4.1.2 **deep-rewrite tier** ＝「A→B→C→D」的 **C**：~~ch40~~ ✅（修 40.1 截斷+換 40.5 罐頭題+深寫 40.2/3/5/6）、~~ch63~~ ✅（附錄C 補術語白話）、~~ch68/72/73/74/75~~ ✅ 0722（內容評估已紮實·非「長但表面」，補教具層＋驗證品質）。其餘 ch15、24、32、34、35、36、41、附錄 ch61–67/69–70 內容多已 de-can+夠深，視需要再逐章深修
+- [x] ~~4.1.3 教具庫擴充 ＝「回原路線」的 **D**（互動教具）~~ ✅✅ 0722 **全站 80 章都有教具了**（原 24 章→補齊 56 章；6 平行子代理依統一 DEMO_SPEC 各認領、讀課掛 1-2 對題教具，我自寫 validate_demos.py 驗 schema 全過、import DB 0 errors、round-trip 確認 80/80）＋**教具霧面玻璃美化**（`.demo-glass` 一次改全 15 種受惠）。型別：scenario-judge/decision-quiz/json-tree/workflow-flow/agent-loop/priority-matrix/prompt-lab 依主題配。（B 進階教具 RegexTester/Tokenizer/SortingViz… 之後有需要再建）
 - [ ] 4.1.4 圖文解說圖：概念/B/D/E/F 區操作圖 110+ 張（🔴 等林董生圖；A 區 29 張 ✅）
 
 ### 4.2 程式辭典（→ 5000）
@@ -254,6 +254,7 @@
 - [ ] 5.4 玻璃/動效/間距外溢到 章節/分身島/機會島/辭典（一區一區換、每次驗亮暗+不破版）
 - [ ] 5.5 手機 nav 展開透明度微調（`TopNav.tsx` 續調）
 - [ ] 5.6 其餘主視覺（夜景 CTA / 五模式小圖 / char 去背）
+- [x] ~~5.7 全功能使用說明 / 使用教學~~ ✅ 0722（共用元件 `components/FeatureGuide.tsx`：收合狀態記 localStorage、全站一致；掛到機會島/分身島 Agent/每日運勢命理/訊息軍師/AI 求職包五大新功能頂端，逐步驟教怎麼用 + 提醒付費/隱私/免責）
 - ＊參賽級門檻：破版/對比/RWD/動效都要過。
 
 ---
