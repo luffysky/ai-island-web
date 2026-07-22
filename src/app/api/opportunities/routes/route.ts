@@ -12,7 +12,7 @@ export async function GET() {
   if (!user) return NextResponse.json({ routes: [] });
   const admin = createSupabaseAdmin();
   const { data } = await admin.from("opportunity_routes")
-    .select("id, opportunity_id, stage, note, created_at, opportunity:opportunities(id, name, category, organizer, prize_text, application_deadline, status, official_url)")
+    .select("id, opportunity_id, stage, note, created_at, opportunity:opportunities(id, name, category, organizer, prize_text, application_deadline, status, official_url, requires_demo, requires_pitch, requires_video, requires_business_plan, requires_team, requires_student, requires_company)")
     .eq("user_id", user.id).order("created_at", { ascending: false });
   return NextResponse.json({ routes: data ?? [] });
 }

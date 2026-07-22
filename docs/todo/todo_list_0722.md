@@ -177,8 +177,8 @@
   - [ ] 3.3.4 PDF 解析 + **版本比較**（存歷次規則 diff：截止/獎金/資格變動）
   - [ ] 3.3.5 cron 分頻；3.3.6 Sentry 監控
 - [ ] 3.4 **V5 Opportunity OS**：十層機會（補助/獎學金/VC/徵件/標案/工作/實習/海外/證照）、AI 配對組隊、成長時間軸、Team/Enterprise、AI 代報名（授權+守條款）
-- [ ] 3.5 表：⬜ `opportunity_changes`、⬜ `user_portfolio`、⬜ `submission_tasks`（三表驗證不存在）
-- [~] 3.6 篩選/詳情：多選 chips ✅、快截止 ✅、~~地區/獎金/身分篩選~~ ✅ 0722（地區🇹🇼/🌏 本就有；補**獎金下限**≥1萬/10萬/100萬 + **身分**🎓限學生/🏢限法人 filter，API `minPrize`/`student`/`company` server 端過濾 + 卡片 badge）。待：⬜ prep_effort AI 估算、⬜ 詳情頁 FAQ/PDF 版本、🚧 我的機會 Dashboard、⬜ 機會地圖
+- [x] ~~3.5 表：`opportunity_changes` / `user_portfolio` / `submission_tasks`~~ ✅ 0722（migration `opportunity_v5_tables_migration.sql` 已跑 prod、RLS 本人 only（changes 公開讀）；**全部真接**：submission_tasks→我的航線缺件清單、user_portfolio→作品庫+餵 AI 幫我挑、opportunity_changes→approve 去重更新記 diff + 詳情頁「規則變動紀錄」）
+- [~] 3.6 篩選/詳情：多選 chips ✅、快截止 ✅、~~地區/獎金/身分篩選~~ ✅ 0722（地區🇹🇼/🌏 本就有；補**獎金下限**≥1萬/10萬/100萬 + **身分**🎓限學生/🏢限法人 filter，API `minPrize`/`student`/`company` server 端過濾 + 卡片 badge）。~~我的機會 Dashboard~~ ✅ 0722（我的航線＝Dashboard，每個機會可展開**缺件清單**：勾選/新增/刪、一鍵「建議缺件」依 requires_* 帶入、n/m 進度）。待：⬜ prep_effort AI 估算、⬜ 詳情頁 FAQ/PDF 版本、⬜ 機會地圖
 - [ ] 3.7 Pipeline / 跨島：機會流水線閉環、20 個機會島 Agent、與創作者島/學習島結合、社群經驗層
 - [ ] 3.8 商業模式：方案分層機制
 

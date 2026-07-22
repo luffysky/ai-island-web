@@ -32,6 +32,20 @@ const REQS: { key: string; label: string }[] = [
   { key: "requires_student", label: "限學生" },
 ];
 
+async function getChanges(id: string) {
+  try {
+    const admin = createSupabaseAdmin();
+    const { data } = await admin.from("opportunity_changes")
+      .select("id, field, old_value, new_value, detected_at")
+      .eq("opportunity_id", id).order("detected_at", { ascending: false }).limit(20);
+    return data ?? [];
+  } catch { return []; }
+}
+const FIELD_ZH: Record<string, string> = {
+  name: "名稱", category: "類別", prize_text: "獎金 / 資源", application_deadline: "報名截止日",
+  is_free: "報名費", status: "狀態", eligibility: "報名資格", description: "說明",
+};
+
 async function getMyAbout(): Promise<string> {
   try {
     const sb = await createSupabaseServer();
@@ -48,6 +62,7 @@ export default async function OpportunityDetail({ params }: { params: Promise<{ 
   const o = await getOpp(id);
   if (!o) notFound();
   const myAbout = await getMyAbout();
+  const changes = await getChanges(id);
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 sm:py-8">
@@ -103,6 +118,23 @@ export default async function OpportunityDetail({ params }: { params: Promise<{ 
         <div className="mt-5">
           <div className="text-sm font-semibold mb-1">報名資格</div>
           <p className="text-sm text-black/70 dark:text-white/70 whitespace-pre-wrap">{o.eligibility}</p>
+        </div>
+      )}
+
+      {/* 規則變動紀錄（V5·opportunity_changes）：截止/獎金/資格改過就留痕，可回溯 */}
+      {changes.length > 0 && (
+        <div className="mt-5 rounded-2xl border border-amber-500/30 bg-amber-500/[0.04] p-4">
+          <div className="text-sm font-semibold mb-2 inline-flex items-center gap-1.5"><AlertTriangle className="w-4 h-4 text-amber-500" /> 規則變動紀錄</div>
+          <ul className="space-y-1.5">
+            {changes.map((c: any) => (
+              <li key={c.id} className="text-xs text-black/70 dark:text-white/70">
+                <span className="text-black/40 dark:text-white/40">{String(c.detected_at).slice(0, 10)}</span>
+                {" · "}<span className="font-medium">{FIELD_ZH[c.field] ?? c.field}</span>
+                {" "}<span className="line-through text-black/40 dark:text-white/40">{c.old_value ?? "（空）"}</span>
+                {" → "}<span className="text-amber-700 dark:text-amber-300 font-medium">{c.new_value ?? "（空）"}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import { createSupabaseServer } from "@/lib/supabase-server";
 import { completeForUsage } from "@/lib/resolve-usage-ai";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +15,24 @@ export async function POST(req: Request) {
   if (!about) return NextResponse.json({ error: "請描述你的作品/身分/目標" }, { status: 400 });
 
   const admin = createSupabaseAdmin();
+
+  // 若已登入且有作品庫（user_portfolio），把它併進描述、讓推薦更準
+  let portfolioNote = "";
+  try {
+    const supabase = await createSupabaseServer();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: pf } = await admin.from("user_portfolio")
+        .select("kind, title, description").eq("user_id", user.id).limit(20);
+      if (pf && pf.length) {
+        const kindZh: Record<string, string> = { work: "作品", skill: "技能", award: "獎項", experience: "經歷" };
+        portfolioNote = "\n\n我的作品庫：\n" + pf.map((p: any) =>
+          `- (${kindZh[p.kind] ?? p.kind}) ${p.title}${p.description ? `：${String(p.description).slice(0, 80)}` : ""}`).join("\n");
+      }
+    }
+  } catch { /* 未登入或查詢失敗 → 只用 about */ }
+
+
   const { data: opps } = await admin.from("opportunities")
     .select("id, name, category, prize_text, application_deadline, requires_company, requires_student, requires_demo, requires_pitch, tags, description")
     .eq("status", "open").limit(60);
@@ -26,7 +45,7 @@ export async function POST(req: Request) {
   const system = `你是 AI 島「機會島」的推薦顧問。根據使用者描述，從「機會清單」挑出最適合的 3-5 個。
 只回 JSON 陣列，每項 {"i":清單編號, "fit":符合率0-100整數, "reason":"一句話中文原因（點出符合哪些條件）"}。
 規則：只挑清單裡真的存在的編號；不符合資格（如限公司但對方沒公司）就別選或標低 fit；沒有合適就回 []。依 fit 由高到低排。`;
-  const user = `使用者描述：${about}\n\n機會清單：\n${list}\n\n只回 JSON 陣列。`;
+  const user = `使用者描述：${about}${portfolioNote}\n\n機會清單：\n${list}\n\n只回 JSON 陣列。`;
 
   let items: any[] = [];
   try {

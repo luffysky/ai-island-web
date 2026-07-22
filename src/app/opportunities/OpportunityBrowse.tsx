@@ -66,12 +66,41 @@ export function OpportunityBrowse() {
   // 機會訂閱（V2）
   const [subs, setSubs] = useState<{ id: string; label: string }[]>([]);
   const [subBusy, setSubBusy] = useState(false);
+  // 我的作品庫（V5·user_portfolio）：AI 幫我挑會自動帶入
+  const [pfOpen, setPfOpen] = useState(false);
+  const [portfolio, setPortfolio] = useState<{ id: string; kind: string; title: string; description?: string | null; url?: string | null }[]>([]);
+  const [pfKind, setPfKind] = useState("work");
+  const [pfTitle, setPfTitle] = useState("");
+  const [pfDesc, setPfDesc] = useState("");
+  const [pfBusy, setPfBusy] = useState(false);
 
   useEffect(() => {
     (async () => {
       try { const r = await fetch("/api/opportunities/subscriptions"); if (r.ok) setSubs((await r.json()).subscriptions ?? []); } catch { /* ignore */ }
     })();
+    (async () => {
+      try { const r = await fetch("/api/opportunities/portfolio"); if (r.ok) setPortfolio((await r.json()).items ?? []); } catch { /* ignore */ }
+    })();
   }, []);
+
+  const PF_KINDS: Record<string, string> = { work: "作品", skill: "技能", award: "獎項", experience: "經歷" };
+  const addPortfolio = async () => {
+    if (!pfTitle.trim() || pfBusy) return;
+    setPfBusy(true);
+    try {
+      const r = await fetch("/api/opportunities/portfolio", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind: pfKind, title: pfTitle.trim(), description: pfDesc.trim() || undefined }),
+      });
+      if (r.status === 401) { window.location.href = "/login?next=/opportunities"; return; }
+      const d = await r.json();
+      if (d.item) { setPortfolio((cur) => [d.item, ...cur]); setPfTitle(""); setPfDesc(""); }
+    } catch { /* ignore */ } finally { setPfBusy(false); }
+  };
+  const deletePortfolio = async (id: string) => {
+    setPortfolio((cur) => cur.filter((p) => p.id !== id));
+    await fetch(`/api/opportunities/portfolio?id=${id}`, { method: "DELETE" }).catch(() => {});
+  };
 
   // 從網址 ?q= 帶入初始搜尋（AI 作品分析的關鍵字連結會導到這裡）
   useEffect(() => {
@@ -239,6 +268,45 @@ export function OpportunityBrowse() {
             <div className="flex justify-end">
               <button onClick={saveProfile} disabled={profSaving} className="inline-flex items-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-40 text-white px-3.5 py-1.5 text-sm font-medium">
                 {profSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : profSaved ? <Check className="w-4 h-4" /> : null} {profSaved ? "已儲存" : "儲存檔案"}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 我的作品庫（V5·user_portfolio）：AI 幫我挑會自動帶入 */}
+      <div className="rounded-2xl border border-black/10 dark:border-white/10 p-3 mb-3">
+        <button onClick={() => setPfOpen((v) => !v)} className="w-full flex items-center gap-2 text-sm font-semibold">
+          <Trophy className="w-4 h-4 text-amber-500" /> 我的作品庫
+          <span className="text-[11px] font-normal text-black/40 dark:text-white/40">{portfolio.length ? `· ${portfolio.length} 筆，AI 幫我挑會帶入` : "· 存作品/技能/獎項，AI 幫我挑更準"}</span>
+          <span className="ml-auto text-xs text-black/40 dark:text-white/40">{pfOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}</span>
+        </button>
+        {pfOpen && (
+          <div className="mt-3 space-y-2">
+            {portfolio.length > 0 && (
+              <ul className="space-y-1.5">
+                {portfolio.map((p) => (
+                  <li key={p.id} className="flex items-start gap-2 group rounded-lg bg-black/[0.02] dark:bg-white/[0.03] px-2.5 py-1.5">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5">{PF_KINDS[p.kind] ?? p.kind}</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-xs font-medium truncate">{p.title}</div>
+                      {p.description && <div className="text-[11px] text-black/50 dark:text-white/50 line-clamp-2">{p.description}</div>}
+                    </div>
+                    <button onClick={() => deletePortfolio(p.id)} className="shrink-0 text-black/20 dark:text-white/20 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition"><X className="w-3.5 h-3.5" /></button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div className="flex flex-wrap gap-1.5">
+              {Object.entries(PF_KINDS).map(([k, label]) => (
+                <button key={k} onClick={() => setPfKind(k)} className={`text-xs rounded-full px-2.5 py-1 border ${pfKind === k ? "bg-amber-600 border-amber-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>{label}</button>
+              ))}
+            </div>
+            <input value={pfTitle} onChange={(e) => setPfTitle(e.target.value)} placeholder="標題（例：AI 學習網站 / Python 資料分析 / 校內設計競賽第一名）" className="w-full bg-white/60 dark:bg-white/5 border border-black/10 dark:border-white/15 rounded-xl px-3 py-2 text-sm outline-none focus:border-amber-500" />
+            <textarea value={pfDesc} onChange={(e) => setPfDesc(e.target.value)} rows={2} placeholder="補充說明（選填，例：有 Demo 與 200 用戶）" className="w-full bg-white/60 dark:bg-white/5 border border-black/10 dark:border-white/15 rounded-xl px-3 py-2 text-sm outline-none focus:border-amber-500 resize-none" />
+            <div className="flex justify-end">
+              <button onClick={addPortfolio} disabled={!pfTitle.trim() || pfBusy} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 disabled:opacity-40 text-white px-3.5 py-1.5 text-sm font-medium">
+                {pfBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} 加入作品庫
               </button>
             </div>
           </div>

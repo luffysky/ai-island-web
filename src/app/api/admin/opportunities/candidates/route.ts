@@ -52,10 +52,38 @@ export async function POST(req: NextRequest) {
     status: "open",
     source_confidence: "unverified",
   };
-  const { data: opp, error } = await admin.from("opportunities").insert(insert).select("id").single();
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  // 去重：同一個 official_url 已存在 → 更新（並記錄欄位變動歷史 opportunity_changes），而非重複 insert
+  const TRACK = ["name", "category", "prize_text", "application_deadline", "is_free", "description"] as const;
+  let oppId: string;
+  const existing = insert.official_url
+    ? (await admin.from("opportunities").select("id, name, category, prize_text, application_deadline, is_free, description").eq("official_url", insert.official_url).maybeSingle()).data
+    : null;
+
+  if (existing) {
+    // 只更新「有帶新值且和舊值不同」的欄位，逐欄記變動
+    const patch: Record<string, any> = {};
+    const changes: { opportunity_id: string; field: string; old_value: string | null; new_value: string | null; source: string }[] = [];
+    for (const f of TRACK) {
+      const nv = insert[f];
+      if (nv === null || nv === undefined) continue;             // 沒帶新值就不動舊資料
+      const ov = (existing as any)[f];
+      if (String(ov ?? "") !== String(nv)) {
+        patch[f] = nv;
+        changes.push({ opportunity_id: existing.id, field: f, old_value: ov == null ? null : String(ov), new_value: String(nv), source: "manual" });
+      }
+    }
+    if (Object.keys(patch).length) {
+      await admin.from("opportunities").update(patch).eq("id", existing.id);
+      await admin.from("opportunity_changes").insert(changes);
+    }
+    oppId = existing.id;
+  } else {
+    const { data: opp, error } = await admin.from("opportunities").insert(insert).select("id").single();
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    oppId = opp.id;
+  }
 
   await admin.from("opportunity_candidates")
-    .update({ status: "approved", reviewed_at: new Date().toISOString(), opportunity_id: opp.id }).eq("id", id);
-  return NextResponse.json({ ok: true, status: "approved", opportunityId: opp.id });
+    .update({ status: "approved", reviewed_at: new Date().toISOString(), opportunity_id: oppId }).eq("id", id);
+  return NextResponse.json({ ok: true, status: "approved", opportunityId: oppId, updated: !!existing });
 }
