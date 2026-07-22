@@ -228,7 +228,8 @@
 - [x] ~~seed 36–40：Python 模組 128 個（stdlib+外部）→ 1773 條~~ ✅ 0721
 - [x] ~~seed 41：DB查詢/Git/K8s雲原生/LLM/分散式系統 33 條 → **1806 條**~~ ✅ 0721
 - [x] ~~seed 42：網路協定/Web/資安/加密驗證 41 條 → **1847 條**（全查過無 slug 衝突）~~ ✅ 0721
-- [ ] 4.2.1 續寫到 5000（現 **2158**，從 `dictionary-seed-56.json` 接）
+- [ ] 4.2.1 續寫到 5000（現 **2177**，從 `dictionary-seed-57.json` 接）
+  - [x] ~~seed 56：時間日期 + Unicode/文字編碼 + 開發工具 19 條 → **2177**~~ ✅ 0723（UTC時區/cron語法/日期解析/duration/單調時鐘 · Unicode/UTF-8/ASCII/字元編碼/BOM/grapheme/emoji編碼 · formatter/pre-commit/lockfile/功能開關/watch-mode/debugger/monorepo工具）
   - [x] ~~seed 55：郵件/訊息協定 + 媒體/壓縮 + 搜尋/索引 23 條 → **2158**~~ ✅ 0723（SMTP/IMAP-POP3/SPF-DKIM-DMARC/退信/MQTT/AMQP/訊息確認/at-least-once · gzip-brotli/有損無損/影像編碼/WebP-AVIF/lazy-image/轉碼/bitrate/自適應串流 · 反向索引/TF-IDF/全文索引/模糊搜尋/字幹還原/自動完成/相關性評分）
   - [x] ~~seed 54：並發/非同步 + 雲端服務 + 金流/支付 21 條 → **2135**~~ ✅ 0723（actor模型/綠色執行緒/thread-pool/worker-pool/生產消費者/反應式/事件驅動/lock-free · serverless/物件儲存/blob/託管DB/可用區 · 金流閘道/PCI-DSS/代碼化/3DS/訂閱計費/webhook冪等/chargeback/退款流程）
   - [x] ~~seed 53：敏捷協作 + 遊戲/圖形 + CS 理論 20 條 → **2114**~~ ✅ 0723（每日站會/燃盡圖/泳道/程式凍結/發布列車 · delta-time/tick-rate/物理引擎/ECS/shader/光柵化/光線追蹤/z-buffer · 有限狀態機/圖靈機/NP完全/圖走訪/位元運算/雜湊碰撞/regex引擎ReDoS）

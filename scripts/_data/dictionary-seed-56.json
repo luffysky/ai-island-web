@@ -1,0 +1,344 @@
+[
+  {
+    "slug": "timezone-utc",
+    "term": "UTC / Timezone",
+    "zh_name": "世界協調時間 / 時區",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "UTC 是全球統一的基準時間，各地時區＝UTC ± 幾小時（台灣 UTC+8）。什麼時候在意：跨時區的血淚教訓——伺服器/資料庫一律存 UTC，只在『顯示給使用者』時才轉當地時區，否則夏令時間、跨區約會全亂。",
+    "analogy": "像世界時鐘的標準原點——大家先對齊 UTC，要看當地幾點再各自 +/- 時差。",
+    "example": "存 UTC → 顯示轉 Asia/Taipei（+8）",
+    "related": [
+      "unix-timestamp",
+      "iso-8601",
+      "ntp"
+    ]
+  },
+  {
+    "slug": "cron-expression",
+    "term": "Cron Expression",
+    "zh_name": "Cron 排程語法",
+    "category": "syntax",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用五個欄位（分 時 日 月 週）描述『何時重複執行』的排程語法。什麼時候在意：設定定時任務（每天備份、每小時同步）。如 `0 9 * * 1` = 每週一早上 9 點。星號=每個。",
+    "analogy": "像設鬧鐘的重複規則——用一串符號講清楚『每週幾、幾點響』。",
+    "example": "0 3 * * * = 每天凌晨 3 點；*/15 * * * * = 每 15 分",
+    "related": [
+      "scheduler-os",
+      "idempotency",
+      "monotonic-clock"
+    ]
+  },
+  {
+    "slug": "date-parsing",
+    "term": "Date Parsing",
+    "zh_name": "日期解析",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把日期字串轉成程式的日期物件。什麼時候在意：地雷密集——`new Date('2026-07-23')` 被當 UTC、`'07/23/2026'` 各地解讀不同、無時區字串會用本機時區。解法：用明確格式庫（date-fns/Temporal）、輸入用 ISO 8601。",
+    "analogy": "像看手寫日期猜意思——寫得不標準（03/04）就會有人讀三月四號、有人讀四月三號。",
+    "example": "別用 new Date('隨便格式')；用 ISO + date-fns parse",
+    "related": [
+      "iso-8601",
+      "timezone-utc",
+      "duration-interval"
+    ]
+  },
+  {
+    "slug": "duration-interval",
+    "term": "Duration / Interval",
+    "zh_name": "時間長度 / 區間",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "duration＝一段『時間長度』（2 小時 30 分）；interval＝兩個時間點之間。什麼時候在意：算『多久前』『還剩多久』『兩日期差幾天』——別自己用毫秒硬減（跨夏令時間/月份會錯），用日期庫。",
+    "analogy": "時間點像地圖上的『地標』，duration 像『兩地距離』——算距離要用對工具，不是目測。",
+    "example": "date-fns differenceInDays(a, b)；別手動 (b-a)/86400000",
+    "related": [
+      "date-parsing",
+      "iso-8601",
+      "monotonic-clock"
+    ]
+  },
+  {
+    "slug": "monotonic-clock",
+    "term": "Monotonic Clock",
+    "zh_name": "單調時鐘",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一個『只會往前、不會被調整』的時鐘，專門用來『量經過多久』。什麼時候在意：測效能/逾時——別用一般時鐘（wall clock）算耗時，它會被 NTP 校正或使用者改時間往回跳，導致負數/亂跳。用 performance.now() / monotonic。",
+    "analogy": "像碼表（只會累加）vs 掛鐘（會被調快調慢）——量秒數要用碼表，不然被人撥錶就亂了。",
+    "example": "效能計時用 performance.now()（單調）非 Date.now()",
+    "related": [
+      "ntp",
+      "unix-timestamp",
+      "duration-interval"
+    ]
+  },
+  {
+    "slug": "unicode",
+    "term": "Unicode",
+    "zh_name": "萬國碼",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "給世界上『每個字元』一個唯一編號（code point）的標準，涵蓋各國文字、符號、emoji。什麼時候在意：處理多語言、emoji、亂碼問題的根基——Unicode 是『編號表』，UTF-8 是『怎麼把編號存成位元組』。",
+    "analogy": "像全球統一的『字元身分證號』——每個字（含 emoji）都有唯一號碼，不管哪國。",
+    "example": "'貓' = U+8C93；'😀' = U+1F600",
+    "related": [
+      "utf-8-encoding",
+      "ascii",
+      "character-encoding"
+    ]
+  },
+  {
+    "slug": "utf-8-encoding",
+    "term": "UTF-8",
+    "zh_name": "UTF-8 編碼",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把 Unicode 編號存成位元組的主流方式：ASCII 用 1 byte、中文 3 byte、emoji 4 byte（變長）。什麼時候在意：web/檔案的標準編碼——存檔、資料庫、HTTP 都該用 UTF-8，用錯編碼就出亂碼。",
+    "analogy": "像把身分證號（Unicode）寫成實際字跡（位元組）的一套規則——常用字寫短、罕用字寫長，省空間。",
+    "example": "檔案存 UTF-8；HTML <meta charset='utf-8'>",
+    "related": [
+      "unicode",
+      "ascii",
+      "byte-order-mark"
+    ]
+  },
+  {
+    "slug": "ascii",
+    "term": "ASCII",
+    "zh_name": "美國標準碼",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "最早的字元編碼，用 7 bit 表示英文字母、數字、標點共 128 個。什麼時候在意：理解編碼歷史與相容——UTF-8 前 128 個跟 ASCII 完全相同（所以純英文檔 ASCII/UTF-8 通用）；碰到只吃 ASCII 的老系統要注意中文會爆。",
+    "analogy": "像最早的英文打字機字盤——只有英文字母數字符號，沒有中文和 emoji。",
+    "example": "'A'=65、'0'=48；純英文 = ASCII 相容",
+    "related": [
+      "unicode",
+      "utf-8-encoding",
+      "character-encoding"
+    ]
+  },
+  {
+    "slug": "character-encoding",
+    "term": "Character Encoding",
+    "zh_name": "字元編碼",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "『字元 ↔ 位元組』怎麼互轉的規則（UTF-8、Big5、GBK、Latin-1…）。什麼時候在意：亂碼的元兇——存檔用一種編碼、讀取用另一種就變『鿍鿍』。解法：全線統一 UTF-8、明確宣告編碼。台灣老檔案常是 Big5。",
+    "analogy": "像不同的密碼本——用 A 本加密、卻用 B 本解讀，出來就是一堆亂七八糟的符號。",
+    "example": "Big5 檔用 UTF-8 開 → 亂碼；要指定對的編碼",
+    "related": [
+      "utf-8-encoding",
+      "unicode",
+      "byte-order-mark"
+    ]
+  },
+  {
+    "slug": "byte-order-mark",
+    "term": "Byte Order Mark (BOM)",
+    "zh_name": "位元組順序記號",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "檔案開頭幾個隱形位元組，標記編碼與位元組順序。什麼時候在意：踩雷點——UTF-8 with BOM 會在檔案最前面塞 3 個隱形位元組，害 JSON 解析失敗、CSV 第一欄多出怪字元、shell script 壞掉。多數情況用『UTF-8 without BOM』。",
+    "analogy": "像檔案開頭的隱形標籤——本意是標記編碼，但很多程式不認、反而被它絆倒。",
+    "example": "存檔選『UTF-8 無 BOM』避免 JSON/CSV 出錯",
+    "related": [
+      "utf-8-encoding",
+      "character-encoding",
+      "unicode"
+    ]
+  },
+  {
+    "slug": "grapheme",
+    "term": "Grapheme",
+    "zh_name": "字素（視覺字元）",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "使用者眼中『一個字元』，但底層可能由多個 Unicode code point 組成（emoji 加膚色、國旗、注音組合）。什麼時候在意：算字數/截斷字串會爆——`'👨‍👩‍👧'.length` 在 JS 是 8 不是 1，硬截會把 emoji 切成亂碼。要用 grapheme 分割器。",
+    "analogy": "像一個看起來單一的貼圖，其實是好幾張小貼紙疊出來的——你以為撕一張，其實撕破了組合。",
+    "example": "家庭 emoji 👨‍👩‍👧 = 1 grapheme 但多個 code point",
+    "related": [
+      "emoji-encoding",
+      "unicode",
+      "utf-8-encoding"
+    ]
+  },
+  {
+    "slug": "emoji-encoding",
+    "term": "Emoji Encoding",
+    "zh_name": "Emoji 編碼",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "emoji 在底層是 Unicode code point，複雜的（膚色、性別、家庭）用『零寬連接符 ZWJ』把多個拼起來。什麼時候在意：字串長度、截斷、資料庫存取（要 utf8mb4 才存得下 4-byte emoji，舊 utf8 會壞）、比對——都要當心 emoji 不是單一字元。",
+    "analogy": "像用積木拼出的公仔——看似一個，其實好幾塊用連接件（ZWJ）組起來的。",
+    "example": "MySQL 要 utf8mb4 才存得下 emoji（utf8 只 3 byte）",
+    "related": [
+      "grapheme",
+      "unicode",
+      "utf-8-encoding"
+    ]
+  },
+  {
+    "slug": "formatter-prettier",
+    "term": "Code Formatter",
+    "zh_name": "程式碼格式化工具",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "自動把程式碼『排版統一』（縮排、引號、換行）的工具（Prettier、gofmt、Black）。什麼時候在意：團隊省下『格式吵架』——存檔自動格式化，大家風格一致、code review 不用挑排版。跟 linter 分工：formatter 管長相、linter 管品質。",
+    "analogy": "像自動排版的文書軟體——不管你打字多亂，按一下全部對齊工整。",
+    "example": "存檔自動跑 Prettier；gofmt 是 Go 內建",
+    "related": [
+      "linter",
+      "pre-commit-hook",
+      "watch-mode"
+    ]
+  },
+  {
+    "slug": "pre-commit-hook",
+    "term": "Pre-commit Hook",
+    "zh_name": "提交前掛鉤",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "git commit 前『自動跑檢查』（格式化、lint、測試），不過就擋下不讓 commit。什麼時候在意：把品質守門自動化——別讓沒格式化/壞掉的 code 進版本庫。用 husky + lint-staged 只檢查改動的檔（快）。",
+    "analogy": "像出門前的檢查表——沒帶鑰匙錢包（沒過檢查）就不讓你出門（commit）。",
+    "example": "commit 前自動 prettier + eslint + 跑相關測試",
+    "related": [
+      "formatter-prettier",
+      "linter",
+      "ci-cd-pipeline"
+    ]
+  },
+  {
+    "slug": "dependency-lockfile",
+    "term": "Lockfile",
+    "zh_name": "依賴鎖定檔",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "記錄『每個套件安裝的確切版本 + hash』的檔案（package-lock.json、pnpm-lock.yaml、Cargo.lock）。什麼時候在意：確保『每台機器/CI 裝的完全一樣』——沒 lockfile，`^1.2` 可能各自裝到不同小版本，出現『我這邊好好的』。一定要 commit lockfile。",
+    "analogy": "像食譜精確到品牌批號——不只寫『糖』，還記『哪家哪批的糖』，確保每次做出一樣的味道。",
+    "example": "commit package-lock.json → CI 裝到分毫不差的版本",
+    "related": [
+      "semantic-versioning",
+      "supply-chain-attack",
+      "monorepo-tooling"
+    ]
+  },
+  {
+    "slug": "feature-toggle",
+    "term": "Feature Toggle (Flag)",
+    "zh_name": "功能開關",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用『開關』控制某功能對誰開啟，不用改 code 重部署就能開/關/灰度。什麼時候在意：漸進發布（先開 5% 使用者）、A/B 測試、緊急關掉出包功能、把『部署』和『發布』分開。注意舊 flag 要清，不然一堆殭屍開關。",
+    "analogy": "像電燈開關——功能程式碼都在（燈裝好了），要不要亮由開關控制，隨時可關。",
+    "example": "newCheckout flag 先對內部開 → 沒問題再全開",
+    "related": [
+      "release-train",
+      "ab-test",
+      "code-freeze"
+    ]
+  },
+  {
+    "slug": "watch-mode",
+    "term": "Watch Mode",
+    "zh_name": "監看模式",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "工具『持續監看檔案變動、一改就自動重跑』（測試、build、編譯）。什麼時候在意：開發時的即時回饋——改 code 存檔，測試自動重跑、頁面自動刷新，不用手動一直執行。",
+    "analogy": "像自動門感應器——偵測到你（檔案）動了就自動反應（重跑），不用手動開。",
+    "example": "vitest --watch、tsc --watch 改檔即時重跑",
+    "related": [
+      "hot-module-replacement",
+      "formatter-prettier",
+      "debugger-breakpoint"
+    ]
+  },
+  {
+    "slug": "debugger-breakpoint",
+    "term": "Breakpoint / Debugger",
+    "zh_name": "中斷點 / 除錯器",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "在程式某行設『中斷點』讓執行暫停，逐步檢查變數、呼叫堆疊。什麼時候在意：比一堆 console.log 高效——能暫停、看當下所有變數、單步執行、看是誰呼叫的。IDE/瀏覽器 DevTools 都內建。",
+    "analogy": "像看影片按暫停+慢動作——停在關鍵那格，仔細看每個角色（變數）當下什麼狀態。",
+    "example": "VS Code / DevTools 設 breakpoint → 逐步 step over",
+    "related": [
+      "watch-mode",
+      "rubber-duck-debugging",
+      "stack-vs-heap"
+    ]
+  },
+  {
+    "slug": "monorepo-tooling",
+    "term": "Monorepo Tooling",
+    "zh_name": "單一倉庫工具",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "管理『一個 repo 裝多個專案/套件』的工具（Turborepo、Nx、pnpm workspace）。什麼時候在意：多個相關專案共用程式碼時——工具幫你處理跨套件依賴、只 build 有改的、共用設定，比多個 repo 好管。",
+    "analogy": "像一棟大樓管多個店面——共用水電門禁（設定），但各店獨立營業，統一物管（工具）調度。",
+    "example": "Turborepo 快取 + 只重建受影響的套件",
+    "related": [
+      "dependency-lockfile",
+      "ci-cd-pipeline",
+      "gitops"
+    ]
+  }
+]
