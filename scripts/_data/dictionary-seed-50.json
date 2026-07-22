@@ -1,0 +1,398 @@
+[
+  {
+    "slug": "composite-index",
+    "term": "Composite Index",
+    "zh_name": "複合索引",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一個索引建在「多個欄位」上（如 (user_id, created_at)）。什麼時候在意：常一起查的欄位組——但有「最左前綴」規則：`(a,b)` 索引能加速查 a 或 a+b，單查 b 用不到。順序要照最常用的查詢排。",
+    "analogy": "像電話簿按『姓＋名』排——查姓、或姓+名都快；只給名字查就沒用（要翻整本）。",
+    "example": "CREATE INDEX ON orders(user_id, created_at);",
+    "related": [
+      "database-index",
+      "query-optimization",
+      "surrogate-key"
+    ]
+  },
+  {
+    "slug": "table-partition",
+    "term": "Table Partitioning",
+    "zh_name": "資料表分區",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把一張超大表「依規則切成多個小分區」（按日期、按範圍），查詢只掃相關分區、也好維護（刪舊資料＝丟整個分區）。什麼時候在意：表大到上億筆、查詢變慢、要定期清舊資料時。",
+    "analogy": "像把一大箱檔案按月份分成多個小箱——找 3 月的只翻 3 月那箱，丟舊資料整箱扔。",
+    "example": "依 created_at 按月分區 → 查當月只掃一個分區",
+    "related": [
+      "database-index",
+      "sharding",
+      "query-optimization"
+    ]
+  },
+  {
+    "slug": "vacuum-postgres",
+    "term": "VACUUM (Postgres)",
+    "zh_name": "清理死列",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "Postgres 用 MVCC，UPDATE/DELETE 會留下「死列（dead tuple）」佔空間；VACUUM 回收它們、更新統計。什麼時候在意：大量更新的表變肥變慢時。通常 autovacuum 自動做，但高頻更新表可能要手動或調參。",
+    "analogy": "像定期清冰箱過期食物——不清會越塞越滿、找東西越來越慢。",
+    "example": "VACUUM ANALYZE orders;  -- 回收空間 + 更新統計",
+    "related": [
+      "database-index",
+      "isolation-level",
+      "query-optimization"
+    ]
+  },
+  {
+    "slug": "surrogate-key",
+    "term": "Surrogate Key",
+    "zh_name": "代理鍵",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用一個「沒有業務意義的自動編號/UUID」當主鍵（而非用 email、身分證這種自然鍵）。什麼時候在意：業務欄位可能變（email 會改）、隱私（別把身分證當 key）——代理鍵穩定又不外洩資訊。",
+    "analogy": "像會員卡號——用一個中性編號認人，而不是用會變的名字或會外洩的身分證。",
+    "example": "id BIGSERIAL PRIMARY KEY（而非 email 當主鍵）",
+    "related": [
+      "composite-index",
+      "er-diagram",
+      "database-index"
+    ]
+  },
+  {
+    "slug": "er-diagram",
+    "term": "ER Diagram",
+    "zh_name": "實體關聯圖",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用圖表達資料庫的「有哪些表（實體）、欄位、以及表之間的關係（一對多、多對多）」。什麼時候在意：設計 schema 前先畫，釐清資料怎麼關聯、避免設計到一半才發現關係錯。",
+    "analogy": "像蓋房子的平面圖——先畫清楚哪個房間連哪個房間，才不會蓋到一半發現動線不通。",
+    "example": "User ──< Order >── Product（一對多、多對多）",
+    "related": [
+      "surrogate-key",
+      "normalization",
+      "foreign-key"
+    ]
+  },
+  {
+    "slug": "connection-string",
+    "term": "Connection String",
+    "zh_name": "連線字串",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "一行把「連資料庫要的資訊」全包起來的字串：協定、帳密、主機、埠、資料庫名。什麼時候在意：設定 DB 連線時。裡面有密碼——絕不能 commit 進 git，放環境變數。",
+    "analogy": "像一張完整的地址+門禁密碼——照著就能連上，但這張紙不能亂丟（有密碼）。",
+    "example": "postgresql://user:pass@host:5432/dbname",
+    "related": [
+      "connection-pool",
+      "secrets-management",
+      "env-var"
+    ]
+  },
+  {
+    "slug": "offset-pagination",
+    "term": "Offset Pagination",
+    "zh_name": "偏移分頁",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用 `LIMIT 20 OFFSET 40`（跳過前 40 筆、取 20）做分頁。什麼時候在意：簡單好做、能跳頁；但缺點是 OFFSET 越大越慢（要數過前面全部），且資料新增時會錯位（重複/漏）。",
+    "analogy": "像看書用『翻到第 N 頁』——好用，但頁數越後面翻越久，中途有人插頁還會亂。",
+    "example": "GET /items?page=3&size=20 → OFFSET 40 LIMIT 20",
+    "related": [
+      "cursor-based",
+      "query-optimization",
+      "http-caching"
+    ]
+  },
+  {
+    "slug": "cursor-based",
+    "term": "Cursor Pagination",
+    "zh_name": "游標分頁",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "用「上一頁最後一筆的值」當游標往後取（WHERE id > last_id），而非跳過 N 筆。什麼時候在意：大資料 / 無限捲動 / 即時更新的清單——不會因新增資料錯位、也不會越後面越慢。缺點是不能直接跳到第 N 頁。",
+    "analogy": "像用書籤——記住『上次看到哪』接著看，不管別人有沒有插頁都接得準。",
+    "example": "GET /items?after=cursor_xyz&size=20",
+    "related": [
+      "offset-pagination",
+      "query-optimization",
+      "database-index"
+    ]
+  },
+  {
+    "slug": "rest-vs-rpc",
+    "term": "REST vs RPC",
+    "zh_name": "REST vs RPC",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "兩種 API 風格：REST 圍繞「資源＋HTTP 動詞」（GET /users/1）；RPC 圍繞「呼叫一個動作」（POST /getUserById）。什麼時候在意：REST 適合 CRUD 資源、快取友善；RPC/gRPC 適合「動作導向」的內部服務、效能好。沒有絕對，看場景。",
+    "analogy": "REST 像去圖書館『對書架操作』（借/還某本書）；RPC 像打電話請人『幫我做某件事』。",
+    "example": "REST: GET /users/1；RPC: POST rpc/getUser {id:1}",
+    "related": [
+      "openapi-swagger",
+      "graphql",
+      "api-versioning"
+    ]
+  },
+  {
+    "slug": "openapi-swagger",
+    "term": "OpenAPI / Swagger",
+    "zh_name": "API 規格文件",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用一份標準格式（YAML/JSON）描述你的 REST API：有哪些端點、參數、回傳。什麼時候在意：自動生互動文件（Swagger UI）、生 client SDK、做契約測試——一份規格多處用，前後端對齊靠它。",
+    "analogy": "像產品規格書——白紙黑字寫清楚每個介面長怎樣，前後端照著做不會兜不攏。",
+    "example": "openapi.yaml → Swagger UI 可點測 + 生 TypeScript client",
+    "related": [
+      "rest-vs-rpc",
+      "api-versioning",
+      "contract-test"
+    ]
+  },
+  {
+    "slug": "sse-server-sent-events",
+    "term": "Server-Sent Events (SSE)",
+    "zh_name": "伺服器推送事件",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "伺服器透過一條長連線「單向持續推」資料給瀏覽器（基於 HTTP）。什麼時候在意：只要『伺服器→前端』的即時更新（通知、進度、AI 串流回應）——比 WebSocket 簡單、自動重連；要雙向才用 WebSocket。",
+    "analogy": "像訂閱電子報——你連上後，對方有新消息就一直寄給你，但你不用回信（單向）。",
+    "example": "AI 逐字回應、股價即時更新常用 SSE",
+    "related": [
+      "websocket",
+      "streaming-response",
+      "long-polling"
+    ]
+  },
+  {
+    "slug": "http-caching",
+    "term": "HTTP Caching",
+    "zh_name": "HTTP 快取",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用回應標頭讓瀏覽器/CDN『把結果存起來、下次不用再問伺服器』：Cache-Control 定多久、ETag 做『沒變就回 304』。什麼時候在意：加速 + 省流量的基本功。靜態資源長快取（配 hash 檔名）、動態資料短快取或驗證。",
+    "analogy": "像影印一份放桌上——下次要看直接拿（快取），偶爾問一下『正本有沒有改』（ETag）。",
+    "example": "Cache-Control: max-age=31536000, immutable（靜態檔）",
+    "related": [
+      "etag",
+      "caching-layers",
+      "offset-pagination"
+    ]
+  },
+  {
+    "slug": "cargo-cult-programming",
+    "term": "Cargo Cult Programming",
+    "zh_name": "貨物崇拜式編程",
+    "category": "slang",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "照抄別人的做法卻不懂為什麼，只因為『大家都這樣』或『之前這樣有效』。什麼時候在意：貼一段不懂的 code、加一個不知作用的設定『因為 Stack Overflow 說要加』——能動但埋雷，該搞懂再用。",
+    "analogy": "典故：二戰後某些島民造假飛機跑道拜拜、以為能召來物資飛機——模仿了形式卻不懂原理。",
+    "example": "到處加 try/catch 吞錯『因為別人也這樣』但根本沒處理",
+    "related": [
+      "premature-optimization",
+      "boilerplate",
+      "snake-oil"
+    ]
+  },
+  {
+    "slug": "foot-gun",
+    "term": "Footgun",
+    "zh_name": "打到自己腳的設計",
+    "category": "slang",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "一個『很容易讓你不小心搞爆自己』的功能或 API 設計。什麼時候在意：形容那種預設危險、一失手就出大包的東西（如預設 `rm -rf`、JS 的 `==`、全域可變狀態）——用時要格外小心或包一層防呆。",
+    "analogy": "字面就是『拿槍對著自己的腳』——這設計給了你一把很容易走火打到自己腳的槍。",
+    "example": "C 的 gets()、SQL 沒 WHERE 的 UPDATE 都是 footgun",
+    "related": [
+      "happy-path",
+      "command-injection",
+      "race-condition"
+    ]
+  },
+  {
+    "slug": "not-invented-here",
+    "term": "Not Invented Here (NIH)",
+    "zh_name": "非我發明症",
+    "category": "slang",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "排斥用現成的東西、堅持『自己重造一個』的傾向。什麼時候在意：明明有成熟套件卻硬要自幹——有時是學習/掌控的正當理由，但多半是浪費時間、還維護不如人家好。要分清『該造輪子』與『重造輪子』。",
+    "analogy": "像明明超市有麵包卻堅持自己種麥磨粉——偶爾有意義，多數是跟自己過不去。",
+    "example": "自寫一個爛掉的日期函式庫，而非用 date-fns",
+    "related": [
+      "cargo-cult-programming",
+      "premature-optimization",
+      "technical-debt"
+    ]
+  },
+  {
+    "slug": "snake-oil",
+    "term": "Snake Oil",
+    "zh_name": "蛇油（假萬靈丹）",
+    "category": "slang",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "誇大到不可信的『萬靈丹』技術/產品——號稱解決一切但實際沒料。什麼時候在意：看到『用了這個 AI 框架效能自動 10 倍、零程式就能…』這種宣稱要警覺，多半是行銷話術。",
+    "analogy": "典故：以前江湖郎中賣『蛇油』號稱包治百病——聽起來太神的通常是騙的。",
+    "example": "『這個工具讓你不用懂資安就絕對安全』= snake oil",
+    "related": [
+      "cargo-cult-programming",
+      "premature-optimization",
+      "llm-eval"
+    ]
+  },
+  {
+    "slug": "nitpick",
+    "term": "Nitpick",
+    "zh_name": "吹毛求疵（雞蛋裡挑骨頭）",
+    "category": "slang",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "code review 時對『無關緊要的小細節』挑毛病（空格、命名偏好）。什麼時候在意：適度提醒品質好，但過度 nitpick 會拖慢 review、傷士氣。慣例：標『nit:』表示『小建議、不強制』，讓對方知道可改可不改。",
+    "analogy": "像挑作文的錯字卻不管內容好壞——小處計較過頭，反而失焦。",
+    "example": "『nit: 這裡建議用 const（不強制）』",
+    "related": [
+      "code-review",
+      "bikeshedding",
+      "boilerplate"
+    ]
+  },
+  {
+    "slug": "golden-path",
+    "term": "Golden Path / Happy Path",
+    "zh_name": "黃金路徑",
+    "category": "slang",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "一切正常、使用者照預期走的『理想順利流程』。什麼時候在意：先把 golden path 做通沒錯，但別只顧它——真正難的是處理『不順的路徑』（錯誤、空狀態、邊界）。只測 happy path 是常見疏漏。",
+    "analogy": "像預想客人乖乖照動線逛——但真實會有人走錯、問路、退貨，那些才是要準備的。",
+    "example": "登入成功是 golden path；密碼錯、鎖定、逾時才是重點",
+    "related": [
+      "edge-case",
+      "fault-tolerance",
+      "fail-fast"
+    ]
+  },
+  {
+    "slug": "fault-tolerance",
+    "term": "Fault Tolerance",
+    "zh_name": "容錯",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "系統『某個部分壞掉時，整體仍能繼續運作（也許降級）』的能力。什麼時候在意：分散式系統的核心目標——假設任何一台機器/服務都會掛，設計成掛了不會全倒（備援、重試、熔斷、優雅降級）。",
+    "analogy": "像飛機有多具引擎——一具熄火還能飛，不是一壞就掉下來。",
+    "example": "某服務掛 → 熔斷 + 回快取/預設值，不整站崩",
+    "related": [
+      "circuit-breaker",
+      "graceful-degradation",
+      "fail-fast"
+    ]
+  },
+  {
+    "slug": "consensus-mechanism",
+    "term": "Consensus Mechanism",
+    "zh_name": "共識機制",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "讓一群互不信任的節點『對同一份帳本/狀態達成一致』的規則（PoW、PoS、Raft…）。什麼時候在意：區塊鏈與分散式系統的核心——沒有中央權威時，怎麼決定『哪筆交易算數』全靠共識演算法。",
+    "analogy": "像一群人沒有主席卻要對『帳本內容』達成共識——得有一套大家認的投票/記帳規則。",
+    "example": "比特幣用 PoW、以太坊改用 PoS 達成共識",
+    "related": [
+      "proof-of-work",
+      "proof-of-stake",
+      "quorum"
+    ]
+  },
+  {
+    "slug": "layer2-scaling",
+    "term": "Layer 2 Scaling",
+    "zh_name": "第二層擴容",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "在主鏈（Layer 1）之上另建一層處理大量交易、只把結果結算回主鏈，藉此加快又降 gas 費。什麼時候在意：區塊鏈主鏈慢又貴的解方（Rollup、Optimism、Arbitrum）——把運算搬到 L2、安全性仍靠 L1。",
+    "analogy": "像大馬路（主鏈）塞車，蓋高架橋（L2）分流，最後車流還是匯回地面結算。",
+    "example": "以太坊 L2 Rollup：鏈下批次處理 → 上鏈結算",
+    "related": [
+      "consensus-mechanism",
+      "smart-contract",
+      "gas-fee"
+    ]
+  },
+  {
+    "slug": "web3-oracle",
+    "term": "Blockchain Oracle",
+    "zh_name": "區塊鏈預言機",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把『鏈外的真實世界資料』（股價、天氣、比賽結果）安全地餵給智能合約的橋樑。什麼時候在意：智能合約本身摸不到鏈外資料——DeFi 要幣價、保險合約要天氣，都靠 oracle（如 Chainlink）。它的可信度是安全弱點。",
+    "analogy": "像法庭外的證人——合約（法官）自己看不到外面發生什麼，得靠可信的證人（oracle）如實作證。",
+    "example": "DeFi 借貸用 Chainlink oracle 取即時幣價清算",
+    "related": [
+      "smart-contract",
+      "consensus-mechanism",
+      "defi"
+    ]
+  }
+]

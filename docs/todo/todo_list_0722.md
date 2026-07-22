@@ -228,7 +228,8 @@
 - [x] ~~seed 36–40：Python 模組 128 個（stdlib+外部）→ 1773 條~~ ✅ 0721
 - [x] ~~seed 41：DB查詢/Git/K8s雲原生/LLM/分散式系統 33 條 → **1806 條**~~ ✅ 0721
 - [x] ~~seed 42：網路協定/Web/資安/加密驗證 41 條 → **1847 條**（全查過無 slug 衝突）~~ ✅ 0721
-- [ ] 4.2.1 續寫到 5000（現 **2035**，從 `dictionary-seed-50.json` 接）
+- [ ] 4.2.1 續寫到 5000（現 **2057**，從 `dictionary-seed-51.json` 接）
+  - [x] ~~seed 50：資料庫深入 + API/整合 + 工程師黑話/Web3/可靠性 22 條 → **2057**~~ ✅ 0723（複合索引/分區/VACUUM/代理鍵/ER圖/連線字串 · offset-cursor分頁/REST-vs-RPC/OpenAPI/SSE/HTTP快取 · cargo-cult/footgun/NIH/蛇油/nitpick/golden-path/容錯/共識機制/L2擴容/區塊鏈預言機）
   - [x] ~~seed 49：機器學習深入 + UX/設計原則 23 條 → **2035**~~ ✅ 0723（過擬合欠擬合/偏差變異/dropout/batchnorm/epoch-batch/one-hot/特徵縮放/集成/隨機森林/k-means · 原型/啟發式評估/資訊架構/使用者流程/persona/可用性測試/費茲定律/完形原則/擬物設計/黑暗模式/微文案/視覺層次/漸進揭露）
   - [x] ~~seed 48：作業系統/底層 + 資安攻擊手法 26 條 → **2012**~~ ✅ 0723（排程器/context-switch/mutex-semaphore/syscall/核心態/CPU快取/位元組序/stack-vs-heap/page-fault/paging-swap/fork-exec/殭屍行程 · 威脅建模/滲透測試/SAST-DAST/CVE-CVSS/命令注入/不安全反序列化/SSTI/XXE/TOCTOU/橫向移動/縱深防禦/供應鏈攻擊/開放重導向/安全標頭）
   - [x] ~~seed 47：AI/LLM 進階 + 產品成長黑話 25 條 → **1986**~~ ✅ 0723（temperature/max_tokens/stop-seq/logit-bias/串流/Transformer/MoE/KV-cache/context-caching/few-shot/AI-agent/LLM-eval/VLM/chunking/vector-embedding/reranking/hybrid-search/context-stuffing · 北極星指標/啟用/成長循環/護城河/單位經濟/LTV-CAC/燒錢率-續命期）
