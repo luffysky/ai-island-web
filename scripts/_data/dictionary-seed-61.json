@@ -1,0 +1,362 @@
+[
+  {
+    "slug": "css-keyframes",
+    "term": "@keyframes",
+    "zh_name": "CSS 關鍵影格",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "定義動畫『各時間點的樣式』（0%、50%、100%），再用 animation 套用。什麼時候在意：做 loading 轉圈、脈動、進場動畫——比 transition（只能 A→B）更能做多階段、可循環的動畫。",
+    "analogy": "像定格動畫的關鍵畫格——你畫幾個關鍵姿勢，瀏覽器幫你補中間的過場。",
+    "example": "@keyframes spin{ from{rotate:0} to{rotate:360deg} }",
+    "related": [
+      "css-transition",
+      "css-transform",
+      "will-change"
+    ]
+  },
+  {
+    "slug": "css-custom-property",
+    "term": "CSS Custom Properties",
+    "zh_name": "CSS 變數",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "用 `--name: value` 定義、`var(--name)` 使用的 CSS 變數。什麼時候在意：主題色/間距統一管理、做深淺色切換（改幾個變數全站變）、JS 也能動態改。跟 Sass 變數不同：這是『執行期活的』、能被 JS/媒體查詢改。",
+    "analogy": "像調色盤的命名色——全站引用『主色』，要換色改一處，所有用到的地方跟著變。",
+    "example": ":root{ --accent:#50fa7b } .btn{ color:var(--accent) }",
+    "related": [
+      "css-cascade-layers",
+      "clamp-fluid",
+      "css-nesting"
+    ]
+  },
+  {
+    "slug": "css-nesting",
+    "term": "CSS Nesting",
+    "zh_name": "CSS 巢狀",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 1,
+    "plain": "原生 CSS 現在能『巢狀寫規則』（子選擇器寫在父規則裡），不用再靠 Sass。什麼時候在意：寫元件樣式更集中好讀——`.card{ & .title{…} &:hover{…} }`。現代瀏覽器已支援。",
+    "analogy": "像把同一房間的裝潢說明寫在一起——不用每條都從大門開始描述，直接在房間段落內寫。",
+    "example": ".card{ color:#333; & .title{ font-weight:bold } }",
+    "related": [
+      "css-custom-property",
+      "css-cascade-layers",
+      "pseudo-class-2"
+    ]
+  },
+  {
+    "slug": "css-cascade-layers",
+    "term": "Cascade Layers (@layer)",
+    "zh_name": "層疊層",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 3,
+    "plain": "用 @layer 明確『分層管理樣式優先順序』，讓你控制哪層蓋哪層，不用一直提高特異性或加 !important。什麼時候在意：管大型專案/引入第三方 CSS 時——把 reset/framework/自訂分層，避免特異性大戰。",
+    "analogy": "像文件的圖層——先定好圖層順序，上層自然蓋下層，不用每個元素都爭誰比較大聲。",
+    "example": "@layer reset, base, components, utilities;",
+    "related": [
+      "css-cascade",
+      "specificity-war",
+      "css-nesting"
+    ]
+  },
+  {
+    "slug": "specificity-war",
+    "term": "Specificity War",
+    "zh_name": "特異性大戰",
+    "category": "slang",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "樣式蓋不過別人時，一直『提高選擇器特異性或加 !important』互相加碼的惡性循環。什麼時候在意：CSS 難維護的典型症狀——與其拚特異性，不如用低特異性選擇器 + cascade layers + 好的命名(BEM)從源頭避免。",
+    "analogy": "像吵架越講越大聲——你 !important 我更 !important，最後沒人聽得懂誰對，該回歸好好講（低特異性 + 分層）。",
+    "example": "避免 #id.class.class !important 的軍備競賽",
+    "related": [
+      "css-specificity",
+      "css-cascade-layers",
+      "css-cascade"
+    ]
+  },
+  {
+    "slug": "scroll-snap",
+    "term": "CSS Scroll Snap",
+    "zh_name": "捲動吸附",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "讓捲動『自動對齊到定點』（像輪播、分頁式捲動），純 CSS 就能做。什麼時候在意：做橫向輪播、全螢幕分段捲動、圖片牆——不用寫 JS，捲一下自動吸到下一張/下一段。",
+    "analogy": "像抽屜的定位磁吸——推一下就『喀』一聲吸到定位，不會停在半途。",
+    "example": "scroll-snap-type:x mandatory; 子項 scroll-snap-align:start",
+    "related": [
+      "sticky-position",
+      "css-transform",
+      "aspect-ratio-css"
+    ]
+  },
+  {
+    "slug": "aspect-ratio-css",
+    "term": "aspect-ratio",
+    "zh_name": "長寬比",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 1,
+    "plain": "一個 CSS 屬性直接鎖『寬高比例』（如 16/9），高度自動算。什麼時候在意：影片/圖片容器保持比例不變形、防止圖片載入時版面跳動(CLS)——以前要用 padding-hack，現在一行搞定。",
+    "analogy": "像相框固定比例——不管放大縮小，長寬比不變、不會被拉扁拉長。",
+    "example": ".video{ aspect-ratio:16/9; width:100% }",
+    "related": [
+      "clamp-fluid",
+      "lazy-image",
+      "css-custom-property"
+    ]
+  },
+  {
+    "slug": "clamp-fluid",
+    "term": "Fluid Typography (clamp)",
+    "zh_name": "流體排版",
+    "category": "concept",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "用 clamp() 讓字級/間距『隨螢幕平滑縮放』但有上下限，不用一堆斷點 media query。什麼時候在意：響應式排版——標題在手機不太小、大螢幕不爆大，中間流暢過渡，一行搞定。",
+    "analogy": "像會自動調整的橡皮筋字——螢幕大就大一點、小就小一點，但有伸縮極限不失控。",
+    "example": "font-size: clamp(1rem, 2.5vw, 2rem)",
+    "related": [
+      "aspect-ratio-css",
+      "css-custom-property",
+      "rem-em-unit"
+    ]
+  },
+  {
+    "slug": "covariance-contravariance",
+    "term": "Covariance / Contravariance",
+    "zh_name": "共變 / 逆變",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "泛型的子型別關係：共變＝『容器隨內容一起變方向』（List<Cat> 可當 List<Animal> 讀）；逆變＝『反方向』（吃 Animal 的函式可當吃 Cat 的用）。什麼時候在意：泛型設計/讀懂型別錯誤——為何某些替換編譯器不給過，就是變異方向不符。",
+    "analogy": "共變像『一箱貓可當一箱動物看』（讀取安全）；逆變像『會照顧任何動物的人，也能照顧貓』（輸入方向相反）。",
+    "example": "讀取位置共變、參數位置逆變（TS/Kotlin 的 out/in）",
+    "related": [
+      "generics",
+      "variance-annotation",
+      "liskov-substitution"
+    ]
+  },
+  {
+    "slug": "type-erasure",
+    "term": "Type Erasure",
+    "zh_name": "型別抹除",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "泛型的型別資訊『只在編譯期存在、執行期被抹掉』（Java、TS）。什麼時候在意：為何執行期拿不到泛型型別（Java 不能 `new T()`、TS 型別 runtime 全沒）——編譯後 List<String> 和 List<Int> 是同一個。要執行期型別得另存（reified、傳 class）。",
+    "analogy": "像施工圖只在蓋的時候用——房子蓋好圖就收走了，之後從房子本身看不出原始藍圖的型別標註。",
+    "example": "Java List<String> runtime = List（型別被抹）",
+    "related": [
+      "generics",
+      "reflection-lang",
+      "static-vs-dynamic-typing"
+    ]
+  },
+  {
+    "slug": "gradual-typing",
+    "term": "Gradual Typing",
+    "zh_name": "漸進式型別",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "讓『動態型別語言逐步加上靜態型別』——可以部分標型別、部分不標，慢慢遷移。什麼時候在意：TypeScript(加在 JS)、Python type hints、PHP——舊專案不用一次全改，先標關鍵處、開嚴格度逐步收緊。",
+    "analogy": "像舊房子分區裝修——不用一次搬空全改，一間間慢慢升級，邊住邊改。",
+    "example": "JS 專案漸進加 TS 型別、tsconfig strict 逐步開",
+    "related": [
+      "static-vs-dynamic-typing",
+      "type-inference",
+      "type-erasure"
+    ]
+  },
+  {
+    "slug": "sum-product-type",
+    "term": "Sum / Product Types",
+    "zh_name": "和型別 / 積型別",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "組合型別的兩種基本方式：積型別＝『多個欄位同時有』（struct/tuple，A 且 B）；和型別＝『多選一』（union/enum，A 或 B）。什麼時候在意：精確建模——用和型別表達『狀態只能是這幾種之一』，配窮盡比對編譯器逼你處理每種。",
+    "analogy": "積型別像套餐（主餐＋飲料＋甜點都有）；和型別像單點（三選一）。",
+    "example": "struct=積(name且age)；Result=和(Ok 或 Err)",
+    "related": [
+      "algebraic-data-type",
+      "discriminated-union",
+      "pattern-matching-fp"
+    ]
+  },
+  {
+    "slug": "type-class",
+    "term": "Type Class",
+    "zh_name": "型別類別",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一種『為型別定義共同行為』的機制（Haskell 起源，Rust 的 trait、Swift 的 protocol 類似）。什麼時候在意：想讓不同型別『都能做某件事』（可比較、可序列化）而不靠繼承——比介面更靈活，能事後為既有型別加能力。",
+    "analogy": "像頒發『技能證照』——凡是考到『可比較』證照的型別，都能用比較功能，不管它們本來是什麼。",
+    "example": "Rust trait Ord；Haskell class Eq；Swift protocol",
+    "related": [
+      "generics",
+      "interface-segregation",
+      "covariance-contravariance"
+    ]
+  },
+  {
+    "slug": "variance-annotation",
+    "term": "Variance Annotation (in/out)",
+    "zh_name": "變異標註",
+    "category": "syntax",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "在泛型宣告時用 `out`（共變、只產出）/`in`（逆變、只吃入）標記型別參數的變異方向（Kotlin、C#、Scala）。什麼時候在意：設計泛型 API——標對了呼叫端才能安全地做子型別替換，標錯編譯器擋。",
+    "analogy": "像標明『這個口只出貨(out)』或『只進貨(in)』——標清楚方向，別人才知道能怎麼安全接。",
+    "example": "Kotlin interface Producer<out T>；Consumer<in T>",
+    "related": [
+      "covariance-contravariance",
+      "generics",
+      "type-class"
+    ]
+  },
+  {
+    "slug": "imperative-paradigm",
+    "term": "Imperative Programming",
+    "zh_name": "命令式範式",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用『一步步的指令 + 改變狀態』來寫程式（for 迴圈、賦值、改變數）。什麼時候在意：最直覺、貼近機器運作的範式——大多數語言的基礎。對比宣告式（描述要什麼）。過度依賴可變狀態會難追 bug。",
+    "analogy": "像食譜的步驟——先切菜、再開火、然後下鍋，一步步照做、狀態一直變。",
+    "example": "for(i=0;i<n;i++){ sum+=arr[i] }",
+    "related": [
+      "declarative-vs-imperative",
+      "oop-paradigm",
+      "functional-paradigm"
+    ]
+  },
+  {
+    "slug": "oop-paradigm",
+    "term": "Object-Oriented Programming",
+    "zh_name": "物件導向範式",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把『資料 + 操作』包成物件，用封裝、繼承、多型組織程式。什麼時候在意：建模有狀態+行為的實體（使用者、訂單）——好處是封裝與重用；陷阱是繼承過深、狀態四散。現代傾向『組合優於繼承』。",
+    "analogy": "像現實世界的物件——每個東西（車、人）自己管自己的資料，還會做自己的動作。",
+    "example": "class Dog{ name; bark(){…} }",
+    "related": [
+      "imperative-paradigm",
+      "composition-over-inheritance",
+      "functional-paradigm"
+    ]
+  },
+  {
+    "slug": "functional-paradigm",
+    "term": "Functional Programming",
+    "zh_name": "函數式範式",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "用『純函式 + 不可變資料 + 組合』來寫程式，避免副作用與可變狀態。什麼時候在意：想要好測、可預測、易平行的程式——資料流清楚、同輸入同輸出。現代語言多是混合（JS/Python 也能寫得很函數式）。",
+    "analogy": "像數學公式——給一樣的輸入永遠得一樣的結果，不看心情、不改外面的東西。",
+    "example": "data.filter(f).map(g).reduce(h)（純轉換鏈）",
+    "related": [
+      "pure-function",
+      "immutable-data",
+      "declarative-vs-imperative"
+    ]
+  },
+  {
+    "slug": "logic-programming",
+    "term": "Logic Programming",
+    "zh_name": "邏輯式範式",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "你『描述事實與規則』，讓系統自己推導答案（Prolog、Datalog）。什麼時候在意：規則推理、關係查詢、約束求解——你不寫『怎麼算』，只寫『什麼成立』，引擎去找符合的解。SQL 也帶點這種味道。",
+    "analogy": "像給偵探一堆線索和規則——你不教他怎麼推，他自己推出兇手是誰。",
+    "example": "Prolog: 事實+規則 → 問問題自動推導答案",
+    "related": [
+      "declarative-vs-imperative",
+      "functional-paradigm",
+      "finite-state-machine"
+    ]
+  },
+  {
+    "slug": "reflection-lang",
+    "term": "Reflection",
+    "zh_name": "反射",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "程式在『執行期檢視/修改自己』的能力——查一個物件有哪些欄位/方法、動態呼叫。什麼時候在意：框架魔法的來源（序列化、DI、ORM 靠反射讀型別/欄位）。強大但慢、繞過型別檢查，別濫用。",
+    "analogy": "像照鏡子看自己——程式執行時能『看見自己的結構』，甚至照著調整。",
+    "example": "Java Class.getMethods()、Python getattr()",
+    "related": [
+      "metaprogramming",
+      "type-erasure",
+      "aspect-oriented"
+    ]
+  },
+  {
+    "slug": "aspect-oriented",
+    "term": "Aspect-Oriented Programming",
+    "zh_name": "面向切面編程",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把『橫跨很多地方的關注』（log、權限、交易、計時）抽出來集中定義，自動『織入』到目標方法，不用每處手動加。什麼時候在意：Spring AOP、裝飾器——避免每個方法都複製貼上 log/權限檢查。",
+    "analogy": "像大樓的中央監控——不用每個房間各裝一套，統一在切面層織入（進出都記錄），各房間程式乾淨。",
+    "example": "Spring @Transactional / 日誌切面自動套用",
+    "related": [
+      "metaprogramming",
+      "reflection-lang",
+      "sidecar"
+    ]
+  }
+]
