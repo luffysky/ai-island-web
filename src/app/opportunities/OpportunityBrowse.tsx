@@ -6,10 +6,18 @@ import { Search, Compass, ExternalLink, Bookmark, BookmarkCheck, AlertTriangle, 
 
 interface Opp {
   id: string; type: string; name: string; organizer?: string; country?: string; category?: string;
-  official_url?: string; prize_text?: string; application_deadline?: string | null;
-  is_free?: boolean; requires_demo?: boolean; requires_pitch?: boolean; is_online?: boolean; requires_qa?: boolean; requires_team?: boolean; tags?: string[];
+  official_url?: string; prize_text?: string; prize_amount?: number | null; application_deadline?: string | null;
+  is_free?: boolean; requires_demo?: boolean; requires_pitch?: boolean; is_online?: boolean; requires_qa?: boolean; requires_team?: boolean;
+  requires_student?: boolean; requires_company?: boolean; prep_effort?: string | null; tags?: string[];
   status: string; source_confidence?: string; ai_island_fit_score?: number | null;
 }
+
+// 獎金下限選項（TWD）
+const PRIZE_TIERS: { label: string; value: number }[] = [
+  { label: "≥ 1 萬", value: 10000 },
+  { label: "≥ 10 萬", value: 100000 },
+  { label: "≥ 100 萬", value: 1000000 },
+];
 
 const STATUS: Record<string, { label: string; cls: string }> = {
   open: { label: "開放中", cls: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" },
@@ -36,6 +44,9 @@ export function OpportunityBrowse() {
   const [online, setOnline] = useState(false);      // 全程線上
   const [urgent, setUrgent] = useState(false);      // 14 天內截止
   const [prizeOnly, setPrizeOnly] = useState(false); // 只看有獎金
+  const [minPrize, setMinPrize] = useState(0);       // 獎金下限（TWD，0=不限）
+  const [student, setStudent] = useState(false);     // 限學生可報
+  const [company, setCompany] = useState(false);     // 限法人／公司
   const [soloOk, setSoloOk] = useState(false);       // 可個人參加（免組隊）
   const [region, setRegion] = useState<"" | "tw" | "overseas">(""); // 地區
   // AI 幫我挑（V2）
@@ -144,13 +155,16 @@ export function OpportunityBrowse() {
     if (noPitch) p.set("noPitch", "1");
     if (online) p.set("online", "1");
     if (urgent) p.set("urgent", "1");
+    if (minPrize > 0) p.set("minPrize", String(minPrize));
+    if (student) p.set("student", "1");
+    if (company) p.set("company", "1");
     try {
       const r = await fetch(`/api/opportunities?${p.toString()}`);
       const d = await r.json();
       setOpps(d.opportunities ?? []);
     } catch { /* ignore */ }
     setLoading(false);
-  }, [q, cats, freeOnly, status, noPitch, online, urgent]);
+  }, [q, cats, freeOnly, status, noPitch, online, urgent, minPrize, student, company]);
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => {
@@ -295,6 +309,18 @@ export function OpportunityBrowse() {
           <button onClick={() => setRegion((v) => (v === "tw" ? "" : "tw"))} title="台灣的機會" className={`text-xs rounded-full px-2.5 py-1 border ${region === "tw" ? "bg-sky-600 border-sky-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>🇹🇼 台灣</button>
           <button onClick={() => setRegion((v) => (v === "overseas" ? "" : "overseas"))} title="海外 / 國際的機會" className={`text-xs rounded-full px-2.5 py-1 border ${region === "overseas" ? "bg-indigo-600 border-indigo-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70"}`}>🌏 海外</button>
         </div>
+        {/* 獎金下限 + 身分（§3.6：獎金 / 身分篩選） */}
+        <div className="flex flex-wrap items-center gap-1.5 mt-2 pt-2 border-t border-black/5 dark:border-white/5">
+          <span className="text-[11px] text-black/40 dark:text-white/40 inline-flex items-center gap-1"><Trophy className="w-3 h-3 text-amber-500" /> 獎金</span>
+          {PRIZE_TIERS.map((t) => (
+            <button key={t.value} onClick={() => setMinPrize((v) => (v === t.value ? 0 : t.value))} title={`獎金 ${t.label} 元`}
+              className={`text-xs rounded-full px-2.5 py-1 border ${minPrize === t.value ? "bg-amber-600 border-amber-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70 hover:bg-black/5 dark:hover:bg-white/10"}`}>{t.label}</button>
+          ))}
+          <span className="w-px h-4 bg-black/10 dark:bg-white/10 mx-1" />
+          <span className="text-[11px] text-black/40 dark:text-white/40 inline-flex items-center gap-1"><UserCog className="w-3 h-3" /> 身分</span>
+          <button onClick={() => setStudent((v) => !v)} title="限學生 / 在學身分可報" className={`text-xs rounded-full px-2.5 py-1 border ${student ? "bg-sky-600 border-sky-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70 hover:bg-black/5 dark:hover:bg-white/10"}`}>🎓 限學生</button>
+          <button onClick={() => setCompany((v) => !v)} title="限公司 / 法人 / 團隊報名" className={`text-xs rounded-full px-2.5 py-1 border ${company ? "bg-slate-600 border-slate-600 text-white" : "border-black/10 dark:border-white/15 text-black/70 dark:text-white/70 hover:bg-black/5 dark:hover:bg-white/10"}`}>🏢 限法人</button>
+        </div>
       </div>
 
       {/* 機會訂閱（V2）：把目前篩選條件存成訂閱、有新符合的機會就推播 */}
@@ -332,6 +358,8 @@ export function OpportunityBrowse() {
                       {o.is_free && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">免報名費</span>}
                       {!o.requires_pitch && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400">🎤 免上台</span>}
                       {o.is_online && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400">🌐 線上</span>}
+                      {o.requires_student && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400">🎓 限學生</span>}
+                      {o.requires_company && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-500/10 text-slate-600 dark:text-slate-400">🏢 限法人</span>}
                       {o.source_confidence !== "verified" && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">待核實</span>}
                     </div>
                     <Link href={`/opportunities/${o.id}`} className="font-bold text-base leading-snug hover:text-violet-600 dark:hover:text-violet-400">{o.name}</Link>
