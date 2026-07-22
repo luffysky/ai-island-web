@@ -1,0 +1,539 @@
+[
+  {
+    "slug": "git-cherry-pick",
+    "term": "git cherry-pick",
+    "zh_name": "揀選提交",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "從別的分支「單獨挑一顆 commit」複製到你現在的分支，不用整個 merge。什麼時候在意：某個修好的 bug 想先撈到正式分支、但不想把整條開發分支的東西都帶過來。",
+    "analogy": "像從別人的便當只夾一塊雞腿到自己碗裡，不用整個便當端過來。",
+    "example": "git cherry-pick a1b2c3d   # 把那顆 commit 複製過來",
+    "related": [
+      "git-rebase",
+      "merge-vs-rebase",
+      "commit-sha"
+    ]
+  },
+  {
+    "slug": "git-squash",
+    "term": "git squash",
+    "zh_name": "壓縮提交",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把好幾顆零碎的 commit「合併成一顆」，讓歷史乾淨。什麼時候在意：一個 PR 裡有 15 顆「typo」「fix」「再 fix」的 commit，合併前 squash 成一顆有意義的。",
+    "analogy": "像把一疊草稿紙揉成一張定稿，別人看歷史只看到結果不看到你改到崩潰的過程。",
+    "example": "git rebase -i HEAD~5   # 把後 4 顆標成 squash",
+    "related": [
+      "git-rebase",
+      "merge-vs-rebase",
+      "fast-forward"
+    ]
+  },
+  {
+    "slug": "upstream-downstream",
+    "term": "Upstream / Downstream",
+    "zh_name": "上游 / 下游",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "upstream＝你 fork/追蹤的「原始來源」倉庫或分支；downstream＝從它衍生出去的。什麼時候在意：貢獻開源要「同步 upstream 的更新」；或設定本地分支追蹤哪個遠端分支（--set-upstream）。",
+    "analogy": "像河流——上游是水源（原專案），你在下游，要定期把上游的新水引下來。",
+    "example": "git remote add upstream <原專案網址>\ngit push -u origin main   # 設定追蹤上游",
+    "related": [
+      "remote-tracking-branch",
+      "pull-request",
+      "fork"
+    ]
+  },
+  {
+    "slug": "remote-tracking-branch",
+    "term": "Remote-tracking Branch",
+    "zh_name": "遠端追蹤分支",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "本地一個「唯讀的鏡子」（如 origin/main），記錄你上次 fetch 時遠端那條分支的樣子。什麼時候在意：搞懂「本地 main」跟「origin/main」是兩回事——git status 說你領先/落後幾個 commit，比的就是它。",
+    "analogy": "像遠端分支的存證照片——你上次拍的樣子，不會自己更新，要 fetch 才重拍。",
+    "example": "git fetch          # 更新 origin/main 這面鏡子\ngit status         # 顯示落後 origin/main 幾個 commit",
+    "related": [
+      "upstream-downstream",
+      "fast-forward",
+      "git-reflog"
+    ]
+  },
+  {
+    "slug": "git-hunk",
+    "term": "Hunk",
+    "zh_name": "變動區塊",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "一段差異（diff）裡「連在一起的一小塊變動」。什麼時候在意：想把同一個檔案的不同改動拆成不同 commit 時，用 `git add -p` 一個 hunk 一個 hunk 挑著 stage。",
+    "analogy": "像考卷上被圈出來的一處修改——一份檔案的改動被切成好幾處小圈圈，你可以只交其中幾處。",
+    "example": "git add -p   # 逐個 hunk 問你 y/n 要不要加入",
+    "related": [
+      "staging-area",
+      "git-squash",
+      "diff"
+    ]
+  },
+  {
+    "slug": "merge-vs-rebase",
+    "term": "Merge vs Rebase",
+    "zh_name": "合併 vs 變基",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "整合分支的兩種做法：merge 保留兩條線、多一顆「合併 commit」，歷史真實但有分岔；rebase 把你的 commit「搬到對方最新之上」重演一遍，歷史變一直線但改寫了 commit。什麼時候在意：團隊規範（多數：本地整理用 rebase、已推出去的共用分支別 rebase）。",
+    "analogy": "merge 像兩條路交會設一個路口；rebase 像把你的路整段抬起來接到對方後面，變一條直路。",
+    "example": "git merge main     # 產生 merge commit\ngit rebase main    # 把我的 commit 接到 main 之後",
+    "related": [
+      "git-rebase",
+      "git-squash",
+      "fast-forward"
+    ]
+  },
+  {
+    "slug": "commit-sha",
+    "term": "Commit SHA",
+    "zh_name": "提交雜湊值",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "每顆 commit 的唯一身分證＝一串 40 位的 hash（如 a1b2c3d…），通常用前 7 碼就夠。什麼時候在意：cherry-pick、revert、bisect、指定版本部署時都用它點名某顆 commit。",
+    "analogy": "像每篇文章的專屬條碼——內容改一個字條碼就全變，用它就能精準找到那一版。",
+    "example": "git log --oneline   # 每行開頭就是短 SHA\ngit show a1b2c3d",
+    "related": [
+      "git-cherry-pick",
+      "git-bisect",
+      "commit"
+    ]
+  },
+  {
+    "slug": "pipe-unix",
+    "term": "Pipe (|)",
+    "zh_name": "管線",
+    "category": "syntax",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "用 `|` 把「前一個指令的輸出」直接餵給「下一個指令當輸入」，串成一條加工線。什麼時候在意：命令列組合小工具解決問題的核心——每個工具做一件事、用管線接起來。",
+    "analogy": "像工廠輸送帶——A 機器做完直接送到 B 機器，不用先堆到地上。",
+    "example": "cat log.txt | grep ERROR | wc -l   # 找 ERROR 行數",
+    "related": [
+      "stdin-stdout-stderr",
+      "stdout-redirect",
+      "grep-command"
+    ]
+  },
+  {
+    "slug": "stdin-stdout-stderr",
+    "term": "stdin / stdout / stderr",
+    "zh_name": "標準輸入 / 輸出 / 錯誤",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "程式的三條標準通道：stdin（別人餵進來的輸入）、stdout（正常輸出）、stderr（錯誤訊息，跟正常輸出分開）。什麼時候在意：想把錯誤和正常結果分流（例如只留錯誤 log）、或把輸出導到檔案時。",
+    "analogy": "像餐廳的三個窗口——點餐（stdin）、出餐（stdout）、客訴（stderr）各走各的窗口，不會混在一起。",
+    "example": "cmd > out.txt 2> err.txt   # stdout 進 out、stderr 進 err",
+    "related": [
+      "pipe-unix",
+      "stdout-redirect",
+      "exit-code"
+    ]
+  },
+  {
+    "slug": "shell-glob",
+    "term": "Glob (萬用字元)",
+    "zh_name": "檔名通配",
+    "category": "syntax",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "用 `*`（任意字元）、`?`（單一字元）、`{a,b}` 等符號一次比對多個檔名。什麼時候在意：對一批檔案下指令（刪所有 .tmp、複製所有圖）。注意 `*` 是 shell 先展開成檔名清單、再交給指令。",
+    "analogy": "像找檔案時說「所有姓王的」——*wang* 就是萬用的模糊比對。",
+    "example": "rm *.tmp            # 刪所有 .tmp\ncp img/{a,b}.png .",
+    "related": [
+      "pipe-unix",
+      "grep-command",
+      "regex"
+    ]
+  },
+  {
+    "slug": "stdout-redirect",
+    "term": "Redirect (> >> <)",
+    "zh_name": "輸出導向",
+    "category": "syntax",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把輸出/輸入接到檔案：`>` 覆寫、`>>` 附加、`<` 從檔案讀進來、`2>` 導錯誤。什麼時候在意：把指令結果存檔、或把 log 累積寫入。`>` 會清空原檔要小心。",
+    "analogy": "像改水管方向——本來噴螢幕（stdout），用 > 把水引進水桶（檔案）。",
+    "example": "echo hi > a.txt     # 覆寫\necho more >> a.txt  # 附加在後面",
+    "related": [
+      "stdin-stdout-stderr",
+      "pipe-unix"
+    ]
+  },
+  {
+    "slug": "ssh",
+    "term": "SSH",
+    "zh_name": "安全遠端連線",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "Secure Shell——加密地登入遠端機器下指令、或做 git 推送驗證。什麼時候在意：連伺服器、部署、用金鑰對（public/private key）免密碼登入與 git push。私鑰絕不外流。",
+    "analogy": "像一條加密的遙控線——你在自己電腦打字，指令安全地送到遠端那台執行。",
+    "example": "ssh user@1.2.3.4\nssh-keygen -t ed25519   # 產生金鑰對",
+    "related": [
+      "public-key-crypto",
+      "tls-handshake",
+      "env-var"
+    ]
+  },
+  {
+    "slug": "tmux",
+    "term": "tmux",
+    "zh_name": "終端多工器",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "在一個終端裡開多個視窗/分割、而且「連線斷了程式還在跑」。什麼時候在意：SSH 到伺服器跑長時間任務（訓練/部署），怕斷線中斷——tmux 讓工作在背景活著，重連再 attach 回去。",
+    "analogy": "像把工作放進一個不會關的房間——你人離開（斷線）機器還在動，回來開門繼續。",
+    "example": "tmux new -s work    # 開一個叫 work 的 session\ntmux attach -t work # 重新接回",
+    "related": [
+      "ssh",
+      "background-job",
+      "process-signal"
+    ]
+  },
+  {
+    "slug": "background-job",
+    "term": "Background Job (&)",
+    "zh_name": "背景執行",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "在指令後加 `&` 讓它「丟到背景跑」、你能繼續用終端；`jobs`/`fg`/`bg` 管理。什麼時候在意：一邊跑伺服器一邊做別的事。但關掉終端多半會殺掉它（要用 nohup 或 tmux 才留得住）。",
+    "analogy": "像叫洗衣機自己洗（背景），你去做別的事，不用站著等。",
+    "example": "npm run dev &      # 丟背景\njobs; fg %1        # 看/叫回前景",
+    "related": [
+      "tmux",
+      "process-signal",
+      "exit-code"
+    ]
+  },
+  {
+    "slug": "process-signal",
+    "term": "Signal (SIGINT/SIGTERM/SIGKILL)",
+    "zh_name": "行程訊號",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "作業系統用來通知程式的訊號：Ctrl+C＝SIGINT（請中斷）、SIGTERM（請優雅結束、可清理）、SIGKILL（-9，直接砍、無法攔截）。什麼時候在意：程式卡住要關掉、或想讓服務收到 SIGTERM 時先存檔再退。",
+    "analogy": "SIGTERM 像禮貌敲門請你收拾走人；SIGKILL 像直接斷電，來不及收拾。",
+    "example": "kill <pid>       # 送 SIGTERM\nkill -9 <pid>    # 送 SIGKILL 強制",
+    "related": [
+      "background-job",
+      "tmux",
+      "exit-code"
+    ]
+  },
+  {
+    "slug": "grep-command",
+    "term": "grep",
+    "zh_name": "文字搜尋",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "在文字/檔案裡「用關鍵字或正則找符合的行」。什麼時候在意：翻 log、找程式碼裡某個字。常搭管線：`... | grep 關鍵字`。`-r` 遞迴、`-i` 忽略大小寫、`-n` 顯示行號。",
+    "analogy": "像一本書的螢光筆——把含某個字的每一行都畫出來給你看。",
+    "example": "grep -rn 'TODO' src/   # 遞迴找 TODO 附行號",
+    "related": [
+      "pipe-unix",
+      "ripgrep",
+      "sed-command"
+    ]
+  },
+  {
+    "slug": "sed-command",
+    "term": "sed",
+    "zh_name": "串流編輯器",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "用一行指令對文字做「找到就取代/刪除」等批次編輯，不用開檔。什麼時候在意：整批檔案把某字串換掉、或在管線中即時改文字。",
+    "analogy": "像文書的「尋找取代」但做成一行指令、能一次處理一整疊檔案。",
+    "example": "sed 's/舊字/新字/g' a.txt        # 印出取代後\nsed -i 's/http/https/g' *.html   # 直接改檔",
+    "related": [
+      "grep-command",
+      "awk-command",
+      "shell-glob"
+    ]
+  },
+  {
+    "slug": "awk-command",
+    "term": "awk",
+    "zh_name": "欄位文字處理",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "專門處理「一行一行、有欄位」的文字（如 CSV、log），能取欄位、算總和、篩選。什麼時候在意：從 log 抽第 N 欄、對某欄加總，比寫程式快。",
+    "analogy": "像 Excel 的公式列——把每行當一列、空白分欄，$1 $2 就是第一二欄。",
+    "example": "awk '{print $1, $3}' log.txt   # 印第1、3欄\nawk '{s+=$2} END{print s}' n.txt",
+    "related": [
+      "sed-command",
+      "grep-command",
+      "pipe-unix"
+    ]
+  },
+  {
+    "slug": "curl-command",
+    "term": "curl",
+    "zh_name": "命令列送請求",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "在終端發 HTTP 請求、測 API、下載檔案。什麼時候在意：不開瀏覽器快速測一個端點回什麼、帶 header/body、看狀態碼。是後端/DevOps 的萬用瑞士刀。",
+    "analogy": "像用命令列打電話給某個網址，問它要資料或送資料給它。",
+    "example": "curl -s https://api.x.com/u/1\ncurl -X POST -d '{\"a\":1}' -H 'Content-Type: application/json' URL",
+    "related": [
+      "http2",
+      "pipe-unix",
+      "ssh"
+    ]
+  },
+  {
+    "slug": "ripgrep",
+    "term": "ripgrep (rg)",
+    "zh_name": "高速搜尋",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "grep 的現代超快版：自動忽略 .gitignore 的檔、預設遞迴、速度快很多。什麼時候在意：在大專案找程式碼——`rg 關鍵字` 幾乎是即時，取代 `grep -rn`。",
+    "analogy": "像升級版的螢光筆掃描機——同樣是找字，但快到幾乎瞬間、還自動跳過雜物堆。",
+    "example": "rg 'useState' src/\nrg -t ts 'TODO'   # 只找 .ts 檔",
+    "related": [
+      "grep-command",
+      "shell-glob"
+    ]
+  },
+  {
+    "slug": "man-page",
+    "term": "man page",
+    "zh_name": "手冊頁",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "Unix 內建的指令說明書。什麼時候在意：忘記某指令的參數時 `man 指令` 直接查（或 `指令 --help` 看精簡版）。看得懂 man 就不用一直上網搜。",
+    "analogy": "像家電附的使用說明書——不確定哪個按鈕幹嘛，翻它就對了。",
+    "example": "man tar        # 看 tar 的完整說明\ntar --help     # 精簡版",
+    "related": [
+      "grep-command",
+      "curl-command"
+    ]
+  },
+  {
+    "slug": "stacking-context",
+    "term": "Stacking Context",
+    "zh_name": "堆疊脈絡",
+    "category": "concept",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 3,
+    "plain": "決定元素「誰疊在誰上面」的獨立圖層群組。什麼時候在意：明明 z-index 設很大卻壓不過別人——因為 z-index 只在同一個 stacking context 內比大小；某些屬性（transform、opacity<1、position+z-index、fixed）會「開一個新 context」把子元素關在裡面。",
+    "analogy": "像大樓分層——你在 3 樓再高也高不過 4 樓的人，因為根本不同層。",
+    "example": "/* 這會開新 stacking context、把子層封在內 */\n.card { transform: translateZ(0); z-index: 1; }",
+    "related": [
+      "z-index",
+      "reflow-repaint",
+      "css-cascade"
+    ]
+  },
+  {
+    "slug": "reflow-repaint",
+    "term": "Reflow / Repaint",
+    "zh_name": "重排 / 重繪",
+    "category": "concept",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 3,
+    "plain": "瀏覽器渲染的兩種代價：reflow（重排＝重新計算版面位置/大小，貴）、repaint（重繪＝只重畫顏色/陰影，較便宜）。什麼時候在意：動畫卡頓時——改 width/top 觸發 reflow 很貴，改 transform/opacity 只走合成層很順。",
+    "analogy": "reflow 像重排整個房間家具（累）；repaint 像只換個牆壁顏色（輕鬆）。",
+    "example": "/* 順：只動 transform/opacity */\n.box { transform: translateX(100px); }",
+    "related": [
+      "stacking-context",
+      "will-change",
+      "critical-css"
+    ]
+  },
+  {
+    "slug": "css-grid",
+    "term": "CSS Grid",
+    "zh_name": "格線佈局",
+    "category": "concept",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "二維（行＋列同時）的版面系統，用來排「網格狀」佈局，比 flexbox 適合整頁骨架。什麼時候在意：做相簿、儀表板、雜誌式版面；`grid-template-columns: repeat(auto-fill, minmax(200px,1fr))` 能自動排滿又響應式。",
+    "analogy": "像圍棋盤——先畫好行列格子，再把東西放進指定格；flexbox 是排一條線、grid 是排一個面。",
+    "example": ".gallery { display:grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap:12px; }",
+    "related": [
+      "flexbox",
+      "subgrid",
+      "container-query"
+    ]
+  },
+  {
+    "slug": "bfc-block-formatting-context",
+    "term": "Block Formatting Context (BFC)",
+    "zh_name": "區塊格式化脈絡",
+    "category": "concept",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 3,
+    "plain": "一塊「自成一國」的排版區域，內部的浮動與外距不會影響到外面。什麼時候在意：解經典 CSS 怪象——包住浮動元素高度塌陷、或相鄰 margin 合併（margin collapse）。觸發 BFC（overflow:hidden、display:flow-root）就能圍起來。",
+    "analogy": "像給一群小孩圍個圍欄——他們在裡面怎麼跑（浮動）都不會撞到欄外的人。",
+    "example": ".clearfix { display: flow-root; }  /* 圍住內部浮動 */",
+    "related": [
+      "reflow-repaint",
+      "css-cascade",
+      "box-model"
+    ]
+  },
+  {
+    "slug": "rem-em-unit",
+    "term": "rem / em",
+    "zh_name": "相對字級單位",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "相對長度單位：rem 相對「根元素 html 的字級」、em 相對「自己或父層的字級」。什麼時候在意：想做可縮放、無障礙友善的版面——用 rem 讓使用者調大字級時整頁跟著放大，比寫死 px 好。",
+    "analogy": "rem 像全公司統一的基準尺（改一處全站縮放）；em 像跟著各部門主管身高（會層層放大、要小心疊加）。",
+    "example": "html{font-size:16px} .title{font-size:1.5rem} /* =24px */",
+    "related": [
+      "clamp-css",
+      "viewport-meta",
+      "media-query"
+    ]
+  },
+  {
+    "slug": "will-change",
+    "term": "will-change",
+    "zh_name": "預告變動",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 3,
+    "plain": "提前告訴瀏覽器「這個元素等下會做動畫（如 transform）」，讓它先把該元素提升到獨立合成層、動起來更順。什麼時候在意：動畫仍卡時的優化手段。但別亂加——每個 will-change 都吃記憶體，濫用反而更慢。",
+    "analogy": "像跟司機說『下個路口要右轉』——他先切到右車道，轉的時候就順；但每個路口都喊反而亂。",
+    "example": ".modal { will-change: transform, opacity; }",
+    "related": [
+      "reflow-repaint",
+      "stacking-context",
+      "css-animation"
+    ]
+  },
+  {
+    "slug": "clamp-css",
+    "term": "clamp()",
+    "zh_name": "夾值函式",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "`clamp(最小, 理想, 最大)` 一行做出「會隨螢幕縮放、但有上下限」的值。什麼時候在意：流體字級/間距——標題在手機不要太小、在大螢幕不要爆大，一行搞定不用一堆 media query。",
+    "analogy": "像有安全繩的橡皮筋——會伸縮（跟著螢幕），但拉不過最大、縮不過最小。",
+    "example": ".title{ font-size: clamp(1.25rem, 4vw, 2.5rem); }",
+    "related": [
+      "rem-em-unit",
+      "media-query",
+      "container-query"
+    ]
+  },
+  {
+    "slug": "container-query",
+    "term": "Container Query",
+    "zh_name": "容器查詢",
+    "category": "concept",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 3,
+    "plain": "讓元件「依它所在容器的寬度」改變樣式，而不是依整個視窗（media query）。什麼時候在意：做可重用元件（卡片放側欄要窄版、放主區要寬版）——同一個卡片依所在容器自動變，不用管整頁多寬。",
+    "analogy": "media query 看『整間房多大』；container query 看『這個櫃子多大』來決定東西怎麼擺。",
+    "example": ".card-wrap{ container-type: inline-size; }\n@container (min-width:400px){ .card{ display:flex } }",
+    "related": [
+      "media-query",
+      "css-grid",
+      "subgrid"
+    ]
+  },
+  {
+    "slug": "subgrid",
+    "term": "subgrid",
+    "zh_name": "子格線",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 3,
+    "plain": "讓巢狀的子 grid「沿用父 grid 的行列線」，使不同卡片內部的元素能跨卡片對齊。什麼時候在意：一排卡片想讓每張的標題、內文、按鈕彼此對齊到同一條基準線時。",
+    "analogy": "像一排櫃子共用同一組層板高度——每個櫃子的第二層都在同一水平線，看起來整齊。",
+    "example": ".card{ display:grid; grid-template-rows: subgrid; }",
+    "related": [
+      "css-grid",
+      "container-query",
+      "reflow-repaint"
+    ]
+  }
+]

@@ -1,0 +1,449 @@
+[
+  {
+    "slug": "stack-data-structure",
+    "term": "Stack",
+    "zh_name": "堆疊",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "後進先出（LIFO）的資料結構：最後放進去的最先拿出來。什麼時候在意：函式呼叫堆疊、undo/redo、括號配對、瀏覽器返回鍵——都是 stack。push 放上去、pop 拿最上面。",
+    "analogy": "像一疊盤子——只能從最上面拿，最後疊的最先被拿走。",
+    "example": "const s=[]; s.push(1); s.push(2); s.pop() // 2",
+    "related": [
+      "queue-data-structure",
+      "recursion",
+      "event-loop"
+    ]
+  },
+  {
+    "slug": "queue-data-structure",
+    "term": "Queue",
+    "zh_name": "佇列",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "先進先出（FIFO）：先排先辦。什麼時候在意：任務排程、訊息佇列、BFS 廣度優先搜尋、印表工作——都是 queue。enqueue 進尾、dequeue 出頭。",
+    "analogy": "像排隊結帳——先來的先結，後到的排後面。",
+    "example": "const q=[]; q.push(1); q.push(2); q.shift() // 1",
+    "related": [
+      "stack-data-structure",
+      "bfs-dfs",
+      "message-queue"
+    ]
+  },
+  {
+    "slug": "heap-data-structure",
+    "term": "Heap (Priority Queue)",
+    "zh_name": "堆積 / 優先佇列",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一種能「隨時快速取出最大或最小值」的樹狀結構。什麼時候在意：要重複拿「目前最緊急/最小」的一項（Dijkstra 最短路、Top-K、任務依優先度處理）——取極值 O(log n) 比每次掃一遍快。",
+    "analogy": "像急診檢傷——不是先來先看，而是隨時把『最危急』的那個提到最前面。",
+    "example": "# Python\nimport heapq; h=[]; heapq.heappush(h,3); heapq.heappop(h) # 最小",
+    "related": [
+      "queue-data-structure",
+      "big-o-notation",
+      "sorting-algorithm"
+    ]
+  },
+  {
+    "slug": "graph-data-structure",
+    "term": "Graph",
+    "zh_name": "圖",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "由「節點（點）＋邊（連線）」組成的結構，表達「誰和誰有關係」。什麼時候在意：社交關係、地圖路網、相依關係、推薦——凡是「關聯網」都是圖。可有向/無向、可帶權重。",
+    "analogy": "像捷運路線圖——站是節點、軌道是邊，找路就是圖的走訪。",
+    "example": "const g={A:['B','C'], B:['D'], C:[], D:[]}  // 鄰接表",
+    "related": [
+      "bfs-dfs",
+      "queue-data-structure",
+      "trie"
+    ]
+  },
+  {
+    "slug": "big-o-notation",
+    "term": "Big-O Notation",
+    "zh_name": "大 O 記號",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "描述演算法「隨資料量變大、時間/空間如何增長」的上界。什麼時候在意：判斷程式會不會在資料一多就爆慢。常見由快到慢：O(1)＜O(log n)＜O(n)＜O(n log n)＜O(n²)。",
+    "analogy": "像看『人越多、排隊時間怎麼漲』——有的隊伍加倍人潮只慢一點，有的直接塞爆。",
+    "example": "陣列 for 迴圈找元素 = O(n)；HashMap 查找 = O(1)",
+    "related": [
+      "time-space-complexity",
+      "sorting-algorithm",
+      "hash-table"
+    ]
+  },
+  {
+    "slug": "time-space-complexity",
+    "term": "Time / Space Complexity",
+    "zh_name": "時間 / 空間複雜度",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "演算法要花多少「時間」與多少「額外記憶體」，都用 Big-O 表示。什麼時候在意：兩種寫法都能動時，比複雜度選——有時用空間換時間（多存一份 cache 換更快），要權衡。",
+    "analogy": "像選路線：一條省時間但要多帶裝備（空間）、一條省裝備但花時間，看你缺哪個。",
+    "example": "用 Set 去重：時間 O(n)、空間 O(n)（多存一份）",
+    "related": [
+      "big-o-notation",
+      "hash-table",
+      "dynamic-programming"
+    ]
+  },
+  {
+    "slug": "sorting-algorithm",
+    "term": "Sorting Algorithm",
+    "zh_name": "排序演算法",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把資料排序的方法（快速排序、合併排序、堆積排序…）。什麼時候在意：多數語言內建 sort 已是 O(n log n) 的優化版，日常直接用；懂原理是為了面試、和理解『為何比較函式要穩定/正確』。",
+    "analogy": "像整理撲克牌——不同人有不同整牌手法，但目標都是排好、有的手法快有的慢。",
+    "example": "arr.sort((a,b)=>a-b)  // 內建、O(n log n)",
+    "related": [
+      "big-o-notation",
+      "time-space-complexity",
+      "binary-search"
+    ]
+  },
+  {
+    "slug": "greedy-algorithm",
+    "term": "Greedy Algorithm",
+    "zh_name": "貪婪演算法",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "每一步都「選當下看起來最好的」，寄望累積出全域最優。什麼時候在意：找零錢、排程、區間問題——貪婪快又簡單，但不是每題都對（有些要 DP 才保證最優），要能證明貪婪對這題成立。",
+    "analogy": "像爬山只往最陡的方向走——常能到山頂，但也可能卡在小山丘（局部最優）下不來。",
+    "example": "找零：先給最大面額硬幣（某些幣制貪婪正確）",
+    "related": [
+      "dynamic-programming",
+      "backtracking",
+      "big-o-notation"
+    ]
+  },
+  {
+    "slug": "singleton-pattern",
+    "term": "Singleton Pattern",
+    "zh_name": "單例模式",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "確保某個類別「全程只有一個實例」、大家共用它。什麼時候在意：設定物件、資料庫連線池、logger——只想要一份共享狀態。但濫用＝變相全域變數、難測試，要節制。",
+    "analogy": "像一個公司只有一位執行長——到處要找的都是同一個人，不會冒出第二個。",
+    "example": "let db; export const getDb = () => (db ??= new DB());",
+    "related": [
+      "factory-pattern",
+      "dependency-injection",
+      "event-emitter"
+    ]
+  },
+  {
+    "slug": "closure-js",
+    "term": "Closure",
+    "zh_name": "閉包",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "函式「記住並帶著它出生時周圍的變數」，即使外層函式已經結束。什麼時候在意：計數器、私有變數、事件處理常保留狀態、React Hook 的 stale closure 坑——都跟閉包有關。",
+    "analogy": "像便當帶著出門——你離開廚房（外層函式）了，但便當（內部變數）還一直跟著你。",
+    "example": "function counter(){ let n=0; return ()=>++n; }\nconst c=counter(); c(); c() // 1,2",
+    "related": [
+      "hoisting",
+      "event-loop",
+      "currying"
+    ]
+  },
+  {
+    "slug": "shadow-dom",
+    "term": "Shadow DOM",
+    "zh_name": "影子 DOM",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "把一個元件的 DOM 和樣式「封裝在一個隱藏的小樹裡」，外面的 CSS 進不去、裡面的也不外洩。什麼時候在意：做 Web Component、或理解 <video> 內建控制列為何改不到樣式——它藏在 shadow DOM。",
+    "analogy": "像膠囊——藥（元件內部）被外殼包住，外界（全站 CSS）碰不到裡面。",
+    "example": "el.attachShadow({mode:'open'}).innerHTML='<style>p{color:red}</style><p>hi</p>'",
+    "related": [
+      "web-component",
+      "dom",
+      "css-cascade"
+    ]
+  },
+  {
+    "slug": "web-component",
+    "term": "Web Component",
+    "zh_name": "網頁元件",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "用瀏覽器原生 API（Custom Elements + Shadow DOM）做「不綁框架、到處能用」的自訂標籤。什麼時候在意：想做跨 React/Vue/純 HTML 都能嵌的元件（如設計系統、嵌入式小工具）。",
+    "analogy": "像通用充電規格——不管什麼牌子的手機（框架）都能用同一個元件。",
+    "example": "customElements.define('my-card', class extends HTMLElement{ /*...*/ })\n<my-card></my-card>",
+    "related": [
+      "shadow-dom",
+      "dom",
+      "custom-hook"
+    ]
+  },
+  {
+    "slug": "event-loop-microtask",
+    "term": "Microtask vs Macrotask",
+    "zh_name": "微任務 / 巨任務",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "事件迴圈裡兩種排隊：microtask（Promise.then、queueMicrotask）優先、每輪清光才做下一個 macrotask（setTimeout、事件）。什麼時候在意：搞懂為何 Promise 的 .then 會比 setTimeout(0) 先跑、非同步順序題。",
+    "analogy": "像餐廳出餐——插隊的 VIP（微任務）全部先出完，才輪到一般號碼牌（巨任務）叫下一位。",
+    "example": "setTimeout(()=>console.log('macro'),0);\nPromise.resolve().then(()=>console.log('micro'));\n// micro 先印",
+    "related": [
+      "promise-then",
+      "event-loop",
+      "closure-js"
+    ]
+  },
+  {
+    "slug": "promise-then",
+    "term": "Promise",
+    "zh_name": "承諾",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "代表「一個之後才會有結果的非同步操作」，有 pending/fulfilled/rejected 三態。什麼時候在意：處理 API/計時器/檔案等非同步；`.then/.catch` 串接、或用 async/await 寫得更順。",
+    "analogy": "像取餐號碼牌——現在還沒好（pending），好了叫你（fulfilled）或告知缺貨（rejected）。",
+    "example": "fetch(url).then(r=>r.json()).catch(e=>...)",
+    "related": [
+      "async-await",
+      "event-loop-microtask",
+      "iterator-protocol"
+    ]
+  },
+  {
+    "slug": "generator-function",
+    "term": "Generator Function",
+    "zh_name": "產生器函式",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "用 `function*` 定義、能「跑一半暫停（yield）、之後再繼續」的函式，一次吐一個值。什麼時候在意：做惰性/無限序列、自訂迭代、或早期的非同步流程控制。",
+    "analogy": "像自動販賣機——按一下（next）掉一罐（yield），沒按就停在那等，不會一次全倒出來。",
+    "example": "function* ids(){ let i=0; while(true) yield i++; }\nconst g=ids(); g.next().value // 0",
+    "related": [
+      "iterator-protocol",
+      "promise-then",
+      "closure-js"
+    ]
+  },
+  {
+    "slug": "iterator-protocol",
+    "term": "Iterator / Iterable",
+    "zh_name": "迭代器協定",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "一套約定：物件只要有 `[Symbol.iterator]()` 回傳有 `next()` 的迭代器，就能被 for...of、展開、解構走訪。什麼時候在意：想讓自訂物件支援 for...of，或理解為何 Map/Set 能被 spread。",
+    "analogy": "像統一的取物口——只要裝了這個口（協定），任何機器都知道怎麼一件一件把東西拿出來。",
+    "example": "for (const x of new Set([1,2])) {}  // Set 是 iterable",
+    "related": [
+      "generator-function",
+      "spread-rest-operator",
+      "symbol-js"
+    ]
+  },
+  {
+    "slug": "spread-rest-operator",
+    "term": "Spread / Rest (...)",
+    "zh_name": "展開 / 其餘運算子",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "同一個 `...`：spread「攤開」一個陣列/物件（複製、合併）；rest「收集」剩下的參數/元素成一個陣列。什麼時候在意：不可變更新（`[...arr, x]`、`{...obj, k:v}`）、複製、可變參數函式。",
+    "analogy": "spread 像把一袋東西倒出來排好；rest 像把散的東西掃進一個袋子。",
+    "example": "const merged={...a, ...b};\nfunction sum(...nums){ return nums.reduce((s,n)=>s+n,0) }",
+    "related": [
+      "destructuring",
+      "immutability",
+      "iterator-protocol"
+    ]
+  },
+  {
+    "slug": "template-literal-js",
+    "term": "Template Literal",
+    "zh_name": "樣板字面值",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "用反引號 `` ` `` 寫字串，可以 `${變數}` 內插、可跨多行。什麼時候在意：組字串（訊息、SQL、HTML）比 + 串接乾淨好讀太多。",
+    "analogy": "像填空卡片——固定文字先印好，${} 的地方現場填值。",
+    "example": "const s = `嗨 ${name}，你有 ${n} 則通知`;",
+    "related": [
+      "tagged-template",
+      "spread-rest-operator"
+    ]
+  },
+  {
+    "slug": "tagged-template",
+    "term": "Tagged Template",
+    "zh_name": "標籤樣板",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "用一個函式「處理」樣板字串——函式拿到切好的文字片段和內插值，可自訂輸出。什麼時候在意：styled-components 的 css``、SQL 防注入標籤、i18n——都靠 tagged template。",
+    "analogy": "像把填好的卡片先交給一個審稿員加工（跳脫、上色）再輸出，而不是直接貼出去。",
+    "example": "function safe(strings,...vals){ /* 跳脫 vals */ }\nsafe`SELECT * WHERE id=${userInput}`",
+    "related": [
+      "template-literal-js",
+      "css-in-js"
+    ]
+  },
+  {
+    "slug": "weakmap-weakset",
+    "term": "WeakMap / WeakSet",
+    "zh_name": "弱引用集合",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "key 只能是物件、且是「弱引用」——當那個物件沒別人用了，會被 GC 回收、自動從裡面消失。什麼時候在意：想把額外資料掛在物件上（快取、私有欄位、DOM metadata）又不想造成記憶體洩漏。",
+    "analogy": "像用鉛筆寫的便利貼——本體（物件）被丟掉，便利貼也跟著消失，不會囤積。",
+    "example": "const cache = new WeakMap();\ncache.set(domNode, data)  // node 被移除就自動清",
+    "related": [
+      "garbage-collection",
+      "proxy",
+      "hash-table"
+    ]
+  },
+  {
+    "slug": "proxy",
+    "term": "Proxy",
+    "zh_name": "代理",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "包一層在物件外面，攔截讀取/賦值/刪除等操作、插入你的邏輯。什麼時候在意：做響應式（Vue 3）、驗證、唯讀保護、記錄存取——不改原物件就能加行為。",
+    "analogy": "像秘書幫老闆過濾——每個找老闆（物件）的請求都先經過秘書（Proxy）處理。",
+    "example": "new Proxy(obj, { get(t,k){ console.log('讀',k); return t[k] } })",
+    "related": [
+      "reflect-api",
+      "proxy-reactivity",
+      "weakmap-weakset"
+    ]
+  },
+  {
+    "slug": "reflect-api",
+    "term": "Reflect",
+    "zh_name": "反射 API",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "一組把「物件底層操作」變成正常函式呼叫的方法（Reflect.get/set/has…），常跟 Proxy 搭配把攔截到的操作「原封不動轉交」。什麼時候在意：寫 Proxy handler 時用 Reflect 轉發，比手動 t[k] 正確（保留 receiver、回傳成功與否）。",
+    "analogy": "像一套標準工具箱——Proxy 攔到請求後，用 Reflect 這把標準扳手照規矩把事情做完。",
+    "example": "get(t,k,r){ return Reflect.get(t,k,r) }",
+    "related": [
+      "proxy",
+      "proxy-reactivity"
+    ]
+  },
+  {
+    "slug": "web-storage",
+    "term": "localStorage / sessionStorage",
+    "zh_name": "網頁儲存",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "瀏覽器存小量鍵值字串：localStorage 永久留著、sessionStorage 關分頁就沒。什麼時候在意：記使用者偏好、暫存表單。注意：只能存字串（要 JSON.stringify）、容量約 5MB、同源可讀＝別放機密（token 有 XSS 風險）。",
+    "analogy": "像貼在螢幕邊的便利貼——localStorage 是長期便條，sessionStorage 是這次開機才有的臨時便條。",
+    "example": "localStorage.setItem('theme','dark');\nlocalStorage.getItem('theme')",
+    "related": [
+      "indexeddb",
+      "structured-clone",
+      "httponly-samesite-secure-cookie"
+    ]
+  },
+  {
+    "slug": "structured-clone",
+    "term": "structuredClone()",
+    "zh_name": "結構化深拷貝",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "瀏覽器/Node 內建的「真・深拷貝」，能複製巢狀物件、陣列、Map、Set、Date 等（但不含函式）。什麼時候在意：要複製一份不共用參照的資料、又懶得裝 lodash；比 `JSON.parse(JSON.stringify())` 正確（後者會弄丟 Date/undefined）。",
+    "analogy": "像影印一整份含夾頁的文件——連裡面夾的東西都複印一份，不是只複印封面。",
+    "example": "const copy = structuredClone(original)",
+    "related": [
+      "immutability",
+      "spread-rest-operator",
+      "weakmap-weakset"
+    ]
+  },
+  {
+    "slug": "event-emitter",
+    "term": "EventEmitter",
+    "zh_name": "事件發射器",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "一個「訂閱—發布」小中心：on 註冊監聽、emit 觸發、off 取消。什麼時候在意：Node.js 大量用（stream、socket）；元件/模組間鬆耦合溝通——發送方不用知道誰在聽。",
+    "analogy": "像廣播電台——電台 emit 節目，任何人可以 on 收聽或 off 關掉，彼此不用認識。",
+    "example": "emitter.on('done', d=>...);\nemitter.emit('done', result)",
+    "related": [
+      "pub-sub",
+      "observer-pattern",
+      "singleton-pattern"
+    ]
+  }
+]
