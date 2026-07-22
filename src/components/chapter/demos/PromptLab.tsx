@@ -70,8 +70,8 @@ export function PromptLab({ title, note, config }: { title?: string; note?: stri
   const switchScenario = (i: number) => { setSi(i); setRevealed(false); setGuess(null); };
 
   return (
-    <div className="rounded-xl border border-border bg-bg-card overflow-hidden">
-      <div className="px-3 py-2 border-b border-border bg-bg-elevated">
+    <div className="demo-glass overflow-hidden">
+      <div className="px-3 py-2 demo-glass-head">
         <div className="text-sm font-semibold flex items-center gap-1.5">🔬 {title ?? "Prompt 實驗室 · 比一比"}</div>
         {note && <div className="text-xs text-fg-muted mt-0.5">{note}</div>}
       </div>

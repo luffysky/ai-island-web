@@ -35,8 +35,8 @@ export function DecisionQuiz({ title, note, config }: { title?: string; note?: s
   }
 
   return (
-    <div className="rounded-xl border border-border bg-bg-card overflow-hidden">
-      <div className="px-3 py-2 border-b border-border bg-bg-elevated flex items-center justify-between">
+    <div className="demo-glass overflow-hidden">
+      <div className="px-3 py-2 demo-glass-head flex items-center justify-between">
         <div>
           <div className="text-sm font-semibold flex items-center gap-1.5">🧭 {title ?? "決策測驗"}</div>
           {note && <div className="text-xs text-fg-muted mt-0.5">{note}</div>}

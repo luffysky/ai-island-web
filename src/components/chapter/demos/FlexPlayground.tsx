@@ -91,8 +91,8 @@ export function FlexPlayground({ title, note }: { title?: string; note?: string 
 }`;
 
   return (
-    <div className="rounded-xl border border-border bg-bg-card overflow-hidden">
-      <div className="px-3 py-2 border-b border-border bg-bg-elevated">
+    <div className="demo-glass overflow-hidden">
+      <div className="px-3 py-2 demo-glass-head">
         <div className="text-sm font-semibold flex items-center gap-1.5">🧩 {title ?? "Flexbox 實驗室"}</div>
         {note && <div className="text-xs text-fg-muted mt-0.5">{note}</div>}
       </div>

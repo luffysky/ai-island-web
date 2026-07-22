@@ -114,7 +114,105 @@
         ],
         "answer": "b",
         "explanation": "課程明確指出想「全平台（Web + Mobile + Desktop）」應選 Flutter，而 Dart + Flutter 是成熟的跨平台方案；同時學兩個語言是浪費時間（心法提到）；React Native 則是給已會 React 的人的替代方案。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "Kotlin 還是 Flutter？測你的路線",
+          "note": "回答三題，看 Kotlin(Android 原生) / Flutter(跨平台) / React Native 哪條路線最合你。",
+          "config": {
+            "intro": "沒有最強、只有最適合你的路線。",
+            "questions": [
+              {
+                "q": "你的 App 要上哪些平台？",
+                "options": [
+                  {
+                    "label": "只做 Android、想要最原生的體驗",
+                    "scores": {
+                      "kotlin": 2
+                    }
+                  },
+                  {
+                    "label": "一份 code 同時上 iOS + Android（甚至 Web / 桌面）",
+                    "scores": {
+                      "flutter": 2
+                    }
+                  },
+                  {
+                    "label": "我已經很熟 React / JavaScript",
+                    "scores": {
+                      "rn": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你的身分比較接近？",
+                "options": [
+                  {
+                    "label": "想進大公司 Android 團隊 / 碰系統底層",
+                    "scores": {
+                      "kotlin": 2
+                    }
+                  },
+                  {
+                    "label": "獨立開發者、要快速做出跨平台成品",
+                    "scores": {
+                      "flutter": 2
+                    }
+                  },
+                  {
+                    "label": "前端工程師想跨進 App、重用既有技能",
+                    "scores": {
+                      "rn": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你最在意什麼？",
+                "options": [
+                  {
+                    "label": "原生體驗、完整存取平台功能、能順便用 Ktor 寫後端",
+                    "scores": {
+                      "kotlin": 2
+                    }
+                  },
+                  {
+                    "label": "開發速度（熱重載）、UI 高度一致可自訂、一套多平台",
+                    "scores": {
+                      "flutter": 2
+                    }
+                  },
+                  {
+                    "label": "少學新語言、沿用 React 生態",
+                    "scores": {
+                      "rn": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "kotlin": {
+                "emoji": "🤖",
+                "title": "走 Kotlin（Android 原生）",
+                "desc": "Android 官方語言、原生體驗與生態最佳，還能用 Ktor 一人連後端一起包。想進大公司或碰系統底層選它；缺點是 iOS 要另做。"
+              },
+              "flutter": {
+                "emoji": "🐦",
+                "title": "走 Dart + Flutter",
+                "desc": "一份程式碼跨 iOS / Android / Web / 桌面、熱重載開發快、UI 自繪高度一致。獨立開發者做跨平台成品首選；缺點是另一套生態、未必處處最原生。"
+              },
+              "rn": {
+                "emoji": "⚛️",
+                "title": "考慮 React Native",
+                "desc": "已經會 React / JavaScript 的話，RN 讓你重用既有知識做跨平台 App，不必從零學 Kotlin 或 Dart。想深碰原生或極致效能再回頭看 Kotlin / Flutter。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "title": "Kotlin + Android 開發",
@@ -534,7 +632,48 @@
         ],
         "answer": "b",
         "explanation": "課程強調 ViewModel + StateFlow + collectAsState 是黃金組合，用來管理和共享複雜的應用狀態。而 remember 只適合單一 Composable 的本地狀態，全域變數和直接傳遞 MutableState 都不是最佳實踐。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Jetpack Compose / 狀態：這樣寫對嗎？",
+          "note": "用現代 Android 的眼光判斷每個做法：可以、有風險、還是不行？選完看解析。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "在 Composable 裡直接寫 `var count = 0` 來記計數，不用 remember。",
+                "correct": "no",
+                "why": "每次 recomposition（重組）都會重跑函式、count 被歸零。要用 `remember { mutableStateOf(0) }` 才留得住。"
+              },
+              {
+                "text": "畫面暫時的展開 / 收合狀態，用 `remember { mutableStateOf(false) }`。",
+                "correct": "ok",
+                "why": "單一畫面的暫時小狀態用畫面內 remember 正合適，不必動用 ViewModel。"
+              },
+              {
+                "text": "要跨畫面重建（手機轉向）仍活著、又連動網路的資料，放進 ViewModel 的 StateFlow。",
+                "correct": "ok",
+                "why": "ViewModel 活得比畫面久、轉向不遺失，搭 StateFlow + collectAsState 是黃金組合。"
+              },
+              {
+                "text": "用 `GlobalScope.launch` 在背景抓資料，不綁任何生命週期。",
+                "correct": "no",
+                "why": "使用者離開畫面、協程還在跑＝浪費資源、記憶體洩漏。用 viewModelScope 會在 ViewModel 銷毀時自動取消。"
+              },
+              {
+                "text": "新專案的 Android UI 還堅持用 XML + findViewById 手動更新。",
+                "correct": "risk",
+                "why": "能動但落伍：手動同步易漏更新、是 bug 溫床。新專案建議直接上 Jetpack Compose。"
+              },
+              {
+                "text": "在主執行緒（Main）直接做網路請求、等它回來。",
+                "correct": "no",
+                "why": "會卡住畫面造成 ANR（應用無回應）。網路 / IO 要在 `Dispatchers.IO` 的協程裡做。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Dart 進階 + Flutter 心法",

@@ -27,8 +27,8 @@ export function ScenarioJudge({ title, note, config }: { title?: string; note?: 
   const correct = scs.filter((s, i) => picks[i] === s.correct).length;
 
   return (
-    <div className="rounded-xl border border-border bg-bg-card overflow-hidden">
-      <div className="px-3 py-2 border-b border-border bg-bg-elevated flex items-center justify-between gap-2">
+    <div className="demo-glass overflow-hidden">
+      <div className="px-3 py-2 demo-glass-head flex items-center justify-between gap-2">
         <div className="min-w-0">
           <div className="text-sm font-semibold flex items-center gap-1.5">⚖️ {title ?? "情境判斷"}</div>
           {note && <div className="text-xs text-fg-muted mt-0.5">{note}</div>}

@@ -229,6 +229,37 @@ html[data-theme="light"] body::before {
 @keyframes footerShine { 0%, 100% { background-position: 160% 0; } 50% { background-position: -60% 0; } }
 @media (prefers-reduced-motion: reduce) { .footer-shine { animation: none; } }
 
+/* ============================================================
+   互動教具卡（demos）— 霧面玻璃 + accent 漸層頂邊，讓「互動體驗」區塊
+   有質感、跟一般教材卡片區隔。全 15 個教具共用（demo-glass / demo-glass-head）。
+   ============================================================ */
+.demo-glass {
+  position: relative;
+  background: color-mix(in srgb, var(--color-bg-card) 66%, transparent);
+  backdrop-filter: blur(14px) saturate(1.25);
+  -webkit-backdrop-filter: blur(14px) saturate(1.25);
+  border: 1px solid color-mix(in srgb, var(--color-border) 70%, transparent);
+  border-radius: var(--radius-card);
+  box-shadow: var(--elev-2),
+              inset 0 1px 0 color-mix(in srgb, var(--color-fg) 7%, transparent);
+}
+/* 頂端一條 accent 漸層光（被 overflow-hidden 修成圓角） */
+.demo-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2), var(--color-accent-3));
+  opacity: 0.8;
+  pointer-events: none;
+}
+.demo-glass-head {
+  background: color-mix(in srgb, var(--color-bg-elevated) 52%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 55%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
 /* 訊息軍師情境 icon「會自己一直動」的 fallback（沒設 Lottie 時用；非 hover 觸發）。
    多個 icon 用 nth-child 錯開相位，整排看起來活潑不呆板。 */
 @keyframes coachIconLive {

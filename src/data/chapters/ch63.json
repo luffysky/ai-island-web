@@ -14,7 +14,7 @@
       "title": "主流 LLM 模型完整對照表",
       "oneLineSummary": "Claude / GPT / Gemini / Grok / Llama 強弱項、價格、適用場景。",
       "xp": 100,
-      "content": "# 主流 LLM 模型完整對照表\n\n## 1. 商用模型主流對照（2026 年）\n\n### Anthropic Claude 系列\n\n| 模型 | Context | 強項 | 價格 (in/out per M tokens) | 適用 |\n|---|---|---|---|---|\n| **Claude Opus 4.7** | 200K | 寫作、複雜推理、長文 | 高 | 創作、深度分析 |\n| **Claude Sonnet 4.6** | 200K | 平衡（CP 值最高）| 中 | 大部分場景 |\n| **Claude Haiku 4.5** | 200K | 速度快、便宜 | 低 | 即時應用、客服 |\n\n**Claude 強項**：\n- 寫作品質（特別是中文）業界最強\n- 邏輯推理穩定、不愛幻覺\n- Context window 利用率高\n- Computer use（操作電腦）獨家\n\n**弱項**：\n- 即時資訊弱（無原生網路搜尋）\n- 圖片生成不行（純文字）\n\n### OpenAI GPT 系列\n\n| 模型 | 強項 | 適用 |\n|---|---|---|\n| **GPT-5** | 多模態、Code Interpreter | 通用旗艦 |\n| **GPT-5 mini** | 便宜、快 | 大量處理 |\n| **GPT-4o** | 多模態、即時聲音 | 對話助手 |\n| **GPT-o1 / o3** | 深度推理（thinking）| 數學、研究 |\n\n**GPT 強項**：\n- 工具生態最廣（Plugin、GPTs）\n- 多模態（語音、圖片、影片）成熟\n- 即時聲音對話獨家\n\n**弱項**：\n- 中文沒 Claude 好\n- 偶爾過度禮貌、廢話多\n\n### Google Gemini 系列\n\n| 模型 | 強項 |\n|---|---|\n| **Gemini 2.5 Pro** | 多模態、200 萬 context（業界最長）|\n| **Gemini 2.5 Flash** | 速度快、超便宜 |\n| **Gemini 2.5 Flash-Lite** | 最便宜（賠錢都有人用）|\n\n**Gemini 強項**：\n- Context window 業界最長（2M+）\n- 多模態原生（影片直接吃）\n- Google 生態整合（Drive、Gmail、YouTube）\n- 價格殺手（Flash 系列）\n\n**弱項**：\n- 推理深度比 Claude 弱\n- 創作品質中等\n\n### xAI Grok 系列\n\n**Grok 4** / Grok 3\n\n**強項**：\n- X (Twitter) 即時資料\n- 沒太多 alignment 限制（敢講）\n\n**弱項**：\n- 中文一般\n- 生態小\n\n### Meta Llama 系列（開源）\n\n**Llama 4 / 3.3 70B / 3.1 405B**\n\n**強項**：\n- 完全免費（自架）\n- 可微調\n- 70B 級別品質接近 GPT-4\n\n**適用**：自架 / 隱私敏感 / 大量批次\n\n### Mistral / Cohere / DeepSeek 等\n\n- **Mistral**：歐洲開源、中等\n- **Cohere Command R+**：RAG 場景強\n- **DeepSeek V3**：中國開源、便宜、品質意外好\n- **Qwen 2.5**：阿里、中文不錯、開源\n\n## 2. 選模型 SOP\n\n| 場景 | 推薦模型 |\n|---|---|\n| 中文寫作 / 翻譯 | **Claude Sonnet/Opus** |\n| 大量處理 / 批次 | **Haiku / Flash / GPT mini** |\n| 多模態（影音圖）| **Gemini / GPT-4o** |\n| 數學 / 邏輯推理 | **GPT-o1 / Claude Opus** |\n| Coding | **Claude / GPT** 都好 |\n| 即時資料 | **Gemini / Grok（X 資料）** |\n| 隱私敏感 | **Llama 自架** |\n| Context 超大 | **Gemini 2.5 Pro** |\n| 預算 NT$0 | **DeepSeek / Qwen / Llama 開源** |\n\n## 3. 價格速算（2026 年）\n\n```\n模型                    Input    Output   每千次對話 (~10K tokens) 約\n─────────────────────────────────────────────────────────────────\nClaude Haiku 4.5        $0.25    $1.25    NT$10\nClaude Sonnet 4.6       $3       $15      NT$120\nClaude Opus 4.7         $15      $75      NT$600\nGPT-5                   $5       $15      NT$160\nGPT-5 mini              $0.15    $0.6     NT$5\nGemini 2.5 Pro          $1.25    $5       NT$50\nGemini 2.5 Flash        $0.075   $0.3     NT$2.4\nDeepSeek V3             $0.27    $1.1     NT$8\n```\n\n## 4. 多模型路由策略\n\n**省錢做法**：\n1. **預設用便宜模型**（Haiku / Flash / mini）\n2. **複雜任務升級**（檢測 token 數 / 主題）\n3. **長 context 用 Gemini**（2M context 便宜）\n4. **創作用 Claude、即時用 Gemini**\n5. **批次用開源**（Llama / Qwen 自架）\n\n```ts\nfunction pickModel(task: Task): string {\n  if (task.tokens > 100000) return 'gemini-2.5-flash';\n  if (task.type === 'writing' && task.lang === 'zh') return 'claude-sonnet';\n  if (task.type === 'realtime') return 'gemini-flash-lite';\n  if (task.type === 'reasoning') return 'gpt-o3';\n  return 'claude-haiku';\n}\n```\n\n## 5. Open Router 等聚合服務\n\n如果不想開多個帳號：\n\n- **OpenRouter**：一個 API 跨所有模型、含很多開源\n- **Together AI**：專注開源、便宜\n- **Replicate**：含 Llama / 圖像 / 影片模型\n- **Hugging Face Inference**：免費 tier 多\n\n## 💡 選擇建議\n\n**個人 / 小公司**：\n- 主力 **Claude Sonnet**（CP 最高）\n- 批次 **Claude Haiku 或 Gemini Flash**\n- 偶爾 **GPT 圖片 / o1 推理**\n\n**Solo Dev**：\n- 訂 Claude Pro NT$650/月（量大很划算）\n- 用 OpenRouter 補其他模型\n\n**☕ 用人話講**\n\n主流 LLM 模型完整對照表。**一句話記住**：像規格比較表——要選用哪個模型（Claude / GPT / Gemini…）時翻它。\n",
+      "content": "# 主流 LLM 模型完整對照表\n\n> **先懂看表格的三個詞（沒碰過 API 的人先看這段）：**\n> - **token（詞元）**——模型把文字切成的最小計費單位。粗估：**英文 ≈ 4 個字母 1 token、中文 ≈ 1 個字 1～2 token**。你付錢是按 token 數算，不是按「次」。\n> - **context（上下文視窗）**——模型一次「看得下」多少 token（含你給的 + 它回的）。200K 代表約可塞一本中篇小說；超過就得砍舊訊息。\n> - **in / out 價格**——輸入（你送進去的）和輸出（模型生成的）分開計價，**通常 output 比 input 貴 4～5 倍**。所以「講很多、回很短」比「講很短、回落落長」省錢。\n\n## 1. 商用模型主流對照（2026 年）\n\n### Anthropic Claude 系列\n\n| 模型 | Context | 強項 | 價格 (in/out per M tokens) | 適用 |\n|---|---|---|---|---|\n| **Claude Opus 4.7** | 200K | 寫作、複雜推理、長文 | 高 | 創作、深度分析 |\n| **Claude Sonnet 4.6** | 200K | 平衡（CP 值最高）| 中 | 大部分場景 |\n| **Claude Haiku 4.5** | 200K | 速度快、便宜 | 低 | 即時應用、客服 |\n\n**Claude 強項**：\n- 寫作品質（特別是中文）業界最強\n- 邏輯推理穩定、不愛幻覺\n- Context window 利用率高\n- Computer use（操作電腦）獨家\n\n**弱項**：\n- 即時資訊弱（無原生網路搜尋）\n- 圖片生成不行（純文字）\n\n### OpenAI GPT 系列\n\n| 模型 | 強項 | 適用 |\n|---|---|---|\n| **GPT-5** | 多模態、Code Interpreter | 通用旗艦 |\n| **GPT-5 mini** | 便宜、快 | 大量處理 |\n| **GPT-4o** | 多模態、即時聲音 | 對話助手 |\n| **GPT-o1 / o3** | 深度推理（thinking）| 數學、研究 |\n\n**GPT 強項**：\n- 工具生態最廣（Plugin、GPTs）\n- 多模態（語音、圖片、影片）成熟\n- 即時聲音對話獨家\n\n**弱項**：\n- 中文沒 Claude 好\n- 偶爾過度禮貌、廢話多\n\n### Google Gemini 系列\n\n| 模型 | 強項 |\n|---|---|\n| **Gemini 2.5 Pro** | 多模態、200 萬 context（業界最長）|\n| **Gemini 2.5 Flash** | 速度快、超便宜 |\n| **Gemini 2.5 Flash-Lite** | 最便宜（賠錢都有人用）|\n\n**Gemini 強項**：\n- Context window 業界最長（2M+）\n- 多模態原生（影片直接吃）\n- Google 生態整合（Drive、Gmail、YouTube）\n- 價格殺手（Flash 系列）\n\n**弱項**：\n- 推理深度比 Claude 弱\n- 創作品質中等\n\n### xAI Grok 系列\n\n**Grok 4** / Grok 3\n\n**強項**：\n- X (Twitter) 即時資料\n- 沒太多 alignment 限制（敢講）\n\n**弱項**：\n- 中文一般\n- 生態小\n\n### Meta Llama 系列（開源）\n\n**Llama 4 / 3.3 70B / 3.1 405B**\n\n**強項**：\n- 完全免費（自架）\n- 可微調\n- 70B 級別品質接近 GPT-4\n\n**適用**：自架 / 隱私敏感 / 大量批次\n\n### Mistral / Cohere / DeepSeek 等\n\n- **Mistral**：歐洲開源、中等\n- **Cohere Command R+**：RAG 場景強\n- **DeepSeek V3**：中國開源、便宜、品質意外好\n- **Qwen 2.5**：阿里、中文不錯、開源\n\n## 2. 選模型 SOP\n\n| 場景 | 推薦模型 |\n|---|---|\n| 中文寫作 / 翻譯 | **Claude Sonnet/Opus** |\n| 大量處理 / 批次 | **Haiku / Flash / GPT mini** |\n| 多模態（影音圖）| **Gemini / GPT-4o** |\n| 數學 / 邏輯推理 | **GPT-o1 / Claude Opus** |\n| Coding | **Claude / GPT** 都好 |\n| 即時資料 | **Gemini / Grok（X 資料）** |\n| 隱私敏感 | **Llama 自架** |\n| Context 超大 | **Gemini 2.5 Pro** |\n| 預算 NT$0 | **DeepSeek / Qwen / Llama 開源** |\n\n## 3. 價格速算（2026 年）\n\n```\n模型                    Input    Output   每千次對話 (~10K tokens) 約\n─────────────────────────────────────────────────────────────────\nClaude Haiku 4.5        $0.25    $1.25    NT$10\nClaude Sonnet 4.6       $3       $15      NT$120\nClaude Opus 4.7         $15      $75      NT$600\nGPT-5                   $5       $15      NT$160\nGPT-5 mini              $0.15    $0.6     NT$5\nGemini 2.5 Pro          $1.25    $5       NT$50\nGemini 2.5 Flash        $0.075   $0.3     NT$2.4\nDeepSeek V3             $0.27    $1.1     NT$8\n```\n\n## 4. 多模型路由策略\n\n**省錢做法**：\n1. **預設用便宜模型**（Haiku / Flash / mini）\n2. **複雜任務升級**（檢測 token 數 / 主題）\n3. **長 context 用 Gemini**（2M context 便宜）\n4. **創作用 Claude、即時用 Gemini**\n5. **批次用開源**（Llama / Qwen 自架）\n\n```ts\nfunction pickModel(task: Task): string {\n  if (task.tokens > 100000) return 'gemini-2.5-flash';\n  if (task.type === 'writing' && task.lang === 'zh') return 'claude-sonnet';\n  if (task.type === 'realtime') return 'gemini-flash-lite';\n  if (task.type === 'reasoning') return 'gpt-o3';\n  return 'claude-haiku';\n}\n```\n\n## 5. Open Router 等聚合服務\n\n如果不想開多個帳號：\n\n- **OpenRouter**：一個 API 跨所有模型、含很多開源\n- **Together AI**：專注開源、便宜\n- **Replicate**：含 Llama / 圖像 / 影片模型\n- **Hugging Face Inference**：免費 tier 多\n\n## 💡 選擇建議\n\n**個人 / 小公司**：\n- 主力 **Claude Sonnet**（CP 最高）\n- 批次 **Claude Haiku 或 Gemini Flash**\n- 偶爾 **GPT 圖片 / o1 推理**\n\n**Solo Dev**：\n- 訂 Claude Pro NT$650/月（量大很划算）\n- 用 OpenRouter 補其他模型\n\n**☕ 用人話講**\n\n主流 LLM 模型完整對照表。**一句話記住**：像規格比較表——要選用哪個模型（Claude / GPT / Gemini…）時翻它。\n",
       "outline": [
         {
           "level": 2,
@@ -87,7 +87,117 @@
         ],
         "answer": "b",
         "explanation": "課程明確指出大量處理/批次場景應該用 Haiku/Flash/GPT mini，而且列出的價格速算表顯示 Haiku 和 Flash 是最便宜的選項。Opus 和 GPT-5 雖然強大但對批次工作來說浪費錢；Context 長度在批次工作中不是優先考慮。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "你該用哪個 LLM？",
+          "note": "回答三題，看你該主力用 Claude / GPT / Gemini / 開源自架 哪一個。",
+          "config": {
+            "intro": "選模型看任務與預算，不是越貴越好。",
+            "questions": [
+              {
+                "q": "你最主要的任務是？",
+                "options": [
+                  {
+                    "label": "中文寫作 / 翻譯 / 創作",
+                    "scores": {
+                      "claude": 2
+                    }
+                  },
+                  {
+                    "label": "多模態（影音圖）/ 即時語音",
+                    "scores": {
+                      "gpt": 1,
+                      "gemini": 1
+                    }
+                  },
+                  {
+                    "label": "超長文件（整本書 / 大量 context）",
+                    "scores": {
+                      "gemini": 2
+                    }
+                  },
+                  {
+                    "label": "大量批次處理、要最省",
+                    "scores": {
+                      "open": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你的預算？",
+                "options": [
+                  {
+                    "label": "願意為品質付費",
+                    "scores": {
+                      "claude": 2
+                    }
+                  },
+                  {
+                    "label": "要便宜大碗、CP 值優先",
+                    "scores": {
+                      "gemini": 2
+                    }
+                  },
+                  {
+                    "label": "NT$0、能自架",
+                    "scores": {
+                      "open": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "還有什麼在意的？",
+                "options": [
+                  {
+                    "label": "推理 / 邏輯要最強",
+                    "scores": {
+                      "gpt": 2
+                    }
+                  },
+                  {
+                    "label": "隱私敏感、資料不能外流",
+                    "scores": {
+                      "open": 2
+                    }
+                  },
+                  {
+                    "label": "要 Google 生態整合（Drive / Gmail）",
+                    "scores": {
+                      "gemini": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "claude": {
+                "emoji": "✍️",
+                "title": "主力 Claude",
+                "desc": "中文寫作 / 創作 / coding 品質業界頂尖、推理穩不愛幻覺。Sonnet CP 值最高、量大批次用 Haiku。弱項是即時資訊與圖片生成。"
+              },
+              "gpt": {
+                "emoji": "🧠",
+                "title": "主力 GPT",
+                "desc": "工具生態最廣、多模態（語音 / 圖片）成熟、o 系列深度推理強。通用旗艦；中文略遜 Claude、偶爾廢話多。"
+              },
+              "gemini": {
+                "emoji": "💎",
+                "title": "主力 Gemini",
+                "desc": "context 業界最長（2M）、多模態原生吃影片、Flash 系列超便宜、Google 生態整合。推理深度與創作略遜 Claude。"
+              },
+              "open": {
+                "emoji": "🔓",
+                "title": "走開源自架（Llama / Qwen / DeepSeek）",
+                "desc": "免費、可微調、隱私可控，適合大量批次與敏感資料。要自己架設維運；頂級開源品質已接近商用中階。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "63.2",
@@ -276,7 +386,14 @@
         ],
         "answer": "a",
         "explanation": "角色是在 Prompt 開頭設定 AI 的身份（如 SEO 專家），而 Chain of Thought 是要求 AI 逐步展示思考邏輯。兩者解決不同問題：角色提升回答品質，Chain of Thought 增加邏輯透明度。"
-      }
+      },
+      "demos": [
+        {
+          "type": "prompt-lab",
+          "title": "同一個 prompt、比兩版輸出",
+          "note": "用三把尺判斷哪版比較好——這就是 Prompt 工法的實戰基本功。"
+        }
+      ]
     },
     {
       "id": "63.3",
@@ -284,7 +401,7 @@
       "title": "Claude / OpenAI / Gemini API 參數速查",
       "oneLineSummary": "三大 LLM API 完整參數對照、含進階功能。",
       "xp": 100,
-      "content": "# Claude / OpenAI / Gemini API 速查\n\n## 1. Claude API（Anthropic）\n\n### 基本呼叫\n\n```bash\ncurl https://api.anthropic.com/v1/messages \\\n  -H \"x-api-key: $ANTHROPIC_API_KEY\" \\\n  -H \"anthropic-version: 2023-06-01\" \\\n  -H \"content-type: application/json\" \\\n  -d '{\n    \"model\": \"claude-sonnet-4-6\",\n    \"max_tokens\": 1024,\n    \"messages\": [\n      {\"role\": \"user\", \"content\": \"Hello\"}\n    ]\n  }'\n```\n\n### Node.js SDK\n\n```ts\nimport Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic();\n\nconst message = await client.messages.create({\n  model: \"claude-sonnet-4-6\",\n  max_tokens: 1024,\n  system: \"你是個 SEO 專家\",        // System prompt\n  messages: [\n    { role: \"user\", content: \"幫我分析\" },\n    { role: \"assistant\", content: \"好的、請問...\" },\n    { role: \"user\", content: \"電商網站\" },\n  ],\n  temperature: 0.7,\n  top_p: 0.95,\n  top_k: 40,\n  stop_sequences: [\"\\n\\nHuman:\"],\n});\n\nconsole.log(message.content[0].text);\n```\n\n### Streaming\n\n```ts\nconst stream = await client.messages.stream({\n  model: \"claude-sonnet-4-6\",\n  max_tokens: 1024,\n  messages: [{ role: \"user\", content: \"...\" }],\n});\n\nfor await (const event of stream) {\n  if (event.type === \"content_block_delta\") {\n    process.stdout.write(event.delta.text);\n  }\n}\n```\n\n### Tool Use（Function Calling）\n\n```ts\nconst message = await client.messages.create({\n  model: \"claude-sonnet-4-6\",\n  max_tokens: 1024,\n  tools: [\n    {\n      name: \"get_weather\",\n      description: \"取得天氣\",\n      input_schema: {\n        type: \"object\",\n        properties: {\n          location: { type: \"string\" },\n          unit: { type: \"string\", enum: [\"c\", \"f\"] },\n        },\n        required: [\"location\"],\n      },\n    },\n  ],\n  messages: [{ role: \"user\", content: \"台北天氣？\" }],\n});\n```\n\n### Vision\n\n```ts\nconst message = await client.messages.create({\n  model: \"claude-sonnet-4-6\",\n  max_tokens: 1024,\n  messages: [{\n    role: \"user\",\n    content: [\n      { type: \"image\", source: { type: \"base64\", media_type: \"image/jpeg\", data: \"...\" }},\n      { type: \"text\", text: \"這張圖是什麼？\" },\n    ],\n  }],\n});\n```\n\n### 完整參數\n\n| 參數 | 範圍 | 預設 | 用途 |\n|---|---|---|---|\n| `model` | str | - | 模型 ID |\n| `max_tokens` | int | 1024 | 最多輸出 token |\n| `messages` | arr | - | 對話歷史 |\n| `system` | str | - | System prompt |\n| `temperature` | 0-1 | 1.0 | 隨機度（0 最穩、1 最有創意）|\n| `top_p` | 0-1 | 1.0 | nucleus sampling |\n| `top_k` | int | - | 取前 K 候選 |\n| `stop_sequences` | arr | - | 遇到就停 |\n| `stream` | bool | false | 串流 |\n| `tools` | arr | - | 可用工具 |\n\n## 2. OpenAI API\n\n```ts\nimport OpenAI from \"openai\";\n\nconst openai = new OpenAI();\n\nconst completion = await openai.chat.completions.create({\n  model: \"gpt-5\",\n  messages: [\n    { role: \"system\", content: \"你是助手\" },\n    { role: \"user\", content: \"Hello\" },\n  ],\n  temperature: 0.7,\n  max_tokens: 1024,\n  top_p: 1,\n  frequency_penalty: 0,    // 重複懲罰\n  presence_penalty: 0,\n  stop: [\"\\n\\n\"],\n  response_format: { type: \"json_object\" },  // 強制 JSON\n  seed: 42,                // 半確定性\n  tools: [...],\n  tool_choice: \"auto\",\n  user: \"user_123\",        // 用於 abuse 偵測\n});\n```\n\n### Streaming\n\n```ts\nconst stream = await openai.chat.completions.create({\n  model: \"gpt-5\",\n  messages: [...],\n  stream: true,\n});\n\nfor await (const chunk of stream) {\n  process.stdout.write(chunk.choices[0]?.delta?.content || \"\");\n}\n```\n\n### Function Calling\n\n```ts\nconst completion = await openai.chat.completions.create({\n  model: \"gpt-5\",\n  messages: [...],\n  tools: [{\n    type: \"function\",\n    function: {\n      name: \"get_weather\",\n      description: \"取得天氣\",\n      parameters: {\n        type: \"object\",\n        properties: {\n          location: { type: \"string\" },\n        },\n        required: [\"location\"],\n      },\n    },\n  }],\n});\n```\n\n### Embeddings\n\n```ts\nconst embedding = await openai.embeddings.create({\n  model: \"text-embedding-3-small\",\n  input: \"Hello world\",\n});\n// 1536 維向量\n```\n\n### Image\n\n```ts\nconst image = await openai.images.generate({\n  model: \"dall-e-3\",\n  prompt: \"...\",\n  size: \"1024x1024\",\n  quality: \"hd\",\n  n: 1,\n});\n```\n\n### TTS\n\n```ts\nconst speech = await openai.audio.speech.create({\n  model: \"tts-1-hd\",\n  voice: \"alloy\",            // alloy / echo / fable / onyx / nova / shimmer\n  input: \"Hello\",\n});\n```\n\n### Whisper（STT）\n\n```ts\nconst transcription = await openai.audio.transcriptions.create({\n  model: \"whisper-1\",\n  file: fs.createReadStream(\"audio.mp3\"),\n  language: \"zh\",\n});\n```\n\n## 3. Google Gemini API\n\n```ts\nimport { GoogleGenerativeAI } from \"@google/generative-ai\";\n\nconst genAI = new GoogleGenerativeAI(API_KEY);\nconst model = genAI.getGenerativeModel({\n  model: \"gemini-2.5-pro\",\n  systemInstruction: \"你是助手\",\n  generationConfig: {\n    temperature: 0.7,\n    topP: 0.95,\n    topK: 40,\n    maxOutputTokens: 8192,\n    responseMimeType: \"application/json\",\n    responseSchema: {...},\n  },\n  safetySettings: [{\n    category: \"HARM_CATEGORY_DANGEROUS\",\n    threshold: \"BLOCK_NONE\",\n  }],\n});\n\nconst result = await model.generateContent(\"Hello\");\nconsole.log(result.response.text());\n```\n\n### Multi-turn\n\n```ts\nconst chat = model.startChat({\n  history: [\n    { role: \"user\", parts: [{ text: \"我叫 Luffy\" }]},\n    { role: \"model\", parts: [{ text: \"Hi Luffy!\" }]},\n  ],\n});\n\nconst result = await chat.sendMessage(\"我幾歲？\");\n```\n\n### Streaming\n\n```ts\nconst result = await model.generateContentStream(\"Hello\");\n\nfor await (const chunk of result.stream) {\n  process.stdout.write(chunk.text());\n}\n```\n\n### 多模態（含 PDF / 影片）\n\n```ts\nconst result = await model.generateContent([\n  \"解釋這份文件\",\n  {\n    inlineData: {\n      mimeType: \"application/pdf\",\n      data: pdfBase64,\n    },\n  },\n]);\n```\n\n## 4. 速度與成本比較表\n\n| 任務 | Claude Sonnet | GPT-5 | Gemini Pro |\n|---|---|---|---|\n| 一般對話延遲 | 中 | 中 | 中 |\n| First token 速度 | 中 | 中 | 快 |\n| Throughput | 中 | 中 | 快 |\n| 中文寫作 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |\n| Coding | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |\n| 推理 | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ (o1) | ⭐⭐⭐ |\n| 多模態 | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |\n| 長 context | ⭐⭐⭐⭐ (200K) | ⭐⭐⭐ (128K) | ⭐⭐⭐⭐⭐ (2M) |\n| 工具/Function | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |\n\n## 5. 統一抽象（推薦做法）\n\n寫一個 adapter、底層可換：\n\n```ts\ntype Provider = \"openai\" | \"anthropic\" | \"google\";\n\nasync function callAI(\n  provider: Provider,\n  model: string,\n  messages: Array<{ role: string; content: string }>,\n  apiKey: string,\n): Promise<{ text: string; tokensIn: number; tokensOut: number }> {\n  if (provider === \"anthropic\") {\n    const sys = messages.find(m => m.role === \"system\")?.content;\n    const others = messages.filter(m => m.role !== \"system\");\n    // call Claude\n    return { text, tokensIn, tokensOut };\n  }\n  if (provider === \"openai\") {\n    // call OpenAI\n  }\n  if (provider === \"google\") {\n    // call Gemini\n  }\n  throw new Error(`Unknown provider ${provider}`);\n}\n```\n\n## 💡 Tip\n\n- **每個 provider 都用 SDK、不要自己寫 fetch**（會少很多坑）\n- **錯誤要 retry with exponential backoff**（429 / 5xx 是常態）\n- **永遠記得 token 計算**（log + dashboard）\n- **streaming 比一次回好**（UX 大幅提升）\n- **system prompt + few-shot 是黃金組合**\n\n**☕ 用人話講**\n\nClaude / OpenAI / Gemini API 參數速查。**一句話記住**：像 API 參數小抄——串接 AI 時忘了某個參數怎麼設，翻它。\n",
+      "content": "# Claude / OpenAI / Gemini API 速查\n\n## 1. Claude API（Anthropic）\n\n### 基本呼叫\n\n```bash\ncurl https://api.anthropic.com/v1/messages \\\n  -H \"x-api-key: $ANTHROPIC_API_KEY\" \\\n  -H \"anthropic-version: 2023-06-01\" \\\n  -H \"content-type: application/json\" \\\n  -d '{\n    \"model\": \"claude-sonnet-4-6\",\n    \"max_tokens\": 1024,\n    \"messages\": [\n      {\"role\": \"user\", \"content\": \"Hello\"}\n    ]\n  }'\n```\n\n### Node.js SDK\n\n```ts\nimport Anthropic from \"@anthropic-ai/sdk\";\n\nconst client = new Anthropic();\n\nconst message = await client.messages.create({\n  model: \"claude-sonnet-4-6\",\n  max_tokens: 1024,\n  system: \"你是個 SEO 專家\",        // System prompt\n  messages: [\n    { role: \"user\", content: \"幫我分析\" },\n    { role: \"assistant\", content: \"好的、請問...\" },\n    { role: \"user\", content: \"電商網站\" },\n  ],\n  temperature: 0.7,\n  top_p: 0.95,\n  top_k: 40,\n  stop_sequences: [\"\\n\\nHuman:\"],\n});\n\nconsole.log(message.content[0].text);\n```\n\n### Streaming\n\n```ts\nconst stream = await client.messages.stream({\n  model: \"claude-sonnet-4-6\",\n  max_tokens: 1024,\n  messages: [{ role: \"user\", content: \"...\" }],\n});\n\nfor await (const event of stream) {\n  if (event.type === \"content_block_delta\") {\n    process.stdout.write(event.delta.text);\n  }\n}\n```\n\n### Tool Use（Function Calling）\n\n```ts\nconst message = await client.messages.create({\n  model: \"claude-sonnet-4-6\",\n  max_tokens: 1024,\n  tools: [\n    {\n      name: \"get_weather\",\n      description: \"取得天氣\",\n      input_schema: {\n        type: \"object\",\n        properties: {\n          location: { type: \"string\" },\n          unit: { type: \"string\", enum: [\"c\", \"f\"] },\n        },\n        required: [\"location\"],\n      },\n    },\n  ],\n  messages: [{ role: \"user\", content: \"台北天氣？\" }],\n});\n```\n\n### Vision\n\n```ts\nconst message = await client.messages.create({\n  model: \"claude-sonnet-4-6\",\n  max_tokens: 1024,\n  messages: [{\n    role: \"user\",\n    content: [\n      { type: \"image\", source: { type: \"base64\", media_type: \"image/jpeg\", data: \"...\" }},\n      { type: \"text\", text: \"這張圖是什麼？\" },\n    ],\n  }],\n});\n```\n\n### 完整參數\n\n| 參數 | 範圍 | 預設 | 用途 |\n|---|---|---|---|\n| `model` | str | - | 模型 ID |\n| `max_tokens` | int | 1024 | 最多輸出 token |\n| `messages` | arr | - | 對話歷史 |\n| `system` | str | - | System prompt |\n| `temperature` | 0-1 | 1.0 | 隨機度（0 最穩、1 最有創意）|\n| `top_p` | 0-1 | 1.0 | nucleus sampling |\n| `top_k` | int | - | 取前 K 候選 |\n| `stop_sequences` | arr | - | 遇到就停 |\n| `stream` | bool | false | 串流 |\n| `tools` | arr | - | 可用工具 |\n**這些參數到底在調什麼（白話版）：**\n\n- **`temperature`（溫度，0～1）**——控制「有多敢亂猜」。**0＝每次幾乎一樣、最穩**（適合抽資料、寫程式、要可重現）；**接近 1＝更發散有創意**（適合寫文案、發想）。不確定就先 0.7。\n- **`top_p`（nucleus sampling，核採樣，0～1）**——另一種控隨機的方式：只從「累積機率前 p 的候選字」裡挑。**0.9 代表只考慮最可能的那批字、丟掉長尾**。跟 temperature 二擇一調就好，別兩個一起亂動。\n- **`top_k`**——每一步只從「機率最高的前 K 個字」裡挑，數字越小越保守。\n- **`frequency_penalty` / `presence_penalty`（OpenAI，重複懲罰）**——調高會讓模型「少重複用過的字 / 少一直講同一主題」，治「跳針、車軲轆話」。\n- **`stop` / `stop_sequences`（停止序列）**——遇到你指定的字串就立刻收手（例如生到 `\\n\\nHuman:` 就停），避免它自問自答演下去。\n- **`seed`（種子，OpenAI）**——固定它 + temperature 0，能讓「同樣輸入盡量給同樣輸出」，方便測試比對。\n- **`max_tokens`（最多輸出 token）**——上限，不是「一定生這麼多」。設太小會被硬切斷（回到一半沒了），設太大不會變貴（只按實際生成算）但要確保夠用。\n\n口訣：**要穩定可重現 → temperature 調低；要創意 → 調高。其餘參數多半用預設就好，有特定毛病（跳針、切斷、演過頭）再對症下藥。**\n\n## 2. OpenAI API\n\n```ts\nimport OpenAI from \"openai\";\n\nconst openai = new OpenAI();\n\nconst completion = await openai.chat.completions.create({\n  model: \"gpt-5\",\n  messages: [\n    { role: \"system\", content: \"你是助手\" },\n    { role: \"user\", content: \"Hello\" },\n  ],\n  temperature: 0.7,\n  max_tokens: 1024,\n  top_p: 1,\n  frequency_penalty: 0,    // 重複懲罰\n  presence_penalty: 0,\n  stop: [\"\\n\\n\"],\n  response_format: { type: \"json_object\" },  // 強制 JSON\n  seed: 42,                // 半確定性\n  tools: [...],\n  tool_choice: \"auto\",\n  user: \"user_123\",        // 用於 abuse 偵測\n});\n```\n\n### Streaming\n\n```ts\nconst stream = await openai.chat.completions.create({\n  model: \"gpt-5\",\n  messages: [...],\n  stream: true,\n});\n\nfor await (const chunk of stream) {\n  process.stdout.write(chunk.choices[0]?.delta?.content || \"\");\n}\n```\n\n### Function Calling\n\n```ts\nconst completion = await openai.chat.completions.create({\n  model: \"gpt-5\",\n  messages: [...],\n  tools: [{\n    type: \"function\",\n    function: {\n      name: \"get_weather\",\n      description: \"取得天氣\",\n      parameters: {\n        type: \"object\",\n        properties: {\n          location: { type: \"string\" },\n        },\n        required: [\"location\"],\n      },\n    },\n  }],\n});\n```\n\n### Embeddings\n\n```ts\nconst embedding = await openai.embeddings.create({\n  model: \"text-embedding-3-small\",\n  input: \"Hello world\",\n});\n// 1536 維向量\n```\n\n### Image\n\n```ts\nconst image = await openai.images.generate({\n  model: \"dall-e-3\",\n  prompt: \"...\",\n  size: \"1024x1024\",\n  quality: \"hd\",\n  n: 1,\n});\n```\n\n### TTS\n\n```ts\nconst speech = await openai.audio.speech.create({\n  model: \"tts-1-hd\",\n  voice: \"alloy\",            // alloy / echo / fable / onyx / nova / shimmer\n  input: \"Hello\",\n});\n```\n\n### Whisper（STT）\n\n```ts\nconst transcription = await openai.audio.transcriptions.create({\n  model: \"whisper-1\",\n  file: fs.createReadStream(\"audio.mp3\"),\n  language: \"zh\",\n});\n```\n\n## 3. Google Gemini API\n\n```ts\nimport { GoogleGenerativeAI } from \"@google/generative-ai\";\n\nconst genAI = new GoogleGenerativeAI(API_KEY);\nconst model = genAI.getGenerativeModel({\n  model: \"gemini-2.5-pro\",\n  systemInstruction: \"你是助手\",\n  generationConfig: {\n    temperature: 0.7,\n    topP: 0.95,\n    topK: 40,\n    maxOutputTokens: 8192,\n    responseMimeType: \"application/json\",\n    responseSchema: {...},\n  },\n  safetySettings: [{\n    category: \"HARM_CATEGORY_DANGEROUS\",\n    threshold: \"BLOCK_NONE\",\n  }],\n});\n\nconst result = await model.generateContent(\"Hello\");\nconsole.log(result.response.text());\n```\n\n### Multi-turn\n\n```ts\nconst chat = model.startChat({\n  history: [\n    { role: \"user\", parts: [{ text: \"我叫 Luffy\" }]},\n    { role: \"model\", parts: [{ text: \"Hi Luffy!\" }]},\n  ],\n});\n\nconst result = await chat.sendMessage(\"我幾歲？\");\n```\n\n### Streaming\n\n```ts\nconst result = await model.generateContentStream(\"Hello\");\n\nfor await (const chunk of result.stream) {\n  process.stdout.write(chunk.text());\n}\n```\n\n### 多模態（含 PDF / 影片）\n\n```ts\nconst result = await model.generateContent([\n  \"解釋這份文件\",\n  {\n    inlineData: {\n      mimeType: \"application/pdf\",\n      data: pdfBase64,\n    },\n  },\n]);\n```\n\n## 4. 速度與成本比較表\n\n| 任務 | Claude Sonnet | GPT-5 | Gemini Pro |\n|---|---|---|---|\n| 一般對話延遲 | 中 | 中 | 中 |\n| First token 速度 | 中 | 中 | 快 |\n| Throughput | 中 | 中 | 快 |\n| 中文寫作 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |\n| Coding | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |\n| 推理 | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ (o1) | ⭐⭐⭐ |\n| 多模態 | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |\n| 長 context | ⭐⭐⭐⭐ (200K) | ⭐⭐⭐ (128K) | ⭐⭐⭐⭐⭐ (2M) |\n| 工具/Function | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |\n\n## 5. 統一抽象（推薦做法）\n\n寫一個 adapter、底層可換：\n\n```ts\ntype Provider = \"openai\" | \"anthropic\" | \"google\";\n\nasync function callAI(\n  provider: Provider,\n  model: string,\n  messages: Array<{ role: string; content: string }>,\n  apiKey: string,\n): Promise<{ text: string; tokensIn: number; tokensOut: number }> {\n  if (provider === \"anthropic\") {\n    const sys = messages.find(m => m.role === \"system\")?.content;\n    const others = messages.filter(m => m.role !== \"system\");\n    // call Claude\n    return { text, tokensIn, tokensOut };\n  }\n  if (provider === \"openai\") {\n    // call OpenAI\n  }\n  if (provider === \"google\") {\n    // call Gemini\n  }\n  throw new Error(`Unknown provider ${provider}`);\n}\n```\n\n## 💡 Tip\n\n- **每個 provider 都用 SDK、不要自己寫 fetch**（會少很多坑）\n- **錯誤要 retry with exponential backoff**（429 / 5xx 是常態）\n- **永遠記得 token 計算**（log + dashboard）\n- **streaming 比一次回好**（UX 大幅提升）\n- **system prompt + few-shot 是黃金組合**\n\n**☕ 用人話講**\n\nClaude / OpenAI / Gemini API 參數速查。**一句話記住**：像 API 參數小抄——串接 AI 時忘了某個參數怎麼設，翻它。\n",
       "outline": [
         {
           "level": 2,
@@ -401,7 +518,7 @@
       "title": "RAG / Embedding / Vector DB 名詞表",
       "oneLineSummary": "RAG、向量檢索、chunking 策略、Vector DB 比較。",
       "xp": 100,
-      "content": "# RAG / Embedding / Vector DB 完整速查\n\n## 1. 什麼是 RAG\n\n**RAG = Retrieval-Augmented Generation**（檢索增強生成）\n\n讓 LLM 在回答前、先從你的資料庫找相關內容、再答題。\n\n```\n[User Question]\n    ↓\n[Embedding] → [Vector DB 找相似的 chunks]\n    ↓\n[相關內容 + 原問題] → [LLM]\n    ↓\n[答案 + 引用來源]\n```\n\n**為什麼需要 RAG**：\n- LLM 不知道你的私有資料\n- LLM 知識有 cutoff、不知道最新\n- 避免幻覺、回答有來源\n- 比 fine-tuning 便宜、好維護\n\n## 2. Embedding（向量化）\n\n把文字轉成 N 維數字向量、語意相近的距離近。\n\n### 常用 Embedding 模型\n\n| 模型 | 維度 | 價格 | 用途 |\n|---|---|---|---|\n| **text-embedding-3-small** (OpenAI) | 1536 | $0.02/M tokens | 通用、便宜 |\n| **text-embedding-3-large** | 3072 | $0.13/M | 品質更好 |\n| **voyage-3** | 1024 | $0.06/M | 業界頂尖（Anthropic 推薦）|\n| **cohere embed v3** | 1024 | $0.10/M | 多語強 |\n| **bge-large-zh** | 1024 | 免費（開源）| 中文強 |\n| **m3e-large** | 1024 | 免費 | 中文 |\n| **multilingual-e5-large** | 1024 | 免費 | 多語 |\n\n### 用 Embedding\n\n```ts\n// OpenAI\nconst res = await openai.embeddings.create({\n  model: \"text-embedding-3-small\",\n  input: \"我想學 SQL\",\n});\nconst vec = res.data[0].embedding;  // [0.12, -0.03, ..., 0.45] (1536 個)\n\n// 計算相似度（cosine similarity）\nfunction cosineSim(a: number[], b: number[]) {\n  const dot = a.reduce((s, v, i) => s + v * b[i], 0);\n  const ma = Math.sqrt(a.reduce((s, v) => s + v * v, 0));\n  const mb = Math.sqrt(b.reduce((s, v) => s + v * v, 0));\n  return dot / (ma * mb);\n}\n```\n\n## 3. Chunking（切片）策略\n\n不能把整本書當一個 chunk、太大模型吃不下、相似度也算不準。\n\n### 切片方法\n\n| 方法 | 適用 |\n|---|---|\n| **Fixed size**（每 500 tokens 切一段）| 簡單、通用 |\n| **Sentence**（每句切）| 短文、QA |\n| **Paragraph**（每段切）| 文章 |\n| **Recursive**（先大後小遞迴切）| LangChain 預設、平衡 |\n| **Semantic chunking**（語意切）| 高品質、慢 |\n| **Markdown-aware**（依標題切）| 文件 |\n| **Code-aware**（依 function 切）| 程式碼 |\n\n### 推薦設定\n\n```ts\n{\n  chunkSize: 500,           // 500 tokens\n  chunkOverlap: 50,         // 重疊 50 tokens（避免切到一半失意）\n  separators: [\"\\n\\n\", \"\\n\", \"。\", \".\", \" \"],  // 優先在這切\n}\n```\n\n### Chunk 加 metadata\n\n```ts\n{\n  id: \"doc-123-chunk-5\",\n  text: \"...\",\n  embedding: [...],\n  metadata: {\n    source: \"AI 島 Ch01\",\n    page: 5,\n    author: \"Luffy\",\n    date: \"2026-05-19\",\n    type: \"lesson\",\n  }\n}\n```\n\n## 4. Vector DB 比較\n\n### 雲端託管\n\n| 服務 | 特色 | 價格 |\n|---|---|---|\n| **Pinecone** | 業界先驅、易用 | $70/月起 |\n| **Weaviate Cloud** | 開源出身、GraphQL | $25/月起 |\n| **Qdrant Cloud** | 開源、Rust 寫的、快 | $0/月起 |\n| **Supabase pgvector** | Postgres 擴充、便宜 | 你的 Supabase 方案 |\n| **MongoDB Atlas Vector** | 已有 MongoDB 用戶 | 含在 Atlas |\n| **Astra DB** | DataStax / Cassandra | 免費額度多 |\n| **Turbopuffer** | 便宜（serverless）| $0.01/M |\n\n### 自架（免費）\n\n| 工具 | 特色 |\n|---|---|\n| **Chroma** | 最簡單、檔案存 |\n| **Qdrant** | 高效能、好用 |\n| **Weaviate** | 功能完整 |\n| **Milvus** | 大規模 |\n| **pgvector** | 你已經有 Postgres |\n| **Faiss** | Meta 開發、單機快 |\n\n### 選哪個？\n\n**初學/個人 project**：Chroma 或 Supabase pgvector\n**Production 中小**：Qdrant Cloud / Supabase pgvector\n**大規模**：Pinecone / Milvus\n\n## 5. pgvector 範例（Supabase）\n\n```sql\n-- 啟用 extension\nCREATE EXTENSION IF NOT EXISTS vector;\n\n-- 建表\nCREATE TABLE documents (\n  id BIGSERIAL PRIMARY KEY,\n  content TEXT NOT NULL,\n  embedding VECTOR(1536),         -- 維度看模型\n  metadata JSONB,\n  created_at TIMESTAMP DEFAULT NOW()\n);\n\n-- 建索引（資料多了重要）\nCREATE INDEX ON documents USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);\n-- 或更快的：\nCREATE INDEX ON documents USING hnsw (embedding vector_cosine_ops);\n\n-- 查詢相似（取 top 5）\nSELECT content, metadata, 1 - (embedding <=> $1) AS similarity\nFROM documents\nORDER BY embedding <=> $1\nLIMIT 5;\n```\n\n### 距離運算子\n\n```\n<-> Euclidean\n<#> negative inner product\n<=> cosine distance\n```\n\n## 6. 完整 RAG 流程（TS 範例）\n\n```ts\n// 1. 切片\nconst chunks = chunkText(longText, { size: 500, overlap: 50 });\n\n// 2. Embedding\nconst embeddings = await Promise.all(\n  chunks.map(c => openai.embeddings.create({\n    model: \"text-embedding-3-small\",\n    input: c.text,\n  }).then(r => r.data[0].embedding))\n);\n\n// 3. 存進 Vector DB\nfor (let i = 0; i < chunks.length; i++) {\n  await supabase.from(\"documents\").insert({\n    content: chunks[i].text,\n    embedding: embeddings[i],\n    metadata: chunks[i].meta,\n  });\n}\n\n// 4. 查詢\nasync function ask(question: string) {\n  // 4a. embedding question\n  const q = await openai.embeddings.create({\n    model: \"text-embedding-3-small\",\n    input: question,\n  });\n  const queryEmbedding = q.data[0].embedding;\n\n  // 4b. 找相似 chunks\n  const { data: relevant } = await supabase.rpc(\"match_documents\", {\n    query_embedding: queryEmbedding,\n    match_count: 5,\n  });\n\n  // 4c. 組 prompt 給 LLM\n  const context = relevant.map(r => r.content).join(\"\\n\\n\");\n  const messages = [\n    { role: \"system\", content: \"你只能根據以下資料回答、不能編造：\\n\" + context },\n    { role: \"user\", content: question },\n  ];\n\n  // 4d. 呼叫 LLM\n  const response = await openai.chat.completions.create({\n    model: \"gpt-5\",\n    messages,\n  });\n\n  return {\n    answer: response.choices[0].message.content,\n    sources: relevant,\n  };\n}\n```\n\n## 7. 進階技巧\n\n### Hybrid Search\n向量檢索 + 關鍵字檢索（BM25）合併。彼此補強。\n\n### Re-ranking\n找到 top 20、再用 cross-encoder（如 Cohere Rerank）重排序、取 top 5。\n\n### Query Expansion\n讓 LLM 把問題改寫成 3-5 個變化版、各做檢索、合併結果。\n\n### HyDE（Hypothetical Document Embeddings）\n讓 LLM 先生成「假答案」、用假答案做檢索（比原問題效果好）。\n\n### MMR（Maximal Marginal Relevance）\n不只挑最相似的、也要挑「不重複」的、增加多樣性。\n\n### Parent-Child Chunks\n切細塊去搜尋、找到後取大塊給 LLM（精確 + 含上下文）。\n\n## 💡 Tip\n\n- **chunkSize 500 + overlap 50** 是好起點\n- **多語混合用 multilingual 模型**（e5、cohere）\n- **中文選 bge-large-zh 或 m3e**\n- **加 metadata 過濾**比純向量檢索強（如限縮日期、type）\n- **永遠存原文 + embedding**、不要只存 embedding\n\n**☕ 用人話講**\n\nRAG / Embedding / Vector DB 名詞表。**一句話記住**：像 AI 名詞字典——chunking、向量檢索這些詞看不懂時，查這頁。\n",
+      "content": "# RAG / Embedding / Vector DB 完整速查\n\n## 1. 什麼是 RAG\n\n**RAG = Retrieval-Augmented Generation**（檢索增強生成）\n\n讓 LLM 在回答前、先從你的資料庫找相關內容、再答題。\n\n```\n[User Question]\n    ↓\n[Embedding] → [Vector DB 找相似的 chunks]\n    ↓\n[相關內容 + 原問題] → [LLM]\n    ↓\n[答案 + 引用來源]\n```\n\n**為什麼需要 RAG**：\n- LLM 不知道你的私有資料\n- LLM 知識有 cutoff、不知道最新\n- 避免幻覺、回答有來源\n- 比 fine-tuning 便宜、好維護\n\n## 2. Embedding（向量化）\n\n把文字轉成 N 維數字向量、語意相近的距離近。\n\n**白話：** embedding 就是「把一段文字壓成一串座標」，讓語意相近的句子在座標空間裡「站得近」。這樣電腦就能用「算距離」來判斷兩句話「意思像不像」——這是 RAG 能「用問題找到相關段落」的底層魔法。**cosine similarity（餘弦相似度）** 就是最常用的「量兩個向量方向有多接近」的算法，值越接近 1 代表語意越像。\n\n### 常用 Embedding 模型\n\n| 模型 | 維度 | 價格 | 用途 |\n|---|---|---|---|\n| **text-embedding-3-small** (OpenAI) | 1536 | $0.02/M tokens | 通用、便宜 |\n| **text-embedding-3-large** | 3072 | $0.13/M | 品質更好 |\n| **voyage-3** | 1024 | $0.06/M | 業界頂尖（Anthropic 推薦）|\n| **cohere embed v3** | 1024 | $0.10/M | 多語強 |\n| **bge-large-zh** | 1024 | 免費（開源）| 中文強 |\n| **m3e-large** | 1024 | 免費 | 中文 |\n| **multilingual-e5-large** | 1024 | 免費 | 多語 |\n\n### 用 Embedding\n\n```ts\n// OpenAI\nconst res = await openai.embeddings.create({\n  model: \"text-embedding-3-small\",\n  input: \"我想學 SQL\",\n});\nconst vec = res.data[0].embedding;  // [0.12, -0.03, ..., 0.45] (1536 個)\n\n// 計算相似度（cosine similarity）\nfunction cosineSim(a: number[], b: number[]) {\n  const dot = a.reduce((s, v, i) => s + v * b[i], 0);\n  const ma = Math.sqrt(a.reduce((s, v) => s + v * v, 0));\n  const mb = Math.sqrt(b.reduce((s, v) => s + v * v, 0));\n  return dot / (ma * mb);\n}\n```\n\n## 3. Chunking（切片）策略\n\n不能把整本書當一個 chunk、太大模型吃不下、相似度也算不準。\n\n### 切片方法\n\n| 方法 | 適用 |\n|---|---|\n| **Fixed size**（每 500 tokens 切一段）| 簡單、通用 |\n| **Sentence**（每句切）| 短文、QA |\n| **Paragraph**（每段切）| 文章 |\n| **Recursive**（先大後小遞迴切）| LangChain 預設、平衡 |\n| **Semantic chunking**（語意切）| 高品質、慢 |\n| **Markdown-aware**（依標題切）| 文件 |\n| **Code-aware**（依 function 切）| 程式碼 |\n\n### 推薦設定\n\n```ts\n{\n  chunkSize: 500,           // 500 tokens\n  chunkOverlap: 50,         // 重疊 50 tokens（避免切到一半失意）\n  separators: [\"\\n\\n\", \"\\n\", \"。\", \".\", \" \"],  // 優先在這切\n}\n```\n\n### Chunk 加 metadata\n\n```ts\n{\n  id: \"doc-123-chunk-5\",\n  text: \"...\",\n  embedding: [...],\n  metadata: {\n    source: \"AI 島 Ch01\",\n    page: 5,\n    author: \"Luffy\",\n    date: \"2026-05-19\",\n    type: \"lesson\",\n  }\n}\n```\n\n## 4. Vector DB 比較\n\n### 雲端託管\n\n| 服務 | 特色 | 價格 |\n|---|---|---|\n| **Pinecone** | 業界先驅、易用 | $70/月起 |\n| **Weaviate Cloud** | 開源出身、GraphQL | $25/月起 |\n| **Qdrant Cloud** | 開源、Rust 寫的、快 | $0/月起 |\n| **Supabase pgvector** | Postgres 擴充、便宜 | 你的 Supabase 方案 |\n| **MongoDB Atlas Vector** | 已有 MongoDB 用戶 | 含在 Atlas |\n| **Astra DB** | DataStax / Cassandra | 免費額度多 |\n| **Turbopuffer** | 便宜（serverless）| $0.01/M |\n\n### 自架（免費）\n\n| 工具 | 特色 |\n|---|---|\n| **Chroma** | 最簡單、檔案存 |\n| **Qdrant** | 高效能、好用 |\n| **Weaviate** | 功能完整 |\n| **Milvus** | 大規模 |\n| **pgvector** | 你已經有 Postgres |\n| **Faiss** | Meta 開發、單機快 |\n\n### 選哪個？\n\n**初學/個人 project**：Chroma 或 Supabase pgvector\n**Production 中小**：Qdrant Cloud / Supabase pgvector\n**大規模**：Pinecone / Milvus\n\n## 5. pgvector 範例（Supabase）\n\n```sql\n-- 啟用 extension\nCREATE EXTENSION IF NOT EXISTS vector;\n\n-- 建表\nCREATE TABLE documents (\n  id BIGSERIAL PRIMARY KEY,\n  content TEXT NOT NULL,\n  embedding VECTOR(1536),         -- 維度看模型\n  metadata JSONB,\n  created_at TIMESTAMP DEFAULT NOW()\n);\n\n-- 建索引（資料多了重要；沒索引每次都要跟全部資料逐一比對、會很慢）\n-- ivfflat：先分群再找、建得快、省記憶體；hnsw：查得更快更準、但建索引較吃資源\nCREATE INDEX ON documents USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100);\n-- 或更快的：\nCREATE INDEX ON documents USING hnsw (embedding vector_cosine_ops);\n\n-- 查詢相似（取 top 5）\nSELECT content, metadata, 1 - (embedding <=> $1) AS similarity\nFROM documents\nORDER BY embedding <=> $1\nLIMIT 5;\n```\n\n### 距離運算子\n\n```\n<-> Euclidean\n<#> negative inner product\n<=> cosine distance\n```\n\n## 6. 完整 RAG 流程（TS 範例）\n\n```ts\n// 1. 切片\nconst chunks = chunkText(longText, { size: 500, overlap: 50 });\n\n// 2. Embedding\nconst embeddings = await Promise.all(\n  chunks.map(c => openai.embeddings.create({\n    model: \"text-embedding-3-small\",\n    input: c.text,\n  }).then(r => r.data[0].embedding))\n);\n\n// 3. 存進 Vector DB\nfor (let i = 0; i < chunks.length; i++) {\n  await supabase.from(\"documents\").insert({\n    content: chunks[i].text,\n    embedding: embeddings[i],\n    metadata: chunks[i].meta,\n  });\n}\n\n// 4. 查詢\nasync function ask(question: string) {\n  // 4a. embedding question\n  const q = await openai.embeddings.create({\n    model: \"text-embedding-3-small\",\n    input: question,\n  });\n  const queryEmbedding = q.data[0].embedding;\n\n  // 4b. 找相似 chunks\n  const { data: relevant } = await supabase.rpc(\"match_documents\", {\n    query_embedding: queryEmbedding,\n    match_count: 5,\n  });\n\n  // 4c. 組 prompt 給 LLM\n  const context = relevant.map(r => r.content).join(\"\\n\\n\");\n  const messages = [\n    { role: \"system\", content: \"你只能根據以下資料回答、不能編造：\\n\" + context },\n    { role: \"user\", content: question },\n  ];\n\n  // 4d. 呼叫 LLM\n  const response = await openai.chat.completions.create({\n    model: \"gpt-5\",\n    messages,\n  });\n\n  return {\n    answer: response.choices[0].message.content,\n    sources: relevant,\n  };\n}\n```\n\n## 7. 進階技巧\n\n### Hybrid Search\n向量檢索 + 關鍵字檢索（BM25）合併。彼此補強。\n\n### Re-ranking\n找到 top 20、再用 cross-encoder（如 Cohere Rerank）重排序、取 top 5。\n\n### Query Expansion\n讓 LLM 把問題改寫成 3-5 個變化版、各做檢索、合併結果。\n\n### HyDE（Hypothetical Document Embeddings）\n讓 LLM 先生成「假答案」、用假答案做檢索（比原問題效果好）。\n\n### MMR（Maximal Marginal Relevance）\n不只挑最相似的、也要挑「不重複」的、增加多樣性。\n\n### Parent-Child Chunks\n切細塊去搜尋、找到後取大塊給 LLM（精確 + 含上下文）。\n\n## 💡 Tip\n\n- **chunkSize 500 + overlap 50** 是好起點\n- **多語混合用 multilingual 模型**（e5、cohere）\n- **中文選 bge-large-zh 或 m3e**\n- **加 metadata 過濾**比純向量檢索強（如限縮日期、type）\n- **永遠存原文 + embedding**、不要只存 embedding\n\n**☕ 用人話講**\n\nRAG / Embedding / Vector DB 名詞表。**一句話記住**：像 AI 名詞字典——chunking、向量檢索這些詞看不懂時，查這頁。\n",
       "outline": [
         {
           "level": 2,
@@ -518,7 +635,53 @@
         ],
         "answer": "b",
         "explanation": "課程明確提到『不能把整本書當一個 chunk、太大模型吃不下、相似度也算不準』。這是 Chunking 策略的核心原因——太大的 chunk 會導致 LLM context 溢出，同時相似度計算會不夠精準。其他選項都是常見的似是而非答案。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "一次 RAG 問答怎麼跑",
+          "note": "看問題怎麼被向量化 → 到 Vector DB 撈相關片段 → 組進 prompt 給 LLM → 回帶來源的答案。",
+          "config": {
+            "trigger": {
+              "kind": "manual",
+              "label": "使用者提問：「我們的退貨政策是幾天？」",
+              "data": "question = '退貨政策幾天?'"
+            },
+            "nodes": [
+              {
+                "kind": "set",
+                "label": "① 問題向量化（Embedding）",
+                "desc": "把問題壓成一串座標，才能跟文件比語意",
+                "data": "embed(question) → [0.12, -0.03, ...]"
+              },
+              {
+                "kind": "db",
+                "label": "② 到 Vector DB 找最相似片段",
+                "desc": "用 cosine 相似度撈 top 5 相關 chunks",
+                "data": "match_documents(vec, top=5) → 5 段退貨相關條文"
+              },
+              {
+                "kind": "action",
+                "label": "③ 相關片段 + 原問題組成 prompt",
+                "desc": "叫 LLM「只能根據這些資料回答、不能編」",
+                "data": "system: 只根據以下資料…\\n{5 段條文}"
+              },
+              {
+                "kind": "ai",
+                "label": "④ 呼叫 LLM 生成答案",
+                "desc": "有真實依據、大幅減少幻覺",
+                "data": "LLM → 「本店退貨政策為 7 天…」"
+              },
+              {
+                "kind": "set",
+                "label": "⑤ 附上來源回給使用者",
+                "desc": "答案可回溯、可信",
+                "data": "answer + sources[條文編號]"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "outcomes": [
