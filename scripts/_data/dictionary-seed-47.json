@@ -1,0 +1,452 @@
+[
+  {
+    "slug": "temperature-sampling",
+    "term": "Temperature",
+    "zh_name": "溫度（取樣）",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "控制 LLM 輸出「有多敢亂猜」的參數（0~1 或更高）。什麼時候在意：要穩定可重現（抽資料、寫程式）調低、接近 0；要創意發散（寫文案、發想）調高。跟 top-p 二擇一調就好。",
+    "analogy": "像調味的辣度——0 度四平八穩、每次一樣；高溫又香又刺激但可能翻車。",
+    "example": "temperature: 0  // 幾乎每次同樣輸出\ntemperature: 0.9  // 更有創意、更發散",
+    "related": [
+      "top-p-sampling",
+      "logit-bias",
+      "max-tokens"
+    ]
+  },
+  {
+    "slug": "max-tokens",
+    "term": "max_tokens",
+    "zh_name": "最大輸出長度",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "限制 LLM 這次「最多生成幾個 token」。什麼時候在意：怕它落落長講不完（設上限）、或被硬切斷（設太小回一半就沒了）。它是上限不是目標，設大不會變貴（按實際生成算）。",
+    "analogy": "像作文限字數——寫到上限就收筆，設太少會被腰斬。",
+    "example": "max_tokens: 1024  // 約 700-800 中文字",
+    "related": [
+      "token-llm",
+      "stop-sequence",
+      "context-window"
+    ]
+  },
+  {
+    "slug": "stop-sequence",
+    "term": "Stop Sequence",
+    "zh_name": "停止序列",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "指定一個字串，LLM 生到它就立刻收手。什麼時候在意：防它自問自答演下去（生到 `\\nUser:` 就停）、或做結構化輸出時卡在分隔線停。",
+    "analogy": "像跟說書人約定『講到這句就停』，一到暗號立刻閉嘴。",
+    "example": "stop: ['\\n\\nUser:', '```']",
+    "related": [
+      "max-tokens",
+      "streaming-response",
+      "temperature-sampling"
+    ]
+  },
+  {
+    "slug": "logit-bias",
+    "term": "Logit Bias",
+    "zh_name": "詞元偏置",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "手動「加分或扣分」某些 token 的出現機率，甚至完全禁用。什麼時候在意：想強迫模型只回 yes/no、避免它講某些詞、或提高特定用語機率。",
+    "analogy": "像在抽獎箱動手腳——把某些球換多幾顆（加分）或直接拿掉（禁用）。",
+    "example": "logit_bias: { '好': 5, '不知道': -100 }  // 壓低某些回答",
+    "related": [
+      "temperature-sampling",
+      "greedy-decoding",
+      "token-llm"
+    ]
+  },
+  {
+    "slug": "streaming-response",
+    "term": "Streaming Response",
+    "zh_name": "串流回應",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "LLM 一邊生成一邊「逐字吐給你」，而不是全部生完才一次回。什麼時候在意：聊天 UI 的體驗——使用者立刻看到字在跑，不用盯著轉圈等好幾秒。",
+    "analogy": "像現場口譯——講一句翻一句，不是等他講完一小時才開口。",
+    "example": "for await (const chunk of stream) process.stdout.write(chunk)",
+    "related": [
+      "max-tokens",
+      "stop-sequence",
+      "kv-cache"
+    ]
+  },
+  {
+    "slug": "transformer-model",
+    "term": "Transformer",
+    "zh_name": "Transformer 架構",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "現代 LLM 的底層架構，核心是「注意力機制」——讓模型算每個字該多關注句中其他哪些字。什麼時候在意：理解為何 LLM 能抓長距離語意、以及 context 越長算力成本為何暴增（注意力是 O(n²)）。",
+    "analogy": "像開會時每個人都同時聽全場、判斷該重點聽誰——比一句句傳話（RNN）抓得住全局。",
+    "example": "GPT / Claude / Gemini 全是 Transformer 家族",
+    "related": [
+      "attention-mechanism",
+      "mixture-of-experts",
+      "kv-cache"
+    ]
+  },
+  {
+    "slug": "mixture-of-experts",
+    "term": "Mixture of Experts (MoE)",
+    "zh_name": "專家混合",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把模型拆成很多「專家子網路」，每個 token 只路由到少數幾個專家算——參數很大但每次只用一小部分，又快又省。什麼時候在意：解釋為何有些超大模型推理卻沒那麼貴（如 Mixtral、部分前沿模型）。",
+    "analogy": "像醫院分科——不是每個醫生都看你，只找對症的兩三位，快又專業。",
+    "example": "總參數 8×7B，但每 token 只激活 2 個專家",
+    "related": [
+      "transformer-model",
+      "quantization",
+      "speculative-decoding"
+    ]
+  },
+  {
+    "slug": "kv-cache",
+    "term": "KV Cache",
+    "zh_name": "鍵值快取",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "生成時把已算過的注意力『鍵/值』存起來，生下一個字不用從頭重算整段。什麼時候在意：理解為何「長對話/長 prompt」吃記憶體、以及 prompt caching 為何能省錢加速。",
+    "analogy": "像算數學時把中間結果記在草稿紙上，下一步直接用，不用每次重算。",
+    "example": "生第 100 個 token 時、前 99 個的 KV 直接複用",
+    "related": [
+      "context-caching",
+      "streaming-response",
+      "transformer-model"
+    ]
+  },
+  {
+    "slug": "context-caching",
+    "term": "Prompt / Context Caching",
+    "zh_name": "上下文快取",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把「每次都一樣的長前綴」（系統提示、文件、few-shot 範例）快取起來，之後的請求重用、不重算也少計費。什麼時候在意：同一份長 context 反覆問——開快取能大幅降延遲與成本（Claude/Gemini 都支援）。",
+    "analogy": "像常客的固定餐——廚房把備料先做好冰著，你再點時直接出，快又便宜。",
+    "example": "system + 長文件標為 cache → 後續問答省 in-token 費用",
+    "related": [
+      "kv-cache",
+      "context-window",
+      "context-stuffing"
+    ]
+  },
+  {
+    "slug": "few-shot-learning",
+    "term": "Few-shot Prompting",
+    "zh_name": "少樣本提示",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "在 prompt 裡「先給幾個範例」再讓模型照做，不用微調就能引導格式/風格。什麼時候在意：要固定輸出格式、教它一個沒見過的小任務——show don't tell，給例子比講規則有效。",
+    "analogy": "像教新人——與其講一堆規則，不如直接給他看三筆做好的範本照抄。",
+    "example": "英:Hello 中:哈囉\\n英:Thanks 中:謝謝\\n英:Bye 中:",
+    "related": [
+      "zero-shot",
+      "chain-of-thought",
+      "system-prompt"
+    ]
+  },
+  {
+    "slug": "ai-agent",
+    "term": "AI Agent",
+    "zh_name": "AI 代理",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "能「自己拆步驟、呼叫工具、看結果再決定下一步」的 LLM 應用，不只回一句話。什麼時候在意：要完成多步驟任務（查資料→算→寫檔）。核心是 think→act→observe 迴圈 + 護欄（高風險動作要人批准）。",
+    "analogy": "像請一個助理辦事——你給目標，他自己查、自己做、卡住會回報，不是問一句答一句。",
+    "example": "目標→規劃→web_search→讀結果→寫檔→回報",
+    "related": [
+      "chain-of-thought",
+      "tool-calling",
+      "guardrails"
+    ]
+  },
+  {
+    "slug": "llm-eval",
+    "term": "LLM Evaluation",
+    "zh_name": "模型評測",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "系統化衡量 LLM 輸出「好不好」的方法：標準答案比對、用另一個強模型當裁判（LLM-as-judge）、人工評分。什麼時候在意：換模型/改 prompt 前後要能量出「真的變好還變差」，不能只憑感覺。",
+    "analogy": "像產品出貨前的品管——建一套測試題庫，改版就跑一遍看分數，不是老闆試用兩下就過。",
+    "example": "跑 100 題測試集 → 比對 / LLM 裁判打分 → 對比 baseline",
+    "related": [
+      "red-teaming",
+      "guardrails",
+      "few-shot-learning"
+    ]
+  },
+  {
+    "slug": "vision-language-model",
+    "term": "Vision-Language Model (VLM)",
+    "zh_name": "視覺語言模型",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "能「同時看圖 + 讀文字」的多模態模型（GPT-4o、Gemini、Claude 都有）。什麼時候在意：讓 AI 看截圖 / 照片 / 圖表回答、OCR、UI 理解。注意不是每個模型都有視覺，沒視覺的丟圖會失敗。",
+    "analogy": "像會看圖說故事的人——你給它一張照片，它看得懂裡面有什麼、還能回答。",
+    "example": "傳一張發票圖 + 問「總金額多少？」",
+    "related": [
+      "multimodal",
+      "transformer-model",
+      "chunking"
+    ]
+  },
+  {
+    "slug": "chunking",
+    "term": "Chunking",
+    "zh_name": "切片",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把長文件切成「一小塊一小塊」再做 embedding 存進向量庫。什麼時候在意：做 RAG。切太大模型吃不下、相似度也算不準；切太小失去上下文。常見 500 tokens + 重疊 50。",
+    "analogy": "像把整本書拆成一張張筆記卡——好搜尋、好取用，但每張要留夠上下文才看得懂。",
+    "example": "chunkSize: 500, overlap: 50, 依標題/句子切",
+    "related": [
+      "vector-embedding",
+      "context-stuffing",
+      "reranking"
+    ]
+  },
+  {
+    "slug": "vector-embedding",
+    "term": "Vector Embedding",
+    "zh_name": "向量嵌入",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把一段文字壓成一串座標（向量），讓語意相近的句子在空間裡站得近。什麼時候在意：語意搜尋、RAG、推薦——用「算距離」判斷兩段話意思像不像，是 AI 找相關內容的底層魔法。",
+    "analogy": "像把每句話標在地圖上，意思相近的座標就靠在一起，找相關就是找附近的點。",
+    "example": "embed('我想學 SQL') → [0.12, -0.03, ...]（1536 維）",
+    "related": [
+      "chunking",
+      "reranking",
+      "hybrid-search"
+    ]
+  },
+  {
+    "slug": "reranking",
+    "term": "Re-ranking",
+    "zh_name": "重排序",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "向量檢索先撈一批候選（如 top 20），再用更精準的模型（cross-encoder）重新排序、取最相關的前幾個。什麼時候在意：RAG 品質不夠好時——粗撈 + 精排，準度明顯提升。",
+    "analogy": "像徵才——先海選一疊履歷（向量撈），再細看面試排名次（重排）取前幾名。",
+    "example": "撈 top 20 → Cohere Rerank → 取 top 5 給 LLM",
+    "related": [
+      "vector-embedding",
+      "hybrid-search",
+      "chunking"
+    ]
+  },
+  {
+    "slug": "hybrid-search",
+    "term": "Hybrid Search",
+    "zh_name": "混合檢索",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "同時用「向量檢索（懂語意）」+「關鍵字檢索（BM25，精準比對字詞）」再合併結果。什麼時候在意：純向量會漏掉專有名詞/型號/代碼的精確比對——兩者互補，RAG 檢索更全。",
+    "analogy": "像找資料——既用『意思差不多』（向量）也用『一字不差』（關鍵字），兩張網一起撒。",
+    "example": "向量 top-k ∪ BM25 top-k → 融合分數排序",
+    "related": [
+      "vector-embedding",
+      "reranking",
+      "chunking"
+    ]
+  },
+  {
+    "slug": "context-stuffing",
+    "term": "Context Stuffing",
+    "zh_name": "塞爆上下文",
+    "category": "error",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把一大堆資料全塞進 prompt、指望模型自己找答案。什麼時候在意：反模式——context 太長不只貴、模型還會「迷失在中間」（lost in the middle）漏掉中段資訊。正解是 RAG 只塞相關片段。",
+    "analogy": "像把整個檔案櫃倒在桌上叫人找一張紙——不如先幫他挑出相關那幾張。",
+    "example": "❌ 塞 50 份文件全文 → ✅ RAG 只塞最相關 5 段",
+    "related": [
+      "chunking",
+      "context-window",
+      "context-caching"
+    ]
+  },
+  {
+    "slug": "north-star-metric",
+    "term": "North Star Metric",
+    "zh_name": "北極星指標",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "一個「最能代表產品替用戶創造價值」的核心指標，全公司對齊它。什麼時候在意：避免大家各追各的數字——選一個真正反映價值的（如 Airbnb 的『訂房晚數』），其他指標都是為它服務。",
+    "analogy": "像航海的北極星——所有人抬頭找同一顆星定方向，不會各走各的。",
+    "example": "通訊 App 的北極星＝『每日發送訊息數』而非註冊數",
+    "related": [
+      "activation-metric",
+      "dau-mau",
+      "growth-loop"
+    ]
+  },
+  {
+    "slug": "activation-metric",
+    "term": "Activation",
+    "zh_name": "啟用指標",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "新用戶「第一次真正體驗到價值」的那個關鍵動作（aha moment）。什麼時候在意：優化留存的起點——找出『做了 X 的新用戶留下來機率高很多』的那個 X，想辦法讓更多人快點做到。",
+    "analogy": "像交友——第一次聊得來（啟用）才會有後續，光加好友（註冊）沒用。",
+    "example": "Facebook 早期：10 天內加 7 個好友＝啟用門檻",
+    "related": [
+      "retention",
+      "north-star-metric",
+      "growth-loop"
+    ]
+  },
+  {
+    "slug": "growth-loop",
+    "term": "Growth Loop",
+    "zh_name": "成長循環",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "產品本身「用戶行為 → 帶來新用戶 → 再產生行為」的自我循環，比一次性漏斗更持久。什麼時候在意：設計可複利的成長，而非只靠燒錢投廣告。如：用戶分享內容→新人看到→註冊→又產生內容。",
+    "analogy": "像滾雪球——每一圈都自己黏上更多雪，越滾越大，不用一直用手推。",
+    "example": "UGC 循環：發內容→SEO/分享→新用戶→再發內容",
+    "related": [
+      "north-star-metric",
+      "activation-metric",
+      "moat"
+    ]
+  },
+  {
+    "slug": "moat",
+    "term": "Moat",
+    "zh_name": "護城河",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "讓對手難以複製/追上你的持久競爭優勢：網路效應、品牌、規模成本、轉換成本、資料飛輪。什麼時候在意：想長久賺錢——沒有護城河，做得好也會被抄到爛。",
+    "analogy": "像城堡外的護城河——城（產品）再好也要有河擋住敵人（對手），不然一攻就破。",
+    "example": "網路效應（用戶越多越好用）＝最強護城河之一",
+    "related": [
+      "growth-loop",
+      "unit-economics",
+      "product-market-fit"
+    ]
+  },
+  {
+    "slug": "unit-economics",
+    "term": "Unit Economics",
+    "zh_name": "單位經濟",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "單一顧客/單筆交易「賺不賺錢」的帳：一個用戶帶來多少收入、花多少成本獲取與服務。什麼時候在意：判斷商業模式健不健康——如果每多一個用戶都虧錢，規模越大死越快。",
+    "analogy": "像賣雞排——先算清楚『一份』的成本與售價賺不賺，再談要開幾家店。",
+    "example": "LTV > CAC（且回收期夠短）＝單位經濟成立",
+    "related": [
+      "ltv-cac",
+      "burn-rate-runway",
+      "moat"
+    ]
+  },
+  {
+    "slug": "ltv-cac",
+    "term": "LTV / CAC",
+    "zh_name": "顧客終身價值 / 獲客成本",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "LTV＝一個顧客一輩子帶來的淨收入；CAC＝獲取一個顧客的成本。什麼時候在意：健康的生意 LTV 要明顯大於 CAC（常見標竿 3:1），且 CAC 回收期夠短，否則獲客等於燒錢。",
+    "analogy": "像釣魚——魚（LTV）要比魚餌+船錢（CAC）值錢，不然出海越多虧越多。",
+    "example": "LTV NT$3000 / CAC NT$800 = 3.75:1（健康）",
+    "related": [
+      "unit-economics",
+      "churn-rate",
+      "burn-rate-runway"
+    ]
+  },
+  {
+    "slug": "burn-rate-runway",
+    "term": "Burn Rate / Runway",
+    "zh_name": "燒錢率 / 續命期",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "burn rate＝每月淨燒多少現金；runway＝以現在的燒法「還能撐幾個月」。什麼時候在意：新創命脈——runway = 現金 ÷ 月燒，快見底前要嘛獲利、要嘛募資，別撐到歸零。",
+    "analogy": "像開車看油表——每公里耗多少油（燒錢率）、還能開多遠（續命期），沒到加油站前要算好。",
+    "example": "帳上 600 萬、月燒 50 萬 → runway 12 個月",
+    "related": [
+      "unit-economics",
+      "ltv-cac",
+      "product-market-fit"
+    ]
+  }
+]

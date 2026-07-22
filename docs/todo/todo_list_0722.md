@@ -228,7 +228,8 @@
 - [x] ~~seed 36–40：Python 模組 128 個（stdlib+外部）→ 1773 條~~ ✅ 0721
 - [x] ~~seed 41：DB查詢/Git/K8s雲原生/LLM/分散式系統 33 條 → **1806 條**~~ ✅ 0721
 - [x] ~~seed 42：網路協定/Web/資安/加密驗證 41 條 → **1847 條**（全查過無 slug 衝突）~~ ✅ 0721
-- [ ] 4.2.1 續寫到 5000（現 **1961**，從 `dictionary-seed-47.json` 接）
+- [ ] 4.2.1 續寫到 5000（現 **1986**，從 `dictionary-seed-48.json` 接）
+  - [x] ~~seed 47：AI/LLM 進階 + 產品成長黑話 25 條 → **1986**~~ ✅ 0723（temperature/max_tokens/stop-seq/logit-bias/串流/Transformer/MoE/KV-cache/context-caching/few-shot/AI-agent/LLM-eval/VLM/chunking/vector-embedding/reranking/hybrid-search/context-stuffing · 北極星指標/啟用/成長循環/護城河/單位經濟/LTV-CAC/燒錢率-續命期）
   - [x] ~~seed 46：軟體工程實務——後端/DevOps/SOLID 原則/資料工程/前端建置 28 條 → **1961**~~ ✅ 0722（多層快取/ACID/fan-out/DB索引 · artifact-registry/metrics/SLO-SLA-SLI/GitOps/Helm/service-discovery/負載測試 · SOLID/單一職責/開放封閉/里氏替換/介面隔離/重構/契約式設計/SemVer · ETL/批次vs串流/列式儲存/資料血緣/schema演進/backfill · minify/hydration-mismatch/HMR）
   - [x] ~~seed 43：前端框架/React-Vue/TS 型別/測試 概念黑話 31 條 → **1878**~~ ✅ 0722（ssr-csr/render-props/HOC/受控非受控/portal/ref-forwarding/debounce/throttle/island-arch/RSC/樂觀更新/衍生狀態/雙向綁定/單向資料流/組合優於繼承/slot/teleport/watcher/computed/reactivity/proxy-signal 響應式/utility-type/satisfies/infer/mock/stub/spy/AAA/回歸測試/coverage）
   - [x] ~~seed 44：Git/CLI-shell/CSS 版面 黑話 30 條 → **1908**~~ ✅ 0722（cherry-pick/squash/upstream/remote-tracking/hunk/merge-vs-rebase/commit-sha · pipe/stdin-out-err/glob/redirect/ssh/tmux/背景執行/signal/grep/sed/awk/curl/ripgrep/man · stacking-context/reflow-repaint/grid/BFC/rem-em/will-change/clamp/container-query/subgrid）
