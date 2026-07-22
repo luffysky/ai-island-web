@@ -33,7 +33,21 @@ export function FloatingNoteButton({
   useEffect(() => {
     try {
       const saved = localStorage.getItem("lessonNoteBtnPos");
-      if (saved) setBtnPos(JSON.parse(saved));
+      if (!saved) return;
+      const pos = JSON.parse(saved) as { x: number; y: number };
+      // 觸發鈕基準是「左下」(left-4 bottom-24)。舊版曾用「右下」基準拖曳、存下的 offset
+      // 套到左下基準會把鈕推到畫面外（= 使用者看到的「懸浮筆記不見了」）。
+      // 這裡把 offset clamp 回可視範圍，越界就歸零並清掉舊值，確保鈕永遠看得到。
+      const maxX = Math.max(0, window.innerWidth - 180);   // 右邊界（留按鈕寬度）
+      const minY = -(window.innerHeight - 160);            // 往上最多到頂
+      const clamped = {
+        x: Math.min(Math.max(pos.x, 0), maxX),
+        y: Math.min(Math.max(pos.y, minY), 0),             // 往下不超過基準（bottom-24）
+      };
+      setBtnPos(clamped);
+      if (clamped.x !== pos.x || clamped.y !== pos.y) {
+        try { localStorage.setItem("lessonNoteBtnPos", JSON.stringify(clamped)); } catch { /* ignore */ }
+      }
     } catch { /* ignore */ }
   }, []);
 
@@ -124,7 +138,15 @@ export function FloatingNoteButton({
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
       if (moved) {
-        try { localStorage.setItem("lessonNoteBtnPos", JSON.stringify(cur)); } catch { /* ignore */ }
+        // clamp 回可視範圍再存（跟載入時同一套邊界），避免拖到畫面外存下後下次看不到
+        const maxX = Math.max(0, window.innerWidth - 180);
+        const minY = -(window.innerHeight - 160);
+        const safe = {
+          x: Math.min(Math.max(cur.x, 0), maxX),
+          y: Math.min(Math.max(cur.y, minY), 0),
+        };
+        setBtnPos(safe);
+        try { localStorage.setItem("lessonNoteBtnPos", JSON.stringify(safe)); } catch { /* ignore */ }
       } else {
         handleOpen();
       }

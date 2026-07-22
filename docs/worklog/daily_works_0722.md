@@ -53,6 +53,7 @@
 - **「在線」狀態失真**：`InteractionTracker` 每 15 秒無條件心跳 → 分頁只要開著就一直推 `last_active_at` → 後台顯示「幾秒前還在用」但人不在。改：心跳只在「分頁 visible + 近 90 秒有真人互動」才送、離開/背景/idle 即停。
 - **履歷空狀態**：沒資料時「來上一課」原是純文字 URL、點不了 → 改 markdown 連結 `[👉 來 AI 島上一課](/chapters)`（renderMarkdown 本就支援）。
 - **創作島「接入創作」只帶作品**：chat `weaveMsg` 原把綠寶整段回覆（含開場白/結尾閒聊）當作品 body → 加 `stripChatter()`：只留作品本體（歌詞含 Suno 提示詞、文案本體都保留）、砍開頭≤2 行/結尾≤3 行明顯寒暄與純表情、偵測 [Verse]/suno 設 workType=song。三案例實測正確。（Hub compose 路徑本就用結構化 r.body/sunoPrompt、乾淨。）
+- **懸浮筆記鈕「不見了」**（230.jpg）：非被刪、是被舊 localStorage 推到畫面外。鈕可拖曳、位置以 **translate offset** 存 `lessonNoteBtnPos`；7/7 基準左下→右下、7/12 又右下→左下但 key 沒換 → 在右下版拖過左邊存下的負 offset（如 x:-1400）套到左下基準 = 飛出左邊界看不到。修：載入與拖曳存檔都把 offset **clamp 回可視範圍**（越界歸零並清舊值）→ 受影響者下次進章節鈕自動回左下、以後拖到畫面外也自癒。
 
 ## 🏁 收尾健檢（本日全部改動一次過）
 
