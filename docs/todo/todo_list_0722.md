@@ -220,7 +220,7 @@
   - [ ] 🏁 **後端/DevOps 全罐頭章清完**（ch15/16/17/18/19/20/21/22/24）
   - [x] ~~ch06/11/12/14/23/25/37/38/39/40/41/42/49/50 殘餘罐頭 63 題全 de-can~~ ✅ 0721（JSON/行動App/資安OWASP/PWA/後端架構/CDN-DNS/WordPress/電商/LINE生態/Kotlin-Dart/遊戲/接案型態/AI Agent/n8n；接案/職涯/變現題一律不掛收入保證）
   - [x] 🏁🏁 **全站章節 de-can 完成 — 掃全 chapters JSON『canned remaining: 0』**（罐頭練習全數清零）
-- [ ] 4.1.2 **deep-rewrite tier 未動章** ＝「A→B→C→D 回原路線」的 **C**（大量內容重寫、**建議每章開專注 session 品質才穩**）：**優先 ch40、ch63、ch68（strict-spec）、ch72–75**；其餘 ch15、ch24、ch32、ch34、ch35、ch36、ch41、附錄 ch61–67/69–70
+- [ ] 4.1.2 **deep-rewrite tier 未動章** ＝「A→B→C→D 回原路線」的 **C**（大量內容重寫、**建議每章開專注 session 品質才穩**）：~~ch40~~ ✅ 0722（修 40.1 截斷 + 換 40.5 罐頭題 + 深寫 40.2/40.3/40.5/40.6，已 import DB）；**續做優先 ch63、ch68（strict-spec）、ch72–75**；其餘 ch15、ch24、ch32、ch34、ch35、ch36、ch41、附錄 ch61–67/69–70
 - [ ] 4.1.3 教具庫擴充 ＝「回原路線」的 **D**（互動教具）：mobile 專屬教具（給 ch11）、規劃 B 教具（RegexTester/CronBuilder/JsonInspector 進階/HttpInspector/Tokenizer/SortingViz/GitGraph/NeuralForward/AuthFlow/MLBoundary）——依技術章需要再建
 - [ ] 4.1.4 圖文解說圖：概念/B/D/E/F 區操作圖 110+ 張（🔴 等林董生圖；A 區 29 張 ✅）
 
