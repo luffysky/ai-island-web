@@ -1,0 +1,398 @@
+[
+  {
+    "slug": "b-tree",
+    "term": "B-Tree",
+    "zh_name": "B 樹",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一種『每個節點裝很多鍵、很矮胖』的平衡樹，專為『從磁碟讀』設計。什麼時候在意：資料庫索引的底層就是 B-Tree（B+Tree）——矮胖代表查一筆只讀少數幾個磁碟區塊，所以索引查詢才快。",
+    "analogy": "像百科全書的分冊索引——不是一頁一頁翻，而是先看粗分類（少數幾層）快速縮到目標。",
+    "example": "Postgres/MySQL 索引預設 B-Tree",
+    "related": [
+      "database-index",
+      "red-black-tree",
+      "lsm-tree"
+    ]
+  },
+  {
+    "slug": "lsm-tree",
+    "term": "LSM-Tree",
+    "zh_name": "日誌結構合併樹",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "Log-Structured Merge Tree：寫入先進記憶體、批次循序寫磁碟、背景合併。什麼時候在意：『寫多讀少』的資料庫（Cassandra、RocksDB、LevelDB）——把隨機寫變循序寫、寫入超快，代價是讀要查多層+定期壓縮合併。",
+    "analogy": "像先把新資料記在便條（記憶體），滿了整疊歸檔（循序寫磁碟），定期整理合併——寫得快、找舊的要多翻幾層。",
+    "example": "Cassandra/RocksDB 寫入密集場景用 LSM",
+    "related": [
+      "b-tree",
+      "write-back",
+      "database-index"
+    ]
+  },
+  {
+    "slug": "red-black-tree",
+    "term": "Red-Black Tree",
+    "zh_name": "紅黑樹",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一種『自動保持平衡』的二元搜尋樹，用紅/黑著色規則確保不會退化成鏈結串列。什麼時候在意：很多語言的有序 Map/Set 底層用它（C++ std::map、Java TreeMap）——保證增刪查都 O(log n)，不會因插入順序爛掉。",
+    "analogy": "像會自動整隊的隊伍——不管人怎麼進來，都自動調整保持整齊，不會一邊排超長。",
+    "example": "Java TreeMap / C++ std::map 底層",
+    "related": [
+      "avl-tree",
+      "b-tree",
+      "binary-search-tree"
+    ]
+  },
+  {
+    "slug": "avl-tree",
+    "term": "AVL Tree",
+    "zh_name": "AVL 樹",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "最早的自平衡二元搜尋樹，平衡條件比紅黑樹嚴（左右高度差 ≤1）。什麼時候在意：查詢極頻繁時——AVL 更矮更平衡、查更快，但插入/刪除因常要旋轉調整而較慢。紅黑樹是查與改的折衷。",
+    "analogy": "像超龜毛的整隊——要求兩邊人數幾乎一樣，查得快，但每次進出都要重排一下比較累。",
+    "example": "讀多寫少、要極快查詢時選 AVL",
+    "related": [
+      "red-black-tree",
+      "binary-search-tree",
+      "b-tree"
+    ]
+  },
+  {
+    "slug": "skip-list",
+    "term": "Skip List",
+    "zh_name": "跳躍串列",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "在排序鏈結串列上『疊幾層快速道』，查找時從高層大步跳、逼近再下層細找。什麼時候在意：Redis 的有序集合(zset)用它——比平衡樹好實作、支援範圍查詢、效能相近 O(log n)。",
+    "analogy": "像捷運有『快車＋各站』——先搭快車（高層）大步接近，再換慢車（底層）到準確那站。",
+    "example": "Redis Sorted Set 底層用 skip list",
+    "related": [
+      "union-find",
+      "red-black-tree",
+      "priority-queue-2"
+    ]
+  },
+  {
+    "slug": "union-find",
+    "term": "Union-Find (Disjoint Set)",
+    "zh_name": "併查集",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "高效管理『一堆元素分成哪些群、能不能合併』的結構，支援『查屬於哪群』與『合併兩群』近乎 O(1)。什麼時候在意：判連通（社群分群、網路連通）、最小生成樹（Kruskal）、偵測環。",
+    "analogy": "像認親戚——問『你倆同一家嗎』(find) 跟『這兩家聯姻合併』(union)，用族長代表快速判斷。",
+    "example": "判兩點是否連通、Kruskal 建 MST",
+    "related": [
+      "graph-data-structure",
+      "graph-traversal",
+      "skip-list"
+    ]
+  },
+  {
+    "slug": "ring-buffer",
+    "term": "Ring Buffer (Circular Buffer)",
+    "zh_name": "環形緩衝區",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "固定大小、『寫到底就繞回開頭覆蓋最舊』的緩衝區。什麼時候在意：串流/即時資料——保留最近 N 筆（log、音訊、感測器）、固定記憶體不增長、寫入 O(1)。滿了自動丟最舊的。",
+    "analogy": "像旋轉壽司台固定幾個位子——新盤放上來就把最舊那盤擠掉，位子數固定不會爆。",
+    "example": "存最近 1000 筆 log / 音訊取樣緩衝",
+    "related": [
+      "deque",
+      "producer-consumer",
+      "lru-eviction"
+    ]
+  },
+  {
+    "slug": "bit-vector",
+    "term": "Bit Vector / Bitmap",
+    "zh_name": "位元向量 / 點陣圖",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用『每個 bit 代表一個布林狀態』的緊湊結構——1 個 byte 存 8 個開關。什麼時候在意：省記憶體地存大量 true/false（哪些 id 已處理、權限旗標、bloom filter 底層）、用位元運算快速做集合運算（交集=AND）。",
+    "analogy": "像一長排開關面板——每個燈一個 bit，用最少空間記一大堆開/關狀態。",
+    "example": "1 億個 id 的『已讀』狀態 → bitmap 省 8 倍空間",
+    "related": [
+      "bitwise-operation",
+      "bloom-filter",
+      "sparse-array"
+    ]
+  },
+  {
+    "slug": "subnetting",
+    "term": "Subnetting / CIDR",
+    "zh_name": "子網劃分",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把一個 IP 網段『切成更小的子網』，用 CIDR 記法（如 192.168.1.0/24）表示。什麼時候在意：設定雲端 VPC、防火牆規則——/24 代表前 24 bit 是網路、後 8 bit 是主機（254 台）。搞懂才會設對網段不重疊。",
+    "analogy": "像把一大片社區劃分成幾個里——每個里有自己的門牌範圍，管理、隔離都清楚。",
+    "example": "10.0.0.0/16 切成多個 /24 子網給不同服務",
+    "related": [
+      "ip-subnet",
+      "dhcp",
+      "firewall"
+    ]
+  },
+  {
+    "slug": "dns-record-types",
+    "term": "DNS Record Types",
+    "zh_name": "DNS 記錄類型",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "DNS 各種記錄：A（域名→IPv4）、AAAA（→IPv6）、CNAME（別名指向另一域名）、MX（收信伺服器）、TXT（驗證/SPF）、NS（管理此域的名稱伺服器）。什麼時候在意：設定網域——綁網站、寄信驗證、換主機都在改這些。",
+    "analogy": "像一本地址簿的不同欄位——住家地址(A)、綽號對照(CNAME)、收信地址(MX)、身分證明(TXT)各記各的。",
+    "example": "A → 主機 IP；CNAME www → 主域；MX → 郵件主機",
+    "related": [
+      "dns-resolution",
+      "cname",
+      "mx-record"
+    ]
+  },
+  {
+    "slug": "dhcp",
+    "term": "DHCP",
+    "zh_name": "動態主機設定協定",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "裝置一連上網路，DHCP 伺服器『自動配發 IP、閘道、DNS』給它，不用手動設。什麼時候在意：家裡/公司 Wi-Fi 連上就有 IP 就是它做的；理解『IP 是租來的、會變』——伺服器要固定 IP 得設靜態或保留。",
+    "analogy": "像遊樂園入口自動發手環（IP）——一進來就給你一個臨時編號，離開回收，下次來可能不同號。",
+    "example": "手機連 Wi-Fi → DHCP 自動給 192.168.1.x",
+    "related": [
+      "subnetting",
+      "dns-resolution",
+      "ip-subnet"
+    ]
+  },
+  {
+    "slug": "proxy-vs-vpn",
+    "term": "Proxy vs VPN",
+    "zh_name": "代理 vs VPN",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "proxy 幫你『轉發特定應用的流量』（換 IP、快取、過濾）；VPN 建『整台裝置的加密隧道』把所有流量都導過去。什麼時候在意：VPN 加密全流量、隱私強；proxy 輕量、只針對某些請求（如爬蟲換 IP、公司內網代理）。",
+    "analogy": "proxy 像請人幫你跑某趟腿（單一應用）；VPN 像搭一台加密專車（整台裝置的所有流量）。",
+    "example": "公司用 proxy 過濾網站；遠端用 VPN 進內網",
+    "related": [
+      "reverse-proxy",
+      "nat-traversal",
+      "end-to-end-encryption"
+    ]
+  },
+  {
+    "slug": "icmp-ping",
+    "term": "ICMP / Ping",
+    "zh_name": "網路探測",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "ping 用 ICMP 協定『戳一下對方、量往返時間』確認通不通、多快。什麼時候在意：最基本的網路排錯第一步——連得到嗎？延遲多少？（有些主機防火牆會擋 ICMP，ping 不到不代表服務掛）。",
+    "analogy": "像喊一聲『在嗎？』聽回音——有回、多久回，判斷對方在不在、遠不遠。",
+    "example": "ping google.com → 看 RTT 幾 ms、有無掉包",
+    "related": [
+      "traceroute",
+      "tcp-vs-udp",
+      "latency"
+    ]
+  },
+  {
+    "slug": "bandwidth-throughput",
+    "term": "Bandwidth vs Throughput",
+    "zh_name": "頻寬 vs 吞吐量",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "頻寬＝『理論最大』傳輸速率（管子多粗）；吞吐量＝『實際』傳到的量（真的流了多少水，受延遲、丟包、壅塞影響）。什麼時候在意：『我有 1G 頻寬怎麼下載才 50MB/s』——頻寬是上限，實際吞吐常更低。",
+    "analogy": "頻寬像水管口徑（最大能流多少）；吞吐量像實際流量（可能因彎折、漏水而變小）。",
+    "example": "1Gbps 頻寬、但實測吞吐 300Mbps（延遲/丟包影響）",
+    "related": [
+      "latency",
+      "packet-loss",
+      "icmp-ping"
+    ]
+  },
+  {
+    "slug": "service-worker-lifecycle",
+    "term": "Service Worker Lifecycle",
+    "zh_name": "Service Worker 生命週期",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "Service Worker 的階段：install（裝、預快取）→ activate（啟用、清舊快取）→ 攔截 fetch。什麼時候在意：做 PWA/離線——理解為何『改了 SW 要等下次載入才生效』（新版先 waiting，舊分頁全關才接管），用 skipWaiting 可搶先接管。",
+    "analogy": "像換保全班——新保全先報到（install）、等舊班全下班（舊分頁關）才正式接手（activate）值勤。",
+    "example": "install 快取殼 → activate 清舊版 → fetch 攔截",
+    "related": [
+      "service-worker",
+      "offline-cache",
+      "web-manifest"
+    ]
+  },
+  {
+    "slug": "web-manifest",
+    "term": "Web App Manifest",
+    "zh_name": "網頁應用清單",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "一個 JSON 檔描述你的 PWA『名稱、圖示、主題色、啟動畫面、顯示模式』，讓它能『加到主畫面』像 App。什麼時候在意：做 PWA——有了 manifest + service worker + HTTPS，瀏覽器才會提示安裝、開起來像原生 App（無網址列）。",
+    "analogy": "像 App 的『身分證+外觀設定』——告訴系統這 App 叫什麼、什麼圖示、開起來長怎樣。",
+    "example": "manifest.json: name/icons/theme_color/display:standalone",
+    "related": [
+      "install-prompt",
+      "service-worker-lifecycle",
+      "app-shell"
+    ]
+  },
+  {
+    "slug": "install-prompt",
+    "term": "Install Prompt (A2HS)",
+    "zh_name": "安裝提示",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "PWA 符合條件時，瀏覽器可提示『加到主畫面』(Add to Home Screen)。什麼時候在意：想引導安裝——攔 beforeinstallprompt 事件、自訂時機顯示按鈕（別一進站就跳、體驗差）。iOS 較受限（要手動從分享選單加）。",
+    "analogy": "像逛店家問『要不要加入會員（裝到桌面）』——時機挑對才不惹人厭。",
+    "example": "存 beforeinstallprompt 事件 → 適當時機顯示安裝鈕",
+    "related": [
+      "web-manifest",
+      "service-worker-lifecycle",
+      "app-shell"
+    ]
+  },
+  {
+    "slug": "app-shell",
+    "term": "App Shell",
+    "zh_name": "應用外殼",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把 App『最小的骨架（header/nav/框架）』先快取起來，秒開先顯示殼、內容再填。什麼時候在意：PWA 追求『瞬開』——外殼從快取即時出現（不等網路），像原生 App 一開就有畫面，資料才慢慢載。",
+    "analogy": "像餐廳先擺好桌椅餐具（殼），你一坐下就有樣子，菜（內容）再上——不用等全部好才開門。",
+    "example": "SW 快取 shell → 離線也秒顯示框架 → 內容再抓",
+    "related": [
+      "service-worker-lifecycle",
+      "offline-cache",
+      "islands-architecture"
+    ]
+  },
+  {
+    "slug": "offline-cache",
+    "term": "Offline-First Caching",
+    "zh_name": "離線優先快取",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "用 service worker 攔請求、優先回快取，讓 App『沒網路也能開』。什麼時候在意：PWA/不穩網路——策略選擇：cache-first（靜態資源）、network-first（要新資料）、stale-while-revalidate（先快取後更新）。",
+    "analogy": "像出門前先把常用東西裝進背包——臨時沒網（沒商店）也能拿背包裡的用。",
+    "example": "SW: 靜態 cache-first、API network-first-fallback-cache",
+    "related": [
+      "service-worker-lifecycle",
+      "cache-storage-api",
+      "stale-while-revalidate"
+    ]
+  },
+  {
+    "slug": "background-sync",
+    "term": "Background Sync",
+    "zh_name": "背景同步",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "離線時使用者的操作先『排隊』，等網路恢復 service worker 自動在背景送出。什麼時候在意：做離線可用的 App——沒網也能按送出（先存本地），恢復連線自動補傳，使用者不用重按。",
+    "analogy": "像離線時寫好的信先放待寄匣——一有網路（郵差來）就自動幫你寄出去。",
+    "example": "離線留言 → 存佇列 → 連線後 SW 自動 POST",
+    "related": [
+      "service-worker-lifecycle",
+      "offline-cache",
+      "message-queue"
+    ]
+  },
+  {
+    "slug": "web-push",
+    "term": "Web Push",
+    "zh_name": "網頁推播",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "讓網站/PWA『即使沒開』也能推播通知（靠 service worker + 推播服務 + VAPID 金鑰）。什麼時候在意：做通知功能——使用者訂閱後拿到 subscription，伺服器用它推；要先請求通知權限（別一進站就要）。",
+    "analogy": "像 App 的推播——網站也能在你沒開它時，跳通知提醒你。",
+    "example": "訂閱 push → 存 subscription → 伺服器 VAPID 推播",
+    "related": [
+      "notification-api",
+      "service-worker-lifecycle",
+      "background-sync"
+    ]
+  },
+  {
+    "slug": "cache-storage-api",
+    "term": "Cache Storage API",
+    "zh_name": "快取儲存 API",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "瀏覽器給 service worker 用的『存 request/response 對』的快取空間（跟 HTTP 快取、localStorage 不同）。什麼時候在意：PWA 精細控制離線快取——用 caches.open/put/match 自己決定存什麼、何時更新、怎麼失效。",
+    "analogy": "像 App 自己管的離線倉庫——你決定把哪些網路回應存起來，離線時直接從這拿。",
+    "example": "caches.open('v1').then(c=>c.put(req, res))",
+    "related": [
+      "offline-cache",
+      "service-worker-lifecycle",
+      "web-storage"
+    ]
+  }
+]
