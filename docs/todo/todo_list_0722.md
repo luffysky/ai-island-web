@@ -228,7 +228,8 @@
 - [x] ~~seed 36–40：Python 模組 128 個（stdlib+外部）→ 1773 條~~ ✅ 0721
 - [x] ~~seed 41：DB查詢/Git/K8s雲原生/LLM/分散式系統 33 條 → **1806 條**~~ ✅ 0721
 - [x] ~~seed 42：網路協定/Web/資安/加密驗證 41 條 → **1847 條**（全查過無 slug 衝突）~~ ✅ 0721
-- [ ] 4.2.1 續寫到 5000（現 **2114**，從 `dictionary-seed-54.json` 接）
+- [ ] 4.2.1 續寫到 5000（現 **2135**，從 `dictionary-seed-55.json` 接）
+  - [x] ~~seed 54：並發/非同步 + 雲端服務 + 金流/支付 21 條 → **2135**~~ ✅ 0723（actor模型/綠色執行緒/thread-pool/worker-pool/生產消費者/反應式/事件驅動/lock-free · serverless/物件儲存/blob/託管DB/可用區 · 金流閘道/PCI-DSS/代碼化/3DS/訂閱計費/webhook冪等/chargeback/退款流程）
   - [x] ~~seed 53：敏捷協作 + 遊戲/圖形 + CS 理論 20 條 → **2114**~~ ✅ 0723（每日站會/燃盡圖/泳道/程式凍結/發布列車 · delta-time/tick-rate/物理引擎/ECS/shader/光柵化/光線追蹤/z-buffer · 有限狀態機/圖靈機/NP完全/圖走訪/位元運算/雜湊碰撞/regex引擎ReDoS）
   - [x] ~~seed 52：函數式編程 + 網頁平台 API + 無障礙 19 條 → **2094**~~ ✅ 0723（宣告式vs命令式/不可變/記憶化/pipe-compose/ADT · Fetch/AbortController/Web-Share/Clipboard/Notification/Geolocation/History API · aria-label/報讀器/鍵盤導覽/焦點管理/對比度/WCAG/prefers-reduced-motion）
   - [x] ~~seed 51：編譯器/語言實作 + 行動 App + 網路底層 18 條 → **2075**~~ ✅ 0723（AST/lexer/parser/JIT/transpiler/linker/符號表/IR/靜態vs動態型別 · 程式碼簽章/OTA更新/生物辨識/背景抓取/App沙盒/原生橋接 · TCP-vs-UDP/base64/NAT穿透）

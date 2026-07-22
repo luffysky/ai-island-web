@@ -1,0 +1,380 @@
+[
+  {
+    "slug": "actor-model",
+    "term": "Actor Model",
+    "zh_name": "演員模型",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "並發的一種設計：每個「actor」有自己私有狀態、只靠『收發訊息』溝通、一次處理一則。什麼時候在意：不用共享記憶體+鎖（避開資料競爭）——Erlang/Elixir、Akka 用它做高併發、容錯系統。",
+    "analogy": "像一群各自獨立的辦公室——不共用桌子（狀態），要辦事就寄公文（訊息），各自處理不打架。",
+    "example": "Erlang 用 actor 做電信級容錯併發",
+    "related": [
+      "event-driven",
+      "green-thread",
+      "producer-consumer"
+    ]
+  },
+  {
+    "slug": "green-thread",
+    "term": "Green Thread",
+    "zh_name": "綠色執行緒",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "由『執行環境（而非作業系統）』排程的輕量執行緒，可開幾十萬個、切換便宜。什麼時候在意：Go 的 goroutine、舊 Java、協程都是類似概念——比 OS thread 省太多，適合大量並發 I/O。",
+    "analogy": "像公司內部自己調度的臨時工——不用驚動政府（OS）發工號，要多少有多少、調度超快。",
+    "example": "Go goroutine：一支程式輕鬆開 10 萬個",
+    "related": [
+      "coroutine",
+      "context-switch",
+      "thread-pool"
+    ]
+  },
+  {
+    "slug": "thread-pool",
+    "term": "Thread Pool",
+    "zh_name": "執行緒池",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "預先建好一批執行緒『重複利用』來處理任務，避免每個任務都新建/銷毀執行緒的開銷。什麼時候在意：處理大量短任務——池化省下建立成本、也限制同時執行數避免壓垮系統。",
+    "analogy": "像餐廳固定請 5 位廚師輪流接單，而不是每來一桌就臨時招一個又解雇——省招募成本。",
+    "example": "ExecutorService 固定 N 執行緒消化任務佇列",
+    "related": [
+      "worker-pool",
+      "connection-pool",
+      "green-thread"
+    ]
+  },
+  {
+    "slug": "worker-pool",
+    "term": "Worker Pool",
+    "zh_name": "工作者池",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "一組 worker 從『共用任務佇列』各自撈任務來做，做完再撈下一個。什麼時候在意：限制並發數（別一次跑 1000 個爆掉）、平行處理一批工作——爬蟲、批次、圖片處理常用。",
+    "analogy": "像一排收銀員共用一條排隊人龍——誰有空誰接下一位，人力控制在固定數量。",
+    "example": "5 個 worker 消化 1000 張圖的縮圖任務",
+    "related": [
+      "thread-pool",
+      "producer-consumer",
+      "fan-in-fan-out"
+    ]
+  },
+  {
+    "slug": "producer-consumer",
+    "term": "Producer-Consumer",
+    "zh_name": "生產者-消費者",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "一種模式：生產者把工作丟進『佇列』、消費者從佇列取出處理，兩邊速度不同也能透過佇列緩衝解耦。什麼時候在意：處理速度不對等時（快產慢耗）——用佇列當緩衝，還能各自獨立擴容。",
+    "analogy": "像壽司店的迴轉台——師傅（生產者）放盤、客人（消費者）拿，各做各的靠轉台（佇列）協調。",
+    "example": "上傳事件進佇列 → 多個 worker 消費轉檔",
+    "related": [
+      "worker-pool",
+      "message-queue",
+      "backpressure"
+    ]
+  },
+  {
+    "slug": "reactive-programming",
+    "term": "Reactive Programming",
+    "zh_name": "反應式編程",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "用『資料流 + 變化自動傳播』的方式寫程式——訂閱一個串流，值一變下游自動更新。什麼時候在意：處理事件流/非同步序列（RxJS、Kotlin Flow、Vue 響應式）——宣告式地組合『過濾、轉換、合併』串流，比手動 callback 清爽。",
+    "analogy": "像 Excel 公式——來源格一改，所有引用它的公式自動重算，你不用手動去更新。",
+    "example": "RxJS：搜尋框輸入流 → debounce → 打 API → 顯示",
+    "related": [
+      "event-driven",
+      "backpressure",
+      "reactivity"
+    ]
+  },
+  {
+    "slug": "event-driven",
+    "term": "Event-Driven Architecture",
+    "zh_name": "事件驅動架構",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "系統各部分靠『發布/訂閱事件』溝通，而非直接互相呼叫。什麼時候在意：解耦與擴展——下單後發『訂單成立』事件，寄信、扣庫存、發貨各自訂閱處理，彼此不用知道對方存在，好加新功能。",
+    "analogy": "像廣播——電台發消息（事件），誰想聽誰訂閱各自反應，電台不用管有誰在聽。",
+    "example": "OrderPlaced 事件 → 通知/庫存/物流各自訂閱處理",
+    "related": [
+      "pub-sub",
+      "message-queue",
+      "actor-model"
+    ]
+  },
+  {
+    "slug": "lock-free",
+    "term": "Lock-Free",
+    "zh_name": "無鎖",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "不用鎖、而是靠『原子操作（如 CAS 比較並交換）』做並發安全的資料結構。什麼時候在意：高效能並發——避開鎖的開銷與死鎖風險，但極難寫對（ABA 問題等）。多數人用現成的無鎖佇列/計數器而非自幹。",
+    "analogy": "像搶最後一個位子用『同時伸手、誰先碰到誰的算』的原子規則，而不是先排隊拿鑰匙（鎖）。",
+    "example": "AtomicInteger.incrementAndGet() 底層用 CAS",
+    "related": [
+      "atomic-cas",
+      "mutex-semaphore",
+      "atomic-operation"
+    ]
+  },
+  {
+    "slug": "serverless-function",
+    "term": "Serverless Function (FaaS)",
+    "zh_name": "無伺服器函式",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "你只寫一個函式、雲端幫你『有請求才跑、跑完就收』，不用管伺服器，按用量計費。什麼時候在意：流量不固定、想省維運（Lambda、Cloud Functions、Vercel）——閒置不花錢、自動擴縮；缺點是冷啟動延遲、有執行時間上限。",
+    "analogy": "像叫計程車——要用才叫、按里程付，不用自己養一台車（伺服器）閒置停在那。",
+    "example": "上傳圖 → 觸發 Lambda 自動產縮圖",
+    "related": [
+      "cold-start",
+      "managed-database",
+      "object-storage"
+    ]
+  },
+  {
+    "slug": "object-storage",
+    "term": "Object Storage",
+    "zh_name": "物件儲存",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把檔案當『物件』存進近乎無限、便宜、高可用的雲端桶（S3、R2、GCS）。什麼時候在意：存圖片/影片/備份/使用者上傳——不像傳統檔案系統，它靠 HTTP 存取、適合海量非結構化資料。搭 CDN 加速。",
+    "analogy": "像無限大的雲端寄物櫃——東西丟進去給個網址取，不用管硬碟夠不夠、會不會壞。",
+    "example": "使用者頭像存 S3/R2 → CDN 分發",
+    "related": [
+      "blob-storage",
+      "cdn-edge",
+      "serverless-function"
+    ]
+  },
+  {
+    "slug": "blob-storage",
+    "term": "Blob Storage",
+    "zh_name": "二進位大物件儲存",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "物件儲存在 Azure 的叫法（Binary Large Object）——存任意二進位大檔。什麼時候在意：跟 object storage 同概念（S3/R2/GCS/Azure Blob 各家名字不同），存影音、備份、日誌歸檔。",
+    "analogy": "跟物件儲存一樣的無限寄物櫃，只是這家（Azure）叫它 Blob。",
+    "example": "Azure Blob 存大量影片檔",
+    "related": [
+      "object-storage",
+      "cdn-edge",
+      "availability-zone"
+    ]
+  },
+  {
+    "slug": "managed-database",
+    "term": "Managed Database",
+    "zh_name": "託管資料庫",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "雲端幫你『代管資料庫』——備份、更新、擴容、故障轉移都自動（RDS、Supabase、PlanetScale、Neon）。什麼時候在意：不想自己維運 DB（半夜爬起來救資料庫）——花點錢換省心與高可用；缺點是彈性/掌控度較低。",
+    "analogy": "像住有管理員的大樓——水電維修、保全都有人管，你只管住，不用自己修水管。",
+    "example": "用 Supabase Postgres 不自己架 DB 伺服器",
+    "related": [
+      "serverless-function",
+      "availability-zone",
+      "read-replica"
+    ]
+  },
+  {
+    "slug": "availability-zone",
+    "term": "Availability Zone (AZ)",
+    "zh_name": "可用區",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "雲端一個地區（region）內『實體隔離的多個機房』，彼此獨立供電/網路。什麼時候在意：高可用設計——把服務跨多個 AZ 部署，一個機房掛了（停電/火災）另一個接手，不整個服務倒。",
+    "analogy": "像同一個城市的多個獨立倉庫——一間失火，貨還在別間，不會全毀。",
+    "example": "跨 3 個 AZ 部署 → 單一機房故障不停機",
+    "related": [
+      "managed-database",
+      "autoscaling-group",
+      "fault-tolerance"
+    ]
+  },
+  {
+    "slug": "payment-gateway",
+    "term": "Payment Gateway",
+    "zh_name": "金流閘道",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "幫你『安全處理刷卡/付款』的中間服務（Stripe、綠界、TapPay），把敏感卡號交給它、你不碰。什麼時候在意：網站要收錢——別自己存卡號（違法又危險），透過閘道處理、你只拿到付款結果與 token。",
+    "analogy": "像商場的統一收銀櫃檯——你不自己數錢驗鈔，交給專業櫃檯處理、給你一張收據。",
+    "example": "結帳串 Stripe：卡號直傳 Stripe、你只收 webhook",
+    "related": [
+      "tokenization-payment",
+      "3d-secure",
+      "pci-dss"
+    ]
+  },
+  {
+    "slug": "pci-dss",
+    "term": "PCI DSS",
+    "zh_name": "支付卡產業資安標準",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "處理信用卡資料必須遵守的一套資安標準。什麼時候在意：只要碰到卡號就受規範——所以多數人『根本不碰卡號』（交給合規的金流閘道），把 PCI 責任外包出去，自己只處理 token。自存卡號＝要通過嚴格稽核。",
+    "analogy": "像食品安全認證——碰到食材（卡號）就要符合衛生標準；不想被稽核，就外包給有牌的中央廚房（閘道）。",
+    "example": "用 Stripe Elements → 卡號不進你伺服器 → 降 PCI 範圍",
+    "related": [
+      "payment-gateway",
+      "tokenization-payment",
+      "3d-secure"
+    ]
+  },
+  {
+    "slug": "tokenization-payment",
+    "term": "Payment Tokenization",
+    "zh_name": "支付代碼化",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把真實卡號換成一個『無意義的 token』，之後用 token 扣款、不再碰真卡號。什麼時候在意：訂閱/一鍵再購——存 token 而非卡號，安全（外洩了也扣不了款）又合規。",
+    "analogy": "像寄物櫃號碼牌——你拿號碼牌（token）領東西，不用把真鑰匙（卡號）到處給。",
+    "example": "首次付款存 card token → 續訂用 token 扣",
+    "related": [
+      "payment-gateway",
+      "pci-dss",
+      "subscription-billing"
+    ]
+  },
+  {
+    "slug": "3d-secure",
+    "term": "3-D Secure (3DS)",
+    "zh_name": "3D 驗證",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "刷卡時多一層『持卡人身分驗證』（銀行 App 確認、簡訊 OTP）。什麼時候在意：降盜刷、把『被盜刷的責任』從商家轉到發卡行（liability shift）；歐盟 SCA 法規要求。缺點是多一步、可能降轉換率。",
+    "analogy": "像刷卡再加一道銀行的人臉/簡訊確認——多一關卡但確定是本人，被盜刷不賴商家。",
+    "example": "結帳跳銀行 App 確認 → 通過才扣款",
+    "related": [
+      "payment-gateway",
+      "pci-dss",
+      "tokenization-payment"
+    ]
+  },
+  {
+    "slug": "subscription-billing",
+    "term": "Subscription Billing",
+    "zh_name": "訂閱計費",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "定期（月/年）自動向使用者收費的機制。什麼時候在意：做 SaaS/會員——要處理續訂、升降級按比例計費（proration）、扣款失敗重試（dunning）、取消退費。多數靠金流閘道的訂閱功能，別自己刻。",
+    "analogy": "像健身房月費——每月自動扣、換方案按比例算、卡沒錢就通知你補，一套流程。",
+    "example": "Stripe Billing 管月費/年費/升降級/催款",
+    "related": [
+      "tokenization-payment",
+      "payment-gateway",
+      "webhook-idempotency"
+    ]
+  },
+  {
+    "slug": "webhook-idempotency",
+    "term": "Webhook Idempotency",
+    "zh_name": "Webhook 冪等",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "金流 webhook 可能『重送同一個事件』（網路重試），你的處理必須『重複收到也只生效一次』。什麼時候在意：收付款通知——沒做冪等會重複發貨/重複加值。做法：記事件 id、處理過就跳過。",
+    "analogy": "像掛號信可能寄兩份——你要認得『這封我簽收過了』，不會因為收到兩次就出兩次貨。",
+    "example": "存 event.id、already processed 就直接回 200 略過",
+    "related": [
+      "idempotency",
+      "payment-gateway",
+      "subscription-billing"
+    ]
+  },
+  {
+    "slug": "chargeback",
+    "term": "Chargeback",
+    "zh_name": "退單/爭議款",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "持卡人向『發卡銀行』申訴要求撤銷一筆刷卡（盜刷、貨不對版、忘記訂閱）。什麼時候在意：做金流要面對——chargeback 商家要退款還可能被罰手續費，太多會被金流封鎖。防範：清楚的退訂、好的客服、3DS。",
+    "analogy": "像跟銀行客訴『這筆我沒買/有問題』把錢要回去——商家不只退錢，還要花力氣舉證。",
+    "example": "用戶忘記訂閱扣款 → 申請 chargeback → 商家舉證",
+    "related": [
+      "refund-flow",
+      "3d-secure",
+      "subscription-billing"
+    ]
+  },
+  {
+    "slug": "refund-flow",
+    "term": "Refund Flow",
+    "zh_name": "退款流程",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把已收的款『退回』給使用者的流程（全額/部分）。什麼時候在意：做電商/訂閱——要處理退款按鈕、透過金流 API 退、更新訂單狀態、通知使用者。跟 chargeback 差在：退款是你主動好好退（比被 chargeback 好）。",
+    "analogy": "像店員主動幫你辦退貨退款——比你跑去跟銀行客訴（chargeback）雙方都輕鬆。",
+    "example": "客服點退款 → Stripe refund API → 訂單標 refunded",
+    "related": [
+      "chargeback",
+      "payment-gateway",
+      "webhook-idempotency"
+    ]
+  }
+]
