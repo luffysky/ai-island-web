@@ -1845,7 +1845,19 @@
         ],
         "answer": "b",
         "explanation": "正則表達式就是為了「按模式快速驗證格式」而生—寫 /^\\d{10}$/ 一行搞定。a、c、d 都能動但低效且容易出錯，不符合字串處理的實務做法。"
-      }
+      },
+      "demos": [
+        {
+          "type": "regex-tester",
+          "title": "正則測試器 · 玩玩看",
+          "note": "正則是跨語言的通用技能——在這即時試，同樣的 pattern 各語言都通用。",
+          "config": {
+            "pattern": "#\\w+",
+            "flags": "g",
+            "testString": "貼文 #程式 學 #Python 和 #正則 超實用 #coding"
+          }
+        }
+      ]
     },
     {
       "id": "7.26",

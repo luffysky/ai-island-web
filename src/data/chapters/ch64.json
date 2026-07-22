@@ -579,7 +579,19 @@
         ],
         "answer": "a",
         "explanation": "選項 a 用 `(div|span)` 在同一個群組內表示「div 或 span」，因此 `<div>` 和 `<span>` 都能匹配。選項 b 雖然也能匹配，但創建了兩個不必要的群組；選項 c 會誤匹配 `<div` 或 `<span`；選項 d 的字元類 `[div|span]` 會當成個別字元來判斷。"
-      }
+      },
+      "demos": [
+        {
+          "type": "regex-tester",
+          "title": "正則測試器 · 邊查邊玩",
+          "note": "上面 cheatsheet 的語法，直接在這打打看、即時看命中——比背表快。",
+          "config": {
+            "pattern": "(\\d{4})-(\\d{2})-(\\d{2})",
+            "flags": "g",
+            "testString": "活動日期 2026-07-23 到 2026-08-15，報名截止 2026-07-30。"
+          }
+        }
+      ]
     }
   ],
   "outcomes": [
