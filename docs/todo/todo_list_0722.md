@@ -228,7 +228,8 @@
 - [x] ~~seed 36–40：Python 模組 128 個（stdlib+外部）→ 1773 條~~ ✅ 0721
 - [x] ~~seed 41：DB查詢/Git/K8s雲原生/LLM/分散式系統 33 條 → **1806 條**~~ ✅ 0721
 - [x] ~~seed 42：網路協定/Web/資安/加密驗證 41 條 → **1847 條**（全查過無 slug 衝突）~~ ✅ 0721
-- [ ] 4.2.1 續寫到 5000（現 **1847**，從 `dictionary-seed-43.json` 接）
+- [ ] 4.2.1 續寫到 5000（現 **1878**，從 `dictionary-seed-44.json` 接）
+  - [x] ~~seed 43：前端框架/React-Vue/TS 型別/測試 概念黑話 31 條 → **1878**~~ ✅ 0722（ssr-csr/render-props/HOC/受控非受控/portal/ref-forwarding/debounce/throttle/island-arch/RSC/樂觀更新/衍生狀態/雙向綁定/單向資料流/組合優於繼承/slot/teleport/watcher/computed/reactivity/proxy-signal 響應式/utility-type/satisfies/infer/mock/stub/spy/AAA/回歸測試/coverage；全查過無 slug 衝突）
   - [x] ~~4.2.1.1 ⚠️ 續寫前先跑 slug 去重掃描~~ ✅（已建流程：cat 全 seed 抽 slug → grep 候選 → python 驗證無 collision 才 author）
   - [x] ~~4.2.1.2 挑真正沒收的主題~~ ✅ seed-41 已用「資料庫/Git/K8s/LLM/分散式」；下批可挑前端框架黑話、TS 型別、測試、資安、網路協定
   - [ ] 4.2.1.3 每批 author → `node scripts/import-dictionary.mjs` → commit（持續）

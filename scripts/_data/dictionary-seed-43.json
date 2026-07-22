@@ -1,0 +1,558 @@
+[
+  {
+    "slug": "ssr-csr",
+    "term": "SSR vs CSR",
+    "zh_name": "伺服器渲染 vs 客戶端渲染",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "CSR（客戶端渲染）＝伺服器先給一頁幾乎空白的 HTML，靠瀏覽器跑 JS 才長出畫面；SSR（伺服器渲染）＝伺服器直接把完整 HTML 生好再送。什麼時候在意：SEO（搜尋引擎/社群預覽要看得到內容→SSR）、首屏速度、以及「白畫面一閃」的體驗。",
+    "analogy": "CSR 像寄一箱 IKEA 零件到你家自己組；SSR 像直接送組好的家具。",
+    "example": "CSR：<div id='root'></div> + 一包 JS\nSSR：伺服器回傳已經有內容的 <main>...</main>",
+    "related": [
+      "hydration",
+      "react-server-component",
+      "seo"
+    ]
+  },
+  {
+    "slug": "render-props",
+    "term": "Render Props",
+    "zh_name": "渲染屬性",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "一種 React 共用邏輯的老招：把「要畫什麼」用一個函式當 prop 傳進去，元件負責邏輯、呼叫你的函式把資料丟回來畫。什麼時候在意：讀舊 code 會遇到；現在多半被 Custom Hook 取代。",
+    "analogy": "像請水電師傅來（他有工具和邏輯），但牆要漆什麼顏色你給他一張紙（函式）自己決定。",
+    "example": "<Mouse render={pos => <p>座標 {pos.x},{pos.y}</p>} />",
+    "related": [
+      "higher-order-component",
+      "custom-hook",
+      "prop-drilling"
+    ]
+  },
+  {
+    "slug": "higher-order-component",
+    "term": "Higher-Order Component (HOC)",
+    "zh_name": "高階元件",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "一個「吃一個元件、吐一個加料版元件」的函式。用來把共用邏輯（權限檢查、載入狀態）包在外層。什麼時候在意：讀舊 React code 常見；新 code 多改用 Hook。",
+    "analogy": "像手機殼——把你的手機（元件）包起來、多了防摔功能，但還是同一支手機。",
+    "example": "const withAuth = Comp => props => user ? <Comp {...props}/> : <Login/>;",
+    "related": [
+      "render-props",
+      "custom-hook",
+      "decorator"
+    ]
+  },
+  {
+    "slug": "controlled-uncontrolled-component",
+    "term": "Controlled / Uncontrolled Component",
+    "zh_name": "受控 / 非受控元件",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "受控＝表單欄位的值由 state 掌控（value + onChange），React 是唯一真相來源；非受控＝值留在 DOM 自己身上，要時才用 ref 去撈。什麼時候在意：表單一改怪怪的、或「打字沒反應」多半是受控寫一半。",
+    "analogy": "受控像用遙控器開電視（狀態在你手上）；非受控像走過去按電視上的按鈕（狀態在電視身上）。",
+    "example": "受控：<input value={name} onChange={e=>setName(e.target.value)} />\n非受控：<input ref={ref} />（讀 ref.current.value）",
+    "related": [
+      "two-way-binding",
+      "one-way-data-flow",
+      "single-source-of-truth"
+    ]
+  },
+  {
+    "slug": "portal-react",
+    "term": "Portal",
+    "zh_name": "傳送門",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "讓某個元件的 DOM「跳出」父層、掛到別的地方（通常是 body 尾端）再渲染，但邏輯上仍屬於原本那棵樹。什麼時候在意：做 Modal / Tooltip 被父層 overflow:hidden 切掉、或被 z-index 壓住時。",
+    "analogy": "像任意門——人（元件）還是你家的，但門一開直接站到大廳中央。",
+    "example": "createPortal(<Modal/>, document.body)  // React\n<Teleport to='body'><Modal/></Teleport>  // Vue",
+    "related": [
+      "teleport",
+      "z-index",
+      "stacking-context"
+    ]
+  },
+  {
+    "slug": "ref-forwarding",
+    "term": "Ref Forwarding",
+    "zh_name": "轉發 ref",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "讓父層拿到的 ref 能「穿過」你的自訂元件、指到裡面真正的 DOM（如 input）。什麼時候在意：想對自訂元件 .focus()、或接第三方需要 ref 的套件時。",
+    "analogy": "像轉接頭——外面插頭（父的 ref）接不上內部插座（真正的 input），forwardRef 就是那個轉接頭。",
+    "example": "const Input = forwardRef((props, ref) => <input ref={ref} {...props}/>);",
+    "related": [
+      "key-prop",
+      "controlled-uncontrolled-component"
+    ]
+  },
+  {
+    "slug": "debounce",
+    "term": "Debounce",
+    "zh_name": "防抖",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "「等你停手才做一次」——連續觸發時只在最後一次之後隔一小段時間才真正執行。什麼時候在意：搜尋框每打一個字就打 API（改成停 300ms 才送）、視窗 resize 一直觸發。",
+    "analogy": "像電梯門——有人一直進來就一直等，等大家都不動了才關門。",
+    "example": "const debounced = debounce(()=>fetchSearch(q), 300);\ninput.oninput = debounced;",
+    "related": [
+      "throttle",
+      "use-debounce",
+      "event-loop"
+    ]
+  },
+  {
+    "slug": "throttle",
+    "term": "Throttle",
+    "zh_name": "節流",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "「固定頻率最多做一次」——不管觸發多密，每隔一段時間只執行一次。什麼時候在意：捲動 / 滑鼠移動事件每秒噴幾百次，改成每 100ms 才處理一次省效能。跟 debounce 差在：debounce 等安靜、throttle 定期放行。",
+    "analogy": "像自動灑水器——你狂經過感應區也沒用，它就是每 5 秒噴一次。",
+    "example": "window.onscroll = throttle(onScroll, 100);",
+    "related": [
+      "debounce",
+      "reactivity"
+    ]
+  },
+  {
+    "slug": "island-architecture",
+    "term": "Islands Architecture",
+    "zh_name": "島嶼架構",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "整頁大多是靜態 HTML，只有真正需要互動的小區塊（一座座「島」）才載入 JS 去啟用。什麼時候在意：內容型網站要快又要 SEO（Astro、Fresh 這類框架的核心賣點），比整頁都 hydrate 省很多 JS。",
+    "analogy": "像一片安靜的海（靜態 HTML）上零星幾座會動的島（互動元件），不是整片海都插電。",
+    "example": "Astro：<StaticArticle/> + <Counter client:load/>（只有 Counter 載 JS）",
+    "related": [
+      "hydration",
+      "react-server-component",
+      "ssr-csr"
+    ]
+  },
+  {
+    "slug": "react-server-component",
+    "term": "React Server Component (RSC)",
+    "zh_name": "React 伺服器元件",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "只在伺服器跑、不送任何 JS 到瀏覽器的元件；可以直接 await 讀資料庫，但不能用 useState/onClick。要互動就把那塊標 'use client' 拆成客戶端元件。什麼時候在意：Next.js App Router 預設就是 RSC，搞不清界線會踩「在 Server 用 useState」的雷。",
+    "analogy": "像廚房（Server）備好菜直接出餐、不佔外場人力；要跟客人互動的才交給外場（Client）。",
+    "example": "// 預設 Server：可 await db\nexport default async function Page(){ const rows = await db.query() }",
+    "related": [
+      "ssr-csr",
+      "hydration",
+      "island-architecture"
+    ]
+  },
+  {
+    "slug": "optimistic-update",
+    "term": "Optimistic Update",
+    "zh_name": "樂觀更新",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "先假設會成功、UI 立刻更新，背景才真的送請求；失敗再回滾。什麼時候在意：按讚、加購物車這種要「秒回饋」的操作，別讓使用者等 API 轉圈。",
+    "analogy": "像餐廳先幫你把「已下單」貼上桌，廚房其實還在做；萬一沒食材再跟你說抱歉撤掉。",
+    "example": "setLikes(n+1);           // 先 +1\nawait fetch('/like').catch(()=>setLikes(n)); // 失敗還原",
+    "related": [
+      "derived-state",
+      "two-way-binding",
+      "use-optimistic"
+    ]
+  },
+  {
+    "slug": "derived-state",
+    "term": "Derived State",
+    "zh_name": "衍生狀態",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "能從既有 state「算出來」的值，就別另外存一份 state，直接在 render 時算或用 computed/useMemo。什麼時候在意：存了 items 又存 total，結果兩邊不同步出 bug——total 應該是衍生的。",
+    "analogy": "你有生日就別再另外記年齡——年齡是算出來的，不然生日改了年齡忘了改就對不上。",
+    "example": "❌ const [total,setTotal]=useState(0)\n✅ const total = items.reduce((s,i)=>s+i.price,0)",
+    "related": [
+      "computed-property",
+      "single-source-of-truth",
+      "memoization"
+    ]
+  },
+  {
+    "slug": "two-way-binding",
+    "term": "Two-way Binding",
+    "zh_name": "雙向綁定",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "資料和輸入框互相同步：改 state 會更新畫面、使用者打字也會回寫 state。Vue 的 v-model 是代表。什麼時候在意：表單很多欄時很省事；但資料流變雙向、debug 較難追。",
+    "analogy": "像連動的兩個水桶——一邊水位變另一邊跟著變，兩邊都能倒水進去。",
+    "example": "<input v-model='name'>  // Vue\n≈ :value='name' @input='name=$event.target.value'",
+    "related": [
+      "one-way-data-flow",
+      "controlled-uncontrolled-component",
+      "reactivity"
+    ]
+  },
+  {
+    "slug": "one-way-data-flow",
+    "term": "One-way Data Flow",
+    "zh_name": "單向資料流",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "資料只從上（父）往下（子）流，子要改就往上「回報事件」讓父去改。React 的核心哲學。什麼時候在意：追 bug 時好處大——畫面怪一定是某個 state 錯，來源單一好找。",
+    "analogy": "像公司公文——只能上級發下來，下級有意見用簽呈往上報，不能自己偷改公文。",
+    "example": "父：<Child value={v} onChange={setV} />\n子：呼叫 onChange 回報，不直接改 value",
+    "related": [
+      "two-way-binding",
+      "single-source-of-truth",
+      "prop-drilling"
+    ]
+  },
+  {
+    "slug": "composition-over-inheritance",
+    "term": "Composition over Inheritance",
+    "zh_name": "組合優於繼承",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "要重用功能時，優先「把小零件拼起來（組合）」而不是「一路繼承一個大爸爸類別」。什麼時候在意：繼承層一深就綁死、改爸爸全家爆炸；組合較鬆、好換零件。React 幾乎全靠組合。",
+    "analogy": "組合像樂高（要什麼拼什麼）；繼承像基因（生下來就固定、想改得動祖宗）。",
+    "example": "❌ class Dog extends Animal extends LivingThing\n✅ dog = compose(canWalk, canBark)",
+    "related": [
+      "higher-order-component",
+      "slot",
+      "design-pattern"
+    ]
+  },
+  {
+    "slug": "slot",
+    "term": "Slot",
+    "zh_name": "插槽",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "讓外層把「一段內容」塞進元件內部指定的洞。Vue 叫 slot、React 用 props.children 或傳 JSX。什麼時候在意：做 Card / Modal / Layout 這種「外框固定、中間內容由使用者填」的可重用元件。",
+    "analogy": "像相框——框（元件）是固定的，中間那格插槽讓你放任何照片（內容）。",
+    "example": "Vue：<Card><template #title>標題</template>內文</Card>\nReact：<Card title={<b>標題</b>}>內文</Card>",
+    "related": [
+      "composition-over-inheritance",
+      "teleport",
+      "render-props"
+    ]
+  },
+  {
+    "slug": "teleport",
+    "term": "Teleport",
+    "zh_name": "傳送",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "Vue 內建元件，把包住的內容渲染到 DOM 樹的別處（通常 body），邏輯仍屬原元件。等同 React 的 Portal。什麼時候在意：Modal / 全螢幕 overlay 被父層 overflow 或 z-index 卡住時。",
+    "analogy": "像任意門——內容從你的房間直接送到大廳，遙控權還在你手上。",
+    "example": "<Teleport to='body'><div class='modal'>...</div></Teleport>",
+    "related": [
+      "portal-react",
+      "z-index",
+      "slot"
+    ]
+  },
+  {
+    "slug": "watcher",
+    "term": "Watcher",
+    "zh_name": "偵聽器",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "「某個值一變，就跑一段副作用」的機制（Vue 的 watch、React 的 useEffect 依賴）。什麼時候在意：值變了要打 API / 存 localStorage / 操作 DOM。注意別拿它算衍生值（那該用 computed），watcher 是做「事」的。",
+    "analogy": "像門口的感應器——有人（值）經過就觸發燈亮（副作用），本身不生產東西。",
+    "example": "watch(query, q => fetchSearch(q))  // Vue\nuseEffect(()=>{ fetchSearch(query) }, [query])  // React",
+    "related": [
+      "computed-property",
+      "derived-state",
+      "reactivity"
+    ]
+  },
+  {
+    "slug": "computed-property",
+    "term": "Computed Property",
+    "zh_name": "計算屬性",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "依賴其他響應式值「算出來、且會快取」的值；依賴沒變就不重算。什麼時候在意：要顯示總價、篩選後清單這種衍生資料——用 computed 比 watch 手動同步乾淨、又比每次重算省。",
+    "analogy": "像自動計算機的記憶格——輸入沒變就直接給上次答案，不重按一遍。",
+    "example": "const total = computed(()=> items.value.reduce((s,i)=>s+i.price,0))",
+    "related": [
+      "derived-state",
+      "watcher",
+      "memoization"
+    ]
+  },
+  {
+    "slug": "reactivity",
+    "term": "Reactivity",
+    "zh_name": "響應式",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "框架「資料一改、用到它的畫面自動跟著更新」的能力，不用你手動去改 DOM。什麼時候在意：這是 React/Vue/Svelte 的核心賣點；搞懂「什麼是響應式的、什麼不是」就能解掉一半「改了畫面沒動」的 bug。",
+    "analogy": "像 Excel——A1 改數字，所有參照 A1 的公式格自動重算，你不用一格格去改。",
+    "example": "const count = ref(0); count.value++  // 畫面自動更新",
+    "related": [
+      "proxy-reactivity",
+      "signal-reactivity",
+      "virtual-dom"
+    ]
+  },
+  {
+    "slug": "proxy-reactivity",
+    "term": "Proxy-based Reactivity",
+    "zh_name": "Proxy 響應式",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "用 JS 的 Proxy 攔截物件的讀寫，藉此知道「誰讀了這個值、值改了要通知誰」。Vue 3 的 reactive 就是這樣做。什麼時候在意：理解為什麼「解構 reactive 物件會失去響應式」——解構後就繞過了 Proxy 攔截。",
+    "analogy": "像在門口裝監視器（Proxy），誰進出（讀寫）都記下來；但翻牆進去（解構）監視器就拍不到。",
+    "example": "const s = reactive({n:0}); s.n++  // Proxy 攔到、觸發更新",
+    "related": [
+      "reactivity",
+      "signal-reactivity",
+      "proxy"
+    ]
+  },
+  {
+    "slug": "signal-reactivity",
+    "term": "Signals",
+    "zh_name": "訊號",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "一種更細粒度的響應式做法：每個 signal 直接知道自己被哪些地方用到，改值時只更新那幾處、不用比對整棵樹。什麼時候在意：Solid / Angular / Preact / Svelte 5 都在推；比 Virtual DOM 更省。",
+    "analogy": "像每個燈都有自己的專屬開關（signal），開一盞只動那盞，不用重掃整棟樓。",
+    "example": "const [count,setCount] = createSignal(0)  // Solid\ncount()  // 讀時自動訂閱",
+    "related": [
+      "reactivity",
+      "proxy-reactivity",
+      "virtual-dom"
+    ]
+  },
+  {
+    "slug": "utility-type",
+    "term": "Utility Types",
+    "zh_name": "工具型別",
+    "category": "syntax",
+    "langs": [
+      "typescript"
+    ],
+    "difficulty": 2,
+    "plain": "TypeScript 內建、幫你「從既有型別快速加工出新型別」的小工具：Partial（全變可選）、Pick（挑幾個欄位）、Omit（去掉幾個）、Record、Required、Readonly…。什麼時候在意：不想重寫一遍型別、只想微調時。",
+    "analogy": "像影印機的功能鍵——原稿（型別）不動，一鍵幫你放大 / 去背 / 挑頁。",
+    "example": "type User={id:string;name:string;age:number}\ntype Draft = Partial<User>          // 全部可選\ntype Card = Pick<User,'id'|'name'>  // 只要兩欄",
+    "related": [
+      "mapped-type",
+      "conditional-type",
+      "satisfies-operator"
+    ]
+  },
+  {
+    "slug": "satisfies-operator",
+    "term": "satisfies",
+    "zh_name": "satisfies 運算子",
+    "category": "syntax",
+    "langs": [
+      "typescript"
+    ],
+    "difficulty": 3,
+    "plain": "TS 4.9 的關鍵字：檢查一個值「符合」某型別、但又保留它「原本更精確的樣子」。什麼時候在意：想要型別檢查、又不想被 as/註記把精確的字面量型別壓扁時。",
+    "analogy": "像通過安檢（符合規定）但不用換上制服（保留你原本的細節）。",
+    "example": "const cfg = { port: 3000 } satisfies Record<string,number>;\ncfg.port  // 仍是 number 而非被拓寬",
+    "related": [
+      "utility-type",
+      "type-narrowing",
+      "as-const"
+    ]
+  },
+  {
+    "slug": "infer-keyword",
+    "term": "infer",
+    "zh_name": "infer 關鍵字",
+    "category": "syntax",
+    "langs": [
+      "typescript"
+    ],
+    "difficulty": 3,
+    "plain": "在條件型別裡「就地宣告一個型別變數、讓 TS 幫你推出來」。什麼時候在意：寫進階泛型工具時（例如取出函式回傳型別、Promise 裡包的型別）。是 ReturnType、Awaited 這些內建工具的底層魔法。",
+    "analogy": "像克漏字——「這個盒子裡裝的是 ___」，infer 就是那個空格，TS 幫你填。",
+    "example": "type Unwrap<T> = T extends Promise<infer U> ? U : T;\ntype X = Unwrap<Promise<string>>  // string",
+    "related": [
+      "conditional-type",
+      "utility-type",
+      "mapped-type"
+    ]
+  },
+  {
+    "slug": "mock",
+    "term": "Mock",
+    "zh_name": "模擬物件",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "測試時用來替代真實依賴（API、資料庫、金流）的假物件，且會「記錄有沒有被呼叫、傳了什麼」讓你驗證互動。什麼時候在意：不想測試真的打網路 / 扣款；原則是只 mock「不是你寫的東西」。",
+    "analogy": "像拍戲用的假鈔和道具槍——長得像、能演，但不會真的花錢或傷人。",
+    "example": "const api = { pay: vi.fn() };\ncheckout(api); expect(api.pay).toHaveBeenCalledWith(100);",
+    "related": [
+      "stub",
+      "spy",
+      "test-double"
+    ]
+  },
+  {
+    "slug": "stub",
+    "term": "Stub",
+    "zh_name": "樁物件",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "測試替身的一種：只負責「回傳你預設好的固定值」，讓被測程式有東西可用，不關心它被怎麼呼叫。什麼時候在意：想讓某個相依「永遠回成功 / 回這筆假資料」來測不同分支。跟 mock 差在：mock 會驗證互動、stub 只餵資料。",
+    "analogy": "像便利貼答案——考試時偷貼一張「這題選 B」，只管給答案、不管你怎麼問。",
+    "example": "getUser = () => ({ name:'測試員' })  // 固定回這筆",
+    "related": [
+      "mock",
+      "spy",
+      "test-double"
+    ]
+  },
+  {
+    "slug": "spy",
+    "term": "Spy",
+    "zh_name": "間諜",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "包在「真實函式」外面的監視器：讓原本的功能照跑，同時偷偷記錄它被呼叫幾次、傳了什麼。什麼時候在意：想確認某個 callback / 事件處理真的被觸發，又不想換掉它的行為。",
+    "analogy": "像行車記錄器——車照開（原功能不變），但全程有錄影（記錄呼叫）。",
+    "example": "const spy = vi.spyOn(obj,'save');\nrun(); expect(spy).toHaveBeenCalledTimes(1);",
+    "related": [
+      "mock",
+      "stub",
+      "test-double"
+    ]
+  },
+  {
+    "slug": "arrange-act-assert",
+    "term": "Arrange-Act-Assert (AAA)",
+    "zh_name": "三段式測試",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "寫單元測試的黃金結構：先 Arrange（準備資料/環境）、再 Act（執行被測的那一下）、最後 Assert（驗證結果對不對）。什麼時候在意：測試又長又亂看不懂時——照這三段分開，一眼就懂在測什麼。",
+    "analogy": "像實驗課：先擺好器材（Arrange）、倒藥劑反應（Act）、看有沒有變色（Assert）。",
+    "example": "// Arrange\nconst cart = new Cart(); cart.add({price:30});\n// Act\nconst total = cart.total();\n// Assert\nexpect(total).toBe(30);",
+    "related": [
+      "mock",
+      "regression-test",
+      "tdd"
+    ]
+  },
+  {
+    "slug": "regression-test",
+    "term": "Regression Test",
+    "zh_name": "回歸測試",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "為「曾經壞過的 bug」補一個測試，確保它以後不會偷偷復發。什麼時候在意：修 bug 的正確流程——先寫一個會 fail 的測試重現它，再修到綠，這個測試就永久守著。",
+    "analogy": "像被同一顆石頭絆倒後，在那裡立個警告牌——下次不會再摔同一跤。",
+    "example": "test('#123 金額不該變負數', ()=>{ expect(sub(0,1)).toBe(0) })",
+    "related": [
+      "arrange-act-assert",
+      "smoke-test",
+      "coverage"
+    ]
+  },
+  {
+    "slug": "coverage",
+    "term": "Code Coverage",
+    "zh_name": "測試覆蓋率",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "測試跑過了多少比例的程式碼（行 / 分支 / 函式）。什麼時候在意：當健康度參考可以，但別當目標——100% 覆蓋不代表沒 bug（每行跑過≠每種情況都驗過），刷數字容易變成假的安全感。",
+    "analogy": "像走過商場每條走道（覆蓋率高），不代表你檢查過每家店有沒有問題。",
+    "example": "vitest --coverage  → Statements 82% / Branches 71%",
+    "related": [
+      "regression-test",
+      "arrange-act-assert",
+      "mutation-testing"
+    ]
+  }
+]
