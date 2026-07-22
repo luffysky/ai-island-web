@@ -1,0 +1,344 @@
+[
+  {
+    "slug": "file-permissions",
+    "term": "File Permissions (rwx)",
+    "zh_name": "檔案權限",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "Linux 每個檔案有『擁有者/群組/其他人』各自的讀(r)寫(w)執行(x)權限。什麼時候在意：部署遇到 permission denied、或設定 script 可執行時。`chmod 755` = 擁有者全權、其他人可讀可執行。",
+    "analogy": "像房間鑰匙分級——屋主全權、家人部分、訪客只能看，各有各的門禁。",
+    "example": "chmod +x deploy.sh（給執行權）；755 / 644 常見",
+    "related": [
+      "root-sudo",
+      "chmod",
+      "daemon"
+    ]
+  },
+  {
+    "slug": "root-sudo",
+    "term": "root / sudo",
+    "zh_name": "超級使用者 / 提權",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "root 是 Linux 的『最高權限帳號』（能做任何事）；sudo 讓一般使用者『暫時借用 root 權限』執行單一指令。什麼時候在意：裝軟體、改系統設定要 sudo。安全原則：別長期用 root、能不用 sudo 就不用（最小權限）。",
+    "analogy": "root 像萬能鑰匙（開得了所有門）；sudo 像跟管理員借一次鑰匙辦一件事、辦完還回去。",
+    "example": "sudo apt install nginx（暫時提權裝軟體）",
+    "related": [
+      "file-permissions",
+      "least-privilege",
+      "daemon"
+    ]
+  },
+  {
+    "slug": "daemon",
+    "term": "Daemon",
+    "zh_name": "常駐服務",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "在背景『常駐執行』的程式，通常名字以 d 結尾（sshd、cron、dockerd）。什麼時候在意：伺服器上長跑的服務——沒有畫面、開機自動起、默默提供功能。用 systemd 管理它們的啟停。",
+    "analogy": "像大樓的中央空調機房——沒人看得到，但一直默默運轉提供服務。",
+    "example": "sshd（SSH 服務）、nginx 都是 daemon",
+    "related": [
+      "systemd",
+      "cron-job",
+      "process-signal"
+    ]
+  },
+  {
+    "slug": "systemd",
+    "term": "systemd",
+    "zh_name": "系統服務管理器",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "現代 Linux 管理『服務啟停、開機自動啟動、看 log』的核心工具。什麼時候在意：自架服務要它常駐、掛了自動重啟、開機自動起——寫一個 .service 檔交給 systemd 管。",
+    "analogy": "像大樓的總機電控室——統一管所有機房（服務）的開關、故障自動重啟、記錄運轉狀況。",
+    "example": "systemctl start/enable myapp；journalctl 看 log",
+    "related": [
+      "daemon",
+      "cron-job",
+      "log-rotation"
+    ]
+  },
+  {
+    "slug": "cron-job",
+    "term": "Cron Job",
+    "zh_name": "定時任務",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "Linux 上『按排程自動執行』的任務，用 crontab 設定（配 cron expression）。什麼時候在意：定時備份、清 log、跑報表。無畫面、到點自動跑。雲端 serverless 常用外部 cron 服務觸發 API 取代。",
+    "analogy": "像設定好的自動鬧鐘辦事——到點自動做某件事，你不用守著。",
+    "example": "crontab: 0 3 * * * /backup.sh（每天 3 點備份）",
+    "related": [
+      "cron-expression",
+      "systemd",
+      "daemon"
+    ]
+  },
+  {
+    "slug": "package-manager-linux",
+    "term": "Package Manager (apt/yum)",
+    "zh_name": "套件管理器",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "Linux 裝/更新/移除軟體的工具（apt、yum/dnf、apk、pacman）。什麼時候在意：伺服器裝軟體——`apt install nginx` 自動處理相依、更新。跟語言的套件管理器（npm/pip）不同層級（這是系統層）。",
+    "analogy": "像系統的 App Store——一行指令自動下載安裝、連相依的東西一起裝好。",
+    "example": "apt update && apt install nginx（Debian/Ubuntu）",
+    "related": [
+      "dependency-lockfile",
+      "root-sudo",
+      "daemon"
+    ]
+  },
+  {
+    "slug": "environment-path",
+    "term": "PATH 環境變數",
+    "category": "concept",
+    "zh_name": "PATH 路徑變數",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "一個列出『去哪些資料夾找可執行檔』的環境變數。什麼時候在意：`command not found` 常是指令不在 PATH——裝了工具卻叫不出來，就要把它的資料夾加進 PATH。",
+    "analogy": "像找人時的『通訊錄清單』——系統照 PATH 列的資料夾依序找指令，沒列到的就『查無此人』。",
+    "example": "export PATH=$PATH:/usr/local/bin（加搜尋路徑）",
+    "related": [
+      "env-var",
+      "package-manager-linux",
+      "root-sudo"
+    ]
+  },
+  {
+    "slug": "disk-usage",
+    "term": "Disk Usage (df/du)",
+    "zh_name": "磁碟用量",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "看磁碟『用了多少、剩多少』：df 看整體分割區、du 看某資料夾多大。什麼時候在意：伺服器『disk full』會害服務掛（DB 寫不進、log 塞爆）——定期看用量、清 log、設告警。",
+    "analogy": "像看倉庫還剩多少空間——df 看整棟倉庫、du 看某個貨架堆多滿。",
+    "example": "df -h（整體）；du -sh /var/log（該資料夾大小）",
+    "related": [
+      "log-rotation",
+      "systemd",
+      "daemon"
+    ]
+  },
+  {
+    "slug": "log-rotation",
+    "term": "Log Rotation",
+    "zh_name": "日誌輪替",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "自動把『不斷長大的 log 檔』切分、壓縮、刪舊，避免塞爆磁碟。什麼時候在意：長跑服務的 log 會無限長大——用 logrotate 設定『每天切一個、壓縮、只留 7 天』。",
+    "analogy": "像把不斷寫的日記本按月換新本、舊本封存、太舊的丟掉，不讓它厚到爆櫃子。",
+    "example": "logrotate 每天切、壓縮、保留 7 天",
+    "related": [
+      "disk-usage",
+      "systemd",
+      "observability"
+    ]
+  },
+  {
+    "slug": "aes",
+    "term": "AES",
+    "zh_name": "進階加密標準",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "現今對稱加密的業界標準（AES-128/256），快又安全。什麼時候在意：要加密資料就用它——磁碟加密、HTTPS 傳輸、DB 欄位加密都用 AES。搭配對的模式（GCM 較好，別用 ECB）。",
+    "analogy": "像業界公認最堅固的保險箱型號——大家要鎖東西都選它，久經考驗。",
+    "example": "AES-256-GCM 加密敏感欄位",
+    "related": [
+      "symmetric-encryption",
+      "rsa",
+      "entropy-randomness"
+    ]
+  },
+  {
+    "slug": "rsa",
+    "term": "RSA",
+    "zh_name": "RSA 加密",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "經典的非對稱加密演算法，靠『大質數相乘難分解』的數學特性。什麼時候在意：HTTPS 憑證、SSH 金鑰、簽章常見 RSA（也漸被更短更快的 ECC 取代）。金鑰要夠長（≥2048 bit）。",
+    "analogy": "像把兩個大質數乘起來容易、要反推回去卻極難——加密好算、破解難如登天。",
+    "example": "SSH/TLS 用 RSA-2048/4096 或 ECC",
+    "related": [
+      "asymmetric-encryption",
+      "digital-signature",
+      "tls-cert"
+    ]
+  },
+  {
+    "slug": "salt-pepper",
+    "term": "Salt / Pepper",
+    "zh_name": "加鹽 / 加胡椒",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "存密碼雜湊時加的隨機料：salt（每個密碼一個、跟雜湊一起存）防彩虹表、pepper（全站一個、另外藏）多一層。什麼時候在意：存密碼絕不能存明文或純雜湊——要 bcrypt/argon2（內建加鹽）。",
+    "analogy": "像每碗湯加不同的鹽——就算兩人密碼一樣，加了不同鹽雜湊也不同，破解表全失效。",
+    "example": "bcrypt 自動每個密碼加獨立 salt",
+    "related": [
+      "argon2",
+      "hashing-vs-encryption",
+      "hashing-collision"
+    ]
+  },
+  {
+    "slug": "hashing-vs-encryption",
+    "term": "Hashing vs Encryption",
+    "zh_name": "雜湊 vs 加密",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "雜湊是『單向、不可還原』（存密碼、驗完整性）；加密是『雙向、可解回』（保護要讀回的資料）。什麼時候在意：搞混會出大包——密碼要雜湊（不該解得回來）、信用卡號要加密（之後要用）。",
+    "analogy": "雜湊像絞肉（回不去原形、只能比對）；加密像上鎖的保險箱（有鑰匙能打開拿回）。",
+    "example": "密碼用 argon2 雜湊；卡號用 AES 加密",
+    "related": [
+      "salt-pepper",
+      "symmetric-encryption",
+      "argon2"
+    ]
+  },
+  {
+    "slug": "key-exchange",
+    "term": "Key Exchange",
+    "zh_name": "金鑰交換",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "兩方在『不安全的通道上』協商出一把只有他們知道的共享金鑰（Diffie-Hellman）。什麼時候在意：HTTPS 握手的核心——就算有人監聽，也算不出協商出的金鑰，之後就用它對稱加密。",
+    "analogy": "像兩人隔空『各調一種顏料混合』，最後調出同一色，但旁觀者看不出配方——雙方有共同秘密、別人沒有。",
+    "example": "TLS 用 ECDHE 交換 session key",
+    "related": [
+      "asymmetric-encryption",
+      "tls-handshake",
+      "end-to-end-encryption"
+    ]
+  },
+  {
+    "slug": "api-gateway-pattern",
+    "term": "API Gateway",
+    "zh_name": "API 閘道",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "放在微服務前面的『單一入口』，統一處理路由、認證、限流、快取，再轉給後面各服務。什麼時候在意：微服務架構——前端只打閘道一個地方，不用知道後面有幾個服務、在哪。跨切關注（auth/限流）集中在這做。",
+    "analogy": "像大樓的總櫃檯——訪客都先到櫃檯（閘道），驗身分、指路，再帶去對的樓層（服務）。",
+    "example": "Kong/APISIX：統一入口 → 路由到 user/order 服務",
+    "related": [
+      "reverse-proxy",
+      "service-registry",
+      "bff-backend-for-frontend"
+    ]
+  },
+  {
+    "slug": "bff-backend-for-frontend",
+    "term": "Backend for Frontend (BFF)",
+    "zh_name": "前端專屬後端",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "為『每種前端（web/手機）各做一個量身的後端層』，幫它組合/裁剪後面微服務的資料。什麼時候在意：不同前端需求差很多時——手機要精簡、web 要完整，BFF 各自幫它們打包好，前端不用自己拼多個 API。",
+    "analogy": "像為不同客人配專屬助理——手機客人要簡潔摘要、桌機客人要詳細報告，各有助理幫忙整理好。",
+    "example": "手機 BFF 回精簡欄位、Web BFF 回完整資料",
+    "related": [
+      "api-gateway-pattern",
+      "service-registry",
+      "graphql"
+    ]
+  },
+  {
+    "slug": "sidecar",
+    "term": "Sidecar Pattern",
+    "zh_name": "邊車模式",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "在主服務旁『附掛一個小容器』幫它處理跨切關注（log 收集、代理、加密），不用改主服務程式碼。什麼時候在意：service mesh（如 Istio 的 Envoy sidecar）——每個服務旁掛一個代理處理網路/安全，主程式專心做業務。",
+    "analogy": "像機車的邊車——主車（服務）專心騎，邊車載著行李/工具（log、代理）跟著跑。",
+    "example": "Istio 每個 pod 掛 Envoy sidecar 處理流量",
+    "related": [
+      "api-gateway-pattern",
+      "service-registry",
+      "container-orchestration"
+    ]
+  },
+  {
+    "slug": "strangler-fig",
+    "term": "Strangler Fig Pattern",
+    "zh_name": "絞殺榕模式",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "漸進式改寫舊系統：新功能用新系統做、舊功能一塊塊搬過去，用路由把流量『逐步』從舊導到新，最後舊的自然淘汰。什麼時候在意：不敢一次重寫整個老系統（風險高）——這招邊跑邊換、可隨時回退。",
+    "analogy": "典故：絞殺榕纏著大樹長，慢慢取代它、最後老樹枯了榕樹已成形——新系統一點點包住舊的取而代之。",
+    "example": "新功能走新服務、舊路由逐條搬遷、最後下線舊系統",
+    "related": [
+      "release-train",
+      "feature-toggle",
+      "api-gateway-pattern"
+    ]
+  },
+  {
+    "slug": "service-registry",
+    "term": "Service Registry",
+    "zh_name": "服務註冊表",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一個記錄『現在有哪些服務實例、在哪個位址』的中央名冊，服務起動時註冊、下線時移除。什麼時候在意：微服務動態擴縮——服務靠查註冊表（service discovery）找到彼此，而非寫死 IP。",
+    "analogy": "像公司的即時分機表——誰在線、分機幾號都登記著，要找人查名冊，不用死背號碼。",
+    "example": "Consul/Eureka：服務啟動註冊、呼叫方查表找位址",
+    "related": [
+      "service-discovery",
+      "api-gateway-pattern",
+      "sidecar"
+    ]
+  }
+]

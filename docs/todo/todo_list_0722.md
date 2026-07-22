@@ -228,7 +228,8 @@
 - [x] ~~seed 36–40：Python 模組 128 個（stdlib+外部）→ 1773 條~~ ✅ 0721
 - [x] ~~seed 41：DB查詢/Git/K8s雲原生/LLM/分散式系統 33 條 → **1806 條**~~ ✅ 0721
 - [x] ~~seed 42：網路協定/Web/資安/加密驗證 41 條 → **1847 條**（全查過無 slug 衝突）~~ ✅ 0721
-- [ ] 4.2.1 續寫到 5000（現 **2199**，從 `dictionary-seed-58.json` 接）
+- [ ] 4.2.1 續寫到 5000（現 **2218**，從 `dictionary-seed-59.json` 接）
+  - [x] ~~seed 58：Linux/系統管理 + 密碼學 + 微服務模式 19 條 → **2218**~~ ✅ 0723（檔案權限/root-sudo/daemon/systemd/cron-job/套件管理器/PATH/磁碟用量/log輪替 · AES/RSA/salt-pepper/雜湊vs加密/金鑰交換 · API閘道/BFF/sidecar/絞殺榕/服務註冊表）
   - [x] ~~seed 57：統計/資料 + 身分驗證 + 快取策略 22 條 → **2199**~~ ✅ 0723（常態分佈/變異數/z-score/信賴區間/抽樣偏誤/貝氏/迴歸/大數法則 · OIDC/SSO/SAML/session-cookie/無密碼/MFA/RBAC-ABAC · cache-aside/write-through/write-back/TTL/LRU/SWR/CDN-purge）
   - [x] ~~seed 56：時間日期 + Unicode/文字編碼 + 開發工具 19 條 → **2177**~~ ✅ 0723（UTC時區/cron語法/日期解析/duration/單調時鐘 · Unicode/UTF-8/ASCII/字元編碼/BOM/grapheme/emoji編碼 · formatter/pre-commit/lockfile/功能開關/watch-mode/debugger/monorepo工具）
   - [x] ~~seed 55：郵件/訊息協定 + 媒體/壓縮 + 搜尋/索引 23 條 → **2158**~~ ✅ 0723（SMTP/IMAP-POP3/SPF-DKIM-DMARC/退信/MQTT/AMQP/訊息確認/at-least-once · gzip-brotli/有損無損/影像編碼/WebP-AVIF/lazy-image/轉碼/bitrate/自適應串流 · 反向索引/TF-IDF/全文索引/模糊搜尋/字幹還原/自動完成/相關性評分）
