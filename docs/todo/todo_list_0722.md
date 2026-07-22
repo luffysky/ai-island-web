@@ -279,7 +279,7 @@
 - [ ] 7.6 作業**自動批改**（現 `graded_by:null` 純手動）+ 教師/助教 role admin 介面 + 作業批改介面
 - [ ] 7.7 監控 LT-17：Sentry / PostHog 接上（錯誤 + 產品分析）
 - [ ] 7.8 **更新法律頁** `/privacy`、`/terms`、`/cookies`（對齊現況：AI/BYOK、分身島對外動作、連結外部帳號、LINE 推播、機會島來源、@提及、個資保存）
-- [ ] 7.9 apple-touch-icon（192/512 maskable ✅ 已補、僅缺 apple-touch）
+- [x] ~~7.9 apple-touch-icon~~ ✅（核對發現已滿足：`src/app/apple-icon.tsx` 180×180 Next.js 慣例檔自動輸出 `<link rel="apple-touch-icon">`；192/512 maskable 也早已補齊。todo 為舊資訊）
 - [ ] 7.10 效能收尾：bundle analyzer、剩餘 `select("*")`→明確欄位、RLS `is_admin()` SECURITY DEFINER + index、大檔上傳 OOM（平台附件路徑仍可能 buffer；creator 已 presigned）
 - [ ] 7.11 AI 成本記帳 P2–P4（P0/P1 ✅）：P2 語意快取推廣、P3 路由統一、P4 RAG/vision 擴充；H2 殘留記帳（embeddings/Whisper/og 圖）
 - [ ] 7.12 測試：E2E + Smoke 擴充；3D 島嶼降耗
