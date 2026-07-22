@@ -1,0 +1,470 @@
+[
+  {
+    "slug": "scheduler-os",
+    "term": "OS Scheduler",
+    "zh_name": "排程器",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "作業系統決定「下一刻哪個執行緒上 CPU 跑」的元件，用時間片輪流、依優先度分配。什麼時候在意：理解為何幾千個 thread 也能『看似同時』跑（其實是快速輪流）、以及為何 CPU 密集任務會餓死其他工作。",
+    "analogy": "像幼稚園老師分玩具——每個小孩玩一下就換下一個，讓大家看起來都有玩到。",
+    "example": "公平排程（CFS）讓每個 thread 輪到相近的 CPU 時間",
+    "related": [
+      "context-switch",
+      "process-vs-thread",
+      "syscall"
+    ]
+  },
+  {
+    "slug": "context-switch",
+    "term": "Context Switch",
+    "zh_name": "上下文切換",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "CPU 從一個 thread/process 切到另一個時，要存下當前狀態、載入下一個的狀態。什麼時候在意：切換有成本，開太多 thread 反而慢（一直在搬狀態）；也是為何協程（不切 thread）比 thread 省。",
+    "analogy": "像同時做很多份作業——每換一科都要收書包、拿新書，換太頻繁光收拾就飽了。",
+    "example": "1000 個 thread 狂切換 → CPU 大半時間在搬狀態",
+    "related": [
+      "process-vs-thread",
+      "scheduler-os",
+      "coroutine"
+    ]
+  },
+  {
+    "slug": "mutex-semaphore",
+    "term": "Mutex / Semaphore",
+    "zh_name": "互斥鎖 / 號誌",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "併發控制工具：mutex＝一次只准一個執行緒進臨界區（互斥）；semaphore＝准最多 N 個同時進。什麼時候在意：多執行緒改同一份資料要上鎖防競爭；但鎖用不好會死鎖。",
+    "analogy": "mutex 像單人廁所鑰匙（一次一人）；semaphore 像停車場 N 個車位（滿了要等）。",
+    "example": "lock.acquire(); balance -= 100; lock.release();",
+    "related": [
+      "deadlock",
+      "race-condition",
+      "atomic-operation"
+    ]
+  },
+  {
+    "slug": "syscall",
+    "term": "System Call",
+    "zh_name": "系統呼叫",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "程式要用作業系統的能力（讀檔、開網路、配記憶體）時，透過 syscall 請核心代勞。什麼時候在意：理解為何 I/O 慢（要切進核心態）、strace 能看程式在呼叫哪些 syscall 除錯。",
+    "analogy": "像跟櫃檯辦事——你（程式）不能自己進金庫（硬體），要填單請行員（核心）幫你辦。",
+    "example": "read() / write() / open() / socket() 底層都是 syscall",
+    "related": [
+      "kernel-userspace",
+      "file-descriptor",
+      "context-switch"
+    ]
+  },
+  {
+    "slug": "kernel-userspace",
+    "term": "Kernel / User Space",
+    "zh_name": "核心態 / 使用者態",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "CPU 兩種權限層：user space（一般程式跑的地方、權限受限）、kernel space（作業系統核心、能碰硬體）。什麼時候在意：安全隔離的根基——程式要碰硬體必須經 syscall 切進核心，防它亂搞。",
+    "analogy": "像銀行——大廳（user）誰都能進但碰不到錢，金庫（kernel）只有行員能進。",
+    "example": "malloc 在 user space、實際跟核心要記憶體才進 kernel",
+    "related": [
+      "syscall",
+      "virtual-memory",
+      "process-vs-thread"
+    ]
+  },
+  {
+    "slug": "cpu-cache",
+    "term": "CPU Cache",
+    "zh_name": "CPU 快取",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "CPU 內超快的小記憶體（L1/L2/L3），放最近用到的資料，避免每次都去慢的主記憶體拿。什麼時候在意：效能優化——資料連續存取（cache-friendly）比亂跳快很多；這是為何陣列常比鏈結串列快。",
+    "analogy": "像桌上的常用文件——伸手就拿（cache），不用每次跑去檔案室（RAM）。",
+    "example": "順序掃陣列比隨機存取快幾倍（cache 命中率高）",
+    "related": [
+      "virtual-memory",
+      "stack-vs-heap",
+      "endianness"
+    ]
+  },
+  {
+    "slug": "endianness",
+    "term": "Endianness",
+    "zh_name": "位元組序",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "多位元組的數字在記憶體「哪個位元組先放」：big-endian（高位在前）vs little-endian（低位在前，x86 用）。什麼時候在意：處理二進位協定、跨機器傳資料、讀檔案格式時——搞錯數字會全亂。",
+    "analogy": "像寫日期——有人 2026/07/23、有人 23/07/2026，同一個日子不同順序，讀錯就理解錯。",
+    "example": "0x1234 存成 [0x12,0x34](big) 或 [0x34,0x12](little)",
+    "related": [
+      "cpu-cache",
+      "stack-vs-heap",
+      "syscall"
+    ]
+  },
+  {
+    "slug": "stack-vs-heap",
+    "term": "Stack vs Heap",
+    "zh_name": "堆疊區 vs 堆積區",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "程式的兩塊記憶體：stack 放函式的區域變數、自動配置回收、快但小；heap 放動態配置（new/malloc）的資料、手動或 GC 管、大但慢。什麼時候在意：stack overflow（遞迴太深）、記憶體洩漏（heap 沒回收）都跟這有關。",
+    "analogy": "stack 像便利貼一張張疊（用完撕掉、自動）；heap 像倉庫租空間（要自己記得退租）。",
+    "example": "int x = 5;（stack）；new User()（heap）",
+    "related": [
+      "memory-leak",
+      "cpu-cache",
+      "garbage-collection"
+    ]
+  },
+  {
+    "slug": "page-fault",
+    "term": "Page Fault",
+    "zh_name": "分頁錯誤",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "程式存取的記憶體頁不在實體 RAM（被換到磁碟或還沒載入），CPU 觸發 page fault、由核心去補進來。什麼時候在意：正常的 page fault 很快；但若 RAM 不足一直換進換出（thrashing 抖動），效能會崩。",
+    "analogy": "像找書——書不在桌上（RAM），得跑去倉庫（磁碟）搬來，跑太多趟就慢死。",
+    "example": "記憶體不足 → 狂 swap → page fault 暴增 → 系統卡死",
+    "related": [
+      "virtual-memory",
+      "paging-swap",
+      "cpu-cache"
+    ]
+  },
+  {
+    "slug": "paging-swap",
+    "term": "Paging / Swap",
+    "zh_name": "分頁 / 置換",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把記憶體切成固定大小的「頁」，RAM 不夠時把不常用的頁暫存到磁碟（swap），要用再換回。什麼時候在意：伺服器 RAM 吃緊時 swap 會讓效能雪崩（磁碟比 RAM 慢千倍）——通常寧可加 RAM。",
+    "analogy": "像桌子太小——把暫時不用的資料收進抽屜（磁碟），要用再拿出來，但一直開關抽屜很慢。",
+    "example": "free -m 看到 swap 用很多 = RAM 不夠、該加",
+    "related": [
+      "page-fault",
+      "virtual-memory",
+      "kernel-userspace"
+    ]
+  },
+  {
+    "slug": "fork-exec",
+    "term": "fork / exec",
+    "zh_name": "分叉 / 執行",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "Unix 建立新程式的兩步：fork() 複製一份自己（子行程），exec() 把子行程換成要跑的新程式。什麼時候在意：理解 shell 怎麼跑指令、為何有父子行程關係。",
+    "analogy": "像分身術——先複製一個自己（fork），再讓分身變身成別人（exec）去辦事。",
+    "example": "shell 執行 ls：fork 出子行程 → exec('ls')",
+    "related": [
+      "process-vs-thread",
+      "zombie-process",
+      "syscall"
+    ]
+  },
+  {
+    "slug": "zombie-process",
+    "term": "Zombie Process",
+    "zh_name": "殭屍行程",
+    "category": "error",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "子行程結束了、但父行程還沒「收屍」（讀取它的結束狀態），它就卡成殭屍佔著行程表。什麼時候在意：父行程沒好好 wait 子行程，殭屍堆積會耗盡行程數。修法：父行程要 wait()、或處理 SIGCHLD。",
+    "analogy": "像離職員工的檔案——人走了但檔案沒歸檔，一直佔著櫃子，堆多了櫃子就滿了。",
+    "example": "父沒 wait() → ps 看到一堆 <defunct> 行程",
+    "related": [
+      "fork-exec",
+      "process-vs-thread",
+      "process-signal"
+    ]
+  },
+  {
+    "slug": "threat-model",
+    "term": "Threat Modeling",
+    "zh_name": "威脅建模",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "系統化地問「誰會攻擊我、攻哪裡、我怕什麼」，畫出資產、入口、信任邊界，再針對性防。什麼時候在意：設計階段就該做——與其事後補漏，不如先想清楚攻擊面。常用 STRIDE 分類。",
+    "analogy": "像蓋房子前先想小偷會從哪進（門窗、後院），再決定裝哪些鎖，而不是蓋完才補。",
+    "example": "畫資料流圖 → 標信任邊界 → 每個入口問『這裡能被怎麼攻』",
+    "related": [
+      "defense-in-depth",
+      "penetration-test",
+      "least-privilege"
+    ]
+  },
+  {
+    "slug": "penetration-test",
+    "term": "Penetration Testing",
+    "zh_name": "滲透測試",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "請人（或工具）扮駭客實際攻你的系統，找出真的能被利用的漏洞。什麼時候在意：上線前 / 定期做，找出自動掃描漏掉的邏輯漏洞。一定要有授權（未授權攻擊是犯法的）。",
+    "analogy": "像請人來試著撬你家門窗——找出真的能進的破口，好在小偷之前補起來。",
+    "example": "授權範圍內：試 SQL injection / 越權 / 弱密碼",
+    "related": [
+      "threat-model",
+      "sast-dast",
+      "cve-cvss"
+    ]
+  },
+  {
+    "slug": "sast-dast",
+    "term": "SAST / DAST",
+    "zh_name": "靜態 / 動態安全掃描",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "SAST＝掃「原始碼」找漏洞（不用跑）；DAST＝對「跑起來的網站」發攻擊測試（黑箱）。什麼時候在意：接進 CI 自動化把關——SAST 早期抓、DAST 抓執行期問題，互補。",
+    "analogy": "SAST 像審圖紙找設計缺陷；DAST 像實際去踹門測試強不強。",
+    "example": "SAST: Semgrep/CodeQL；DAST: OWASP ZAP 掃線上站",
+    "related": [
+      "penetration-test",
+      "threat-model",
+      "security-headers"
+    ]
+  },
+  {
+    "slug": "cve-cvss",
+    "term": "CVE / CVSS",
+    "zh_name": "漏洞編號 / 評分",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "CVE＝每個已公開漏洞的全球唯一編號（如 CVE-2021-44228 Log4Shell）；CVSS＝該漏洞的嚴重度評分 0–10。什麼時候在意：套件掃出漏洞時看 CVE 查細節、看 CVSS 決定多急著修。",
+    "analogy": "CVE 像疾病的病例編號、CVSS 像病情嚴重度分級——查編號知道是什麼病、看分數知道多急。",
+    "example": "npm audit 報 CVE-xxxx CVSS 9.8（Critical）→ 立刻升級",
+    "related": [
+      "supply-chain-attack",
+      "penetration-test",
+      "sast-dast"
+    ]
+  },
+  {
+    "slug": "command-injection",
+    "term": "Command Injection",
+    "zh_name": "命令注入",
+    "category": "error",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把使用者輸入直接拼進系統指令執行，攻擊者塞 `; rm -rf /` 之類就能在你伺服器跑任意指令。什麼時候在意：任何呼叫 shell 的地方。修法：別拼字串、用參數化 API、白名單驗證輸入。",
+    "analogy": "像請人填表卻讓他在欄位寫『順便把保險箱打開』而你照做——輸入不能當指令執行。",
+    "example": "❌ exec(`ping ${ip}`) ← ip='8.8.8.8; rm -rf /'",
+    "related": [
+      "ssti",
+      "insecure-deserialization",
+      "least-privilege"
+    ]
+  },
+  {
+    "slug": "insecure-deserialization",
+    "term": "Insecure Deserialization",
+    "zh_name": "不安全的反序列化",
+    "category": "error",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把不可信的資料反序列化成物件時，被塞入惡意內容導致執行任意程式碼或竄改狀態。什麼時候在意：用 Java/PHP/Python pickle 等反序列化外部輸入時。修法：別反序列化不可信資料、用 JSON（純資料）、簽章驗證。",
+    "analogy": "像收到陌生包裹就直接拆組裝——裡面若藏機關（惡意物件），一拆就中招。",
+    "example": "Python pickle.loads(不可信資料) → 可被植入 RCE",
+    "related": [
+      "command-injection",
+      "ssti",
+      "xxe"
+    ]
+  },
+  {
+    "slug": "ssti",
+    "term": "Server-Side Template Injection (SSTI)",
+    "zh_name": "伺服器端樣板注入",
+    "category": "error",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把使用者輸入直接放進伺服器樣板引擎當「樣板」渲染，攻擊者塞樣板語法就能執行程式碼。什麼時候在意：用 Jinja2/Handlebars 等把使用者資料當模板拼接時。修法：使用者資料只當「值」傳入、別當模板字串。",
+    "analogy": "像讓客人自己在你的填空信裡寫公式——他寫『{{偷資料}}』你的系統照算就外洩了。",
+    "example": "❌ render_template_string('Hi '+userInput) ← '{{7*7}}'→49",
+    "related": [
+      "command-injection",
+      "xxe",
+      "insecure-deserialization"
+    ]
+  },
+  {
+    "slug": "xxe",
+    "term": "XML External Entity (XXE)",
+    "zh_name": "XML 外部實體注入",
+    "category": "error",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "XML 解析器允許「外部實體」時，攻擊者可讓它讀伺服器本機檔案或打內網。什麼時候在意：解析使用者上傳的 XML（含 SVG、docx、SOAP）時。修法：關掉外部實體解析（disable DTD/external entities）。",
+    "analogy": "像填表時偷寫『請把 /etc/passwd 的內容貼進來』，而 XML 解析器真的照做。",
+    "example": "<!ENTITY x SYSTEM 'file:///etc/passwd'> → 讀走系統檔",
+    "related": [
+      "insecure-deserialization",
+      "ssti",
+      "security-headers"
+    ]
+  },
+  {
+    "slug": "toctou",
+    "term": "TOCTOU (Race Condition)",
+    "zh_name": "檢查與使用時間差",
+    "category": "error",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "Time-Of-Check to Time-Of-Use：程式「檢查」和「使用」之間有空檔，攻擊者趁隙把東西掉包。什麼時候在意：先檢查權限/檔案存在、再操作的流程；或先查餘額再扣款的併發。修法：用原子操作 / 鎖 / 交易。",
+    "analogy": "像保全查完證件放你進、你趁他轉頭把證件換給沒證的人——查的當下對、用的當下已變。",
+    "example": "檢查檔案安全→(攻擊者換成符號連結)→開檔＝開到別的",
+    "related": [
+      "race-condition",
+      "mutex-semaphore",
+      "atomic-operation"
+    ]
+  },
+  {
+    "slug": "lateral-movement",
+    "term": "Lateral Movement",
+    "zh_name": "橫向移動",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "攻擊者攻下一台機器後，用它當跳板「橫向」滲透內網其他機器、擴大戰果。什麼時候在意：這是為何『內網互信、外圍防護』不夠——一台破全網危險。防禦：網路分段、零信任、最小權限。",
+    "analogy": "像小偷翻進一間房後，用裡面的鑰匙串一間間開——一扇窗破，整棟遭殃。",
+    "example": "攻下 Web 伺服器 → 用它連內網 DB / 其他服務",
+    "related": [
+      "zero-trust",
+      "least-privilege",
+      "defense-in-depth"
+    ]
+  },
+  {
+    "slug": "defense-in-depth",
+    "term": "Defense in Depth",
+    "zh_name": "縱深防禦",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "不靠單一防線，而是層層設防：就算外圍破了，還有驗證、加密、最小權限、監控一層層擋。什麼時候在意：資安基本心法——假設每一層都可能被突破，多疊幾層降低整體風險。",
+    "analogy": "像城堡——護城河、城牆、內牆、衛兵層層設，破一道還有下一道，不是只靠一面牆。",
+    "example": "WAF + 輸入驗證 + 參數化查詢 + 最小權限 + 監控",
+    "related": [
+      "least-privilege",
+      "lateral-movement",
+      "threat-model"
+    ]
+  },
+  {
+    "slug": "supply-chain-attack",
+    "term": "Supply Chain Attack",
+    "zh_name": "供應鏈攻擊",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "不直接攻你，而是攻你「用的東西」——被投毒的 npm 套件、被入侵的 CI、被竄改的更新。什麼時候在意：現代最兇的攻擊面之一。防禦：鎖版本 + 校驗（lockfile/hash）、最小依賴、掃 CVE、驗簽。",
+    "analogy": "像下毒不下在你碗裡、而下在食材供應商那——你照常煮就中招。",
+    "example": "熱門套件被植入惡意碼 → 所有安裝者一起中",
+    "related": [
+      "cve-cvss",
+      "secrets-management",
+      "defense-in-depth"
+    ]
+  },
+  {
+    "slug": "open-redirect",
+    "term": "Open Redirect",
+    "zh_name": "開放重導向",
+    "category": "error",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "你的網站把使用者導向「網址參數指定的地方」卻不驗證，攻擊者用你的域名連結把人騙去釣魚站。什麼時候在意：登入後跳轉 `?next=` 這種參數。修法：只允許站內路徑 / 白名單域名。",
+    "analogy": "像你家門口的『指路牌』被人偷改指向詐騙集團——客人信任你的招牌就被騙走。",
+    "example": "❌ redirect(req.query.next) ← next=//evil.com",
+    "related": [
+      "security-headers",
+      "clickjacking",
+      "threat-model"
+    ]
+  },
+  {
+    "slug": "security-headers",
+    "term": "Security Headers",
+    "zh_name": "安全標頭",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "HTTP 回應加的防護標頭：CSP（擋 XSS）、HSTS（強制 HTTPS）、X-Frame-Options（防點擊劫持）、X-Content-Type-Options（防 MIME 嗅探）等。什麼時候在意：低成本高效益的縱深防禦一層，網站上線該檢查。",
+    "analogy": "像門上多裝幾個小裝置——防撬、防偷窺、防貼假告示，一個個小防護疊起來。",
+    "example": "Content-Security-Policy / Strict-Transport-Security / X-Frame-Options",
+    "related": [
+      "csp-header",
+      "open-redirect",
+      "defense-in-depth"
+    ]
+  }
+]
