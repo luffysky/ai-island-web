@@ -1,0 +1,344 @@
+[
+  {
+    "slug": "declarative-vs-imperative",
+    "term": "Declarative vs Imperative",
+    "zh_name": "宣告式 vs 命令式",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "命令式＝一步步『告訴電腦怎麼做』（for 迴圈、改變數）；宣告式＝『描述你要什麼』讓底層決定怎麼做（SQL、React、map/filter）。什麼時候在意：宣告式通常更好讀、少 bug（不管過程）；React/SQL/CSS 都是宣告式的代表。",
+    "analogy": "命令式像自己開車導航每個路口；宣告式像跟司機說『帶我去機場』，怎麼開他決定。",
+    "example": "命令式 for 累加 vs 宣告式 arr.reduce((s,x)=>s+x)",
+    "related": [
+      "pure-function",
+      "map-filter-reduce",
+      "immutable-data"
+    ]
+  },
+  {
+    "slug": "immutable-data",
+    "term": "Immutable Data",
+    "zh_name": "不可變資料",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "資料一旦建立就不改它，要變就『產生一份新的』。什麼時候在意：React state、並發安全、可預測性——不可變讓『誰改了資料』無從發生，比較 reference 就知道變沒變。代價是產生新物件的開銷。",
+    "analogy": "像合約——不塗改原件，要改就簽一份新版，舊版留著可追溯、不會被偷改。",
+    "example": "const next = [...arr, x]（不改原 arr、產生新陣列）",
+    "related": [
+      "pure-function",
+      "side-effect",
+      "structured-clone"
+    ]
+  },
+  {
+    "slug": "memoize",
+    "term": "Memoization",
+    "zh_name": "記憶化",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把純函式『算過的結果快取起來』，同樣輸入再問就直接回、不重算。什麼時候在意：昂貴的重複計算（費式數列、React useMemo、費時查詢）。前提是純函式——不純的快取會給錯答案。",
+    "analogy": "像算過的數學題把答案記在旁邊——下次遇到同題直接抄，不重算。",
+    "example": "const memo={}; f=(n)=>memo[n]??=expensive(n)",
+    "related": [
+      "pure-function",
+      "referential-transparency",
+      "computed-property"
+    ]
+  },
+  {
+    "slug": "pipe-compose",
+    "term": "Pipe / Compose",
+    "zh_name": "管道 / 組合",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把多個小函式『串成一條加工線』：pipe 由左到右（資料流順讀）、compose 由右到左（數學慣例）。什麼時候在意：函數式的組合心法——用小純函式拼出複雜處理，比巢狀呼叫好讀。",
+    "analogy": "像生產線——原料經過『洗→切→煮→擺盤』一站站處理，每站是一個小函式。",
+    "example": "pipe(trim, toLowerCase, slugify)('  Hi ')",
+    "related": [
+      "function-composition",
+      "map-filter-reduce",
+      "declarative-vs-imperative"
+    ]
+  },
+  {
+    "slug": "algebraic-data-type",
+    "term": "Algebraic Data Type (ADT)",
+    "zh_name": "代數資料型別",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "用『和型別（sum，多選一）』與『積型別（product，多個一起）』組合出的型別。什麼時候在意：把『所有可能狀態』精確建模——如 Result = Ok(值) | Err(錯)，配 pattern matching 窮盡處理每種情況，編譯器逼你別漏。",
+    "analogy": "像餐點選擇——主餐(和：擇一)＋配菜(積：都有)，把所有合法組合明確定義出來。",
+    "example": "type Shape = Circle(r) | Rect(w,h)（和型別）",
+    "related": [
+      "discriminated-union",
+      "pattern-matching-fp",
+      "result-either-type"
+    ]
+  },
+  {
+    "slug": "fetch-api",
+    "term": "Fetch API",
+    "zh_name": "Fetch API",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "瀏覽器內建、用 Promise 發 HTTP 請求的現代 API，取代老舊的 XMLHttpRequest。什麼時候在意：前端打 API 的標配。注意：fetch 只有網路層錯才 reject，HTTP 4xx/5xx 不會 throw（要自己看 res.ok）。",
+    "analogy": "像現代的點餐 App——比舊的打電話（XHR）順，但『餐做壞了』它不會自動報錯、要你自己檢查。",
+    "example": "const r = await fetch(url); if(!r.ok) throw…; const d = await r.json();",
+    "related": [
+      "abort-controller",
+      "formdata",
+      "promise-then"
+    ]
+  },
+  {
+    "slug": "abort-controller",
+    "term": "AbortController",
+    "zh_name": "中止控制器",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "用來『取消』進行中的 fetch 或事件監聽。什麼時候在意：使用者切走頁面、輸入變了要取消舊的搜尋請求（避免競態、race condition）、設請求逾時。React useEffect cleanup 常用它取消。",
+    "analogy": "像點了餐又反悔——按取消鍵（abort）叫廚房別做了，不用等它做完再丟掉。",
+    "example": "const c=new AbortController(); fetch(url,{signal:c.signal}); c.abort();",
+    "related": [
+      "fetch-api",
+      "use-debounce",
+      "race-condition"
+    ]
+  },
+  {
+    "slug": "web-share-api",
+    "term": "Web Share API",
+    "zh_name": "網頁分享 API",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "讓網頁呼叫『系統原生分享面板』（分享到 LINE、IG、複製…），還能帶檔案。什麼時候在意：手機上做分享功能——用原生面板比自己刻各家分享按鈕好。要 HTTPS + 使用者手勢觸發、且非全瀏覽器支援（要 fallback）。",
+    "analogy": "像按手機的『分享』鍵——彈出系統選單，要分享去哪你自己選，App 不用各自串接。",
+    "example": "await navigator.share({ title, url, files:[img] })",
+    "related": [
+      "clipboard-api",
+      "notification-api",
+      "fetch-api"
+    ]
+  },
+  {
+    "slug": "clipboard-api",
+    "term": "Clipboard API",
+    "zh_name": "剪貼簿 API",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "用程式讀寫系統剪貼簿（複製文字/圖片）。什麼時候在意：做『一鍵複製』按鈕。要 HTTPS + 使用者手勢；讀取剪貼簿會要權限（隱私）。",
+    "analogy": "像幫使用者按了 Ctrl+C——把東西放進剪貼簿，他到別處貼上就有。",
+    "example": "await navigator.clipboard.writeText('複製的內容')",
+    "related": [
+      "web-share-api",
+      "fetch-api",
+      "history-api"
+    ]
+  },
+  {
+    "slug": "notification-api",
+    "term": "Notification API",
+    "zh_name": "通知 API",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "讓網頁顯示『系統層級通知』（即使分頁沒開，配 service worker + Push）。什麼時候在意：做 PWA 推播。要先請求權限（別一進站就要，體驗差）；背景推播要 service worker 接 push 事件。",
+    "analogy": "像 App 的通知——跳到你的通知中心，不用開著網頁也看得到。",
+    "example": "Notification.requestPermission() → new Notification('嗨')",
+    "related": [
+      "web-share-api",
+      "service-worker",
+      "background-fetch"
+    ]
+  },
+  {
+    "slug": "geolocation-api",
+    "term": "Geolocation API",
+    "zh_name": "地理位置 API",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "取得使用者的『地理座標』（經緯度）。什麼時候在意：找附近、定位、地圖功能。要 HTTPS + 使用者授權；精度看裝置（GPS 準、IP 粗）。別濫用、只在需要時要。",
+    "analogy": "像問『你現在在哪』——使用者點頭後手機報出座標，不點頭就拿不到。",
+    "example": "navigator.geolocation.getCurrentPosition(pos => pos.coords)",
+    "related": [
+      "notification-api",
+      "clipboard-api",
+      "ip-subnet"
+    ]
+  },
+  {
+    "slug": "history-api",
+    "term": "History API",
+    "zh_name": "歷史 API",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "用 pushState/replaceState 在『不重新載入頁面』的情況下改網址、管理前進/後退。什麼時候在意：SPA 路由的底層——React Router / Vue Router 靠它做到『換頁不刷新、網址還對、上一頁能返回』。",
+    "analogy": "像看相簿翻頁——網址跟著換、返回鍵有效，但整本相簿（頁面）沒重新載入。",
+    "example": "history.pushState({}, '', '/about') → 網址變但不刷新",
+    "related": [
+      "fetch-api",
+      "ssr-csr",
+      "one-way-data-flow"
+    ]
+  },
+  {
+    "slug": "aria-label",
+    "term": "aria-label",
+    "zh_name": "ARIA 標籤",
+    "category": "syntax",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "給沒有可見文字的元素（如只有圖示的按鈕）補一個『給螢幕報讀器唸的名稱』。什麼時候在意：純 icon 按鈕（🔍、✕）視障者聽不出是什麼——加 aria-label='搜尋' 讓報讀器唸得出用途。",
+    "analogy": "像幫沒貼標籤的按鈕貼上點字標籤——看得到的人靠圖示，看不到的靠標籤。",
+    "example": "<button aria-label='關閉'><XIcon/></button>",
+    "related": [
+      "screen-reader",
+      "alt-text",
+      "aria-role"
+    ]
+  },
+  {
+    "slug": "screen-reader",
+    "term": "Screen Reader",
+    "zh_name": "螢幕報讀器",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "把畫面內容『唸出來』給視障者的輔助軟體（VoiceOver、NVDA、TalkBack）。什麼時候在意：做無障礙時要想『用聽的怎麼用你的網站』——語意化 HTML、alt、aria 都是為了讓報讀器唸得對、導覽得順。",
+    "analogy": "像有人幫你把整個畫面唸出來導覽——你的排版和標記亂，他就唸得零零落落。",
+    "example": "用 VoiceOver 試聽自己的網站，體驗盲用流程",
+    "related": [
+      "aria-label",
+      "semantic-html",
+      "live-region"
+    ]
+  },
+  {
+    "slug": "keyboard-navigation",
+    "term": "Keyboard Navigation",
+    "zh_name": "鍵盤導覽",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "整個網站『只用鍵盤（Tab/Enter/方向鍵）就能操作』。什麼時候在意：很多人不用滑鼠（視障、行動不便、進階使用者）。重點：可聚焦、Tab 順序合理、有清楚的 focus 樣式、Esc 能關彈窗。",
+    "analogy": "像不用滑鼠也能玩完整個遊戲——每個功能都要有鍵盤能到達的路。",
+    "example": "Tab 走到按鈕 → Enter 觸發；Esc 關 modal",
+    "related": [
+      "focus-management",
+      "tab-index",
+      "semantic-html"
+    ]
+  },
+  {
+    "slug": "focus-management",
+    "term": "Focus Management",
+    "zh_name": "焦點管理",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "控制『鍵盤焦點現在在哪、該移去哪』。什麼時候在意：開 modal 要把焦點移進去並困在裡面（focus trap）、關掉要移回觸發的按鈕；SPA 換頁要把焦點移到新內容——不然鍵盤/報讀器使用者會迷路。",
+    "analogy": "像帶盲人走路——每到新場景要牽他的手到對的位置，不能放著讓他撞牆。",
+    "example": "開 modal → focus 第一個輸入；關 → focus 回原按鈕",
+    "related": [
+      "keyboard-navigation",
+      "tab-index",
+      "focus-trap"
+    ]
+  },
+  {
+    "slug": "color-contrast-ratio",
+    "term": "Color Contrast Ratio",
+    "zh_name": "顏色對比度",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "文字與背景的明暗對比值。什麼時候在意：對比太低（淺灰字白底）弱視/陽光下看不清。WCAG 標準：一般文字 ≥ 4.5:1、大字 ≥ 3:1。設計好看之餘要過對比。",
+    "analogy": "像招牌字——太淡的顏色遠看或陽光下就糊了，要夠對比才人人看得清。",
+    "example": "#767676 灰字白底 = 4.5:1（剛好過 AA）",
+    "related": [
+      "wcag-levels",
+      "semantic-html",
+      "visual-hierarchy"
+    ]
+  },
+  {
+    "slug": "wcag-levels",
+    "term": "WCAG (A / AA / AAA)",
+    "zh_name": "無障礙準則等級",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "網頁無障礙的國際準則，分三級：A（最低）、AA（業界/法規常見標準）、AAA（最高、很嚴）。什麼時候在意：多數專案/政府案要求達 AA——對比、鍵盤、替代文字、可調字級等一整套檢查項。",
+    "analogy": "像建築的無障礙法規等級——AA 是『大家都該做到』的標準門檻，AAA 是模範生。",
+    "example": "目標達 WCAG 2.1 AA（對比 4.5:1、鍵盤可操作…）",
+    "related": [
+      "color-contrast-ratio",
+      "aria-label",
+      "semantic-html"
+    ]
+  },
+  {
+    "slug": "prefers-reduced-motion",
+    "term": "prefers-reduced-motion",
+    "zh_name": "減少動態偏好",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "一個 CSS media query，偵測使用者『系統設定了想減少動畫』（前庭失調、暈眩敏感）。什麼時候在意：做動效時要尊重它——偵測到就關掉/減弱動畫，別讓人頭暈。這是負責任動效的基本禮貌。",
+    "analogy": "像餐廳問『會不會對某食材過敏』——使用者說會暈，你就把讓人暈的動畫收起來。",
+    "example": "@media (prefers-reduced-motion: reduce){ *{animation:none} }",
+    "related": [
+      "wcag-levels",
+      "keyboard-navigation",
+      "color-contrast-ratio"
+    ]
+  }
+]
