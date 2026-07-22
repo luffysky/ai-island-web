@@ -54,6 +54,16 @@
 - 本日完成項全部在 todo 劃線更新（辭典 43–64、翻譯 backlog、機會島三表/§3.6、使用說明、LINE 美化、CSP、apple-touch-icon）。
 - 補寫 0722 worklog 後半段（機會島三表 / §3.6 / FeatureGuide / LINE 通知美化 / CSP / apple-touch-icon）。
 
+## 互動學習道具大工程 — 定調 + 起步（林董 0723）
+
+- **背景**：林董檢視 ch26（Python 基礎 38 課）只掛 1 個 scenario-judge，指出 0722 的「每章 1-2 教具」campaign **太薄、太敷衍**。重新定調「教具＝能讓使用者真正學懂該章的互動道具、玩了就懂」。
+- **定調規則**（詳見 todo §4.1.5）：① 程式碼章每課沙盒必備（概念課例外→給道具）② 非程式章給該領域道具（寫作→TipTap）③ 既有好道具鋪更密 + 可遊戲化 ④ 建新「玩了就懂」元件。
+- **起步（本日已建 2 個新元件）**：
+  - **RegexTester** ✅：打 pattern + 測試字串，即時高亮命中、列擷取群組、語法錯即時提示。掛 ch64.4（正則 cheatsheet）/ch04.24（JS RegExp）/ch07.25（字串+正則）。
+  - **WritingStudio** ✅：TipTap 編輯器 + 即時字數 + 引導發部落格（接現有 BlogEditor + /me/blog/new）。掛 ch51.3（部落格/內容寫作）。
+- **確認**：Pyodide 已自動預載 numpy/pandas/matplotlib（可出圖表）→ ch26 資料/ML 課也能有真沙盒。
+- **狀態**：大工程排入 todo §4.1.5、跨多次 session 逐章推進。tsc/vitest/build 全綠。
+
 ## ⏳ 下次開工
 
 - **續辭典**：2348 / 5000，從 `dictionary-seed-65.json` 接（第 65 批）。＊新批次記得跑 `translate-sync-all.mjs` 補 i18n。

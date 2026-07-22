@@ -221,7 +221,14 @@
   - [x] ~~ch06/11/12/14/23/25/37/38/39/40/41/42/49/50 殘餘罐頭 63 題全 de-can~~ ✅ 0721（JSON/行動App/資安OWASP/PWA/後端架構/CDN-DNS/WordPress/電商/LINE生態/Kotlin-Dart/遊戲/接案型態/AI Agent/n8n；接案/職涯/變現題一律不掛收入保證）
   - [x] 🏁🏁 **全站章節 de-can 完成 — 掃全 chapters JSON『canned remaining: 0』**（罐頭練習全數清零）
 - [~] 4.1.2 **deep-rewrite tier** ＝「A→B→C→D」的 **C**：~~ch40~~ ✅（修 40.1 截斷+換 40.5 罐頭題+深寫 40.2/3/5/6）、~~ch63~~ ✅（附錄C 補術語白話）、~~ch68/72/73/74/75~~ ✅ 0722（內容評估已紮實·非「長但表面」，補教具層＋驗證品質）。其餘 ch15、24、32、34、35、36、41、附錄 ch61–67/69–70 內容多已 de-can+夠深，視需要再逐章深修
-- [x] ~~4.1.3 教具庫擴充 ＝「回原路線」的 **D**（互動教具）~~ ✅✅ 0722 **全站 80 章都有教具了**（原 24 章→補齊 56 章；6 平行子代理依統一 DEMO_SPEC 各認領、讀課掛 1-2 對題教具，我自寫 validate_demos.py 驗 schema 全過、import DB 0 errors、round-trip 確認 80/80）＋**教具霧面玻璃美化**（`.demo-glass` 一次改全 15 種受惠）。型別：scenario-judge/decision-quiz/json-tree/workflow-flow/agent-loop/priority-matrix/prompt-lab 依主題配。（B 進階教具 RegexTester/Tokenizer/SortingViz… 之後有需要再建）
+- [~] 4.1.3 教具庫擴充 ＝「回原路線」的 **D**（互動教具）：~~全站 80 章都有教具~~ ✅ 0722（原 24→補齊 56 章、每章 1-2 對題教具、霧面玻璃美化）——**但林董 0723 定調「太薄」，升級為下方 §4.1.5 大工程**。
+- [ ] 4.1.5 🔴🔴 **互動學習道具大工程（林董 0723 定調·全站加密）**——「教具＝能讓使用者真正學懂該章的互動道具、玩了就懂，不是塞選擇題充數」。**規則**：
+  - **① 程式碼章節：每節課「沙盒(playground)必備」**（Python 走 Pyodide〔已自動預載 numpy/pandas/matplotlib、可出圖表〕、其他語言走 server sandbox `/api/playground/run`）。**除非該課只講概念** → 給對應道具。沙盒只放程式章、別亂塞。
+  - **② 非程式章節：放該領域的道具**——例：寫作/創作章放 **WritingStudio**（TipTap 編輯器 + 即時字數 + 引導發部落格，✅ 已建、掛 ch51.3）；設計章配色/版面；SEO 章 SERP 預覽；創業章單位經濟試算；行銷章漏斗…（其餘非程式章的道具再想）。
+  - **③ 既有好道具鋪更密**（flex-playground/json-tree/workflow-flow/box-model… 大章每 3-5 課一個）＋**可遊戲化引導**（概念闖關解鎖+XP、Debug 偵探點錯行、拖拉配對、限時 Speedrun）。
+  - **④ 新互動元件 backlog（玩了就懂）**：~~RegexTester~~ ✅ 0723（打 pattern 即時看命中/群組、掛 ch64.4/ch04.24/ch07.25）、~~WritingStudio~~ ✅ 0723；待建：Tokenizer（看字→token 數/成本，LLM 章）/SortingViz（演算法）/SqlPlayground（SQL JOIN 視覺化）/NeuralForward+GradientDescent（深度學習）/HttpInspector（HTTP）/GitGraph（Git）/DataFrameExplorer（Pandas）/BigOGrapher/CronBuilder/SerpPreview/UnitEconomicsCalc/PersonaBuilder…
+  - **做法**：新元件我逐一建（React demo 元件 + 註冊型別/dispatcher + 掛章 import DB）；沙盒全補 + 概念道具鋪章用平行子代理（spec：讀每課 content、code 課補 playground〔initialCode 從 content code block 改寫〕、概念課掛對題 demo）。**是跨多次 session 的大工程**、逐章推進逐次 commit。
+  - **盤點基準（0723）**：程式章 code 課多已有 playground（ch1-11/17/19-22/33/76 覆蓋 90%+）；缺口＝ch26 資料/ML 段 20 課、ch7/16/31/32/47/48 部分、非程式章多只 1-2 demo。優先 ch26（Python 基礎·觸發此討論）當範本。
 - [ ] 4.1.4 圖文解說圖：概念/B/D/E/F 區操作圖 110+ 張（🔴 等林董生圖；A 區 29 張 ✅）
 
 ### 4.2 程式辭典（→ 5000）
