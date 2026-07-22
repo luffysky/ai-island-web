@@ -9,6 +9,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { LottieIcon } from "@/components/ui/LottieIcon";
+import { FeatureGuide } from "@/components/FeatureGuide";
 import { SCENARIOS, TONES, type ToneId, type CoachVersion, MC_MAX_POINTS } from "@/lib/message-coach";
 
 // 情境 → line-icon（Lottie 沒設時的 fallback、會自己一直動）＋配色
@@ -142,6 +143,18 @@ export function MessageCoach() {
           <h1 className="text-2xl font-bold text-black/85 dark:text-white/90">{t("meta.title")}</h1>
           <p className="text-sm text-black/55 dark:text-white/55 mt-1">{t("meta.subtitle")}</p>
         </header>
+        <FeatureGuide
+          id="message-coach"
+          title="訊息軍師 使用說明"
+          intro="難開口的話（加薪、婉拒、道歉、催款…）不知道怎麼講？選情境、講重點，AI 幫你潤成好說出口的三個版本。"
+          steps={[
+            { title: "選情境", desc: "從下面 12 個常見情境挑一個（加薪 / 婉拒 / 道歉 / 催款 / 請假 / 客訴…）。" },
+            { title: "填要點", desc: "用最白話寫你想表達的重點就好，不用寫完整句子——例如「想加 3 千、我接了兩個新專案」。" },
+            { title: "選語氣", desc: "客氣 / 專業 / 堅定 / 幽默 / 溫暖，挑一個最貼近你想給對方的感覺。" },
+            { title: "產出三版本、挑一個抄", desc: "AI 給三個不同寫法，每版都能一鍵複製；不夠貼可點「再委婉 / 更堅定 / 換一批」微調。" },
+          ]}
+          tip="免費每天 3 則、付費無限。我們不會存下你填的內容（只計次），放心講。"
+        />
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {SCENARIOS.map((s) => (
             <button key={s.id} onClick={() => pick(s.id)}

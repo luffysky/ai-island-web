@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Bot, Send, Loader2, CheckCircle2, XCircle, Wrench, Eye, ShieldAlert, ShieldCheck, History, Cpu, Square, Laptop, Plug, Copy, Trash2, X, Mic, Pencil, FileText, FileSpreadsheet, Presentation } from "lucide-react";
+import { FeatureGuide } from "@/components/FeatureGuide";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -437,6 +438,20 @@ export function AgentClient() {
           </div>
         </div>
       </div>
+
+      <FeatureGuide
+        id="agent"
+        title="分身島 Agent 使用說明"
+        intro="把一個「目標」交給 AI 分身，它會自己拆步驟、用工具（查資料、讀網頁、寫檔、跑程式…）一步步完成，過程你看得到、也控制得住。"
+        steps={[
+          { title: "給它一個目標", desc: "用一句話講你要什麼，例：「幫我查這週台北的 AI 活動、整理成表格」。不知道怎麼下？點下面的範本庫選一個。" },
+          { title: "選省錢檔（可選）", desc: "省 / 平衡 / 品質三檔控制它花多少力氣與 token；免費模型優先，超出才升級。" },
+          { title: "看它一步步做", desc: "每一步會顯示它「想什麼→用哪個工具→得到什麼」，全程透明，不是黑箱。" },
+          { title: "高風險動作先問你", desc: "凡是會寫入 / 對外（寄信、發文、刪東西、花錢）的動作，一定停下來等你按批准才做。" },
+          { title: "收成果 & 存對話", desc: "完成後給你結果；歷史對話可在右側側欄切換 / 刪除，隨時接回去繼續。" },
+        ]}
+        tip="對外與破壞性動作永遠需要你點頭；不確定它要幹嘛時，先用「唯讀 / 查資料」類目標熟悉它。"
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-5">
         {/* 主區 */}

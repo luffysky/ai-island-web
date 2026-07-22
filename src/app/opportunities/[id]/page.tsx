@@ -7,6 +7,7 @@ import { ExternalLink, ArrowLeft, Trophy, CalendarClock, AlertTriangle, Building
 import { RulesSummary } from "./RulesSummary";
 import { FitAnalysis } from "./FitAnalysis";
 import { GenerateMaterials } from "./GenerateMaterials";
+import { estimatePrepEffort, PREP_META, buildOpportunityFaq } from "@/lib/opportunity-prep";
 
 export const dynamic = "force-dynamic";
 
@@ -70,11 +71,14 @@ export default async function OpportunityDetail({ params }: { params: Promise<{ 
         <ArrowLeft className="w-4 h-4" /> 機會島
       </Link>
 
+      {(() => { const p = estimatePrepEffort(o); return (
       <div className="flex flex-wrap items-center gap-1.5 mb-2">
         {o.category && <span className="text-xs px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-600 dark:text-violet-400">{o.category}</span>}
         {o.is_free && <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">免報名費</span>}
+        <span className="text-xs px-2 py-0.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] text-black/60 dark:text-white/60" title={`估算準備量：${p.level}${p.factors.length ? `（${p.factors.join("、")}）` : ""}`}>{PREP_META[p.level].emoji} 準備量 {p.level}</span>
         {o.source_confidence !== "verified" && <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 inline-flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> 資料待人工核實</span>}
       </div>
+      ); })()}
 
       <h1 className="text-2xl sm:text-3xl font-bold leading-tight">{o.name}</h1>
 
@@ -159,6 +163,28 @@ export default async function OpportunityDetail({ params }: { params: Promise<{ 
           </div>
         );
       })()}
+      {/* FAQ（§3.6·規則式、依機會資料自動組）*/}
+      {(() => {
+        const faq = buildOpportunityFaq(o);
+        return (
+          <div className="mt-8">
+            <h2 className="text-lg font-bold mb-3">常見問題</h2>
+            <div className="space-y-2">
+              {faq.map((f, i) => (
+                <details key={i} className="group rounded-2xl border border-black/10 dark:border-white/10 bg-white/50 dark:bg-white/[0.03] px-4 py-3">
+                  <summary className="cursor-pointer list-none flex items-center gap-2 text-sm font-medium text-black/80 dark:text-white/85">
+                    <span className="text-violet-500">Q</span>{f.q}
+                    <span className="ml-auto text-black/30 dark:text-white/30 group-open:rotate-180 transition">▾</span>
+                  </summary>
+                  <p className="mt-2 text-sm text-black/65 dark:text-white/65 leading-relaxed pl-5">{f.a}</p>
+                </details>
+              ))}
+            </div>
+            <p className="mt-2 text-[11px] text-black/40 dark:text-white/40">＊以上為依機會資料自動整理的常見問答，實際規定一律以主辦單位官網為準。</p>
+          </div>
+        );
+      })()}
+
       <p className="mt-4 text-[11px] text-black/40 dark:text-white/40">此頁資料整理自公開資訊、可能過時；報名前請以主辦單位官方公告為準。</p>
     </div>
   );

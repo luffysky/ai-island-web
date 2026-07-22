@@ -7,6 +7,7 @@ import {
   Share2, Check, Cake, RefreshCw, ChevronDown, History, Clock,
   Link2, Download, X,
 } from "lucide-react";
+import { FeatureGuide } from "@/components/FeatureGuide";
 import { TarotSection } from "./TarotSection";
 import { BaziSection } from "./BaziSection";
 import { IChingSection } from "./IChingSection";
@@ -109,6 +110,20 @@ export function Fortune() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 sm:py-8 space-y-5">
+      <FeatureGuide
+        id="fortune"
+        title="每日運勢・命理 使用說明"
+        intro="結合星座每日運勢、塔羅、八字、易經的每日心靈小工具——放輕鬆看、當每天的正向提醒就好。"
+        steps={[
+          { title: "填一次生日資料", desc: "生日（可選時辰、國曆／農曆）填一次即可，用來算你的星座與命盤；沒有時辰也能算（精度會標示較低）。" },
+          { title: "看每日運勢", desc: "整體 / 愛情 / 事業 / 財運四面向 + 分數 + 幸運色數字 + 一句提醒，每天更新一次。" },
+          { title: "抽塔羅 / 排八字 / 卜易經", desc: "塔羅可帶問題抽三張牌陣；八字排正統四柱五行；易經梅花易數起卦。想要 AI 深入解讀就展開對應區塊。" },
+          { title: "分享運勢卡", desc: "按分享會產生一張運勢 OG 圖卡，可分享到其他 App、複製連結或下載圖片。" },
+          { title: "綁 LINE 每日推播", desc: "到設定開啟 LINE 通知，每天早上自動把當日運勢推到你的 LINE。" },
+        ]}
+        tip="運勢命理僅供娛樂與正向參考，不做醫療 / 投資 / 法律等具體斷言。免費每日基本盤；塔羅、易經 AI 深解免費每日 1 次、付費無限。"
+      />
+
       {/* 星座 + 日期 + 分數環 */}
       <div className="rounded-2xl bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 dark:from-violet-500/15 dark:to-fuchsia-500/15 border border-violet-500/20 p-5 sm:p-6">
         <div className="flex items-center gap-4">

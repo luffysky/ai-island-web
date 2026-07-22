@@ -3,11 +3,14 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Search, Compass, ExternalLink, Bookmark, BookmarkCheck, AlertTriangle, CalendarClock, Trophy, Sparkles, Loader2, UserCog, ChevronDown, ChevronUp, Check, Bell, X } from "lucide-react";
+import { FeatureGuide } from "@/components/FeatureGuide";
+import { estimatePrepEffort, PREP_META } from "@/lib/opportunity-prep";
 
 interface Opp {
   id: string; type: string; name: string; organizer?: string; country?: string; category?: string;
   official_url?: string; prize_text?: string; prize_amount?: number | null; application_deadline?: string | null;
-  is_free?: boolean; requires_demo?: boolean; requires_pitch?: boolean; is_online?: boolean; requires_qa?: boolean; requires_team?: boolean;
+  is_free?: boolean; requires_demo?: boolean; requires_pitch?: boolean; requires_video?: boolean; requires_business_plan?: boolean;
+  is_online?: boolean; requires_qa?: boolean; requires_team?: boolean;
   requires_student?: boolean; requires_company?: boolean; prep_effort?: string | null; tags?: string[];
   status: string; source_confidence?: string; ai_island_fit_score?: number | null;
 }
@@ -244,6 +247,21 @@ export function OpportunityBrowse() {
         <p className="text-[11px] text-amber-600/90 dark:text-amber-400/80 mt-1 inline-flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> 目前為初始資料、部分欄位「待人工核實」，實際以官網為準。</p>
       </div>
 
+      <FeatureGuide
+        id="opportunities"
+        intro="機會島幫你找到適合的競賽 / 補助 / 徵件，並一路陪你追到截止、準備到報名。"
+        steps={[
+          { title: "找 & 篩選", desc: "用上面的搜尋和分類，配合免費 / 免上台 / 線上 / 獎金下限 / 地區 / 學生法人身分等條件，縮到適合你的。" },
+          { title: "存進「我的作品庫」", desc: "把你的作品 / 技能 / 獎項填一次，之後「AI 幫我挑」會自動帶入、推薦更準。" },
+          { title: "AI 幫我挑", desc: "描述你的狀況（或靠作品庫），AI 從開放中的機會挑出最適合的幾個，附符合率與原因。" },
+          { title: "加入「我的航線」", desc: "看到想試的按書籤加入航線，就能追蹤截止日、更新投件進度（已收藏 / 準備中 / 已投件 / 完成）。" },
+          { title: "用缺件清單追準備", desc: "在我的航線展開每個機會的「缺件清單」，一鍵帶入建議缺件、逐項打勾，準備進度一目了然。" },
+          { title: "丟給分身島幫你準備", desc: "點「丟給分身島」把準備任務交給 AI 代理，它會列文件清單、整理待辦（對外動作會先問過你）。" },
+        ]}
+        tip="機會資料整理自公開資訊、可能過時；報名前一定要點進官網再次確認截止與資格。"
+      />
+
+
       {/* 我的機會檔案（V2）：存一次、所有 AI 工具自動帶入 */}
       <div className="rounded-2xl border border-black/10 dark:border-white/10 p-3 mb-3">
         <button onClick={() => setProfOpen((v) => !v)} className="w-full flex items-center gap-2 text-sm font-semibold">
@@ -428,6 +446,7 @@ export function OpportunityBrowse() {
                       {o.is_online && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400">🌐 線上</span>}
                       {o.requires_student && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400">🎓 限學生</span>}
                       {o.requires_company && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-500/10 text-slate-600 dark:text-slate-400">🏢 限法人</span>}
+                      {(() => { const p = estimatePrepEffort(o); return <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] text-black/55 dark:text-white/55" title={p.factors.join("、") || "多半填表即可"}>{PREP_META[p.level].emoji} 準備量 {p.level}</span>; })()}
                       {o.source_confidence !== "verified" && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">待核實</span>}
                     </div>
                     <Link href={`/opportunities/${o.id}`} className="font-bold text-base leading-snug hover:text-violet-600 dark:hover:text-violet-400">{o.name}</Link>

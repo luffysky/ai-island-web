@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Loader2, Download, Copy, Printer, Sparkles, IdCard, Mic, FileText, Mail, ArrowRight } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
+import { FeatureGuide } from "@/components/FeatureGuide";
 
 // markdown → HTML（標題/列表/粗體/連結，XSS 安全）— 對齊 ResumeClient
 function renderMarkdown(md: string): string {
@@ -142,6 +143,19 @@ export function JobKitClient() {
   const t = useTranslations("jobKit");
   return (
     <div>
+      <FeatureGuide
+        id="job-kit"
+        title="AI 求職包 使用說明"
+        intro="一站生出求職要用的四樣東西：履歷、自傳、求職信、面試模擬。內容會參考你在島上的學習紀錄自動帶入。"
+        steps={[
+          { title: "先整理履歷", desc: "點「履歷」把經歷 / 技能 / 目標職位填好——它是自傳、求職信的基礎資料。" },
+          { title: "生自傳 / 求職信", desc: "下面兩個產生器：填目標職位（求職信再補招募資訊），AI 產出草稿，可複製、下載 .md 或直接列印成 PDF。" },
+          { title: "練面試", desc: "點「模擬面試」跟 AI 多輪問答，結束會評分並留下歷史，反覆練到穩。" },
+          { title: "輸出與投遞", desc: "文件用瀏覽器列印（Ctrl/⌘+P）就能存 PDF；投出去前記得依實際職缺再微調。" },
+        ]}
+        tip="免費：自傳 / 求職信各每月 3 份、面試模擬可用；Premium 無限。AI 產出是草稿，請務必自己校對再使用、別掛不實內容。"
+      />
+
       {/* 既有工具入口 */}
       <div className="grid sm:grid-cols-2 gap-3 mb-4">
         <Link href="/me/resume" className="bg-bg-card border border-border rounded-xl p-4 flex items-center gap-3 hover:border-accent/50 transition">

@@ -23,7 +23,7 @@ export async function GET(req: Request) {
 
   const admin = createSupabaseAdmin();
   let query = admin.from("opportunities")
-    .select("id, type, name, organizer, country, category, official_url, prize_amount, prize_text, currency, application_deadline, is_free, requires_demo, requires_pitch, is_online, requires_qa, requires_team, requires_student, requires_company, prep_effort, tags, status, source_confidence, ai_island_fit_score")
+    .select("id, type, name, organizer, country, category, official_url, prize_amount, prize_text, currency, application_deadline, is_free, requires_demo, requires_pitch, requires_video, requires_business_plan, is_online, requires_qa, requires_team, requires_student, requires_company, prep_effort, tags, status, source_confidence, ai_island_fit_score")
     .limit(200);
 
   if (q) query = query.or(`name.ilike.%${q}%,organizer.ilike.%${q}%,category.ilike.%${q}%`);
