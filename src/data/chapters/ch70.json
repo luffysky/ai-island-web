@@ -154,7 +154,122 @@
       "tip": {
         "type": "practical",
         "text": "挑一個介面順眼的就開始，不用糾結選哪個，多數都夠用"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "線上遊樂場挑哪個？",
+          "note": "這課列了 Replit / CodePen / LeetCode / Ideone / Glitch；回答幾題，看你這次的目的最該開哪個。",
+          "config": {
+            "intro": "遊樂場沒有最強、看你這次想幹嘛。選一個點進去、比一直看比較表有用。",
+            "questions": [
+              {
+                "q": "你這次想做什麼？",
+                "options": [
+                  {
+                    "label": "做網頁、想馬上看到畫面效果",
+                    "scores": {
+                      "codepen": 2
+                    }
+                  },
+                  {
+                    "label": "練演算法 / 準備面試",
+                    "scores": {
+                      "leetcode": 2
+                    }
+                  },
+                  {
+                    "label": "跑一段任意語言、還想要完整環境",
+                    "scores": {
+                      "replit": 2
+                    }
+                  },
+                  {
+                    "label": "做個能上網的小 API / 小網站",
+                    "scores": {
+                      "glitch": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你想用哪種語言？",
+                "options": [
+                  {
+                    "label": "HTML / CSS / JavaScript",
+                    "scores": {
+                      "codepen": 2
+                    }
+                  },
+                  {
+                    "label": "Python / Java / Go 這類後端語言",
+                    "scores": {
+                      "replit": 1
+                    }
+                  },
+                  {
+                    "label": "冷門語言（Rust / Kotlin…）貼了就跑",
+                    "scores": {
+                      "ideone": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "要不要註冊、想多方便？",
+                "options": [
+                  {
+                    "label": "最好不用註冊、貼上按 run 就好",
+                    "scores": {
+                      "ideone": 2
+                    }
+                  },
+                  {
+                    "label": "願意登入換保存 / 協作",
+                    "scores": {
+                      "replit": 1,
+                      "codepen": 1
+                    }
+                  },
+                  {
+                    "label": "想直接部署上線給人看",
+                    "scores": {
+                      "glitch": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "replit": {
+                "emoji": "🧰",
+                "title": "用 Replit",
+                "desc": "支援 50+ 語言、有內建終端機還能協作，環境最完整。想練任何語言、或做稍大一點的專案首選。"
+              },
+              "codepen": {
+                "emoji": "🎨",
+                "title": "用 CodePen",
+                "desc": "前端王者，HTML/CSS/JS 三欄即時預覽、範例庫超多，適合做網頁、看別人怎麼寫特效。"
+              },
+              "leetcode": {
+                "emoji": "🧩",
+                "title": "用 LeetCode",
+                "desc": "刷題專用、邊寫邊測自動判分，準備面試就靠它。當練習場、不是學語法的地方。"
+              },
+              "ideone": {
+                "emoji": "⚡",
+                "title": "用 Ideone",
+                "desc": "極簡、免註冊、支援 60+ 語言（含冷門的）。想快速測一小段 code 或試冷門語言最省事。"
+              },
+              "glitch": {
+                "emoji": "🐟",
+                "title": "用 Glitch",
+                "desc": "Node + 前端完整環境，能做小 API / 小網站還能直接部署上網、看別人原始碼 remix。想練後端邏輯選它。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "70.2",
@@ -1130,7 +1245,44 @@
       "tip": {
         "type": "practical",
         "text": "把這些網址加書籤，寫 code 卡住時秒救命；尤其 regex 和 JSON 格式化，幾乎每週都用得上。"
-      }
+      },
+      "demos": [
+        {
+          "type": "json-tree",
+          "title": "被 JSON.cn 排版後的長相",
+          "note": "這課提到後端常回一坨爛糊糊的 JSON、貼進 JSON.cn 就變漂亮；這就是排版後、你能點開巢狀結構看清楚的樣子。",
+          "config": {
+            "caption": "一份假的 API 回傳：外層是狀態與資料，data 裡巢著使用者物件和一個工具清單陣列。點左邊箭頭把巢狀的 tools / user 收合看看。",
+            "data": {
+              "status": "ok",
+              "code": 200,
+              "data": {
+                "user": {
+                  "id": 42,
+                  "name": "Luffysky",
+                  "isPro": true
+                },
+                "tools": [
+                  {
+                    "name": "Regex101",
+                    "category": "regex"
+                  },
+                  {
+                    "name": "JSON.cn",
+                    "category": "json"
+                  },
+                  {
+                    "name": "CodePen",
+                    "category": "css"
+                  }
+                ],
+                "nextCursor": null
+              },
+              "took_ms": 37
+            }
+          }
+        }
+      ]
     }
   ],
   "outcomes": [

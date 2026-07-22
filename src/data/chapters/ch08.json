@@ -452,7 +452,53 @@
         ],
         "answer": "a",
         "explanation": "useState 的作用就是回傳 [當前值, setter]，透過 setter 更新狀態會觸發 re-render。選 b 違反 hook 規則、選 c 和 d 都違反 React 狀態管理的基本原則。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "useState 這樣用 OK 嗎？",
+          "note": "判斷 React state 的更新方式是好做法、有風險、還是會出錯",
+          "config": {
+            "scenarios": [
+              {
+                "text": "同一個 handler 想加 2、連續呼叫兩次 setCount(count + 1)",
+                "correct": "risk",
+                "why": "兩次都讀到同一個舊 count、實際只加 1、連續更新要用 setCount(prev => prev + 1)。"
+              },
+              {
+                "text": "改物件 state 用 setForm(prev => ({ ...prev, name }))",
+                "correct": "ok",
+                "why": "複製整個物件再改一個欄位、不可變更新、不會弄丟其他欄位。"
+              },
+              {
+                "text": "直接 count++ 或 form.name = \"x\" 改 state",
+                "correct": "no",
+                "why": "直接改 state React 不會重畫、一定要透過 setter。"
+              },
+              {
+                "text": "setForm({ name: \"new\" }) 只給一個欄位（原本還有 email、age）",
+                "correct": "no",
+                "why": "這樣會整包換掉、email/age 直接消失、要 spread 舊值再改。"
+              },
+              {
+                "text": "setCount 之後下一行馬上 console.log(count)、期待是新值",
+                "correct": "risk",
+                "why": "state 不是即時的、這行還是舊值、要看新值用 function updater 或 useEffect。"
+              },
+              {
+                "text": "能從現有 state 算出來的（fullName = first + last）就直接算、不另存 state",
+                "correct": "ok",
+                "why": "能算的不要存 state、另存一份容易不同步。"
+              },
+              {
+                "text": "兩個 sibling 元件要共用的狀態、提升到共同 parent 再用 props 傳下去",
+                "correct": "ok",
+                "why": "state lifting、共用狀態放共同 parent 才會同步。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "8.6",
@@ -716,7 +762,53 @@
         ],
         "answer": "b",
         "explanation": "選項 b 才對。加上 [id] 作為 dependency，這樣 id 變化時會重新跑 effect、觸發新的 fetch。選項 a 會無限迴圈（每 render 都 fetch），選項 c 只跑一次（id 變時不會 fetch），選項 d 多加 fetch 是不必要的。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "useEffect 這樣寫 OK 嗎？",
+          "note": "判斷 useEffect 的依賴、cleanup、使用時機是好做法、有風險、還是會爆",
+          "config": {
+            "scenarios": [
+              {
+                "text": "useEffect(() => { setCount(count + 1); }) 不加依賴陣列",
+                "correct": "no",
+                "why": "每次 render 都跑 → setState → 再 render、變成無限迴圈。"
+              },
+              {
+                "text": "fetch 資料的 effect、把 id 列進依賴陣列 [id]",
+                "correct": "ok",
+                "why": "id 變才重新抓、少列會抓到舊資料。"
+              },
+              {
+                "text": "訂閱事件 / setInterval 後、在 effect 回傳的 cleanup 裡取消訂閱 / clearInterval",
+                "correct": "ok",
+                "why": "沒 cleanup 會 memory leak、cleanup 是必做。"
+              },
+              {
+                "text": "ESLint 的 exhaustive-deps 警告缺依賴、直接 disable 掉眼不見為淨",
+                "correct": "risk",
+                "why": "那通常是真 bug（stale closure）、除了極少數例外、不該無腦關掉。"
+              },
+              {
+                "text": "用 useEffect 把 items.length 同步到另一個 count state",
+                "correct": "no",
+                "why": "這是 derived state、直接 const count = items.length 算就好、用 effect 多繞一圈還可能不同步。"
+              },
+              {
+                "text": "切換 id 快、舊 fetch 才回、用 cancelled flag 或 AbortController 擋掉舊回應",
+                "correct": "ok",
+                "why": "防 race condition、避免舊請求覆蓋掉新資料。"
+              },
+              {
+                "text": "onClick 裡就能做的事（showToast）硬塞進 useEffect 監聽某個 flag",
+                "correct": "risk",
+                "why": "useEffect 是拿來同步外部系統的、響應事件應該直接寫在 handler 裡。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "8.9",

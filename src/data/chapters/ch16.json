@@ -90,7 +90,59 @@
         ],
         "answer": "b",
         "explanation": "課程明確指出「Step 5-9 才是後端真正在做的事」，核心就是處理請求、驗證資料、與 DB 互動、回應結果。DNS、TCP、TLS 是網路基礎層（發生在 Step 1-3），不是後端工程師設計的應用邏輯。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "按下「登入」的 3 秒、後端在忙什麼",
+          "note": "跟著一個 request 走完 DNS → 連線 → 後端 → DB → 回應的完整旅程",
+          "config": {
+            "trigger": {
+              "kind": "manual",
+              "label": "你在 Chrome 按下「登入」",
+              "data": "POST /api/login\n{\"email\":\"alice@x.com\",\"password\":\"...\"}"
+            },
+            "nodes": [
+              {
+                "kind": "http",
+                "label": "DNS 查詢",
+                "desc": "把網域名字換成 IP 地址",
+                "data": "facebook.com → 157.240.241.35（約 5-50ms）"
+              },
+              {
+                "kind": "http",
+                "label": "TCP + TLS 握手",
+                "desc": "建立連線、再協商加密",
+                "data": "三次握手 + 交換金鑰、確認憑證（約 150-400ms）"
+              },
+              {
+                "kind": "action",
+                "label": "Load Balancer 分流",
+                "desc": "從一堆 server 挑一台比較閒的接手",
+                "data": "看哪台負載低（約 1-5ms）"
+              },
+              {
+                "kind": "code",
+                "label": "後端邏輯",
+                "desc": "解析 JSON、比對密碼、簽發 token、寫 log",
+                "data": "bcrypt.compare(password) → sign JWT（約 50-200ms）"
+              },
+              {
+                "kind": "db",
+                "label": "查資料庫",
+                "desc": "撈 user 資料 + 權限",
+                "data": "SELECT * FROM users WHERE email = ?（約 5-50ms）"
+              },
+              {
+                "kind": "http",
+                "label": "回傳 Response",
+                "desc": "200 OK + token、瀏覽器存 cookie 後跳轉主頁",
+                "data": "HTTP 200 + Set-Cookie: session=xxx"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "16.2",
@@ -254,7 +306,116 @@
         ],
         "answer": "a",
         "explanation": "tRPC 專為 TypeScript 全端設計、無需 schema、type safe end-to-end，是 2024+ Next.js 全端的首選。gRPC 雖快但需要 .proto 定義、不適合只 TS 的內部團隊；GraphQL 對這場景是 overkill；REST 沒有錯但不如 tRPC 適合 TS 全棧。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "REST / GraphQL / gRPC / tRPC / WebSocket 選哪個",
+          "note": "依 API 給誰用、資料需求、團隊規模、幫你選對 API 風格",
+          "config": {
+            "intro": "設計 API 有好幾種風格、各有適合場景。回答幾題、看你這個專案該用哪個。",
+            "questions": [
+              {
+                "q": "這個 API 主要給誰用？",
+                "options": [
+                  {
+                    "label": "公開給任何人 / 各種語言的 client",
+                    "scores": {
+                      "rest": 2
+                    }
+                  },
+                  {
+                    "label": "只有自己的 TypeScript 前後端",
+                    "scores": {
+                      "trpc": 2
+                    }
+                  },
+                  {
+                    "label": "服務跟服務之間（微服務內部）",
+                    "scores": {
+                      "grpc": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "資料需求是什麼？",
+                "options": [
+                  {
+                    "label": "簡單 CRUD、九成場景",
+                    "scores": {
+                      "rest": 2
+                    }
+                  },
+                  {
+                    "label": "前端想自己挑欄位、避免打好幾個 endpoint",
+                    "scores": {
+                      "graphql": 2
+                    }
+                  },
+                  {
+                    "label": "要雙向即時（聊天 / 協作 / 遊戲）",
+                    "scores": {
+                      "ws": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "團隊 / 規模？",
+                "options": [
+                  {
+                    "label": "indie / 小 SaaS、要開發快",
+                    "scores": {
+                      "trpc": 2,
+                      "rest": 1
+                    }
+                  },
+                  {
+                    "label": "中大型、多個前端吃同一份 API",
+                    "scores": {
+                      "graphql": 2
+                    }
+                  },
+                  {
+                    "label": "Google 級、服務間要高效通訊",
+                    "scores": {
+                      "grpc": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "rest": {
+                "emoji": "🌐",
+                "title": "REST",
+                "desc": "最主流、99% 公司在用。HTTP 動詞 + 名詞、好 cache、curl 就能 debug。簡單夠用，缺點是一個頁面常要打好幾個 endpoint。"
+              },
+              "graphql": {
+                "emoji": "🔮",
+                "title": "GraphQL",
+                "desc": "一個 endpoint、client 自己 query 要的欄位、不多不少。解決 over/under-fetch。代價是 server 端複雜、cache 較難、學習曲線陡，小專案 overkill。"
+              },
+              "grpc": {
+                "emoji": "⚡",
+                "title": "gRPC",
+                "desc": "binary + HTTP/2、超快、跨語言、streaming 強。適合微服務之間。缺點是不能用 curl debug、瀏覽器不能直接用。"
+              },
+              "trpc": {
+                "emoji": "🧩",
+                "title": "tRPC",
+                "desc": "全 TypeScript、呼叫遠端像呼叫本地函式、端到端型別安全、不用寫 schema。Next.js 全端首選，但只給 TS 用、不適合公開 API。"
+              },
+              "ws": {
+                "emoji": "🔌",
+                "title": "WebSocket",
+                "desc": "雙向長連線、真正即時、低延遲。聊天 / 協作 / 即時報價必備。代價是連線狀態管理複雜、不易 scale。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "16.4",

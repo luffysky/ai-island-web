@@ -1302,7 +1302,35 @@
         ],
         "answer": "b",
         "explanation": "Plan-Execute 適合任務複雜、有明確目標、步驟多（10+）的情況，寫長文章就是典型例子。ReAct 只適合 3-5 步的探索型任務。選項 d 雖然也合理，但課程強調的是「ReAct vs Plan-Execute 的選擇」，不是必須用 Multi-Agent。"
-      }
+      },
+      "demos": [
+        {
+          "type": "agent-loop",
+          "title": "ReAct Agent 跑一輪",
+          "note": "看 ReAct 架構的 Agent 怎麼 Think → Act → Observe 循環到達標",
+          "config": {
+            "task": "找出最新 iPhone 跟前一代的差別",
+            "steps": [
+              {
+                "thought": "我不知道現在最新的 iPhone 是哪一代、得先查",
+                "action": "web_search(\"最新 iPhone 2026\")",
+                "observation": "iPhone 17 是最新一代、2025 年發布"
+              },
+              {
+                "thought": "最新是 17、那前一代就是 iPhone 16、我要比較兩者規格",
+                "action": "web_search(\"iPhone 17 vs iPhone 16 規格差別\")",
+                "observation": "查到晶片、螢幕、相機、電池的對照資料"
+              },
+              {
+                "thought": "資料已經夠了、可以整理成使用者要的差別了",
+                "action": "finish()",
+                "observation": "不再需要用工具、準備輸出最終答案"
+              }
+            ],
+            "answer": "iPhone 17 相較 16 主要差在更新的晶片、更亮的螢幕、相機升級與電池續航提升（實際規格以官方發布為準）。"
+          }
+        }
+      ]
     },
     {
       "id": "46.17",

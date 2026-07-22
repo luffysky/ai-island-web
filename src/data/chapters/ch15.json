@@ -314,7 +314,59 @@
         ],
         "answer": "a",
         "explanation": "課程明確定義 CI（Continuous Integration）是每 push 自動測試和 build，CD（Continuous Deployment）是通過測試後自動上線。其他選項都是似是而非的錯誤定義。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "push 之後、CI/CD 自動幫你跑什麼",
+          "note": "看一條 GitHub Actions 生產線：從 push 到自動上線的每一站",
+          "config": {
+            "trigger": {
+              "kind": "webhook",
+              "label": "push 到 main 分支就觸發",
+              "data": "on:\n  push:\n    branches: [main]\n  pull_request:"
+            },
+            "nodes": [
+              {
+                "kind": "code",
+                "label": "Checkout 程式碼",
+                "desc": "把這次 push 的 repo 拉到跑步機上",
+                "data": "uses: actions/checkout@v4"
+              },
+              {
+                "kind": "set",
+                "label": "裝環境 + 相依",
+                "desc": "Node 20、用 npm ci 依 lock 精準安裝",
+                "data": "uses: actions/setup-node@v4\nrun: npm ci"
+              },
+              {
+                "kind": "code",
+                "label": "Lint",
+                "desc": "檢查程式風格 / 潛在 bug、爛寫法先擋掉",
+                "data": "run: npm run lint"
+              },
+              {
+                "kind": "code",
+                "label": "跑測試",
+                "desc": "單元 / 整合測試全綠才准往下",
+                "data": "run: npm test"
+              },
+              {
+                "kind": "code",
+                "label": "Build",
+                "desc": "打包成上線版本、build 壞了就停在這",
+                "data": "run: npm run build"
+              },
+              {
+                "kind": "action",
+                "label": "部署（只有 main 才做）",
+                "desc": "前面全過 + 分支是 main、才自動上 production",
+                "data": "if: github.ref == 'refs/heads/main'\nvercel-args: --prod"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Vercel / Netlify / Cloudflare Pages",
@@ -1006,7 +1058,53 @@
         ],
         "answer": "b",
         "explanation": "Hotfix 確實需要快速流程，但部署時機同樣重要——週五下午出事沒人改。正確做法是快速修+review，但選在流量低峰、有人值班的時段（週一早上）才部署。倉促在週五部署會讓問題更嚴重。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "要上 production 了、這樣做對嗎？",
+          "note": "判斷部署時機、migration、rollback 這些 SOP 動作哪些穩、哪些會炸",
+          "config": {
+            "scenarios": [
+              {
+                "text": "週五下午 5 點、把一個大改動推上 production",
+                "correct": "no",
+                "why": "出事時大家都下班了、沒人能立刻救；避開週五 / 假期前 / 流量高峰。"
+              },
+              {
+                "text": "上線前先在 staging 環境跑一輪、QA / PM 確認過再放行",
+                "correct": "ok",
+                "why": "staging 先測是抓 production-only bug 的關鍵一關。"
+              },
+              {
+                "text": "新版本先放給 1% 流量、看 error / latency 沒問題再逐步放大（canary）",
+                "correct": "ok",
+                "why": "灰度上線讓爛版本只影響一小撮人、不是全世界。"
+              },
+              {
+                "text": "migration 先加新欄位、確認穩定、下次 migration 才刪舊欄位",
+                "correct": "ok",
+                "why": "先擴後縮（expand → contract）、新舊 code 交接期都不會炸。"
+              },
+              {
+                "text": "新 code 都還沒部署、就先把舊欄位 DROP 掉",
+                "correct": "no",
+                "why": "線上還在跑的舊 code 立刻找不到欄位、整個服務噴 500。"
+              },
+              {
+                "text": "一出事第一時間先 rollback 回上一版、再慢慢查原因",
+                "correct": "ok",
+                "why": "止血優先、rollback 比現場硬修快 100 倍。"
+              },
+              {
+                "text": "直接 push main、沒 PR review 也沒等 CI 就上",
+                "correct": "risk",
+                "why": "少了 review 跟 CI 這兩道保險、把壞版推上線的機率大增。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "npm vs yarn vs pnpm vs bun",

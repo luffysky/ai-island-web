@@ -71,6 +71,14 @@
 - **教具開始鋪各章**（林董要求：盡量 80 章都有教具）：先掛深寫章——ch40：40.1 decision-quiz（Kotlin/Flutter/RN 路線測驗）、40.5 scenario-judge（Compose/狀態 6 題對錯判斷）；ch63：63.1 decision-quiz（該用哪個 LLM）、63.2 prompt-lab、63.4 workflow-flow（RAG 問答流程）。全 import DB。
 - **教具覆蓋盤點**：80 章中 24 章已有教具、**56 章待補**（清單見 scratchpad）。續掃：以 scenario-judge（好/風險/不行判斷·幾乎每技術章都適用）為主力 + decision-quiz / json-tree / workflow-flow / agent-loop 依章配。
 
+## 教具鋪滿全站（林董：盡量 80 章都有教具）
+
+- **目標**：80 章原本只 24 章有教具 → 補到全站。教具型別 15 種（scenario-judge 判斷 / decision-quiz 選型 / json-tree / workflow-flow / agent-loop / priority-matrix / prompt-lab 等）。
+- **做法**：我先掛深寫章（ch40/63/68/72–75），其餘 49 章用 6 個平行子代理依「DEMO_SPEC.md」（統一 schema + 語氣 + 選型指南）各認領一批、讀該課內容後掛 1–2 個對題教具（只加 `demos` 欄、不動既有內容）。
+- **我方驗證（不只信子代理）**：自寫 `validate_demos.py` 逐一驗 demo type ∈ 支援集、scenario-judge correct∈{ok/risk/no}、decision-quiz scores key ⊆ outcomes key、workflow-flow node kind 合法…等 → **48 章 88 個 demo 全 schema-valid**；再 `import_chapters_to_db.mjs` 全數灌 DB（0 errors）。
+- **本批完成 47 章**（A/C/D/E/F 批 + 我 7 章；ch11/15–21 批 B 完成後再併）：涵蓋 ch00-10、22-41、46、61-79 等。每章 code 之間的 demo 都扣該課實際內容（如 ch04 ===/型別轉換判斷、ch18 NoSQL 文件 json-tree、ch22 部署 pipeline workflow-flow、ch79 RAG agent-loop）。
+- 教具外觀已先做**霧面玻璃**（見上）＝ 補進來的教具一律有質感。
+
 ## 🏁 收尾健檢（本日全部改動一次過）
 
 - **API/UI/DB 接線**：`node scripts/audit-db-columns.mjs` → 我的新查詢（`ai_usage_daily`/`fortune_daily`/`app_settings`）全部乾淨；殘留 ✗ 都是既有 template-literal 欄位名與 OG `<img src>` URL 的誤報。**本批零新增 migration**（全讀既有表/欄）。

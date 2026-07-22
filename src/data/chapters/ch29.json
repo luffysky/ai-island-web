@@ -1211,7 +1211,53 @@
         ],
         "answer": "a",
         "explanation": "課程的核心重點是：RSS 是網站「主動提供」給 reader 用、Sitemap 是網站「告訴 Google 來爬」用——都是網站主動公開的資料，所以拿來用就是合理使用。其他選項混淆了技術工具或誤解了合法性的來源。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "抓資料的做法：好 / 有風險 / 不行",
+          "note": "判斷這些抓取做法哪些友善又合規、哪些會害你被擋或踩線",
+          "config": {
+            "scenarios": [
+              {
+                "text": "要抓資料前，先找有沒有 RSS / sitemap / 官方 API",
+                "correct": "ok",
+                "why": "這些是網站主動公開、歡迎機器取用的入口，又快又穩又合規"
+              },
+              {
+                "text": "完全無視 robots.txt、對整站每秒狂打幾百次請求",
+                "correct": "no",
+                "why": "形同 DDoS、不友善又可能違反 ToS，對方會直接把你擋掉"
+              },
+              {
+                "text": "追某站有沒有新文章，用訂閱 RSS 而不是每分鐘狂爬首頁",
+                "correct": "ok",
+                "why": "RSS 是對方提供的更新機制，只拉一個小 XML、對方樂意給"
+              },
+              {
+                "text": "硬爬對方脆弱的 HTML 版面、又沒設任何延遲 / rate limit",
+                "correct": "risk",
+                "why": "對方一改版就壞、高頻又增加對方負擔，該節制並優先找結構化來源"
+              },
+              {
+                "text": "大網站的 sitemap index 太大分多檔，就遞迴抓每個子 sitemap",
+                "correct": "ok",
+                "why": "這是解析大型 sitemap 的正確做法、一次拿到全站 URL 清單"
+              },
+              {
+                "text": "明明有官方 API 可用，卻繞過去大量爬 HTML",
+                "correct": "risk",
+                "why": "放著穩定合規的官方管道不用、去爬脆弱又不受歡迎的頁面，得不償失"
+              },
+              {
+                "text": "把對方主動公開的 sitemap 資料拿來有節制地取用",
+                "correct": "ok",
+                "why": "sitemap 本就是給機器讀的、合理使用，量小也不會造成負擔"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Apify：商業爬蟲平台",

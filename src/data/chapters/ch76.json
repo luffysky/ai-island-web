@@ -1485,7 +1485,53 @@
         ],
         "answer": "b",
         "explanation": "OnPush 的核心概念就是「只在 input 參考變了才檢查」——物件參考沒變，即使內部屬性改動也會被跳過。這正是為什麼要配合 Signal（它知道內部變化）或確保傳入新參考，才能觸發更新。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Angular 變更偵測 / 效能：好 / 有風險 / 不行",
+          "note": "判斷這些做法哪些是 2026 高效 Angular、哪些會踩到『畫面不更新』或效能雷",
+          "config": {
+            "scenarios": [
+              {
+                "text": "用 Signal 管狀態，變更偵測只更新真的用到它的元件",
+                "correct": "ok",
+                "why": "signal 天生知道『誰用了我』，變時精準更新，是 2026 高效標配"
+              },
+              {
+                "text": "對『重複很多次的列表項』元件加 OnPush",
+                "correct": "ok",
+                "why": "熱點元件跳過不必要的檢查、省很多，正是 OnPush 的用武之地"
+              },
+              {
+                "text": "@for 加上 track，讓只有變動的那幾列被更新",
+                "correct": "ok",
+                "why": "沒 track 會整串重建，track 是效能基本盤、該先做對"
+              },
+              {
+                "text": "一上來就全站到處套 OnPush",
+                "correct": "risk",
+                "why": "容易踩到『該更新卻不更新』的雷，該先把 Signal + @for track 做對、再對熱點加 OnPush"
+              },
+              {
+                "text": "OnPush 元件靠直接改 @Input 物件的內部屬性（參考沒變）期待畫面更新",
+                "correct": "risk",
+                "why": "OnPush 只看參考有沒有變、內部改動會被跳過，要傳新參考或改用 Signal"
+              },
+              {
+                "text": "用 @defer 把畫面看不到的區塊延遲載入",
+                "correct": "ok",
+                "why": "首屏不用先載看不到的東西、加快載入，是現代 Angular 的效能招"
+              },
+              {
+                "text": "明明能用 Signal + @for track，卻放著預設策略讓每個事件都重掃整棵樹",
+                "correct": "risk",
+                "why": "預設雖保險但元件一多就慢，大型 app 該用 Signal 讓更新精準"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "76.22",
@@ -1697,7 +1743,122 @@
         ],
         "answer": "c",
         "explanation": "課程明確指出 Angular 是『大型 / 企業 / 多人團隊 / 重型別與一致性』的最佳選擇，具備原生 TS、全配套路由/表單/DI、以及約定統一的優勢。React 生態大但需自己拼、Vue 則更適合中小專案快速上手。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "React / Vue / Angular 選哪個？",
+          "note": "依你的團隊規模、對型別規範的偏好與在意的點，判斷先學 / 先用哪個框架",
+          "config": {
+            "intro": "三大框架別吵誰最好——看團隊跟專案。答四題看你這個情境適合先上哪個。",
+            "questions": [
+              {
+                "q": "團隊 / 專案的規模？",
+                "options": [
+                  {
+                    "label": "個人 / 新創、要最大生態",
+                    "scores": {
+                      "react": 2
+                    }
+                  },
+                  {
+                    "label": "中小專案、要快上手",
+                    "scores": {
+                      "vue": 2
+                    }
+                  },
+                  {
+                    "label": "大型企業、多人團隊",
+                    "scores": {
+                      "angular": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你對型別與開發規範的偏好？",
+                "options": [
+                  {
+                    "label": "想要自由彈性、自己拼",
+                    "scores": {
+                      "react": 1
+                    }
+                  },
+                  {
+                    "label": "適中就好",
+                    "scores": {
+                      "vue": 1
+                    }
+                  },
+                  {
+                    "label": "要強型別 + 統一約定",
+                    "scores": {
+                      "angular": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你最看重什麼？",
+                "options": [
+                  {
+                    "label": "生態大、第三方套件最多",
+                    "scores": {
+                      "react": 2
+                    }
+                  },
+                  {
+                    "label": "上手最快、模板直覺",
+                    "scores": {
+                      "vue": 2
+                    }
+                  },
+                  {
+                    "label": "路由 / 表單 / HTTP / DI 官方全內建",
+                    "scores": {
+                      "angular": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "台灣職缺考量？",
+                "options": [
+                  {
+                    "label": "職缺數量最多優先",
+                    "scores": {
+                      "react": 1
+                    }
+                  },
+                  {
+                    "label": "外商 / 企業機會不少也 OK",
+                    "scores": {
+                      "angular": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "react": {
+                "emoji": "⚛️",
+                "title": "React",
+                "desc": "最自由、生態最大，什麼都自己拼。適合個人 / 新創 / 要最大彈性與套件庫的情境，台灣職缺也最多。缺點是要自己選一堆工具、心智模型（UI = f(state) + 自己管副作用）要花點時間。"
+              },
+              "vue": {
+                "emoji": "💚",
+                "title": "Vue",
+                "desc": "最好上手、模板直覺、響應式自動追蹤。適合中小專案、想快速交付功能。優點是學習曲線平緩、缺點是超大型企業場景的『全配 + 強約定』不如 Angular。"
+              },
+              "angular": {
+                "emoji": "🅰️",
+                "title": "Angular",
+                "desc": "最完整、最企業。原生 TypeScript + 全配（路由/表單/HTTP/DI 官方內建）+ Signals + 統一約定，適合大型 / 多人團隊 / 長期維護。上手較陡，但團隊風格一致、好維護。三個先學透一個，觀念八成互通。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "76.25",

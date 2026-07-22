@@ -175,7 +175,53 @@
         ],
         "answer": "b",
         "explanation": "Partial Index 正是為了這種情境設計——只 index 你真正常查的那部分資料（pending 的 1%），讓 index 更小更快，避免浪費空間在你永遠不查的已完成訂單上。選項 a 會浪費 90% 的 index 空間；c 和 d 都用錯了索引類型。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "這個 index 加得對嗎？",
+          "note": "判斷各種索引選擇哪些對症下藥、哪些白加甚至拖慢",
+          "config": {
+            "scenarios": [
+              {
+                "text": "常用 WHERE email = ?、在 email 欄加 B-tree 索引",
+                "correct": "ok",
+                "why": "=、範圍、排序、前綴 LIKE 都吃 B-tree、99% 場景就用它。"
+              },
+              {
+                "text": "要查 JSONB 內部欄位 / 陣列 / 全文、改用 GIN 索引",
+                "correct": "ok",
+                "why": "JSON、陣列、全文搜尋是 GIN 的主場、B-tree 這裡幫不上忙。"
+              },
+              {
+                "text": "期望 WHERE name LIKE '%字尾' 靠一般 B-tree 加速",
+                "correct": "no",
+                "why": "B-tree 只吃「前綴」LIKE 'abc%'；後綴 / 包含要用 GIN（或全文搜尋）。"
+              },
+              {
+                "text": "只有 1% 訂單是 pending、常查 pending、用 partial index 只 index 那 1%",
+                "correct": "ok",
+                "why": "部分索引大小只有 1/100、又查得更快、對症下藥。"
+              },
+              {
+                "text": "每個欄位都無腦加索引、以為越多越快",
+                "correct": "risk",
+                "why": "索引會讓「寫入」變慢、還佔空間；只加真的會用到的。"
+              },
+              {
+                "text": "億筆、按時間遞增的 log 表、用 BRIN 索引",
+                "correct": "ok",
+                "why": "資料天然有序時 BRIN 空間只佔 B-tree 的千分之一、超划算。"
+              },
+              {
+                "text": "加了索引就不看 EXPLAIN、反正一定變快",
+                "correct": "risk",
+                "why": "有沒有真的走到 index、要看 EXPLAIN ANALYZE 才知道；很多人加錯還以為有效。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "EXPLAIN ANALYZE：找慢 query",
@@ -1067,7 +1113,53 @@
         ],
         "answer": "a",
         "explanation": "ALTER COLUMN TYPE 會導致整張表重寫（rewrite），在 PG 11 之前是高危險操作。正確做法是加新欄位 → 批次回填舊資料 → application 切讀寫 → 刪舊欄位，這就是課程重點的「Expand → Migrate → Contract」三段式。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "改 schema 不停機、這樣做行不行？",
+          "note": "判斷 migration 動作哪些秒殺不 lock、哪些會把線上服務搞掛",
+          "config": {
+            "scenarios": [
+              {
+                "text": "加欄位用 ADD COLUMN ... NULL（可空）",
+                "correct": "ok",
+                "why": "可空欄位是秒殺、不 rewrite 整表、不 lock。"
+              },
+              {
+                "text": "大表 CREATE INDEX（沒加 CONCURRENTLY）、上班尖峰直接跑",
+                "correct": "no",
+                "why": "一般 CREATE INDEX 會整表 lock、所有讀寫全卡住；尖峰跑 = 服務停擺。"
+              },
+              {
+                "text": "建索引用 CREATE INDEX CONCURRENTLY",
+                "correct": "ok",
+                "why": "併發建索引不擋讀寫、線上照跑，正解。"
+              },
+              {
+                "text": "回填舊資料一次 UPDATE 整張大表",
+                "correct": "risk",
+                "why": "整表 UPDATE 會 lock 很久；要分批（每次幾千筆）慢慢跑。"
+              },
+              {
+                "text": "照「Expand → Migrate → Contract」：先加新欄、雙寫、回填、最後才拿掉舊欄",
+                "correct": "ok",
+                "why": "三段式讓新舊 code 交接期都相容、真正做到零停機。"
+              },
+              {
+                "text": "新 code 都還沒上、就先把舊欄位 DROP 掉",
+                "correct": "no",
+                "why": "線上還在跑的舊 code 立刻找不到欄位、整批噴錯。"
+              },
+              {
+                "text": "Migration 檔同時寫好 rollback（怎麼撤）",
+                "correct": "ok",
+                "why": "出事能一鍵回退、是專業 migration 的基本配備。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Backup + Disaster Recovery",

@@ -167,7 +167,36 @@
         ],
         "answer": "a",
         "explanation": "課程強調 MongoDB 的彈性 Schema 是關鍵特色——每個 Document 可以有不同欄位，不像 SQL 要求嚴格的 Schema。b 錯在 MongoDB 就是彈性；c 錯在有 $lookup 可以 JOIN；d 錯在索引仍需手動建立以提升效能。"
-      }
+      },
+      "demos": [
+        {
+          "type": "json-tree",
+          "title": "一筆 MongoDB document 長這樣",
+          "note": "看 document 怎麼把巢狀物件、陣列直接塞進同一筆、不用像 SQL 拆好幾張表",
+          "config": {
+            "caption": "MongoDB 的一筆 document 就是一個 JSON——陣列、巢狀物件都能直接放，一次讀出來、不用 JOIN。",
+            "data": {
+              "_id": "665f1a2b9c3e4d0012a4f8b1",
+              "name": "小明",
+              "email": "ming@x.com",
+              "age": 25,
+              "tags": [
+                "admin",
+                "premium"
+              ],
+              "profile": {
+                "city": "台北",
+                "bio": "喜歡寫程式的貓奴",
+                "hobbies": [
+                  "coding",
+                  "攝影"
+                ]
+              },
+              "createdAt": "2026-05-28T14:23:51.000Z"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "18.3",
@@ -470,7 +499,110 @@
         ],
         "answer": "c",
         "explanation": "課程明確列出用 SQL 的訊號包括：資料結構固定、需要 JOIN、需要強一致性（金流）、需要 Transaction。你的狀況全中，而且團隊熟悉 SQL。不知道用什麼時直接選 SQL 也不會錯。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "SQL 還是 NoSQL？別被炫文洗腦",
+          "note": "依資料形狀、一致性需求、用途、幫你選對資料庫、不跳坑",
+          "config": {
+            "intro": "SQL vs NoSQL 沒有「最好」、只有「適合」。回答幾題、看你這個場景該用哪個。",
+            "questions": [
+              {
+                "q": "資料的「形狀」是？",
+                "options": [
+                  {
+                    "label": "固定（user / order / product）、還要 JOIN",
+                    "scores": {
+                      "sql": 2
+                    }
+                  },
+                  {
+                    "label": "天然是 JSON、schema 常改",
+                    "scores": {
+                      "mongo": 2
+                    }
+                  },
+                  {
+                    "label": "只是 key → value 的快取 / session",
+                    "scores": {
+                      "redis": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "一致性需求？",
+                "options": [
+                  {
+                    "label": "金流 / 庫存 / 轉帳、不能出錯",
+                    "scores": {
+                      "sql": 2
+                    }
+                  },
+                  {
+                    "label": "社交動態、可接受最終一致",
+                    "scores": {
+                      "mongo": 2
+                    }
+                  },
+                  {
+                    "label": "排行榜 / 限流、要極快",
+                    "scores": {
+                      "redis": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你在做什麼？",
+                "options": [
+                  {
+                    "label": "不確定 / 一般 SaaS",
+                    "scores": {
+                      "sql": 2
+                    }
+                  },
+                  {
+                    "label": "AI / RAG / 語意搜尋",
+                    "scores": {
+                      "vector": 2
+                    }
+                  },
+                  {
+                    "label": "已有主 DB、只想加速",
+                    "scores": {
+                      "redis": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "sql": {
+                "emoji": "📁",
+                "title": "SQL（PostgreSQL / MySQL）",
+                "desc": "結構固定、要 JOIN、要強一致（ACID）就選它。不知道用什麼 = 直接選 SQL、不會錯。很多公司三年後把 Mongo 改回 PG。"
+              },
+              "mongo": {
+                "emoji": "🍃",
+                "title": "MongoDB（Document）",
+                "desc": "schema 變化快、資料天然是 JSON、要橫向擴展到超大規模時適用。代價是沒真 JOIN、Transaction 較弱，資料品質容易失控。"
+              },
+              "redis": {
+                "emoji": "⚡",
+                "title": "Redis",
+                "desc": "幾乎是「必加」不是「替代」——跟主 DB 共存，管快取 / session / 排行榜 / 限流 / Pub-Sub，讓網站加速 10 倍。"
+              },
+              "vector": {
+                "emoji": "🧠",
+                "title": "Vector DB（pgvector / Pinecone）",
+                "desc": "AI 應用、RAG、語意搜尋專用——找「意思相近」而不是「字一樣」。indie 直接用 pgvector、跟 SQL 並存最省事。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "title": "NoSQL 是什麼？跟 SQL 怎麼選",

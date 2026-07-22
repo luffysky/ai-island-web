@@ -406,7 +406,53 @@
         ],
         "answer": "a",
         "explanation": "課程強調 .NET 9 性能在業界前段、跨 Windows/macOS/Linux、C# 語法現代且適合企業應用。選項 b 錯在限制平台、c 誇大了簡化程度、d 不符合框架實際功能。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": ".NET 開發判判看",
+          "note": "版本選擇、Minimal vs Controller、EF Core、DI 的好做法與雷點。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "2026 開一個全新的 Web API 專案，選 .NET Framework 4.8",
+                "correct": "no",
+                "why": ".NET Framework 只跑 Windows、已停止大改，新專案一律用 .NET 8+ 跨平台版。"
+              },
+              {
+                "text": "新專案用 .NET 8、丟進 Docker 跑在 Linux 伺服器",
+                "correct": "ok",
+                "why": ".NET Core 本來就設計成容器友善、跨平台，這正是它的強項。"
+              },
+              {
+                "text": "只有 3 個端點的微服務，用 Minimal API 直接寫在 Program.cs",
+                "correct": "ok",
+                "why": "小服務用 Minimal API 一眼看全部、開發最快，剛好對味。"
+              },
+              {
+                "text": "一個 100+ 端點的企業大專案，全部塞進 Program.cs 的 Minimal API",
+                "correct": "risk",
+                "why": "檔案會爆長又難維護、多人協作容易打架；大專案該用 Controller 分檔。"
+              },
+              {
+                "text": "EF Core 查使用者連同文章，用 .Include(u => u.Posts) 一次撈出來",
+                "correct": "ok",
+                "why": "Include 會轉成 LEFT JOIN 一次帶回關聯，避免逐筆查的 N+1。"
+              },
+              {
+                "text": "把資料庫連線字串（含密碼）寫死在 DbContext 的 OnConfiguring 裡",
+                "correct": "risk",
+                "why": "機密不該寫死在程式碼，應放 appsettings / 環境變數，避免進版控外洩。"
+              },
+              {
+                "text": "Service 靠建構子注入 DbContext（DI），不自己 new",
+                "correct": "ok",
+                "why": "建構子注入是 .NET DI 的標準做法，好測試、生命週期由框架管。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Blazor + WPF + MAUI",
@@ -502,7 +548,113 @@
         ],
         "answer": "a",
         "explanation": "課程的核心心法就是『C# 全棧夢』——用同一個語言搞定網頁、桌面、跨平台，省去學其他語言的成本。選項 b、c 都是錯的（生態其實比較小），d 是混淆概念。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "C# 做 UI，選哪個？",
+          "note": "Blazor Server / WebAssembly / WPF / MAUI 依你的目標配一個。",
+          "config": {
+            "intro": "同樣用 C# / .NET 做前端 UI，方案這麼多、看你的情況挑一個。",
+            "questions": [
+              {
+                "q": "你主要要做什麼？",
+                "options": [
+                  {
+                    "label": "網頁應用",
+                    "scores": {
+                      "server": 1,
+                      "wasm": 1
+                    }
+                  },
+                  {
+                    "label": "只跑 Windows 的桌面工具",
+                    "scores": {
+                      "wpf": 3
+                    }
+                  },
+                  {
+                    "label": "同時上 iOS / Android / 桌面的 App",
+                    "scores": {
+                      "maui": 3
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "（若做網頁）對離線 / 延遲的要求？",
+                "options": [
+                  {
+                    "label": "要離線可用、互動零延遲、能放靜態主機",
+                    "scores": {
+                      "wasm": 2
+                    }
+                  },
+                  {
+                    "label": "要邏輯保密、能直連資料庫、首次載入快",
+                    "scores": {
+                      "server": 2
+                    }
+                  },
+                  {
+                    "label": "我做的是桌面 / 手機、跳過這題",
+                    "scores": {
+                      "wpf": 1,
+                      "maui": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "部署場景？",
+                "options": [
+                  {
+                    "label": "企業內網、整天連著網路、有伺服器養",
+                    "scores": {
+                      "server": 1,
+                      "wpf": 1
+                    }
+                  },
+                  {
+                    "label": "只想丟靜態主機、不想養伺服器",
+                    "scores": {
+                      "wasm": 1
+                    }
+                  },
+                  {
+                    "label": "要上 App Store / Google Play",
+                    "scores": {
+                      "maui": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "server": {
+                "emoji": "🖥️",
+                "title": "Blazor Server",
+                "desc": "邏輯在伺服器、UI 靠 SignalR 同步。邏輯保密、可直連 DB、bundle 小；缺點是要持續連線、每次互動有往返延遲、得養伺服器。適合企業內網工具。"
+              },
+              "wasm": {
+                "emoji": "🌐",
+                "title": "Blazor WebAssembly",
+                "desc": "C# 編譯成 WASM 在瀏覽器跑。離線可用、零延遲、可放靜態主機；缺點是首次載入 3~5MB、只能透過 API 存資料、程式碼看得到。適合大型前端。"
+              },
+              "wpf": {
+                "emoji": "🪟",
+                "title": "WPF",
+                "desc": "微軟最強的 Windows 桌面框架，資料繫結 / 樣式 / 動畫都強。缺點是只跑 Windows。適合企業內部工具、Windows-only 軟體。"
+              },
+              "maui": {
+                "emoji": "📱",
+                "title": ".NET MAUI",
+                "desc": "一份 C# 編譯成 iOS / Android / Windows / Mac App。C# 開發者友善；缺點是生態最小、社群不如 RN / Flutter。適合要跨平台又想用 C# 的團隊。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "title": "Unity + C# 遊戲開發",

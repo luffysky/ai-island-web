@@ -959,7 +959,53 @@
         ],
         "answer": "a",
         "explanation": "bcrypt 驗證密碼後只做了一次確認，而 JWT token 讓客戶端可以帶著身份證明（token）去後續請求，省去重複輸入密碼。選項 c 看似合理但混淆了概念——JWT 不是「身份識別卡」而是「登入後的通行證」，d 則誤導了 JWT 的核心意義。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "登入認證的做法：好 / 有風險 / 不行",
+          "note": "判斷這些密碼與 token 的處理哪些安全、哪些是頭號資安洞",
+          "config": {
+            "scenarios": [
+              {
+                "text": "密碼用 bcrypt / argon2 單向雜湊後才存 DB",
+                "correct": "ok",
+                "why": "就算資料庫外洩也還原不出原密碼，這是後端安全基本盤"
+              },
+              {
+                "text": "為了方便，直接把使用者密碼明文存進資料庫",
+                "correct": "no",
+                "why": "一外洩就全曝光、很多人還重用密碼，絕不能存明文或可逆加密"
+              },
+              {
+                "text": "JWT secret 放環境變數、不寫進 code",
+                "correct": "ok",
+                "why": "secret 一旦洩漏所有 token 都能偽造，必須放 env、別進版控"
+              },
+              {
+                "text": "把登入 token 存 HttpOnly + Secure + SameSite cookie",
+                "correct": "ok",
+                "why": "JS 讀不到（防 XSS 竊取）、只走 HTTPS、又能防 CSRF"
+              },
+              {
+                "text": "為了前端好讀，把 token 存在 localStorage",
+                "correct": "risk",
+                "why": "任何 XSS 都能讀走 localStorage 冒充登入，敏感憑證別放 JS 拿得到的地方"
+              },
+              {
+                "text": "refresh token 存 DB、可撤銷、支援登出",
+                "correct": "ok",
+                "why": "長效 refresh token 存 DB 才能在登出 / 被盜時撤銷"
+              },
+              {
+                "text": "新手為了『搞懂原理』從零自己手刻 OAuth + 2FA + session",
+                "correct": "risk",
+                "why": "認證是頭號資安洞、細節多易出錯，新手該用 Clerk / Auth.js 這類成熟方案"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "31.14",
@@ -1468,7 +1514,123 @@
         ],
         "answer": "a",
         "explanation": "課程明確建議新 indie SaaS 想試新技術時選 Bun，因為它結合了「TS 原生不用編譯」、「速度快」、「內建工具全」的優勢。選項 b 是保守穩定的選法，c 和 d 都不符合「快速啟動」且「不想寫編譯」的需求。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "Node / Bun / Deno 該選誰？",
+          "note": "依你的專案性質與在意的點，判斷該用穩的 Node、快的 Bun、還是安全的 Deno",
+          "config": {
+            "intro": "runtime 別追最新最快——看你的專案。答四題看你這個情境適合哪個。",
+            "questions": [
+              {
+                "q": "這是什麼性質的專案？",
+                "options": [
+                  {
+                    "label": "公司 / 接案、要好招人維護",
+                    "scores": {
+                      "node": 2
+                    }
+                  },
+                  {
+                    "label": "個人 indie、想試新東西",
+                    "scores": {
+                      "bun": 1
+                    }
+                  },
+                  {
+                    "label": "純 TS、又很在意安全",
+                    "scores": {
+                      "deno": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你最在意什麼？",
+                "options": [
+                  {
+                    "label": "生態成熟、穩定、文件多",
+                    "scores": {
+                      "node": 2
+                    }
+                  },
+                  {
+                    "label": "啟動 / 執行速度（尤其 cold start）",
+                    "scores": {
+                      "bun": 2
+                    }
+                  },
+                  {
+                    "label": "權限安全預設 + 原生 TS",
+                    "scores": {
+                      "deno": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "專案現在的狀態？",
+                "options": [
+                  {
+                    "label": "已上 production 且跑得穩",
+                    "scores": {
+                      "node": 2
+                    }
+                  },
+                  {
+                    "label": "還在開發早期、可以實驗",
+                    "scores": {
+                      "bun": 1,
+                      "deno": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "部署目標是？",
+                "options": [
+                  {
+                    "label": "傳統 server / Lambda",
+                    "scores": {
+                      "node": 1
+                    }
+                  },
+                  {
+                    "label": "serverless、cold start 很重要",
+                    "scores": {
+                      "bun": 2
+                    }
+                  },
+                  {
+                    "label": "edge（就近全球）",
+                    "scores": {
+                      "deno": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "node": {
+                "emoji": "🟩",
+                "title": "Node（22 + pnpm）",
+                "desc": "正式長期服務的安全牌。生態最大、最成熟、工具鏈最穩、最好招人，v22 還內建了 .env / --watch / test runner。缺點只是寫 TS 要 tsx、比 Bun 慢一點——90% 場景無感。"
+              },
+              "bun": {
+                "emoji": "🟧",
+                "title": "Bun",
+                "desc": "想試新又想快就選它。啟動快 3-5x（serverless cold start 有感）、TS 原生免編譯、bundler / test / 套件管理全內建、npm 99% 相容。缺點是較新、production 案例還少，適合個人專案先試水溫。"
+              },
+              "deno": {
+                "emoji": "🟦",
+                "title": "Deno",
+                "desc": "TS-first + 安全預設。權限要明確授權、用標準 Web API、原生 TS，適合追新又在意安全的新專案。缺點是生態較小、API 跟 Node 不同、遷移成本高，屬穩定小眾。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "31.21",

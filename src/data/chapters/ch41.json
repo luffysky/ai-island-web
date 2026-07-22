@@ -162,7 +162,153 @@
         ],
         "answer": "a",
         "explanation": "Godot 同時符合三個條件：開源免費、2D 超強、輕量易上手。雖然 Unity 也適合 2D Indie，但要付費；Unreal 是 3D 為主；Phaser 則是 Web 遊戲工具，不適合 Steam。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "遊戲引擎選哪個？",
+          "note": "Unity / Unreal / Godot / Phaser，依目標與經驗配一個。",
+          "config": {
+            "intro": "想做遊戲、卻卡在選引擎？回答幾題看看你適合哪個。",
+            "questions": [
+              {
+                "q": "你的目標？",
+                "options": [
+                  {
+                    "label": "想走遊戲開發職業 / 進大公司",
+                    "scores": {
+                      "unity": 2
+                    }
+                  },
+                  {
+                    "label": "做 3D 大作、畫面要頂",
+                    "scores": {
+                      "unreal": 2
+                    }
+                  },
+                  {
+                    "label": "自己做 Indie 小遊戲、想省錢",
+                    "scores": {
+                      "godot": 2
+                    }
+                  },
+                  {
+                    "label": "已會 JavaScript、想做網頁遊戲",
+                    "scores": {
+                      "phaser": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你的經驗 / 電腦？",
+                "options": [
+                  {
+                    "label": "新手、電腦普通",
+                    "scores": {
+                      "godot": 2
+                    }
+                  },
+                  {
+                    "label": "有程式底、電腦夠強（16G+）",
+                    "scores": {
+                      "unreal": 1,
+                      "unity": 1
+                    }
+                  },
+                  {
+                    "label": "會 Python",
+                    "scores": {
+                      "godot": 1
+                    }
+                  },
+                  {
+                    "label": "會 JS、想快速驗證點子",
+                    "scores": {
+                      "phaser": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "主要目標平台？",
+                "options": [
+                  {
+                    "label": "手遊 iOS / Android",
+                    "scores": {
+                      "unity": 2
+                    }
+                  },
+                  {
+                    "label": "PC 大作 / 家用主機",
+                    "scores": {
+                      "unreal": 2
+                    }
+                  },
+                  {
+                    "label": "2D Indie 上 Steam",
+                    "scores": {
+                      "godot": 2
+                    }
+                  },
+                  {
+                    "label": "瀏覽器直接玩",
+                    "scores": {
+                      "phaser": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "在意抽成 / 免費嗎？",
+                "options": [
+                  {
+                    "label": "要完全免費、不抽成、遊戲 100% 是我的",
+                    "scores": {
+                      "godot": 2
+                    }
+                  },
+                  {
+                    "label": "無所謂、學習資源多最重要",
+                    "scores": {
+                      "unity": 1,
+                      "unreal": 1
+                    }
+                  },
+                  {
+                    "label": "輕量、瀏覽器跑就好",
+                    "scores": {
+                      "phaser": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "unity": {
+                "emoji": "🎮",
+                "title": "Unity",
+                "desc": "C#、2D/3D 通吃、手遊上架方便、學習資源最多、履歷加分。缺點是檔案大、訂閱模式惹議。想走職業或做中型 Indie 的最保險選擇。"
+              },
+              "unreal": {
+                "emoji": "🎬",
+                "title": "Unreal Engine",
+                "desc": "C++ / Blueprint、3D 畫面一流、免費但營收破百萬抽 5%。學習曲線陡、吃電腦配備。適合有底子、要做 3D 大作的人。"
+              },
+              "godot": {
+                "emoji": "🐤",
+                "title": "Godot",
+                "desc": "開源免費、輕量（<100MB）、2D 超強、GDScript 像 Python、不抽成。缺點是 3D 弱、生態小。新手 / Indie 最友善。"
+              },
+              "phaser": {
+                "emoji": "🕹️",
+                "title": "Phaser",
+                "desc": "JavaScript、2D 網頁遊戲專家、極輕量、瀏覽器直接玩。適合已會 JS、想快速驗證點子或做 Hyper-casual 試水。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "title": "Unity 入門：C# + Component",
@@ -893,7 +1039,53 @@
         ],
         "answer": "b",
         "explanation": "課程明確指出「模型 2：遊戲 + 副業」是 Indie 開發者的現實做法——先靠接案或教課過活，遊戲作為熱情項目，5-10 年累積後才能轉為純開發者。其他選項違反課程核心心法（完成 > 完美）或忽視 Indie 的高風險現實。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Steam 上架變現判判看",
+          "note": "上架、商店頁、行銷、心態的好做法與常見雷。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "遊戲還很不完整，就用「搶先體驗」上架先收錢再說",
+                "correct": "no",
+                "why": "用 Early Access 騙錢會招來大量差評、砸掉口碑；該做完整、玩得起來再上。"
+              },
+              {
+                "text": "上線前 3~6 個月先開商店頁、持續發 Devlog 累積 Wishlist",
+                "correct": "ok",
+                "why": "上線時有 1000 個 Wishlist，成功率比 0 個高 10 倍以上，這是 Steam 最該做的事。"
+              },
+              {
+                "text": "商店頁截圖全放精美美術，卻看不出遊戲到底怎麼玩",
+                "correct": "risk",
+                "why": "玩家 3 秒決定去留、看不懂玩法就走人；截圖要展示最有趣的實際 gameplay。"
+              },
+              {
+                "text": "上線時搭 10~30% 的 launch discount 製造限時感",
+                "correct": "ok",
+                "why": "折扣不是為了便宜賣，而是刺激玩家馬上買、衝第一週銷量與演算法推薦。"
+              },
+              {
+                "text": "一款沒特別大內容的 2D 小品，硬定價 $50",
+                "correct": "risk",
+                "why": "超過 $30 要有理由（大製作 / 大量內容），否則轉化率會很差。"
+              },
+              {
+                "text": "把第一款遊戲當金礦、直接辭職全靠它過活",
+                "correct": "risk",
+                "why": "第一款通常賣不動、Indie 是浪漫不是金礦；留正職 / 副業、持續做到第 3~5 款才有機會。"
+              },
+              {
+                "text": "Trailer 開頭 10 秒就丟出最抓人的畫面、靜音也看得懂",
+                "correct": "ok",
+                "why": "多數人靜音刷影片，前 10 秒抓不住人就滑走，這是預告片的關鍵。"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "boss": {

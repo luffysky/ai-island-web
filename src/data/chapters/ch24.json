@@ -342,7 +342,53 @@
         ],
         "answer": "b",
         "explanation": "課程開頭明確對比字串 log『難 query、難 aggregate』，而 JSON log『易 filter、aggregate』。這是結構化 log 的核心目的——讓 log 變得可查詢、可分析，而不是只有人眼看懂的文字。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "寫 Log 的做法：好 / 有風險 / 不行",
+          "note": "判斷這些日誌做法哪些讓你事後查得到、哪些會害你查不到或洩漏敏感資料",
+          "config": {
+            "scenarios": [
+              {
+                "text": "用 JSON 結構化 log、帶 request_id / user_id / event 欄位",
+                "correct": "ok",
+                "why": "可被查詢、過濾、聚合，還能用 request_id 串起整條請求"
+              },
+              {
+                "text": "到處用 console.log 印純文字字串、散在各台機器",
+                "correct": "risk",
+                "why": "難 query 難 aggregate、跨機器兜不起來，出事查半天"
+              },
+              {
+                "text": "把密碼、完整信用卡號、JWT 記進 log",
+                "correct": "no",
+                "why": "log 會被大量蒐集留存、多人可存取，記敏感資料等於製造洩漏點"
+              },
+              {
+                "text": "production 直接開最細的 trace / debug 狂印",
+                "correct": "risk",
+                "why": "量太大會拖慢、吃儲存、淹沒重要訊息，正式環境設 info 以上"
+              },
+              {
+                "text": "每個 request 從進來到回應都帶同一個 request_id",
+                "correct": "ok",
+                "why": "事後能用它把跨服務的多條 log 撈出來、重建當時發生什麼"
+              },
+              {
+                "text": "log 集中送到 aggregator（Better Stack / Loki）統一查",
+                "correct": "ok",
+                "why": "跨服務一起搜、可做 dashboard 與告警，寫了沒人看等於沒寫"
+              },
+              {
+                "text": "log 只寫進容器本機檔案、容器一重啟就沒了",
+                "correct": "risk",
+                "why": "容器是短命的，log 要外送集中，不然出事時該看的都不見了"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Web Vitals + RUM",
@@ -893,7 +939,36 @@
         ],
         "answer": "b",
         "explanation": "Structured Logging 的核心價值就是結構化欄位化，讓 log 變成可查詢、可統計、可視覺化的資料；傳統文字 log 只能靠 grep 和 regex 笨搜。a 是表面理由、c 和 d 分別是錯誤認知（敏感資訊要主動 redact）。"
-      }
+      },
+      "demos": [
+        {
+          "type": "json-tree",
+          "title": "一條結構化日誌長什麼樣",
+          "note": "展開看結構化 log 的欄位——欄位化、帶脈絡、敏感資料遮罩，才查得到、對得起來",
+          "config": {
+            "caption": "同樣是記一次付款失敗，欄位化的 JSON log 讓你能用 user_id / event / status 精準搜尋與聚合",
+            "data": {
+              "ts": "2026-07-22T10:30:15.123Z",
+              "level": "error",
+              "service": "checkout-api",
+              "env": "production",
+              "event": "payment_failed",
+              "request_id": "req_8f3a2c9d",
+              "user_id": "u_10231",
+              "method": "POST",
+              "path": "/api/orders",
+              "status": 502,
+              "duration_ms": 3120,
+              "password": "[Redacted]",
+              "err": {
+                "type": "UpstreamTimeout",
+                "gateway": "stripe",
+                "message": "connect ETIMEDOUT"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "title": "Metrics + Dashboard",

@@ -575,7 +575,142 @@
         ],
         "answer": "c",
         "explanation": "200 訂單落在「成長期（100-1000 訂單）」，課程明確建議用 SaaS 方案如 91APP/Shopify，成本合理（月 3-5k）且能建立品牌形象。蝦皮只適合驗證，自架和 WooCommerce 客製都會超支。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "電商要開在哪？",
+          "note": "蝦皮 / SaaS / WooCommerce / 自架，依規模與技術配一個。",
+          "config": {
+            "intro": "要開網路商店，用蝦皮、租 SaaS、裝 WooCommerce、還是自己寫？",
+            "questions": [
+              {
+                "q": "你現在最想解決的是？",
+                "options": [
+                  {
+                    "label": "先驗證有沒有人買、0 技術 0 成本",
+                    "scores": {
+                      "marketplace": 2
+                    }
+                  },
+                  {
+                    "label": "要有品牌自有站、但不想 coding",
+                    "scores": {
+                      "saas": 2
+                    }
+                  },
+                  {
+                    "label": "要完全客製、我懂或願學技術",
+                    "scores": {
+                      "woo": 1,
+                      "custom": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "月訂單規模？",
+                "options": [
+                  {
+                    "label": "< 100 單、剛起步",
+                    "scores": {
+                      "marketplace": 2
+                    }
+                  },
+                  {
+                    "label": "100~1000 單、成長中",
+                    "scores": {
+                      "saas": 2
+                    }
+                  },
+                  {
+                    "label": "1000~10000 單、要客製功能",
+                    "scores": {
+                      "woo": 2
+                    }
+                  },
+                  {
+                    "label": "5000+ 單、要獨特商業模式",
+                    "scores": {
+                      "custom": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "技術 / 預算？",
+                "options": [
+                  {
+                    "label": "沒技術、預算有限",
+                    "scores": {
+                      "marketplace": 1,
+                      "saas": 1
+                    }
+                  },
+                  {
+                    "label": "懂 PHP / SQL、月預算幾千",
+                    "scores": {
+                      "woo": 2
+                    }
+                  },
+                  {
+                    "label": "有工程師團隊、預算 10 萬起",
+                    "scores": {
+                      "custom": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "在意抽成 / 數據掌握嗎？",
+                "options": [
+                  {
+                    "label": "無所謂、要平台自帶流量",
+                    "scores": {
+                      "marketplace": 2
+                    }
+                  },
+                  {
+                    "label": "想要自有客戶名單、少抽成",
+                    "scores": {
+                      "woo": 1,
+                      "saas": 1
+                    }
+                  },
+                  {
+                    "label": "數據要 100% 自己掌握",
+                    "scores": {
+                      "custom": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "marketplace": {
+                "emoji": "🛒",
+                "title": "先上蝦皮 / momo",
+                "desc": "零流量問題、0 前置成本，5 天就知道有沒有人買。缺點是抽 5~15%、沒品牌、客戶名單歸平台。最適合驗證商品。"
+              },
+              "saas": {
+                "emoji": "🏬",
+                "title": "Shopify / 91APP",
+                "desc": "5 分鐘上線、維運廠商顧，91APP 內建台灣金流物流。月費 + 抽成換省事，適合要品牌自有站又不想 coding 的成長期。"
+              },
+              "woo": {
+                "emoji": "🧩",
+                "title": "WooCommerce",
+                "desc": "開源免費、完全客製、數據歸你，月 500 單時成本最低。但要自己顧主機、安全、速度優化，適合懂點 PHP/SQL 的人。"
+              },
+              "custom": {
+                "emoji": "🏗️",
+                "title": "完全自架（Next.js + 綠界 / Stripe）",
+                "desc": "無限客製與擴展、100% 掌控，但開發 10~100 萬起跳、要團隊維運。已驗證市場、月 5000+ 單再上。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "title": "金流整合：綠界 / NewebPay / LINE Pay / Stripe",
@@ -703,7 +838,59 @@
         ],
         "answer": "a",
         "explanation": "課程明確提到用 Strategy Pattern 來設計多金流並存，讓不同付款方式透過統一的 interface 來實作，避免重複邏輯。直接呼叫 API、寫在前端判斷、或用 if-else 大函數都是容易維護且不夠彈性的做法。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "綠界結帳走一遍",
+          "note": "從按「結帳」到訂單變 paid，看金流資料一格一格流過。",
+          "config": {
+            "trigger": {
+              "kind": "manual",
+              "label": "使用者在購物車按「立即結帳」",
+              "data": "cart → { amount: 2500, items: [...] }"
+            },
+            "nodes": [
+              {
+                "kind": "code",
+                "label": "後端建立訂單（pending）",
+                "desc": "把購物車轉成訂單、狀態設 pending_payment",
+                "data": "order = { id: 'ORD20240115001', amount: 2500, status: 'pending' }"
+              },
+              {
+                "kind": "code",
+                "label": "產生 CheckMacValue",
+                "desc": "參數 ksort 排序 → 前後加 HashKey/HashIV → URL encode → SHA256",
+                "data": "CheckMacValue = SHA256(...)  // 防金額被竄改"
+              },
+              {
+                "kind": "http",
+                "label": "導向綠界付款頁",
+                "desc": "組 HTML form 自動 submit 到綠界 AioCheckOut",
+                "data": "POST payment.ecpay.com.tw/Cashier/AioCheckOut/V5"
+              },
+              {
+                "kind": "action",
+                "label": "使用者在綠界頁付款",
+                "desc": "選信用卡 / ATM / 超商 完成付款",
+                "data": "使用者離開你的站、在綠界收款頁付錢"
+              },
+              {
+                "kind": "if",
+                "label": "綠界回呼 + 驗 CheckMacValue",
+                "desc": "綠界 server 對 server POST 回呼、你重算比對防偽造",
+                "data": "received === expected ? 繼續 : 作廢"
+              },
+              {
+                "kind": "db",
+                "label": "訂單改 paid + 開發票 + 寄信",
+                "desc": "只信任這個回呼、不信前端；狀態轉 paid 後觸發後續",
+                "data": "order.status = 'paid' → 開電子發票 + email 通知"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "物流整合 + 訂單管理",

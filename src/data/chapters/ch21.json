@@ -610,7 +610,82 @@
         ],
         "answer": "a",
         "explanation": "Session 儲存在 server（Redis/DB），server 有完全控制權，刪一筆資料就能立刻讓該 session 失效；JWT 是自帶簽章的 token，一旦簽發就沒辦法立刻撤銷（除非用 blacklist，但那就回到 stateful），所以必須用 Session 才能做到「隨時可撤銷」。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "登入狀態用 Session 還是 JWT？",
+          "note": "依用戶端、是否要即時踢人、架構、幫你選對認證方式",
+          "config": {
+            "intro": "Session 跟 JWT 常被搞混。回答幾題、看你這個案子該用哪個。",
+            "questions": [
+              {
+                "q": "你的用戶端主要是？",
+                "options": [
+                  {
+                    "label": "單一網站（瀏覽器為主）",
+                    "scores": {
+                      "session": 2
+                    }
+                  },
+                  {
+                    "label": "手機 App / 多個服務共用登入",
+                    "scores": {
+                      "jwt": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "需要「立刻把某人踢下線」嗎？",
+                "options": [
+                  {
+                    "label": "要（後台能強制某裝置登出）",
+                    "scores": {
+                      "session": 2
+                    }
+                  },
+                  {
+                    "label": "短期 token 過期就好、不用即時撤銷",
+                    "scores": {
+                      "jwt": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你的架構？",
+                "options": [
+                  {
+                    "label": "單體、有 Redis 存狀態沒問題",
+                    "scores": {
+                      "session": 2
+                    }
+                  },
+                  {
+                    "label": "微服務 / serverless、不想共享 session store",
+                    "scores": {
+                      "jwt": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "session": {
+                "emoji": "🗄️",
+                "title": "Server-Side Session",
+                "desc": "server 記登入狀態、靠 cookie 帶 session id。強一致、可即時撤銷（刪一筆 Redis 就登出）、單一網站首選。缺點是 stateful、要共享 store、mobile 不愛 cookie。"
+              },
+              "jwt": {
+                "emoji": "🎟️",
+                "title": "JWT",
+                "desc": "token 自帶資料、server 不用查 store。stateless、跨服務 / mobile 友善。缺點是不能即時撤銷——用「短命 access + 長命 refresh token」來補、access 存 HttpOnly cookie 防 XSS。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "title": "OAuth 2.0 完整流程",
@@ -1034,7 +1109,53 @@
         ],
         "answer": "a",
         "explanation": "bcrypt 搭配適當的 cost factor（12 推薦）是業界標準，能夠抵禦 GPU 攻擊並讓密碼破解困難。選項 b、d 的自定義 salt 仍不夠慢且容易被彩虹表破解；選項 c 明文存放會在資料庫洩漏時完全暴露所有密碼。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "密碼 / 認證這樣存、哪些是大罪？",
+          "note": "判斷密碼雜湊、reset 流程這些做法哪些安全、哪些會上新聞頭條",
+          "config": {
+            "scenarios": [
+              {
+                "text": "密碼用 argon2id（或 bcrypt）雜湊後才存進 DB",
+                "correct": "ok",
+                "why": "密碼專用、慢又耗記憶體的雜湊、就算 DB 外洩也難被暴力破解。"
+              },
+              {
+                "text": "直接把密碼明文存進 users 表",
+                "correct": "no",
+                "why": "災難等級——DB 被駭 / 員工偷看 / log 印出、全部 user 密碼裸奔、還吃 GDPR 罰款。"
+              },
+              {
+                "text": "用 MD5 / SHA256 當密碼雜湊、覺得夠快很方便",
+                "correct": "no",
+                "why": "太快正是問題——GPU 一秒撞上百億次、弱密碼瞬間破；那是給檔案用的雜湊、不是密碼。"
+              },
+              {
+                "text": "自己搞 sha256(password + \"salt\") 當防護",
+                "correct": "risk",
+                "why": "加了 salt 也還是「快」的雜湊、擋不住 GPU；請用現成的 bcrypt / argon2。"
+              },
+              {
+                "text": "註冊時比對 HaveIBeenPwned、擋掉外洩過的爛密碼",
+                "correct": "ok",
+                "why": "被洩過的密碼最容易被撞庫、先擋掉能大幅降低盜帳號風險。"
+              },
+              {
+                "text": "忘記密碼的 reset token 設 1 小時過期、用過即刪",
+                "correct": "ok",
+                "why": "短期一次性 token 才不會被人撿去長期利用。"
+              },
+              {
+                "text": "忘記密碼時、若 email 不存在就回「查無此帳號」",
+                "correct": "risk",
+                "why": "這會洩漏帳號是否存在、幫攻擊者列舉用戶；不管在不在都該回「已寄信」。"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "boss": {

@@ -159,7 +159,104 @@
         ],
         "answer": "b",
         "explanation": "ISR 完美應對這個場景：平常快速供應靜態 HTML（像倉庫拿畫），同時每小時自動背景重新產生新頁面，內容會漸進更新。SSR 每次都要 server 算會很貴，SSG 無法自動更新，CSR 首屏會慢。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "這個頁面該用哪種渲染模式？",
+          "note": "CSR / SSR / SSG / ISR / RSC 選錯、網站慢 5 倍或成本 10 倍——回答幾題看該用哪種",
+          "config": {
+            "intro": "選錯渲染模式、網站慢 5 倍或成本 10 倍。回答幾題、看你這個頁面該用哪一種。（真實專案常是同一站不同路由用不同模式。）",
+            "questions": [
+              {
+                "q": "這個頁面的內容多久變一次？",
+                "options": [
+                  {
+                    "label": "幾乎不變（部落格、文件、Landing 行銷頁）",
+                    "scores": {
+                      "ssg": 2
+                    }
+                  },
+                  {
+                    "label": "會變、但不用即時（商品庫存、新聞、每分鐘更新就好）",
+                    "scores": {
+                      "isr": 2
+                    }
+                  },
+                  {
+                    "label": "每次請求都不同 / 個人化（購物車、user dashboard）",
+                    "scores": {
+                      "ssr": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "SEO 重要嗎？",
+                "options": [
+                  {
+                    "label": "很重要、要被 Google / AI 引擎收錄",
+                    "scores": {
+                      "ssg": 1,
+                      "isr": 1
+                    }
+                  },
+                  {
+                    "label": "登入後才看得到、不在乎 SEO（後台 admin）",
+                    "scores": {
+                      "csr": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "頁面有大量互動、又想要極致效能 / 直接讀 DB 嗎？",
+                "options": [
+                  {
+                    "label": "要、是現代 SaaS、想混靜態 + 互動",
+                    "scores": {
+                      "rsc": 2
+                    }
+                  },
+                  {
+                    "label": "還好、單純內容展示",
+                    "scores": {
+                      "ssg": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "ssg": {
+                "emoji": "📦",
+                "title": "SSG（build 時先產好靜態頁）",
+                "desc": "內容不常變、又要快又要 SEO——build 時就把 HTML 產好丟 CDN、10-50ms 吐頁、最便宜最安全。部落格、文件、Landing page 首選。內容變了要重 build 是它唯一缺點。"
+              },
+              "isr": {
+                "emoji": "🔄",
+                "title": "ISR（SSG + 自動更新）",
+                "desc": "要新鮮但不用即時——先給靜態頁（快）、過 X 秒背景自動重產。電商商品頁、新聞最適合。設定 export const revalidate = 60 就好、不用自己寫 cron job 重 build。"
+              },
+              "ssr": {
+                "emoji": "🍳",
+                "title": "SSR（每次請求 server 現產）",
+                "desc": "每次內容都不同 / 要登入個人化——server 即時算好完整 HTML、SEO 好首屏快。缺點是每次請求都要 server 算、流量大成本高。別整站都用、會帳單爆炸。"
+              },
+              "csr": {
+                "emoji": "🖥️",
+                "title": "CSR（瀏覽器端現渲染）",
+                "desc": "登入後的後台、SEO 不重要——server 只送空殼 + JS、瀏覽器自己畫。開發簡單、互動快、但首屏白屏久、爬蟲抓不到內容。Admin panel 很適合。"
+              },
+              "rsc": {
+                "emoji": "🧩",
+                "title": "RSC（React 伺服器元件混用）",
+                "desc": "現代 SaaS、想混靜態 + 互動又要極致效能——元件層級分 server / client、能直接讀 DB、bundle 更小、API key 安全。心智模型較複雜、但這是 2026 的主流方向。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "10.3",
@@ -307,7 +404,53 @@
         ],
         "answer": "b",
         "explanation": "這課的核心價值是「正確分配 server / client 邊界能讓 bundle 小 50%、首屏快 2 秒」。Server Component 的最大優勢就是程式碼不會進 client bundle，所以瀏覽器要下載和執行的東西才會變少。選 d 雖然也是 Server Component 的好處，但不是「為什麼要預設用它」的根本原因。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Server / Client Component 分對了嗎？",
+          "note": "判斷 App Router 的 server / client 元件邊界處理是好做法、有風險、還是會爆",
+          "config": {
+            "scenarios": [
+              {
+                "text": "預設用 Server Component、只有真的要互動的元件才加 \"use client\"",
+                "correct": "ok",
+                "why": "預設 server、把 use client 推到葉子、bundle 最小、首屏最快。"
+              },
+              {
+                "text": "圖方便、整個 app 最上層就加 \"use client\"",
+                "correct": "no",
+                "why": "等於回到純 SPA、Next.js 的好處全沒了。"
+              },
+              {
+                "text": "在 Server Component 裡 await db.users.findMany() 直接讀 DB",
+                "correct": "ok",
+                "why": "Server Component 能 async、能直接讀 DB、不用另寫 API 中間層。"
+              },
+              {
+                "text": "在 Server Component 裡用 useState",
+                "correct": "no",
+                "why": "Server Component 不能用 hook、會編譯錯、要拆出 client 子元件。"
+              },
+              {
+                "text": "把 server 抓好的資料透過 props（number/string/object）傳給 Client Component 顯示",
+                "correct": "ok",
+                "why": "這是標準資料傳遞方式、props 只要可序列化就行。"
+              },
+              {
+                "text": "把 process.env.OPENAI_KEY 包成 NEXT_PUBLIC_OPENAI_KEY 傳給 Client 用",
+                "correct": "no",
+                "why": "NEXT_PUBLIC_ 會被打包進瀏覽器、金鑰被全世界看到、key 只能留在 server。"
+              },
+              {
+                "text": "Client Component 想顯示 Server 元件的內容、透過 children 把 Server Component 塞進去",
+                "correct": "ok",
+                "why": "children 是已渲染好的 tree、不是 import 關係、這是合法繞過「Client 不能 import Server」的方法。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "10.5",

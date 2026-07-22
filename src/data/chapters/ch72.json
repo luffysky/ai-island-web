@@ -100,7 +100,82 @@
         ],
         "answer": "a",
         "explanation": "語言設定是「整站都要的、層級深、不頻繁更新」的典型 Context 場景，放在 App 頂層 Provider 讓深層 component 直接拿、避免 props drilling。B 選項頻繁更新該用 ref，C 選項局部狀態該用 useState，D 選項硬編碼無法動態切換。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "狀態該放哪？useState / Context / Zustand",
+          "note": "回答兩題，看這份狀態該用畫面內 state、Context、還是狀態庫。",
+          "config": {
+            "intro": "跨元件共用狀態選錯工具，不是太吃力就是全站亂 re-render。",
+            "questions": [
+              {
+                "q": "這份狀態誰要用？",
+                "options": [
+                  {
+                    "label": "只有一兩層、局部（modal 開關、表單當下值）",
+                    "scores": {
+                      "local": 2
+                    }
+                  },
+                  {
+                    "label": "整站都要（主題 / 語言 / 登入 session）、不常變",
+                    "scores": {
+                      "context": 2
+                    }
+                  },
+                  {
+                    "label": "很多頁面共用、更新頻繁、邏輯複雜",
+                    "scores": {
+                      "zustand": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "更新頻率 & 複雜度？",
+                "options": [
+                  {
+                    "label": "只在這個元件內用",
+                    "scores": {
+                      "local": 2
+                    }
+                  },
+                  {
+                    "label": "很少變、大多是讀",
+                    "scores": {
+                      "context": 2
+                    }
+                  },
+                  {
+                    "label": "頻繁更新、多來源寫入、要好維護",
+                    "scores": {
+                      "zustand": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "local": {
+                "emoji": "🧩",
+                "title": "用 useState（局部就好）",
+                "desc": "單一元件 / 一兩層的狀態，useState 最直接，別為它上 Context 或狀態庫（過度設計）。要給子層就用 props。"
+              },
+              "context": {
+                "emoji": "📡",
+                "title": "用 Context",
+                "desc": "整站要、層級深、不常變（主題 / 語言 / session）的典型場景。記得 value 用 useMemo、或讀寫拆兩個 Context，避免全站 re-render。"
+              },
+              "zustand": {
+                "emoji": "🐻",
+                "title": "用 Zustand / Jotai",
+                "desc": "多頁面共用、更新頻繁、邏輯複雜時，Context re-render 太廣、Redux 又太多樣板。Zustand 輕、可選擇性訂閱、效能好，是 2026 主流。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "72.3",
@@ -141,7 +216,48 @@
         ],
         "answer": "b",
         "explanation": "Stale Closure 問題是因為空依賴 [] 讓 setInterval 只建立一次、抓住初始的 count。解法不是改依賴（會無限建立 interval），而是用 functional setter `prev => prev + 1` 讓 React 自動給你最新 state，不靠外層變數引用。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "React 這樣寫對嗎？（5 大坑）",
+          "note": "判斷每個寫法：可以、有風險、還是不行？——就是本課那五個坑。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "useEffect 依賴寫 `[{ q: query }]`（每次都傳新物件）。",
+                "correct": "no",
+                "why": "物件 reference 每 render 都不同、effect 永遠重跑＝無限迴圈。依賴放 primitive `[query]`。"
+              },
+              {
+                "text": "setInterval 裡用 `setCount(prev => prev + 1)` 拿最新值。",
+                "correct": "ok",
+                "why": "functional setter 避開 stale closure、拿得到最新 state，不必把 count 放依賴。"
+              },
+              {
+                "text": "`list.map((item, i) => <Item key={i} />)` 用陣列 index 當 key。",
+                "correct": "risk",
+                "why": "列表不重排 / 不刪除時還行；一旦插入或刪中間項就會錯亂。有穩定 id 就用 `item.id`。"
+              },
+              {
+                "text": "改陣列直接 `todos.push(x)` 再 `setTodos(todos)`。",
+                "correct": "no",
+                "why": "reference 沒變、React 用 Object.is 認為沒變、不 re-render。要 `setTodos([...todos, x])`。"
+              },
+              {
+                "text": "傳給 `React.memo` 子元件的 onClick 每次都 inline 新建 `() => {}`。",
+                "correct": "risk",
+                "why": "每 render 都是新 function、memo 形同失效。用 useCallback 包起來才有效。"
+              },
+              {
+                "text": "更新深層巢狀物件用 structuredClone / Immer 產生新結構。",
+                "correct": "ok",
+                "why": "保持 immutable、reference 有變 React 才會更新，正解。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "72.4",

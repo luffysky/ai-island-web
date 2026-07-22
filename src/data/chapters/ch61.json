@@ -205,7 +205,14 @@
         ],
         "answer": "b",
         "explanation": "`text-overflow: ellipsis` 需要搭配 `white-space: nowrap`（禁止換行）和 `overflow: hidden`（隱藏溢出）才能生效；單獨設定 `text-overflow` 是無法運作的。"
-      }
+      },
+      "demos": [
+        {
+          "type": "css-layout",
+          "title": "版面圖鑑 · 互動版",
+          "note": "這課列了 300+ CSS 屬性「查了會用」；點不同版型、看它其實是靠哪些屬性排出來的（比死背屬性表強）。"
+        }
+      ]
     },
     {
       "id": "61.3",
@@ -326,7 +333,53 @@
         ],
         "answer": "a",
         "explanation": "課程強調不改變原陣列的方法，filter 和 map 都是不改變原陣列的推薦做法。選項 b 的 splice 會改變原陣列，c 的 sort 和 forEach 也會改變原陣列；d 雖然 reduce 也不改變原陣列，但相比之下 a 的組合（filter + map）更直觀和易讀。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "陣列方法用得對嗎？",
+          "note": "這課把陣列方法分「不改原陣列（推薦）」和「改原陣列」兩區；用攻擊者的眼光判斷每個寫法：可以、有風險、還是別這樣。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "要把每個元素乘 2 得到新陣列，用 `arr.map(x => x*2)`。",
+                "correct": "ok",
+                "why": "map 專門做「轉換每個元素並回傳新陣列」，不動到原陣列，正是它的用途。"
+              },
+              {
+                "text": "只想跑過每個元素印 log，卻用 `arr.map(x => console.log(x))` 而不是 forEach。",
+                "correct": "risk",
+                "why": "能動，但 map 會產生一個沒人用的新陣列（全是 undefined）；純遍歷該用 forEach，語意才對。"
+              },
+              {
+                "text": "在 `arr.forEach()` 裡想中途 `break` 跳出迴圈。",
+                "correct": "no",
+                "why": "forEach 不能 break/continue；要提早中止得改用 for…of 或 some/every。"
+              },
+              {
+                "text": "取最後一個元素用 `arr.at(-1)` 而不是 `arr[arr.length-1]`。",
+                "correct": "ok",
+                "why": "at() 支援負索引，讀起來更清楚，是 ES2022 之後的正解。"
+              },
+              {
+                "text": "要保留原陣列又要排序，用 `arr.toSorted()`（ES2023）而不是 `arr.sort()`。",
+                "correct": "ok",
+                "why": "sort() 會就地改動原陣列，toSorted() 回傳新陣列不動原本的，需要保留原資料時更安全。"
+              },
+              {
+                "text": "用 `arr.reduce((a,b)=>a+b)` 加總，但沒給初始值，陣列可能是空的。",
+                "correct": "risk",
+                "why": "空陣列又沒初始值，reduce 會直接丟 TypeError；養成 `reduce(fn, 0)` 給初始值的習慣。"
+              },
+              {
+                "text": "想找符合條件的第一個元素，用 `arr.filter(fn)[0]`。",
+                "correct": "risk",
+                "why": "能拿到答案，但 filter 會掃完整個陣列再取第一個；`find(fn)` 找到就停，更省。"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "outcomes": [

@@ -127,7 +127,59 @@
         ],
         "answer": "d",
         "explanation": "部署的 5 個階段是依序進行的：Stage 1 Dev（localhost）→ Stage 2 Build（編譯成 dist/）→ Stage 3 Artifact（打包產物）→ Stage 4 Runtime（真正執行）→ Stage 5 監控。小明的流程包含了前四個階段，所以答案是全部四個都經過。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "從 push 到上線的部署管線",
+          "note": "看 code push 後，一路經過 CI、build、artifact、部署到監控的每一站",
+          "config": {
+            "trigger": {
+              "kind": "manual",
+              "label": "工程師把 code 推上 main",
+              "data": "git push origin main"
+            },
+            "nodes": [
+              {
+                "kind": "code",
+                "label": "CI 自動測",
+                "desc": "GitHub Actions 跑 lint / typecheck / test",
+                "data": "沒過就擋下、不讓壞版往下走"
+              },
+              {
+                "kind": "code",
+                "label": "Build 打包",
+                "desc": "把 source code 變成可執行的 artifact",
+                "data": "npm run build 產出 dist/ 或 docker build 成 image"
+              },
+              {
+                "kind": "action",
+                "label": "推 image 到 registry",
+                "desc": "把打包好的 image 存起來",
+                "data": "推到 GHCR / container registry，帶版本 tag"
+              },
+              {
+                "kind": "action",
+                "label": "先部署 staging",
+                "desc": "上仿正式環境給 QA / 自己先測",
+                "data": "用真資料 sample、不影響線上客戶"
+              },
+              {
+                "kind": "http",
+                "label": "Smoke test",
+                "desc": "打 /health 確認服務真的起得來",
+                "data": "GET /health → 200 才繼續，不然中止"
+              },
+              {
+                "kind": "action",
+                "label": "部署 production + 監控",
+                "desc": "切流量上線、盯 log / metric",
+                "data": "出事能一鍵 rollback 回上一版"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Docker 入門",
@@ -227,7 +279,53 @@
         ],
         "answer": "a",
         "explanation": "多階段 build 是課程強調的核心優化方法：builder stage 包含所有編譯工具，但最後的 production stage 只複製編譯好的產物，完全不帶 build 工具，大幅減少 image 體積且提升安全性。b 會拖累啟動速度，c 是架構決策不是瘦身方法，d 完全反向（Alpine 才是最輕量）。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Docker 做法：好 / 有風險 / 不行",
+          "note": "判斷這些 Docker 打包做法哪些是最佳實踐、哪些會害你 image 又肥又不安全",
+          "config": {
+            "scenarios": [
+              {
+                "text": "用多階段 build：builder stage 編譯，production stage 只複製最終產物、不帶編譯工具",
+                "correct": "ok",
+                "why": "正式 image 又小又安全，這是課程強調的核心優化"
+              },
+              {
+                "text": "把 API key / DB 密碼直接寫進 Dockerfile 或 image 裡",
+                "correct": "no",
+                "why": "image 會被推到 registry、layer 可被挖出，secrets 絕不進 image、要用環境變數注入"
+              },
+              {
+                "text": "基底用 node:20-alpine 這種精簡 image",
+                "correct": "ok",
+                "why": "alpine 變體最小、image 體積小、傳輸與啟動都快"
+              },
+              {
+                "text": "加 .dockerignore 排除 node_modules / .git / .env",
+                "correct": "ok",
+                "why": "避免把沒必要或敏感的檔案打進 image、也讓 build 更快"
+              },
+              {
+                "text": "全部塞單一 stage，把編譯工具、測試框架、dev 依賴通通打進正式 image",
+                "correct": "risk",
+                "why": "image 肥大、攻擊面變大，該用多階段 build 把這些留在 builder stage"
+              },
+              {
+                "text": "同一份 image 從 dev 一路帶到 production 都跑同一份",
+                "correct": "ok",
+                "why": "環境一致，正是 Docker 解決『在我電腦可以』的價值"
+              },
+              {
+                "text": "把 log 寫進 container 內的檔案、不輸出 stdout",
+                "correct": "risk",
+                "why": "container 一沒了 log 也跟著消失，應輸出 stdout 讓外部集中蒐集"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Railway / Fly.io / Render",

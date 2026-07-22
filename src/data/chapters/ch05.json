@@ -334,7 +334,112 @@
         ],
         "answer": "a",
         "explanation": "在物件型別中，用 ? 符號來表示欄位可選（optional）。選項 b 允許 null，但不是可選；c 和 d 都是不合法的語法。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "這次該用 type 還是 interface？",
+          "note": "99% 可互換、但有些情況一個明顯比較順手——回答幾題看這次該用哪個",
+          "config": {
+            "intro": "type 跟 interface 大多數場景可互換、但關鍵時刻一個會比另一個順手。回答幾題、看你這次該挑哪個。",
+            "questions": [
+              {
+                "q": "你要定義的東西是？",
+                "options": [
+                  {
+                    "label": "一個物件的形狀（有哪些欄位）",
+                    "scores": {
+                      "iface": 1,
+                      "either": 1
+                    }
+                  },
+                  {
+                    "label": "union / literal（string | number、'active' | 'done'）",
+                    "scores": {
+                      "typ": 2
+                    }
+                  },
+                  {
+                    "label": "tuple、函式型別、或原始型別別名",
+                    "scores": {
+                      "typ": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "這個型別會被外部 import、或是 library 的 public API 嗎？",
+                "options": [
+                  {
+                    "label": "會、是公開 API 或要給別人 extend",
+                    "scores": {
+                      "iface": 2
+                    }
+                  },
+                  {
+                    "label": "只是專案內部自己用",
+                    "scores": {
+                      "either": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你需要「宣告合併」或讓它被 extend 嗎？",
+                "options": [
+                  {
+                    "label": "需要 extend / 合併（像擴充第三方型別）",
+                    "scores": {
+                      "iface": 2
+                    }
+                  },
+                  {
+                    "label": "不需要",
+                    "scores": {
+                      "either": 1,
+                      "typ": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "團隊已有慣例嗎？",
+                "options": [
+                  {
+                    "label": "跟 React props / 官方 / Microsoft 風格走",
+                    "scores": {
+                      "iface": 1
+                    }
+                  },
+                  {
+                    "label": "偏函式風、習慣全用 type",
+                    "scores": {
+                      "typ": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "iface": {
+                "emoji": "🧩",
+                "title": "這題用 interface",
+                "desc": "你在定義物件結構 / public API / 需要 extend 或宣告合併——這些正是 interface 的強項（能 extends、能自動合併）。React props、給別人用的型別都推薦 interface。它唯一做不到的是 union。"
+              },
+              "typ": {
+                "emoji": "🏷️",
+                "title": "這題用 type",
+                "desc": "你要的是 union / literal / tuple / 函式型別這些 interface 做不到的東西——只能用 type。狀態機的 'idle' | 'loading' | 'done'、ID = string | number 都用 type。"
+              },
+              "either": {
+                "emoji": "🤝",
+                "title": "兩個都行、挑一個保持一致就好",
+                "desc": "單純的內部物件型別、type 跟 interface 幾乎沒差。重點不是選哪個、是「整個專案保持一致」。新手心法：物件用 interface、union 用 type。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "5.5",
@@ -1294,7 +1399,53 @@
         ],
         "answer": "b",
         "explanation": "strict 模式中的 strictPropertyInitialization 規則強制要求 class 屬性必須在宣告時或 constructor 內初始化，否則編譯器會報錯。price 屬性既沒有預設值，constructor 也沒有設定它，所以違反這個規則。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "strict 模式這樣用 OK 嗎？",
+          "note": "判斷 TS strict / 型別安全的做法是好習慣、有風險、還是不行",
+          "config": {
+            "scenarios": [
+              {
+                "text": "新專案 tsconfig 直接開 strict: true",
+                "correct": "ok",
+                "why": "業界共識新專案必開、能抓約 3 成 production bug、不商量。"
+              },
+              {
+                "text": "關掉 strict、覺得標型別太麻煩",
+                "correct": "risk",
+                "why": "關了 TS 幾乎只剩自動補全、失去真正價值、等於寫回 JS。"
+              },
+              {
+                "text": "額外開 noUncheckedIndexedAccess、逼你檢查 arr[i] 可能 undefined",
+                "correct": "ok",
+                "why": "寫起來煩一點、但 production bug 大降、senior 共識建議開。"
+              },
+              {
+                "text": "catch 到 error（strict 下型別是 unknown）直接 e.message",
+                "correct": "no",
+                "why": "unknown 不能直接用、要先 e instanceof Error 收窄型別才安全。"
+              },
+              {
+                "text": "class 屬性沒初始化、就用 name!: string 斷言硬過",
+                "correct": "risk",
+                "why": "! 是告訴 TS「我保證會初始化」繞過檢查、萬一沒初始化就 runtime 爆、要慎用。"
+              },
+              {
+                "text": "老 codebase 一次全開 strict、把幾百個錯一次修完再上線",
+                "correct": "risk",
+                "why": "可行但風險大、課堂建議漸進採用（先開 strict 暫留 noImplicitAny:false）慢慢修。"
+              },
+              {
+                "text": "不想處理某行型別錯、用 // @ts-expect-error 而不是 // @ts-ignore",
+                "correct": "ok",
+                "why": "expect-error 至少明確標記、錯誤修好後它還會提醒你移除、比默默 ignore 好。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "5.17",

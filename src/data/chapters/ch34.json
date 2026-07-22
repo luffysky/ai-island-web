@@ -474,7 +474,53 @@
         ],
         "answer": "b",
         "explanation": "@Transactional 的核心就是：任一步失敗 → 全 rollback。當 paymentService.charge() 拋異常時，整個交易會被回滾，包括已經執行的 orderRepo.save()。這是事務的原子性原則。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Spring Security + JPA 判判看",
+          "note": "認證 / JWT / JPA 查詢的最佳實踐 vs 反模式，判「可以 / 有風險 / 不行」。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "前後端分離、改用 JWT 驗證後，把 Spring Security 的 CSRF 防護關掉",
+                "correct": "ok",
+                "why": "JWT 無狀態、不靠 cookie 帶身份、CSRF 的攻擊前提不成立，關掉是合理做法。"
+              },
+              {
+                "text": "資料庫密碼直接寫死在 SecurityConfig 的程式碼裡",
+                "correct": "no",
+                "why": "機密進版控就形同外洩，密碼要放環境變數或密鑰管理（如 AWS Secrets Manager）。"
+              },
+              {
+                "text": "用 @Query nativeQuery、把 request 參數字串串接進 SQL（... WHERE id = \" + req.id）",
+                "correct": "no",
+                "why": "這是典型 SQL injection 破口，一定要用參數綁定，別把使用者輸入接進 SQL 字串。"
+              },
+              {
+                "text": "一對多關聯，先 findAll() 再在迴圈裡對每個 user 呼叫 getOrders()",
+                "correct": "risk",
+                "why": "這就是 N+1 問題：100 個用戶會多打 100 句 SQL，資料量一大就很慢。"
+              },
+              {
+                "text": "改用 JOIN FETCH 或 @EntityGraph 一次把關聯一起撈出來",
+                "correct": "ok",
+                "why": "一句 SQL 解決關聯，正是修 N+1 的正解。"
+              },
+              {
+                "text": "用 JWT 當登入憑證，卻要求「使用者按登出就立刻讓 token 失效」",
+                "correct": "risk",
+                "why": "JWT 無狀態、發出去在過期前無法即時撤銷；要即時登出得另做黑名單，別當它做得到。"
+              },
+              {
+                "text": "Repository 用方法名 findByActiveAndRole 讓 Spring 自動產 SQL",
+                "correct": "ok",
+                "why": "方法名衍生查詢簡潔、可讀、編譯期檢查，簡單條件用它剛好。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Spring Boot 部署 + 接案",
@@ -578,7 +624,129 @@
         ],
         "answer": "b",
         "explanation": "課程的核心心法強調：Java 接案 = 進企業/開發團隊，而非 Indie 工具。個人開發者學 Java 是為了「履歷」進企業，不是為了獨立接案；同樣投入時間，學 Go/Node 對想做個人 SaaS 的開發者更划算。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "Spring Boot 部署放哪裡？",
+          "note": "依你的技術底、流量、成本，配一個對的部署方案。",
+          "config": {
+            "intro": "程式寫好了、要 24 小時跑給客戶用——你的情況適合哪種部署？",
+            "questions": [
+              {
+                "q": "你願意花在維運（裝系統、防火牆、備份）的心力？",
+                "options": [
+                  {
+                    "label": "只想快點上線、越少維運越好",
+                    "scores": {
+                      "managed": 2
+                    }
+                  },
+                  {
+                    "label": "中等、碰得動 Docker / CI",
+                    "scores": {
+                      "enterprise": 1,
+                      "managed": 1
+                    }
+                  },
+                  {
+                    "label": "老手、想自己掌控整台機器",
+                    "scores": {
+                      "selfvm": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "流量規模？",
+                "options": [
+                  {
+                    "label": "小到中、穩定就好",
+                    "scores": {
+                      "managed": 2
+                    }
+                  },
+                  {
+                    "label": "大流量、要自動擴展",
+                    "scores": {
+                      "enterprise": 2
+                    }
+                  },
+                  {
+                    "label": "serverless / K8s 容器密集、常冷啟動",
+                    "scores": {
+                      "native": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "成本與掌控怎麼取捨？",
+                "options": [
+                  {
+                    "label": "願付月費換省事",
+                    "scores": {
+                      "managed": 2
+                    }
+                  },
+                  {
+                    "label": "要跟 AWS / GCP 生態整合",
+                    "scores": {
+                      "enterprise": 2
+                    }
+                  },
+                  {
+                    "label": "長期最省、自己扛維運",
+                    "scores": {
+                      "selfvm": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "冷啟動時間敏感嗎？",
+                "options": [
+                  {
+                    "label": "無所謂、是常駐服務",
+                    "scores": {
+                      "managed": 1,
+                      "enterprise": 1
+                    }
+                  },
+                  {
+                    "label": "非常敏感（Lambda 每次呼叫都要快）",
+                    "scores": {
+                      "native": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "managed": {
+                "emoji": "🚀",
+                "title": "Railway / Fly.io",
+                "desc": "一個指令部署、自動 CI/CD、月費幾美金起。新手快速上線最省事，缺點是彈性與掌控不如自管。"
+              },
+              "enterprise": {
+                "emoji": "🏢",
+                "title": "AWS Beanstalk / GCP App Engine",
+                "desc": "自動擴展、跟雲端生態無縫整合，適合企業大流量。缺點是費用較高、設定中等複雜。"
+              },
+              "selfvm": {
+                "emoji": "🛠️",
+                "title": "自管雲端 VM（EC2 / Linode / DO）",
+                "desc": "完全自由、長期最便宜，適合想完全掌控的老手。缺點是安全更新、備份、監控都得自己扛。"
+              },
+              "native": {
+                "emoji": "⚡",
+                "title": "GraalVM Native Image",
+                "desc": "啟動 100ms 級、記憶體砍 5 倍，適合 serverless / K8s 密集部署。缺點是編譯慢、部分 library 反射會壞、除錯難。"
+              }
+            }
+          }
+        }
+      ]
     }
   ],
   "boss": {

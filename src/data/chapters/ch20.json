@@ -174,7 +174,45 @@
         ],
         "answer": "a",
         "explanation": "RESTful 的統一介面原則要求：URL 用名詞表達資源、動作用 HTTP method 表達。a 選項用 DELETE verb 清楚表達刪除動作、用 resource path 指定對象，符合規範。b、c、d 都在 URL 或 method 裡混入動詞，違反統一介面的核心原則。"
-      }
+      },
+      "demos": [
+        {
+          "type": "json-tree",
+          "title": "一個設計良好的 REST 回應長這樣",
+          "note": "看資料放 data、分頁放 meta、成功用對狀態碼的標準回應形狀",
+          "config": {
+            "caption": "好的 REST 回應：資料放 data、分頁 / 統計放 meta、成功用 200；別把錯誤也硬回 200 + {error}。",
+            "data": {
+              "data": [
+                {
+                  "id": "post_abc123",
+                  "title": "第一篇文章",
+                  "author": {
+                    "id": "u_42",
+                    "name": "小明"
+                  },
+                  "createdAt": "2026-05-28T14:30:00Z"
+                },
+                {
+                  "id": "post_def456",
+                  "title": "第二篇文章",
+                  "author": {
+                    "id": "u_43",
+                    "name": "小美"
+                  },
+                  "createdAt": "2026-05-27T09:12:00Z"
+                }
+              ],
+              "meta": {
+                "page": 1,
+                "perPage": 20,
+                "total": 137,
+                "hasNextPage": true
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "title": "GraphQL 入門",
@@ -782,7 +820,53 @@
         ],
         "answer": "a",
         "explanation": "驗簽章的核心目的是確認通知確實來自 Stripe，而不是被冒充。不驗就無法區分真假，攻擊者可以偽造虛假通知來執行惡意操作（如標記未支付的訂單為已付款）。b 是簽章的附加好處但不是主要風險、c 和 d 都無關驗簽章。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "接 / 發 Webhook 這樣做、安全嗎？",
+          "note": "判斷 webhook 的驗簽、冪等、回應速度這些做法哪些對、哪些是漏洞",
+          "config": {
+            "scenarios": [
+              {
+                "text": "收到 Stripe webhook、先用 signature 驗證真的是 Stripe 發的",
+                "correct": "ok",
+                "why": "不驗簽 = 任何人都能假裝 Stripe 通知你「付款成功」；驗簽是第一道關。"
+              },
+              {
+                "text": "完全不驗簽章、收到「付款成功」就直接出貨",
+                "correct": "no",
+                "why": "等於把後門大開、攻擊者偽造一個請求就能白拿貨。"
+              },
+              {
+                "text": "用 event id 記錄處理過的、同一個 event 來兩次不重複處理（idempotent）",
+                "correct": "ok",
+                "why": "webhook 會因網路 retry 重複送、冪等處理才不會重複扣款 / 重複出貨。"
+              },
+              {
+                "text": "webhook 進來先丟 queue、立刻回 200、重活背景慢慢做",
+                "correct": "ok",
+                "why": "5 秒內回 200、對方才不會當失敗一直 retry；重邏輯丟背景是標準做法。"
+              },
+              {
+                "text": "在 webhook handler 裡跑 10 秒的重運算才回應",
+                "correct": "risk",
+                "why": "太久沒回 200、第三方會判定失敗並重送、造成重複處理。"
+              },
+              {
+                "text": "自己發 webhook 給別人時、用 HMAC 簽章 + timestamp 防偽造 / 重放",
+                "correct": "ok",
+                "why": "讓對方能驗證來源、timestamp 擋重放攻擊，是負責任的 sender。"
+              },
+              {
+                "text": "Webhook endpoint 用 http（非 https）、方便測試就好",
+                "correct": "no",
+                "why": "明文傳輸 payload 會被中間人看光 / 竄改；正式一律 https。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "API Versioning 策略",

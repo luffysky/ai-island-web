@@ -622,7 +622,59 @@
         ],
         "answer": "b",
         "explanation": "Webhook 的核心流程是：用戶傳訊息到 LINE → LINE Server 轉發給你的 Server（HTTP POST）→ 你的 Server 解析事件並回應。選項 a 的順序錯誤，c 是誤解 webhook 的 push 性質，d 多了不必要的往返。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "LINE Bot 收訊息走一遍",
+          "note": "使用者傳一句話，看事件怎麼從 LINE 流進你的 server 再回覆。",
+          "config": {
+            "trigger": {
+              "kind": "webhook",
+              "label": "使用者在 LINE 傳一則文字給你的官方帳號",
+              "data": "LINE Server → POST https://your-server.com/webhook"
+            },
+            "nodes": [
+              {
+                "kind": "http",
+                "label": "POST /webhook 收到請求",
+                "desc": "LINE Server 把事件用 HTTP POST 送到你的 server",
+                "data": "body: { events: [...] }, header: x-line-signature"
+              },
+              {
+                "kind": "if",
+                "label": "驗簽章 validateSignature",
+                "desc": "用 Channel secret 驗 x-line-signature、防偽造請求",
+                "data": "無效 → 回 401、不處理"
+              },
+              {
+                "kind": "code",
+                "label": "解析 events",
+                "desc": "取出事件陣列、判斷 type（message / follow / postback）",
+                "data": "event.type === 'message' && event.message.type === 'text'"
+              },
+              {
+                "kind": "db",
+                "label": "查 / 存使用者與訊息",
+                "desc": "upsert LineUser、記錄這則 incoming 訊息",
+                "data": "prisma.message.create({ userId, type: 'incoming', content })"
+              },
+              {
+                "kind": "ai",
+                "label": "（可選）丟給 AI 產生回覆",
+                "desc": "帶前 10 則對話 context 請 AI 回答",
+                "data": "claude.messages.create({ system, messages })"
+              },
+              {
+                "kind": "action",
+                "label": "client.replyMessage 回覆",
+                "desc": "用 replyToken 回覆（30 秒內、不算付費額度）",
+                "data": "reply { type: 'text', text: '你說：…' }"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Flex Message：富文本訊息",
@@ -734,7 +786,65 @@
         ],
         "answer": "b",
         "explanation": "carousel 就是專門用來放多張卡片橫滑的 container，每張卡片是一個 bubble。bubble 只能顯示單一卡片，box 只是內部排版用，都不適合做橫滑卡片牆。"
-      }
+      },
+      "demos": [
+        {
+          "type": "json-tree",
+          "title": "Flex Message 就是一包 JSON",
+          "note": "商品卡的 bubble 分 hero / body / footer，用 box 疊出來。",
+          "config": {
+            "caption": "點開看：bubble 底下 hero 放圖、body 用 box 疊文字、footer 放按鈕；layout 決定橫排或直排。",
+            "data": {
+              "type": "bubble",
+              "hero": {
+                "type": "image",
+                "url": "https://example.com/product.jpg",
+                "size": "full",
+                "aspectRatio": "16:9"
+              },
+              "body": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                  {
+                    "type": "text",
+                    "text": "iPhone 17 Pro",
+                    "weight": "bold",
+                    "size": "xl"
+                  },
+                  {
+                    "type": "text",
+                    "text": "NT$ 35,900",
+                    "color": "#ff5555",
+                    "size": "lg"
+                  },
+                  {
+                    "type": "text",
+                    "text": "支援 AI、相機升級",
+                    "size": "sm",
+                    "wrap": true
+                  }
+                ]
+              },
+              "footer": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                  {
+                    "type": "button",
+                    "style": "primary",
+                    "action": {
+                      "type": "uri",
+                      "label": "立即購買",
+                      "uri": "https://example.com/buy"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "title": "Rich Menu：底部選單（用 API 設定）",

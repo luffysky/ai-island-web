@@ -286,7 +286,53 @@
         ],
         "answer": "d",
         "explanation": "Full (strict) 是最安全的選擇，提供雙邊 HTTPS + 驗證 origin 憑證；Flexible 只保護用戶到 Cloudflare 的連線但不安全；Full 沒有驗證 origin cert；Off 根本不加密。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "HTTPS / SSL 設定：好 / 有風險 / 不行",
+          "note": "判斷這些 HTTPS 設定哪些安全達標、哪些只是看起來安全其實有洞",
+          "config": {
+            "scenarios": [
+              {
+                "text": "Cloudflare 用 Full (strict)：雙邊 HTTPS 且驗證 origin 憑證",
+                "correct": "ok",
+                "why": "全程加密又確認 origin 身分，最安全的模式"
+              },
+              {
+                "text": "生產網站只跑 HTTP、不上 HTTPS 就上線",
+                "correct": "no",
+                "why": "流量明文可被監聽竄改、瀏覽器標不安全、SEO 被打壓、PWA 也不能用"
+              },
+              {
+                "text": "用 Flexible mode：User→Cloudflare 是 HTTPS、Cloudflare→origin 卻是 HTTP",
+                "correct": "risk",
+                "why": "後半段沒加密、看起來有鎖頭其實半路明文，別用"
+              },
+              {
+                "text": "開 HSTS 強制瀏覽器之後永遠用 HTTPS",
+                "correct": "ok",
+                "why": "防降級攻擊、避免使用者連到 HTTP 版"
+              },
+              {
+                "text": "HTTPS 頁面裡載入 http:// 開頭的圖片或 script",
+                "correct": "risk",
+                "why": "mixed content 會被瀏覽器擋、跳警告，資源要全 HTTPS"
+              },
+              {
+                "text": "用 Let's Encrypt 免費憑證搭配自動續期",
+                "correct": "ok",
+                "why": "免費又必要，90 天效期靠自動化續期完全免手動"
+              },
+              {
+                "text": "SSL/TLS 還允許 TLS 1.0 / 1.1 這些舊協定",
+                "correct": "risk",
+                "why": "已被淘汰、有已知弱點，最低該設 TLS 1.2"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Subdomain 策略",
@@ -813,7 +859,59 @@
         ],
         "answer": "a",
         "explanation": "低 TTL（300秒）代表 cache 只活 5 分鐘，這樣改 record 後各地 DNS cache 很快就過期重新查詢，5-10 分鐘內全球使用者都會看到新 IP；如果跳過這步，舊 TTL 3600 的 cache 會讓某些人 24 小時內還連到舊 IP。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "輸入網址後，DNS 怎麼查到 IP",
+          "note": "跟著一個網址查詢，看它一路問過 resolver、root、TLD、權威伺服器才拿到 IP",
+          "config": {
+            "trigger": {
+              "kind": "manual",
+              "label": "使用者在瀏覽器輸入網址",
+              "data": "https://example.com"
+            },
+            "nodes": [
+              {
+                "kind": "code",
+                "label": "先查快取",
+                "desc": "瀏覽器 / 作業系統的 DNS 快取",
+                "data": "有沒過期的紀錄就直接用、省去後面所有步驟"
+              },
+              {
+                "kind": "action",
+                "label": "問 DNS resolver",
+                "desc": "通常是 ISP 或 8.8.8.8",
+                "data": "resolver 有快取就直接回、沒有就往上層問"
+              },
+              {
+                "kind": "action",
+                "label": "問 root 伺服器",
+                "desc": "root 不知道答案、但知道誰管 .com",
+                "data": "回：.com 去問 TLD 伺服器"
+              },
+              {
+                "kind": "action",
+                "label": "問 .com TLD 伺服器",
+                "desc": "TLD 知道 example.com 的權威伺服器是誰",
+                "data": "回：去問 ns1.cloudflare.com"
+              },
+              {
+                "kind": "db",
+                "label": "問權威 nameserver",
+                "desc": "這台才有真正的紀錄",
+                "data": "A 紀錄 example.com → 1.2.3.4（TTL 決定可快取多久）"
+              },
+              {
+                "kind": "http",
+                "label": "瀏覽器連上該 IP",
+                "desc": "拿到 IP 後才真正發出 HTTP 請求",
+                "data": "連 1.2.3.4 拿網頁；改 DNS 前先降 TTL 才會快生效"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "SSL / HTTPS / Let's Encrypt",

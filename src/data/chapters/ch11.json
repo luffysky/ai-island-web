@@ -103,7 +103,107 @@
         ],
         "answer": "a",
         "explanation": "課程明確說明 Indie 推薦方案就是『RN + Expo：1 個工程師、一條龍』。選項 b 是原生路線（兩倍工作量）、c 是已凋零技術、d 雖然也可以但需要學新語言，RN + Expo 對獨立開發者最友善。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "原生 / RN / Flutter 你走哪條路？",
+          "note": "用你的底子、團隊規模、產品定位、幫你對號入座三大路線",
+          "config": {
+            "intro": "想做手機 App、三條路線怎麼挑？回答幾題、幫你對號入座。",
+            "questions": [
+              {
+                "q": "你的底子是什麼？",
+                "options": [
+                  {
+                    "label": "會 React / JavaScript",
+                    "scores": {
+                      "rn": 2
+                    }
+                  },
+                  {
+                    "label": "想學一套全新但很順的語言",
+                    "scores": {
+                      "flutter": 2
+                    }
+                  },
+                  {
+                    "label": "iOS + Android 都想榨到極致效能",
+                    "scores": {
+                      "native": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你是幾個人做？",
+                "options": [
+                  {
+                    "label": "一個人 / 小團隊、要一條龍",
+                    "scores": {
+                      "rn": 2,
+                      "flutter": 1
+                    }
+                  },
+                  {
+                    "label": "iOS、Android 各有專職人力",
+                    "scores": {
+                      "native": 2
+                    }
+                  },
+                  {
+                    "label": "很在意 hot reload 的開發爽度",
+                    "scores": {
+                      "flutter": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "產品定位？",
+                "options": [
+                  {
+                    "label": "一般 App、九成需求就夠",
+                    "scores": {
+                      "rn": 2,
+                      "flutter": 1
+                    }
+                  },
+                  {
+                    "label": "指標級產品、對相機 / 感測器 / 效能吹毛求疵",
+                    "scores": {
+                      "native": 2
+                    }
+                  },
+                  {
+                    "label": "要兩平台 UI 長得一模一樣",
+                    "scores": {
+                      "flutter": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "rn": {
+                "emoji": "⚛️",
+                "title": "React Native + Expo",
+                "desc": "indie 首選——你的 React 底子直接通用、一份 code 兩平台、Expo 把環境設定全包好。缺點是碰到很底層的功能要 bridge。九成需求它都夠。"
+              },
+              "flutter": {
+                "emoji": "🐦",
+                "title": "Flutter",
+                "desc": "跨平台一致 + hot reload 神速、UI 兩邊長得一樣。代價是要學 Dart。閒魚 / Google Pay 都用它。"
+              },
+              "native": {
+                "emoji": "🏆",
+                "title": "原生（Swift / Kotlin）",
+                "desc": "效能天花板、功能最全、系統新特性第一手支援。代價是 iOS / Android 要各寫一套 = 兩倍工，通常只有指標級產品才划算。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "title": "React Native + Expo 完整入門",
@@ -1830,7 +1930,53 @@
         ],
         "answer": "a",
         "explanation": "這是標準的 token refresh 流程：當收到 401 時，用 refresh token 去換新的 access token，再重試原請求。選項 b 是終極方案（不是自動 refresh 的目的），選項 c 沒有真的解決過期問題，選項 d 會造成無限迴圈。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "手機端認證這樣做、行不行？",
+          "note": "判斷 token 存放、refresh、生物辨識這些做法哪些安全、哪些是雷",
+          "config": {
+            "scenarios": [
+              {
+                "text": "JWT access token 存進 SecureStore（iOS Keychain / Android 加密儲存）",
+                "correct": "ok",
+                "why": "敏感 token 就該放加密的 SecureStore、不是明文的 AsyncStorage。"
+              },
+              {
+                "text": "把 refresh token 直接塞進 AsyncStorage 明文存",
+                "correct": "risk",
+                "why": "AsyncStorage 沒加密、被 root / 越獄的裝置翻得到；refresh token 這種長效憑證要放 SecureStore。"
+              },
+              {
+                "text": "access token 設短期（15 分）、refresh token 設長期（30 天）",
+                "correct": "ok",
+                "why": "短命 access + 長命 refresh 是業界標準、兼顧安全跟體驗。"
+              },
+              {
+                "text": "收到 401 時用 interceptor 自動拿 refresh 換新 token 再重送原請求",
+                "correct": "ok",
+                "why": "使用者無感續命、不會動不動被登出，是正解。"
+              },
+              {
+                "text": "跳生物辨識前先 hasHardwareAsync + isEnrolledAsync 檢查裝置支援",
+                "correct": "ok",
+                "why": "先確認有硬體、也真的有註冊指紋 / 臉、才不會在不支援的機器上壞掉。"
+              },
+              {
+                "text": "只靠前端「Face ID 過了就給進」、後端不再驗 token",
+                "correct": "no",
+                "why": "生物辨識只是解鎖前端、真正的授權一定要後端驗 token；不然改一下前端就繞過了。"
+              },
+              {
+                "text": "access token 設成永不過期、省得一直 refresh",
+                "correct": "no",
+                "why": "永不過期的 token 一旦外洩就永久有效、無法收回、等於送鑰匙給小偷。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "App 國際化（i18n）+ 在地化",

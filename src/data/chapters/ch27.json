@@ -1812,7 +1812,53 @@
         ],
         "answer": "d",
         "explanation": "選 d 最不合理。200 個缺失值用'unknown'填、會讓數值欄變成字串或邏輯混亂，後續分析容易出錯。應該先檢查缺失比例和欄位特性，再選用中位數、平均數、或 KNN 這類更合適的策略。其他選項都是合理做法。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "資料清理判官",
+          "note": "判斷 pandas 清理缺失值 / 重複 / 異常值的做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "動手清理前先 `df_original = df.copy()` 備份一份原始資料",
+                "correct": "ok",
+                "why": "清壞了隨時能對照原資料、是資深工程師的基本動作"
+              },
+              {
+                "text": "看到有缺失值就無腦 `df.dropna()` 把整列砍掉",
+                "correct": "risk",
+                "why": "整列刪可能丟掉大量有用資料、要先看缺多少、有時 fillna / interpolate 更合理"
+              },
+              {
+                "text": "年齡欄有極端值、用中位數 `df['age'].fillna(df['age'].median())` 填補",
+                "correct": "ok",
+                "why": "中位數不怕 outlier 拉偏、比平均數穩、是常見穩健做法"
+              },
+              {
+                "text": "把所有偵測到的異常值（outlier）一律當錯誤刪掉",
+                "correct": "risk",
+                "why": "異常值可能是真實的 VIP 大額交易、不是錯、要先看『為什麼異常』再決定"
+              },
+              {
+                "text": "日期欄用 `pd.to_datetime(df['date'], errors='coerce')`、無效日期轉成 NaT 再處理",
+                "correct": "ok",
+                "why": "coerce 讓無法解析的變 NaT 不會整個 raise、之後能篩出來單獨查"
+              },
+              {
+                "text": "清理每一步都不寫註解、三個月後自己也看不懂為何這樣清",
+                "correct": "no",
+                "why": "紀錄每步（為什麼這樣清）才可維護、同事跟未來的你才看得懂"
+              },
+              {
+                "text": "為了資料『完美』卡在清理階段一整週不做分析",
+                "correct": "no",
+                "why": "清到夠用能跑分析就好、追完美是新手陷阱、Garbage 清乾淨即可別過頭"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Feature Engineering：把資料變模型可用",

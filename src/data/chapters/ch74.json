@@ -60,7 +60,82 @@
         ],
         "answer": "a",
         "explanation": "Vite 的核心差異是改變了思路：不是先全部 bundle 再啟動，而是一開始就啟動 dev server，讓瀏覽器用原生 ESM 動態載入。選項 b、c、d 都是 Vite 的優化技術，但不是「本質差異」的主因。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "2026 前端 build 工具怎麼選？",
+          "note": "回答兩題，看你的專案該用 Vite / Next.js / 還是暫留 Webpack。",
+          "config": {
+            "intro": "沒有最強、只有最合你專案型態的。",
+            "questions": [
+              {
+                "q": "你的專案是？",
+                "options": [
+                  {
+                    "label": "React / Vue / Svelte 純前端 SPA、要開發快",
+                    "scores": {
+                      "vite": 2
+                    }
+                  },
+                  {
+                    "label": "要 SSR / SSG / 全端（伺服器元件、SEO）",
+                    "scores": {
+                      "next": 2
+                    }
+                  },
+                  {
+                    "label": "維護中的舊專案、已有大量 Webpack 客製設定",
+                    "scores": {
+                      "webpack": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你最在意？",
+                "options": [
+                  {
+                    "label": "dev server 秒開、HMR 極快",
+                    "scores": {
+                      "vite": 2
+                    }
+                  },
+                  {
+                    "label": "開箱即用的路由 / SSR / 部署一條龍",
+                    "scores": {
+                      "next": 2
+                    }
+                  },
+                  {
+                    "label": "不想動現有能跑的建置設定",
+                    "scores": {
+                      "webpack": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "vite": {
+                "emoji": "⚡",
+                "title": "用 Vite",
+                "desc": "純前端新專案首選：原生 ESM dev 秒開、esbuild 超快、Rollup 打包優化。2026 約 90% 新專案用它。"
+              },
+              "next": {
+                "emoji": "▲",
+                "title": "用 Next.js（內建 Turbopack）",
+                "desc": "要 SSR / SSG / 伺服器元件 / SEO / 全端一條龍就選 Next，它自帶建置（Turbopack），不必自己配 Vite。"
+              },
+              "webpack": {
+                "emoji": "📦",
+                "title": "暫留 Webpack",
+                "desc": "只有『既有專案有大量 Webpack 客製、遷移成本高』才留著。注意 CRA 已停更，全新專案別再從 Webpack / CRA 起手。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "74.2",

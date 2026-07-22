@@ -61,7 +61,53 @@
         ],
         "answer": "b",
         "explanation": "HTTP request 只會把 scheme、host、port、path 和 query 送到 server；fragment (#後面的部分) 純粹是瀏覽器的前端路由機制，server 永遠看不到。選項 a 錯誤因為 server 看不到 fragment；c 錯誤因為 query string 確實會被送到 server；d 錯誤因為加密跟 fragment 是否被送到 server 沒有關係。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "在網址列按 Enter 之後，發生了什麼",
+          "note": "看一次 HTTP 請求怎麼從 DNS → 連線 → 送 request → 伺服器 → 回應畫面。",
+          "config": {
+            "trigger": {
+              "kind": "manual",
+              "label": "在瀏覽器輸入 https://ai-island.com 按 Enter",
+              "data": "GET https://ai-island.com/"
+            },
+            "nodes": [
+              {
+                "kind": "action",
+                "label": "① DNS 查詢：網址 → IP",
+                "desc": "把人看的網址翻成機器的 IP 位址",
+                "data": "ai-island.com → 104.21.x.x"
+              },
+              {
+                "kind": "action",
+                "label": "② 建立連線：TCP 握手 + TLS 加密",
+                "desc": "先握手接通、HTTPS 再協商加密金鑰",
+                "data": "SYN → SYN/ACK → ACK；TLS handshake"
+              },
+              {
+                "kind": "http",
+                "label": "③ 送出 HTTP request",
+                "desc": "含 method、路徑、headers（Host / Cookie / UA）",
+                "data": "GET / HTTP/2\nHost: ai-island.com"
+              },
+              {
+                "kind": "db",
+                "label": "④ 伺服器處理",
+                "desc": "路由、查資料庫、組回應",
+                "data": "200 OK, Content-Type: text/html"
+              },
+              {
+                "kind": "set",
+                "label": "⑤ 瀏覽器收 response → 畫面",
+                "desc": "依 status / headers 決定怎麼呈現，載入 CSS / JS",
+                "data": "解析 HTML → 渲染"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "75.2",
@@ -182,7 +228,48 @@
         ],
         "answer": "b",
         "explanation": "JWT 的缺點就是無狀態、server 不存資料，所以登出不能立刻生效。唯一解決方案是維護一個 blacklist，把廢掉的 token ID 記起來，驗證時檢查。刪帳號、等過期、改 Session 都無法在不改架構下馬上禁用。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Header / Cookie / 驗證：安全嗎？",
+          "note": "用攻擊者的眼光判斷每個做法：可以、有風險、還是不行？",
+          "config": {
+            "scenarios": [
+              {
+                "text": "存登入 token 的 cookie 設 HttpOnly + Secure + SameSite。",
+                "correct": "ok",
+                "why": "HttpOnly 擋 JS 偷讀（防 XSS 竊 token）、Secure 只走 HTTPS、SameSite 防 CSRF，正確組合。"
+              },
+              {
+                "text": "把 JWT 或 API key 放在 URL 的 query string 上傳。",
+                "correct": "no",
+                "why": "URL 會被記進瀏覽紀錄、伺服器 log、referer 外洩。機密放 header（Authorization）或 body。"
+              },
+              {
+                "text": "用 `Authorization: Bearer <token>` 這個 header 帶 token。",
+                "correct": "ok",
+                "why": "標準做法、token 不落地在 URL、伺服器好統一驗證。"
+              },
+              {
+                "text": "回應對所有來源開 `Access-Control-Allow-Origin: *` 又允許帶 cookie。",
+                "correct": "no",
+                "why": "萬用 * 又帶憑證等於門戶大開；要明列信任的來源網域。"
+              },
+              {
+                "text": "敏感操作只靠前端隱藏按鈕，後端不再驗身分 / 權限。",
+                "correct": "no",
+                "why": "前端可被繞過、request 可自造。授權一定要在後端每次驗。"
+              },
+              {
+                "text": "靜態圖片回應加長效 Cache-Control 讓瀏覽器快取。",
+                "correct": "ok",
+                "why": "不常變的靜態資源快取是正確效能做法（配 content hash 檔名做版本控制）。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "75.5",

@@ -148,7 +148,53 @@
         ],
         "answer": "a",
         "explanation": "正確流程是：先用 git add . 把改動加進待 commit 區、再用 git commit -m 確認改動並寫說明、最後 git push 推到 GitHub。其他順序會因為還沒 commit 或還沒 add 而失敗。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Git 這樣用 OK 嗎？",
+          "note": "判斷 Git / GitHub 日常操作是好做法、有風險、還是不行",
+          "config": {
+            "scenarios": [
+              {
+                "text": "每天寫完 code：git add . → git commit -m 寫清楚做了什麼 → git push",
+                "correct": "ok",
+                "why": "這就是課堂教的每日標準工作流、commit 訊息寫清楚還能幫履歷加分。"
+              },
+              {
+                "text": "commit 訊息全部寫「update」「修改」「123」",
+                "correct": "risk",
+                "why": "能動、但未來的你跟合作者都看不懂改了什麼、建議照 feat: / fix: 慣例寫。"
+              },
+              {
+                "text": "git push 叫你輸入密碼、就把 GitHub 登入密碼打進去",
+                "correct": "no",
+                "why": "2021 後 GitHub 廢掉密碼登入、要用 Personal Access Token 或 gh auth login、打密碼一定失敗。"
+              },
+              {
+                "text": "多人協作、早上一開工先 git pull 拉最新版再開始寫",
+                "correct": "ok",
+                "why": "不先 pull 容易跟別人的改動撞在一起、開工先拉是好習慣。"
+              },
+              {
+                "text": "把放 API key 的 .env 也 git add . 一起 commit 推上公開 repo",
+                "correct": "no",
+                "why": "金鑰推上公開 repo 等於外洩、要用 .gitignore 擋掉、絕不能推。"
+              },
+              {
+                "text": "第一次跳過 git config user.name / user.email 就直接開始 commit",
+                "correct": "risk",
+                "why": "能 commit、但記錄的作者對不到你 GitHub 帳號、綠格子不會算在你頭上。"
+              },
+              {
+                "text": "遇到 Permission denied (publickey) 就改用 HTTPS 的 repo URL",
+                "correct": "ok",
+                "why": "那是用了 SSH URL 但沒設 SSH key、課堂教的正解就是改 HTTPS。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "0.4",
@@ -238,7 +284,14 @@
         ],
         "answer": "b",
         "explanation": "課程明確指出「AI 答得很爛 → 多半是問題太模糊」，並教了「問好問題 3 招」來解決，而不是換工具或付費。這是本課的核心重點——學會問問題比選哪個 AI 工具更重要。"
-      }
+      },
+      "demos": [
+        {
+          "type": "prompt-builder",
+          "title": "六格公式組一個好 prompt",
+          "note": "把「角色＋場景＋目標」這種問好問題的招數、用六個格子拼出來練手感"
+        }
+      ]
     }
   ],
   "summary": [

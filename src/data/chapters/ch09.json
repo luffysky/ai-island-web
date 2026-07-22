@@ -667,7 +667,111 @@
         ],
         "answer": "a",
         "explanation": "課程開頭的『一句話結論』明確說明『台灣 / 美國找工作 → React（機會多 3-5 倍）』，且對比表中台灣招募 React 是 5 顆星、Vue 只有 2 顆星。Vue 雖然寫法簡潔，但在台灣就業市場上不是首選。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "Vue 還是 React？先學哪個",
+          "note": "不是宗教戰爭、是「你的目標 + 市場」決定——回答幾題看這階段先學哪個",
+          "config": {
+            "intro": "Vue 還是 React 不是「哪個更好」、是「你的目標 + 市場」決定。回答幾題、看你這階段先學哪個最划算。",
+            "questions": [
+              {
+                "q": "你的目標市場是？",
+                "options": [
+                  {
+                    "label": "台灣大公司 / 美商 / 美國新創 / 不確定走全球",
+                    "scores": {
+                      "react": 2
+                    }
+                  },
+                  {
+                    "label": "中國 / 香港 / 東南亞市場",
+                    "scores": {
+                      "vue": 2
+                    }
+                  },
+                  {
+                    "label": "接案 / 一個人做 Indie SaaS 給中小客戶",
+                    "scores": {
+                      "vue": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你的背景？",
+                "options": [
+                  {
+                    "label": "純 HTML / CSS 出身、或設計師轉前端",
+                    "scores": {
+                      "vue": 1
+                    }
+                  },
+                  {
+                    "label": "JS / Node 老手、JSX 對我不難",
+                    "scores": {
+                      "react": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "想做手機 App 嗎？",
+                "options": [
+                  {
+                    "label": "想、要能做 iOS + Android",
+                    "scores": {
+                      "react": 2
+                    }
+                  },
+                  {
+                    "label": "不想 / 純 Web",
+                    "scores": {
+                      "either": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你已經會其中一個了嗎？",
+                "options": [
+                  {
+                    "label": "已經會 React、想加值多元市場",
+                    "scores": {
+                      "vue": 1
+                    }
+                  },
+                  {
+                    "label": "全新的、還沒選",
+                    "scores": {
+                      "react": 1,
+                      "either": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "react": {
+                "emoji": "⚛️",
+                "title": "先學 React",
+                "desc": "你偏全球 / 台美職缺、想做手機 App、或沒特定市場——React 職缺多 3-5 倍、生態最大、還能做 React Native。缺點是 JSX + Hook 心智模型對新手較陡。先學到透、之後 1 週就能上手 Vue。"
+              },
+              "vue": {
+                "emoji": "💚",
+                "title": "先學 Vue",
+                "desc": "你偏亞洲市場 / 接案 / Indie SaaS，或純 HTML 出身——Vue 的 template 接近 HTML、入門最快、官方把 Router / Pinia / Nuxt 都配齊、開發速度快。缺點是台美職缺較少。"
+              },
+              "either": {
+                "emoji": "🤝",
+                "title": "哪個都行、選一個學透",
+                "desc": "你的條件兩邊都通。記住：會 100 個沒上線的 project、不如 1 個真的上線的產品。隨便選一個學到熟（3-6 個月做 3 個專案、第 3 個一定要上線）、之後 1 週能通另一個。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "title": "Vue Composition API：setup + ref + reactive",
@@ -755,7 +859,53 @@
         ],
         "answer": "a",
         "explanation": "ref 在 script 內需要 `.value` 來存取真實值，但 Vue 在 template 內會自動解包，所以不用寫 `.value`。選項 b 錯在 script 內要用 `.value`；選項 c 錯在 template 不用 `.value`；選項 d 錯在 ref 本來就能用原始值，reactive 才只能用物件。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Composition API 這樣用 OK 嗎？",
+          "note": "判斷 ref / reactive / computed / watch 的用法是好做法、有風險、還是會出錯",
+          "config": {
+            "scenarios": [
+              {
+                "text": "在 <script setup> 裡讀 / 改 ref 一律加 .value（count.value++）",
+                "correct": "ok",
+                "why": "script 內 ref 一定要 .value、只有 template 內才自動解包。"
+              },
+              {
+                "text": "const { name } = reactive(user) 直接解構 reactive 物件",
+                "correct": "no",
+                "why": "解構會失去響應性、name 之後變了畫面不動、要用 toRefs 或乾脆統一用 ref。"
+              },
+              {
+                "text": "官方建議 99% 場景用 ref、少碰 reactive",
+                "correct": "ok",
+                "why": "ref 什麼型別都能用、解構 / 重新賦值不翻車、寫法統一。"
+              },
+              {
+                "text": "把 fetch 資料、改別的 ref 這種副作用塞進 computed",
+                "correct": "no",
+                "why": "computed 只該「算值」、有副作用要用 watch / watchEffect。"
+              },
+              {
+                "text": "任何「依賴其他 reactive 算出來的值」用 computed 而不是普通 function",
+                "correct": "ok",
+                "why": "computed 自動追蹤 + cache、值沒變不重算、比 function 快。"
+              },
+              {
+                "text": "watch 一個物件、想抓它內部屬性變化、卻沒加 { deep: true }",
+                "correct": "risk",
+                "why": "預設只比對頂層 reference、物件內部改了不會觸發、要 deep 或改用 getter watch。"
+              },
+              {
+                "text": "只是「值變了就重跑」的簡單場景、用 watchEffect 讓它自動追蹤依賴",
+                "correct": "ok",
+                "why": "watchEffect 自動偵測用到的 reactive、寫法簡潔、適合這種場景（要 oldVal 才改用 watch）。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Vue 模板語法：v-if / v-for / v-model",

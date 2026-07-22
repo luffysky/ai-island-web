@@ -1070,7 +1070,53 @@
         ],
         "answer": "b",
         "explanation": "with 是 Python 推薦的做法，自動處理資源清理，即使中間發生錯誤也會確保 close。選 a 雖然也可以，但 with 更簡潔、更 pythonic；選 c 只在有錯時 close 不完整；選 d 沒有例外處理保護。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "例外處理好習慣判官",
+          "note": "判斷 Python try / except 的做法是穩健、有風險、還是不行",
+          "config": {
+            "scenarios": [
+              {
+                "text": "把整段 risky() 用 `except Exception:` 全抓、但不 log 直接 `pass` 吞掉",
+                "correct": "no",
+                "why": "默默吞錯是大忌、出事完全查不到、至少要 log 一下"
+              },
+              {
+                "text": "先抓 `FileNotFoundError` / `PermissionError`、最後再放一個 `except Exception` 當保底",
+                "correct": "ok",
+                "why": "抓具體例外最精準、保底放最後、debug 時一眼看出是哪種錯"
+              },
+              {
+                "text": "為了「保證擋掉所有中斷」直接 `except BaseException:`",
+                "correct": "no",
+                "why": "BaseException 含 KeyboardInterrupt、會擋掉使用者按 Ctrl+C 中斷程式的能力、最多到 Exception"
+              },
+              {
+                "text": "開檔用 `with open(...) as f:`、不自己寫 finally 關檔",
+                "correct": "ok",
+                "why": "with 會自動 close、就算中間 raise 也會關、比手寫 finally 更 pythonic"
+              },
+              {
+                "text": "轉包裝錯誤時寫 `raise ValueError('bad input') from e` 保留原本的 JSONDecodeError",
+                "correct": "ok",
+                "why": "raise from 保留錯誤鏈、追根因更快、不會把原始原因弄丟"
+              },
+              {
+                "text": "取 dict 的值統統先 `if key in d` 檢查、絕不用 try/except",
+                "correct": "risk",
+                "why": "Python 慣用 EAFP（先做出錯再接）、有時 d.get(key, default) 或 try 更簡潔、一律 if 先檢查未必最好"
+              },
+              {
+                "text": "抓到錯後印一句「出錯了」就 return、繼續拿明顯壞掉的資料往下算",
+                "correct": "no",
+                "why": "違反 fail fast、壞資料會像雪球越滾越大、該早暴露就別硬撐"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "26.10",

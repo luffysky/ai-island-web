@@ -87,7 +87,117 @@
         ],
         "answer": "b",
         "explanation": "課程強調 SQL 長壽的根本原因是 Codd 的「宣告式設計」（你只說要什麼、電腦自己優化怎麼做），加上 1986 年的標準化讓全球統一，所以即使 50 年後仍適用。MySQL 熱門和 NoSQL 退潮只是表象，不是根本原因。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "MySQL / PostgreSQL / SQLite / Supabase 選哪個",
+          "note": "依你在做什麼、在意什麼、幫你挑第一個 SQL 資料庫",
+          "config": {
+            "intro": "SQL 資料庫有好幾種、寫起來語法九成共通、但定位差很多。回答幾題對號入座。",
+            "questions": [
+              {
+                "q": "你在做什麼？",
+                "options": [
+                  {
+                    "label": "indie SaaS / MVP、想 10 分鐘起步",
+                    "scores": {
+                      "supabase": 2
+                    }
+                  },
+                  {
+                    "label": "手機 App / 桌面小工具、單機就好",
+                    "scores": {
+                      "sqlite": 2
+                    }
+                  },
+                  {
+                    "label": "老牌 CMS / WordPress 生態",
+                    "scores": {
+                      "mysql": 2
+                    }
+                  },
+                  {
+                    "label": "想學功能最強、AI 也用得到的",
+                    "scores": {
+                      "pg": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你最在意什麼？",
+                "options": [
+                  {
+                    "label": "JSON / 向量 / GIS 全內建",
+                    "scores": {
+                      "pg": 2,
+                      "supabase": 1
+                    }
+                  },
+                  {
+                    "label": "一個檔案就是一個 DB、不用裝 server",
+                    "scores": {
+                      "sqlite": 2
+                    }
+                  },
+                  {
+                    "label": "教學最多、便宜雲服務最齊",
+                    "scores": {
+                      "mysql": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "要不要順便有 Auth / Realtime / Storage？",
+                "options": [
+                  {
+                    "label": "要、一條龍最省事",
+                    "scores": {
+                      "supabase": 2
+                    }
+                  },
+                  {
+                    "label": "不用、純資料庫就好",
+                    "scores": {
+                      "pg": 2
+                    }
+                  },
+                  {
+                    "label": "就本地練習",
+                    "scores": {
+                      "sqlite": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "supabase": {
+                "emoji": "🚀",
+                "title": "Supabase",
+                "desc": "PostgreSQL 雲端版 + Auth + Realtime + Storage 一條龍。10 分鐘起一個 indie SaaS、免費額度大方。底層就是 PG、學了不浪費。"
+              },
+              "pg": {
+                "emoji": "🐘",
+                "title": "PostgreSQL",
+                "desc": "功能最強、JSON / pgvector / GIS 全內建、AI 應用幾乎都用它、企業職缺也多。語法跟 MySQL 九成共通、學一個兩個都會。林董的建議首選。"
+              },
+              "mysql": {
+                "emoji": "🐬",
+                "title": "MySQL",
+                "desc": "最熱門、教學最多、便宜雲服務最齊。WordPress / 蝦皮 / 老牌系統都用。功能比 PG 弱一截、但生態超成熟。"
+              },
+              "sqlite": {
+                "emoji": "📦",
+                "title": "SQLite",
+                "desc": "單一檔案就是一個 DB、不用裝 server、手機 App / 桌面工具 / 學習必備。缺點是不適合多人同時寫。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "17.2",
@@ -863,7 +973,53 @@
         ],
         "answer": "a",
         "explanation": "本課重點強調「沒寫 WHERE 的 UPDATE = 整張表被改」，這是最危險的操作因為會影響全表，而且無法復原除非有備份。選項 b 錯在安全模式是自主開啟的選項而非自動拒絕、c 和 d 都是錯誤的保護機制想像。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "改資料（UPDATE）這樣寫、安全嗎？",
+          "note": "判斷 UPDATE / 批次改資料的做法哪些安全、哪些是 DBA 噩夢",
+          "config": {
+            "scenarios": [
+              {
+                "text": "跑 UPDATE users SET age = 0;（忘了寫 WHERE）",
+                "correct": "no",
+                "why": "沒 WHERE = 整張表全被改、而且沒 undo（除非有備份）；這是經典災難。"
+              },
+              {
+                "text": "改資料前先 BEGIN、跑 UPDATE 看影響幾筆、不對就 ROLLBACK",
+                "correct": "ok",
+                "why": "用交易試水溫、確認影響範圍再 COMMIT、是最保險的做法。"
+              },
+              {
+                "text": "養成「先寫 WHERE、再回頭寫 SET」的肌肉記憶",
+                "correct": "ok",
+                "why": "先框好範圍再改、能擋掉九成「忘了 WHERE」的意外。"
+              },
+              {
+                "text": "在工具開 safe update mode（沒 WHERE 直接拒絕執行）",
+                "correct": "ok",
+                "why": "多一層保險開關、手滑也炸不了整張表。"
+              },
+              {
+                "text": "正式環境直接對整張大表一次 UPDATE、不分批",
+                "correct": "risk",
+                "why": "大表整批 UPDATE 會 lock 很久、線上服務跟著卡；要分批 + 挑離峰。"
+              },
+              {
+                "text": "用 UPDATE ... RETURNING 一次拿到改完的結果、不用再 SELECT",
+                "correct": "ok",
+                "why": "PG 專屬、一句搞定、少一次來回，正解。"
+              },
+              {
+                "text": "覺得反正有備份、UPDATE 隨便跑不用先確認",
+                "correct": "no",
+                "why": "還原備份要停機 + 掉資料 + 半夜被叫醒，備份是最後防線、不是隨便亂改的藉口。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "17.13",

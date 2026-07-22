@@ -1130,7 +1130,53 @@
         ],
         "answer": "a",
         "explanation": "「本月精選」和「本週熱門」只是頁面的分區標題，不是獨立可分發的內容，所以用 <section>；但每篇部落格文章可以單獨拿出來放 RSS，所以用 <article>。選項 b 搞反了、c 誤用 article、d 是舊時代 div soup 做法。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "這個標籤選對了嗎？",
+          "note": "判斷語意化 HTML5 七兄弟（header/nav/main/article/section/aside/footer）用得對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "整頁全部用 <div> 排版、只靠 class 名稱區分區塊",
+                "correct": "risk",
+                "why": "畫面看起來一樣、但報讀器跟 Google 看不懂結構、8 成 div 該換成語意標籤。"
+              },
+              {
+                "text": "一頁只放一個 <main>、包住核心內容（不含 header/nav/footer）",
+                "correct": "ok",
+                "why": "main 每頁只能一個、報讀器還有「跳到 main」的捷徑。"
+              },
+              {
+                "text": "部落格每篇文章用 <article>、頁面分區（本月精選）用 <section>",
+                "correct": "ok",
+                "why": "能單獨分享出去的用 article、只是分區的用 section、判斷法正確。"
+              },
+              {
+                "text": "一頁放三個 <main> 分別包三大區塊",
+                "correct": "no",
+                "why": "規格不允許一頁多個 main、a11y 工具會混亂、每頁只能一個。"
+              },
+              {
+                "text": "<section> 裡面不放任何標題（h2~h6）",
+                "correct": "risk",
+                "why": "section 規範上應該要有標題、純粹沒標題的分區其實該用 div。"
+              },
+              {
+                "text": "頁面有主導覽跟麵包屑兩個 <nav>、各自加 aria-label",
+                "correct": "ok",
+                "why": "多個 nav 一定要 aria-label 區分、不然報讀器會連念三次 navigation 分不清。"
+              },
+              {
+                "text": "footer 裡一堆小連結也整包成 <nav>",
+                "correct": "risk",
+                "why": "nav 只該包真正的導覽用途、到處是 nav 反而干擾報讀器、footer 連結用 <ul> 就好。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "無障礙 a11y：aria 屬性 + 鍵盤導航",
@@ -1450,7 +1496,54 @@
         ],
         "answer": "b",
         "explanation": "課程明確指出『傳統 SEO 流量 5 年內可能腰斬、AI 引擎會接管 30-50%，現在多寫一份 schema = 未來多一份 AI 引用流量』。選項 a、c、d 都把趨勢說得太絕對或誤解了 schema 的實際作用。"
-      }
+      },
+      "demos": [
+        {
+          "type": "json-tree",
+          "title": "一段 Course 結構化資料長怎樣",
+          "note": "點開看 JSON-LD 的巢狀結構——貼進 <script type=application/ld+json> Google 就讀得懂",
+          "config": {
+            "caption": "這是一段 Course（線上課程）的 JSON-LD。放進頁面後、Google 搜尋結果會秀「免費課程」標籤 + ⭐ 評分。點開每一層看 key → value。",
+            "data": {
+              "@context": "https://schema.org",
+              "@type": "Course",
+              "name": "HTML 完整 25 課",
+              "description": "從 HTML 基礎到 SEO + 無障礙、25 課全包",
+              "provider": {
+                "@type": "Organization",
+                "name": "AI 島",
+                "sameAs": "https://ai-island-web.snowrealm.pet"
+              },
+              "offers": [
+                {
+                  "@type": "Offer",
+                  "category": "Free",
+                  "price": "0",
+                  "priceCurrency": "TWD"
+                }
+              ],
+              "hasCourseInstance": [
+                {
+                  "@type": "CourseInstance",
+                  "courseMode": "online",
+                  "courseWorkload": "PT25H",
+                  "instructor": {
+                    "@type": "Person",
+                    "name": "Luffy Lin"
+                  }
+                }
+              ],
+              "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "4.8",
+                "ratingCount": "127"
+              },
+              "inLanguage": "zh-Hant",
+              "isAccessibleForFree": true
+            }
+          }
+        }
+      ]
     },
     {
       "title": "lazy loading + 圖片優化（picture / srcset / WebP）",

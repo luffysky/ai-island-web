@@ -843,7 +843,53 @@
         ],
         "answer": "a",
         "explanation": "Go 的核心設計就是用 error 型別當回傳值，搭配 if err != nil 的檢查，這樣每個錯誤都要被處理者明確決定—比 try-catch 的隱式往上拋更明確。其他選項都不符合課程內容：b 說「不允許拋異常」不準確、c 說「必須第一個」錯誤（應該是最後一個）、d 說「用 panic 比較簡潔」則誤解了 panic 的用途。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Go error 判官",
+          "note": "判斷 Go 的錯誤處理寫法是慣用、有風險、還是不行",
+          "config": {
+            "scenarios": [
+              {
+                "text": "每個回傳 error 的呼叫後面都 `if err != nil { return ... }` 明確處理",
+                "correct": "ok",
+                "why": "Go 慣用逐一檢查 err、看 code 就知道哪會錯、雖囉嗦但 production 穩"
+              },
+              {
+                "text": "圖方便寫 `result, _ := operation()` 把 error 直接丟掉",
+                "correct": "no",
+                "why": "忽略 error 是大忌、出錯毫無痕跡、除非真的不在乎（如有 default 的 Atoi）"
+              },
+              {
+                "text": "往上傳錯時用 `fmt.Errorf(\"get order %d: %w\", id, err)` 包裝加 context",
+                "correct": "ok",
+                "why": "%w 包裝保留原錯又加了 context、上層能用 errors.Is / errors.As 判斷"
+              },
+              {
+                "text": "使用者輸入格式錯就直接 `panic()` 讓程式炸掉",
+                "correct": "no",
+                "why": "可預期的業務錯該回 error、panic 只留給不可恢復的 bug（nil 解參考 / 越界）"
+              },
+              {
+                "text": "定義 package 級 sentinel error `var ErrNotFound = errors.New(...)`、上層用 errors.Is 比對",
+                "correct": "ok",
+                "why": "sentinel error 讓呼叫端能精準判斷是哪種錯、是標準慣用法"
+              },
+              {
+                "text": "HTTP handler 內對任何 panic 用 middleware 的 defer + recover 攔住",
+                "correct": "ok",
+                "why": "recover middleware 防單一請求 panic 拖垮整個 server、是正確的最後防線"
+              },
+              {
+                "text": "自訂 error 型別想抓、卻用 `err == myErr` 直接比較而不是 errors.As",
+                "correct": "risk",
+                "why": "包裝過（%w）的 error 直接 == 比不到、抓型別要用 errors.As、抓 sentinel 用 errors.Is"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "32.13",

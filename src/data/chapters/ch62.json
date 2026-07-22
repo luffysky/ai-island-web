@@ -115,7 +115,53 @@
         ],
         "answer": "b",
         "explanation": "WHERE 是針對原始資料列的過濾，HAVING 才是針對 GROUP BY 分組後的結果做過濾。在這題中，「平均價格高於 100」是針對分組後的聚合值判斷，所以要用 HAVING。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "這句 SQL 寫得好嗎？",
+          "note": "把這課教的 JOIN、WHERE、聚合、索引觀念放進真實情境，判斷每個寫法：可以、有風險、還是別這樣。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "用參數化查詢：`SELECT * FROM users WHERE name = ?`，把使用者輸入當參數傳。",
+                "correct": "ok",
+                "why": "參數化讓輸入永遠被當「資料」不是「程式碼」，SQL Injection 直接免疫。"
+              },
+              {
+                "text": "把使用者輸入字串拼進 SQL：`\"...WHERE name='\" + input + \"'\"`。",
+                "correct": "no",
+                "why": "SQL Injection 大門，輸入一個 `' OR '1'='1` 就撈走整張表；一律用參數化。"
+              },
+              {
+                "text": "報表只需要 3 個欄位，卻寫 `SELECT *` 把整列全撈。",
+                "correct": "risk",
+                "why": "能跑，但多傳沒用的欄位、也擋住只用索引就答完的機會；正式查詢挑明欄位。"
+              },
+              {
+                "text": "在幾百萬筆的 orders 表，用常被查的 `user_id` 建索引。",
+                "correct": "ok",
+                "why": "高頻過濾/JOIN 的欄位建索引，能把全表掃描變成快速定位，正確做法。"
+              },
+              {
+                "text": "要「每個使用者的訂單數」，用 `GROUP BY user_id` 配 `COUNT(*)`。",
+                "correct": "ok",
+                "why": "聚合＋GROUP BY 正是算「每組幾筆」的標準寫法。"
+              },
+              {
+                "text": "刪測試資料圖方便，直接 `DELETE FROM users` 沒帶 WHERE。",
+                "correct": "no",
+                "why": "沒 WHERE 等於清空整張表，且多半無法復原；刪改一定先確認 WHERE。"
+              },
+              {
+                "text": "要撈「有下過單的使用者」，用 `LEFT JOIN` 再自己過濾掉 NULL。",
+                "correct": "risk",
+                "why": "能得到結果，但這需求本質是交集，`INNER JOIN` 更直接也更好懂；LEFT JOIN 是留「沒配對到也要」的情況用的。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "62.2",
@@ -470,7 +516,53 @@
         ],
         "answer": "b",
         "explanation": "PATCH 就是用來做部分更新的，只改動你指定的欄位；PUT 是整筆取代（所有欄位都要送），兩者是不同用途。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "一個 REST 請求的一生",
+          "note": "跟著一個 POST 請求走一遍：從瀏覽器送出、到伺服器判斷、回哪個 status code——把這課的 Method 與狀態碼串成流程看。",
+          "config": {
+            "trigger": {
+              "kind": "manual",
+              "label": "前端送出「新增一篇文章」",
+              "data": "POST /api/posts  (Body: {title, content})"
+            },
+            "nodes": [
+              {
+                "kind": "http",
+                "label": "① 到達伺服器路由",
+                "desc": "POST = 新增資料、不是冪等；帶 Body",
+                "data": "Method: POST → 對應「建立」語意"
+              },
+              {
+                "kind": "if",
+                "label": "② 檢查有沒有登入",
+                "desc": "沒 token / token 失效就擋下",
+                "data": "沒登入 → 回 401 Unauthorized（不是 403）"
+              },
+              {
+                "kind": "if",
+                "label": "③ 驗證 Body 格式",
+                "desc": "title 空白之類的格式問題",
+                "data": "格式錯 → 回 400 Bad Request"
+              },
+              {
+                "kind": "db",
+                "label": "④ 寫進資料庫",
+                "desc": "新增成功、拿到新文章 id",
+                "data": "INSERT INTO posts ..."
+              },
+              {
+                "kind": "action",
+                "label": "⑤ 回傳建立成功",
+                "desc": "建立類請求成功用 201、附上新資源位置",
+                "data": "201 Created + Location: /api/posts/123"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "outcomes": [

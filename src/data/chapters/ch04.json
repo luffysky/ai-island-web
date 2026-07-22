@@ -293,7 +293,53 @@
         ],
         "answer": "b",
         "explanation": "=== 是嚴格相等，不做型別轉換，最安全。== 會偷偷轉型別（例如 0 == \"\" 會是 true），所以容易造成 bug，這課特別強調要永遠用 ===。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "== / === / ?? / ?. 用對了嗎？",
+          "note": "判斷 JS 比較與現代運算符的寫法是好做法、有風險、還是會出錯",
+          "config": {
+            "scenarios": [
+              {
+                "text": "比較兩個值一律用 ===（型別跟值都要一樣）",
+                "correct": "ok",
+                "why": "=== 不做隱式轉型、避開一整類詭異 bug、專業慣例。"
+              },
+              {
+                "text": "還在用 == 比較、想說「差不多就好」",
+                "correct": "risk",
+                "why": "== 會偷偷轉型（0 == \"\" 居然成立）製造莫名 bug、除了 x == null 都該改用 ===。"
+              },
+              {
+                "text": "設定預設值用 const count = input || 10、而 input 可能是 0",
+                "correct": "risk",
+                "why": "0 是 falsy 會被當沒值換成 10、這種場景該用 ?? 才對。"
+              },
+              {
+                "text": "讀可能不存在的巢狀屬性用 user?.profile?.name",
+                "correct": "ok",
+                "why": "optional chaining 前面是 null/undefined 就斷電回 undefined、不會整支爆。"
+              },
+              {
+                "text": "以為 [] === [] 會是 true",
+                "correct": "no",
+                "why": "物件比的是「是不是同一個實體」、兩個不同陣列永遠不相等。"
+              },
+              {
+                "text": "想把數字相加卻寫 \"5\" + 3、預期得到 8",
+                "correct": "no",
+                "why": "+ 遇到字串就變拼接、得到 \"53\"、要先 Number(x) 或 +x 轉數字。"
+              },
+              {
+                "text": "用 x == null 一次擋掉 null 跟 undefined",
+                "correct": "ok",
+                "why": "這是 == 唯一推薦的例外寫法、簡潔又好讀。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "4.5",
@@ -931,7 +977,52 @@
         ],
         "answer": "b",
         "explanation": "fetch 的大坑：404 / 500 這類 HTTP 錯誤不會自動 reject Promise——只有網路斷線或 CORS 擋住才會 reject。HTTP 錯誤必須自己檢查 r.ok（或 r.status）來判斷。"
-      }
+      },
+      "demos": [
+        {
+          "type": "json-tree",
+          "title": "fetch 回來的 JSON 長怎樣",
+          "note": "fetch 一個 /api/users 打回來、r.json() 之後就是在處理這種巢狀結構",
+          "config": {
+            "caption": "這是 fetch('/api/users') 回來、r.json() 解析後的資料。前端拿到的就是這種「物件包陣列、陣列裡又是物件」的巢狀結構。點開看每一層。",
+            "data": {
+              "ok": true,
+              "page": 1,
+              "pageSize": 2,
+              "total": 137,
+              "users": [
+                {
+                  "id": 1,
+                  "name": "招財",
+                  "email": "zhaocai@x.com",
+                  "roles": [
+                    "admin",
+                    "editor"
+                  ],
+                  "profile": {
+                    "age": 3,
+                    "city": "Taipei",
+                    "verified": true
+                  }
+                },
+                {
+                  "id": 2,
+                  "name": "小黑",
+                  "email": "heihei@x.com",
+                  "roles": [
+                    "viewer"
+                  ],
+                  "profile": {
+                    "age": 5,
+                    "city": "Kaohsiung",
+                    "verified": false
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
     },
     {
       "id": "4.15",

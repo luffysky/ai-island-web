@@ -688,7 +688,42 @@
         ],
         "answer": "a",
         "explanation": "字典的核心概念就是用『有意義的名字』（key）當編號來找值（value），比起陣列必須記住 0、1、2... 的數字位置，字典用『Alice』、『Bob』這樣的名字直接查詢更直觀方便。其他選項不是字典設計的主要目的。"
-      }
+      },
+      "demos": [
+        {
+          "type": "json-tree",
+          "title": "巢狀字典就是 JSON",
+          "note": "字典（dict/map）疊起來就是 JSON——API 回傳、設定檔、使用者資料都長這樣",
+          "config": {
+            "caption": "字典是「名字對值」的對照表、疊起來就變成 JSON。這是一份使用者資料：外層 key 是帳號、value 又是一個字典、裡面還有陣列。點開每一層看 key → value。",
+            "data": {
+              "alice": {
+                "age": 30,
+                "email": "alice@x.com",
+                "hobbies": [
+                  "讀書",
+                  "登山"
+                ],
+                "vip": true
+              },
+              "bob": {
+                "age": 25,
+                "email": "bob@x.com",
+                "hobbies": [
+                  "遊戲"
+                ],
+                "vip": false
+              },
+              "charlie": {
+                "age": 28,
+                "email": "charlie@x.com",
+                "hobbies": [],
+                "vip": false
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "7.10",
@@ -1165,7 +1200,53 @@
         ],
         "answer": "a",
         "explanation": "Exception 用「丟出 / 接住」的機制，錯誤會打斷流程；Result/Option 則是函數明確回傳成功或失敗的結果，編譯器強制你處理，這是兩種方式的核心差別。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "錯誤處理這樣寫 OK 嗎？",
+          "note": "判斷 try/catch、Result、往上拋等錯誤處理做法是好習慣、有風險、還是地雷",
+          "config": {
+            "scenarios": [
+              {
+                "text": "try ... except: pass 把錯誤默默吞掉",
+                "correct": "no",
+                "why": "錯誤被吃掉、出事永遠找不到原因、這是最大地雷。"
+              },
+              {
+                "text": "catch 到錯誤時 log 下來、還帶上 context（哪個 user、哪個動作）",
+                "correct": "ok",
+                "why": "production 出事 8 成靠 log 找原因、帶 context 才查得到。"
+              },
+              {
+                "text": "一律用 except Exception / catch 全部、包最外層抓所有錯",
+                "correct": "risk",
+                "why": "抓太廣會把該炸出來的 bug 也藏起來、應該抓具體型別。"
+              },
+              {
+                "text": "直接把完整技術 stack trace 丟給使用者看",
+                "correct": "risk",
+                "why": "對使用者不友善也可能洩漏內部細節、該回「付款失敗請稍後再試」這種友善訊息。"
+              },
+              {
+                "text": "DB 層技術錯往上拋、業務層包成 UserNotFoundError、API 層回 404 友善訊息",
+                "correct": "ok",
+                "why": "每層處理自己該處理的、不能處理的往上拋、這是實戰分層 pattern。"
+              },
+              {
+                "text": "找不到必要資料時馬上 raise / throw 中止、不硬著頭皮往下跑",
+                "correct": "ok",
+                "why": "fail-fast 早失敗、讓上層處理、比帶著壞資料繼續好。"
+              },
+              {
+                "text": "陣列超界、不可能發生的狀態這種「程式邏輯錯」用 panic / assert",
+                "correct": "ok",
+                "why": "邏輯錯用 panic 讓開發者早發現、輸入錯才用 Result / try-catch、分得清楚。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "7.17",

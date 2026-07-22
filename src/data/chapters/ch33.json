@@ -298,7 +298,48 @@
         ],
         "answer": "b",
         "explanation": "所有權的第二和第三條規則：同一時間只能有一個擁有者、賦值會 move（移動）所有權。`let s2 = s1` 不是複製，而是把所有權搬給 s2，s1 直接失效；後面再用 s1 會編譯失敗。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Rust 所有權判官",
+          "note": "判斷這段對 Ownership / move / clone 的理解對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "`let s2 = s1;` 之後還想 `println!(\"{}\", s1)` 印 s1",
+                "correct": "no",
+                "why": "String 賦值是 move、所有權搬給 s2、s1 已失效不能再用、編譯直接擋"
+              },
+              {
+                "text": "真的需要兩份都能用時、用 `let s2 = s1.clone()` 深拷貝",
+                "correct": "ok",
+                "why": "clone 是正確拿到兩份的方式、代價是多花記憶體與時間、需要才用"
+              },
+              {
+                "text": "把 `String` 傳進函式後、函式外還想繼續用那個變數",
+                "correct": "no",
+                "why": "傳進函式所有權也跟著移進去、函式結束值被釋放、外面的變數已作廢"
+              },
+              {
+                "text": "把 `i32` 傳進函式後、原變數繼續拿來用",
+                "correct": "ok",
+                "why": "i32 這類簡單型別有 Copy 特性、是複製不是 move、原變數照樣能用"
+              },
+              {
+                "text": "一遇到 borrow checker 報錯就到處亂加 `.clone()` 把錯壓下去",
+                "correct": "risk",
+                "why": "亂 clone 雖能編過但白白多花成本、該用借用（&）的地方硬拷貝、是壞味道"
+              },
+              {
+                "text": "以為 `let s2 = s1;` 是複製、預期 s1 跟 s2 各自獨立可改",
+                "correct": "no",
+                "why": "誤解、那是 move 不是 copy、同塊記憶體永遠只有一個擁有者、才不會被重複釋放"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "33.5",

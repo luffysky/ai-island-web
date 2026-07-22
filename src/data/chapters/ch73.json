@@ -60,7 +60,48 @@
         ],
         "answer": "b",
         "explanation": "物件類型用 reactive（不用 .value、業界推薦）；需要自動追蹤衍生值（總價）就用 computed，不需要手動 watch。computed 會自動偵測依賴變化，這是核心概念。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Composition API 這樣用對嗎？",
+          "note": "判斷 ref / reactive / computed / watch 的用法：可以、有風險、還是不行？",
+          "config": {
+            "scenarios": [
+              {
+                "text": "count 是數字，用 `const count = ref(0)`、改用 `count.value++`。",
+                "correct": "ok",
+                "why": "primitive 用 ref、透過 .value 讀寫是正解。"
+              },
+              {
+                "text": "user 是物件，用 `reactive({...})`，然後 `const { name } = user` 解構出來用。",
+                "correct": "no",
+                "why": "解構 reactive 會失去響應式。要用 `toRefs(user)` 或直接 `user.name`。"
+              },
+              {
+                "text": "衍生值 `doubled = computed(() => count.value * 2)`。",
+                "correct": "ok",
+                "why": "衍生 state 用 computed 自動追蹤依賴、快取結果，正解。"
+              },
+              {
+                "text": "總價每次靠 watch 監聽再手動 `setTotal`。",
+                "correct": "risk",
+                "why": "能動但多餘：衍生值該用 computed；watch 適合『變化時做副作用（打 API / 存檔）』。"
+              },
+              {
+                "text": "元件卸載時忘了在 onUnmounted 移除 addEventListener。",
+                "correct": "no",
+                "why": "listener 沒清＝記憶體洩漏、還可能對已卸載元件操作。onMounted 加、onUnmounted 移。"
+              },
+              {
+                "text": "新專案用 `<script setup lang='ts'>` + defineProps / defineEmits。",
+                "correct": "ok",
+                "why": "2026 主流寫法、TS 推導最好、樣板最少。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "73.2",

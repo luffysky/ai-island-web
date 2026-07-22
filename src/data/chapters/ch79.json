@@ -365,7 +365,30 @@
         "answer": "b",
         "explanation": "RAG 先把問題轉成向量、去向量資料庫檢索最相關的文件片段、連同問題一起給 LLM、讓它根據真實資料回答、藉此降低幻覺。"
       },
-      "xp": 20
+      "xp": 20,
+      "demos": [
+        {
+          "type": "agent-loop",
+          "title": "RAG：先檢索、再回答",
+          "note": "看 LLM 遇到「不知道的私有問題」時，不硬編，而是先去向量庫撈資料、再照著撈到的內容回答——這就是這課 RAG 的骨架。",
+          "config": {
+            "task": "使用者問：AI 島總共有幾個章節？",
+            "steps": [
+              {
+                "thought": "這是 AI 島的私有資訊、我訓練時沒看過，硬答會變幻覺；先去知識庫查。",
+                "action": "embed(問題) → 向量庫 similarity_search(k=3)",
+                "observation": "撈到最相關的一段：「AI 島有 79 個章節。」"
+              },
+              {
+                "thought": "有了真實根據，把這段內容塞進 prompt、照著它回答，不要自己編。",
+                "action": "把「撈到的段落 + 原問題」一起送進 LLM",
+                "observation": "LLM 依據提供的段落生成答案，並可附上出處"
+              }
+            ],
+            "answer": "AI 島目前有 79 個章節（依知識庫檢索到的資料回答）。有根據才答、這就是 RAG 防幻覺的關鍵。"
+          }
+        }
+      ]
     },
     {
       "id": "79.9",
@@ -405,7 +428,106 @@
         "answer": "a",
         "explanation": "先用 prompt（最便宜、最快）試；不夠再用 RAG 補知識與出處；都不行才考慮 fine-tune（LoRA/QLoRA）。能用便宜的解決就別花貴的。"
       },
-      "xp": 25
+      "xp": 25,
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "prompt、RAG、還是微調？",
+          "note": "用這課收尾的三句心法（成本由低到高：prompt → RAG → 微調）回答幾題，看你這個需求該先動哪一招。",
+          "config": {
+            "intro": "能用便宜的解決就別花貴的。先問清楚需求、再決定爬到哪一階。",
+            "questions": [
+              {
+                "q": "你的問題本質比較像？",
+                "options": [
+                  {
+                    "label": "只是要它照某個格式 / 步驟回答",
+                    "scores": {
+                      "prompt": 2
+                    }
+                  },
+                  {
+                    "label": "要它根據我「會一直變的私有文件」回答、還要出處",
+                    "scores": {
+                      "rag": 2
+                    }
+                  },
+                  {
+                    "label": "要它固定用某種風格 / 語氣 / 行為",
+                    "scores": {
+                      "finetune": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "知識多久會變一次？",
+                "options": [
+                  {
+                    "label": "常變（產品文件、法規、庫存…）",
+                    "scores": {
+                      "rag": 2
+                    }
+                  },
+                  {
+                    "label": "幾乎不變、是固定的風格或規則",
+                    "scores": {
+                      "finetune": 1,
+                      "prompt": 1
+                    }
+                  },
+                  {
+                    "label": "根本沒有『知識』、就是要它做個小任務",
+                    "scores": {
+                      "prompt": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你願意投入多少成本？",
+                "options": [
+                  {
+                    "label": "越省越好、最好改幾句話就解決",
+                    "scores": {
+                      "prompt": 2
+                    }
+                  },
+                  {
+                    "label": "願意建個小資料庫、但不想重訓模型",
+                    "scores": {
+                      "rag": 2
+                    }
+                  },
+                  {
+                    "label": "願意準備資料、花資源訓練（LoRA/QLoRA）",
+                    "scores": {
+                      "finetune": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "prompt": {
+                "emoji": "✍️",
+                "title": "先靠 Prompt 就好",
+                "desc": "最便宜的一階：zero-shot 試 → 不行加 few-shot 範例 → 用 CoT / 角色設定。要改格式、做固定小任務，多半 prompt 就夠，別急著花錢。"
+              },
+              "rag": {
+                "emoji": "📚",
+                "title": "用 RAG",
+                "desc": "知識常變、要根據私有文件回答、又要附出處時選它。把文件切塊做 embedding 存向量庫，回答前先檢索再生成，換資料庫即可更新、不用重訓，還能大幅壓幻覺。"
+              },
+              "finetune": {
+                "emoji": "🔧",
+                "title": "才考慮微調（LoRA/QLoRA）",
+                "desc": "成本最高的一階：任務很固定、要特定輸出風格 / 行為，或要塞進 prompt 放不下的大量領域知識時才用。用 LoRA/QLoRA 只訓練一小塊參數，消費級顯卡也跑得動。"
+              }
+            }
+          }
+        }
+      ]
     }
   ]
 }

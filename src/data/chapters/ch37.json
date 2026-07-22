@@ -282,7 +282,53 @@
         ],
         "answer": "b",
         "explanation": "課程明確指出 Indie 接案建議就是 Astra + Elementor Pro，原因是客戶易維護、快交付。Cloudways 是台灣友善選擇、CP 值好。選 a 浪費成本、c 速度不行、d 雖然性能好但對小案子成本過高。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "WordPress 建站判判看",
+          "note": "子主題 / 外掛 / 安全 / 交付的好做法與雷點。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "要改主題樣式，直接編輯母主題（Astra）本身的檔案",
+                "correct": "no",
+                "why": "母主題一更新就把你的改動全蓋掉，永遠要改 child theme。"
+              },
+              {
+                "text": "建 astra-child 子主題，所有改動都寫在 child theme",
+                "correct": "ok",
+                "why": "更新母主題不會覆蓋 child theme 的修改，這是正確做法。"
+              },
+              {
+                "text": "一個小官網裝了 30 幾個外掛",
+                "correct": "risk",
+                "why": "每個外掛平均 +50~200ms、還容易互相衝突；用必要的、其他刪掉。"
+              },
+              {
+                "text": "後台開 2FA、改掉預設 wp-admin 登入網址、限制登入嘗試次數",
+                "correct": "ok",
+                "why": "這些都是 WordPress 的安全基本盤，能擋掉大量自動化攻擊。"
+              },
+              {
+                "text": "Permalink 設成 /%postname%/",
+                "correct": "ok",
+                "why": "乾淨好記又對 SEO 友善，是標準設定。"
+              },
+              {
+                "text": "一般中小企業形象官網，直接用 Astra + Elementor 交付、不自刻主題",
+                "correct": "ok",
+                "why": "80% 客戶不需要客製主題，用成熟主題交付又快又好維護。"
+              },
+              {
+                "text": "商用官網把留言功能整個開著、也沒裝 Akismet 擋 spam",
+                "correct": "risk",
+                "why": "沒防護的留言區會被 spam 灌爆；商用官網通常該關留言或加擋 spam。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "WooCommerce + 客製化 + 接案",
@@ -802,7 +848,56 @@
         ],
         "answer": "a",
         "explanation": "ACF 正是為了讓客戶「不寫程式也能自訂欄位」而生的，是接案最快的方案。選 b 太複雜（新手不適合），c 是進階方案（超出需求），d 會混淆作品和部落格文章。"
-      }
+      },
+      "demos": [
+        {
+          "type": "json-tree",
+          "title": "WordPress REST API 回傳長怎樣",
+          "note": "GET /wp-json/wp/v2/posts/123 撈一篇文章，Headless 前端就靠這包 JSON。",
+          "config": {
+            "caption": "點開看：title / content 都包在 { rendered } 裡，分類標籤是 id 陣列，_links 帶關聯資源網址。",
+            "data": {
+              "id": 123,
+              "date": "2026-07-22T10:30:00",
+              "slug": "hello-headless",
+              "status": "publish",
+              "type": "post",
+              "title": {
+                "rendered": "你好，Headless WordPress"
+              },
+              "content": {
+                "rendered": "<p>這段是文章內文…</p>",
+                "protected": false
+              },
+              "excerpt": {
+                "rendered": "<p>文章摘要…</p>"
+              },
+              "author": 1,
+              "featured_media": 456,
+              "categories": [
+                5,
+                8
+              ],
+              "tags": [
+                12,
+                19
+              ],
+              "_links": {
+                "self": [
+                  {
+                    "href": "https://example.com/wp-json/wp/v2/posts/123"
+                  }
+                ],
+                "author": [
+                  {
+                    "href": "https://example.com/wp-json/wp/v2/users/1"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
     }
   ],
   "boss": {

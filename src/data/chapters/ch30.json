@@ -91,7 +91,136 @@
         ],
         "answer": "a",
         "explanation": "課程明確指出 10K 以下用 Python/Node 就夠，不要過度工程。Go/Rust 是 100K+ 規模才考慮的選擇，用 Rust 爬 8,000 筆是典型浪費資源的過度工程。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "爬蟲該用哪種語言？",
+          "note": "依你的日爬量、成本壓力與團隊，判斷該用 Python/Node、Go、還是 Rust",
+          "config": {
+            "intro": "爬蟲語言別為了炫技——對規模選對工具。答四題看你這個專案適合誰。",
+            "questions": [
+              {
+                "q": "你大概每天要爬多少頁？",
+                "options": [
+                  {
+                    "label": "1 萬筆以下",
+                    "scores": {
+                      "small": 2
+                    }
+                  },
+                  {
+                    "label": "1-10 萬筆",
+                    "scores": {
+                      "small": 1,
+                      "go": 1
+                    }
+                  },
+                  {
+                    "label": "10-100 萬筆",
+                    "scores": {
+                      "go": 2
+                    }
+                  },
+                  {
+                    "label": "1000 萬筆以上",
+                    "scores": {
+                      "rust": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "雲端成本對你的壓力有多大？",
+                "options": [
+                  {
+                    "label": "規模小、幾乎無感",
+                    "scores": {
+                      "small": 2
+                    }
+                  },
+                  {
+                    "label": "想省點機器",
+                    "scores": {
+                      "go": 1
+                    }
+                  },
+                  {
+                    "label": "每年雲費幾十萬、很想砍",
+                    "scores": {
+                      "rust": 2,
+                      "go": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你的團隊人才長怎樣？",
+                "options": [
+                  {
+                    "label": "只有寫 Python / JS 的人",
+                    "scores": {
+                      "small": 2
+                    }
+                  },
+                  {
+                    "label": "有 Go 經驗",
+                    "scores": {
+                      "go": 1
+                    }
+                  },
+                  {
+                    "label": "養得起 Rust 工程師",
+                    "scores": {
+                      "rust": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "現在在哪個階段？",
+                "options": [
+                  {
+                    "label": "MVP、快速驗證想法",
+                    "scores": {
+                      "small": 2
+                    }
+                  },
+                  {
+                    "label": "已經被效能 / 雲費打臉",
+                    "scores": {
+                      "go": 2
+                    }
+                  },
+                  {
+                    "label": "搜尋引擎級、規模超大",
+                    "scores": {
+                      "rust": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "small": {
+                "emoji": "🐍",
+                "title": "Python / Node 就夠",
+                "desc": "你的規模 99% 用 Python 或 Node 綽綽有餘。優點是開發最快、生態最完整、最好找人；別為了帳面效能用 Rust 寫小爬蟲、那是浪費。量再大一點就上 Scrapy / Crawlee 框架處理並發與 retry。"
+              },
+              "go": {
+                "emoji": "🟢",
+                "title": "上 Go（colly）",
+                "desc": "到了 100 萬/天等級、單機並發撐不住時，Go 的 colly 能開到單機 5 萬並發、記憶體省、編譯型 bug 少。缺點是生態比 Python 小、人才較少。再大就配 Redis queue 做分散式。"
+              },
+              "rust": {
+                "emoji": "🟥",
+                "title": "Rust + 分散式",
+                "desc": "1000 萬+/天、雲費痛到有感時才值得。Rust 記憶體最省、可用 1/10 機器跑、年省可觀。代價是學習曲線陡、工程師難找又貴——確定被效能打臉、且有人才庫再上。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "30.2",

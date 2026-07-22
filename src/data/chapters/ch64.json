@@ -220,7 +220,106 @@
         ],
         "answer": "a",
         "explanation": "pnpm 加 dev 套件的正確指令是 `pnpm add -D pkg`，-D 就是 --save-dev 的簡寫。選項 b 會加到 dependencies，c 是 npm 的語法，d 是加全域而非 dev。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "npm / yarn / pnpm 選哪個？",
+          "note": "三個套件管理器指令幾乎一樣、差在細節。回答幾題，看你這個專案比較適合誰。",
+          "config": {
+            "intro": "沒有最強、只有最合你這個專案的那一個。",
+            "questions": [
+              {
+                "q": "你最在意什麼？",
+                "options": [
+                  {
+                    "label": "省硬碟、多專案共用同一份套件",
+                    "scores": {
+                      "pnpm": 2
+                    }
+                  },
+                  {
+                    "label": "最穩、教學文件最多、遇到問題最好查",
+                    "scores": {
+                      "npm": 2
+                    }
+                  },
+                  {
+                    "label": "團隊已經在用、要跟大家一致",
+                    "scores": {
+                      "yarn": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你的專案規模？",
+                "options": [
+                  {
+                    "label": "monorepo / 很多子套件",
+                    "scores": {
+                      "pnpm": 2
+                    }
+                  },
+                  {
+                    "label": "一般大小的單一專案",
+                    "scores": {
+                      "npm": 1,
+                      "yarn": 1
+                    }
+                  },
+                  {
+                    "label": "新開的小專案、隨便都行",
+                    "scores": {
+                      "npm": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你的習慣比較接近？",
+                "options": [
+                  {
+                    "label": "喜歡最新、願意裝新工具換效能",
+                    "scores": {
+                      "pnpm": 2
+                    }
+                  },
+                  {
+                    "label": "Node 內建就有、不想多裝東西",
+                    "scores": {
+                      "npm": 2
+                    }
+                  },
+                  {
+                    "label": "早期就用 yarn、指令記熟了",
+                    "scores": {
+                      "yarn": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "npm": {
+                "emoji": "📦",
+                "title": "用 npm 就好",
+                "desc": "Node 內建、不用另外裝，文件與教學最多、遇到坑最好 Google。優點是穩、通用；缺點是裝套件比 pnpm 慢一點、硬碟佔比較多。新手與一般專案的安全牌。"
+              },
+              "yarn": {
+                "emoji": "🧶",
+                "title": "跟著團隊用 yarn",
+                "desc": "指令簡潔（`yarn add`）、lockfile 穩定，很多既有專案在用。最大理由通常是「團隊一致」；沒有特別理由要換就沿用，別為換而換。"
+              },
+              "pnpm": {
+                "emoji": "🚀",
+                "title": "改用 pnpm",
+                "desc": "用硬連結共用套件，多專案下省超多硬碟、裝得也快，對 monorepo 特別友善。代價是要另外安裝、少數老工具偶爾要調設定；追求效能與空間選它。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "64.3",
@@ -317,7 +416,53 @@
         ],
         "answer": "b",
         "explanation": "--rm 讓容器結束時自動刪除、-it 提供互動式終端機。選項 a 的 -d 是背景執行，無法互動；選項 c 沒有 --rm，容器停止後仍保留；選項 d 缺少 -it，無法互動輸入。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Docker 這樣用可以嗎？",
+          "note": "拿這課的 image / container / volume / port 指令放進真實情境，判斷：可以、有風險、還是別這樣。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "要資料在容器刪掉後還在，用 `-v ./data:/data` 掛 volume。",
+                "correct": "ok",
+                "why": "容器本身是「用完即丟」，重要資料要用 volume 存到容器外才不會跟著消失。"
+              },
+              {
+                "text": "跑一次性任務用 `docker run --rm -it node bash`，結束自動清掉。",
+                "correct": "ok",
+                "why": "--rm 讓臨時容器結束就刪，不會留一堆停掉的殭屍容器，正確用法。"
+              },
+              {
+                "text": "把資料庫密碼直接寫死在 Dockerfile 裡再 build。",
+                "correct": "no",
+                "why": "密碼會被烤進 image、任何人 pull 下來都看得到；機密要用環境變數或 secret 注入。"
+              },
+              {
+                "text": "正式環境長期不清理，`docker ps -a` 累積幾百個停掉的容器與舊 image。",
+                "correct": "risk",
+                "why": "不會馬上壞，但硬碟會被吃光；定期 `container prune` / `image prune` 清掉沒用的。"
+              },
+              {
+                "text": "把容器的 80 埠對到主機：`docker run -d -p 8080:80 nginx`。",
+                "correct": "ok",
+                "why": "`-p 主機:容器` 是把服務暴露出來的標準做法，外面用 8080 就能連到容器內的 80。"
+              },
+              {
+                "text": "服務希望開機或當掉自動起來，卻沒設 `--restart`。",
+                "correct": "risk",
+                "why": "能跑，但一當掉就不會自己回來；正式服務加 `--restart always` 比較穩。"
+              },
+              {
+                "text": "為了進去改東西，直接在跑著的容器裡 `docker exec` 手動改檔案當正式修法。",
+                "correct": "no",
+                "why": "改動不會留在 image、容器一重建就沒了；正確是改 Dockerfile 重新 build，容器要能「隨時丟掉重來」。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "64.4",

@@ -110,7 +110,105 @@
         ],
         "answer": "a",
         "explanation": "課程強調 PHP 不是因為很潮，而是因為 WordPress 市場龐大（43%）且有大量 legacy 代碼要維護，Laravel 則是現代 PHP 的代表，整體生態和接案機會都很實際。b 誇大了 PHP 的性能追趕；c 忽視了 Node.js 在全棧 TS 的優勢；d 與課程內容相反（Laravel 才是 99% 首選）。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "你的專案適合 Laravel 嗎？",
+          "note": "PHP / Laravel、Node、還是 Symfony？依專案性質配一個。",
+          "config": {
+            "intro": "想用 PHP 開發？先看你的專案適不適合 Laravel。",
+            "questions": [
+              {
+                "q": "專案性質？",
+                "options": [
+                  {
+                    "label": "中小型 SaaS / MVP 想快速上線",
+                    "scores": {
+                      "laravel": 2
+                    }
+                  },
+                  {
+                    "label": "重即時性（線上遊戲、即時協作、聊天）",
+                    "scores": {
+                      "node": 2
+                    }
+                  },
+                  {
+                    "label": "超大型、高度客製、大團隊維護",
+                    "scores": {
+                      "symfony": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "團隊 / 生態偏好？",
+                "options": [
+                  {
+                    "label": "想要文件多、社群大、快上手",
+                    "scores": {
+                      "laravel": 2
+                    }
+                  },
+                  {
+                    "label": "執著整個公司都用 TypeScript、統一型別",
+                    "scores": {
+                      "node": 2
+                    }
+                  },
+                  {
+                    "label": "需要每個元件都能獨立抽換",
+                    "scores": {
+                      "symfony": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "規模 / 並發？",
+                "options": [
+                  {
+                    "label": "一般業務流量、夠用就好",
+                    "scores": {
+                      "laravel": 2
+                    }
+                  },
+                  {
+                    "label": "要撐極高並發、省資源",
+                    "scores": {
+                      "node": 2
+                    }
+                  },
+                  {
+                    "label": "企業級、長期維護、要模組化",
+                    "scores": {
+                      "symfony": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "laravel": {
+                "emoji": "🐘",
+                "title": "Laravel",
+                "desc": "現代 PHP 實戰首選：文件清楚、社群大、工具全（Migration / Auth / Queue 都內建），約定優於設定、快 ship MVP。中小型 SaaS、WordPress 以外的接案主力。"
+              },
+              "node": {
+                "emoji": "🟢",
+                "title": "改用 Node.js",
+                "desc": "要即時推送、全棧 TypeScript 一致、或極高並發時，Node（或 Go）原生更順。PHP 每個請求獨立、實時與超高並發是它的弱項。"
+              },
+              "symfony": {
+                "emoji": "🏛️",
+                "title": "Symfony",
+                "desc": "給大團隊 / 大型企業的框架：高度模組化、每個元件可獨立用，但學習曲線陡。當你的問題大到 Laravel 搞不定才考慮。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "title": "Laravel 起步 + Eloquent ORM",
@@ -678,7 +776,53 @@
         ],
         "answer": "a",
         "explanation": "{{ }} 是 Blade 的自動 escape 語法，會自動呼叫 htmlspecialchars() 防護 XSS；{!! !!} 不 escape（只用於信任的 HTML）；直接 echo $_GET 會被注入；eval() 是遠端代碼執行漏洞，絕對禁用。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "PHP 資安判判看",
+          "note": "SQL injection / XSS / CSRF / 檔案上傳，判「可以 / 有風險 / 不行」。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "把網址參數直接接進 SQL：SELECT * FROM users WHERE id = $_GET['id']",
+                "correct": "no",
+                "why": "典型 SQL injection：攻擊者傳 1 OR 1=1 就撈走全部資料，甚至 DROP TABLE。"
+              },
+              {
+                "text": "改用 prepared statement，SQL 放 ? 佔位、參數另外綁定",
+                "correct": "ok",
+                "why": "資料庫知道 ? 只放數據、不解析成指令，這是防注入最保險的做法。"
+              },
+              {
+                "text": "用 Laravel Blade 的 {{ $comment }} 輸出使用者留言",
+                "correct": "ok",
+                "why": "Blade 預設自動 escape，<script> 會被轉成純文字顯示、不會執行。"
+              },
+              {
+                "text": "為了顯示富文本，直接對使用者輸入用 {!! $input !!}",
+                "correct": "no",
+                "why": "{!! !!} 會原封輸出 HTML，對使用者輸入用就是開 XSS 大門。"
+              },
+              {
+                "text": "Laravel 表單裡加 @csrf 產生隱藏 token",
+                "correct": "ok",
+                "why": "攻擊者的假網站拿不到這個 token，偽造的跨站請求會被擋下。"
+              },
+              {
+                "text": "頭像上傳直接用原始檔名 move_uploaded_file 存進 public 目錄",
+                "correct": "no",
+                "why": "攻擊者可上傳 hack.php 當 webshell、直接控制伺服器；副檔名不可信。"
+              },
+              {
+                "text": "上傳圖片先驗 MIME + getimagesize 確認、改隨機檔名、存 public 目錄外",
+                "correct": "ok",
+                "why": "多層驗證 + 改名 + 放安全位置，正是檔案上傳的正確防守。"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "boss": {

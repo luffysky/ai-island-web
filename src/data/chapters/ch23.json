@@ -242,7 +242,53 @@
         ],
         "answer": "b",
         "explanation": "課程明確指出 Serverless 適合『API（low traffic）』但『❌ 不適合持續連線（WebSocket）』；API 服務流量時有時無正是 Serverless 的黃金場景（按用量計費），但 WebSocket 需要持續連線應該用傳統 VM。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "這個場景該不該用 Serverless",
+          "note": "判斷哪些工作丟 serverless 剛好、哪些會踩到冷啟動 / 時間上限 / 帳單爆的坑",
+          "config": {
+            "scenarios": [
+              {
+                "text": "低頻的 webhook、表單通知用 serverless function 處理",
+                "correct": "ok",
+                "why": "流量時有時無、按用量計費、沒人用不收錢，正是 serverless 黃金場景"
+              },
+              {
+                "text": "把需要 24 小時持續保持的 WebSocket 長連線塞進 Lambda",
+                "correct": "no",
+                "why": "serverless 不適合持續連線，長連線該用常駐 VM / 容器"
+              },
+              {
+                "text": "上線前沒設 budget alert，函式又寫成互相觸發的無窮迴圈",
+                "correct": "risk",
+                "why": "按呼叫計費，爆量或無窮迴圈會讓帳單失控，必設用量告警"
+              },
+              {
+                "text": "每天固定時間跑一次的排程小任務用 serverless cron",
+                "correct": "ok",
+                "why": "偶爾跑一次的短任務不用養機器，很划算"
+              },
+              {
+                "text": "把要跑超過 15 分鐘的重運算硬塞 Lambda",
+                "correct": "no",
+                "why": "Lambda 有 15 分鐘執行上限，長任務要拆成 queue 或用常駐機器"
+              },
+              {
+                "text": "常態高頻大流量的服務還堅持 serverless、以為一定最省",
+                "correct": "risk",
+                "why": "高頻請求下 serverless 成本反而可能比常駐 VM 貴，要實際算成本"
+              },
+              {
+                "text": "用 Cloudflare Workers 做 edge API、幾乎無冷啟動",
+                "correct": "ok",
+                "why": "Workers 用 V8 isolates、冷啟動 < 5ms，適合輕量 edge API"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Container Orchestration：K8s / ECS",
@@ -626,7 +672,129 @@
         ],
         "answer": "c",
         "explanation": "小團隊應該用 Modular Monolith：既能保持 Monolith 的簡單（同個 deploy、好 debug），又能預先做好程式碼模組化，為未來擴展預留彈性。選項 b 也不錯但不如 c 周全；a 違反「微服務 50+ 工程師」的建議；d 是最糟的反面教材。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "單體還是微服務？",
+          "note": "依你的團隊規模與痛點，判斷該用單體、模組化單體、還是真的該拆微服務",
+          "config": {
+            "intro": "別跟風拆微服務——先看規模跟團隊，答四題看你現在該走哪條路。",
+            "questions": [
+              {
+                "q": "你的工程團隊多大？",
+                "options": [
+                  {
+                    "label": "少於 10 人",
+                    "scores": {
+                      "mono": 2
+                    }
+                  },
+                  {
+                    "label": "10-30 人、開始分組",
+                    "scores": {
+                      "modular": 2
+                    }
+                  },
+                  {
+                    "label": "50 人以上、多團隊",
+                    "scores": {
+                      "micro": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "系統的領域邊界清楚嗎、各部分擴展需求一樣嗎？",
+                "options": [
+                  {
+                    "label": "還很模糊、擴展需求差不多",
+                    "scores": {
+                      "mono": 2
+                    }
+                  },
+                  {
+                    "label": "邊界開始浮現、想先在程式碼分模組",
+                    "scores": {
+                      "modular": 2
+                    }
+                  },
+                  {
+                    "label": "邊界明確、有的要獨立擴展、甚至要不同技術棧",
+                    "scores": {
+                      "micro": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你有沒有成熟的監控 / 分散式追蹤 / 多套部署維運能力？",
+                "options": [
+                  {
+                    "label": "幾乎沒有",
+                    "scores": {
+                      "mono": 2
+                    }
+                  },
+                  {
+                    "label": "有一部分",
+                    "scores": {
+                      "modular": 1,
+                      "micro": 1
+                    }
+                  },
+                  {
+                    "label": "很完整、扛得住分散式複雜度",
+                    "scores": {
+                      "micro": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "部署頻率有被彼此拖累嗎？",
+                "options": [
+                  {
+                    "label": "不會、一起發版沒問題",
+                    "scores": {
+                      "mono": 2
+                    }
+                  },
+                  {
+                    "label": "偶爾卡到",
+                    "scores": {
+                      "modular": 1
+                    }
+                  },
+                  {
+                    "label": "嚴重、不同團隊急著要獨立發版",
+                    "scores": {
+                      "micro": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "mono": {
+                "emoji": "🧱",
+                "title": "先用單體（Monolith）",
+                "desc": "你的規模與團隊還沒到需要分散式的痛點。組織良好的單體開發、測試、部署、除錯都最簡單，起步最快。優點是簡單好維護、缺點是規模大後難拆——但那是以後的事，現在別自找分散式的麻煩。"
+              },
+              "modular": {
+                "emoji": "🧩",
+                "title": "模組化單體（Modular Monolith）",
+                "desc": "維持單體的簡單（同個 deploy、好 debug），但把程式碼依領域切成清楚的模組，為未來預留彈性。優點是兼顧簡單與擴展性、缺點是要有紀律維持模組邊界。中型團隊最務實的甜蜜點。"
+              },
+              "micro": {
+                "emoji": "🕸️",
+                "title": "可以考慮拆微服務",
+                "desc": "你有規模、有團隊、有維運能力，也出現明確的領域邊界與獨立擴展/發版需求——這時針對性拆出服務值得。優點是獨立部署擴展、故障隔離；缺點是分散式複雜度（網路、一致性、多套監控維運）倍增，要拆對、別全拆。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "title": "AWS / GCP / Azure 比較",
