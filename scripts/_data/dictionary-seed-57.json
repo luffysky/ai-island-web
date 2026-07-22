@@ -1,0 +1,398 @@
+[
+  {
+    "slug": "normal-distribution",
+    "term": "Normal Distribution",
+    "zh_name": "常態分佈",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "資料呈『中間多、兩邊少』的鐘形對稱分佈（身高、考試分數）。什麼時候在意：很多統計方法假設資料常態；68-95-99.7 法則：約 68% 落在 ±1 個標準差內。看到鐘形就想到它。",
+    "analogy": "像一群人的身高——大部分集中在平均附近，特別高或特別矮的很少。",
+    "example": "IQ 平均 100、標準差 15 → 約 68% 落 85~115",
+    "related": [
+      "standard-deviation",
+      "z-score",
+      "variance-stat"
+    ]
+  },
+  {
+    "slug": "variance-stat",
+    "term": "Variance",
+    "zh_name": "變異數",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "衡量資料『散得多開』——每個值離平均的差平方後平均。什麼時候在意：判斷穩定性（變異大＝波動大）；標準差是它開根號（回到原單位好懂）。ML 的 bias-variance 也用這概念。",
+    "analogy": "像一群人的準時程度——變異數小＝大家都差不多準時，大＝有人超早有人超晚。",
+    "example": "兩組平均都 60 分，變異大的那組成績更參差",
+    "related": [
+      "standard-deviation",
+      "normal-distribution",
+      "z-score"
+    ]
+  },
+  {
+    "slug": "z-score",
+    "term": "Z-Score",
+    "zh_name": "標準分數",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "一個值『距離平均幾個標準差』。什麼時候在意：跨不同尺度比較（考試 vs 身高誰更突出）、偵測離群值（|z|>3 很異常）、特徵標準化。z=2 代表比平均高 2 個標準差。",
+    "analogy": "像把不同科目的成績換算成『贏過幾成的人』——分數不能直接比，換算後才公平。",
+    "example": "z = (值 - 平均) / 標準差；|z|>3 多半是離群值",
+    "related": [
+      "standard-deviation",
+      "normal-distribution",
+      "feature-scaling"
+    ]
+  },
+  {
+    "slug": "confidence-interval",
+    "term": "Confidence Interval",
+    "zh_name": "信賴區間",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "用樣本估母體時給的『一個範圍 + 信心水準』（如 95% 信賴區間 [48%, 52%]）。什麼時候在意：民調、A/B 測試——別只報一個點估計，要報範圍表達不確定性。樣本越大區間越窄（越精準）。",
+    "analogy": "像估對方年齡說『大概 30 到 35 歲，我八成把握』——給範圍比硬猜一個數誠實。",
+    "example": "支持率 50% ± 3%（95% CI）",
+    "related": [
+      "p-value",
+      "sampling-bias",
+      "law-of-large-numbers"
+    ]
+  },
+  {
+    "slug": "sampling-bias",
+    "term": "Sampling Bias",
+    "zh_name": "抽樣偏誤",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "取樣方式讓樣本『不能代表母體』，結論就歪。什麼時候在意：做調查/分析/訓練資料——只問老客戶、只看有回覆的、倖存者偏誤（只看成功案例）都會誤導。要問『我漏掉了誰』。",
+    "analogy": "經典：二戰只看『飛回來的飛機』彈孔補強——其實該補的是『沒飛回來的』被打中的地方（倖存者偏誤）。",
+    "example": "只調查填問卷的人 → 漏掉懶得填/已流失的",
+    "related": [
+      "confidence-interval",
+      "correlation-causation",
+      "outlier"
+    ]
+  },
+  {
+    "slug": "bayes-theorem",
+    "term": "Bayes' Theorem",
+    "zh_name": "貝氏定理",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "用『新證據』更新原本的信念（機率）。什麼時候在意：垃圾郵件過濾、醫療檢測、推薦——關鍵直覺：檢測準確率高，但若病本身很罕見，驗出陽性也可能多半是假陽性（要看基礎率）。",
+    "analogy": "像看到烏雲『更新』下雨的機率——不是從零猜，而是拿新線索去修正原本的判斷。",
+    "example": "病罕見時，即使檢測 99% 準，陽性也常是假陽性",
+    "related": [
+      "confidence-interval",
+      "p-value",
+      "normal-distribution"
+    ]
+  },
+  {
+    "slug": "regression-analysis",
+    "term": "Regression Analysis",
+    "zh_name": "迴歸分析",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "找出『變數之間的關係』並用來預測（線性迴歸：畫一條最貼近資料的線）。什麼時候在意：預測數值（房價、銷量）、看哪個因素影響大。注意：迴歸抓的是相關、不等於因果。",
+    "analogy": "像從『坪數 vs 房價』的散點中畫一條趨勢線——之後給坪數就能估價。",
+    "example": "線性迴歸：房價 ≈ a×坪數 + b×屋齡 + c",
+    "related": [
+      "correlation-causation",
+      "outlier",
+      "regularization"
+    ]
+  },
+  {
+    "slug": "law-of-large-numbers",
+    "term": "Law of Large Numbers",
+    "zh_name": "大數法則",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "樣本越多，平均值越接近真實母體平均。什麼時候在意：別用少量資料下結論（丟 10 次硬幣可能 7 正，丟 1 萬次才接近 50%）；A/B 測試樣本不夠就別急著判勝負。",
+    "analogy": "像丟硬幣——丟幾次可能偏，丟夠多次正反自然趨近一半。",
+    "example": "A/B 測試各才 20 人 → 差異多半是雜訊，別下定論",
+    "related": [
+      "confidence-interval",
+      "sampling-bias",
+      "p-value"
+    ]
+  },
+  {
+    "slug": "openid-connect",
+    "term": "OpenID Connect (OIDC)",
+    "zh_name": "OIDC 身分層",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "建在 OAuth 上的『身分驗證』標準——OAuth 管『授權（能做什麼）』，OIDC 加上『認證（你是誰）』，給一個 ID token。什麼時候在意：做『用 X 登入』要確認身分時——OIDC 回一個含使用者資訊的 ID token（JWT）。",
+    "analogy": "OAuth 是『給你房卡能進哪些房』，OIDC 再附一張『這是本人證件』確認你是誰。",
+    "example": "Google/Auth0 登入回 ID token（JWT）含 sub/email",
+    "related": [
+      "oauth-flow",
+      "jwt",
+      "sso-single-sign-on"
+    ]
+  },
+  {
+    "slug": "sso-single-sign-on",
+    "term": "Single Sign-On (SSO)",
+    "zh_name": "單一登入",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "登入一次就能『通行多個相關系統』，不用每個各登一次。什麼時候在意：企業內多個系統、或一組產品——用 Google Workspace 登入公司所有工具。背後常用 SAML 或 OIDC。",
+    "analogy": "像遊樂園的一日票——入園刷一次，裡面所有設施都能進，不用每個攤位重新買票。",
+    "example": "用公司 Google 帳號登入 Slack/Notion/GitHub",
+    "related": [
+      "saml",
+      "openid-connect",
+      "oauth-flow"
+    ]
+  },
+  {
+    "slug": "saml",
+    "term": "SAML",
+    "zh_name": "安全斷言標記語言",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "企業 SSO 常用的老牌標準（XML 為主），身分提供者（IdP）發『斷言』證明使用者身分給服務。什麼時候在意：做企業版/B2B——大公司常要求 SAML SSO 對接他們的 Okta/AD。比 OIDC 老、笨重，但企業普及。",
+    "analogy": "像公司發的『識別證明公文』——IdP 出一張蓋章公文，各系統認這張就放行。",
+    "example": "企業客戶要求用 Okta SAML 登入你的 SaaS",
+    "related": [
+      "sso-single-sign-on",
+      "openid-connect",
+      "service-account"
+    ]
+  },
+  {
+    "slug": "session-cookie",
+    "term": "Session Cookie",
+    "zh_name": "工作階段 Cookie",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "登入後伺服器發一個『session id』存在 cookie，之後每次請求帶著它認出是你。什麼時候在意：傳統登入方式——狀態存伺服器（好撤銷）。安全設定：HttpOnly（防 JS 偷）、Secure（只 HTTPS）、SameSite（防 CSRF）。跟 JWT 是兩種取向。",
+    "analogy": "像寄物櫃號碼牌——伺服器記著號碼對應的你，你每次出示牌子就認得。",
+    "example": "Set-Cookie: sid=abc; HttpOnly; Secure; SameSite=Lax",
+    "related": [
+      "httponly-samesite-secure-cookie",
+      "jwt",
+      "token-rotation"
+    ]
+  },
+  {
+    "slug": "passwordless",
+    "term": "Passwordless Auth",
+    "zh_name": "無密碼登入",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "不用密碼登入——用 magic link（寄登入連結）、OTP 簡訊碼、或 passkey（生物辨識）。什麼時候在意：改善體驗+安全——沒密碼就沒得被盜、被撞庫；passkey（WebAuthn）是趨勢，防釣魚。",
+    "analogy": "像進門不用鑰匙、改用指紋或一次性通行碼——沒有鑰匙可掉、可被複製。",
+    "example": "寄 magic link 到 email 點了就登入",
+    "related": [
+      "magic-link",
+      "mfa-2fa",
+      "totp"
+    ]
+  },
+  {
+    "slug": "mfa-2fa",
+    "term": "MFA / 2FA",
+    "zh_name": "多因素驗證",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "登入要通過『兩種以上』的驗證：知道的（密碼）+ 持有的（手機 OTP）+ 本身的（指紋）。什麼時候在意：大幅提升安全——密碼被偷也進不來（還缺第二關）。優先用 authenticator app / passkey，簡訊 OTP 較弱（可被 SIM 劫持）。",
+    "analogy": "像保險箱要『密碼 + 鑰匙』兩樣都對才開——偷到一樣沒用。",
+    "example": "密碼 + Google Authenticator 6 位碼",
+    "related": [
+      "totp",
+      "passwordless",
+      "token-rotation"
+    ]
+  },
+  {
+    "slug": "rbac-abac",
+    "term": "RBAC / ABAC",
+    "zh_name": "角色 / 屬性存取控制",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "授權模型：RBAC 依『角色』給權限（admin/editor/viewer）；ABAC 依『屬性』更細（部門=財務 且 金額<10萬 才可核准）。什麼時候在意：設計權限系統——RBAC 簡單夠用多數場景；規則複雜才上 ABAC。",
+    "analogy": "RBAC 像職稱決定權限（經理能做什麼）；ABAC 像依情境細判（這筆金額、這個部門、這個時段能不能做）。",
+    "example": "RBAC：admin 能刪；ABAC：本人且未鎖定才可改",
+    "related": [
+      "least-privilege",
+      "service-account",
+      "api-scope"
+    ]
+  },
+  {
+    "slug": "cache-aside",
+    "term": "Cache-Aside",
+    "zh_name": "旁路快取",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "最常見的快取模式：讀時先看快取，沒有（miss）才查 DB、順手寫回快取。什麼時候在意：加速讀取——應用自己管快取邏輯。要處理『資料改了怎麼讓快取失效』（改 DB 時刪掉對應快取）。",
+    "analogy": "像找資料先翻桌上便條（快取），沒有才去檔案室（DB）拿、順手抄一份放桌上。",
+    "example": "get: cache.get(k) ?? (db.get(k) 存回 cache)",
+    "related": [
+      "cache-invalidation",
+      "ttl-expiry",
+      "cache-key"
+    ]
+  },
+  {
+    "slug": "write-through",
+    "term": "Write-Through",
+    "zh_name": "直寫快取",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "寫入時『同時寫快取和 DB』（都成功才算完）。什麼時候在意：要快取和 DB 一致——讀取一定拿到最新；代價是寫入慢一點（等兩邊）。對比 write-back（先寫快取後補寫 DB，快但有丟資料風險）。",
+    "analogy": "像記帳同時寫進手帳和電腦——兩邊即時一致，但每筆要寫兩次慢一點。",
+    "example": "更新時 cache.set + db.set 都完成才回",
+    "related": [
+      "write-back",
+      "cache-aside",
+      "cache-invalidation"
+    ]
+  },
+  {
+    "slug": "write-back",
+    "term": "Write-Back (Write-Behind)",
+    "zh_name": "回寫快取",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "寫入只先寫快取、之後『非同步批次補寫 DB』。什麼時候在意：追求寫入極快、可容忍偶爾丟一點資料（快取掛了還沒回寫的就沒了）——如計數器、按讚數這類不那麼關鍵的高頻寫入。",
+    "analogy": "像先記在便條、晚點再一次抄進正式帳本——快，但便條掉了那幾筆就沒了。",
+    "example": "按讚先寫 Redis、每分鐘批次回寫 DB",
+    "related": [
+      "write-through",
+      "cache-aside",
+      "producer-consumer"
+    ]
+  },
+  {
+    "slug": "ttl-expiry",
+    "term": "TTL / Expiry",
+    "zh_name": "存活時間 / 過期",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "給快取項目設『幾秒後自動失效』。什麼時候在意：最簡單的快取失效法——資料不用永遠新鮮就設個 TTL（如 60 秒），到期自動重抓。TTL 短＝新鮮但常打 DB、長＝省但可能舊。",
+    "analogy": "像鮮奶標效期——過期自動丟掉重買（重抓），不用一直手動確認。",
+    "example": "cache.set(k, v, ttl=60)（60 秒後自動失效）",
+    "related": [
+      "cache-aside",
+      "stale-while-revalidate",
+      "lru-eviction"
+    ]
+  },
+  {
+    "slug": "lru-eviction",
+    "term": "LRU Eviction",
+    "zh_name": "最近最少用淘汰",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "快取滿了要丟東西時，優先丟『最久沒被用到的』(Least Recently Used)。什麼時候在意：快取空間有限——LRU 假設『最近用的之後還會用』，保留熱門、淘汰冷門。Redis、瀏覽器快取都有類似策略。",
+    "analogy": "像冰箱滿了先丟『最久沒動過的』——常吃的留著，積灰的清掉。",
+    "example": "Redis maxmemory-policy allkeys-lru",
+    "related": [
+      "ttl-expiry",
+      "cache-aside",
+      "cpu-cache"
+    ]
+  },
+  {
+    "slug": "stale-while-revalidate",
+    "term": "Stale-While-Revalidate",
+    "zh_name": "過期仍先回、背景更新",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "快取過期時『先把舊的回給使用者（快）』、同時背景抓新的更新快取。什麼時候在意：兼顧速度與新鮮——使用者不用等重抓，下次就拿到新的。HTTP Cache-Control、Next.js ISR、SWR 套件都用這招。",
+    "analogy": "像先給你昨天的報紙看（不用等），同時去拿今天的，下次給你新的。",
+    "example": "Cache-Control: max-age=60, stale-while-revalidate=300",
+    "related": [
+      "ttl-expiry",
+      "http-caching",
+      "cache-aside"
+    ]
+  },
+  {
+    "slug": "cdn-purge",
+    "term": "CDN Purge / Invalidation",
+    "zh_name": "CDN 快取清除",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "主動叫 CDN『丟掉某個快取的舊版本』，讓它下次去源站重抓。什麼時候在意：更新了圖片/檔案但 CDN 還回舊的——purge 那個 URL。更好的做法：檔名加 hash（內容變檔名就變），根本不用 purge。",
+    "analogy": "像叫各分店把過期的舊貨全下架、重新進貨——不然客人一直拿到舊版。",
+    "example": "改了 logo.png → purge CDN 或改檔名 logo.abc123.png",
+    "related": [
+      "http-caching",
+      "cache-invalidation",
+      "gzip-brotli"
+    ]
+  }
+]
