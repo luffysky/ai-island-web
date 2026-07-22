@@ -1,0 +1,398 @@
+[
+  {
+    "slug": "raft-consensus",
+    "term": "Raft",
+    "zh_name": "Raft 共識演算法",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一個『好懂版』的分散式共識演算法：選一個 leader、所有寫入經 leader 複製到多數節點才算數。什麼時候在意：分散式系統要多節點對『同一份資料』達成一致（etcd、Consul 用它）——比 Paxos 好理解好實作。",
+    "analogy": "像開會選一個主席（leader），所有決議由主席提、多數人點頭才通過，換屆再重選。",
+    "example": "etcd/Consul 用 Raft 保證叢集資料一致",
+    "related": [
+      "paxos",
+      "leader-election",
+      "split-brain"
+    ]
+  },
+  {
+    "slug": "paxos",
+    "term": "Paxos",
+    "zh_name": "Paxos 共識",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "經典（但很難懂）的分散式共識演算法，讓一群不可靠節點對某個值達成一致。什麼時候在意：理論基石——很多系統的共識源頭；因為太難懂，Raft 才被發明來取代。知道它是『共識的老祖宗』即可。",
+    "analogy": "像一套嚴謹到很燒腦的投票規程——保證結果一致，但條文複雜到大家寧可用簡化版（Raft）。",
+    "example": "Google Chubby 等用 Paxos 家族",
+    "related": [
+      "raft-consensus",
+      "quorum",
+      "consensus-mechanism"
+    ]
+  },
+  {
+    "slug": "split-brain",
+    "term": "Split-Brain",
+    "zh_name": "腦裂",
+    "category": "error",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "叢集因網路分區『裂成兩半、各自以為自己是 leader』，兩邊都接受寫入→資料衝突。什麼時候在意：分散式高可用的惡夢——要用 quorum（過半才能當家）避免：少數那半知道自己不夠票就不服務。",
+    "analogy": "像公司斷了聯絡，兩地各自選了 CEO 各發號令——回來一對帳全亂了。要規定『過半數才算數』。",
+    "example": "用 quorum（>N/2）防兩邊同時當 leader",
+    "related": [
+      "quorum",
+      "raft-consensus",
+      "leader-election"
+    ]
+  },
+  {
+    "slug": "vector-clock",
+    "term": "Vector Clock",
+    "zh_name": "向量時鐘",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "分散式系統裡判斷『事件先後/是否並發』的機制——每個節點各記一個計數器向量。什麼時候在意：沒有全域時鐘時要排事件因果（誰先誰後、還是同時發生的衝突）——Dynamo 類系統用它偵測衝突版本。",
+    "analogy": "像多人共筆各自記『我改到第幾版』——比對向量就知道誰的版本較新、或是各改各的（衝突）。",
+    "example": "Dynamo 用 vector clock 偵測並發寫衝突",
+    "related": [
+      "lamport-clock",
+      "crdt",
+      "eventual-consistency"
+    ]
+  },
+  {
+    "slug": "crdt",
+    "term": "CRDT",
+    "zh_name": "無衝突複製資料型別",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "Conflict-free Replicated Data Type——設計成『多節點各自改、合併時數學上保證自動收斂一致』的資料結構。什麼時候在意：協作編輯、離線優先、多主複製（Figma、Yjs 協作）——不用中央協調就能合併，沒有衝突。",
+    "analogy": "像多人各自往同一個計數器加減，最後不管誰先誰後合起來答案都一樣——天生不會吵架。",
+    "example": "Yjs/Automerge 做即時協作編輯",
+    "related": [
+      "vector-clock",
+      "eventual-consistency",
+      "event-sourcing-2"
+    ]
+  },
+  {
+    "slug": "distributed-lock",
+    "term": "Distributed Lock",
+    "zh_name": "分散式鎖",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "讓『多台機器/多個行程』對同一資源互斥（一次只一個能動）的鎖，常用 Redis(Redlock)、etcd、Zookeeper。什麼時候在意：多實例服務要防重複執行（同一排程只跑一次、防重複扣款）。難點：鎖要有過期（持有者掛了別死鎖）、又要防過期後誤放。",
+    "analogy": "像多間分店共用一支『唯一的印章』——誰拿到誰能蓋，但要設歸還時限，免得拿走的人消失就沒人能用了。",
+    "example": "Redis SETNX + 過期 做排程單例鎖",
+    "related": [
+      "mutex-semaphore",
+      "idempotency",
+      "leader-election"
+    ]
+  },
+  {
+    "slug": "outbox-pattern",
+    "term": "Transactional Outbox",
+    "zh_name": "交易發件匣模式",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "要『改 DB + 發訊息』又保證一致時，把訊息先寫進同一個 DB 交易的 outbox 表，再由背景把 outbox 的訊息可靠發出。什麼時候在意：避免『DB 改了但訊息沒發』或反之——兩件事不能放同一個原子操作時，用 outbox 保證最終一致。",
+    "analogy": "像寄信——先把信連同帳一起記進帳本（同交易），再由郵差（背景）照帳本把信寄出，不會漏寄或重複。",
+    "example": "下單交易寫 orders + outbox → CDC/輪詢發 event",
+    "related": [
+      "change-data-capture",
+      "event-driven",
+      "saga-orchestration"
+    ]
+  },
+  {
+    "slug": "saga-orchestration",
+    "term": "Saga Pattern",
+    "zh_name": "Saga 分散式交易",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "跨多個服務的『長交易』拆成一連串本地交易，每步失敗就跑『補償動作』回滾前面的。什麼時候在意：微服務沒有跨服務 ACID——訂單要扣款+扣庫存+出貨分屬不同服務，某步失敗就補償（退款、還庫存）達成最終一致。",
+    "analogy": "像接力賽每棒各自完成一段，中途有人掉棒就『倒帶』把前面幾棒做的撤銷（補償），而不是硬繼續。",
+    "example": "扣款成功但扣庫存失敗 → 觸發退款補償",
+    "related": [
+      "outbox-pattern",
+      "two-phase-commit",
+      "eventual-consistency"
+    ]
+  },
+  {
+    "slug": "cpu-core-thread",
+    "term": "CPU Core / Thread",
+    "zh_name": "CPU 核心 / 執行緒",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "實體核心＝真的運算單元；超執行緒(SMT)讓一個核心『假裝成兩個邏輯執行緒』塞更多工作。什麼時候在意：設並發數、看伺服器規格——8 核 16 執行緒代表 8 實體、16 邏輯。CPU 密集任務併發數別遠超實體核心。",
+    "analogy": "像廚房——實體核心是真的爐台，超執行緒像一個爐台輪流煮兩鍋（趁空檔切換），不是真的多一個爐。",
+    "example": "8C16T：worker 數設 8-16 之間依任務型",
+    "related": [
+      "process-vs-thread",
+      "context-switch",
+      "simd"
+    ]
+  },
+  {
+    "slug": "gpu-computing",
+    "term": "GPU Computing",
+    "zh_name": "GPU 運算",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "GPU 有『幾千個小核心』能同時做大量『一樣的簡單運算』（並行）。什麼時候在意：矩陣運算/深度學習/繪圖——CPU 擅長少量複雜任務、GPU 擅長海量平行簡單任務。訓練 AI、渲染都靠 GPU。",
+    "analogy": "CPU 像幾個博士（少但強、做複雜的）；GPU 像幾千個小學生（各做簡單加法但人海戰術超快）。",
+    "example": "神經網路的矩陣乘法丟 GPU 平行算",
+    "related": [
+      "simd",
+      "cpu-core-thread",
+      "shader"
+    ]
+  },
+  {
+    "slug": "simd",
+    "term": "SIMD",
+    "zh_name": "單指令多資料",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "Single Instruction Multiple Data——一道指令同時對『一批資料』做同樣運算（CPU 的 SSE/AVX、GPU 的核心）。什麼時候在意：效能優化——影像/音訊/向量運算用 SIMD 一次處理多個數，比一個個算快好幾倍。",
+    "analogy": "像蓋章——不是一張張蓋，是一次把一整排紙同時蓋好（一個動作、多份資料）。",
+    "example": "AVX 指令一次加 8 個 float",
+    "related": [
+      "gpu-computing",
+      "cpu-cache",
+      "bitwise-operation"
+    ]
+  },
+  {
+    "slug": "cache-hierarchy",
+    "term": "Cache Hierarchy (L1/L2/L3)",
+    "zh_name": "快取階層",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "CPU 的多層快取：L1 最小最快（貼著核心）、L2 中等、L3 較大共享，再外面才是 RAM。什麼時候在意：效能極致優化——資料越常用要越靠近核心；cache miss（要去 RAM 拿）比命中慢百倍，所以 cache-friendly 的資料排列很重要。",
+    "analogy": "像找東西：手邊(L1)→抽屜(L2)→櫃子(L3)→倉庫(RAM)，越遠越慢，常用的放手邊最快。",
+    "example": "連續存取陣列 = 高 cache 命中；亂跳指標 = 常 miss",
+    "related": [
+      "cpu-cache",
+      "ram-vs-storage",
+      "memory-bus"
+    ]
+  },
+  {
+    "slug": "ram-vs-storage",
+    "term": "RAM vs Storage",
+    "zh_name": "記憶體 vs 儲存",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "RAM＝『暫時、超快、斷電就沒』的工作記憶體；storage(SSD/HDD)＝『永久、較慢、斷電還在』的儲存。什麼時候在意：搞懂『程式跑在 RAM、資料存在硬碟』——RAM 不夠會用硬碟當 swap 變超慢；重要資料要落地到 storage 才不怕當機。",
+    "analogy": "RAM 像你的辦公桌（拿取快但下班要清空）；storage 像檔案櫃（慢一點但東西一直在）。",
+    "example": "程式與當前資料在 RAM、檔案/DB 存 SSD",
+    "related": [
+      "cache-hierarchy",
+      "paging-swap",
+      "stack-vs-heap"
+    ]
+  },
+  {
+    "slug": "firmware",
+    "term": "Firmware",
+    "zh_name": "韌體",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "燒錄在硬體裡、控制它最底層運作的軟體（BIOS、路由器/家電的內建程式）。什麼時候在意：介於硬體與軟體之間——更新韌體修 bug/加功能/補漏洞。它壞了裝置可能變磚。IoT 裝置的韌體安全常被忽略。",
+    "analogy": "像家電內建的『說明書兼大腦』——出廠就燒進去，控制它怎麼動，偶爾原廠推更新。",
+    "example": "路由器韌體更新修安全漏洞",
+    "related": [
+      "embedded-rtos",
+      "interrupt-hardware",
+      "daemon"
+    ]
+  },
+  {
+    "slug": "interrupt-hardware",
+    "term": "Hardware Interrupt",
+    "zh_name": "硬體中斷",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "硬體（鍵盤、網卡、計時器）有事時『打斷 CPU 當下工作、要它立刻處理』的信號。什麼時候在意：理解 OS/驅動/嵌入式——CPU 不用一直輪詢問『有輸入嗎』，而是被中斷通知（省力）。中斷處理要極快，別卡住。",
+    "analogy": "像你專心工作時電話響（中斷）——立刻接一下處理完再回來，不用一直盯著電話等。",
+    "example": "按鍵盤觸發中斷 → CPU 暫停去讀輸入",
+    "related": [
+      "process-signal",
+      "firmware",
+      "embedded-rtos"
+    ]
+  },
+  {
+    "slug": "neural-network-2",
+    "term": "Neural Network",
+    "zh_name": "神經網路",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "模仿大腦、由多層『神經元』組成的模型，每個連結有權重，靠調權重學會對應輸入輸出。什麼時候在意：深度學習的基礎——輸入層→隱藏層→輸出層，層數多就是『深度』學習。用來辨識圖片、翻譯、生成等。",
+    "analogy": "像一層層的篩選網——資料流過每層被『加權轉換』，逐層萃取特徵，最後得出答案。",
+    "example": "輸入圖 → 多層 → 輸出『這是貓』的機率",
+    "related": [
+      "backpropagation-2",
+      "activation-relu",
+      "gradient-vanishing"
+    ]
+  },
+  {
+    "slug": "backpropagation-2",
+    "term": "Backpropagation",
+    "zh_name": "反向傳播",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "神經網路的學習核心：算出『預測錯多少』，再『從後往前』把誤差分攤回每個權重、按梯度微調。什麼時候在意：理解 NN 怎麼學——一次次前向預測、反向修正權重，讓誤差越來越小。搭配梯度下降。",
+    "analogy": "像考完試檢討——從最後的錯（答案）往回找是哪幾步算錯，各自修正一點，下次考好一點。",
+    "example": "loss 反向傳播 → 更新各層權重",
+    "related": [
+      "neural-network-2",
+      "gradient-descent",
+      "gradient-vanishing"
+    ]
+  },
+  {
+    "slug": "activation-relu",
+    "term": "Activation Function (ReLU)",
+    "zh_name": "激活函數",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "神經元的『非線性開關』，決定輸出強度。ReLU（負的變 0、正的照舊）最常用、簡單有效。什麼時候在意：沒有它，多層網路等於一層（純線性）——激活函數提供非線性，網路才學得會複雜模式。",
+    "analogy": "像神經元的『興奮閾值』——夠強才傳下去（ReLU：負訊號直接壓成 0）。",
+    "example": "ReLU(x)=max(0,x)；隱藏層常用",
+    "related": [
+      "neural-network-2",
+      "temperature-softmax",
+      "gradient-vanishing"
+    ]
+  },
+  {
+    "slug": "gradient-vanishing",
+    "term": "Vanishing / Exploding Gradient",
+    "zh_name": "梯度消失 / 爆炸",
+    "category": "error",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "深層網路反向傳播時，梯度層層相乘可能『越乘越接近 0（消失，學不動）或越乘越大（爆炸，發散）』。什麼時候在意：訓練深網路卡住——用 ReLU、BatchNorm、殘差連結(ResNet)、梯度裁剪來緩解。是深度學習能變『深』的關鍵障礙。",
+    "analogy": "像悄悄話傳一長排——傳到最後不是聽不見了（消失）就是被越傳越誇張（爆炸）。",
+    "example": "用 ResNet 殘差連結讓梯度好傳到深層",
+    "related": [
+      "backpropagation-2",
+      "batch-normalization",
+      "activation-relu"
+    ]
+  },
+  {
+    "slug": "embedding-layer",
+    "term": "Embedding Layer",
+    "zh_name": "嵌入層",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把『離散的東西（字、id、類別）』轉成『稠密向量』的可學習層，讓語意相近的靠得近。什麼時候在意：NLP/推薦——文字/商品先變 embedding 向量餵給模型；這些向量是訓練出來的、帶語意。跟 seed-47 的 vector-embedding 同源。",
+    "analogy": "像把每個字翻成一組『座標』——意思像的字座標相近，模型才好處理。",
+    "example": "詞 → embedding 向量 → 餵進 Transformer",
+    "related": [
+      "vector-embedding",
+      "transformer-model",
+      "tokenization-nlp"
+    ]
+  },
+  {
+    "slug": "transfer-learning",
+    "term": "Transfer Learning",
+    "zh_name": "遷移學習",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "拿『已在大量資料上訓練好的模型』，用你少量的資料微調來解你的任務。什麼時候在意：資料/算力有限——不用從零訓練，站在巨人肩上（預訓練模型）微調，省時省資源、效果還好。是現代 AI 應用的主流。",
+    "analogy": "像請一個已經很會畫畫的人，只教他你要的畫風（微調），比從頭教一個人畫畫快太多。",
+    "example": "拿預訓練 ResNet/BERT 微調你的分類任務",
+    "related": [
+      "fine-tuning-2",
+      "embedding-layer",
+      "neural-network-2"
+    ]
+  },
+  {
+    "slug": "temperature-softmax",
+    "term": "Softmax / Temperature",
+    "zh_name": "Softmax / 溫度",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "softmax 把一排分數轉成『加起來為 1 的機率分佈』；temperature 調它的『尖銳/平緩』——低溫更確定（挑最高分）、高溫更隨機（分散）。什麼時候在意：分類輸出機率、LLM 取樣——這就是 seed-47 temperature 的數學底層。",
+    "analogy": "softmax 像把幾個候選人的票數換算成得票率；溫度像調『要不要一面倒』——低溫贏者全拿、高溫大家有機會。",
+    "example": "logits → softmax → 機率；溫度控分佈尖平",
+    "related": [
+      "temperature-sampling",
+      "activation-relu",
+      "top-p-sampling"
+    ]
+  }
+]
