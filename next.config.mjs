@@ -26,6 +26,26 @@ const nextConfig = {
   },
   // 全站安全 headers（B3）：HSTS + 防點擊劫持 + 防 MIME 嗅探 + Referrer 收斂
   async headers() {
+    // CSP —— 先上 Report-Only（§7.1）：瀏覽器只「回報」違規、不擋任何東西，
+    // 完全不會弄壞站。目的是先在 console/report 觀察哪些來源會被擋，再逐步收斂到 enforce。
+    // 收斂路線：確認乾淨後，把 header key 改成 'Content-Security-Policy'（去掉 -Report-Only）、
+    // 並把 script-src 的 'unsafe-inline'/'unsafe-eval' 換成 nonce（需 middleware 注入）。
+    const csp = [
+      "default-src 'self'",
+      "base-uri 'self'",
+      "object-src 'none'",                 // 禁用 <object>/<embed>（老式 XSS 面）
+      "frame-ancestors 'self'",            // 等同 X-Frame-Options、防點擊劫持
+      "form-action 'self'",                // 表單只能送同源
+      "img-src 'self' data: blob: https:", // 上傳圖/OG/avatar 走 https + data/blob
+      "font-src 'self' data:",
+      "style-src 'self' 'unsafe-inline'",  // Tailwind/內聯樣式需要（之後可收）
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // Next 內聯 bootstrap；之後改 nonce
+      "connect-src 'self' https: wss:",    // API/Supabase/AI/WS；收斂時改列明確網域
+      "media-src 'self' data: blob: https:",
+      "worker-src 'self' blob:",           // service worker / web worker
+      "manifest-src 'self'",
+    ].join('; ');
+
     const securityHeaders = [
       { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
       { key: 'X-Content-Type-Options', value: 'nosniff' },
@@ -34,6 +54,8 @@ const nextConfig = {
       { key: 'X-DNS-Prefetch-Control', value: 'on' },
       // 關掉用不到的高風險能力 + opt-out FLoC；microphone=(self) 開放同源（AI 聊天語音輸入要用）
       { key: 'Permissions-Policy', value: 'camera=(), microphone=(self), geolocation=(), browsing-topics=()' },
+      // Report-Only：只回報不阻擋（安全上線、觀察後再收斂為 enforce）
+      { key: 'Content-Security-Policy-Report-Only', value: csp },
     ];
     return [{ source: '/:path*', headers: securityHeaders }];
   },

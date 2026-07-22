@@ -273,7 +273,7 @@
 
 ## 七、安全 / 合規 / 品質 / 技術債
 
-- [ ] 7.1 **真 CSP header**（`next.config.mjs` 目前無；先前「已做」是章節內容誤判）→ 先 Report-Only 再收斂
+- [~] 7.1 **真 CSP header**：~~先上 Report-Only~~ ✅ 0722（`next.config.mjs` headers 加 `Content-Security-Policy-Report-Only`：default/base/object-none/frame-ancestors/form-action/img/font/style/script/connect/media/worker/manifest；只回報不阻擋、不會弄壞站）。待收斂：觀察 console/report 無誤 → 改 `Content-Security-Policy`（enforce）+ script-src 換 nonce（需 middleware 注入、去掉 unsafe-inline/eval）+ connect-src 收成明確網域
 - [ ] 7.2 **Cloudflare Turnstile + 蜜罐**（repo 零實作、只在章節 JSON 出現）
 - [x] ~~7.3 **GDPR `user_settings` 表**（無此表、gdpr/export 靜默略過）~~ ✅ 0721：移除死查詢、改匯出真的有的 per-user 設定表 `user_blog_settings` + `email_subscriptions`（通知/LINE 偏好本就在 profiles.* 已 dump）；DB 實測兩表 user_id OK。
 - [ ] 7.4 v1 API key **輪替/停用 admin UI**（表存在、無 UI）
