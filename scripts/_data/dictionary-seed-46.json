@@ -1,0 +1,506 @@
+[
+  {
+    "slug": "caching-layers",
+    "term": "Caching Layers",
+    "zh_name": "多層快取",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "從瀏覽器→CDN→反向代理→應用記憶體→Redis→資料庫，一路可以層層加快取。什麼時候在意：優化讀取效能。關鍵不是加快取、而是「怎麼失效」——資料改了各層要能一致更新，不然使用者看到舊資料。",
+    "analogy": "像找東西：先翻口袋（記憶體）、再翻抽屜（Redis）、最後去倉庫（DB）——越近越快，但要記得更新。",
+    "example": "Cache-Control(瀏覽器) → CDN → Redis(TTL 60s) → Postgres",
+    "related": [
+      "etag",
+      "consistent-hashing",
+      "read-replica"
+    ]
+  },
+  {
+    "slug": "acid-transaction",
+    "term": "ACID Transaction",
+    "zh_name": "ACID 交易",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "資料庫交易的四保證：Atomicity（全成或全不成）、Consistency（不破壞約束）、Isolation（併發互不干擾）、Durability（提交後不丟）。什麼時候在意：轉帳、下單扣庫存——多步驟要嘛全做、要嘛全退，不能做一半。",
+    "analogy": "像 ATM 轉帳——扣了 A 一定要加到 B，中途斷電也不能只扣不加。",
+    "example": "BEGIN; UPDATE a SET bal=bal-100; UPDATE b SET bal=bal+100; COMMIT;",
+    "related": [
+      "two-phase-commit",
+      "eventual-consistency",
+      "connection-pool"
+    ]
+  },
+  {
+    "slug": "fan-out",
+    "term": "Fan-out",
+    "zh_name": "扇出",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "一個事件觸發「散發給很多接收者」。什麼時候在意：發一則推特要寫進幾百萬粉絲的時間軸（fan-out on write，寫時展開）vs 讀時才組（fan-out on read）——大型社群的經典取捨。",
+    "analogy": "像喜帖——一次印好寄給所有賓客（寫時扇出），還是客人來問才給（讀時扇出）。",
+    "example": "發文 → 訊息佇列 → 批次寫進 N 個粉絲的 feed",
+    "related": [
+      "pub-sub",
+      "message-queue",
+      "load-balancer"
+    ]
+  },
+  {
+    "slug": "database-index",
+    "term": "Database Index",
+    "zh_name": "資料庫索引",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "幫某欄位建的「目錄」，讓查詢不用整表掃描。什麼時候在意：查詢變慢時第一個檢查點。代價：寫入變慢、佔空間；且要建在「常拿來 WHERE/JOIN/ORDER」的欄位、最左前綴要對。",
+    "analogy": "像書末的索引——想查某個詞直接翻到頁碼，不用一頁頁找。",
+    "example": "CREATE INDEX ON users(email);  -- email 查詢從 O(n) → O(log n)",
+    "related": [
+      "query-optimization",
+      "n-plus-1",
+      "caching-layers"
+    ]
+  },
+  {
+    "slug": "artifact-registry",
+    "term": "Artifact Registry",
+    "zh_name": "產物倉庫",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "存放建置產物（Docker image、npm 套件、jar…）並管理版本的倉庫。什麼時候在意：CI 建好 image 推到 registry、部署時再拉下來跑；私有 registry 存內部套件。",
+    "analogy": "像倉儲物流中心——工廠（CI）生產好裝箱入庫，門市（部署）要用再調貨。",
+    "example": "docker push ghcr.io/org/app:sha-abc123",
+    "related": [
+      "container-image",
+      "ci-cd-pipeline",
+      "gitops"
+    ]
+  },
+  {
+    "slug": "metrics-monitoring",
+    "term": "Metrics",
+    "zh_name": "指標監控",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把系統狀態量化成「隨時間變化的數字」（QPS、延遲 p95、錯誤率、CPU…），畫成儀表板 + 設告警。什麼時候在意：可觀測性三支柱之一（另兩個是 log、trace）；沒指標＝出事只能猜。",
+    "analogy": "像車子的儀表板——時速、油量、水溫一目了然，異常會亮燈提醒。",
+    "example": "Prometheus 收集 + Grafana 畫圖 + 超過門檻告警",
+    "related": [
+      "observability",
+      "slo-sla-sli",
+      "distributed-tracing"
+    ]
+  },
+  {
+    "slug": "slo-sla-sli",
+    "term": "SLO / SLA / SLI",
+    "zh_name": "服務水準目標 / 協議 / 指標",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "SLI＝實際量到的指標（如可用率 99.95%）；SLO＝你給自己訂的目標（如 99.9%）；SLA＝對客戶的白紙黑字承諾（沒達到要賠）。什麼時候在意：定義「多可靠才算夠」、算 error budget 決定能不能冒險上新功能。",
+    "analogy": "SLI 是考試成績、SLO 是你設的及格線、SLA 是跟家長簽的保證書（沒到要受罰）。",
+    "example": "SLO：一個月內 API 可用率 ≥ 99.9%（可容忍約 43 分鐘停機）",
+    "related": [
+      "metrics-monitoring",
+      "observability",
+      "postmortem"
+    ]
+  },
+  {
+    "slug": "gitops",
+    "term": "GitOps",
+    "zh_name": "以 Git 為真相源的維運",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把「系統該長怎樣」全寫進 Git（宣告式設定），有工具持續讓實際環境「向 Git 對齊」。什麼時候在意：K8s 部署——改設定就是發 PR，審核合併後自動同步，回滾＝revert commit，一切可追溯。",
+    "analogy": "像用一份『藍圖』管房子——要改就改藍圖（Git），工班自動照最新藍圖施工。",
+    "example": "ArgoCD/Flux 監看 repo → 自動 apply 到叢集",
+    "related": [
+      "infrastructure-as-code",
+      "ci-cd-pipeline",
+      "helm-chart"
+    ]
+  },
+  {
+    "slug": "helm-chart",
+    "term": "Helm Chart",
+    "zh_name": "Helm 套件",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "Kubernetes 的「套件管理器」，把一堆 K8s YAML 打包成可參數化、可版本化的 chart，一鍵安裝/升級/回滾。什麼時候在意：部署複雜應用到 K8s，不想手動維護幾十個 YAML。",
+    "analogy": "像手機的 App 安裝檔——把一堆設定打包，裝一次就好，還能一鍵更新/移除。",
+    "example": "helm install myapp ./chart --set replicas=3",
+    "related": [
+      "pod-k8s",
+      "gitops",
+      "container-orchestration"
+    ]
+  },
+  {
+    "slug": "service-discovery",
+    "term": "Service Discovery",
+    "zh_name": "服務發現",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "微服務環境裡，服務會不斷起起落落、IP 會變——service discovery 讓服務「靠名字找到彼此」而不是寫死 IP。什麼時候在意：微服務互相呼叫、容器動態擴縮時。",
+    "analogy": "像公司總機——你只要說找『財務部』，總機幫你接到現在負責的人，不用記他分機。",
+    "example": "呼叫 http://user-service（由 DNS/Consul 解析到實際 pod）",
+    "related": [
+      "load-balancer",
+      "container-orchestration",
+      "service-mesh"
+    ]
+  },
+  {
+    "slug": "load-testing",
+    "term": "Load Testing",
+    "zh_name": "負載測試",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用工具模擬「大量使用者同時打」，看系統在多少流量下開始變慢/掛掉。什麼時候在意：上線前、行銷活動前，先知道天花板在哪、瓶頸是 DB 還是 CPU，別等真人湧入才發現。",
+    "analogy": "像橋樑載重測試——先開一堆卡車上去壓，確認能承受多少，別等通車才知道。",
+    "example": "k6/Locust 模擬 1000 併發 → 觀察 p95 延遲與錯誤率",
+    "related": [
+      "metrics-monitoring",
+      "rate-limiting",
+      "chaos-engineering"
+    ]
+  },
+  {
+    "slug": "solid-principles",
+    "term": "SOLID",
+    "zh_name": "SOLID 五原則",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "物件導向設計的五個好習慣縮寫：單一職責、開放封閉、里氏替換、介面隔離、依賴反轉。什麼時候在意：想讓程式好維護、好擴充、改一處不牽動全身時的指導原則。別當教條、當方向感。",
+    "analogy": "像蓋房子的五條施工規範——照著做房子好整修、好加蓋，不會拆一面牆整棟垮。",
+    "example": "每個 class 只做一件事、加功能用擴充不改舊碼…",
+    "related": [
+      "single-responsibility",
+      "open-closed-principle",
+      "dependency-injection"
+    ]
+  },
+  {
+    "slug": "single-responsibility",
+    "term": "Single Responsibility Principle",
+    "zh_name": "單一職責原則",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "一個模組/類別「只該有一個改變的理由」＝只做一件事。什麼時候在意：一個檔案又管 UI 又管 API 又管驗證，改一處常弄壞另一處——拆開各司其職就好測好改。",
+    "analogy": "像瑞士刀 vs 專用工具——什麼都想做的類別，樣樣都做不好也難修。",
+    "example": "把「算錢」「存 DB」「寄信」拆成三個各自負責的函式",
+    "related": [
+      "solid-principles",
+      "separation-of-concerns",
+      "coupling-cohesion"
+    ]
+  },
+  {
+    "slug": "open-closed-principle",
+    "term": "Open-Closed Principle",
+    "zh_name": "開放封閉原則",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "對「擴充」開放、對「修改」封閉——加新功能時用新增（新類別/策略）而非改動既有能跑的碼。什麼時候在意：每加一種付款方式就去改同一個大 if-else，很容易改壞——改成可插拔的策略就安全。",
+    "analogy": "像插座——要加新電器插上去就好（擴充），不用把牆打掉重拉線（修改）。",
+    "example": "新增 PaymentStrategy 實作、不動既有結帳流程",
+    "related": [
+      "solid-principles",
+      "strategy-pattern",
+      "dependency-injection"
+    ]
+  },
+  {
+    "slug": "liskov-substitution",
+    "term": "Liskov Substitution Principle",
+    "zh_name": "里氏替換原則",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "子類別必須能「無痛替換」父類別而不出錯——子類不該偷偷破壞父類的承諾。什麼時候在意：繼承設計。經典反例：Square 繼承 Rectangle 卻讓「改寬不改高」的假設破功。",
+    "analogy": "像替身演員——換上去戲要能照演，不能演一半突然不會台詞（破壞父類行為）。",
+    "example": "任何吃 Bird 的地方換成 Penguin 不該爆（那 fly() 就別放 Bird）",
+    "related": [
+      "solid-principles",
+      "interface-segregation",
+      "design-by-contract"
+    ]
+  },
+  {
+    "slug": "interface-segregation",
+    "term": "Interface Segregation Principle",
+    "zh_name": "介面隔離原則",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "別逼使用者依賴他用不到的方法——寧可多個小介面，別一個肥大介面。什麼時候在意：實作一個介面卻被迫寫一堆用不到的空方法時，代表介面該拆。",
+    "analogy": "像餐廳菜單——別給素食者一本全是肉的菜單逼他翻，分開小菜單各取所需。",
+    "example": "拆成 Readable / Writable，而非一個什麼都有的 FileOps",
+    "related": [
+      "solid-principles",
+      "single-responsibility",
+      "liskov-substitution"
+    ]
+  },
+  {
+    "slug": "refactoring",
+    "term": "Refactoring",
+    "zh_name": "重構",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "在「不改變外部行為」的前提下、改善程式碼內部結構（命名、拆函式、去重複）。什麼時候在意：程式能跑但越來越難改時。安全重構的前提是有測試護著——改完跑測試確認行為沒變。",
+    "analogy": "像整理房間——東西還是那些（功能不變），但擺得更好找、更好住。",
+    "example": "把 200 行的函式拆成幾個有意義的小函式，測試全綠",
+    "related": [
+      "technical-debt",
+      "code-smell",
+      "regression-test"
+    ]
+  },
+  {
+    "slug": "design-by-contract",
+    "term": "Design by Contract",
+    "zh_name": "契約式設計",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "函式和呼叫者訂「契約」：前置條件（你要給我什麼）、後置條件（我保證回什麼）、不變式（過程中恆成立）。什麼時候在意：釐清「這個 bug 是誰的錯」——是呼叫者沒守前置、還是函式沒守後置。",
+    "analogy": "像網購契約——你要付對的錢（前置），我保證出對的貨（後置），違約就知道是誰的問題。",
+    "example": "// 前置：n>=0；後置：回傳 >=1\nfunction factorial(n){ ... }",
+    "related": [
+      "liskov-substitution",
+      "exception",
+      "type-checker"
+    ]
+  },
+  {
+    "slug": "semantic-versioning",
+    "term": "Semantic Versioning (SemVer)",
+    "zh_name": "語意化版號",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "版號 MAJOR.MINOR.PATCH 各有意義：MAJOR＝破壞相容、MINOR＝加功能相容、PATCH＝修 bug。什麼時候在意：升套件時看版號差多少判斷風險；`^1.2.3` 允許升到 <2.0.0（不跳 major）。",
+    "analogy": "像產品型號——大改版（換代）、小升級（加功能）、修正版（除錯），看數字就懂差多少。",
+    "example": "1.4.2 → 1.5.0（加功能、相容）；→ 2.0.0（可能破壞）",
+    "related": [
+      "technical-debt",
+      "ci-cd-pipeline",
+      "feature-flag"
+    ]
+  },
+  {
+    "slug": "etl-pipeline",
+    "term": "ETL / ELT",
+    "zh_name": "資料管線",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把資料從來源搬到分析倉庫的流程：Extract 抽取、Transform 轉換清洗、Load 載入。ELT 則是先載入再轉換（善用倉庫算力）。什麼時候在意：做資料分析/報表前，得先把散落各處的資料整理到一處。",
+    "analogy": "像備料——從市場買菜（抽取）、洗切處理（轉換）、放進冰箱備用（載入）。",
+    "example": "訂單 DB → 清洗去重 → 載入 BigQuery 供分析",
+    "related": [
+      "batch-vs-stream",
+      "data-lineage",
+      "columnar-storage"
+    ]
+  },
+  {
+    "slug": "batch-vs-stream",
+    "term": "Batch vs Stream Processing",
+    "zh_name": "批次 vs 串流處理",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "批次＝累積一段時間一次算（如每天跑報表）；串流＝資料一來就即時處理（如即時儀表板、詐欺偵測）。什麼時候在意：看你要「延遲可接受但省成本」還是「要即時」——多數團隊兩者混用。",
+    "analogy": "批次像每天集中收一次垃圾；串流像有髒東西立刻掃掉——一個省事、一個即時。",
+    "example": "批次：每晚跑昨日營收；串流：Kafka 即時算 QPS",
+    "related": [
+      "etl-pipeline",
+      "message-queue",
+      "fan-out"
+    ]
+  },
+  {
+    "slug": "columnar-storage",
+    "term": "Columnar Storage",
+    "zh_name": "列式儲存",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把資料「按欄」而非「按列」存（Parquet、ClickHouse）。什麼時候在意：分析型查詢（只算某幾欄的總和/平均）——同欄資料連在一起，掃得快又壓縮率高。交易型（一次讀整筆）反而用列式資料庫較好。",
+    "analogy": "像 Excel——想算某一整欄總和時，資料按欄排好一次抓，比一列列翻快得多。",
+    "example": "SELECT avg(price) FROM sales  -- 列式只讀 price 欄",
+    "related": [
+      "olap-oltp",
+      "etl-pipeline",
+      "database-index"
+    ]
+  },
+  {
+    "slug": "data-lineage",
+    "term": "Data Lineage",
+    "zh_name": "資料血緣",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "追蹤「一份資料/欄位是從哪來、經過哪些轉換、被誰用」的來龍去脈。什麼時候在意：報表數字錯了要往回查是哪一步壞的；或改上游前想知道會影響哪些下游。",
+    "analogy": "像食品產銷履歷——這盤菜的每樣食材從哪個農場、經過哪些加工，全查得到。",
+    "example": "營收報表 ← 匯總表 ← 清洗後訂單 ← 原始 orders",
+    "related": [
+      "etl-pipeline",
+      "schema-evolution",
+      "observability"
+    ]
+  },
+  {
+    "slug": "schema-evolution",
+    "term": "Schema Evolution",
+    "zh_name": "結構演進",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "資料的欄位結構隨時間改變（加欄、改型別）時，如何讓新舊資料/新舊程式「都還能讀」。什麼時候在意：改資料表或訊息格式時——要向前/向後相容，別讓舊消費者一夕讀不了。",
+    "analogy": "像表格改版——新增欄位時，讓拿舊表格的人也還看得懂、填得下。",
+    "example": "Avro/Protobuf 加欄位設預設值，舊 reader 仍可解",
+    "related": [
+      "migration",
+      "data-lineage",
+      "semantic-versioning"
+    ]
+  },
+  {
+    "slug": "backfill",
+    "term": "Backfill",
+    "zh_name": "回填",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用新的邏輯/新欄位，把「過去的歷史資料」重新補算一遍。什麼時候在意：新增一個指標或修好一個計算 bug 後，不只影響今後、也要把歷史資料重跑對齊。",
+    "analogy": "像補寫日記——今天才想到要記某件事，把過去幾天的也一起補齊。",
+    "example": "新增『使用者活躍度』欄 → 對歷史事件回跑補值",
+    "related": [
+      "etl-pipeline",
+      "schema-evolution",
+      "batch-vs-stream"
+    ]
+  },
+  {
+    "slug": "minification",
+    "term": "Minification",
+    "zh_name": "壓縮最小化",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "把程式碼裡的空白、換行、註解拿掉、變數改短名，讓檔案更小、載入更快（不改功能）。什麼時候在意：production build 自動做；是縮小 JS/CSS 體積、加速首屏的基本手段。",
+    "analogy": "像把文章的空行和廢話全刪掉、只留精華——意思不變但薄很多。",
+    "example": "function add(a,b){return a+b} → function a(b,c){return b+c}",
+    "related": [
+      "tree-shaking",
+      "code-splitting",
+      "critical-rendering-path"
+    ]
+  },
+  {
+    "slug": "hydration-mismatch",
+    "term": "Hydration Mismatch",
+    "zh_name": "水合不一致",
+    "category": "error",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "SSR 產的 HTML 和瀏覽器重新渲染的結果對不上，React 就報 hydration error。什麼時候在意：用了 `Date.now()`、`window`、隨機值、或依裝置不同的內容在 server/client 產出不同時。修法：把那段延後到 client（useEffect）或用穩定值。",
+    "analogy": "像雙胞胎對筆錄——伺服器和瀏覽器兩份供詞要一字不差，一有出入就抓包。",
+    "example": "❌ SSR 顯示 {Date.now()}（server/client 值不同）→ mismatch",
+    "related": [
+      "hydration",
+      "ssr-csr",
+      "react-server-component"
+    ]
+  },
+  {
+    "slug": "hot-module-replacement",
+    "term": "Hot Module Replacement (HMR)",
+    "zh_name": "熱模組替換",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "開發時改一個檔，只「換掉那個模組」並保留頁面當前狀態，不用整頁重刷。什麼時候在意：改樣式/元件即時看到、還不會弄丟你剛填到一半的表單狀態——現代 dev server（Vite）秒級 HMR。",
+    "analogy": "像換燈泡不用停電——只換壞的那顆，其他電器（頁面狀態）繼續運作。",
+    "example": "改 Button.tsx → 畫面只更新那個元件、表單輸入還在",
+    "related": [
+      "bundler",
+      "source-map",
+      "code-splitting"
+    ]
+  }
+]
