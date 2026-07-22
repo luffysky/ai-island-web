@@ -1,0 +1,326 @@
+[
+  {
+    "slug": "ast-abstract-syntax-tree",
+    "term": "AST (Abstract Syntax Tree)",
+    "zh_name": "抽象語法樹",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把程式碼解析成的「樹狀結構」，每個節點代表一個語法元素（運算、宣告、函式）。什麼時候在意：linter、formatter、編譯器、babel/型別檢查全靠它——它們不是對文字硬幹，而是先轉成 AST 再分析/改寫。",
+    "analogy": "像把一句話拆成『主詞-動詞-受詞』的文法樹——電腦看懂結構後才好處理。",
+    "example": "a + b * 2 → 樹：+(a, *(b, 2))",
+    "related": [
+      "lexer-tokenizer",
+      "parser",
+      "transpiler"
+    ]
+  },
+  {
+    "slug": "lexer-tokenizer",
+    "term": "Lexer / Tokenizer",
+    "zh_name": "詞法分析器",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "編譯的第一步：把原始碼字串切成一個個「token」（關鍵字、識別字、數字、符號）。什麼時候在意：理解編譯流程——先斷詞（lexer）、再組文法（parser）→ AST。",
+    "analogy": "像讀句子先把字詞一個個認出來（斷詞），才能理解整句文法。",
+    "example": "'let x = 5' → [let][x][=][5] 四個 token",
+    "related": [
+      "parser",
+      "ast-abstract-syntax-tree",
+      "syntax"
+    ]
+  },
+  {
+    "slug": "parser",
+    "term": "Parser",
+    "zh_name": "語法分析器",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把 lexer 切好的 token 依文法規則「組成 AST」。什麼時候在意：語法錯誤就是 parser 在這步報的（『unexpected token』）。JSON.parse、SQL、程式語言背後都有 parser。",
+    "analogy": "像把認出來的字詞按文法拼成有結構的句子——拼不起來就報『語法錯誤』。",
+    "example": "[let][x][=][5] → AST：宣告(x, 5)",
+    "related": [
+      "lexer-tokenizer",
+      "ast-abstract-syntax-tree",
+      "syntax"
+    ]
+  },
+  {
+    "slug": "jit-compilation",
+    "term": "JIT Compilation",
+    "zh_name": "即時編譯",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "Just-In-Time：程式跑的時候，把「熱點」（常跑的部分）即時編成機器碼加速，兼顧直譯的彈性與編譯的速度。什麼時候在意：V8(JS)、JVM、PyPy 為何能又快又不用先編譯——靠 JIT 邊跑邊優化熱路徑。",
+    "analogy": "像口譯員發現某段話常講，就先把它背成順口的譯法，之後遇到直接飆出來。",
+    "example": "V8 把常跑的 JS 函式 JIT 成機器碼",
+    "related": [
+      "compiler-vs-interpreter",
+      "bytecode",
+      "cpu-cache"
+    ]
+  },
+  {
+    "slug": "transpiler",
+    "term": "Transpiler",
+    "zh_name": "轉譯器",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把一種語言/版本的原始碼轉成「另一種同層級的原始碼」（不是機器碼）。什麼時候在意：TypeScript→JavaScript、新版 JS→舊版相容、Sass→CSS——寫新語法、產出瀏覽器/環境吃得下的舊語法。",
+    "analogy": "像把台語翻成國語——還是人看的語言（同層級），只是換個大家都懂的版本。",
+    "example": "Babel: ES2023 JS → ES5 相容 JS",
+    "related": [
+      "compiler-vs-interpreter",
+      "ast-abstract-syntax-tree",
+      "minification"
+    ]
+  },
+  {
+    "slug": "linker",
+    "term": "Linker",
+    "zh_name": "連結器",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "編譯後把多個「目的檔」和函式庫「連」成一個可執行檔，解析彼此的符號參照。什麼時候在意：C/C++/Rust 的『undefined reference』『symbol not found』就是連結階段的錯——編譯過了但連不起來。",
+    "analogy": "像把各章分開印好的稿子裝訂成一本書，還要把『見第 X 章』的頁碼參照對好。",
+    "example": "main.o + utils.o + libc → 連成 a.out",
+    "related": [
+      "compiler-vs-interpreter",
+      "symbol-table",
+      "intermediate-representation"
+    ]
+  },
+  {
+    "slug": "symbol-table",
+    "term": "Symbol Table",
+    "zh_name": "符號表",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "編譯器內部記錄「每個名字（變數/函式/型別）對應什麼、什麼型別、在哪個作用域」的表。什麼時候在意：理解編譯器怎麼做名稱解析、型別檢查、作用域——找不到名字就報『undefined』。",
+    "analogy": "像通訊錄——記著每個名字對應的人是誰、電話幾號，用到名字就查表對應。",
+    "example": "編譯 x = y + 1 時查表確認 y 有宣告、型別對",
+    "related": [
+      "parser",
+      "linker",
+      "type-inference"
+    ]
+  },
+  {
+    "slug": "intermediate-representation",
+    "term": "Intermediate Representation (IR)",
+    "zh_name": "中間表示",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "編譯器把原始碼先轉成一種「中間語言」（如 LLVM IR）再優化、再產各平台機器碼。什麼時候在意：理解為何一個編譯器前端能支援多語言、後端能出多平台——中間用 IR 當共同橋樑。",
+    "analogy": "像世界語當中轉——各國語言先譯成世界語，再從世界語譯成各國語言，不用兩兩互譯。",
+    "example": "Rust/C/Swift → LLVM IR → x86 / ARM 機器碼",
+    "related": [
+      "compiler-vs-interpreter",
+      "bytecode",
+      "linker"
+    ]
+  },
+  {
+    "slug": "static-vs-dynamic-typing",
+    "term": "Static vs Dynamic Typing",
+    "zh_name": "靜態 vs 動態型別",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "靜態＝型別在編譯期就固定並檢查（TS、Java、Rust）；動態＝執行期才知道型別（Python、JS）。什麼時候在意：靜態早抓型別錯、好重構、IDE 提示強；動態寫得快、彈性高但錯誤到執行才爆。",
+    "analogy": "靜態像出貨前逐箱貼標檢查（早發現裝錯）；動態像打開才知道裡面是什麼（快但可能驚喜）。",
+    "example": "TS 編譯期擋型別錯；Python 執行到才 TypeError",
+    "related": [
+      "type-inference",
+      "type-checker",
+      "syntax"
+    ]
+  },
+  {
+    "slug": "code-signing",
+    "term": "Code Signing",
+    "zh_name": "程式碼簽章",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用開發者憑證幫 App「數位簽章」，證明它是你發的、且沒被竄改。什麼時候在意：iOS/Android/桌面 App 上架與安裝都要——簽章錯（憑證過期、profile 不符）是打包最常見的坑。",
+    "analogy": "像商品上的防偽封條＋出廠章——證明是正品、沒被動過手腳，缺了不給上架。",
+    "example": "iOS 要 Apple 憑證 + provisioning profile 才能裝",
+    "related": [
+      "app-store-review",
+      "biometric-auth",
+      "ota-update"
+    ]
+  },
+  {
+    "slug": "ota-update",
+    "term": "OTA Update",
+    "zh_name": "空中更新",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "Over-The-Air：不經過 App Store 審核，直接把「JS/資源更新」推到已安裝的 App。什麼時候在意：React Native / Expo 修小 bug 想跳過幾天審核即時上線——但只能更新 JS 層，動到原生碼還是要送審。",
+    "analogy": "像手機系統的線上更新——不用拿去店裡重灌，連上網就自己更新。",
+    "example": "Expo EAS Update / CodePush 熱更新 JS bundle",
+    "related": [
+      "code-signing",
+      "app-store-review",
+      "background-fetch"
+    ]
+  },
+  {
+    "slug": "biometric-auth",
+    "term": "Biometric Authentication",
+    "zh_name": "生物辨識驗證",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用指紋 / 臉部 / 虹膜解鎖或驗證身分。什麼時候在意：App 登入 / 付款的便利又安全的驗證。重點：生物特徵存在裝置的安全區（不上傳伺服器），App 只拿到『通過與否』。",
+    "analogy": "像門禁刷臉——門自己認人開鎖，你的臉不會被拷貝一份送到別處。",
+    "example": "iOS Face ID / Android BiometricPrompt 解鎖 App",
+    "related": [
+      "code-signing",
+      "app-sandbox",
+      "totp"
+    ]
+  },
+  {
+    "slug": "background-fetch",
+    "term": "Background Fetch",
+    "zh_name": "背景抓取",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "App 沒開在前景時，系統偶爾喚醒它「在背景更新資料」（抓新訊息、同步）。什麼時候在意：想讓 App 一打開就有新內容。但作業系統嚴格限制頻率與時間（省電），不保證即時。",
+    "analogy": "像請人趁你睡覺時順手把信箱的信收進來——但只能偶爾、不能一直吵醒他。",
+    "example": "新聞 App 半夜背景抓好隔天頭條",
+    "related": [
+      "push-notification",
+      "ota-update",
+      "offline-first"
+    ]
+  },
+  {
+    "slug": "app-sandbox",
+    "term": "App Sandbox",
+    "zh_name": "App 沙盒",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "作業系統把每個 App 關在自己的「沙盒」裡——只能存取自己的資料與被授權的資源，碰不到別的 App 或系統要害。什麼時候在意：手機安全的根基；為何 App 要『請求權限』才能用相機/通訊錄。",
+    "analogy": "像各自獨立的遊戲圍欄——小孩只能在自己欄裡玩、拿別欄東西要先問過。",
+    "example": "App 要讀相簿 → 系統跳權限請求才給",
+    "related": [
+      "biometric-auth",
+      "code-signing",
+      "kernel-userspace"
+    ]
+  },
+  {
+    "slug": "native-bridge",
+    "term": "Native Bridge",
+    "zh_name": "原生橋接",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "跨平台框架（React Native / Flutter）讓 JS/Dart 呼叫『原生功能（相機、藍牙、感測器）』的橋樑。什麼時候在意：跨平台 App 要用原生能力、或效能瓶頸——舊 RN 的 bridge 是序列化通訊、量大會慢（新架構 JSI 改善）。",
+    "analogy": "像翻譯官——JS 這邊講的話透過翻譯官傳給原生那邊，量太大翻譯就成瓶頸。",
+    "example": "RN 呼叫相機：JS →(bridge)→ 原生相機模組",
+    "related": [
+      "webview",
+      "app-sandbox",
+      "code-signing"
+    ]
+  },
+  {
+    "slug": "tcp-vs-udp",
+    "term": "TCP vs UDP",
+    "zh_name": "TCP vs UDP",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "兩種傳輸協定：TCP 可靠（保證送到、有序、會重傳），慢一點；UDP 不保證送達、無序，但快、開銷小。什麼時候在意：網頁/檔案傳輸用 TCP（不能掉字）；即時遊戲/語音/影像串流用 UDP（掉一兩幀沒差、要即時）。",
+    "analogy": "TCP 像掛號信（保證送達、簽收）；UDP 像明信片（丟出去就算，快但可能寄丟）。",
+    "example": "HTTP/網頁用 TCP；線上遊戲/視訊多用 UDP",
+    "related": [
+      "packet-loss",
+      "webrtc",
+      "http3"
+    ]
+  },
+  {
+    "slug": "base64-encoding",
+    "term": "Base64 Encoding",
+    "zh_name": "Base64 編碼",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "把二進位資料（圖片、檔案）轉成「純文字」的編碼，好塞進只吃文字的地方（JSON、URL、email）。什麼時候在意：內嵌小圖到 HTML/CSS（data URI）、傳附件。注意：它不是加密（人人可解），且會讓體積膨脹約 33%。",
+    "analogy": "像把圖片描述成一長串只有字母數字的密語——不是保密，只是換成純文字好傳。",
+    "example": "data:image/png;base64,iVBORw0KG...（內嵌小圖）",
+    "related": [
+      "url-encoding",
+      "mime-type",
+      "jwt"
+    ]
+  },
+  {
+    "slug": "nat-traversal",
+    "term": "NAT Traversal",
+    "zh_name": "NAT 穿透",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "多數裝置藏在路由器 NAT 後面、沒有公開 IP，要讓外面主動連進來得靠穿透技術（STUN 打洞、TURN 中繼）。什麼時候在意：P2P 連線（WebRTC 視訊、遊戲連線、檔案直傳）——雙方都在 NAT 後時最難連。",
+    "analogy": "像兩個都住在有門禁大樓的人要直接互訪——得靠管理員（STUN/TURN）幫忙牽線打洞。",
+    "example": "WebRTC 用 STUN 打洞、失敗退回 TURN 中繼",
+    "related": [
+      "webrtc",
+      "tcp-vs-udp",
+      "port-forwarding"
+    ]
+  }
+]
