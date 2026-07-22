@@ -228,7 +228,8 @@
 - [x] ~~seed 36–40：Python 模組 128 個（stdlib+外部）→ 1773 條~~ ✅ 0721
 - [x] ~~seed 41：DB查詢/Git/K8s雲原生/LLM/分散式系統 33 條 → **1806 條**~~ ✅ 0721
 - [x] ~~seed 42：網路協定/Web/資安/加密驗證 41 條 → **1847 條**（全查過無 slug 衝突）~~ ✅ 0721
-- [ ] 4.2.1 續寫到 5000（現 **2283**，從 `dictionary-seed-62.json` 接）
+- [ ] 4.2.1 續寫到 5000（現 **2304**，從 `dictionary-seed-63.json` 接）
+  - [x] ~~seed 62：商業/產品 + SEO + 行銷成長 21 條 → **2304**~~ ✅ 0723（TAM-SAM-SOM/GTM/JTBD/MVP-MLP/pivot/PLG/飛輪 · on-page SEO/backlink/SERP/CWV/結構化資料/canonical/sitemap · 轉換漏斗/AARRR/歸因模型/再行銷/滴灌郵件/社會證明/誘餌內容）
   - [x] ~~seed 61：CSS 進階 + 型別理論 + 程式範式 20 條 → **2283**~~ ✅ 0723（@keyframes/CSS變數/巢狀/層疊層/特異性大戰/scroll-snap/aspect-ratio/流體排版 · 共變逆變/型別抹除/漸進式型別/和積型別/型別類別/變異標註 · 命令式/OOP/函數式/邏輯式/反射/面向切面範式）
   - [x] ~~seed 60：進階資料結構 + 網路底層 + PWA 22 條 → **2263**~~ ✅ 0723（B樹/LSM樹/紅黑樹/AVL/skip-list/併查集/環形緩衝/bitmap · 子網劃分/DNS記錄類型/DHCP/proxy-vs-vpn/ping/頻寬vs吞吐 · SW生命週期/web-manifest/安裝提示/app-shell/離線快取/背景同步/web-push/cache-storage）
   - [x] ~~seed 59：錯誤處理 + 可觀測性 + 可靠性/發布 23 條 → **2241**~~ ✅ 0723（try-catch-finally/例外vs錯誤/fail-fast/重試退避/斷路器/優雅降級/stack-trace/panic-recover · log級別/span-trace/OpenTelemetry/correlation-id/黃金訊號/RED指標/錯誤追蹤/可用性監控 · 零停機/安全DB遷移/主幹開發/回退策略/錯誤預算/toil自動化/影子流量）

@@ -1,0 +1,380 @@
+[
+  {
+    "slug": "tam-sam-som",
+    "term": "TAM / SAM / SOM",
+    "zh_name": "市場規模三層",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "市場大小的三層：TAM（總潛在市場，全部人）、SAM（你產品能服務的那塊）、SOM（你短期實際搶得到的）。什麼時候在意：估市場、寫商業計畫——別只講 TAM『幾千億市場』（沒意義），SOM 才是實際能吃到的。",
+    "analogy": "像賣雨傘——全台灣人(TAM)、會下雨地區的人(SAM)、你店附近實際會買的人(SOM)，最後那個才是你的生意。",
+    "example": "TAM 全球、SAM 台灣、SOM 首年可觸及的用戶",
+    "related": [
+      "go-to-market",
+      "product-market-fit",
+      "saas-metrics"
+    ]
+  },
+  {
+    "slug": "go-to-market",
+    "term": "Go-to-Market (GTM)",
+    "zh_name": "上市策略",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "『產品要怎麼推到市場、賣給誰、用什麼管道』的整體計畫。什麼時候在意：要上線/推新產品——定義目標客群、定價、通路（自媒體/廣告/銷售）、訊息。好產品沒有 GTM 也賣不動。",
+    "analogy": "像開餐廳不只把菜做好——還要想開在哪、賣給誰、怎麼讓人知道、怎麼定價。",
+    "example": "GTM：鎖定獨立開發者、靠社群+內容行銷、freemium",
+    "related": [
+      "tam-sam-som",
+      "product-led-growth",
+      "conversion-funnel"
+    ]
+  },
+  {
+    "slug": "jobs-to-be-done",
+    "term": "Jobs To Be Done (JTBD)",
+    "zh_name": "待完成的任務",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "看使用者『雇用你的產品是為了完成什麼任務』，而非只看人口屬性。什麼時候在意：做需求/定位——經典『人們不是要買鑽頭，是要牆上一個洞』；抓住真正的 job 才做對功能。",
+    "analogy": "經典：客人買奶昔不是因為愛喝，是為了『通勤路上單手能吃、撐到中午』——那才是它被雇用的 job。",
+    "example": "問『你雇這產品來完成什麼？』而非『你幾歲』",
+    "related": [
+      "product-market-fit",
+      "minimum-lovable-product",
+      "persona"
+    ]
+  },
+  {
+    "slug": "minimum-lovable-product",
+    "term": "MVP / MLP",
+    "zh_name": "最小可行 / 可愛產品",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "MVP＝能『驗證核心假設』的最小版本；MLP（Minimum Lovable）＝不只可用、還要讓人喜歡。什麼時候在意：別一開始做太大——先做最小的去驗證有沒有人要，但也別粗糙到沒人想用（MLP 的提醒）。",
+    "analogy": "MVP 像先做一台能動的滑板車驗證『有人要代步嗎』，而不是直接造一台車。",
+    "example": "先上核心功能驗證需求，再依回饋加",
+    "related": [
+      "product-market-fit",
+      "jobs-to-be-done",
+      "pivot"
+    ]
+  },
+  {
+    "slug": "pivot",
+    "term": "Pivot",
+    "zh_name": "轉向",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "發現原方向不對時，『基於學到的東西，策略性地大轉方向』（換客群、換問題、換商業模式），但保留累積的資產。什麼時候在意：驗證後發現沒 PMF——不是硬撐也不是全放棄，是聰明地轉。很多知名公司都 pivot 過。",
+    "analogy": "像一隻腳定住、另一隻腳轉方向——不是整個人跑掉，是以既有基礎換個朝向。",
+    "example": "從 B2C 沒起色 → pivot 到 B2B 同技術",
+    "related": [
+      "product-market-fit",
+      "go-to-market",
+      "runway-2"
+    ]
+  },
+  {
+    "slug": "product-led-growth",
+    "term": "Product-Led Growth (PLG)",
+    "zh_name": "產品驅動成長",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "讓『產品本身』帶動獲取、轉換、擴散（免費試用、易上手、用了就想升級），而非靠業務推銷。什麼時候在意：SaaS/工具——Slack/Figma/Notion 的打法，降低獲客成本、靠體驗自然擴散。",
+    "analogy": "像好吃的試吃——東西夠好，客人自己會買、還揪朋友來，不用店員一直推。",
+    "example": "免費用到爽 → 團隊變大自然升級付費",
+    "related": [
+      "flywheel",
+      "conversion-funnel",
+      "go-to-market"
+    ]
+  },
+  {
+    "slug": "flywheel",
+    "term": "Flywheel",
+    "zh_name": "飛輪效應",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "一個『越轉越省力、自我強化』的成長循環（更多用戶→更多內容/資料→更好體驗→更多用戶）。什麼時候在意：設計可複利的成長——初期推得很費力，一旦轉起來就自帶動能。Amazon 的低價→流量→賣家→更低價是經典。",
+    "analogy": "像推一個超重的飛輪——一開始很吃力，轉起來後慣性讓它越轉越快、越省力。",
+    "example": "用戶↑→UGC↑→SEO/口碑↑→用戶↑（自我強化）",
+    "related": [
+      "growth-loop",
+      "product-led-growth",
+      "moat"
+    ]
+  },
+  {
+    "slug": "seo-onpage",
+    "term": "On-Page SEO",
+    "zh_name": "頁面內 SEO",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "你在『自己頁面上』能做的 SEO：標題(title)、描述、標題階層(H1-H3)、語意化、內鏈、圖片 alt、頁面速度、關鍵字自然融入。什麼時候在意：內容型網站基本功——先把自己頁面做對，搜尋引擎才看得懂、排得上。",
+    "analogy": "像把店面招牌、菜單、動線都弄清楚——客人（搜尋引擎）一進來就知道你賣什麼。",
+    "example": "對的 title/description/H1 + 內鏈 + 快 + 語意化",
+    "related": [
+      "core-web-vitals",
+      "meta-description",
+      "structured-data-seo"
+    ]
+  },
+  {
+    "slug": "backlink",
+    "term": "Backlink",
+    "zh_name": "反向連結",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "『別的網站連到你』的連結，是 SEO 最重要的排名信號之一（像投票/背書）。什麼時候在意：想提升權威與排名——高品質、相關網站的連結最有價值；買連結/垃圾連結會被懲罰。靠好內容自然被引用最穩。",
+    "analogy": "像口碑推薦——越多有信譽的人（網站）主動介紹你，搜尋引擎就越信任你。",
+    "example": "權威媒體引用你的文章 → 高品質 backlink",
+    "related": [
+      "serp",
+      "seo-onpage",
+      "social-proof"
+    ]
+  },
+  {
+    "slug": "serp",
+    "term": "SERP",
+    "zh_name": "搜尋結果頁",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "Search Engine Results Page——你搜尋後看到的那頁結果（含廣告、自然結果、精選摘要、知識面板）。什麼時候在意：做 SEO 要研究 SERP——看排前面的長怎樣、有沒有精選摘要可搶、競爭多激烈，決定策略。",
+    "analogy": "像貨架——大家都想搶最顯眼的位置（第一頁前幾名），研究貨架擺法才知道怎麼上架。",
+    "example": "分析目標關鍵字的 SERP：誰在前 10、有無 featured snippet",
+    "related": [
+      "backlink",
+      "seo-onpage",
+      "structured-data-seo"
+    ]
+  },
+  {
+    "slug": "core-web-vitals",
+    "term": "Core Web Vitals",
+    "zh_name": "核心網頁指標",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "Google 用來評『網頁體驗好不好』的三個指標：LCP（最大內容多快出現）、INP（互動反應快不快）、CLS（版面有沒有亂跳）。什麼時候在意：SEO 排名信號之一 + 真實體驗——這三個爛，使用者跑掉、排名也受影響。",
+    "analogy": "像餐廳的『上菜快不快、服務反應快不快、桌子有沒有晃』——體驗指標，差了客人不想再來。",
+    "example": "LCP<2.5s、INP<200ms、CLS<0.1（good）",
+    "related": [
+      "seo-onpage",
+      "lazy-image",
+      "aspect-ratio-css"
+    ]
+  },
+  {
+    "slug": "structured-data-seo",
+    "term": "Structured Data (Schema.org)",
+    "zh_name": "結構化資料",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用標準格式(JSON-LD)『告訴搜尋引擎頁面內容是什麼』（文章、商品、評分、FAQ），可獲得 rich results（星等、FAQ 展開）。什麼時候在意：想在 SERP 搶眼——加了結構化資料，結果可能顯示評分星星、價格、FAQ，點擊率更高。",
+    "analogy": "像幫商品貼上標準規格標籤——搜尋引擎不用猜，直接知道『這是有 4.5 星的食譜』並秀出來。",
+    "example": "JSON-LD 標 Article/Product/FAQ → rich snippet",
+    "related": [
+      "serp",
+      "seo-onpage",
+      "core-web-vitals"
+    ]
+  },
+  {
+    "slug": "canonical-url",
+    "term": "Canonical URL",
+    "zh_name": "標準網址",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用 `rel=canonical` 告訴搜尋引擎『這幾個重複/相似的頁，哪個是正版』，避免重複內容分散權重。什麼時候在意：同內容有多個網址（帶參數、分頁、http/https）——指定 canonical，把 SEO 權重集中到正版。",
+    "analogy": "像同一篇文章被轉載多處——標明『原文在這』，功勞（權重）算給正本，不被稀釋。",
+    "example": "?utm=x 的頁面 canonical 指向乾淨主網址",
+    "related": [
+      "sitemap-xml",
+      "seo-onpage",
+      "serp"
+    ]
+  },
+  {
+    "slug": "sitemap-xml",
+    "term": "XML Sitemap",
+    "zh_name": "網站地圖",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "一個列出你網站『所有重要頁面網址』的 XML 檔，幫搜尋引擎有效率地找到並索引你的頁。什麼時候在意：網站大/新/頁面深——提交 sitemap 給 Google Search Console，讓它別漏掉頁面。配 robots.txt 指路。",
+    "analogy": "像給訪客一張『景點總表』——不用他自己亂逛找，直接照表把每個地方都逛到。",
+    "example": "sitemap.xml 列全站 URL → 提交 Search Console",
+    "related": [
+      "canonical-url",
+      "crawl-budget",
+      "seo-onpage"
+    ]
+  },
+  {
+    "slug": "conversion-funnel",
+    "term": "Conversion Funnel",
+    "zh_name": "轉換漏斗",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "使用者從『知道→有興趣→試用→付費』一層層流失的過程，每關都會掉一些人。什麼時候在意：優化成長——找出『哪一關掉最多』針對性修（漏最兇的地方改善 CP 值最高），別亂槍打鳥。",
+    "analogy": "像漏斗——上面倒進很多水（訪客），一層層漏，最後滴出來的才是客戶；補最漏的那層最有效。",
+    "example": "訪客 1000→註冊 200→試用 80→付費 20，看哪關掉最多",
+    "related": [
+      "aarrr-pirate",
+      "landing-page-optimization",
+      "product-led-growth"
+    ]
+  },
+  {
+    "slug": "aarrr-pirate",
+    "term": "AARRR (Pirate Metrics)",
+    "zh_name": "海盜指標",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "成長的五個階段指標：Acquisition(獲取)、Activation(啟用)、Retention(留存)、Referral(推薦)、Revenue(營收)。什麼時候在意：系統化看成長——別只盯註冊數，五關都要顧；唸起來像海盜的『AARRR』。",
+    "analogy": "像顧客旅程的五個關卡——來了、上手了、留下了、揪人了、付錢了，每關都要過。",
+    "example": "分別追 5 指標找最弱一環優先改",
+    "related": [
+      "conversion-funnel",
+      "activation-metric",
+      "retention"
+    ]
+  },
+  {
+    "slug": "attribution-model",
+    "term": "Attribution Model",
+    "zh_name": "歸因模型",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "決定『一筆轉換的功勞算給哪個行銷管道』的規則（最後點擊、首次點擊、平均分配、時間衰減）。什麼時候在意：算行銷 ROI——使用者經過多個接觸點才買，歸因方式不同會讓你對『哪個管道有效』判斷完全不同。",
+    "analogy": "像進球助攻怎麼算——最後一腳(last click)？第一腳(first)？還是全隊都算？算法不同、功勞歸屬就不同。",
+    "example": "last-click 高估最後管道、低估品牌曝光的貢獻",
+    "related": [
+      "conversion-funnel",
+      "retargeting",
+      "ab-test-marketing"
+    ]
+  },
+  {
+    "slug": "retargeting",
+    "term": "Retargeting",
+    "zh_name": "再行銷",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "對『來過但沒轉換的人』再投廣告拉回來（看過商品沒買、加購沒結帳）。什麼時候在意：這群人意願高、CP 值好——用像素追蹤、投放提醒。但別太煩人（一直跟著跑會反感），設頻率上限。",
+    "analogy": "像店員記得『剛才看很久沒買的客人』，適時提醒一句『那件還在喔』——但別一直跟著念。",
+    "example": "加購未結帳 → 隔天投『你的購物車在等你』廣告",
+    "related": [
+      "attribution-model",
+      "conversion-funnel",
+      "email-drip"
+    ]
+  },
+  {
+    "slug": "email-drip",
+    "term": "Email Drip Campaign",
+    "zh_name": "滴灌式郵件",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "依使用者行為/時間『自動分批寄一系列信』（歡迎信→教學→案例→優惠），逐步引導。什麼時候在意：養客/轉換——新註冊的人自動收到一連串引導信，不用手動；比一次群發轟炸有效。",
+    "analogy": "像滴灌澆花——不是一次倒一桶水（淹死），是定時滴一點，慢慢養。",
+    "example": "註冊 D0 歡迎、D1 教學、D3 案例、D7 優惠",
+    "related": [
+      "conversion-funnel",
+      "lead-magnet",
+      "retargeting"
+    ]
+  },
+  {
+    "slug": "social-proof",
+    "term": "Social Proof",
+    "zh_name": "社會證明",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "用『別人也在用/推薦』來降低新客戶的疑慮（用戶數、評價、名人背書、logo 牆、即時購買通知）。什麼時候在意：提升轉換——人會跟隨群體，『已有 10 萬人使用』『★4.8』比自賣自誇有力。要真實，造假會反噬。",
+    "analogy": "像餐廳門口排隊——大家看到人多就覺得好吃，也想排。真實的人氣會吸引更多人。",
+    "example": "落地頁放真實評價、用戶數、合作品牌 logo",
+    "related": [
+      "landing-page-optimization",
+      "backlink",
+      "conversion-funnel"
+    ]
+  },
+  {
+    "slug": "lead-magnet",
+    "term": "Lead Magnet",
+    "zh_name": "誘餌內容",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用『免費有價值的東西』(電子書、範本、工具、試用)換取潛在客戶的聯絡方式(email)。什麼時候在意：獲取名單——先給價值建立信任，再慢慢轉換（配 email drip）。誘餌要真的有用、跟你產品相關。",
+    "analogy": "像試吃換你留 LINE——先給你嚐到甜頭，建立關係，之後再推薦正餐。",
+    "example": "『免費下載 SEO 檢查表』→ 換 email → drip 培養",
+    "related": [
+      "email-drip",
+      "conversion-funnel",
+      "social-proof"
+    ]
+  }
+]
