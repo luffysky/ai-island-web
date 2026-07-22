@@ -1,0 +1,398 @@
+[
+  {
+    "slug": "mvcc",
+    "term": "MVCC",
+    "zh_name": "多版本並發控制",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "Multi-Version Concurrency Control——資料每次改都留一個新版本，讓『讀不擋寫、寫不擋讀』。什麼時候在意：Postgres/MySQL 為何高併發還順——讀取看到的是某個時間點的快照，不用等寫完。代價是留舊版本要定期清（VACUUM）。",
+    "analogy": "像文件的版本歷史——你在看 v3 時，別人可以同時存 v4，各看各的版本不打架。",
+    "example": "Postgres 讀取拿快照、不被同時的 UPDATE 卡住",
+    "related": [
+      "vacuum-postgres",
+      "dirty-read",
+      "optimistic-locking"
+    ]
+  },
+  {
+    "slug": "acid-vs-base",
+    "term": "ACID vs BASE",
+    "zh_name": "ACID vs BASE",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "兩種一致性取向：ACID（傳統關聯式，強一致、交易可靠）；BASE（很多 NoSQL，Basically Available, Soft state, Eventually consistent，放寬一致換高可用/擴展）。什麼時候在意：選資料庫——金流要 ACID、社群動態可接受 BASE 的最終一致。",
+    "analogy": "ACID 像銀行（每筆帳一定對）；BASE 像社群按讚數（暫時不同步沒關係，過陣子就對了）。",
+    "example": "轉帳用 ACID；貼文計數用 BASE 最終一致",
+    "related": [
+      "acid-transaction",
+      "eventual-consistency",
+      "cap-theorem"
+    ]
+  },
+  {
+    "slug": "dirty-read",
+    "term": "Dirty Read",
+    "zh_name": "髒讀",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "讀到『別的交易還沒 commit（可能會 rollback）的資料』。什麼時候在意：交易隔離級別——最低的 Read Uncommitted 會髒讀（讀到假資料、對方一回滾就錯）。多數 DB 預設 Read Committed 以上避免它。",
+    "analogy": "像看到別人購物車還沒結帳的東西就當成已賣出——結果他放棄結帳，你的判斷就錯了。",
+    "example": "隔離級別調到 Read Committed 以上防髒讀",
+    "related": [
+      "phantom-read",
+      "mvcc",
+      "isolation-level"
+    ]
+  },
+  {
+    "slug": "phantom-read",
+    "term": "Phantom Read",
+    "zh_name": "幻讀",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "同一交易內兩次『同樣的範圍查詢』，結果筆數不同（因為別的交易插入/刪了符合的列）。什麼時候在意：需要範圍一致時（對帳、報表）——要用最高的 Serializable 隔離或加鎖才完全避免。",
+    "analogy": "像數房間人數，你數兩次卻不一樣——中途有人偷偷進來（幻影），害你算不準。",
+    "example": "Serializable 隔離級別可防幻讀（代價是更多鎖）",
+    "related": [
+      "dirty-read",
+      "isolation-level",
+      "mvcc"
+    ]
+  },
+  {
+    "slug": "window-function",
+    "term": "Window Function",
+    "zh_name": "視窗函數",
+    "category": "syntax",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "SQL 中『對一組相關列做計算但不合併成一列』的函數（ROW_NUMBER、RANK、running total、移動平均）。什麼時候在意：排名、累計、同組比較——比 GROUP BY 強，能保留每一列又加上跨列的計算。",
+    "analogy": "像考卷發回時，每個人不只看自己分數，還多一欄『班排名』——保留個人資料又加了跨人比較。",
+    "example": "RANK() OVER (PARTITION BY dept ORDER BY salary DESC)",
+    "related": [
+      "cte-recursive",
+      "sql-join-types",
+      "olap-oltp"
+    ]
+  },
+  {
+    "slug": "cte-recursive",
+    "term": "Recursive CTE",
+    "zh_name": "遞迴共用表達式",
+    "category": "syntax",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "用 `WITH RECURSIVE` 讓 SQL 能『查樹狀/圖狀的層層資料』（組織架構、留言巢狀、分類樹）。什麼時候在意：查『某人底下所有下屬』『某留言的所有回覆』這種階層——一句遞迴 CTE 搞定，不用程式迴圈打很多次 query。",
+    "analogy": "像順藤摸瓜——從一個節點自動往下一層層展開，直到摸完整串。",
+    "example": "WITH RECURSIVE 查員工的所有下屬層級",
+    "related": [
+      "window-function",
+      "graph-traversal",
+      "sql-join-types"
+    ]
+  },
+  {
+    "slug": "database-trigger",
+    "term": "Database Trigger",
+    "zh_name": "資料庫觸發器",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "設定『某表被 INSERT/UPDATE/DELETE 時自動執行』的資料庫端邏輯。什麼時候在意：自動維護（改資料時自動記 audit log、更新 updated_at、算衍生欄）。優點是保證一定觸發；缺點是『隱形魔法』難 debug、難測，別放太多業務邏輯。",
+    "analogy": "像自動門感應器——有人經過（改資料）就自動反應（做某事），但裝太多會搞不清誰觸發了什麼。",
+    "example": "UPDATE 前自動設 updated_at = now()",
+    "related": [
+      "stored-procedure-2",
+      "change-data-capture",
+      "mvcc"
+    ]
+  },
+  {
+    "slug": "change-data-capture",
+    "term": "Change Data Capture (CDC)",
+    "zh_name": "變更資料捕捉",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "即時捕捉資料庫的『每一筆增刪改』，串流出去給別的系統（同步到搜尋引擎、資料倉庫、快取）。什麼時候在意：要讓 DB 的變動即時反映到其他地方——讀 DB 的 log（如 Postgres WAL）比輪詢查詢高效。Debezium 是代表。",
+    "analogy": "像即時轉播——DB 一有動作馬上播報出去，下游系統跟著更新，不用一直去問『有變嗎』。",
+    "example": "Debezium 讀 WAL → 把 DB 變更推到 Kafka → 同步 ES",
+    "related": [
+      "write-ahead-log",
+      "event-driven",
+      "database-trigger"
+    ]
+  },
+  {
+    "slug": "test-pyramid",
+    "term": "Test Pyramid",
+    "zh_name": "測試金字塔",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "測試比例的建議：底層大量『快又便宜』的單元測試、中層適量整合測試、頂層少量『慢又貴』的 E2E。什麼時候在意：規劃測試策略——別倒過來（一堆慢 E2E、沒單元測試），會慢又脆。多數該是金字塔形。",
+    "analogy": "像蓋房子——地基（單元測試）要多要穩，越上層（E2E）越少越精，倒三角會塌。",
+    "example": "70% 單元 / 20% 整合 / 10% E2E",
+    "related": [
+      "unit-integration-e2e",
+      "mocking-vs-stubbing",
+      "flaky-test-2"
+    ]
+  },
+  {
+    "slug": "unit-integration-e2e",
+    "term": "Unit / Integration / E2E",
+    "zh_name": "單元 / 整合 / 端對端",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "三種測試層級：單元（測單一函式，隔離）、整合（測幾個模組一起，如 API+DB）、E2E（模擬真實使用者從頭走一遍）。什麼時候在意：知道各測什麼——單元抓邏輯錯、整合抓接線錯、E2E 抓流程錯，互補。",
+    "analogy": "單元像檢查單顆零件、整合像測幾個零件裝一起、E2E 像整台車上路試開。",
+    "example": "函式測單元、API+DB 測整合、登入到結帳測 E2E",
+    "related": [
+      "test-pyramid",
+      "contract-testing",
+      "load-vs-stress-test"
+    ]
+  },
+  {
+    "slug": "mocking-vs-stubbing",
+    "term": "Mock vs Stub",
+    "zh_name": "Mock vs Stub",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "測試替身兩種：stub 只『餵固定回傳值』；mock 還『驗證有沒有被正確呼叫』。什麼時候在意：寫測試選對工具——只需要讓相依有回應用 stub；要確認『有呼叫 send() 且參數對』用 mock。別過度 mock（測到假的）。",
+    "analogy": "stub 像便條答案（只給答案）；mock 像監視器（還記錄你怎麼問的、問幾次）。",
+    "example": "stub 讓 API 回假資料；mock 驗證 email.send 被呼叫",
+    "related": [
+      "mock",
+      "stub",
+      "test-double-2"
+    ]
+  },
+  {
+    "slug": "property-based-test",
+    "term": "Property-Based Testing",
+    "zh_name": "性質測試",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "不寫具體例子，而是描述『應該恆成立的性質』，讓工具自動生大量隨機輸入去戳（QuickCheck、Hypothesis、fast-check）。什麼時候在意：想找你沒想到的邊界 case——如『排序後長度不變、元素不增減』，工具會自動找出反例。",
+    "analogy": "像請一個超龜毛的測試員亂試幾千種輸入——你只說『規則是什麼』，他負責找出打破規則的怪招。",
+    "example": "性質：reverse(reverse(x))==x → 工具丟千種 x 驗",
+    "related": [
+      "snapshot-testing",
+      "test-fixtures",
+      "arrange-act-assert"
+    ]
+  },
+  {
+    "slug": "snapshot-testing",
+    "term": "Snapshot Testing",
+    "zh_name": "快照測試",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "第一次跑時把輸出（UI 結構、JSON）存成『快照』，之後每次比對『有沒有跟快照不一樣』，變了就提醒你確認。什麼時候在意：測 UI 元件/序列化輸出——抓『非預期的變動』。缺點：容易養成無腦更新快照的壞習慣（要真的看 diff）。",
+    "analogy": "像拍一張『標準照』存檔——之後每次比對現況跟標準照有沒有變，變了就檢查是不是故意的。",
+    "example": "React 元件 render 結果存快照，改動時 diff 提示",
+    "related": [
+      "property-based-test",
+      "golden-master",
+      "test-coverage-2"
+    ]
+  },
+  {
+    "slug": "contract-testing",
+    "term": "Contract Testing",
+    "zh_name": "契約測試",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "驗證『服務提供方跟消費方對 API 格式的約定沒被破壞』（Pact）。什麼時候在意：微服務——後端改了 API 欄位，前端/別的服務會壞。契約測試在各自 CI 就抓到不相容，不用等整合才爆。",
+    "analogy": "像買賣合約——雙方先講好規格，任一方偷改（少給欄位）契約測試就抓包，不用等交貨才發現不對。",
+    "example": "Pact：消費方定期望、提供方驗證有滿足",
+    "related": [
+      "openapi-swagger",
+      "unit-integration-e2e",
+      "api-deprecation"
+    ]
+  },
+  {
+    "slug": "load-vs-stress-test",
+    "term": "Load vs Stress Test",
+    "zh_name": "負載 vs 壓力測試",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "load test＝在『預期負載』下看表現正不正常；stress test＝故意加壓到『超過極限』看在哪垮、怎麼垮、能不能恢復。什麼時候在意：上線前——load 確認撐得住日常、stress 找天花板與故障模式（優雅降級還是雪崩）。",
+    "analogy": "load 像測橋能不能承受日常車流；stress 像一直加卡車看橋幾噸會斷、斷了怎麼斷。",
+    "example": "load：模擬尖峰流量；stress：加到崩潰找極限",
+    "related": [
+      "load-testing",
+      "test-pyramid",
+      "chaos-engineering"
+    ]
+  },
+  {
+    "slug": "rest-maturity",
+    "term": "Richardson Maturity Model",
+    "zh_name": "REST 成熟度模型",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "衡量一個 API『多 RESTful』的四個等級：L0（只用 HTTP 當通道）、L1（用資源）、L2（用對 HTTP 動詞+狀態碼）、L3（HATEOAS 超媒體）。什麼時候在意：設計 REST API——多數好 API 做到 L2（正確用 GET/POST/PUT/DELETE + 狀態碼）就夠實用。",
+    "analogy": "像廚藝分級——從隨便煮到擺盤講究，多數餐廳做到『好吃又擺得體面』(L2) 就很好，L3 是米其林級講究。",
+    "example": "用對動詞+狀態碼=L2；加超連結導覽=L3",
+    "related": [
+      "hateoas",
+      "rest-vs-rpc",
+      "api-deprecation"
+    ]
+  },
+  {
+    "slug": "hateoas",
+    "term": "HATEOAS",
+    "zh_name": "超媒體驅動",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "Hypermedia As The Engine Of Application State——API 回應裡附『下一步能做什麼的連結』，客戶端跟著走不用寫死網址。什麼時候在意：REST 最高境界（L3）——理論漂亮但實務少見，多數 API 沒做到（成本高、前端也不太靠它）。理解概念即可。",
+    "analogy": "像網頁的超連結——你不用背網址，看到頁面上的連結點下去就能到下一步。",
+    "example": "回應含 {links:{next:'/orders/2', cancel:'/orders/1/cancel'}}",
+    "related": [
+      "rest-maturity",
+      "rest-vs-rpc",
+      "openapi-swagger"
+    ]
+  },
+  {
+    "slug": "api-rate-limit",
+    "term": "API Rate Limiting",
+    "zh_name": "API 限流",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "限制『每個用戶/IP 單位時間能打幾次 API』，防濫用、防打垮、保公平。什麼時候在意：對外 API——用 token bucket 等演算法，超過回 429 + Retry-After。回應帶剩餘額度 header 讓客戶端自律。",
+    "analogy": "像遊樂設施每人每小時限玩幾次——防有人一直霸佔，大家都玩得到。",
+    "example": "每 IP 每分鐘 60 次，超過回 429",
+    "related": [
+      "rate-limiting",
+      "retry-logic",
+      "api-key-vs-oauth"
+    ]
+  },
+  {
+    "slug": "api-key-vs-oauth",
+    "term": "API Key vs OAuth",
+    "zh_name": "API Key vs OAuth",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "兩種 API 認證：API Key（一串固定金鑰，簡單、識別『哪個應用』，權限粗）；OAuth（代表『某個使用者』授權、可細分權限、可撤銷、有時效）。什麼時候在意：機器對機器/內部用 API Key 夠；要代表使用者、要細權限用 OAuth。",
+    "analogy": "API Key 像公司大門的通用門禁卡（進得來就是自己人）；OAuth 像個人識別證（是誰、能進哪些樓層都清楚）。",
+    "example": "內部服務用 API Key；第三方代使用者操作用 OAuth",
+    "related": [
+      "oauth-flow",
+      "api-scope",
+      "api-rate-limit"
+    ]
+  },
+  {
+    "slug": "graphql-n-plus-one",
+    "term": "GraphQL N+1 Problem",
+    "zh_name": "GraphQL N+1 問題",
+    "category": "error",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "GraphQL 查一個列表、每個項目又各自去查關聯，變成 1+N 次 DB 查詢，暴慢。什麼時候在意：做 GraphQL resolver——查 10 篇文章的作者，若各查一次就 11 次 query。解法：用 DataLoader 批次+快取合併成 1-2 次。",
+    "analogy": "像點 10 份餐卻分 10 趟去廚房拿——該一次端出來（批次），不是來回跑 10 趟。",
+    "example": "用 DataLoader 把 N 次作者查詢合批成 1 次",
+    "related": [
+      "n-plus-1",
+      "query-optimization",
+      "graphql"
+    ]
+  },
+  {
+    "slug": "webhook-security",
+    "term": "Webhook Security",
+    "zh_name": "Webhook 安全",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "收 webhook 要驗『真的是對方發的、沒被竄改、不是重放』：驗簽章(HMAC)、檢查時間戳、冪等處理。什麼時候在意：接金流/第三方 webhook——不驗簽任何人都能偽造事件（假裝付款成功）。一定要驗 signature header。",
+    "analogy": "像收到『貨到付款已收款』通知——要先確認真的是物流公司發的（驗簽），不然騙子隨便發你就出貨。",
+    "example": "驗 Stripe-Signature（HMAC）+ 時間戳 + event id 冪等",
+    "related": [
+      "webhook-idempotency",
+      "hmac",
+      "idempotency"
+    ]
+  },
+  {
+    "slug": "api-deprecation",
+    "term": "API Deprecation",
+    "zh_name": "API 淘汰",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "要下線舊 API 版本時『好好預告、給遷移期』，而非直接砍掉害人壞掉。什麼時候在意：維護對外 API——用版本號、Deprecation/Sunset header 預告、文件標註、監控誰還在用、給足遷移時間再關。",
+    "analogy": "像店要搬遷——提早貼公告、給老客戶時間適應，而不是某天直接拉下鐵門。",
+    "example": "v1 標 deprecated + Sunset 日期 → 半年後才關",
+    "related": [
+      "semantic-versioning",
+      "contract-testing",
+      "rest-maturity"
+    ]
+  }
+]
