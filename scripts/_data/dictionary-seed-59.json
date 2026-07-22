@@ -1,0 +1,416 @@
+[
+  {
+    "slug": "try-catch-finally",
+    "term": "try / catch / finally",
+    "zh_name": "例外處理三段",
+    "category": "syntax",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "try 包『可能出錯的程式』、catch 接住錯誤處理、finally 不管成敗都會跑（收尾）。什麼時候在意：處理可能失敗的操作（網路、檔案、解析）。原則：catch 具體的錯、別空 catch 吞掉、finally 放釋放資源（關檔、關連線）。",
+    "analogy": "像做實驗——try 動手做、catch 出意外時應變、finally 不管成敗都要收拾器材。",
+    "example": "try{ risky() } catch(e){ handle(e) } finally{ cleanup() }",
+    "related": [
+      "exception-vs-error",
+      "fail-fast-2",
+      "stack-trace"
+    ]
+  },
+  {
+    "slug": "exception-vs-error",
+    "term": "Exception vs Error",
+    "zh_name": "例外 vs 錯誤",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "exception＝『預期可能發生、可處理』的狀況（檔案不存在、輸入不合法）；error（嚴重錯誤）＝『不該發生、通常不救』的（記憶體爆、程式 bug）。什麼時候在意：該 catch 的是 exception；catch 到 Error 級的通常代表 bug，別硬吞、讓它炸出來修。",
+    "analogy": "exception 像下雨（帶傘應對）；error 像地震（不是撐傘能解決的，是結構問題）。",
+    "example": "catch FileNotFound（可處理）；別 catch OutOfMemory",
+    "related": [
+      "try-catch-finally",
+      "panic-recover",
+      "error-code"
+    ]
+  },
+  {
+    "slug": "fail-fast-2",
+    "term": "Fail Fast",
+    "zh_name": "快速失敗",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "一發現不對就『立刻報錯停下』，而非硬撐讓錯誤擴散到後面才爆（難查）。什麼時候在意：輸入驗證、前置條件檢查——在源頭擋下壞資料，錯誤訊息貼近問題點，好 debug。",
+    "analogy": "像食材一進門就驗貨，壞的當場退——別煮到一半上桌才發現不對，追不回是哪步壞的。",
+    "example": "函式開頭 if(!valid) throw，別讓壞值往下流",
+    "related": [
+      "try-catch-finally",
+      "design-by-contract",
+      "exception-vs-error"
+    ]
+  },
+  {
+    "slug": "retry-logic",
+    "term": "Retry with Backoff",
+    "zh_name": "重試（退避）",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "呼叫可能『暫時失敗』（網路抖、429、5xx）時自動重試，且每次等更久（exponential backoff）+ 加隨機（jitter）。什麼時候在意：呼叫外部 API/服務——別失敗就放棄，但也別狂重試打垮對方。重試前提是操作冪等。",
+    "analogy": "像打電話佔線——不是掛了就算，隔一下再打、越等越久，而不是狂 call 煩死對方。",
+    "example": "失敗 → 等 1s、2s、4s… 重試（加隨機抖動）",
+    "related": [
+      "exponential-backoff",
+      "circuit-breaker-2",
+      "idempotency"
+    ]
+  },
+  {
+    "slug": "circuit-breaker-2",
+    "term": "Circuit Breaker",
+    "zh_name": "斷路器",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "某個依賴一直失敗時，『暫時停止呼叫它』（跳閘）、直接回錯/預設值，過一陣再試探。什麼時候在意：防雪崩——下游掛了還狂打會拖垮自己、也不給對方喘息。開/半開/關三態。",
+    "analogy": "像家裡的電路斷路器——短路（一直失敗）就跳閘保護，不會讓整棟燒起來，過陣子再試通不通。",
+    "example": "連續失敗 5 次 → 跳閘 30 秒直接回 fallback",
+    "related": [
+      "retry-logic",
+      "graceful-degradation-2",
+      "fault-tolerance"
+    ]
+  },
+  {
+    "slug": "graceful-degradation-2",
+    "term": "Graceful Degradation",
+    "zh_name": "優雅降級",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "某功能壞了，『退而求其次』給堪用的版本，而非整個崩掉。什麼時候在意：推薦服務掛了就顯示熱門清單、即時匯率拿不到就用快取值——讓核心體驗還在，不是白畫面。",
+    "analogy": "像電梯壞了還有樓梯——不是整棟封鎖，是給你次一等但能用的方案。",
+    "example": "AI 推薦掛 → 退回一般熱門清單，不是空白",
+    "related": [
+      "circuit-breaker-2",
+      "fault-tolerance",
+      "fail-fast-2"
+    ]
+  },
+  {
+    "slug": "stack-trace",
+    "term": "Stack Trace",
+    "zh_name": "呼叫堆疊追蹤",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "錯誤發生時印出的『一路是誰呼叫誰』的清單，最上面通常是出錯點。什麼時候在意：debug 第一手線索——照著 stack trace 從錯誤點往回追是哪條路徑觸發的。前端記得留 source map 才看得懂壓縮後的。",
+    "analogy": "像出事現場的『足跡回溯』——順著腳印一路查是從哪走過來、在哪出事。",
+    "example": "看 stack trace 最上層 = 出錯的檔案:行號",
+    "related": [
+      "debugger-breakpoint",
+      "source-map",
+      "error-tracking"
+    ]
+  },
+  {
+    "slug": "panic-recover",
+    "term": "Panic / Recover",
+    "zh_name": "恐慌 / 復原",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "Go 的機制：panic 是『嚴重、通常該讓程式停』的錯（類似其他語言的 unchecked exception）；recover 能在 defer 裡攔下 panic 避免整個程式掛。什麼時候在意：Go 開發——一般錯用回傳 error（明確），panic 留給真的不該發生的；伺服器用 recover 防單一請求 panic 拖垮全站。",
+    "analogy": "panic 像拉緊急剎車（整台停）；recover 像在關鍵處加安全網，接住不讓它摔到底。",
+    "example": "Go：defer recover() 防一個 handler panic 害整個 server 掛",
+    "related": [
+      "exception-vs-error",
+      "try-catch-finally",
+      "fault-tolerance"
+    ]
+  },
+  {
+    "slug": "log-level",
+    "term": "Log Levels",
+    "zh_name": "日誌級別",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "log 的嚴重度分級：DEBUG（開發細節）< INFO（正常事件）< WARN（怪但沒壞）< ERROR（出錯了）< FATAL（掛了）。什麼時候在意：production 通常設 INFO 以上（DEBUG 太吵、太多）；用對級別才好過濾、設對告警（ERROR 才叫醒你）。",
+    "analogy": "像醫院的警報分級——一般廣播、注意、緊急、危急，別把小事當危急狂響、也別把大事當小事。",
+    "example": "prod 設 INFO；出 ERROR 才觸發告警",
+    "related": [
+      "structured-logging",
+      "golden-signals",
+      "error-tracking"
+    ]
+  },
+  {
+    "slug": "span-trace",
+    "term": "Span / Trace",
+    "zh_name": "追蹤跨度",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "分散式追蹤的單位：一個 trace＝一次完整請求的旅程，由多個 span（每個服務/步驟一段，有起訖時間）組成。什麼時候在意：微服務除錯——一個請求經過 5 個服務，看 trace 就知道『慢在哪一段』。",
+    "analogy": "像包裹的物流追蹤——整趟（trace）由『到某站、離某站』多段（span）組成，一眼看出卡在哪個轉運站。",
+    "example": "一次結帳 trace：閘道→user→order→payment 各一 span",
+    "related": [
+      "opentelemetry",
+      "correlation-id",
+      "distributed-tracing-2"
+    ]
+  },
+  {
+    "slug": "opentelemetry",
+    "term": "OpenTelemetry (OTel)",
+    "zh_name": "開放遙測標準",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "統一收集『log/metrics/traces』三支柱的開源標準，不綁特定廠商。什麼時候在意：做可觀測性——用 OTel 埋一次，資料可送 Datadog/Grafana/Jaeger 等任一後端，換工具不用重埋。",
+    "analogy": "像萬用充電規格——埋一次線（OTel），要接哪家的儀表板（後端）都通，不被綁死。",
+    "example": "OTel SDK 埋點 → 匯出到 Grafana/Jaeger",
+    "related": [
+      "span-trace",
+      "golden-signals",
+      "distributed-tracing-2"
+    ]
+  },
+  {
+    "slug": "correlation-id",
+    "term": "Correlation ID",
+    "zh_name": "關聯識別碼",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "給每個請求一個『唯一 id』，一路傳遞並記進各服務的 log，之後靠它把散落各處的 log『串成一次請求的完整故事』。什麼時候在意：分散式除錯——沒有它，多服務的 log 混在一起根本對不起來是同一次請求。",
+    "analogy": "像包裹的追蹤編號——每個經手站都記這個號，最後用它把整段旅程的紀錄串起來。",
+    "example": "X-Request-Id 一路傳、每筆 log 都帶 → grep 得到全程",
+    "related": [
+      "span-trace",
+      "structured-logging",
+      "opentelemetry"
+    ]
+  },
+  {
+    "slug": "golden-signals",
+    "term": "Four Golden Signals",
+    "zh_name": "四大黃金訊號",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "Google SRE 建議監控的四個核心指標：延遲（Latency）、流量（Traffic）、錯誤（Errors）、飽和度（Saturation）。什麼時候在意：不知道該監控什麼時——先顧好這四個，涵蓋『快不快、多少量、有沒有錯、快撐不住了沒』。",
+    "analogy": "像車子的四個核心錶——時速、油耗、故障燈、水溫，顧好這四個大方向就不會出大事。",
+    "example": "儀表板先放：p95 延遲 / QPS / 錯誤率 / CPU",
+    "related": [
+      "red-metrics",
+      "metrics-monitoring",
+      "slo-sla-sli"
+    ]
+  },
+  {
+    "slug": "red-metrics",
+    "term": "RED Metrics",
+    "zh_name": "RED 指標",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "針對『服務』的三個關鍵指標：Rate（每秒請求數）、Errors（錯誤率）、Duration（回應時間分佈）。什麼時候在意：監控 API/服務的簡單心法——看這三個就掌握服務健康。跟黃金訊號類似、更精簡。",
+    "analogy": "像看一家店的三個數字——來客量、退貨率、結帳快不快，大致知道經營好不好。",
+    "example": "每個 API：RPS / 錯誤% / p50-p95-p99 延遲",
+    "related": [
+      "golden-signals",
+      "metrics-monitoring",
+      "slo-sla-sli"
+    ]
+  },
+  {
+    "slug": "error-tracking",
+    "term": "Error Tracking",
+    "zh_name": "錯誤追蹤",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "自動『收集、分組、告警』production 的錯誤（Sentry、Rollbar），附 stack trace、發生次數、影響人數。什麼時候在意：使用者遇到的錯你要主動知道——別等客訴。把同類錯聚合、標優先度、連到出錯的 commit。",
+    "analogy": "像店裡的意見箱自動分類統計——哪個問題最多人踩、影響多大，一目了然主動修。",
+    "example": "Sentry 捕捉前端/後端錯 → 分組 + 告警 + 定位 commit",
+    "related": [
+      "stack-trace",
+      "log-level",
+      "uptime-monitoring"
+    ]
+  },
+  {
+    "slug": "uptime-monitoring",
+    "term": "Uptime Monitoring",
+    "zh_name": "可用性監控",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "從外部『定期戳你的網站』確認還活著、多快，掛了就告警。什麼時候在意：第一時間知道站掛了（別靠使用者通知）——UptimeRobot、Pingdom 每分鐘檢查，順便量各地延遲、算可用率。",
+    "analogy": "像請人每分鐘打電話確認店還開著——不通就馬上通知你，不用等客人抱怨。",
+    "example": "每 1 分鐘打 /health，連續失敗就發告警",
+    "related": [
+      "health-endpoint",
+      "error-tracking",
+      "slo-sla-sli"
+    ]
+  },
+  {
+    "slug": "zero-downtime",
+    "term": "Zero-Downtime Deploy",
+    "zh_name": "零停機部署",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "部署新版時『服務不中斷』——用滾動更新/藍綠/金絲雀，先起新的、確認健康再切流量、關舊的。什麼時候在意：不能停機的服務——關鍵是新舊要能並存一下（DB schema 要向後相容、別破壞舊版）。",
+    "analogy": "像換輪胎不熄火——先架好備胎（新版）承重，再拆舊胎，車子全程沒停。",
+    "example": "滾動更新：起新 pod → 健康檢查過 → 導流量 → 關舊",
+    "related": [
+      "blue-green-deploy",
+      "rolling-update",
+      "database-migration-safe"
+    ]
+  },
+  {
+    "slug": "database-migration-safe",
+    "term": "Safe Schema Migration",
+    "zh_name": "安全資料庫遷移",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "改 DB schema 又不停機的做法：分多步、每步向後相容（先加欄位可空→部署讀寫→回填→設非空），別一次改到讓舊版程式讀不了。什麼時候在意：改正式 DB——大表加索引/改欄位要小心鎖表；擴充式改動（expand-contract）比直接砍安全。",
+    "analogy": "像邊營業邊裝修——分階段圍一小塊做，隨時保持店能營運，不是關店大改。",
+    "example": "加欄位可空→雙寫→回填→切換→移除舊欄（分次）",
+    "related": [
+      "zero-downtime",
+      "schema-evolution",
+      "migration"
+    ]
+  },
+  {
+    "slug": "trunk-based-dev",
+    "term": "Trunk-Based Development",
+    "zh_name": "主幹開發",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "大家『頻繁地把小改動合進主幹（main）』，用短命分支、feature flag 藏未完成功能，而非長期各開大分支。什麼時候在意：減少『合併地獄』與長期分支發散——搭 CI + flag，持續整合、隨時可發。",
+    "analogy": "像大家常回主河道會合，而不是各自開一條運河越開越遠、最後接不回來。",
+    "example": "每天多次小 PR 合 main + flag 藏未完成的",
+    "related": [
+      "feature-toggle",
+      "ci-cd-pipeline",
+      "release-train"
+    ]
+  },
+  {
+    "slug": "rollback-strategy",
+    "term": "Rollback Strategy",
+    "zh_name": "回退策略",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "出包時『快速退回上一個好版本』的計畫。什麼時候在意：部署一定要能退——保留前一版 image、DB 改動要可逆（或向後相容）、一鍵回滾。回退比 hotfix 快又穩，先止血再查因。",
+    "analogy": "像文件的『復原上一步』——搞砸了先按 Ctrl+Z 回到能用的狀態，再慢慢查哪裡錯。",
+    "example": "新版出包 → 一鍵切回上一個 image（分鐘級止血）",
+    "related": [
+      "blue-green-deploy",
+      "zero-downtime",
+      "database-migration-safe"
+    ]
+  },
+  {
+    "slug": "error-budget",
+    "term": "Error Budget",
+    "zh_name": "錯誤預算",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "SLO 允許的『可以出錯的額度』（如 99.9% 可用 → 每月約 43 分鐘可停）。什麼時候在意：平衡『穩定 vs 快速上新』——預算還夠就大膽發新功能，燒完了就先專心修穩定性別再冒險。",
+    "analogy": "像每月的『可遲到扣打』——還有額度就能偶爾冒險，用完了就得乖乖準時別再遲到。",
+    "example": "這月已燒 80% error budget → 凍結高風險發布",
+    "related": [
+      "slo-sla-sli",
+      "blameless-postmortem",
+      "release-train"
+    ]
+  },
+  {
+    "slug": "toil-automation",
+    "term": "Toil / Automation",
+    "zh_name": "瑣務 / 自動化",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "toil＝『重複、手動、沒成長性、可自動化』的維運雜務（手動重啟、手動改設定）。什麼時候在意：SRE 心法——花時間把 toil 自動化掉，別讓團隊被雜務淹沒、規模一大就爆。衡量並設上限（如 toil < 50% 時間）。",
+    "analogy": "像每天手洗一堆碗——與其一直洗，不如買台洗碗機（自動化），把時間拿去做更有價值的事。",
+    "example": "把『手動重啟卡住服務』寫成自動偵測+重啟",
+    "related": [
+      "error-budget",
+      "runbook",
+      "ci-cd-pipeline"
+    ]
+  },
+  {
+    "slug": "shadow-traffic",
+    "term": "Shadow Traffic (Mirroring)",
+    "zh_name": "影子流量",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把『真實流量複製一份』打到新版/新服務，但『不回傳給使用者』——只用來測新版在真實負載下對不對、快不快。什麼時候在意：上線前的高信心驗證——用真流量壓測新版、比對輸出，發現問題也不影響使用者。",
+    "analogy": "像新手駕駛在副駕『跟著開一遍』（模擬操作）但不真的控車——用真路況練，出錯也不影響乘客。",
+    "example": "複製 prod 流量鏡射到新版 → 比對結果、不回使用者",
+    "related": [
+      "canary-analysis",
+      "zero-downtime",
+      "load-testing"
+    ]
+  }
+]
