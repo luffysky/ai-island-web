@@ -79,6 +79,37 @@
 - **本批完成 47 章**（A/C/D/E/F 批 + 我 7 章；ch11/15–21 批 B 完成後再併）：涵蓋 ch00-10、22-41、46、61-79 等。每章 code 之間的 demo 都扣該課實際內容（如 ch04 ===/型別轉換判斷、ch18 NoSQL 文件 json-tree、ch22 部署 pipeline workflow-flow、ch79 RAG agent-loop）。
 - 教具外觀已先做**霧面玻璃**（見上）＝ 補進來的教具一律有質感。
 
+## 機會島 §3.5 三表建置 + 全部真接（授權後）
+
+- migration `opportunity_v5_tables_migration.sql`（已跑 prod、RLS 本人 only、changes 公開讀）：
+  - **submission_tasks（缺件/準備清單）** → 「我的航線」每個機會可展開勾選/新增/刪待辦、一鍵「建議缺件」依 requires_*(demo/pitch/影片/計畫書/團隊/學生/公司) 帶入、n/m 進度。新 API `submission-tasks`。
+  - **user_portfolio（作品/技能/獎項/經歷庫）** → 機會島「我的作品庫」CRUD + 併進「AI 幫我挑」recommend prompt。新 API `portfolio`。
+  - **opportunity_changes（欄位變動歷史）** → 審核 approve 改「同 official_url 去重更新 + 逐欄記 diff」（順修重複 insert bug）；詳情頁「規則變動紀錄」。新 API `[id]/changes`。
+- audit-db-columns 三表零缺。
+
+## 機會島 §3.6 收尾（準備量估算 + 詳情頁 FAQ）
+
+- **準備量估算** `lib/opportunity-prep.ts`：依 requires_* 規則式估「準備量 🟢低/🟡中/🔴高」（可靠零成本、非 LLM）→ 詳情頁 + 清單卡片 badge。
+- **獎金下限 + 身分 filter**：≥1萬/10萬/100萬 + 🎓限學生/🏢限法人（API `minPrize`/`student`/`company` server 過濾）。
+- **詳情頁 FAQ**：依機會資料自動組 6–7 題常見問答（報名費/身分/準備/截止/獎勵/怎麼開始），`<details>` 摺疊。
+
+## 全功能使用說明（FeatureGuide）
+
+- 共用元件 `components/FeatureGuide.tsx`（收合狀態記 localStorage、全站一致），掛到 5 大新功能：機會島 / 分身島 Agent / 每日運勢命理 / 訊息軍師 / AI 求職包——逐步驟教學 + 付費/隱私/免責提醒。
+
+## 全通路通知美化（LINE / TG / Discord）
+
+- 盤點三通路：TG（HTML+粗體+blockquote+按鈕）、Discord（embed+色塊+按鈕）admin 與內容 cron **本就已美化**；LINE 使用者端補齊剩餘純文字 → Flex 卡：
+  - **今日運勢**（新 `buildFortuneCard`：星座+分數+三面向+幸運色數+提醒+按鈕）、**今天值得做的 3 件事**（buildListCard）、**機會截止提醒 / 訂閱符合 / 分身島完成**（buildSimpleCard/buildListCard）。皆保留純文字 altText fallback。
+
+## §7.1 CSP Report-Only 上線
+
+- `next.config.mjs` headers 加 `Content-Security-Policy-Report-Only`（default/base/object-none/frame-ancestors/form-action/img/style/script/connect/worker/manifest）——只回報不阻擋、不弄壞站；之後觀察無誤再收斂 enforce（script-src 換 nonce）。
+
+## §7.9 apple-touch-icon 核對
+
+- 核對發現已滿足：`src/app/apple-icon.tsx` 180×180 Next.js 慣例檔自動輸出 `<link rel="apple-touch-icon">`。todo 為舊資訊、已修正。
+
 ## 🏁 收尾健檢（本日全部改動一次過）
 
 - **API/UI/DB 接線**：`node scripts/audit-db-columns.mjs` → 我的新查詢（`ai_usage_daily`/`fortune_daily`/`app_settings`）全部乾淨；殘留 ✗ 都是既有 template-literal 欄位名與 OG `<img src>` URL 的誤報。**本批零新增 migration**（全讀既有表/欄）。

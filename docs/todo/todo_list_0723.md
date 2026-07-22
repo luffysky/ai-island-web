@@ -1,4 +1,4 @@
-# AI 島待辦總表 2026-07-22（**現行主檔**·0721 建、0722 續用更新）
+# AI 島待辦總表 2026-07-23（**現行主檔**·0721 建、0722/0723 續用更新）
 
 > 本檔＝整合 `docs/todo/` 全部 10 個舊檔（MASTER_TODO / ROADMAP_2026Q3 / 0705new_todotask / todo_list_0713 / 0714 / 0715 / TODO / BACKLOG / BEGINNER_FRIENDLY_BACKLOG / REPORTS_TODO_2026-06-03）後的**唯一現行待辦**。
 > 狀態經 3 組 subagent 逐項對照「程式碼 + git 紀錄」核對過（2026-07-21）。舊檔全部降為**歷史存查**（見文末〈附錄 A：舊檔核對裁決〉），之後只更新本檔。
@@ -254,7 +254,7 @@
   - [x] ~~4.2.1.1 ⚠️ 續寫前先跑 slug 去重掃描~~ ✅（已建流程：cat 全 seed 抽 slug → grep 候選 → python 驗證無 collision 才 author）
   - [x] ~~4.2.1.2 挑真正沒收的主題~~ ✅ seed-41 已用「資料庫/Git/K8s/LLM/分散式」；下批可挑前端框架黑話、TS 型別、測試、資安、網路協定
   - [ ] 4.2.1.3 每批 author → `node scripts/import-dictionary.mjs` → commit（持續）
-  - [~] 4.2.1.4 新批次跑 `node scripts/translate-sync-all.mjs` 補 i18n ✅ 跑了一輪（本次翻 1058 欄位×語言、dictionary 達 500 上限）；辭典/lesson 尚有 backlog、冪等重跑即可清完
+  - [x] ~~4.2.1.4 新批次跑 `node scripts/translate-sync-all.mjs` 補 i18n~~ ✅ 0723 **翻譯 backlog 清完**（辭典 i18n 99% 覆蓋＝17962/18123 非空欄位×語言；跑了多輪 1000/輪迴圈直到 script 回「已同步完」。＊分母是「非空欄位」：僅 1345/2348 詞條有 analogy，其餘只翻 zh_name+plain。免費 Google、冪等）
 - [ ] 4.2.2 語言島（英/日辭典，沿用 `domain='english'|'japanese'`）
 
 ### 4.3 其他內容
