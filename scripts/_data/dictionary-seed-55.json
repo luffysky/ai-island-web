@@ -1,0 +1,414 @@
+[
+  {
+    "slug": "smtp",
+    "term": "SMTP",
+    "zh_name": "簡單郵件傳輸協定",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "寄 email 用的協定（Simple Mail Transfer Protocol）——負責把信『送出去』。什麼時候在意：程式要寄信（驗證信、通知）時串 SMTP 伺服器或用寄信服務（SendGrid、Resend）。收信是另外的 IMAP/POP3。",
+    "analogy": "像郵局的寄件窗口——只管把信送出去，收信要去信箱（IMAP）那邊。",
+    "example": "用 Resend/SMTP 寄註冊驗證信",
+    "related": [
+      "imap-pop3",
+      "spf-dkim-dmarc",
+      "email-bounce"
+    ]
+  },
+  {
+    "slug": "imap-pop3",
+    "term": "IMAP / POP3",
+    "zh_name": "收信協定",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "兩種『收 email』的協定：IMAP 信留在伺服器、多裝置同步（現代主流）；POP3 把信下載到本機、伺服器上刪掉（舊式）。什麼時候在意：串接收信匣、做 email 客戶端時選 IMAP。",
+    "analogy": "IMAP 像雲端相簿（信在雲端、各裝置都看得到）；POP3 像把照片下載到一台電腦、雲端就沒了。",
+    "example": "手機+電腦同步用 IMAP",
+    "related": [
+      "smtp",
+      "spf-dkim-dmarc"
+    ]
+  },
+  {
+    "slug": "spf-dkim-dmarc",
+    "term": "SPF / DKIM / DMARC",
+    "zh_name": "寄信驗證三兄弟",
+    "category": "reference",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "防止別人冒用你網域寄信、也讓你的信別進垃圾桶的三個 DNS 設定：SPF（誰能代你寄）、DKIM（信有你的數位簽章）、DMARC（驗不過怎麼處理）。什麼時候在意：自架寄信或用服務寄信時要設好，否則信容易被當垃圾郵件。",
+    "analogy": "像信封上的防偽——SPF 是『授權寄件人名單』、DKIM 是『火漆封印』、DMARC 是『驗不過就退回』的規則。",
+    "example": "設好三者 → 驗證信不進垃圾桶、不被冒名",
+    "related": [
+      "smtp",
+      "email-bounce",
+      "dns-resolution"
+    ]
+  },
+  {
+    "slug": "email-bounce",
+    "term": "Email Bounce",
+    "zh_name": "退信",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "信寄不到被退回：hard bounce（地址不存在、永久失敗）、soft bounce（信箱滿、暫時）。什麼時候在意：做行銷/通知信——一直寄給 hard bounce 的地址會傷『寄件信譽』、被 ISP 降級。要處理退信、清掉無效地址。",
+    "analogy": "像寄實體信被退回『查無此人』——一直往死地址寄，郵局會覺得你在亂寄。",
+    "example": "收到 hard bounce → 標記該 email 失效、別再寄",
+    "related": [
+      "smtp",
+      "spf-dkim-dmarc"
+    ]
+  },
+  {
+    "slug": "mqtt",
+    "term": "MQTT",
+    "zh_name": "物聯網訊息協定",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "超輕量的『發布/訂閱』訊息協定，專為低頻寬、不穩定網路、省電裝置設計。什麼時候在意：做 IoT（感測器、智慧家電）——裝置訂閱主題、有資料就發，比 HTTP 省太多。",
+    "analogy": "像對講機頻道——裝置轉到某頻道（topic）收聽，誰有話就廣播，極省電省流量。",
+    "example": "溫度感測器 publish 到 topic → App 訂閱即時收",
+    "related": [
+      "pub-sub",
+      "amqp",
+      "message-ack"
+    ]
+  },
+  {
+    "slug": "amqp",
+    "term": "AMQP",
+    "zh_name": "進階訊息佇列協定",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "企業級的訊息佇列協定（RabbitMQ 用），支援可靠投遞、路由、確認。什麼時候在意：服務間要『可靠地非同步傳訊息』——比自己用 HTTP 輪詢穩，有 exchange 路由、ack 確認、重試機制。",
+    "analogy": "像有掛號與分揀的郵政系統——訊息保證送達、能依規則分流到對的收件人。",
+    "example": "RabbitMQ 用 AMQP 做訂單事件可靠分派",
+    "related": [
+      "message-queue",
+      "mqtt",
+      "dead-letter"
+    ]
+  },
+  {
+    "slug": "message-ack",
+    "term": "Message Acknowledgement",
+    "zh_name": "訊息確認",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "消費者處理完訊息後回一個『ack（確認）』告訴佇列可以刪了；沒 ack 佇列會重送。什麼時候在意：確保訊息『真的被處理』——處理成功才 ack，中途掛掉沒 ack 就重送給別人，不會漏。",
+    "analogy": "像掛號信要簽收——沒簽收（ack）郵局當你沒收到、會再送一次。",
+    "example": "worker 處理成功 → ack；失敗/當機 → 不 ack → 重送",
+    "related": [
+      "at-least-once",
+      "dead-letter",
+      "amqp"
+    ]
+  },
+  {
+    "slug": "at-least-once",
+    "term": "At-Least-Once / Exactly-Once",
+    "zh_name": "至少一次 / 剛好一次",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "訊息投遞保證等級：at-least-once（保證送到、但可能重複）最常見；exactly-once（剛好一次）很難、成本高。什麼時候在意：多數系統選 at-least-once + 消費端做冪等（重複也只生效一次），比硬求 exactly-once 實際。",
+    "analogy": "像重要通知寧可多講幾次（怕你沒聽到），但你要能認出『這我聽過了』別重複行動。",
+    "example": "付款事件 at-least-once + 冪等處理 = 不重複加值",
+    "related": [
+      "message-ack",
+      "idempotency",
+      "dead-letter"
+    ]
+  },
+  {
+    "slug": "gzip-brotli",
+    "term": "gzip / Brotli",
+    "zh_name": "HTTP 壓縮",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "伺服器把文字資源（HTML/CSS/JS）壓縮再傳、瀏覽器解壓，省頻寬加速。gzip 通用、Brotli 壓更小（靜態資源尤佳）。什麼時候在意：網站效能基本盤——確認伺服器/CDN 有開壓縮，文字檔可縮到 1/4 大小。",
+    "analogy": "像寄包裹前真空壓縮——同樣的東西體積小很多、寄得快，收到再展開。",
+    "example": "Content-Encoding: br（Brotli）省 15-25% vs gzip",
+    "related": [
+      "minification",
+      "http-caching",
+      "cdn-edge"
+    ]
+  },
+  {
+    "slug": "lossy-lossless",
+    "term": "Lossy vs Lossless",
+    "zh_name": "有損 vs 無損壓縮",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "有損（JPEG、MP3）丟掉人不易察覺的細節換更小體積、不可逆；無損（PNG、FLAC、zip）完整保留、可還原。什麼時候在意：選格式——照片用有損（省空間）、要精確/會再編輯用無損（別一存再存越糊）。",
+    "analogy": "有損像口述轉述（意思在、細節掉）；無損像影印（一字不差但檔案大）。",
+    "example": "照片存 JPEG（有損）；logo/文件截圖存 PNG（無損）",
+    "related": [
+      "image-codec",
+      "gzip-brotli",
+      "webp-avif"
+    ]
+  },
+  {
+    "slug": "image-codec",
+    "term": "Image Codec",
+    "zh_name": "影像編碼格式",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "編/解碼圖片的格式：JPEG（照片、有損）、PNG（透明、無損）、GIF（動圖、老）、WebP/AVIF（現代、更小）。什麼時候在意：選對格式差很多——照片 JPEG/WebP、需透明 PNG/WebP、動圖用影片取代 GIF。",
+    "analogy": "像不同的打包方式——同一張圖，用對的格式能又小又清楚。",
+    "example": "照片 → WebP（比 JPEG 小 25-35%）",
+    "related": [
+      "webp-avif",
+      "lossy-lossless",
+      "thumbnail-generation"
+    ]
+  },
+  {
+    "slug": "webp-avif",
+    "term": "WebP / AVIF",
+    "zh_name": "次世代圖片格式",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "更新更小的圖片格式：WebP（Google、支援度廣）、AVIF（更小、支援漸普及）。什麼時候在意：優化網頁載入——同畫質比 JPEG/PNG 小很多。用 <picture> 提供 AVIF/WebP + 舊格式 fallback。",
+    "analogy": "像升級版的壓縮技術——同樣清楚的照片，檔案只要舊格式的 6-7 成。",
+    "example": "<picture><source srcset=x.avif type=image/avif>…",
+    "related": [
+      "image-codec",
+      "lossy-lossless",
+      "lazy-image"
+    ]
+  },
+  {
+    "slug": "lazy-image",
+    "term": "Lazy Loading (images)",
+    "zh_name": "圖片延遲載入",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "圖片『捲到快看到才載入』，而非一進頁就全載。什麼時候在意：長頁面/圖多——大幅加快首屏、省流量。HTML 原生 `loading='lazy'` 一個屬性搞定，或用 IntersectionObserver。",
+    "analogy": "像自助餐要吃才夾——不是一開始把所有菜都端上桌，看到哪盤想吃再拿。",
+    "example": "<img src=x.jpg loading='lazy'>",
+    "related": [
+      "intersection-observer",
+      "webp-avif",
+      "critical-rendering-path"
+    ]
+  },
+  {
+    "slug": "transcoding",
+    "term": "Transcoding",
+    "zh_name": "轉碼",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把媒體從一種編碼/格式/畫質『轉成另一種』（如 MOV→MP4、4K→1080p）。什麼時候在意：使用者上傳各種格式的影片，你要轉成統一、能串流、多畫質的版本（用 FFmpeg / 雲端轉碼服務）。",
+    "analogy": "像把各國語言的影片配音成統一語言＋多種畫質版本，好讓大家都看得順。",
+    "example": "上傳 MOV → FFmpeg 轉 MP4 + 產 480p/720p/1080p",
+    "related": [
+      "bitrate",
+      "adaptive-streaming",
+      "video-codec"
+    ]
+  },
+  {
+    "slug": "bitrate",
+    "term": "Bitrate",
+    "zh_name": "位元率",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "每秒用多少資料量表示音訊/視訊（如 5 Mbps）。什麼時候在意：畫質 vs 檔案/頻寬的權衡——bitrate 高畫質好但檔案大、耗流量；串流會依網速動態調（adaptive）。",
+    "analogy": "像水管粗細——流量大（高 bitrate）水（畫質）足但耗水費，網速不夠就調細。",
+    "example": "1080p 影片約 5-8 Mbps；網慢自動降到 720p",
+    "related": [
+      "transcoding",
+      "adaptive-streaming",
+      "video-codec"
+    ]
+  },
+  {
+    "slug": "adaptive-streaming",
+    "term": "Adaptive Bitrate Streaming",
+    "zh_name": "自適應串流",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "影片切成小片段、備多種畫質，播放器『依你當下網速動態切換』畫質（HLS、DASH）。什麼時候在意：做影音平台——網好給 1080p、網差自動降 480p 不卡頓，體驗順。",
+    "analogy": "像自動變速——上坡（網差）自動降檔保持前進，別讓你卡在原地轉圈。",
+    "example": "YouTube/HLS 依網速在 360p~4K 間即時切換",
+    "related": [
+      "bitrate",
+      "transcoding",
+      "video-codec"
+    ]
+  },
+  {
+    "slug": "inverted-index",
+    "term": "Inverted Index",
+    "zh_name": "反向索引",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "搜尋引擎的核心資料結構：記錄『每個字 → 出現在哪些文件』，反過來查。什麼時候在意：全文搜尋為何快——不用掃每篇文章找關鍵字，而是查字典直接得到含該字的文件清單（Elasticsearch、Postgres FTS 底層都是）。",
+    "analogy": "像書末的索引——想查某個詞，直接翻到『它出現在哪幾頁』，不用讀整本書找。",
+    "example": "'貓' → [doc1, doc5, doc9]；搜尋秒回",
+    "related": [
+      "tf-idf",
+      "full-text-index",
+      "relevance-scoring"
+    ]
+  },
+  {
+    "slug": "tf-idf",
+    "term": "TF-IDF",
+    "zh_name": "詞頻-逆文件頻率",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "衡量一個字對一篇文件『多重要』的經典算法：在這篇出現越多（TF）越重要、但在所有文件都常見（像『的』）就扣分（IDF）。什麼時候在意：搜尋相關性排序、關鍵字擷取——讓『稀有又切題』的字權重高。",
+    "analogy": "像評文章關鍵字——某詞這篇狂出現（重要），但如果每篇都有（如『我們』）就不算特色。",
+    "example": "'量子' 在這篇多、在整體少 → 高 TF-IDF 分",
+    "related": [
+      "inverted-index",
+      "relevance-scoring",
+      "vector-embedding"
+    ]
+  },
+  {
+    "slug": "full-text-index",
+    "term": "Full-Text Index",
+    "zh_name": "全文索引",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "資料庫為『文字內容』建的特殊索引，支援關鍵字/片語搜尋、排名，比 LIKE '%字%' 快又準。什麼時候在意：站內搜尋——Postgres 的 tsvector/GIN、MySQL FULLTEXT，資料量大時遠勝逐列掃描。",
+    "analogy": "像幫整本書做可搜尋的目錄——查詞直接跳，不用一頁頁翻找。",
+    "example": "Postgres to_tsvector + GIN index 做站內搜尋",
+    "related": [
+      "inverted-index",
+      "tf-idf",
+      "database-index"
+    ]
+  },
+  {
+    "slug": "fuzzy-search",
+    "term": "Fuzzy Search",
+    "zh_name": "模糊搜尋",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "容許『打錯字、拼音近似』也能搜到（用編輯距離 Levenshtein 等）。什麼時候在意：搜尋框要體貼——使用者打 'javascrpt' 也要找到 'javascript'，或注音/拼音容錯。",
+    "analogy": "像店員聽你講得不太準也猜得到你要什麼——『那個…賈瓦…』『JavaScript 嗎？』",
+    "example": "搜 'recieve' 也能命中 'receive'（差 1 字）",
+    "related": [
+      "stemming-lemmatization",
+      "autocomplete-typeahead",
+      "relevance-scoring"
+    ]
+  },
+  {
+    "slug": "stemming-lemmatization",
+    "term": "Stemming / Lemmatization",
+    "zh_name": "字幹提取 / 詞形還原",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把字『還原成基本形』再索引/比對：stemming 粗暴砍字尾（running→run）、lemmatization 用詞典還原（better→good）。什麼時候在意：搜尋要『搜 run 也找到 running/ran』——英文尤其需要，中文則靠斷詞。",
+    "analogy": "像查字典查原形——不管『跑、跑步、跑了』，都歸到『跑』這個詞根去對。",
+    "example": "搜 'cats' 也命中 'cat'（還原成字根）",
+    "related": [
+      "fuzzy-search",
+      "full-text-index",
+      "tf-idf"
+    ]
+  },
+  {
+    "slug": "autocomplete-typeahead",
+    "term": "Autocomplete / Typeahead",
+    "zh_name": "自動完成/即打即現",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "使用者打字時『即時跳出建議』。什麼時候在意：搜尋框體驗——要快（debounce + 快取 + 前綴索引）、要相關。前綴匹配用 Trie 或搜尋引擎的 completion suggester。",
+    "analogy": "像手機注音選字——你才打頭一個字，它就把可能的詞列給你選。",
+    "example": "打 'reac' → 即時建議 'react / reactive / reach'",
+    "related": [
+      "fuzzy-search",
+      "trie",
+      "relevance-scoring"
+    ]
+  },
+  {
+    "slug": "relevance-scoring",
+    "term": "Relevance Scoring",
+    "zh_name": "相關性評分",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "搜尋結果『該怎麼排先後』的算分（TF-IDF、BM25、加上點擊/新鮮度/熱門度等信號）。什麼時候在意：搜尋不只要找到、還要把『最該看的排最前』——調權重、加業務信號（銷量、評分）是搜尋體驗關鍵。",
+    "analogy": "像餐廳推薦排序——不只列出有賣的，還把『評價高又離你近』的排最前面。",
+    "example": "BM25 基礎分 + 新鮮度/熱門度加權 → 最終排序",
+    "related": [
+      "tf-idf",
+      "inverted-index",
+      "reranking"
+    ]
+  }
+]
