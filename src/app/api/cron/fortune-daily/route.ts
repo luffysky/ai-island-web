@@ -3,6 +3,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { verifyCronAuth } from "@/lib/cron-auth";
 import { notifyUserLine } from "@/lib/notify-user-line";
 import { getOrCreateDailyFortune, taipeiToday } from "@/lib/fortune-service";
+import { buildFortuneCard } from "@/lib/line-flex";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -78,7 +79,22 @@ export async function GET(req: NextRequest) {
       "看完整運勢 → ai-island-web.snowrealm.pet/fortune",
     ].join("\n");
 
-    const sent = await notifyUserLine({ userId: u.id, text, category: "fortune" });
+    // 美化：改推 Flex 卡片（notifyUserLine 有 flex 就用 flex、text 當 altText fallback）
+    const flex = buildFortuneCard({
+      zodiacEmoji: result.zodiacEmoji,
+      zodiacZh: result.zodiacZh,
+      date,
+      overall: f.overall,
+      love: f.love,
+      career: f.career,
+      wealth: f.wealth,
+      luckyColor: f.luckyColor,
+      luckyNumber: f.luckyNumber,
+      tip: f.tip,
+      score: typeof (f as any).score === "number" ? (f as any).score : undefined,
+    });
+
+    const sent = await notifyUserLine({ userId: u.id, text, flex, category: "fortune" });
     if (!sent.ok) { failed++; continue; }
 
     // 站內鈴鐺留一筆 + 當 dedupe 標記

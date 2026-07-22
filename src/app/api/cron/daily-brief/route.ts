@@ -3,6 +3,9 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { verifyCronAuth } from "@/lib/cron-auth";
 import { buildDailyBrief } from "@/lib/daily-brief";
 import { notifyUserLine } from "@/lib/notify-user-line";
+import { buildListCard } from "@/lib/line-flex";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -37,7 +40,15 @@ export async function GET(req: NextRequest) {
       const items = await buildDailyBrief(u.id);
       if (!items.length) { skipped++; continue; }
       const text = `🌅 今天值得做的 3 件事\n\n${items.map((s, i) => `${i + 1}. ${s}`).join("\n")}\n\n（不想收：設定 → 通知偏好可關）`;
-      const r = await notifyUserLine({ userId: u.id, text, category: "agent" });
+      // 美化：改推 Flex 列表卡（清晰的序號清單 + 打開 AI 島按鈕）
+      const flex = buildListCard({
+        title: "今天值得做的 3 件事",
+        emoji: "🌅",
+        items: items.map((s) => ({ primary: s })),
+        footerButton: { label: "☀️ 打開 AI 島", uri: SITE_URL },
+        accentColor: "#f59e0b",
+      });
+      const r = await notifyUserLine({ userId: u.id, text, flex, category: "agent" });
       if (r.ok) sent++;
       else if (r.reason === "category_disabled" || r.reason === "user_disabled" || r.reason === "not_bound") skipped++;
       else failed++;

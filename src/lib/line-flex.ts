@@ -465,6 +465,117 @@ export function buildAIErrorCard(opts: {
   });
 }
 
+/** 今日運勢卡：星座 emoji + 分數 + 三面向 + 幸運色/數字 + 提醒 + 看完整運勢按鈕 */
+export function buildFortuneCard(opts: {
+  zodiacEmoji: string;
+  zodiacZh: string;
+  date: string;
+  overall: string;
+  love: string;
+  career: string;
+  wealth: string;
+  luckyColor: string;
+  luckyNumber: string | number;
+  tip: string;
+  score?: number;
+}): FlexMessage {
+  const color = "#8b5cf6"; // 紫
+  const aspect = (icon: string, label: string, text: string) => ({
+    type: "box" as const,
+    layout: "vertical" as const,
+    spacing: "xs" as const,
+    contents: [
+      { type: "text" as const, text: `${icon} ${label}`, size: "xs" as const, color, weight: "bold" as const },
+      { type: "text" as const, text, size: "sm" as const, color: "#3a3f4a", wrap: true, lineSpacing: "4px" as const },
+    ],
+  });
+  return {
+    type: "flex",
+    altText: `${opts.zodiacEmoji} ${opts.zodiacZh}．今日運勢：${opts.overall}`.slice(0, 400),
+    contents: {
+      type: "bubble",
+      size: "kilo",
+      styles: {
+        header: { backgroundColor: lighten(color, 0.35) },
+        body: { backgroundColor: lighten(color, 0.92) },
+        footer: { backgroundColor: lighten(color, 0.86) },
+      },
+      header: {
+        type: "box",
+        layout: "horizontal",
+        paddingAll: "lg",
+        background: glassHeader(color),
+        borderWidth: "1px",
+        borderColor: lighten(color, 0.65),
+        cornerRadius: "12px",
+        contents: [
+          { type: "text", text: opts.zodiacEmoji, size: "xxl", color: "#ffffff", flex: 0, align: "center", gravity: "center" },
+          {
+            type: "box",
+            layout: "vertical",
+            flex: 1,
+            margin: "md",
+            contents: [
+              { type: "text", text: `${opts.zodiacZh}．今日運勢`, weight: "bold", size: "lg", color: "#ffffff" },
+              { type: "text", text: opts.date, size: "xs", color: "#EDE7FA" },
+            ],
+          },
+          ...(typeof opts.score === "number" ? [{
+            type: "box" as const, layout: "vertical" as const, flex: 0, justifyContent: "center" as const,
+            contents: [
+              { type: "text" as const, text: String(opts.score), weight: "bold" as const, size: "xxl" as const, color: "#ffffff", align: "center" as const },
+              { type: "text" as const, text: "分", size: "xxs" as const, color: "#EDE7FA", align: "center" as const },
+            ],
+          }] : []),
+        ],
+      },
+      body: {
+        type: "box",
+        layout: "vertical",
+        paddingAll: "lg",
+        spacing: "md",
+        background: glassBody(color),
+        borderWidth: "1px",
+        borderColor: GLASS_BORDER,
+        cornerRadius: "12px",
+        contents: [
+          { type: "text", text: opts.overall, size: "sm", color: "#1a1d24", wrap: true, lineSpacing: "5px" },
+          { type: "separator", margin: "md", color: GLASS_SEPARATOR },
+          aspect("💗", "愛情", opts.love),
+          aspect("💼", "事業", opts.career),
+          aspect("💰", "財運", opts.wealth),
+          { type: "separator", margin: "md", color: GLASS_SEPARATOR },
+          {
+            type: "box", layout: "horizontal", spacing: "md",
+            contents: [
+              { type: "text", text: `🎨 幸運色 ${opts.luckyColor}`, size: "xs", color: "#444851", flex: 1, wrap: true },
+              { type: "text", text: `🔢 幸運數字 ${opts.luckyNumber}`, size: "xs", color: "#444851", flex: 1, wrap: true },
+            ],
+          },
+          { type: "text", text: `💡 ${opts.tip}`, size: "xs", color: "#6a5acd", wrap: true, lineSpacing: "4px" },
+          { type: "text", text: `🕐 ${nowTW()}`, size: "xxs", color: "#a8aab2", align: "end", margin: "sm" },
+        ],
+      },
+      footer: {
+        type: "box",
+        layout: "horizontal",
+        paddingAll: "md",
+        background: glassFooter(color),
+        borderWidth: "1px",
+        borderColor: GLASS_BORDER,
+        cornerRadius: "12px",
+        contents: [{
+          type: "button",
+          action: { type: "uri", label: "🔮 看完整運勢", uri: `${SITE_URL}/fortune` },
+          style: "primary",
+          color: darken(color, 0.15),
+          height: "sm",
+        }],
+      },
+    },
+  };
+}
+
 export function buildAiReplyCard(opts: { text: string; userName: string }): FlexMessage {
   const color = "#5fa8d3"; // 青藍
   return {
