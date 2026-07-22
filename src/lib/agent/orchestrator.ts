@@ -405,9 +405,17 @@ async function notifyLineIfFromLine(taskId: string, userId: string): Promise<voi
   const summary = task.status === "succeeded"
     ? String((task.result as any)?.summary ?? "完成")
     : `任務未完成：${task.error ?? "失敗"}`;
-  const head = task.status === "succeeded" ? "🤖 分身島完成任務" : "🤖 分身島任務結束";
+  const head = task.status === "succeeded" ? "分身島完成任務" : "分身島任務結束";
   const { notifyUserLine } = await import("@/lib/notify-user-line");
-  await notifyUserLine({ userId, category: "agent", text: `${head}\n\n${summary.slice(0, 1500)}\n\n看完整：${site}/agent?task=${taskId}` });
+  const { buildSimpleCard } = await import("@/lib/line-flex");
+  const doneCard = buildSimpleCard({
+    emoji: "🤖",
+    title: head,
+    accentColor: task.status === "succeeded" ? "#22c55e" : "#ef4444",
+    body: summary.slice(0, 1500),
+    buttons: [{ label: "📄 看完整結果", uri: `${site}/agent?task=${taskId}`, primary: true }],
+  });
+  await notifyUserLine({ userId, category: "agent", text: `🤖 ${head}\n\n${summary.slice(0, 1500)}\n\n看完整：${site}/agent?task=${taskId}`, flex: doneCard });
 }
 
 // LINE 發起的任務需要批准時→推 LINE 一張帶「允許/取消」postback 按鈕的卡（守紅線：對外動作在 LINE 也能一鍵放行）。

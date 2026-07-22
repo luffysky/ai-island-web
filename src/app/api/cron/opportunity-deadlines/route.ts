@@ -3,6 +3,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { verifyCronAuth } from "@/lib/cron-auth";
 import { pushUserNotif } from "@/lib/notify-helpers";
 import { notifyUserLine } from "@/lib/notify-user-line";
+import { buildSimpleCard, buildListCard } from "@/lib/line-flex";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -59,7 +60,19 @@ export async function GET(req: NextRequest) {
     const title = dl === 1 ? `⏰ 明天截止：${o.name}` : `⏰ 剩 ${dl} 天截止：${o.name}`;
     const body = `你收藏的機會「${o.name}」報名截止 ${o.application_deadline}，剩 ${dl} 天。要不要現在準備？`;
     await pushUserNotif({ userId: r.user_id, kind: "system", title, body, link });
-    notifyUserLine({ userId: r.user_id, category: "deadlines", text: `${title}\n報名截止 ${o.application_deadline}（剩 ${dl} 天）\n${process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet"}${link}` }).catch(() => {});
+    const site0 = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
+    const dlCard = buildSimpleCard({
+      emoji: "⏰",
+      title: dl === 1 ? "明天就截止！" : `剩 ${dl} 天截止`,
+      accentColor: dl <= 3 ? "#ef4444" : "#f59e0b",
+      body: o.name,
+      meta: [
+        { label: "報名截止", value: String(o.application_deadline) },
+        { label: "剩餘", value: `${dl} 天` },
+      ],
+      buttons: [{ label: "🚀 去準備報名", uri: `${site0}${link}`, primary: true }],
+    });
+    notifyUserLine({ userId: r.user_id, category: "deadlines", text: `${title}\n報名截止 ${o.application_deadline}（剩 ${dl} 天）\n${site0}${link}`, flex: dlCard }).catch(() => {});
     sent++;
     results.push({ user: r.user_id.slice(0, 8), opp: o.name, days: dl });
   }
@@ -98,7 +111,14 @@ export async function GET(req: NextRequest) {
       const title = `🔔 ${matched.length} 個新機會符合你的訂閱`;
       const body = `符合「${s.label}」：\n${names}${matched.length > 5 ? `\n…等 ${matched.length} 個` : ""}`;
       await pushUserNotif({ userId: s.user_id, kind: "system", title, body, link: "/opportunities" });
-      notifyUserLine({ userId: s.user_id, category: "subscriptions", text: `${title}\n${body}\n${site}/opportunities` }).catch(() => {});
+      const subCard = buildListCard({
+        title: `${matched.length} 個新機會符合訂閱`,
+        emoji: "🔔",
+        items: matched.slice(0, 8).map((o) => ({ primary: o.name, secondary: [o.category, o.organizer].filter(Boolean).join("・") || undefined })),
+        footerButton: { label: "🧭 去機會島看看", uri: `${site}/opportunities` },
+        accentColor: "#8b5cf6",
+      });
+      notifyUserLine({ userId: s.user_id, category: "subscriptions", text: `${title}\n${body}\n${site}/opportunities`, flex: subCard }).catch(() => {});
       subSent++;
     }
   }
