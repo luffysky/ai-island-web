@@ -1,0 +1,416 @@
+[
+  {
+    "slug": "overfitting-underfitting",
+    "term": "Overfitting / Underfitting",
+    "zh_name": "過擬合 / 欠擬合",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "過擬合＝模型把訓練資料背得太死（連雜訊都學），換新資料就爛；欠擬合＝學得太淺，連訓練資料都抓不好。什麼時候在意：模型訓練分數好、實測卻差＝過擬合的典型症狀。",
+    "analogy": "過擬合像死背考古題（換題就掛）；欠擬合像根本沒讀（怎麼考都低）。",
+    "example": "訓練 99%、測試 60% → 嚴重過擬合",
+    "related": [
+      "regularization",
+      "cross-validation",
+      "bias-variance-tradeoff"
+    ]
+  },
+  {
+    "slug": "bias-variance-tradeoff",
+    "term": "Bias-Variance Tradeoff",
+    "zh_name": "偏差-變異權衡",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "模型誤差來自兩種：bias（太簡化、系統性偏，=欠擬合）與 variance（對訓練資料太敏感、換資料就抖，=過擬合）。什麼時候在意：調模型複雜度就是在這兩者間找平衡——太簡單高 bias、太複雜高 variance。",
+    "analogy": "像射箭——bias 是準心偏了（都射偏同方向）、variance 是手抖（散得到處都是），要兩個都低。",
+    "example": "加深模型降 bias 但升 variance，靠正則化拉回",
+    "related": [
+      "overfitting-underfitting",
+      "regularization",
+      "ensemble-learning"
+    ]
+  },
+  {
+    "slug": "dropout",
+    "term": "Dropout",
+    "zh_name": "隨機丟棄",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "訓練神經網路時，每步隨機「關掉」一部分神經元，逼網路別過度依賴特定幾個、增強泛化。什麼時候在意：防過擬合的常用手段（如 dropout 0.5）。推論時不 dropout。",
+    "analogy": "像練球隊時隨機讓幾個主力休息——逼全隊都會打，不會只靠明星球員，上場更穩。",
+    "example": "nn.Dropout(0.5) 加在全連接層之間",
+    "related": [
+      "overfitting-underfitting",
+      "batch-normalization",
+      "regularization"
+    ]
+  },
+  {
+    "slug": "batch-normalization",
+    "term": "Batch Normalization",
+    "zh_name": "批次正規化",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "訓練時把每層的輸出「標準化」（拉到相近的分佈），讓訓練更穩更快、也有輕微正則效果。什麼時候在意：深層網路訓練不穩、收斂慢時常加。",
+    "analogy": "像每一關都把水位調回標準高度——後面關卡不會因前面暴衝而失控，整條線順很多。",
+    "example": "Conv → BatchNorm → ReLU 是經典組合",
+    "related": [
+      "dropout",
+      "activation-function",
+      "learning-rate"
+    ]
+  },
+  {
+    "slug": "epoch-batch-iteration",
+    "term": "Epoch / Batch / Iteration",
+    "zh_name": "訓練輪 / 批 / 迭代",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "epoch＝把全部訓練資料完整跑一遍；batch＝一次餵給模型的一小撮資料；iteration＝跑完一個 batch 更新一次權重。什麼時候在意：設訓練參數——batch 太大吃記憶體、太小不穩；epoch 太多會過擬合。",
+    "analogy": "epoch 像把整本習題做完一遍；batch 像一次做幾題就對答案改進；做完全部＝一個 epoch。",
+    "example": "1000 筆、batch=100 → 10 iterations = 1 epoch",
+    "related": [
+      "learning-rate",
+      "gradient-descent",
+      "overfitting-underfitting"
+    ]
+  },
+  {
+    "slug": "one-hot-encoding",
+    "term": "One-Hot Encoding",
+    "zh_name": "獨熱編碼",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把類別型資料（紅/綠/藍）轉成只有一個位置是 1、其餘 0 的向量，讓模型能吃。什麼時候在意：類別特徵不能直接餵數字（會被誤當有大小順序）——one-hot 避免『紅=1、綠=2』被當成綠比紅大。",
+    "analogy": "像投票——三個選項各一個框，你選誰就那格打勾（1）、其餘空白（0），沒有誰比較大。",
+    "example": "['紅','綠','藍'] → 紅=[1,0,0] 綠=[0,1,0]",
+    "related": [
+      "feature-scaling",
+      "feature-engineering",
+      "random-forest"
+    ]
+  },
+  {
+    "slug": "feature-scaling",
+    "term": "Feature Scaling",
+    "zh_name": "特徵縮放",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "把不同量級的特徵（年齡 0-100 vs 收入 0-百萬）縮到相近範圍（標準化/歸一化）。什麼時候在意：距離型/梯度型模型（KNN、SVM、神經網路）——不縮放的話大數值特徵會壓過小的。",
+    "analogy": "像比賽前統一單位——有人用公分有人用公尺，不換算成同單位就沒法公平比。",
+    "example": "StandardScaler：(x-平均)/標準差 → 均值0、標準差1",
+    "related": [
+      "one-hot-encoding",
+      "k-means",
+      "gradient-descent"
+    ]
+  },
+  {
+    "slug": "ensemble-learning",
+    "term": "Ensemble Learning",
+    "zh_name": "集成學習",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "把多個模型的預測「合起來投票/平均」，通常比單一模型準又穩。什麼時候在意：想再擠一點準度、降低過擬合。兩大流派：bagging（並行、如隨機森林）、boosting（串接補錯、如 XGBoost）。",
+    "analogy": "像請一群專家投票，比只問一個人可靠——個別會錯，多數決通常對。",
+    "example": "隨機森林 = 一堆決策樹投票",
+    "related": [
+      "random-forest",
+      "bias-variance-tradeoff",
+      "gradient-boosting"
+    ]
+  },
+  {
+    "slug": "random-forest",
+    "term": "Random Forest",
+    "zh_name": "隨機森林",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "訓練很多棵「各看部分資料/特徵」的決策樹，最後投票或平均。什麼時候在意：表格資料的萬用強打——好用、不太需調參、抗過擬合、還能看特徵重要度。",
+    "analogy": "像找一片森林的樹各自判斷再投票——單棵樹容易偏，一整片森林平均起來就穩。",
+    "example": "RandomForestClassifier(n_estimators=100)",
+    "related": [
+      "ensemble-learning",
+      "gradient-boosting",
+      "overfitting-underfitting"
+    ]
+  },
+  {
+    "slug": "k-means",
+    "term": "K-Means Clustering",
+    "zh_name": "K-平均分群",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "非監督學習：把資料自動分成 K 群，讓同群的靠得近。什麼時候在意：沒有標籤、想把顧客/資料自動分類（分眾、找族群）。要自己決定 K 是多少（常用 elbow 法試）。",
+    "analogy": "像把散落的人按距離自動圍成 K 個圈圈——靠近的自成一群，不用先貼標籤。",
+    "example": "把用戶依行為分 5 群做精準行銷",
+    "related": [
+      "feature-scaling",
+      "pca",
+      "ensemble-learning"
+    ]
+  },
+  {
+    "slug": "prototype-ux",
+    "term": "Prototype",
+    "zh_name": "原型",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "還沒寫程式前，先做一個「可點、可走流程」的假畫面來驗證設計。什麼時候在意：花大錢開發前先低成本測方向——低擬真（紙上/線框）快速試、高擬真（Figma 可互動）測細節。",
+    "analogy": "像蓋房子前先做模型屋——先看格局對不對，不用蓋錯了才拆。",
+    "example": "Figma 串好畫面 → 給人試點 → 發現卡點再改",
+    "related": [
+      "wireframe",
+      "usability-testing",
+      "user-flow"
+    ]
+  },
+  {
+    "slug": "heuristic-evaluation",
+    "term": "Heuristic Evaluation",
+    "zh_name": "啟發式評估",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用一套公認的「好用原則」（如 Nielsen 十大原則）逐條檢查介面有沒有違反，快速抓可用性問題。什麼時候在意：沒時間做完整使用者測試時，先用專家原則自檢一輪 CP 值高。",
+    "analogy": "像出餐前用一張標準檢查表自己先過一遍——擺盤、份量、溫度逐項打勾，抓明顯問題。",
+    "example": "檢查：有沒有『系統狀態可見』『可復原操作』…",
+    "related": [
+      "usability-testing",
+      "progressive-disclosure",
+      "visual-hierarchy"
+    ]
+  },
+  {
+    "slug": "information-architecture",
+    "term": "Information Architecture (IA)",
+    "zh_name": "資訊架構",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "怎麼把內容「組織、分類、命名、導覽」讓人找得到東西。什麼時候在意：網站/App 的選單結構、分類、麵包屑——IA 亂，功能再好使用者也找不到。",
+    "analogy": "像圖書館的分類與書架配置——書再多，分類清楚就找得到，亂放等於沒有。",
+    "example": "導覽分類 / 麵包屑 / 搜尋 / 標籤 的整體規劃",
+    "related": [
+      "user-flow",
+      "progressive-disclosure",
+      "visual-hierarchy"
+    ]
+  },
+  {
+    "slug": "user-flow",
+    "term": "User Flow",
+    "zh_name": "使用者流程",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "使用者為了完成某個目標，一步步經過哪些畫面/動作的路徑圖。什麼時候在意：設計功能前先畫流程，找出多餘步驟、卡點、岔路，讓路徑最短最順。",
+    "analogy": "像規劃逛街動線——從進門到結帳走哪條路最順，先畫好才不會讓客人繞路。",
+    "example": "註冊流程：首頁→填 email→驗證→設密碼→完成",
+    "related": [
+      "information-architecture",
+      "prototype-ux",
+      "progressive-disclosure"
+    ]
+  },
+  {
+    "slug": "persona",
+    "term": "Persona",
+    "zh_name": "人物誌",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "根據真實研究，虛構出一個代表目標用戶的『具體人物』（年齡/目標/痛點/情境）。什麼時候在意：做設計決策時問『這個 persona 會怎麼用』，比空談『使用者』具體、能對齊團隊。",
+    "analogy": "像替目標客群畫一張具體的臉——『25 歲上班族小美，通勤時想快速學東西』比『使用者』好想像。",
+    "example": "設計時：『小美在捷運上單手滑，這步好按嗎？』",
+    "related": [
+      "user-flow",
+      "usability-testing",
+      "information-architecture"
+    ]
+  },
+  {
+    "slug": "usability-testing",
+    "term": "Usability Testing",
+    "zh_name": "可用性測試",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "找真實使用者來『實際操作』你的產品，在旁觀察他們卡在哪、誤解什麼。什麼時候在意：驗證設計對不對——5 個用戶就能抓出約 8 成的主要可用性問題，便宜又有效。",
+    "analogy": "像請人試吃新菜看表情——他皺眉的地方就是問題，比你自己覺得好吃可靠。",
+    "example": "給任務『找到退貨政策』→ 看他卡幾秒、點錯幾次",
+    "related": [
+      "heuristic-evaluation",
+      "prototype-ux",
+      "persona"
+    ]
+  },
+  {
+    "slug": "fitts-law",
+    "term": "Fitts's Law",
+    "zh_name": "費茲定律",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "目標越大、越近，越快點得到。什麼時候在意：重要按鈕做大、放好按的位置（手機拇指區、螢幕角落其實很好點因為是無限邊界）；小又遠的按鈕讓人抓狂。",
+    "analogy": "像投籃——籃框越大越近越好進；把常用按鈕做小做遠，等於故意刁難使用者。",
+    "example": "主要 CTA 做大做顯眼；刪除鈕別跟確認鈕擠一起",
+    "related": [
+      "visual-hierarchy",
+      "gestalt-principles",
+      "dark-pattern"
+    ]
+  },
+  {
+    "slug": "gestalt-principles",
+    "term": "Gestalt Principles",
+    "zh_name": "完形原則",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "人腦「自動把視覺元素組織成整體」的規律：靠近的看成一組（鄰近）、像的看成一類（相似）、對齊的看成有關聯。什麼時候在意：排版——用間距/對齊/相似就能讓人『不用讀字就懂分組』。",
+    "analogy": "像看夜空自動把星星連成星座——大腦會自己找規律，設計就是善用這個。",
+    "example": "相關欄位靠近、同類按鈕同樣式 → 一眼看懂分組",
+    "related": [
+      "visual-hierarchy",
+      "whitespace",
+      "information-architecture"
+    ]
+  },
+  {
+    "slug": "skeuomorphism",
+    "term": "Skeuomorphism",
+    "zh_name": "擬物設計",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "讓數位介面『長得像真實物件』（記事本有紙紋、按鈕有立體陰影）幫人快速理解。什麼時候在意：早期 iOS 的風格；後來流行扁平化（flat）反其道。現在多是折衷（適度陰影/材質提示可點）。",
+    "analogy": "像把垃圾桶圖示畫成真垃圾桶——不用教就知道是丟東西的地方。",
+    "example": "iBooks 的木頭書架 vs 現在的扁平卡片",
+    "related": [
+      "visual-hierarchy",
+      "affordance",
+      "gestalt-principles"
+    ]
+  },
+  {
+    "slug": "dark-pattern",
+    "term": "Dark Pattern",
+    "zh_name": "黑暗模式（誘導設計）",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "故意用設計『誘導/欺騙』使用者做不利自己的事：難取消的訂閱、預設勾選加購、把『拒絕』做得很難找。什麼時候在意：這是該避免的反道德設計——短期騙到、長期毀信任還可能違法。",
+    "analogy": "像故意把出口指示牌藏起來、把加購按鈕做得超大——讓你不小心就中招。",
+    "example": "取消訂閱要點 7 層、退訂鈕做成灰色小字",
+    "related": [
+      "fitts-law",
+      "microcopy",
+      "usability-testing"
+    ]
+  },
+  {
+    "slug": "microcopy",
+    "term": "Microcopy",
+    "zh_name": "微文案",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "介面上的小字：按鈕文字、提示、錯誤訊息、空狀態說明。什麼時候在意：這些小字決定體驗好壞——『發生錯誤』vs『網路怪怪的，再試一次』差很多；好的 microcopy 像貼心的引導。",
+    "analogy": "像店員的一句話——同樣拒絕，『沒貨』跟『這款太搶手賣完了，幫您看看類似的？』感受天差地別。",
+    "example": "空購物車：『還沒加東西，去逛逛？』比『無資料』好",
+    "related": [
+      "dark-pattern",
+      "progressive-disclosure",
+      "persona"
+    ]
+  },
+  {
+    "slug": "visual-hierarchy",
+    "term": "Visual Hierarchy",
+    "zh_name": "視覺層次",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用大小、顏色、粗細、間距、位置引導眼睛『先看什麼、後看什麼』。什麼時候在意：每個畫面都該有明確主角——最重要的最突出，次要的收斂，別什麼都搶眼（=什麼都不突出）。",
+    "analogy": "像報紙——大標題先抓眼、副標次之、內文最後，讓你一眼知道重點在哪。",
+    "example": "主 CTA 大又亮、次要動作做成低調文字連結",
+    "related": [
+      "gestalt-principles",
+      "whitespace",
+      "fitts-law"
+    ]
+  },
+  {
+    "slug": "progressive-disclosure",
+    "term": "Progressive Disclosure",
+    "zh_name": "漸進揭露",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "一次只給『當下需要的』資訊/選項，進階的收起來、需要時再展開。什麼時候在意：功能多又怕嚇跑新手時——預設簡單、進階藏在『更多設定』，兼顧新手與老手。",
+    "analogy": "像餐廳菜單——先給主菜單，想深入再翻『主廚推薦/加點』，不是一開始就攤一百道菜。",
+    "example": "表單先問必填、進階選項收在『展開更多』",
+    "related": [
+      "information-architecture",
+      "visual-hierarchy",
+      "microcopy"
+    ]
+  }
+]
