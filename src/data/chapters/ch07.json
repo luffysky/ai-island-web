@@ -471,7 +471,16 @@
         ],
         "answer": "c",
         "explanation": "答案 c 用懶式評估，只在需要時才計算下一個元素，不會浪費資源去處理全部 100 萬個數字。答案 b 會先篩出所有符合條件的（可能幾十萬個），才取前 5 個，浪費效能。答案 a 可行但不夠優雅。答案 d 最沒效率。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "7.6.loops",
+          "language": "javascript",
+          "title": "迴圈 for / while / 迭代",
+          "initialCode": "// for：跑固定次數\nfor (let i = 1; i <= 3; i++) console.log(\"第\", i, \"次\");\n\n// while：條件成立就一直跑\nlet n = 5, steps = 0;\nwhile (n > 1) { n = n % 2 ? n * 3 + 1 : n / 2; steps++; }  // 冰雹數列\nconsole.log(\"回到 1 用了\", steps, \"步\");\n\n// for...of：直接迭代每個元素\nfor (const fruit of [\"🍎\", \"🍌\", \"🍇\"]) console.log(fruit);\n\n// 迴圈 + 累加\nlet sum = 0;\nfor (const x of [10, 20, 30]) sum += x;\nconsole.log(\"總和 =\", sum);\n",
+          "hint": "改範圍或條件，看迴圈怎麼重複做事。"
+        }
+      ]
     },
     {
       "id": "7.7",
@@ -550,7 +559,16 @@
         ],
         "answer": "a",
         "explanation": "函數就是 DRY（Don't Repeat Yourself）的核心概念——把重複的邏輯封裝成一個單位，只要叫名字就能執行。b 是副作用、c 是誤會、d 是變數的工作，都不是函數的真正目的。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "7.7.functions",
+          "language": "javascript",
+          "title": "函數：抽象的單位",
+          "initialCode": "// 函數 = 把一段邏輯包起來、給個名字、可重複用\nfunction greet(name, lang = \"zh\") {           // 預設參數\n  return lang === \"zh\" ? `哈囉 ${name}` : `Hi ${name}`;\n}\nconsole.log(greet(\"Nami\"));\nconsole.log(greet(\"Bob\", \"en\"));\n\n// 箭頭函數 + 高階函數（函數當參數）\nconst twice = f => x => f(f(x));\nconst addOne = x => x + 1;\nconsole.log(\"加兩次1:\", twice(addOne)(10));   // 12\n\n// 遞迴：函數呼叫自己\nconst fact = n => n <= 1 ? 1 : n * fact(n - 1);\nconsole.log(\"5! =\", fact(5));                 // 120\n",
+          "hint": "改參數或邏輯，看函數怎麼包裝一段可重用的邏輯。"
+        }
+      ]
     },
     {
       "id": "7.8",
@@ -617,7 +635,16 @@
         ],
         "answer": "a",
         "explanation": "香蕉是陣列的第二個元素，但陣列從 0 開始編號，所以香蕉的位置是 [1]。選項 b 是橘子、選項 c 和 d 是語法錯誤或不適用於基本陣列操作。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "7.8.arrays",
+          "language": "javascript",
+          "title": "陣列 Array 常用操作",
+          "initialCode": "const arr = [3, 1, 4, 1, 5, 9, 2, 6];\nconsole.log(\"原陣列:\", arr);\nconsole.log(\"長度:\", arr.length, \"| 第1個:\", arr[0]);\n\narr.push(10);                       // 加到最後\nconsole.log(\"push 後:\", arr);\n\nconsole.log(\"每個*2:\", arr.map(x => x * 2));\nconsole.log(\"只留偶數:\", arr.filter(x => x % 2 === 0));\nconsole.log(\"總和:\", arr.reduce((a, b) => a + b, 0));\nconsole.log(\"由小到大:\", [...arr].sort((a, b) => a - b));\nconsole.log(\"有沒有 >8 的:\", arr.some(x => x > 8));\n",
+          "hint": "改陣列或方法，看 push/map/filter/reduce 各做什麼。"
+        }
+      ]
     },
     {
       "id": "7.9",
@@ -723,6 +750,15 @@
             }
           }
         }
+      ],
+      "playgrounds": [
+        {
+          "key": "7.9.dict",
+          "language": "javascript",
+          "title": "字典 Dict / Map",
+          "initialCode": "// 物件當字典\nconst user = { name: \"Nami\", age: 18, city: \"Taipei\" };\nconsole.log(\"name =\", user.name);\nuser.email = \"nami@example.com\";     // 新增 key\nconsole.log(\"所有 key:\", Object.keys(user));\nconsole.log(\"所有 value:\", Object.values(user));\n\n// Map：key 可以是任何型別、有順序、好迭代\nconst scores = new Map();\nscores.set(\"Alice\", 90);\nscores.set(\"Bob\", 72);\nconsole.log(\"Alice 分數:\", scores.get(\"Alice\"));\nconsole.log(\"有沒有 Bob:\", scores.has(\"Bob\"));\nfor (const [k, v] of scores) console.log(k, \"→\", v);\n\n// 計數：字典最經典的用途\nconst text = \"banana\";\nconst count = {};\nfor (const ch of text) count[ch] = (count[ch] ?? 0) + 1;\nconsole.log(\"字母出現次數:\", count);\n",
+          "hint": "改 key/value，看字典怎麼用鍵取值。"
+        }
       ]
     },
     {
@@ -794,7 +830,16 @@
         ],
         "answer": "a",
         "explanation": "Set 的核心特性就是「自動去重」，把重複的訪客名單丟進 Set 後會自動只保留不重複的元素。這正是課程中提到的「去掉重複」用途，比用陣列 + 判斷簡單 100 倍。其他選項都不是為了去重而設計的。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "7.10.collections",
+          "language": "javascript",
+          "title": "Set / Stack / Queue",
+          "initialCode": "// Set：自動去重\nconst s = new Set([1, 2, 2, 3, 3, 3]);\nconsole.log(\"去重後:\", [...s]);\ns.add(4); console.log(\"有沒有 2:\", s.has(2), \"| 大小:\", s.size);\n\n// Stack 堆疊：後進先出（LIFO）——用 push / pop\nconst stack = [];\nstack.push(\"A\"); stack.push(\"B\"); stack.push(\"C\");\nconsole.log(\"堆疊彈出:\", stack.pop(), \"(最後進的先出)\");\n\n// Queue 佇列：先進先出（FIFO）——用 push / shift\nconst queue = [];\nqueue.push(\"排隊1\"); queue.push(\"排隊2\");\nconsole.log(\"佇列取出:\", queue.shift(), \"(最先進的先出)\");\n",
+          "hint": "看集合去重、堆疊(後進先出)、佇列(先進先出)。"
+        }
+      ]
     },
     {
       "id": "7.11",
@@ -857,7 +902,16 @@
         ],
         "answer": "a",
         "explanation": "課程的核心是『把東西跟它能做的事綁在一起』，也就是屬性和方法在同一個 class 內。朋友的說法恰好相反，把 OOP 的優點—內聚性—誤解為分離。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "7.11.oop",
+          "language": "javascript",
+          "title": "OOP：class / object",
+          "initialCode": "class Dog {\n  constructor(name, age) {          // 建構子：造物件時跑\n    this.name = name;\n    this.age = age;\n  }\n  bark() { return `${this.name}: 汪！`; }\n  humanAge() { return this.age * 7; }\n}\n\nconst d = new Dog(\"小白\", 3);        // 造一個實體\nconsole.log(d.bark());\nconsole.log(`${d.name} 的人類年齡約 ${d.humanAge()} 歲`);\nconsole.log(\"d 是不是 Dog:\", d instanceof Dog);\n",
+          "hint": "改屬性或方法，看物件怎麼把資料+行為包在一起。"
+        }
+      ]
     },
     {
       "id": "7.12",
@@ -908,7 +962,16 @@
         ],
         "answer": "a",
         "explanation": "繼承的核心概念就是「兒子繼承爸爸的能力」，讓子類別可以重複使用父類別已經寫好的程式碼（如 eat、sleep），不用重新寫一遍。選項 b 是封裝、c 是多型、d 與三大特性無關。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "7.12.oop3",
+          "language": "javascript",
+          "title": "OOP 三大特性：繼承/封裝/多型",
+          "initialCode": "class Animal {\n  constructor(name) { this.name = name; }\n  speak() { return `${this.name} 發出聲音`; }\n}\nclass Cat extends Animal {            // 繼承\n  speak() { return `${this.name}: 喵~`; }   // 多型：覆寫父類方法\n}\nclass Cow extends Animal {\n  speak() { return `${this.name}: 哞~`; }\n}\n\nconst animals = [new Cat(\"咪咪\"), new Cow(\"大牛\"), new Animal(\"怪物\")];\nfor (const a of animals) console.log(a.speak());  // 同一個 speak()、各自表現不同＝多型\n",
+          "hint": "看子類別繼承、覆寫方法(多型)。"
+        }
+      ]
     },
     {
       "id": "7.13",
@@ -983,7 +1046,16 @@
         ],
         "answer": "b",
         "explanation": "純函數的定義就是：同樣輸入→同樣輸出，且不改外部狀態。這讓程式好預測、好測試、能快取、能平行執行。a、c、d 都是概念混淆或只是函數式的工具，不是純函數的核心。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "7.13.fp",
+          "language": "javascript",
+          "title": "函數式：map/filter/reduce/純函數",
+          "initialCode": "const orders = [\n  { item: \"咖啡\", price: 120, qty: 2 },\n  { item: \"蛋糕\", price: 90,  qty: 1 },\n  { item: \"茶\",   price: 60,  qty: 3 },\n];\n\n// 鏈式：算每項小計 → 只留超過100 → 加總\nconst total = orders\n  .map(o => ({ ...o, subtotal: o.price * o.qty }))   // 純函數：不改原物件\n  .filter(o => o.subtotal > 100)\n  .reduce((sum, o) => sum + o.subtotal, 0);\nconsole.log(\"超過100的品項總額:\", total);\n\n// 不可變：原陣列不動\nconst nums = [1, 2, 3];\nconst doubled = nums.map(x => x * 2);\nconsole.log(\"原:\", nums, \"| 新:\", doubled);\n",
+          "hint": "看純函數、不可變、鏈式資料轉換。"
+        }
+      ]
     },
     {
       "id": "7.14",
@@ -1050,7 +1122,64 @@
         ],
         "answer": "b",
         "explanation": "TypeScript 是強靜態、推導、半 null safe（strict 模式），Rust 是強靜態、推導、null safe。共同點是強靜態和推導，但 Rust 的 null safe 程度更高、更強制。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "動態型別 vs 靜態型別，你的專案適合哪種？",
+          "note": "回答幾題，看該選動態(Python/JS)還是靜態(TS/Go/Rust)。",
+          "config": {
+            "questions": [
+              {
+                "q": "專案規模與生命週期？",
+                "options": [
+                  {
+                    "label": "小腳本 / 原型 / 快速驗證",
+                    "scores": {
+                      "dyn": 2
+                    }
+                  },
+                  {
+                    "label": "大型、多人、長期維護",
+                    "scores": {
+                      "stat": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你最在意？",
+                "options": [
+                  {
+                    "label": "寫得快、彈性高、少囉嗦",
+                    "scores": {
+                      "dyn": 2
+                    }
+                  },
+                  {
+                    "label": "編譯期就抓錯、重構安全、IDE 提示強",
+                    "scores": {
+                      "stat": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "dyn": {
+                "emoji": "🐍",
+                "title": "動態型別",
+                "desc": "型別執行時才定（Python/JS/Ruby）。寫得快、彈性大；代價是型別錯可能到執行才炸。"
+              },
+              "stat": {
+                "emoji": "🦀",
+                "title": "靜態型別",
+                "desc": "型別編譯期就定（TS/Go/Rust/Java）。前期多寫一點型別，換來早抓錯、重構安全、大型專案好維護。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "7.15",
@@ -1121,7 +1250,38 @@
         ],
         "answer": "b",
         "explanation": "陣列是複雜型別（物件），存放在 Heap。當 `b = a` 時，b 和 a 都是指向同一個 Heap 上陣列物件的參考（地址），所以改動陣列內容時，兩個變數都會看到變化。選項 a 錯誤因為沒有複製；選項 c 錯誤因為陣列不是簡單型別；選項 d 的說法不精確，不是「自動更新」，而是本來就指向同一個物件。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "記憶體：這樣用安全嗎？",
+          "note": "判斷每個記憶體使用是穩健(ok)、有風險(risk)、還是會出事(no)。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "函式內宣告的區域變數，用完離開函式就自動回收",
+                "correct": "ok",
+                "why": "區域變數放 Stack、離開作用域自動釋放，正常。"
+              },
+              {
+                "text": "全域陣列一直 push 資料、從來不清",
+                "correct": "risk",
+                "why": "物件放 Heap 靠 GC 回收；一直被全域參照＝GC 收不掉＝記憶體洩漏，長跑會爆。"
+              },
+              {
+                "text": "兩個物件互相參照、但已經沒人用它們",
+                "correct": "ok",
+                "why": "現代 GC 是「可達性」判定、不是引用計數，互相參照的孤島照樣會被回收。"
+              },
+              {
+                "text": "開了大量檔案/連線但忘了關",
+                "correct": "no",
+                "why": "檔案描述符/連線是有限資源，不關會耗盡、程式掛掉——要用 try-finally / with 確保釋放。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "7.16",
@@ -1246,6 +1406,15 @@
             ]
           }
         }
+      ],
+      "playgrounds": [
+        {
+          "key": "7.16.errors",
+          "language": "javascript",
+          "title": "錯誤處理 try / catch / finally",
+          "initialCode": "function divide(a, b) {\n  if (b === 0) throw new Error(\"除數不能為 0\");   // 主動丟錯\n  return a / b;\n}\n\nfor (const [a, b] of [[10, 2], [5, 0]]) {\n  try {\n    console.log(`${a}/${b} =`, divide(a, b));\n  } catch (e) {\n    console.log(`${a}/${b} 出錯:`, e.message);   // 接住錯誤、不讓程式崩\n  } finally {\n    console.log(\"  (finally 一定會跑)\");\n  }\n}\n\n// 也可自訂錯誤型別\nclass ValidationError extends Error {}\ntry { throw new ValidationError(\"欄位不合法\"); }\ncatch (e) { console.log(\"捕到:\", e.constructor.name, \"-\", e.message); }\n",
+          "hint": "改會不會丟錯，看 try/catch/finally 的流程。"
+        }
       ]
     },
     {
@@ -1313,7 +1482,42 @@
         ],
         "answer": "b",
         "explanation": "分檔的核心目的是降低複雜度、提高維護性。每個檔案負責一個職責（user、order、email），改動某部分不會影響全部，多人開發也不會互踩腳。a、c、d 都是對模組化的誤解。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "模組化：一個 import 怎麼被解析",
+          "note": "看 import/export 怎麼把程式拆成可重用的模組。",
+          "config": {
+            "trigger": {
+              "kind": "manual",
+              "label": "你的檔案寫 import { sum } from './utils'"
+            },
+            "nodes": [
+              {
+                "kind": "code",
+                "label": "1. 解析模組路徑",
+                "desc": "找到 ./utils 這個檔（或 node_modules 的套件）"
+              },
+              {
+                "kind": "set",
+                "label": "2. 載入並執行該模組",
+                "desc": "跑一次它的頂層程式、收集它 export 的東西"
+              },
+              {
+                "kind": "if",
+                "label": "3. 只取你要的 export",
+                "desc": "具名匯出 { sum } 只拉 sum、tree-shaking 可搖掉沒用到的"
+              },
+              {
+                "kind": "action",
+                "label": "4. 綁進你的作用域",
+                "desc": "之後你的檔案就能用 sum()，模組只執行一次、被快取"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "7.18",
@@ -1380,7 +1584,38 @@
         ],
         "answer": "a",
         "explanation": "這題考的是命名清晰度。`usr_cnt` 過度縮寫，違反第 1 原則「看名字就懂用途」；正確應該寫 `user_count`。選項 b 錯因為變數就是名詞不需要動詞；選項 c 錯因為 Python 本來就用 snake_case；選項 d 錯因為這是真正的變數值，不是 magic number（magic number 是那些硬寫在程式裡的無意義數字如 18、1000）。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "命名好不好？",
+          "note": "判斷每個命名是好(ok)、勉強(risk)、還是糟糕(no)。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "const activeUserCount = 42",
+                "correct": "ok",
+                "why": "具體、可讀、一看就懂是什麼。好命名。"
+              },
+              {
+                "text": "const data2 = fetchUsers()",
+                "correct": "risk",
+                "why": "data/data2 這種沒說出內容、加編號區分＝勉強能用但會讓後人猜。"
+              },
+              {
+                "text": "const x = user.creditCard.number",
+                "correct": "no",
+                "why": "x 完全沒表達意義、又是敏感資料，可讀性與安全都糟。"
+              },
+              {
+                "text": "function isEmailValid(email) {...}",
+                "correct": "ok",
+                "why": "布林函式用 is/has 開頭、講清楚回傳什麼，慣例好命名。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "7.19",
@@ -1455,7 +1690,81 @@
         ],
         "answer": "a",
         "explanation": "Observer 模式的核心是「解耦事件發布者與多個訂閱者」，訂單函數只發通知，各項服務各自註冊 observer 監聽，新需求只加 observer 不改原函數。b 是 Singleton 用途、c 是 Factory 用途、d 誤解了設計模式的目的。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "這個需求該用哪個設計模式？",
+          "note": "看情境選對模式：Singleton / Factory / Observer。",
+          "config": {
+            "questions": [
+              {
+                "q": "你的情境最像？",
+                "options": [
+                  {
+                    "label": "整個程式只能有一個實例（設定、連線池）",
+                    "scores": {
+                      "single": 2
+                    }
+                  },
+                  {
+                    "label": "依條件建立不同類型的物件、但呼叫端不想管細節",
+                    "scores": {
+                      "factory": 2
+                    }
+                  },
+                  {
+                    "label": "一件事發生時、要通知一堆對象跟著反應",
+                    "scores": {
+                      "observer": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "再確認：",
+                "options": [
+                  {
+                    "label": "要全域唯一、共享同一份狀態",
+                    "scores": {
+                      "single": 1
+                    }
+                  },
+                  {
+                    "label": "想把「怎麼 new」集中起來、好擴充",
+                    "scores": {
+                      "factory": 1
+                    }
+                  },
+                  {
+                    "label": "要一對多的訂閱／發布關係",
+                    "scores": {
+                      "observer": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "single": {
+                "emoji": "1️⃣",
+                "title": "Singleton 單例",
+                "desc": "保證一個類別只有一個實例、全域共用。適合設定、連線池、日誌。（小心濫用變成全域變數）"
+              },
+              "factory": {
+                "emoji": "🏭",
+                "title": "Factory 工廠",
+                "desc": "把「建立物件」的邏輯集中起來，呼叫端只說要什麼、不管怎麼 new。好擴充。"
+              },
+              "observer": {
+                "emoji": "📡",
+                "title": "Observer 觀察者",
+                "desc": "一對多：主題變動時自動通知所有訂閱者。事件系統、UI 響應式都靠它。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "7.20",
@@ -1526,7 +1835,38 @@
         ],
         "answer": "a",
         "explanation": "Python 的 GIL 讓同時只有一個 thread 能執行 Python bytecode，所以 CPU 密集型工作用 thread 沒用；必須改用 multiprocessing（多行程）才能突破 GIL、達到真平行。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "並發：這段會不會出 race condition？",
+          "note": "判斷多執行緒/並發下是安全(ok)、有風險(risk)、還是會錯(no)。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "兩個執行緒同時對同一個 counter 做 count++（沒加鎖）",
+                "correct": "no",
+                "why": "count++ 不是原子操作（讀→加→寫），兩緒交錯會覆蓋彼此、算錯。要加鎖或用原子型別。"
+              },
+              {
+                "text": "每個執行緒只讀共享設定、都不寫",
+                "correct": "ok",
+                "why": "唯讀共享沒有競爭，安全。"
+              },
+              {
+                "text": "用一把鎖保護所有共享資料的存取",
+                "correct": "ok",
+                "why": "正確加鎖能避免 race；但要小心鎖太粗會拖慢、鎖順序不一致會死鎖。"
+              },
+              {
+                "text": "兩個執行緒各拿一把鎖、又互相等對方的鎖",
+                "correct": "no",
+                "why": "經典死鎖（deadlock）——兩邊都不放、永遠卡住。要固定鎖的取得順序。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "7.21",
@@ -1597,7 +1937,16 @@
         ],
         "answer": "a",
         "explanation": "async 的核心是利用 I/O 等待時間做其他事，所以三個 API 可以同時等，總時間只取決於最慢的那個（100ms），不是 300ms。這就是課程開頭「max(100, 50, 200)」的概念。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "7.21.async",
+          "language": "javascript",
+          "title": "async / await / event loop",
+          "initialCode": "const sleep = ms => new Promise(r => setTimeout(r, ms));\n\nasync function task(name, ms) {\n  await sleep(ms);\n  console.log(name, \"完成\");\n  return name;\n}\n\n// 事件迴圈：同步先跑、微任務再跑\nconsole.log(\"1. 同步開始\");\nPromise.resolve().then(() => console.log(\"3. 微任務(then)\"));\nconsole.log(\"2. 同步結束\");\n\n(async () => {\n  // 三個一起跑，總時間≈最久那個\n  const t0 = Date.now();\n  await Promise.all([task(\"A\", 30), task(\"B\", 20), task(\"C\", 10)]);\n  console.log(\"全部完成，耗時約\", Date.now() - t0, \"ms (不是相加)\");\n})();\n",
+          "hint": "看非同步不阻塞、await 等結果、事件迴圈順序。"
+        }
+      ]
     },
     {
       "id": "7.22",
@@ -1660,7 +2009,42 @@
         ],
         "answer": "b",
         "explanation": "訊息傳遞的核心是「不共享記憶體」，每個 actor 只改自己的狀態，透過訊息溝通，所以不會發生兩個執行緒搶同一變數的 race condition，也不會互等鎖造成 deadlock。a 錯因為 channel 本身也有同步機制；c 和 d 不是這課的重點。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "訊息傳遞：Actor / Channel 怎麼運作",
+          "note": "看「不共享記憶體、改用傳訊息」怎麼避開鎖。",
+          "config": {
+            "trigger": {
+              "kind": "manual",
+              "label": "多個工作要協作，但不想共享記憶體+加鎖"
+            },
+            "nodes": [
+              {
+                "kind": "set",
+                "label": "1. 每個 Actor 有自己的私有狀態",
+                "desc": "別人不能直接改它、只能發訊息給它"
+              },
+              {
+                "kind": "action",
+                "label": "2. 送訊息進信箱(mailbox)",
+                "desc": "actor.send(msg)，非阻塞"
+              },
+              {
+                "kind": "code",
+                "label": "3. Actor 一次處理一則訊息",
+                "desc": "序列處理→不會有 race，自然安全"
+              },
+              {
+                "kind": "if",
+                "label": "4. 需要回覆就再送一則訊息回去",
+                "desc": "Go 用 channel、Erlang/Akka 用 actor，都是這個精神"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "7.23",
@@ -1727,7 +2111,104 @@
         ],
         "answer": "b",
         "explanation": "Big O 的核心概念就是看「資料量變大時的成長趨勢」。線性搜尋 n 變 10 倍，時間就變 10 倍；但二元搜尋每次砍半，n 變 100 萬倍只多花不到 20 次操作，這才是快 25,000 倍的根本原因。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "這段程式是什麼時間複雜度？",
+          "note": "看程式結構判斷 Big O、哪個規模大了會爆。",
+          "config": {
+            "questions": [
+              {
+                "q": "「一個迴圈跑過 n 個元素、各做固定工作」是？",
+                "options": [
+                  {
+                    "label": "O(1) 常數",
+                    "scores": {
+                      "n": 0
+                    }
+                  },
+                  {
+                    "label": "O(n) 線性",
+                    "scores": {
+                      "n": 2
+                    }
+                  },
+                  {
+                    "label": "O(n²) 平方",
+                    "scores": {
+                      "nn": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "「巢狀兩層迴圈、各跑 n 次」是？",
+                "options": [
+                  {
+                    "label": "O(n) 線性",
+                    "scores": {
+                      "n": 0
+                    }
+                  },
+                  {
+                    "label": "O(n²) 平方（n 一大就爆）",
+                    "scores": {
+                      "nn": 2
+                    }
+                  },
+                  {
+                    "label": "O(log n)",
+                    "scores": {
+                      "log": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "「每次把範圍對半砍（二分搜尋）」是？",
+                "options": [
+                  {
+                    "label": "O(n)",
+                    "scores": {
+                      "n": 0
+                    }
+                  },
+                  {
+                    "label": "O(log n)（超快、n 翻倍只多一步）",
+                    "scores": {
+                      "log": 2
+                    }
+                  },
+                  {
+                    "label": "O(n²)",
+                    "scores": {
+                      "nn": 0
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "n": {
+                "emoji": "📈",
+                "title": "你抓到 O(n) 線性",
+                "desc": "工作量跟資料量成正比。多數單層迴圈都是這類——可接受。"
+              },
+              "nn": {
+                "emoji": "⚠️",
+                "title": "你抓到 O(n²) 平方",
+                "desc": "巢狀迴圈的殺手：n=1000 就是一百萬次。資料一大就要想辦法降階（用 Map/排序）。"
+              },
+              "log": {
+                "emoji": "🚀",
+                "title": "你抓到 O(log n)",
+                "desc": "每步砍半＝超高效。二分搜尋、平衡樹都是。n 翻倍只多做一步。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "7.24",
@@ -1774,7 +2255,16 @@
         ],
         "answer": "b",
         "explanation": "課程強調『所有語言都有內建排序——別自己寫』，實務上應該用內建函式，省時又穩定。自己寫排序只在面試要求『實作』時才需要。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "7.24.algorithms",
+          "language": "javascript",
+          "title": "常見演算法：排序 / 搜尋 / 遞迴",
+          "initialCode": "// 氣泡排序：一步步把大的往後推\nfunction bubbleSort(a) {\n  a = [...a];\n  for (let i = 0; i < a.length; i++)\n    for (let j = 0; j < a.length - 1 - i; j++)\n      if (a[j] > a[j + 1]) [a[j], a[j + 1]] = [a[j + 1], a[j]];\n  return a;\n}\nconsole.log(\"排序前:\", [5, 2, 8, 1, 9]);\nconsole.log(\"排序後:\", bubbleSort([5, 2, 8, 1, 9]));\n\n// 二分搜尋：在「已排序」陣列裡對半找（O(log n)）\nfunction binarySearch(a, target) {\n  let lo = 0, hi = a.length - 1;\n  while (lo <= hi) {\n    const mid = (lo + hi) >> 1;\n    if (a[mid] === target) return mid;\n    if (a[mid] < target) lo = mid + 1; else hi = mid - 1;\n  }\n  return -1;\n}\nconsole.log(\"找 7 在索引:\", binarySearch([1, 3, 5, 7, 9, 11], 7));\n\n// 遞迴：費氏數列\nconst fib = n => n < 2 ? n : fib(n - 1) + fib(n - 2);\nconsole.log(\"費氏前8項:\", Array.from({length: 8}, (_, i) => fib(i)));\n",
+          "hint": "看氣泡排序、二分搜尋、遞迴實作。"
+        }
+      ]
     },
     {
       "id": "7.25",
@@ -1857,6 +2347,15 @@
             "testString": "貼文 #程式 學 #Python 和 #正則 超實用 #coding"
           }
         }
+      ],
+      "playgrounds": [
+        {
+          "key": "7.25.strings",
+          "language": "javascript",
+          "title": "字串處理常用方法",
+          "initialCode": "const s = \"  Hello, AI Island!  \";\nconsole.log(\"trim:\", JSON.stringify(s.trim()));\nconsole.log(\"大寫:\", s.trim().toUpperCase());\nconsole.log(\"包含 AI:\", s.includes(\"AI\"));\nconsole.log(\"取代:\", s.trim().replace(\"AI\", \"🤖\"));\nconsole.log(\"切割:\", \"a,b,c,d\".split(\",\"));\nconsole.log(\"接合:\", [\"2026\", \"07\", \"31\"].join(\"-\"));\nconsole.log(\"padStart:\", \"7\".padStart(3, \"0\"));   // 007\n\n// 樣板字串\nconst name = \"Nami\", n = 3;\nconsole.log(`${name} 有 ${n} 則新訊息，${n > 0 ? \"去看看\" : \"沒有新訊息\"}`);\n",
+          "hint": "改字串或方法，看跨語言通用的字串操作。"
+        }
       ]
     },
     {
@@ -1928,7 +2427,47 @@
         ],
         "answer": "a",
         "explanation": "json.load() 搭配 open() 的 'r' 模式，是 Python 讀取 JSON 檔案的標準做法。'rb' 是給二進制檔案用（如圖片），requests 是給網路請求用，手動解析是沒必要且容易出錯。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "I/O：一次網路請求/讀檔的旅程",
+          "note": "看 I/O 為什麼「慢」、為什麼要非同步。",
+          "config": {
+            "trigger": {
+              "kind": "manual",
+              "label": "程式要讀一個檔案 / 打一個 API"
+            },
+            "nodes": [
+              {
+                "kind": "code",
+                "label": "1. 發出 I/O 請求",
+                "desc": "跟作業系統說「我要讀這個檔 / 連這個網址」"
+              },
+              {
+                "kind": "if",
+                "label": "2. 等待（這裡最慢）",
+                "desc": "硬碟/網路比 CPU 慢幾萬~百萬倍——CPU 在這乾等很浪費"
+              },
+              {
+                "kind": "set",
+                "label": "3a. 同步：整個程式卡住等",
+                "desc": "簡單但期間什麼都不能做"
+              },
+              {
+                "kind": "action",
+                "label": "3b. 非同步：先去做別的、好了再回來",
+                "desc": "await / callback＝I/O 等待時 CPU 不閒著，吞吐大增"
+              },
+              {
+                "kind": "db",
+                "label": "4. 資料回來、繼續處理",
+                "desc": "拿到 bytes / response 後接著算"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "7.27",
@@ -2003,7 +2542,81 @@
         ],
         "answer": "b",
         "explanation": "單元測試快、多、便宜，適合大量寫；E2E 測試慢、少、貴，只用來驗證關鍵使用者流程。測試金字塔就是在說明最經濟有效的測試配置比例。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "這個情況該寫哪種測試？",
+          "note": "單元 / 整合 / E2E 各測什麼，選對層級。",
+          "config": {
+            "questions": [
+              {
+                "q": "你想驗證的是？",
+                "options": [
+                  {
+                    "label": "單一函式的邏輯對不對（純計算）",
+                    "scores": {
+                      "unit": 2
+                    }
+                  },
+                  {
+                    "label": "API + 資料庫接起來有沒有通",
+                    "scores": {
+                      "integ": 2
+                    }
+                  },
+                  {
+                    "label": "使用者從登入到結帳整條流程",
+                    "scores": {
+                      "e2e": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你要「多、快、便宜」還是「少、慢、真實」？",
+                "options": [
+                  {
+                    "label": "大量、毫秒級、隔離——當地基",
+                    "scores": {
+                      "unit": 1
+                    }
+                  },
+                  {
+                    "label": "中等數量、測模組接線",
+                    "scores": {
+                      "integ": 1
+                    }
+                  },
+                  {
+                    "label": "少量、慢、但最接近真實使用",
+                    "scores": {
+                      "e2e": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "unit": {
+                "emoji": "🧱",
+                "title": "單元測試 Unit",
+                "desc": "測單一函式、隔離、快又多——測試金字塔的地基。抓邏輯錯最有效。"
+              },
+              "integ": {
+                "emoji": "🔗",
+                "title": "整合測試 Integration",
+                "desc": "測幾個模組一起（API+DB）、抓「接線」的錯。數量中等。"
+              },
+              "e2e": {
+                "emoji": "🎬",
+                "title": "端對端 E2E",
+                "desc": "模擬真實使用者走完整流程。最真實但最慢最脆，金字塔頂端、少量精選。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "7.28",
@@ -2078,7 +2691,38 @@
         ],
         "answer": "b",
         "explanation": "正確答案是 B。Production debug 的核心是「有意義的 context」（誰、什麼、為什麼），用結構化 log 才能快速查詢和分析。A 會製造噪音，C 洩露敏感資訊违反安全，D 完全無法追蹤問題。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Debug：這個除錯做法好嗎？",
+          "note": "判斷每個除錯習慣是好(ok)、勉強(risk)、還是壞(no)。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "先穩定重現 bug、縮小到最小可重現案例，再動手",
+                "correct": "ok",
+                "why": "能穩定重現+最小化＝除錯成功一半。正確心法。"
+              },
+              {
+                "text": "看到錯就到處亂改、改到不報錯為止",
+                "correct": "no",
+                "why": "沒理解根因、亂試＝可能只是把症狀蓋掉、埋更深的雷。"
+              },
+              {
+                "text": "到處灑 console.log 看變數值",
+                "correct": "risk",
+                "why": "快速有效、但灑完要記得清；複雜問題用中斷點/debugger 更有系統。"
+              },
+              {
+                "text": "先讀錯誤訊息與 stack trace 最上面幾行",
+                "correct": "ok",
+                "why": "錯誤訊息通常直接指出檔案:行號與原因，先讀它最省時。"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "boss": {
