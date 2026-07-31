@@ -10,6 +10,7 @@ import { sendPushToUser } from "@/lib/web-push";
 import { loadUserMcpTools } from "./mcp";
 import { loadUserOpenApiTools } from "./openapi-tools";
 import { maybeSuggestSkill } from "./skill-synth";
+import { resourceKeyOf, extractReadText, diffOrFull } from "./diff-read";
 
 // 手機遙控核心：關鍵時刻推播到使用者所有裝置（VAPID 未設會自動 no-op）。fire-and-forget。
 function pushSafe(userId: string, title: string, body: string, taskId: string, tag: string) {
@@ -490,6 +491,7 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
   const admin = createSupabaseAdmin();
   const history: StepRow[] = [];
   const doneCalls = new Map<string, ToolResult>();  // 去重：同一個 (工具+參數) 只真的做一次
+  const readCache = new Map<string, string>();      // 2.7.3：資源鍵 → 上次讀到的文字（重讀只送差異）
   // 本回合結束時要更新對話串 last_message_at + 寫 turn_summary
   const bumpThread = async (summary: string) => {
     await admin.from("agent_tasks").update({ turn_summary: summary.slice(0, 600) }).eq("id", taskId);
@@ -711,6 +713,21 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
       } catch (e: any) { result = { ok: false, error: e?.message ?? "工具執行例外" }; }
       if (!doneCalls.has(callKey)) doneCalls.set(callKey, result);  // 記起來、下次同呼叫直接沿用
       row.ok = result.ok; row.result = result.ok ? result.data : { error: result.error };
+      // 2.7.3 Diff 只讀變動：read 類工具「重讀同資源」且內容幾乎相同 → 只把差異塞進 history（省 token）。
+      if (result.ok && tool.risk === "read") {
+        try {
+          const rk = resourceKeyOf(tool.name, decision.args);
+          if (rk) {
+            const text = extractReadText(result.data);
+            const prev = readCache.get(rk);
+            if (prev && text) {
+              const d = diffOrFull(prev, text);
+              if (d.reduced) row.result = { diffOnly: true, note: "重讀同資源、內容幾乎不變", changes: d.text };
+            }
+            if (text) readCache.set(rk, text);
+          }
+        } catch { /* 任何錯 → 保留完整內容 */ }
+      }
       history.push(row);
       await admin.from("agent_steps").insert({
         task_id: taskId, idx, thought: row.thought, tool_name: tool.name, risk: tool.risk,

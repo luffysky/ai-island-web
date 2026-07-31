@@ -180,7 +180,7 @@
 ### 2.7 省 token（Snow Orchestrator）＆ MCP／技能
 - [x] ~~2.7.1 Rule-filter 完整層~~ ✅ 0731（`src/lib/agent/rule-filter.ts`：純招呼/測試字→罐頭語不叫 LLM；10 分鐘內一字不差重複任務→回上次結果〔時效性任務不快取〕；掛 orchestrator 頂端、命中走正常收尾路徑；純函式有單元測試。commit 8e313722）
 - [x] ~~2.7.2 Agent 任務 Embedding RAG~~ ✅ 其實早已接（`launchAgentTask` 用 `match_agent_tasks` 撈語意相似過去任務 + `agent_memory` 跨對話記憶 → 併進 planner priorContext）。todo 標記過時、已核。
-- [ ] 2.7.3 Diff 只讀變動；[x] ~~2.7.4 per-agent daily budget~~ ✅ 0801（每位員工可設「每日任務上限」：agent_skills.daily_budget〔migration 跑 prod〕、launchAgentTask 依 (user,skill,今日) 計數超過就擋〔0=不限、fail-open〕、skills API 收/回、SkillCreator 加欄位。Event-driven/Sleep 屬另案）
+- [x] ~~2.7.3 Diff 只讀變動~~ ✅ 0801（`lib/agent/diff-read.ts`：read 類工具重讀同資源〔同 url/path/query〕且內容重疊≥90% → history 只塞差異〔+新增/-消失〕不重貼全文、省 token；純函式 6 測試；orchestrator 主迴圈套用、任何錯退回完整）；[x] ~~2.7.4 per-agent daily budget~~ ✅ 0801（每位員工可設「每日任務上限」：agent_skills.daily_budget〔migration 跑 prod〕、launchAgentTask 依 (user,skill,今日) 計數超過就擋〔0=不限、fail-open〕、skills API 收/回、SkillCreator 加欄位。Event-driven/Sleep 屬另案）
 - [~] 2.7.5 成本/ROI Dashboard＝同 §4.4：使用者端 `/me/ai-usage` ✅ 0722（本月額度+30天用量/成本圖）；跨用戶 efficiency 排行（admin）← 之後
 - [ ] 2.7.6 Cost-per-Task benchmark 實測；2.7.7 AI COO
 - [ ] 2.7.8 MCP 外部實戰測試；2.7.9 MCP Marketplace + 技能市集分享
