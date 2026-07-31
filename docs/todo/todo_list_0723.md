@@ -245,6 +245,9 @@
   - **④ 新互動元件 backlog（玩了就懂）**：~~RegexTester~~ ✅ 0723（打 pattern 即時看命中/群組、掛 ch64.4/ch04.24/ch07.25）、~~WritingStudio~~ ✅ 0723；待建：Tokenizer（看字→token 數/成本，LLM 章）/SortingViz（演算法）/SqlPlayground（SQL JOIN 視覺化）/NeuralForward+GradientDescent（深度學習）/HttpInspector（HTTP）/GitGraph（Git）/DataFrameExplorer（Pandas）/BigOGrapher/CronBuilder/SerpPreview/UnitEconomicsCalc/PersonaBuilder…
   - **做法**：新元件我逐一建（React demo 元件 + 註冊型別/dispatcher + 掛章 import DB）；沙盒全補 + 概念道具鋪章用平行子代理（spec：讀每課 content、code 課補 playground〔initialCode 從 content code block 改寫〕、概念課掛對題 demo）。**是跨多次 session 的大工程**、逐章推進逐次 commit。
   - **盤點基準（0723）**：程式章 code 課多已有 playground（ch1-11/17/19-22/33/76 覆蓋 90%+）；缺口＝ch26 資料/ML 段 20 課、ch7/16/31/32/47/48 部分、非程式章多只 1-2 demo。優先 ch26（Python 基礎·觸發此討論）當範本。
+  - **進度**：
+    - [x] ~~**ch26 Python 基礎（範本章）100% 覆蓋**~~ ✅ 0731——原 15 沙盒+1 教具 → **27 沙盒 + 12 教具、38 課 0 課沒互動**。新增 12 個可跑 Python 沙盒（Pyodide 預載 numpy/pandas/matplotlib/sklearn，每段本地 exec 驗過）＋11 個教具（PyTorch/HF/FastAPI/Django 等需 GPU/server 無法瀏覽器跑 → decision-quiz/workflow-flow/scenario-judge 對題）。commit ee91669d。
+    - [ ] 下一章：ch7（程式邏輯共通 28 課只 5 PG）、ch16/31/32/47/48 補沙盒；非程式大章鋪領域道具。
 - [ ] 4.1.4 圖文解說圖：概念/B/D/E/F 區操作圖 110+ 張（🔴 等林董生圖；A 區 29 張 ✅）
 
 ### 4.2 程式辭典（→ 5000）
