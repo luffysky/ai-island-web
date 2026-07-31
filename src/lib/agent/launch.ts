@@ -48,12 +48,25 @@ export async function launchAgentTask(opts: {
   let maxSteps = Math.min(Math.max(Number(opts.maxSteps) || 40, 1), 100);
   if (opts.skillId) {
     const { data: sk } = await admin.from("agent_skills")
-      .select("id, goal_template, allowed_tools, max_steps, is_builtin, user_id")
+      .select("id, goal_template, allowed_tools, max_steps, is_builtin, user_id, daily_budget")
       .eq("id", opts.skillId).or(`is_builtin.eq.true,user_id.eq.${userId}`).single();
     if (sk) {
       skillId = sk.id;
       skill = { allowedTools: (sk.allowed_tools as string[]) ?? [], prompt: sk.goal_template || undefined };
       maxSteps = Math.min(Math.max(Number(sk.max_steps) || maxSteps, 1), 100);
+      // 2.7.4 per-agent 日預算：這位員工今天跑過的任務數達上限 → 擋（0=不限）。fail-open：查詢出錯不擋。
+      const budget = Number((sk as any).daily_budget) || 0;
+      if (budget > 0 && !opts.skipDailyCap) {
+        try {
+          const since = new Date(); since.setHours(0, 0, 0, 0);
+          const { count } = await admin.from("agent_tasks")
+            .select("id", { count: "exact", head: true })
+            .eq("user_id", userId).eq("skill_id", skillId).gte("created_at", since.toISOString());
+          if (typeof count === "number" && count >= budget) {
+            return { error: `這位員工今天的任務已達你設的上限（${budget} 個）。明天再繼續，或到技能設定調高上限 🙌` };
+          }
+        } catch { /* fail-open */ }
+      }
     }
   }
 

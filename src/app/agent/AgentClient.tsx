@@ -987,7 +987,7 @@ export function AgentClient() {
       {storeOpen && (
         <SkillStore skills={skills} tools={tools} onToggle={installSkill} onClose={() => setStoreOpen(false)} onDeleted={loadSkills}
           onEdit={(sk, mode) => {
-            setSkillDraft({ name: sk.name, emoji: sk.emoji, description: sk.description ?? "", goal_template: (sk as any).goal_template ?? "", allowed_tools: sk.allowed_tools ?? [] });
+            setSkillDraft({ name: sk.name, emoji: sk.emoji, description: sk.description ?? "", goal_template: (sk as any).goal_template ?? "", allowed_tools: sk.allowed_tools ?? [], daily_budget: (sk as any).daily_budget ?? 0 });
             setSkillEditId(mode === "edit" ? sk.id : null);
             setStoreOpen(false); setSkillModal(true);
           }} />
@@ -1132,13 +1132,14 @@ function SkillStore({ skills, tools, onToggle, onClose, onDeleted, onEdit }: {
   );
 }
 
-interface SkillDraft { name: string; emoji: string; description: string; goal_template: string; allowed_tools: string[]; }
+interface SkillDraft { name: string; emoji: string; description: string; goal_template: string; allowed_tools: string[]; daily_budget?: number; }
 function SkillCreator({ tools, onClose, onCreated, initial, editId }: { tools: ToolInfo[]; onClose: () => void; onCreated: (id: string) => void; initial?: SkillDraft | null; editId?: string | null }) {
   const [name, setName] = useState(initial?.name ?? "");
   const [emoji, setEmoji] = useState(initial?.emoji ?? "🤖");
   const [desc, setDesc] = useState(initial?.description ?? "");
   const [prompt, setPrompt] = useState(initial?.goal_template ?? "");
   const [picked, setPicked] = useState<string[]>(initial?.allowed_tools ?? []);
+  const [budget, setBudget] = useState<number>(initial?.daily_budget ?? 0);   // 2.7.4 每日任務上限（0=不限）
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
 
@@ -1150,8 +1151,8 @@ function SkillCreator({ tools, onClose, onCreated, initial, editId }: { tools: T
     try {
       const url = editId ? `/api/agent/skills?id=${editId}` : "/api/agent/skills";
       const payload = editId
-        ? { name, emoji, description: desc, goal_template: prompt, allowed_tools: picked }
-        : { name, emoji, description: desc, goal_template: prompt, allowed_tools: picked, max_steps: 12, category: "employee" };
+        ? { name, emoji, description: desc, goal_template: prompt, allowed_tools: picked, daily_budget: budget }
+        : { name, emoji, description: desc, goal_template: prompt, allowed_tools: picked, daily_budget: budget, max_steps: 12, category: "employee" };
       const r = await fetch(url, {
         method: editId ? "PATCH" : "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -1190,6 +1191,12 @@ function SkillCreator({ tools, onClose, onCreated, initial, editId }: { tools: T
               })}
             </div>
           </div>
+          {/* 2.7.4 每日任務上限：防這位員工失控燒錢（0=不限） */}
+          <label className="flex items-center gap-2 text-xs text-black/60 dark:text-white/60">
+            <span className="shrink-0">每日任務上限</span>
+            <input type="number" min={0} max={500} value={budget} onChange={(e) => setBudget(Math.max(0, Math.min(500, Number(e.target.value) || 0)))} className="w-20 rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2 py-1" />
+            <span className="text-black/40 dark:text-white/40">個／天（0＝不限，防單一員工失控燒錢）</span>
+          </label>
           {err && <div className="text-xs text-rose-500">{err}</div>}
           <button onClick={save} disabled={saving} className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white px-4 py-2.5 text-sm font-medium">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />} {editId ? "儲存修改" : "錄取這位員工"}

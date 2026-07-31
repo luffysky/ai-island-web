@@ -16,7 +16,7 @@ export async function GET() {
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const admin = createSupabaseAdmin();
   const { data } = await admin.from("agent_skills")
-    .select("id, name, description, emoji, category, goal_template, allowed_tools, max_steps, is_builtin, user_id")
+    .select("id, name, description, emoji, category, goal_template, allowed_tools, max_steps, daily_budget, is_builtin, user_id")
     .or(`is_builtin.eq.true,user_id.eq.${user.id}`)
     .order("is_builtin", { ascending: false }).order("category", { ascending: true }).order("created_at", { ascending: true });
   const { data: installs } = await admin.from("agent_skill_installs").select("skill_id").eq("user_id", user.id);
@@ -88,6 +88,7 @@ export async function POST(req: Request) {
     goal_template: String(b.goal_template ?? "").slice(0, 1000), // 職能/指令
     allowed_tools: allowed,
     max_steps: Math.min(Math.max(Number(b.max_steps) || 12, 1), 30),
+    daily_budget: Math.min(Math.max(Number(b.daily_budget) || 0, 0), 500),
     is_builtin: false,
   }).select("id").single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -118,6 +119,7 @@ export async function PATCH(req: Request) {
   if (typeof b.goal_template === "string") patch.goal_template = b.goal_template.slice(0, 1000);
   if (Array.isArray(b.allowed_tools)) patch.allowed_tools = b.allowed_tools.filter((t: string) => VALID_TOOLS.has(t)).slice(0, 20);
   if (b.max_steps != null) patch.max_steps = Math.min(Math.max(Number(b.max_steps) || 12, 1), 30);
+  if (b.daily_budget != null) patch.daily_budget = Math.min(Math.max(Number(b.daily_budget) || 0, 0), 500);
   if (typeof b.category === "string" && CATS.has(b.category)) patch.category = b.category;
   if (Object.keys(patch).length === 0) return NextResponse.json({ error: "沒有可更新的欄位" }, { status: 400 });
 
