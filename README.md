@@ -80,6 +80,31 @@
 - GA4 儀表板 + 站內第一方互動分析（即時在線 / 頁面停留 / scroll / 完成率）
 - 合規：Audit log 全覆蓋、外洩事件 72h 通報倒數
 
+### 🤖 分身島 Agent（AI 員工辦公室）
+- **Agent Loop**（`agent/orchestrator`）：目標 → L1 拆解 → 規劃工具 → 權限判斷（read 自動 / write·dangerous 要批准）→ 執行 → L3 反思 → 收尾；背景執行（關頁照跑）
+- **L4 技能合成**：完成的任務**自動蒸餾**成可重複用的「員工」（一鍵採用）；**L5 經理–專才**：拆 ≥3 子任務時派專才並行、經理指派角色、**邊完成邊串流**
+- **AI 員工辦公室** `/agent/office`：員工（技能）＋**排程**（cron 員工）＋**自主任務規劃**（員工依職責+歷史+記憶自己決定做什麼）＋待批准佇列＋KPI
+- **動態工具來源**：MCP server ＋ **OpenAPI spec →自動變工具**（SSRF 防護）；**共享資料黑板**（agent 間寫 DB 交換 jsonb、不經 LLM）
+- **省 token / 治理**：Rule-filter（招呼/重複短路）、Diff 只讀變動（重讀同資源只送差異）、pgvector RAG（撈相似過去任務）、per-agent 每日預算、每任務步數上限
+- **多通路發起**：LINE `/分身`、手機遙控（Web Push + 跨裝置批准 + 語音）、桌面助手（本機檔案/指令，輪詢橋接）
+- 對外/破壞性動作**一律逐項批准 + 送出前看草稿全文**（紅線）
+
+### 🔮 每日運勢 / AI 命理
+- 星座每日運勢（零 AI 決定性生成、可無限推）+ **塔羅**（78 張三牌陣）+ **八字排盤**（lunar-javascript 正統四柱/五行/十神）+ **易經·梅花易數**（本地起卦）
+- **訪客免註冊試玩**（選星座看基本運勢 → 引導註冊解鎖進階）、八字可改生日/時辰/幫別人算、歷史回顧
+- LINE 每日推播（Flex 卡）、OG 運勢分享卡、統一付費 gating（`fortune-gate`）
+
+### 🎯 機會島（Opportunity Island）
+- 機會雷達（curated RSS→審核佇列，絕不自動捏資料）、多層機會分類、訂閱比對 + 截止提醒 cron
+- **AI 三件套**：讀規則 / 適合度分析（缺件）/ 生成報名素材；缺件清單、作品庫、規則變動紀錄、準備量估算
+
+### 📖 程式辭典 & 🧩 互動學習道具
+- **程式辭典** `/dictionary`：2300+ 條白話術語（手寫零 API），白話+比喻+範例+相關詞，四語 i18n
+- **互動學習道具**：每課可跑的**程式沙盒**（Python 走 Pyodide〔含 numpy/pandas/matplotlib/sklearn〕、其他語言 server sandbox）＋**教具層**（RegexTester / WritingStudio / 判斷題 / 決策樹 / json-tree / 工作流圖…霧面玻璃風格）
+
+### 🛠️ 大眾變現輕工具
+- 訊息軍師（難開口的話幫你講好）、AI 求職包（履歷+自傳+面試模擬）、生活助理範本庫、每日晨報（規劃中·整合天氣）
+
 ---
 
 ## 🛠️ 技術棧
@@ -211,11 +236,12 @@ docs/   scripts/          # 文件 + 內容匯入 / 部署腳本
 | 文件 | 用途 |
 |---|---|
 | [CLAUDE.md](CLAUDE.md) | 專案最重要的雷（DB vs JSON、1000 筆截斷、部署 fallback、內容生成） |
-| [docs/OWNER_SETUP.md](docs/OWNER_SETUP.md) | 老闆手動待辦 + env 總清單（金流 / VAPID / cron） |
-| [docs/payments_setup.md](docs/payments_setup.md) | 綠界 / 藍新 / Stripe 設定步驟 |
-| [docs/daily_works_0704.md](docs/daily_works_0704.md) | 最新工作日誌（含測試 / CI 段） |
-| [docs/MASTER_TODO.md](docs/MASTER_TODO.md) | 路線圖與進度 |
-| [docs/RULE/](docs/RULE/) | 協作 / sprint / lock 規則 |
+| [docs/todo/todo_list_0801.md](docs/todo/todo_list_0801.md) | **現行待辦主檔**（整合全部舊 todo、逐項核對過） |
+| [docs/worklog/](docs/worklog/) | 每日工作日誌（最新 `daily_works_0801.md`） |
+| [docs/island/分身島規劃待閱.md](docs/island/分身島規劃待閱.md) | 分身島四大工程規劃書（AI 公司世界觀 / Workspace Hub / AI COO / 技能市集） |
+| [docs/Platform.md](docs/Platform.md) | AI 島這側對 SnowRealm Platform 整合的看法 |
+| [docs/island/](docs/island/) | 分身島 / 機會島規劃與 spec |
+| [docs/setup/](docs/setup/) · [docs/payments_setup.md](docs/payments_setup.md) | 老闆手動待辦、cron、金流（綠界/藍新/Stripe）設定 |
 
 ---
 
