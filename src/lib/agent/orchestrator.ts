@@ -127,6 +127,24 @@ async function decompose(goal: string, priorContext = "", freeModel = PLANNER_ST
   } catch { return [goal]; }
 }
 
+// L5 經理–專才：管理者依整體目標，替每個子任務指派一個「專才角色」（如 資料研究員 / 在地情報員 / 數據查證員）。
+// 專才拿到角色後會用更聚焦的視角做事，比一律通用子代理更精準。一次便宜呼叫；失敗 → 全空字串（退回通用行為）。
+async function assignSpecialists(goal: string, plan: string[], freeModel: string): Promise<string[]> {
+  const fallback = plan.map(() => "");
+  if (plan.length < 2) return fallback;
+  try {
+    const system = "你是專案經理。給你一個總目標與已拆好的子任務清單，替每個子任務指派一個最適合的『專才角色』（4-8 字、聚焦該子任務的專業視角，例：資料研究員、在地情報員、數據查證員、法規查核員、彙整分析師）。只回 JSON 字串陣列、長度與子任務數相同、順序一一對應。";
+    const user = `總目標：${goal}\n\n子任務：\n${plan.map((p, i) => `${i + 1}. ${p}`).join("\n")}\n\n只回 JSON 字串陣列（每個子任務一個角色，順序對應）。`;
+    const res = await completeForUsage("agent_core", { system, user, maxTokens: 300, defaultModel: freeModel });
+    const t = (res.text ?? "").trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+    const s = t.indexOf("["), e = t.lastIndexOf("]");
+    if (s === -1 || e === -1) return fallback;
+    const arr = JSON.parse(t.slice(s, e + 1));
+    if (!Array.isArray(arr)) return fallback;
+    return plan.map((_, i) => String(arr[i] ?? "").slice(0, 12));
+  } catch { return fallback; }
+}
+
 async function planNext(goal: string, history: StepRow[], skill?: SkillCtx, extraTools: AgentTool[] = [], priorContext = "", plan: string[] = [], freeModel = PLANNER_STRONG, webCalls = 0, strongModel?: string): Promise<Decision | null> {
   const hist = history.map((s) =>
     `#${s.idx} ${s.toolName ?? "?"}(${JSON.stringify(s.args ?? {})}) → ${s.ok ? "ok" : "fail"}: ${JSON.stringify(s.result ?? {}).slice(0, 400)}`
@@ -284,10 +302,14 @@ async function finalizeFromHistory(goal: string, history: StepRow[], strongModel
 const READONLY_TOOLS = TOOLS.filter((t) => t.risk === "read" && !t.needsDevice).map((t) => t.name);
 
 // 跑一個「子代理」：對單一子任務做有上限的唯讀研究，回它的小結。無審批、無裝置。
-async function runSubAgent(subGoal: string, userId: string, freeModel: string, taskId: string, maxSteps = 5, strongModel?: string): Promise<{ goal: string; summary: string }> {
+async function runSubAgent(subGoal: string, userId: string, freeModel: string, taskId: string, maxSteps = 5, strongModel?: string, role = ""): Promise<{ goal: string; summary: string; role: string }> {
   const history: StepRow[] = [];
   const doneCalls = new Map<string, ToolResult>();
-  const subSkill: SkillCtx = { allowedTools: READONLY_TOOLS };  // 只給唯讀工具
+  // 專才角色：把「你是專精 X 的專才」加進 planner 系統提示，讓子代理更聚焦（經理–專才階層）。
+  const subSkill: SkillCtx = {
+    allowedTools: READONLY_TOOLS,  // 只給唯讀工具
+    prompt: role ? `你是專精「${role}」的專才代理，只負責這個子任務、聚焦你的專業面向：用唯讀工具查到具體、可查證的資訊，附上來源，精準扼要、別發散到別人的守備範圍。` : undefined,
+  };
   for (let i = 0; i < maxSteps; i++) {
     const webCalls = history.filter((s) => WEB_TOOLS.has(s.toolName ?? "")).length;
     if (webCalls >= 4) break;  // 子任務更省 API
@@ -295,7 +317,7 @@ async function runSubAgent(subGoal: string, userId: string, freeModel: string, t
     if (!decision) break;
     if (decision.done || !decision.tool) {
       const s = sanitizeAnswer(decision.summary ?? "");
-      if (s && !looksLikeRawDecisionJson(s) && !looksLikeReasoning(s.slice(0, 200))) return { goal: subGoal, summary: s };
+      if (s && !looksLikeRawDecisionJson(s) && !looksLikeReasoning(s.slice(0, 200))) return { goal: subGoal, summary: s, role };
       break;
     }
     const tool = getTool(decision.tool);
@@ -316,7 +338,7 @@ async function runSubAgent(subGoal: string, userId: string, freeModel: string, t
     history.push({ idx: i, toolName: tool.name, args: decision.args, ok: result.ok, result: result.ok ? result.data : { error: result.error } });
   }
   const summary = await finalizeFromHistory(subGoal, history, strongModel);
-  return { goal: subGoal, summary };
+  return { goal: subGoal, summary, role };
 }
 
 // 把多個子代理的小結合併成一份完整、去重、有條理的最終答案。
@@ -509,13 +531,17 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
   const canParallel = plan.length >= 3 && !skill && extraTools.length === 0;
   if (canParallel) {
     try {
-      yield { type: "thought", idx: 0, thought: `這任務較大，派 ${plan.length} 個子代理同時去查，再幫你彙整。` };
-      const results = await Promise.all(plan.map((sub) => runSubAgent(sub, userId, freeModel, taskId, 5, strongModel).catch(() => ({ goal: sub, summary: "" }))));
+      // 經理–專才：先由經理替每個子任務指派專才角色，再讓對應專才並行去做（比一律通用子代理更聚焦）。
+      const roles = await assignSpecialists(goal, plan, freeModel);
+      const named = roles.filter(Boolean);
+      yield { type: "thought", idx: 0, thought: named.length ? `這任務較大，我當經理派 ${plan.length} 位專才同時處理（${named.join("、")}），再幫你彙整。` : `這任務較大，派 ${plan.length} 個子代理同時去查，再幫你彙整。` };
+      const results = await Promise.all(plan.map((sub, i) => runSubAgent(sub, userId, freeModel, taskId, 5, strongModel, roles[i]).catch(() => ({ goal: sub, summary: "", role: roles[i] || "" }))));
       let pIdx = 0;
       for (const r of results) {
-        const row: StepRow = { idx: pIdx, thought: `子代理：${r.goal}`, toolName: "subagent", ok: !!r.summary, result: { goal: r.goal, summary: r.summary.slice(0, 600) } };
+        const label = r.role ? `專才「${r.role}」：${r.goal}` : `子代理：${r.goal}`;
+        const row: StepRow = { idx: pIdx, thought: label, toolName: "subagent", ok: !!r.summary, result: { goal: r.goal, role: r.role, summary: r.summary.slice(0, 600) } };
         history.push(row);
-        await admin.from("agent_steps").insert({ task_id: taskId, idx: pIdx, thought: row.thought, tool_name: "subagent", args: { goal: r.goal }, result: row.result, ok: !!r.summary });
+        await admin.from("agent_steps").insert({ task_id: taskId, idx: pIdx, thought: row.thought, tool_name: "subagent", args: { goal: r.goal, role: r.role }, result: row.result, ok: !!r.summary });
         yield { type: "step", step: row };
         pIdx++;
       }
