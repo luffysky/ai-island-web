@@ -40,6 +40,9 @@ export async function GET() {
     installed: s.is_builtin ? installed.has(s.id) : true,
     usage: usage.get(s.id) ?? { used: 0, succeeded: 0 },
   }));
+  // 2.7.12 熱門排序：用過越多次的排越前面（穩定排序 → 沒用過的維持原本 is_builtin/category/created_at 次序）。
+  // 主畫面「快速取用」列與商店各分類內都因此把常用技能浮上來。
+  skills.sort((a, b) => (b.usage.used - a.usage.used));
   return NextResponse.json({ skills });
 }
 

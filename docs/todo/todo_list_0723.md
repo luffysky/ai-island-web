@@ -173,13 +173,14 @@
 - [ ] 2.6.6 工作空間 Hub（簡報/表格/文件生成器聚合入口——大工程）
 
 ### 2.7 省 token（Snow Orchestrator）＆ MCP／技能
-- [ ] 2.7.1 Rule-filter 完整層；2.7.2 Agent 任務 Embedding RAG（站內有 embeddings、agent 未接）
+- [x] ~~2.7.1 Rule-filter 完整層~~ ✅ 0731（`src/lib/agent/rule-filter.ts`：純招呼/測試字→罐頭語不叫 LLM；10 分鐘內一字不差重複任務→回上次結果〔時效性任務不快取〕；掛 orchestrator 頂端、命中走正常收尾路徑；純函式有單元測試。commit 8e313722）
+- [x] ~~2.7.2 Agent 任務 Embedding RAG~~ ✅ 其實早已接（`launchAgentTask` 用 `match_agent_tasks` 撈語意相似過去任務 + `agent_memory` 跨對話記憶 → 併進 planner priorContext）。todo 標記過時、已核。
 - [ ] 2.7.3 Diff 只讀變動；2.7.4 Event-driven + Sleep + per-agent daily budget
 - [~] 2.7.5 成本/ROI Dashboard＝同 §4.4：使用者端 `/me/ai-usage` ✅ 0722（本月額度+30天用量/成本圖）；跨用戶 efficiency 排行（admin）← 之後
 - [ ] 2.7.6 Cost-per-Task benchmark 實測；2.7.7 AI COO
 - [ ] 2.7.8 MCP 外部實戰測試；2.7.9 MCP Marketplace + 技能市集分享
 - [ ] 2.7.10 技能 YAML 完整規格；2.7.11 內建技能 workflow 補齊（GitHub管家/檔案整理師…）
-- [~] 2.7.12 技能成效統計（usage ✅；熱門排序未做）；2.7.13「用 Agent→學會建 Agent」教學閉環
+- [x] ~~2.7.12 技能成效統計 + 熱門排序~~ ✅ 0731（usage 早已算〔used/succeeded〕；熱門排序＝skills API 依 used 次數穩定排序、常用技能浮上快速取用列與各分類內，無需 migration）；[ ] 2.7.13「用 Agent→學會建 Agent」教學閉環（未做）
 
 ---
 
