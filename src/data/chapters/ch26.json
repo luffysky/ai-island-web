@@ -504,7 +504,16 @@
         ],
         "answer": "b",
         "explanation": "字串不可變、`s.upper()` 只回傳新字串 'HI' 但沒被接住、s 仍是 'hi'。要 `s = s.upper()` 才會變。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "26.3.5.strings",
+          "language": "python",
+          "title": "字串方法即時試",
+          "initialCode": "# === 字串常用方法：改改看馬上有感 ===\ns = \"  Hello, AI Island!  \"\nprint(\"原字串:\", repr(s))\nprint(\"strip():\", repr(s.strip()))              # 去頭尾空白\nprint(\"lower():\", s.strip().lower())            # 轉小寫\nprint(\"replace:\", s.strip().replace(\"AI\", \"🤖\"))\n\ncsv = \"Alice,30,Taipei\"\nparts = csv.split(\",\")                          # 用逗號切成 list\nprint(\"\\nsplit:\", parts)\nprint(\"join :\", \" | \".join(parts))              # 用 | 接回字串\n\nname, age = \"Nami\", 18\nprint(f\"\\nf-string: {name} 今年 {age} 歲、明年 {age+1} 歲\")\n\nimport re\ntext = \"聯絡 alice@example.com 或 bob@test.org\"\nemails = re.findall(r\"\\w+@\\w+\\.\\w+\", text)       # 正則抓出所有 email\nprint(\"\\n找到 email:\", emails)\n",
+          "hint": "改字串、改參數，看 strip/split/join/replace/f-string/re 各做什麼。"
+        }
+      ]
     },
     {
       "id": "26.4",
@@ -639,7 +648,16 @@
         ],
         "answer": "a",
         "explanation": "first 接第一個（1）、`*rest` 接住剩下的全部、並裝成 list、所以 rest 是 [2, 3, 4]。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "26.4.5.unpack",
+          "language": "python",
+          "title": "拆包 Unpacking 試玩",
+          "initialCode": "# === Unpacking 拆包 ===\na, b, c = 1, 2, 3                 # 一次給三個變數\nprint(\"a,b,c =\", a, b, c)\n\na, b = b, a                      # 交換不用暫存變數\nprint(\"交換後 a,b =\", a, b)\n\nfirst, *rest = [10, 20, 30, 40]  # * 收「剩下的」變成 list\nprint(\"first =\", first, \"| rest =\", rest)\n\n*head, last = [1, 2, 3, 4]\nprint(\"head =\", head, \"| last =\", last)\n\npoint = {\"x\": 3, \"y\": 5}\ndef show(x, y):\n    print(f\"座標 ({x}, {y})\")\nshow(**point)                    # ** 把 dict 攤開成 x=3, y=5\n\nnums = [1, 2, 3]\nprint(\"攤開傳參:\", *nums)         # 等於 print(1, 2, 3)\n",
+          "hint": "多個變數一次接、星號 * 收剩下的、dict 用 ** 攤開。"
+        }
+      ]
     },
     {
       "id": "26.5",
@@ -850,7 +868,16 @@
         ],
         "answer": "a",
         "explanation": "要改外層變數的關鍵字是 global（全域）/ nonlocal（外層函式）；但實務上應盡量避免濫用 global、優先用回傳值（return）讓資料流清楚。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "26.6.5.scope",
+          "language": "python",
+          "title": "變數作用域 global / nonlocal",
+          "initialCode": "# === 變數作用域 ===\ncount = 0\ndef add_global():\n    global count            # 宣告：我要改「模組層」那個 count\n    count += 1\nadd_global(); add_global()\nprint(\"global count =\", count)   # 2\n\ndef outer():\n    total = 0\n    def inner():\n        nonlocal total       # 改「外層函式」的 total、不是新建一個\n        total += 10\n    inner(); inner()\n    return total\nprint(\"nonlocal total =\", outer())  # 20\n\n# 沒宣告時：函式內的指派會「新建區域變數」、不影響外面\nx = 100\ndef try_change():\n    x = 999                  # 這是區域 x、外面的 x 不變\ntry_change()\nprint(\"沒宣告 → 外面 x 仍是\", x)     # 100\n",
+          "hint": "看 global 改到外層、nonlocal 改到外層函式的變數。"
+        }
+      ]
     },
     {
       "id": "26.7",
@@ -1407,7 +1434,16 @@
         ],
         "answer": "a",
         "explanation": "課程明確指出 NumPy 快的四個原因：C 語言底層、連續記憶體、SIMD 向量化指令、沒 Python overhead。其他選項都不符合課程內容——b 不準確（不是全平行化），c 和 d 不在講授範圍。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "26.13.numpy",
+          "language": "python",
+          "title": "NumPy 陣列運算",
+          "initialCode": "import numpy as np\na = np.array([1, 2, 3, 4, 5])\nprint(\"陣列:\", a)\nprint(\"每個 *2:\", a * 2)              # 向量化：不用寫迴圈\nprint(\"平均/總和/最大:\", a.mean(), a.sum(), a.max())\n\nm = np.array([[1, 2, 3], [4, 5, 6]])\nprint(\"\\n形狀:\", m.shape)\nprint(\"每欄總和(axis=0):\", m.sum(axis=0))   # 跨列 → 每欄一個值\nprint(\"每列總和(axis=1):\", m.sum(axis=1))   # 跨欄 → 每列一個值\n\nmask = a > 2\nprint(\"\\n布林遮罩 a>2:\", mask)\nprint(\"篩出來:\", a[mask])             # 只留 True 的\n",
+          "hint": "改陣列或運算，看向量化一次算一整批。"
+        }
+      ]
     },
     {
       "id": "26.14",
@@ -1462,7 +1498,16 @@
         ],
         "answer": "b",
         "explanation": "df.info() 一次顯示列數、欄數、欄位型別和缺失值概況，是 data scientist 拿到資料的標準第一步。搭配 df.isnull().sum() 能精確統計各欄缺失值，最有效率。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "26.14.pandas",
+          "language": "python",
+          "title": "Pandas 表格處理",
+          "initialCode": "import pandas as pd\ndf = pd.DataFrame({\n    \"name\": [\"Alice\", \"Bob\", \"Cara\", \"Dan\"],\n    \"city\": [\"Taipei\", \"Tainan\", \"Taipei\", \"Tainan\"],\n    \"score\": [88, 72, 95, 60],\n})\nprint(df)\nprint(\"\\n分數 > 80:\")\nprint(df[df[\"score\"] > 80])                  # 條件篩選\n\nprint(\"\\n各城市平均分:\")\nprint(df.groupby(\"city\")[\"score\"].mean())    # 分組彙總\n\nprint(\"\\n依分數由高到低:\")\nprint(df.sort_values(\"score\", ascending=False)[[\"name\", \"score\"]])\n",
+          "hint": "改資料或條件，看 DataFrame 篩選/分組/排序。"
+        }
+      ]
     },
     {
       "id": "26.15",
@@ -1525,7 +1570,16 @@
         ],
         "answer": "a",
         "explanation": "Matplotlib 的 plt.subplots(2, 2) 就是專門用來畫子圖的、dpi=300 是業界標準的印刷品質。Seaborn 是高階套件、沒有自己的 subplots() 和 save()、Plotly 是互動網頁圖表不適合印刷、plt.export() 也不存在。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "26.15.matplotlib",
+          "language": "python",
+          "title": "Matplotlib 畫圖",
+          "initialCode": "import matplotlib.pyplot as plt\nimport numpy as np\n\nx = np.linspace(0, 10, 100)\nplt.figure(figsize=(6, 3.2))\nplt.plot(x, np.sin(x), label=\"sin\")\nplt.plot(x, np.cos(x), label=\"cos\", linestyle=\"--\")\nplt.title(\"sin vs cos\")\nplt.xlabel(\"x\"); plt.ylabel(\"y\")\nplt.legend(); plt.grid(alpha=0.3)\nplt.show()   # 線上會直接把圖顯示出來\n\n# 長條圖\nplt.figure(figsize=(6, 3.2))\ncities = [\"Taipei\", \"Tainan\", \"Kaohsiung\"]\nplt.bar(cities, [88, 72, 95], color=[\"#6366f1\", \"#22c55e\", \"#f97316\"])\nplt.title(\"各城市分數\")\nplt.show()\n",
+          "hint": "改資料或圖型，按執行看圖表直接畫出來。"
+        }
+      ]
     },
     {
       "id": "26.16",
@@ -1592,7 +1646,105 @@
         ],
         "answer": "b",
         "explanation": "因為你沒有預先的「標準答案」（客戶類型標籤），只有原始資料，所以不能用監督學習。聚類是非監督學習，讓機器自己找出相似的客戶並分群。監督學習的回歸和分類都需要有已知的 Y（答案），強化學習則用在 Agent 試錯的場景。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "你的問題該用哪種機器學習？",
+          "note": "回答三題，看你的任務屬於監督／非監督／強化學習。",
+          "config": {
+            "intro": "想像你手上有個問題，回答下面三題：",
+            "questions": [
+              {
+                "q": "你的資料有「標準答案（標籤）」嗎？",
+                "options": [
+                  {
+                    "label": "有，每筆都標好了答案",
+                    "scores": {
+                      "sup": 2
+                    }
+                  },
+                  {
+                    "label": "沒有，只有一堆原始資料",
+                    "scores": {
+                      "unsup": 2
+                    }
+                  },
+                  {
+                    "label": "沒有答案，但做對會拿到獎勵",
+                    "scores": {
+                      "rl": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你最想做的是？",
+                "options": [
+                  {
+                    "label": "預測數值或分類（房價、是不是垃圾信）",
+                    "scores": {
+                      "sup": 2
+                    }
+                  },
+                  {
+                    "label": "把相似的東西自動分群、找結構",
+                    "scores": {
+                      "unsup": 2
+                    }
+                  },
+                  {
+                    "label": "讓 agent 在環境裡試錯、學到最佳策略",
+                    "scores": {
+                      "rl": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "下面哪個最像你的情境？",
+                "options": [
+                  {
+                    "label": "有歷史資料＋答案，要它學會對新資料判斷",
+                    "scores": {
+                      "sup": 1
+                    }
+                  },
+                  {
+                    "label": "顧客分群、異常偵測、降維",
+                    "scores": {
+                      "unsup": 1
+                    }
+                  },
+                  {
+                    "label": "下棋、機器人走路、遊戲 AI",
+                    "scores": {
+                      "rl": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "sup": {
+                "emoji": "🎯",
+                "title": "監督式學習 Supervised",
+                "desc": "有標籤資料 → 學會「輸入對應到什麼答案」。分類/迴歸都屬這類（大多數入門 ML）。"
+              },
+              "unsup": {
+                "emoji": "🧩",
+                "title": "非監督式學習 Unsupervised",
+                "desc": "沒有標籤 → 從資料本身找結構：分群(k-means)、降維(PCA)、異常偵測。"
+              },
+              "rl": {
+                "emoji": "🕹️",
+                "title": "強化學習 Reinforcement",
+                "desc": "透過與環境互動、試錯拿獎勵，學到最佳策略。AlphaGo、機器人控制走這路。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "26.17",
@@ -1659,7 +1811,16 @@
         ],
         "answer": "a",
         "explanation": "課程重點強調 sklearn 最強的設計就是「統一 API」——所有 model 都是同樣的 4 步驟（建立、訓練、預測、評估），這是學 sklearn 的核心優勢。其他選項都違反這個統一設計的核心概念。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "26.17.sklearn",
+          "language": "python",
+          "title": "scikit-learn 第一個模型",
+          "initialCode": "from sklearn.datasets import load_iris\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score\n\nX, y = load_iris(return_X_y=True)\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)\n\nmodel = LogisticRegression(max_iter=1000)\nmodel.fit(X_train, y_train)              # 訓練\npred = model.predict(X_test)             # 預測\nprint(\"測試集準確率:\", round(accuracy_score(y_test, pred), 3))\nprint(\"前 5 筆預測:\", pred[:5], \"| 實際:\", y_test[:5])\n",
+          "hint": "換模型或資料，看訓練→預測→算準確率一條龍。"
+        }
+      ]
     },
     {
       "id": "26.18",
@@ -1730,7 +1891,16 @@
         ],
         "answer": "b",
         "explanation": "train/test split 的核心目的是用模型沒看過的資料驗證其泛化能力。選項 a 會造成過度擬合、無法檢驗真實表現；選項 c 訓練資料不足、模型學不好；選項 d 忽視 stratify 等重要細節。只有 b 符合「80/20 分割 + 用 test 驗證泛化能力」的正確做法。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "26.18.featureeng",
+          "language": "python",
+          "title": "特徵工程 + train/test split",
+          "initialCode": "import numpy as np\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.preprocessing import StandardScaler\n\nX = np.array([[1.0, 200], [2.0, 400], [3.0, 600], [4.0, 800], [5.0, 1000], [6.0, 1200]])\ny = np.array([0, 0, 0, 1, 1, 1])\n\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.34, random_state=0)\nprint(\"訓練集筆數:\", len(X_train), \"| 測試集筆數:\", len(X_test))\n\nscaler = StandardScaler().fit(X_train)   # 只用「訓練集」學縮放參數（防資料洩漏）\nprint(\"\\n縮放前(訓練集前2筆):\\n\", X_train[:2])\nprint(\"縮放後(平均0、標準差1):\\n\", np.round(scaler.transform(X_train)[:2], 2))\n",
+          "hint": "看資料標準化、切訓練/測試集的差別。"
+        }
+      ]
     },
     {
       "id": "26.19",
@@ -1797,7 +1967,16 @@
         ],
         "answer": "c",
         "explanation": "詐欺偵測的關鍵是「漏抓詐欺會出人命（損失錢）」，所以應該優先看 recall（不漏抓），即使 precision 低一點（多誤報）也能接受。accuracy 98% 很高但會騙人，precision 60% 不是這場景的首要指標。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "26.19.metrics",
+          "language": "python",
+          "title": "評估指標 accuracy/precision/recall/F1",
+          "initialCode": "from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix\n\ny_true = [1, 0, 1, 1, 0, 1, 0, 0, 1, 0]   # 實際（1=陽性）\ny_pred = [1, 0, 1, 0, 0, 1, 1, 0, 1, 0]   # 模型預測\n\nprint(\"混淆矩陣 [[TN FP][FN TP]]:\")\nprint(confusion_matrix(y_true, y_pred))\nprint(\"\\nAccuracy 準確率 :\", round(accuracy_score(y_true, y_pred), 3))\nprint(\"Precision 精確率:\", round(precision_score(y_true, y_pred), 3), \"(說是陽性有多少真的是)\")\nprint(\"Recall 召回率   :\", round(recall_score(y_true, y_pred), 3), \"(真陽性抓回多少)\")\nprint(\"F1 分數        :\", round(f1_score(y_true, y_pred), 3), \"(precision 與 recall 的調和平均)\")\n",
+          "hint": "改預測結果，看四個指標怎麼變、差在哪。"
+        }
+      ]
     },
     {
       "id": "26.20",
@@ -1864,7 +2043,16 @@
         ],
         "answer": "b",
         "explanation": "train 和 test 分數差距很大（98% vs 65%）是過擬合的典型特徵，表示模型把訓練資料「背起來」了。改善過擬合的方法包括簡化模型、加 Regularization、Early Stopping 等；加複雜度反而會加重過擬合。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "26.20.overfit",
+          "language": "python",
+          "title": "過擬合 / 交叉驗證",
+          "initialCode": "from sklearn.datasets import load_iris\nfrom sklearn.tree import DecisionTreeClassifier\nfrom sklearn.model_selection import cross_val_score\n\nX, y = load_iris(return_X_y=True)\nfor depth in [1, 2, 3, None]:            # None = 不限深度（最容易過擬合）\n    clf = DecisionTreeClassifier(max_depth=depth, random_state=0)\n    clf.fit(X, y)\n    train_acc = clf.score(X, y)                          # 在訓練資料上的分數\n    cv = cross_val_score(clf, X, y, cv=5).mean()         # 5 折交叉驗證（較誠實）\n    print(f\"max_depth={str(depth):>4} | 訓練分 {train_acc:.3f} | 交叉驗證 {cv:.3f} | 落差 {train_acc-cv:+.3f}\")\nprint(\"\\n落差越大 = 越可能過擬合（背了訓練資料、換新資料就掉）\")\n",
+          "hint": "調 max_depth 看訓練分數 vs 交叉驗證分數的落差(過擬合)。"
+        }
+      ]
     },
     {
       "id": "26.21",
@@ -1931,7 +2119,16 @@
         ],
         "answer": "b",
         "explanation": "這是多分類問題（10 種動物），輸出層要用 Softmax 把結果壓成機率、加總為 1；配對的 Loss 是 Cross-Entropy。選項 a 的 ReLU 是用在隱藏層、選項 c 的 Sigmoid 和 Binary Cross-Entropy 是二分類用、選項 d 不加激活是回歸（預測數字）才用。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "26.21.nn",
+          "language": "python",
+          "title": "神經網路：手刻一次前向 + 反向",
+          "initialCode": "import numpy as np\n# 最小神經網路：1 個神經元學會「x -> 2x」\nnp.random.seed(0)\nX = np.array([[1.0], [2.0], [3.0], [4.0]])\ny = np.array([[2.0], [4.0], [6.0], [8.0]])   # 目標：y = 2x\nw = np.random.randn(1, 1); b = 0.0\nlr = 0.01\n\nfor step in range(300):\n    pred = X @ w + b                 # 前向傳播\n    loss = ((pred - y) ** 2).mean()  # 均方誤差\n    grad_w = (2 * X.T @ (pred - y)) / len(X)   # 反向傳播：對 w 的梯度\n    grad_b = (2 * (pred - y)).mean()\n    w -= lr * grad_w; b -= lr * grad_b         # 梯度下降更新\n    if step % 60 == 0:\n        print(f\"step {step:>3} | loss {loss:.4f} | w {w[0,0]:.3f} (目標 2.0)\")\nprint(f\"\\n學到 w≈{w[0,0]:.3f}, b≈{b:.3f}（應該接近 w=2, b=0）\")\n",
+          "hint": "用 numpy 手算一個神經元的前向傳播與梯度、看 loss 下降。"
+        }
+      ]
     },
     {
       "id": "26.22",
@@ -1994,7 +2191,56 @@
         ],
         "answer": "a",
         "explanation": "課程明確指出 Tensor 的兩個核心特性是「可以在 GPU 跑」和「可以追蹤梯度」，而 NumPy 只能在 CPU 上運作。選項 b 錯在「一定比較快」（CPU 上可能一樣），c 錯在資料型態限制，d 錯在相容性。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "PyTorch 訓練迴圈長怎樣",
+          "note": "一步步看神經網路每個 epoch 在做什麼（PyTorch 需 GPU/環境、這裡用流程圖看懂）。",
+          "config": {
+            "trigger": {
+              "kind": "manual",
+              "label": "準備好資料與模型，開始訓練"
+            },
+            "nodes": [
+              {
+                "kind": "set",
+                "label": "1. 拿一批資料 (batch)",
+                "desc": "從 DataLoader 取一小批 X, y"
+              },
+              {
+                "kind": "code",
+                "label": "2. 前向傳播 forward",
+                "desc": "pred = model(X)，算出預測",
+                "data": "pred = model(X)"
+              },
+              {
+                "kind": "code",
+                "label": "3. 算損失 loss",
+                "desc": "比對 pred 與真實 y",
+                "data": "loss = criterion(pred, y)"
+              },
+              {
+                "kind": "code",
+                "label": "4. 反向傳播 backward",
+                "desc": "算每個參數的梯度",
+                "data": "loss.backward()"
+              },
+              {
+                "kind": "set",
+                "label": "5. 更新權重",
+                "desc": "optimizer 依梯度調參數",
+                "data": "optimizer.step()\noptimizer.zero_grad()"
+              },
+              {
+                "kind": "if",
+                "label": "6. 還沒收斂 → 回到第 1 步",
+                "desc": "重複很多 epoch，loss 越降越低"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "26.23",
@@ -2057,7 +2303,81 @@
         ],
         "answer": "a",
         "explanation": "圖片任務應該用 CNN，因為卷積層透過小視窗滑過圖片學 local pattern（線條、邊緣、紋理），參數量少、能利用圖片特性。RNN 是為序列資料設計、普通 NN 會參數爆炸，都不適合。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "你的資料該用哪種深度學習架構？",
+          "note": "資料型態決定架構：影像、序列、還是長文本？",
+          "config": {
+            "questions": [
+              {
+                "q": "你的輸入資料主要是？",
+                "options": [
+                  {
+                    "label": "圖片 / 影像（像素有空間關係）",
+                    "scores": {
+                      "cnn": 2
+                    }
+                  },
+                  {
+                    "label": "有時間先後的序列（語音、股價、逐字）",
+                    "scores": {
+                      "rnn": 2
+                    }
+                  },
+                  {
+                    "label": "長文本、需要看整段前後關係",
+                    "scores": {
+                      "tf": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "最重要的能力是？",
+                "options": [
+                  {
+                    "label": "抓「局部特徵」（邊緣、紋理、形狀）",
+                    "scores": {
+                      "cnn": 2
+                    }
+                  },
+                  {
+                    "label": "記住「前面發生過什麼」",
+                    "scores": {
+                      "rnn": 1
+                    }
+                  },
+                  {
+                    "label": "一次看全部、算每個字對每個字的關聯",
+                    "scores": {
+                      "tf": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "cnn": {
+                "emoji": "🖼️",
+                "title": "CNN 卷積神經網路",
+                "desc": "用卷積核掃過影像抓局部特徵，影像辨識的主力。"
+              },
+              "rnn": {
+                "emoji": "🔁",
+                "title": "RNN / LSTM",
+                "desc": "逐步吃序列、把記憶往後傳，適合時間序列與早期 NLP（現多被 Transformer 取代）。"
+              },
+              "tf": {
+                "emoji": "⚡",
+                "title": "Transformer",
+                "desc": "用 self-attention 一次看全序列、算兩兩關聯，現代 NLP 與 LLM 的地基。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "26.24",
@@ -2132,7 +2452,48 @@
         ],
         "answer": "a",
         "explanation": "課程明確指出「2026 不要自己從零訓練 model（沒算力、沒資料），要學會從 HF 拿預訓練 model、自己稍微 fine-tune」。這是 indie 開發者 AI 工作的主流路徑，也是 Hugging Face 生態系的核心價值。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "Hugging Face：預訓練 → 微調流程",
+          "note": "不用從零訓練——站在預訓練模型肩上，用少量資料微調。",
+          "config": {
+            "trigger": {
+              "kind": "manual",
+              "label": "想做一個文本分類器，但資料不多"
+            },
+            "nodes": [
+              {
+                "kind": "ai",
+                "label": "1. 挑一個預訓練模型",
+                "desc": "到 Hugging Face Hub 找 bert-base 之類"
+              },
+              {
+                "kind": "code",
+                "label": "2. 載入模型與 tokenizer",
+                "desc": "from_pretrained 一行載好",
+                "data": "AutoModel.from_pretrained('bert-base-chinese')"
+              },
+              {
+                "kind": "set",
+                "label": "3. 準備你的少量標註資料",
+                "desc": "幾百~幾千筆就可能夠"
+              },
+              {
+                "kind": "ai",
+                "label": "4. Fine-tune 微調",
+                "desc": "用 Trainer 在你的資料上再訓練幾輪"
+              },
+              {
+                "kind": "action",
+                "label": "5. 推論 / 部署",
+                "desc": "pipeline() 直接拿來預測新資料"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "26.25",
@@ -2199,7 +2560,49 @@
         ],
         "answer": "a",
         "explanation": "課程明確列出 FastAPI 5 大賣點，其中速度、自動文件、Pydantic 驗證是核心優勢；b 夸大了（還是要寫 type hint）；c 錯誤（Django 也支援 async）；d 錯誤（需要 uvicorn ASGI server）。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "FastAPI：一個請求怎麼跑完",
+          "note": "看 HTTP 請求進到 ASGI、路由、驗證、回應的一生。",
+          "config": {
+            "trigger": {
+              "kind": "webhook",
+              "label": "POST /users 進來一個請求",
+              "data": "{ \"name\": \"Nami\", \"age\": 18 }"
+            },
+            "nodes": [
+              {
+                "kind": "http",
+                "label": "1. ASGI 伺服器接收",
+                "desc": "Uvicorn 把請求交給 FastAPI"
+              },
+              {
+                "kind": "if",
+                "label": "2. 路由對應",
+                "desc": "比對到 @app.post('/users') 的函式"
+              },
+              {
+                "kind": "set",
+                "label": "3. Pydantic 驗證輸入",
+                "desc": "body 自動轉成 model、型別不對就回 422"
+              },
+              {
+                "kind": "code",
+                "label": "4. 執行你的 handler",
+                "desc": "寫入資料、算東西",
+                "data": "async def create_user(u: User): ..."
+              },
+              {
+                "kind": "action",
+                "label": "5. 回傳 JSON response",
+                "desc": "回傳 dict/model，自動序列化成 JSON"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "26.26",
@@ -2258,7 +2661,43 @@
         ],
         "answer": "a",
         "explanation": "Pydantic 的核心能力之一就是型別轉換——當收到能轉換的資料（如字串 \"30\"）時，會自動轉成目標型別（int 30）。這正是 Pydantic 比手動驗證強大的地方，省去寫 int(data[\"age\"]) 的麻煩。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Pydantic 會放行還是擋下？",
+          "note": "判斷每筆輸入通過驗證（ok）還是被擋（no）。model 是 User(name:str, age:int)。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "{\"name\":\"Nami\",\"age\":18}",
+                "correct": "ok",
+                "why": "name 是 str、age 是 int，型別對 → 通過。"
+              },
+              {
+                "text": "{\"name\":\"Nami\",\"age\":\"18\"}",
+                "correct": "ok",
+                "why": "Pydantic 會把數字字串 \"18\" 自動轉成 int 18 → 通過（強制轉型）。"
+              },
+              {
+                "text": "{\"name\":\"Nami\",\"age\":\"abc\"}",
+                "correct": "no",
+                "why": "\"abc\" 無法轉成 int → ValidationError，擋下。"
+              },
+              {
+                "text": "{\"name\":\"Nami\"}",
+                "correct": "no",
+                "why": "缺少必填的 age → ValidationError，擋下。"
+              },
+              {
+                "text": "{\"name\":123,\"age\":18}",
+                "correct": "no",
+                "why": "name 應是 str 卻給 int（v2 嚴格模式）→ 擋下。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "26.27",
@@ -2325,7 +2764,16 @@
         ],
         "answer": "a",
         "explanation": "asyncio.gather() 讓多個 async 操作並行執行，不是一個個等。3 個各 100ms 會同時跑，總時間是最慢的那個（100ms），而不是累加（300ms）——這就是 async 的威力。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "26.27.async",
+          "language": "python",
+          "title": "Async 非同步",
+          "initialCode": "import asyncio, time\n\nasync def fetch(name, delay):\n    await asyncio.sleep(delay)        # 模擬等 I/O（不阻塞其他工作）\n    return f\"{name} 完成（花 {delay}s）\"\n\nasync def main():\n    t0 = time.time()\n    # gather：三個一起跑，總時間≈最久那個(0.3s)，不是相加(0.6s)\n    results = await asyncio.gather(\n        fetch(\"A\", 0.3), fetch(\"B\", 0.2), fetch(\"C\", 0.1),\n    )\n    for r in results:\n        print(r)\n    print(f\"總共花了 {time.time()-t0:.2f}s（不是 0.6s → 這就是非同步的威力）\")\n\nasyncio.run(main())\n",
+          "hint": "看 asyncio.gather 讓多個 await 同時跑、總時間不疊加。"
+        }
+      ]
     },
     {
       "id": "26.28",
@@ -2392,7 +2840,50 @@
         ],
         "answer": "a",
         "explanation": "ORM（Object-Relational Mapping）的核心概念就是用 Python class 和物件來操作資料庫，而不需要寫原生 SQL。選項 b 是備份工具、c 是寫 SQL 的框架、d 是 Alembic 的功能，都不是 ORM 的定義。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "SQLAlchemy ORM：物件怎麼變成 SQL",
+          "note": "用 Python 物件操作資料庫、Alembic 管 schema 變更。",
+          "config": {
+            "trigger": {
+              "kind": "manual",
+              "label": "要把一個 User 存進資料庫"
+            },
+            "nodes": [
+              {
+                "kind": "set",
+                "label": "1. 定義 Model",
+                "desc": "class User(Base) 對應一張表",
+                "data": "class User(Base):\n  __tablename__='users'"
+              },
+              {
+                "kind": "db",
+                "label": "2. 開 Session",
+                "desc": "with Session(engine) as s:"
+              },
+              {
+                "kind": "code",
+                "label": "3. 建物件、加入",
+                "desc": "操作 Python 物件、不寫 SQL",
+                "data": "s.add(User(name='Nami'))"
+              },
+              {
+                "kind": "db",
+                "label": "4. commit 寫入",
+                "desc": "ORM 產生 INSERT SQL 送進 DB",
+                "data": "s.commit()"
+              },
+              {
+                "kind": "set",
+                "label": "5. 改了 Model → Alembic 產 migration",
+                "desc": "alembic revision --autogenerate 追蹤 schema 變更"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "26.29",
@@ -2455,7 +2946,53 @@
         ],
         "answer": "b",
         "explanation": "bcrypt 的目的就是讓駭客即使拿到 hash、也無法反推原密碼、並且因為 bcrypt 計算成本高（防暴力破解）、所以破解難度遠高於 MD5/SHA-1。JWT token 是登入後才產生、不會存在 users 表裡。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "JWT 登入驗證流程",
+          "note": "看 token 怎麼簽發、之後每個請求怎麼驗。",
+          "config": {
+            "trigger": {
+              "kind": "manual",
+              "label": "使用者輸入帳號密碼登入"
+            },
+            "nodes": [
+              {
+                "kind": "http",
+                "label": "1. POST /login 帶帳密",
+                "desc": "前端把帳密送到後端"
+              },
+              {
+                "kind": "code",
+                "label": "2. 驗證密碼",
+                "desc": "比對雜湊、正確才繼續"
+              },
+              {
+                "kind": "set",
+                "label": "3. 簽發 JWT",
+                "desc": "header.payload.signature，用密鑰簽名",
+                "data": "jwt.encode({'sub': user_id}, SECRET)"
+              },
+              {
+                "kind": "action",
+                "label": "4. 回傳 token 給前端",
+                "desc": "前端存起來（memory / cookie）"
+              },
+              {
+                "kind": "http",
+                "label": "5. 後續請求帶 token",
+                "desc": "Authorization: Bearer <token>"
+              },
+              {
+                "kind": "if",
+                "label": "6. 後端驗簽章",
+                "desc": "簽章有效且沒過期 → 放行；否則 401"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "26.30",
@@ -2522,7 +3059,81 @@
         ],
         "answer": "b",
         "explanation": "WebSocket 適合需要『雙向』即時通訊的場景（如游標同步），SSE 適合『單向』伺服器推送的場景（如 AI 串流），選 b 是最對的搭配。選 a、c、d 都是沒搞懂兩個技術的差異。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "這個需求該用哪個工具？",
+          "note": "即時雙向？耗時背景？定時任務？各有對應解法。",
+          "config": {
+            "questions": [
+              {
+                "q": "你的需求最像？",
+                "options": [
+                  {
+                    "label": "聊天室 / 即時通知，伺服器要主動推給前端",
+                    "scores": {
+                      "ws": 2
+                    }
+                  },
+                  {
+                    "label": "寄信、影片轉檔等「很慢」的工作，不能卡住請求",
+                    "scores": {
+                      "celery": 2
+                    }
+                  },
+                  {
+                    "label": "每天半夜自動跑報表 / 清理",
+                    "scores": {
+                      "cron": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "再確認一題：",
+                "options": [
+                  {
+                    "label": "需要雙向、持續連線",
+                    "scores": {
+                      "ws": 1
+                    }
+                  },
+                  {
+                    "label": "要重試、排隊、分散到多台 worker",
+                    "scores": {
+                      "celery": 1
+                    }
+                  },
+                  {
+                    "label": "只是照時間觸發",
+                    "scores": {
+                      "cron": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "ws": {
+                "emoji": "🔌",
+                "title": "WebSocket",
+                "desc": "持久雙向連線，伺服器能主動推播——聊天、即時儀表板、通知。"
+              },
+              "celery": {
+                "emoji": "⚙️",
+                "title": "Celery（背景任務佇列）",
+                "desc": "把耗時工作丟進佇列、由 worker 非同步處理，可重試、可擴充。"
+              },
+              "cron": {
+                "emoji": "⏰",
+                "title": "排程任務",
+                "desc": "定時觸發（cron / APScheduler / Celery beat），跑週期性工作。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "26.31",
@@ -2585,7 +3196,81 @@
         ],
         "answer": "b",
         "explanation": "Django 的內建 Admin 後台可以用最少程式碼（只需註冊 model）就給非技術人員一個完整 CRUD 管理介面，這正是課程強調的 Django 最強賣點。FastAPI 雖快但沒內建 admin，Flask 太簡陋不適合大型系統。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "你的專案該選哪個 Python 後端框架？",
+          "note": "Django / FastAPI / Flask 各有適合的場景。",
+          "config": {
+            "questions": [
+              {
+                "q": "你最需要的是？",
+                "options": [
+                  {
+                    "label": "開箱即用（ORM、後台、Auth 全包），快速做完整網站",
+                    "scores": {
+                      "dj": 2
+                    }
+                  },
+                  {
+                    "label": "高效能 API、async、自動文件、型別驗證",
+                    "scores": {
+                      "fa": 2
+                    }
+                  },
+                  {
+                    "label": "極簡、輕量、想自己組零件",
+                    "scores": {
+                      "fl": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "專案型態偏向？",
+                "options": [
+                  {
+                    "label": "內容網站 / 後台管理系統",
+                    "scores": {
+                      "dj": 1
+                    }
+                  },
+                  {
+                    "label": "給前端 / App 打的 API、微服務",
+                    "scores": {
+                      "fa": 1
+                    }
+                  },
+                  {
+                    "label": "小工具、原型、學習",
+                    "scores": {
+                      "fl": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "dj": {
+                "emoji": "🏛️",
+                "title": "Django (+ DRF)",
+                "desc": "重裝、全包——ORM、Admin、Auth 現成，適合內容站與後台；DRF 補 API。"
+              },
+              "fa": {
+                "emoji": "⚡",
+                "title": "FastAPI",
+                "desc": "現代非同步、型別驗證、自動 API 文件，做 API / 微服務首選。"
+              },
+              "fl": {
+                "emoji": "🍶",
+                "title": "Flask",
+                "desc": "極簡微框架，要什麼自己裝，適合小專案、原型、學習。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "26.32",
@@ -2656,7 +3341,54 @@
         ],
         "answer": "b",
         "explanation": "課程強調 indie 開發者不需要 Kubernetes，只要用 Gunicorn + Uvicorn + Docker 就能月 $30 撐 1 萬用戶。選項 a 的 --reload 只用於開發；c 是過度工程；d 不安全且不穩定。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "部署：從 code 到跑在伺服器",
+          "note": "打包成 Docker、跑 Gunicorn+Uvicorn workers 上線。",
+          "config": {
+            "trigger": {
+              "kind": "manual",
+              "label": "code 寫好了，要上線"
+            },
+            "nodes": [
+              {
+                "kind": "code",
+                "label": "1. 寫 Dockerfile",
+                "desc": "把 app + 依賴打包成 image",
+                "data": "FROM python:3.12\nCMD gunicorn ..."
+              },
+              {
+                "kind": "set",
+                "label": "2. docker build",
+                "desc": "建成一個可攜的 image"
+              },
+              {
+                "kind": "db",
+                "label": "3. push 到 registry",
+                "desc": "推上 Docker Hub / GHCR"
+              },
+              {
+                "kind": "action",
+                "label": "4. 伺服器跑容器",
+                "desc": "Gunicorn 開多個 Uvicorn worker 吃流量",
+                "data": "gunicorn -k uvicorn.workers.UvicornWorker -w 4"
+              },
+              {
+                "kind": "http",
+                "label": "5. Nginx 反向代理",
+                "desc": "對外收 request、轉給容器、上 HTTPS"
+              },
+              {
+                "kind": "if",
+                "label": "6. 健康檢查 + 監控",
+                "desc": "/health OK 才收流量，掛了自動重啟"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "boss": {
