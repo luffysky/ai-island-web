@@ -474,6 +474,22 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
   yield { type: "status", status: "planning" };
   await setStatus("running");
 
+  // Rule-filter（省 token 前置層）：純招呼/測試字、或 10 分鐘內一字不差的重複任務 → 決定性短路、完全不叫 LLM。
+  // 寧可放行不可誤攔（isPureGreeting 只認完全等於招呼詞、重複快取避開時效性任務）。命中就走與正常收尾一致的路徑。
+  try {
+    const { preFilterGoal } = await import("@/lib/agent/rule-filter");
+    const hit = await preFilterGoal({ admin, userId, goal, taskId, hasSkill: !!skill });
+    if (hit) {
+      const row: StepRow = { idx: 0, thought: hit.reason === "greeting" ? "招呼語 → 直接回覆、不啟動完整流程（省 token）" : "10 分鐘內的重複任務 → 回上次結果（省 token）", toolName: "rule-filter", ok: true, result: { reason: hit.reason } };
+      await admin.from("agent_steps").insert({ task_id: taskId, idx: 0, thought: row.thought, tool_name: "rule-filter", args: {}, result: row.result, ok: true });
+      yield { type: "step", step: row };
+      await setStatus("succeeded", { result: { summary: hit.summary }, step_count: 1, finished_at: new Date().toISOString() });
+      await bumpThread(hit.summary);
+      yield { type: "done", status: "succeeded", summary: hit.summary };
+      return;
+    }
+  } catch { /* fail-open：前置層任何錯 → 照常跑完整流程 */ }
+
   // 省錢模式三檔：
   //   saver   = 全程用便宜模型、連「升級/收尾」都不換貴的（strongModel = freeModel）
   //   balanced= 免費優先、需要時才升級到強模型（＝原本行為）
