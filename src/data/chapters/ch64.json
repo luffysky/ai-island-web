@@ -578,7 +578,7 @@
           }
         ],
         "answer": "a",
-        "explanation": "選項 a 用 `(div|span)` 在同一個群組內表示「div 或 span」，因此 `<div>` 和 `<span>` 都能匹配。選項 b 雖然也能匹配，但創建了兩個不必要的群組；選項 c 會誤匹配 `<div` 或 `<span`；選項 d 的字元類 `[div|span]` 會當成個別字元來判斷。"
+        "explanation": "選項 a 用 `(div|span)` 在同一個群組內表示「div 或 span」，因此 `<div>` 和 `<span>` 都能匹配。選項 b 雖然也能匹配，但創建了兩個不必要的群組；選項 c `/<div|span>/` 的 `|` 是以「整個式子」為界、切成 `<div` 或 `span>` 兩半，所以會誤匹配 `<div`（缺 `>`）或 `span>`（缺 `<`）；選項 d 的字元類 `[div|span]` 會當成個別字元來判斷。"
       },
       "demos": [
         {
