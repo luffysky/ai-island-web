@@ -8,6 +8,7 @@ import { getTool, describeToolList, effectiveTools, needsApproval, approvalSumma
 import { getOnlineDevice, dispatchToDevice } from "./bridge";
 import { sendPushToUser } from "@/lib/web-push";
 import { loadUserMcpTools } from "./mcp";
+import { loadUserOpenApiTools } from "./openapi-tools";
 import { maybeSuggestSkill } from "./skill-synth";
 
 // 手機遙控核心：關鍵時刻推播到使用者所有裝置（VAPID 未設會自動 no-op）。fire-and-forget。
@@ -468,8 +469,11 @@ export function runAgentTaskDetached(taskId: string, userId: string, goal: strin
   if (RUNNING.has(taskId)) return;
   RUNNING.add(taskId);
   (async () => {
-    // 動態工具：沒帶就自動載入使用者啟用的 MCP server 工具（背景進行、不擋 POST 回應）
-    const dyn = extraTools ?? await loadUserMcpTools(userId).catch(() => []);
+    // 動態工具：沒帶就自動載入使用者啟用的 MCP server 工具 + OpenAPI 來源工具（背景進行、不擋 POST 回應）
+    const dyn = extraTools ?? [
+      ...await loadUserMcpTools(userId).catch(() => []),
+      ...await loadUserOpenApiTools(userId).catch(() => []),
+    ];
     // 事件在 runAgentTask 內就已落 DB + 推播；這裡只需把 generator 跑到底、不需消費事件。
     try { for await (const _ev of runAgentTask(taskId, userId, goal, maxSteps, skill, dyn, priorContext, costMode)) { void _ev; } }
     catch { /* runAgentTask 自身的 try/catch 已把任務標成 failed */ }

@@ -93,6 +93,11 @@ export function AgentClient() {
   const [mcpUrl, setMcpUrl] = useState("");
   const [mcpAuth, setMcpAuth] = useState("");
   const [mcpErr, setMcpErr] = useState("");
+  // 2.1.6 OpenAPI → tools
+  const [oaSources, setOaSources] = useState<{ id: string; name: string; spec_url: string }[]>([]);
+  const [oaForm, setOaForm] = useState(false);
+  const [oaName, setOaName] = useState(""); const [oaSpec, setOaSpec] = useState(""); const [oaBase, setOaBase] = useState(""); const [oaAuth, setOaAuth] = useState("");
+  const [oaBusy, setOaBusy] = useState(false); const [oaErr, setOaErr] = useState("");
   const [kpi, setKpi] = useState<any>(null);
   const [memory, setMemory] = useState<{ id: string; kind: string; key: string; value: string }[]>([]); // Phase C：分身長期記得你
   const [braveKey, setBraveKey] = useState<{ id: string; masked?: string } | null | undefined>(undefined); // 搜尋金鑰（Brave BYOK）；undefined=載入中
@@ -219,6 +224,24 @@ export function AgentClient() {
     loadMcp();
   }, [loadMcp]);
 
+  const loadOpenapi = useCallback(async () => {
+    try { const r = await fetch("/api/agent/openapi"); if (r.ok) setOaSources((await r.json()).sources ?? []); } catch { /* ignore */ }
+  }, []);
+  const addOpenapi = useCallback(async () => {
+    if (!oaName.trim() || !oaSpec.trim()) { setOaErr("需要名稱與 spec 網址"); return; }
+    setOaBusy(true); setOaErr("");
+    try {
+      const r = await fetch("/api/agent/openapi", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: oaName, spec_url: oaSpec, base_url: oaBase || undefined, auth_header: oaAuth || undefined }) });
+      const d = await r.json();
+      if (!r.ok) { setOaErr(d.error ?? "加入失敗"); return; }
+      setOaForm(false); setOaName(""); setOaSpec(""); setOaBase(""); setOaAuth(""); loadOpenapi();
+    } catch { setOaErr("加入失敗"); } finally { setOaBusy(false); }
+  }, [oaName, oaSpec, oaBase, oaAuth, loadOpenapi]);
+  const delOpenapi = useCallback(async (id: string) => {
+    await fetch(`/api/agent/openapi?id=${id}`, { method: "DELETE" }).catch(() => {});
+    loadOpenapi();
+  }, [loadOpenapi]);
+
   const addCustomMcp = useCallback(async () => {
     if (!mcpName.trim() || !mcpUrl.trim()) { setMcpErr("需要名稱與網址"); return; }
     setMcpBusy(true); setMcpErr("");
@@ -242,12 +265,13 @@ export function AgentClient() {
     loadDevices();
     loadSkills();
     loadMcp();
+    loadOpenapi();
     loadMemory();
     loadBraveKey();
     loadTavilyKey();
     const t = setInterval(loadDevices, 10000);        // 每 10s 刷新裝置在線狀態
     return () => clearInterval(t);
-  }, [loadHistory, loadDevices, loadSkills, loadMcp, loadMemory, loadBraveKey, loadTavilyKey]);
+  }, [loadHistory, loadDevices, loadSkills, loadMcp, loadOpenapi, loadMemory, loadBraveKey, loadTavilyKey]);
 
   const pair = useCallback(async () => {
     setNewToken(null);
@@ -857,6 +881,31 @@ export function AgentClient() {
                 <input value={mcpAuth} onChange={(e) => setMcpAuth(e.target.value)} placeholder="Authorization（選填，如 Bearer xxx）" className="w-full text-xs rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2 py-1.5" />
                 {mcpErr && <div className="text-[10px] text-rose-500">{mcpErr}</div>}
                 <button onClick={addCustomMcp} disabled={mcpBusy} className="w-full rounded-lg bg-fuchsia-600 hover:bg-fuchsia-700 text-white px-2 py-1.5 text-xs disabled:opacity-50">{mcpBusy ? "驗證連線中…" : "加入（會先驗證連得上）"}</button>
+              </div>
+            )}
+          </div>
+
+          {/* OpenAPI → tools（2.1.6 工具自動發現） */}
+          <div className="rounded-2xl border border-black/10 dark:border-white/10 p-3.5">
+            <div className="flex items-center gap-1.5 text-sm font-semibold mb-2"><Plug className="w-4 h-4 text-teal-500" /> OpenAPI 工具</div>
+            <p className="text-xs text-black/50 dark:text-white/50 mb-2">貼一份 OpenAPI(Swagger) spec 網址，Agent 會自動把它的 API 變成可用工具（GET 自動跑、寫入類要你確認）。</p>
+            <div className="space-y-1 mb-2">
+              {oaSources.map((s) => (
+                <div key={s.id} className="flex items-center gap-1.5 text-xs rounded-lg border border-black/10 dark:border-white/10 px-2 py-1.5">
+                  <span className="flex-1 min-w-0 truncate" title={s.spec_url}>🔌 {s.name}</span>
+                  <button onClick={() => delOpenapi(s.id)} className="text-rose-500 hover:text-rose-600 shrink-0 text-[11px]">移除</button>
+                </div>
+              ))}
+            </div>
+            <button onClick={() => setOaForm((v) => !v)} className="text-xs rounded-lg px-2 py-1.5 border border-teal-500/40 text-teal-600 dark:text-teal-400 hover:bg-teal-500/10">＋ 加 OpenAPI 來源</button>
+            {oaForm && (
+              <div className="mt-2 space-y-1.5">
+                <input value={oaName} onChange={(e) => setOaName(e.target.value)} placeholder="名稱（會當工具前綴）" className="w-full text-xs rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2 py-1.5" />
+                <input value={oaSpec} onChange={(e) => setOaSpec(e.target.value)} placeholder="OpenAPI spec 網址 https://…/openapi.json" className="w-full text-xs rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2 py-1.5" />
+                <input value={oaBase} onChange={(e) => setOaBase(e.target.value)} placeholder="Base URL（選填，覆蓋 spec 內的 server）" className="w-full text-xs rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2 py-1.5" />
+                <input value={oaAuth} onChange={(e) => setOaAuth(e.target.value)} placeholder="Authorization（選填，如 Bearer xxx）" className="w-full text-xs rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2 py-1.5" />
+                {oaErr && <div className="text-[10px] text-rose-500">{oaErr}</div>}
+                <button onClick={addOpenapi} disabled={oaBusy} className="w-full rounded-lg bg-teal-600 hover:bg-teal-700 text-white px-2 py-1.5 text-xs disabled:opacity-50">{oaBusy ? "抓取並驗證 spec…" : "加入（會先抓 spec 驗證）"}</button>
               </div>
             )}
           </div>
