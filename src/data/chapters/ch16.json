@@ -618,7 +618,93 @@
         ],
         "answer": "b",
         "explanation": "課程明確指出『Indie SaaS、想快速 ship』應選 Python（FastAPI），原因是寫得快、生態強、debug 容易；同時 Python 在『AI/ML 後端』維度是『沒之一』，完美符合未來需求。性能 50k req/s 對 indie 已經超夠用，不是瓶頸。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "你的專案該選哪個後端語言？",
+          "note": "依團隊與需求選 Node / Python / Go / Java。",
+          "config": {
+            "questions": [
+              {
+                "q": "團隊最熟 / 生態需求？",
+                "options": [
+                  {
+                    "label": "前端也是 JS、想全端同語言、即時應用",
+                    "scores": {
+                      "node": 2
+                    }
+                  },
+                  {
+                    "label": "資料 / AI / 腳本、生態豐富",
+                    "scores": {
+                      "py": 2
+                    }
+                  },
+                  {
+                    "label": "要高併發、低延遲、部署單檔",
+                    "scores": {
+                      "go": 2
+                    }
+                  },
+                  {
+                    "label": "大型企業、強型別、成熟框架",
+                    "scores": {
+                      "java": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "最在意？",
+                "options": [
+                  {
+                    "label": "開發快、生態大",
+                    "scores": {
+                      "node": 1,
+                      "py": 1
+                    }
+                  },
+                  {
+                    "label": "效能與併發",
+                    "scores": {
+                      "go": 1
+                    }
+                  },
+                  {
+                    "label": "穩定與可維護（大團隊）",
+                    "scores": {
+                      "java": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "node": {
+                "emoji": "🟢",
+                "title": "Node.js",
+                "desc": "JS 全端、生態最大、I/O 密集與即時應用強項。"
+              },
+              "py": {
+                "emoji": "🐍",
+                "title": "Python",
+                "desc": "資料/AI/自動化首選，框架多、寫得快。"
+              },
+              "go": {
+                "emoji": "🐹",
+                "title": "Go",
+                "desc": "高併發、低延遲、編譯成單一執行檔，雲原生最愛。"
+              },
+              "java": {
+                "emoji": "☕",
+                "title": "Java / Kotlin",
+                "desc": "企業級、強型別、生態成熟，大型長期系統穩。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "16.7",
@@ -677,7 +763,38 @@
         ],
         "answer": "b",
         "explanation": "課程明確說「簡單 CRUD → ORM」，撈訂單並排序就是典型簡單 CRUD，ORM 寫法最簡潔。Raw SQL 雖快但這裡沒必要，Query Builder 則是複雜需求的中間選項。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "資料庫存取：這樣安全嗎？",
+          "note": "判斷 ORM/Query Builder/Raw SQL 的寫法安不安全。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "db.query(\"SELECT * FROM users WHERE id = \" + req.params.id)",
+                "correct": "no",
+                "why": "字串拼接 = SQL injection 大門。攻擊者傳 '1 OR 1=1' 就撈走全表。"
+              },
+              {
+                "text": "db.query(\"SELECT * FROM users WHERE id = ?\", [req.params.id])",
+                "correct": "ok",
+                "why": "參數化查詢（佔位符 + 綁定），資料庫把輸入當「值」不當 SQL，安全。"
+              },
+              {
+                "text": "用 ORM 的 User.findByPk(req.params.id)",
+                "correct": "ok",
+                "why": "ORM 底層自動參數化、幫你擋 injection；還好維護。"
+              },
+              {
+                "text": "ORM 也用 raw SQL 但一樣字串拼接使用者輸入",
+                "correct": "no",
+                "why": "用了 ORM 不代表安全——raw SQL 照樣要參數綁定。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "16.8",
@@ -740,7 +857,81 @@
         ],
         "answer": "b",
         "explanation": "JWT 是無狀態的（server 驗簽就行、不查 DB），跨服務、多端適用，最適合 mobile app。Session 需要 server 維護狀態，不適合 mobile；OAuth 是第三方登入框架，不是 mobile app 自己的認證方案；明文密碼絕對禁止。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "該用哪種認證方式？",
+          "note": "JWT / Session / OAuth 各適合什麼場景。",
+          "config": {
+            "questions": [
+              {
+                "q": "你的架構？",
+                "options": [
+                  {
+                    "label": "多服務 / 無狀態 API / 手機 App",
+                    "scores": {
+                      "jwt": 2
+                    }
+                  },
+                  {
+                    "label": "傳統單體網站、伺服器記登入狀態",
+                    "scores": {
+                      "sess": 2
+                    }
+                  },
+                  {
+                    "label": "想讓使用者用 Google/LINE 登入",
+                    "scores": {
+                      "oauth": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "最在意？",
+                "options": [
+                  {
+                    "label": "可水平擴展、不用共享 session store",
+                    "scores": {
+                      "jwt": 1
+                    }
+                  },
+                  {
+                    "label": "能即時撤銷登入",
+                    "scores": {
+                      "sess": 1
+                    }
+                  },
+                  {
+                    "label": "不自己管密碼、借力第三方",
+                    "scores": {
+                      "oauth": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "jwt": {
+                "emoji": "🎫",
+                "title": "JWT",
+                "desc": "無狀態 token、適合多服務/API/App；缺點是簽出去難即時撤銷（要短效期+refresh）。"
+              },
+              "sess": {
+                "emoji": "🍪",
+                "title": "Session + Cookie",
+                "desc": "伺服器記狀態、可即時撤銷；擴展時要共享 session store（如 Redis）。"
+              },
+              "oauth": {
+                "emoji": "🔗",
+                "title": "OAuth / 社群登入",
+                "desc": "借第三方發證，不自己存密碼；常搭 OIDC 拿身份。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "16.9",
@@ -811,7 +1002,47 @@
         ],
         "answer": "b",
         "explanation": "Background job 的核心就是把慢操作（轉檔）丟到 queue，讓 web server 立刻回應使用者，worker 背景非同步處理。這樣 user 體驗快、伺服器不會被卡住。選項 a 會讓使用者等很久；c 搞混 Redis 用途；d 太被動、不夠及時。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "Background Job：耗時工作丟佇列",
+          "note": "看為什麼慢工作不要卡在請求裡。",
+          "config": {
+            "trigger": {
+              "kind": "webhook",
+              "label": "使用者按「匯出報表」（很花時間）"
+            },
+            "nodes": [
+              {
+                "kind": "action",
+                "label": "1. 立刻回「已收到、處理中」",
+                "desc": "不讓使用者的請求卡著等"
+              },
+              {
+                "kind": "set",
+                "label": "2. 把工作丟進佇列",
+                "desc": "push 到 Redis / RabbitMQ queue"
+              },
+              {
+                "kind": "code",
+                "label": "3. Worker 從佇列取出來慢慢做",
+                "desc": "獨立的 worker process 處理，可多台分攤"
+              },
+              {
+                "kind": "if",
+                "label": "4. 失敗自動重試",
+                "desc": "退避重試、超過次數進 dead-letter"
+              },
+              {
+                "kind": "action",
+                "label": "5. 做完通知使用者",
+                "desc": "Email / WebSocket 推「報表好了」"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "16.10",
@@ -866,7 +1097,58 @@
         ],
         "answer": "a",
         "explanation": "加 cache 前 DB 每秒接 500 次查詢，加 cache 後同樣 1 秒內只有第 1 次查詢打 DB、其餘 499 次打 cache，所以 DB 負載從 500 次降到 1 次、約等於原來的 1/500。這就是課堂強調的『同樣硬體 cost 差 100 倍』的核心原理。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "該用哪種快取策略？",
+          "note": "Cache-Aside / Write-Through / CDN 各適合什麼。",
+          "config": {
+            "questions": [
+              {
+                "q": "你要快取什麼？",
+                "options": [
+                  {
+                    "label": "讀多寫少的資料庫查詢結果",
+                    "scores": {
+                      "aside": 2
+                    }
+                  },
+                  {
+                    "label": "寫入時就要讓快取跟 DB 一致",
+                    "scores": {
+                      "through": 2
+                    }
+                  },
+                  {
+                    "label": "圖片/CSS/JS 等靜態檔給全球使用者",
+                    "scores": {
+                      "cdn": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "aside": {
+                "emoji": "↩️",
+                "title": "Cache-Aside（旁路）",
+                "desc": "先查快取、沒有再查 DB 並回填。最常見；要處理失效與過期。"
+              },
+              "through": {
+                "emoji": "✍️",
+                "title": "Write-Through",
+                "desc": "寫入時同步更新快取與 DB，讀取一定命中新資料；寫入稍慢。"
+              },
+              "cdn": {
+                "emoji": "🌐",
+                "title": "CDN",
+                "desc": "靜態資源放邊緣節點、就近給使用者，減少來回延遲與源站負載。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "16.11",
@@ -917,7 +1199,16 @@
         ],
         "answer": "a",
         "explanation": "課程明確提到沒有 rate limit 的首個後果就是『暴力破解——攻擊者一秒嘗試 1 萬個密碼』。其他選項與 rate limit 的核心防護目的無關。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "16.11.ratelimit",
+          "language": "javascript",
+          "title": "Rate Limiting：Token Bucket 限流",
+          "initialCode": "// Token Bucket：桶裡有令牌才放行，令牌用完就擋，會慢慢補回來\nclass TokenBucket {\n  constructor(capacity, refillPerSec) {\n    this.capacity = capacity; this.tokens = capacity;\n    this.refill = refillPerSec; this.last = Date.now();\n  }\n  allow() {\n    const now = Date.now();\n    this.tokens = Math.min(this.capacity, this.tokens + (now - this.last) / 1000 * this.refill);\n    this.last = now;\n    if (this.tokens >= 1) { this.tokens -= 1; return true; }\n    return false;\n  }\n}\n// 桶容量 3、每秒補 1 個\nconst bucket = new TokenBucket(3, 1);\n// 一口氣打 5 次：前 3 次有令牌放行、後 2 次被擋（429）\nfor (let i = 1; i <= 5; i++) {\n  console.log(`第 ${i} 次請求:`, bucket.allow() ? \"✅ 放行\" : \"⛔ 擋下 (429 Too Many Requests)\");\n}\nconsole.log(\"\\\\n→ 突發流量被限速、保護後端不被打爆\");\n",
+          "hint": "改容量或速率，看令牌桶怎麼擋住暴衝流量。"
+        }
+      ]
     },
     {
       "id": "16.12",
@@ -988,7 +1279,58 @@
         ],
         "answer": "b",
         "explanation": "SSE 完美適合這個場景：server 單向推資料、不需要 client 回傳、比 WebSocket 簡單、HTTP 上跑易維護。WebSocket 也行但過度設計；長輪詢浪費頻寬。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "即時通訊該用哪個技術？",
+          "note": "WebSocket / SSE / 長輪詢 依需求選。",
+          "config": {
+            "questions": [
+              {
+                "q": "你的即時需求？",
+                "options": [
+                  {
+                    "label": "雙向即時（聊天、多人協作、遊戲）",
+                    "scores": {
+                      "ws": 2
+                    }
+                  },
+                  {
+                    "label": "伺服器單向推（股價、通知、進度）",
+                    "scores": {
+                      "sse": 2
+                    }
+                  },
+                  {
+                    "label": "環境限制、只能靠 HTTP 輪詢",
+                    "scores": {
+                      "poll": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "ws": {
+                "emoji": "🔌",
+                "title": "WebSocket",
+                "desc": "全雙工持久連線，客戶端與伺服器都能主動送。即時互動首選。"
+              },
+              "sse": {
+                "emoji": "📡",
+                "title": "SSE（Server-Sent Events）",
+                "desc": "伺服器→客戶端單向串流，走 HTTP、自動重連，做通知/進度很輕量。"
+              },
+              "poll": {
+                "emoji": "🔁",
+                "title": "長輪詢 Long Polling",
+                "desc": "沒有更好選項時的退路：撐住請求到有資料才回。相容性最好但較耗資源。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "16.13",
@@ -1059,7 +1401,42 @@
         ],
         "answer": "b",
         "explanation": "課程的核心是說明檔案儲存的成本與性能差異：DB 存檔案會導致容量爆炸（1 萬張 2MB 圖片 = 20GB）、備份慢、查詢慢、成本高（DB 1GB > S3 100GB），所以應該用物件儲存（S3/R2），只在 DB 存 URL。選項 a 的「API 新」、c 的「不支援二進位」、d 的「影響 SEO」都是課程未提及或錯誤的理由。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "大檔上傳：Presigned URL 直傳 S3/R2",
+          "note": "看大檔為什麼別經過你的伺服器。",
+          "config": {
+            "trigger": {
+              "kind": "manual",
+              "label": "使用者要上傳一支 500MB 影片"
+            },
+            "nodes": [
+              {
+                "kind": "http",
+                "label": "1. 前端跟後端要「上傳許可證」",
+                "desc": "POST /upload-url 說要傳什麼檔"
+              },
+              {
+                "kind": "code",
+                "label": "2. 後端簽一個 presigned URL",
+                "desc": "對 S3/R2 簽一個限時、限這個 key 的上傳網址"
+              },
+              {
+                "kind": "action",
+                "label": "3. 前端直接把檔案 PUT 到 S3/R2",
+                "desc": "不經過你的伺服器→省頻寬、不塞爆"
+              },
+              {
+                "kind": "db",
+                "label": "4. 上傳完回報後端",
+                "desc": "存檔案 metadata（url、大小、擁有者）"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "16.14",
@@ -1126,7 +1503,58 @@
         ],
         "answer": "c",
         "explanation": "Tracing 專門處理「1 個 request 走過哪些服務」的問題，能看到完整時間軸（例如：API gateway 5ms → DB 30ms → cache 1ms）。Logging 和 Metrics 都是全域觀察，看不到單一 request 的跨服務路徑。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "可觀測性三本柱：這情況看哪個？",
+          "note": "Logs / Metrics / Traces 各回答什麼問題。",
+          "config": {
+            "questions": [
+              {
+                "q": "你想知道的是？",
+                "options": [
+                  {
+                    "label": "某一筆請求「當時發生了什麼」的細節",
+                    "scores": {
+                      "log": 2
+                    }
+                  },
+                  {
+                    "label": "整體「趨勢/數量」：QPS、錯誤率、延遲 P99",
+                    "scores": {
+                      "metric": 2
+                    }
+                  },
+                  {
+                    "label": "一筆請求「跨多個服務」跑了哪條路、卡在哪",
+                    "scores": {
+                      "trace": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "log": {
+                "emoji": "📜",
+                "title": "Logs 日誌",
+                "desc": "離散事件的文字紀錄，查「那一刻的細節」。結構化 log 最好搜。"
+              },
+              "metric": {
+                "emoji": "📊",
+                "title": "Metrics 指標",
+                "desc": "時間序列數字（QPS/延遲/錯誤率），看趨勢、設警報。"
+              },
+              "trace": {
+                "emoji": "🧵",
+                "title": "Traces 追蹤",
+                "desc": "一筆請求跨服務的完整路徑與各段耗時，找分散式瓶頸。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "16.15",
@@ -1197,7 +1625,16 @@
         ],
         "answer": "b",
         "explanation": "課程一開始強調「先 measure 再修」，用 APM、慢 query log 或 profiling 找瓶頸才是 Senior 的做法。亂優化（a、d）可能浪費時間或反而變慢（index 太多會拖累 INSERT/UPDATE）；b 是科學有效的方法。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "16.15.nplus1",
+          "language": "javascript",
+          "title": "N+1 問題：看查詢次數暴增",
+          "initialCode": "// 模擬資料庫：每次 query 就計數一次\nlet queries = 0;\nconst db = {\n  getPosts() { queries++; return [{id:1,userId:10},{id:2,userId:11},{id:3,userId:10}]; },\n  getUser(id) { queries++; return {id, name: \"User\"+id}; },\n  getUsersIn(ids) { queries++; return ids.map(id => ({id, name:\"User\"+id})); },\n};\n\n// ❌ N+1 寫法：先撈文章(1)、再對每篇各撈作者(N)\nqueries = 0;\nconst posts = db.getPosts();\nfor (const p of posts) db.getUser(p.userId);\nconsole.log(\"N+1 寫法查詢次數:\", queries, \"(1 + 3 篇 = 4 次)\");\n\n// ✅ 批次寫法：先撈文章(1)、把作者 id 收集起來一次撈(1)\nqueries = 0;\nconst posts2 = db.getPosts();\nconst ids = [...new Set(posts2.map(p => p.userId))];\ndb.getUsersIn(ids);\nconsole.log(\"批次寫法查詢次數:\", queries, \"(1 + 1 = 2 次)\");\nconsole.log(\"\\\\n→ 資料越多、N+1 差距越大。用 JOIN / DataLoader / with() 一次撈。\");\n",
+          "hint": "比較 N+1 寫法(1+N 次) vs 批次撈(2 次)的查詢數差別。"
+        }
+      ]
     },
     {
       "id": "16.16",
@@ -1268,7 +1705,47 @@
         ],
         "answer": "b",
         "explanation": "課程強調用環境變數的核心理由是：1) 機密資料（密碼、API Key）不進版本控制；2) 不同環境可用不同設定。a 選項無關效能，c 選項錯誤（多語言都支持），d 選項把 Docker 和環境變數混為一談。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "部署與運維：上線一條龍",
+          "note": "從 code 到穩定跑在線上的關鍵關卡。",
+          "config": {
+            "trigger": {
+              "kind": "manual",
+              "label": "要把後端服務上線"
+            },
+            "nodes": [
+              {
+                "kind": "code",
+                "label": "1. Docker 打包",
+                "desc": "把 app + 依賴 + 執行環境包成 image"
+              },
+              {
+                "kind": "set",
+                "label": "2. 環境變數注入",
+                "desc": "密鑰/DB 連線用 env 帶、絕不寫死進 image"
+              },
+              {
+                "kind": "action",
+                "label": "3. 啟動容器",
+                "desc": "跑起來、對外開 port"
+              },
+              {
+                "kind": "if",
+                "label": "4. Health check",
+                "desc": "/health 回 OK 才收流量，掛了自動重啟/回滾"
+              },
+              {
+                "kind": "http",
+                "label": "5. 反向代理 + HTTPS",
+                "desc": "Nginx/Caddy 對外、上憑證、負載平衡"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "16.17",
@@ -1323,7 +1800,58 @@
         ],
         "answer": "a",
         "explanation": "課程明確說初創 99% 該用 Monolith，因為開發超快、部署簡單、debug 容易。微服務適合大公司多團隊，太早用會增加複雜度反而拖慢進度。Serverless 和 API Gateway 都是配套工具，不是初創的首選架構。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "後端架構：該用哪種？",
+          "note": "單體 / 微服務 / 模組化單體 依團隊規模選。",
+          "config": {
+            "questions": [
+              {
+                "q": "團隊與階段？",
+                "options": [
+                  {
+                    "label": "小團隊 / 早期 / 要快",
+                    "scores": {
+                      "mono": 2
+                    }
+                  },
+                  {
+                    "label": "多團隊、各自獨立部署、規模大",
+                    "scores": {
+                      "micro": 2
+                    }
+                  },
+                  {
+                    "label": "想要單體的簡單、又要模組邊界清楚",
+                    "scores": {
+                      "modmono": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "mono": {
+                "emoji": "🧱",
+                "title": "單體 Monolith",
+                "desc": "一個服務、一次部署，早期最快最簡單。別過早拆微服務。"
+              },
+              "micro": {
+                "emoji": "🕸️",
+                "title": "微服務",
+                "desc": "各服務獨立部署/擴展/選型，適合大團隊；代價是分散式複雜度暴增。"
+              },
+              "modmono": {
+                "emoji": "📦",
+                "title": "模組化單體",
+                "desc": "單體部署、內部清楚模組邊界。多數專案的甜蜜點，需要再拆微服務。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "16.18",
@@ -1386,7 +1914,58 @@
         ],
         "answer": "a",
         "explanation": "課程核心講的是 6 個主要趨勢（Edge、Serverless、AI-native、TypeScript 全棧、Rust 滲透、DevOps 自動化）共同驅動的大轉變。選項 b 誇大了 Rust 的角色（Rust 主要在框架層滲透而非全面取代）；選項 c 提出的 Kubernetes 遷移與課程建議相反（中小企業應避免過早微服務化）；選項 d 過度誇大 AI 能力（AI 只是輔助工具）。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "2026 後端趨勢：這需求適合哪個？",
+          "note": "Edge / Serverless / 傳統伺服器 怎麼選。",
+          "config": {
+            "questions": [
+              {
+                "q": "你的工作負載？",
+                "options": [
+                  {
+                    "label": "全球低延遲、輕量邏輯（個人化、A/B、rewrite）",
+                    "scores": {
+                      "edge": 2
+                    }
+                  },
+                  {
+                    "label": "流量起伏大、只想為用量付費、免管伺服器",
+                    "scores": {
+                      "serverless": 2
+                    }
+                  },
+                  {
+                    "label": "長連線 / 重運算 / 要完全掌控",
+                    "scores": {
+                      "server": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "edge": {
+                "emoji": "🌍",
+                "title": "Edge Functions",
+                "desc": "跑在離使用者最近的節點，超低延遲；限制多（時間/大小/API）。"
+              },
+              "serverless": {
+                "emoji": "⚡",
+                "title": "Serverless",
+                "desc": "按呼叫計費、自動擴縮、免管機器；注意冷啟動與執行時限。"
+              },
+              "server": {
+                "emoji": "🖥️",
+                "title": "傳統伺服器 / 容器",
+                "desc": "長連線、重運算、完全掌控時仍最合適；要自己顧擴縮與運維。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "title": "HTTP 完整：method / status code / header / cookies",
