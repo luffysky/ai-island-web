@@ -307,6 +307,56 @@ export const TOOLS: AgentTool[] = [
       return { ok: true, data: { found: true, results: data } };
     },
   },
+  // 2.6.5 Agent 互相共享資料：私人結構化黑板（user 範圍）。多個 agent/任務可用它直接交換 jsonb，
+  // 資料不經 LLM 重述（省 token、不失真）。純內部、無外部副作用 → read 風險、自動執行。
+  {
+    name: "data.write",
+    description: "把一份結構化資料以 key 存進你的私人共享黑板，供其他分身/任務直接讀取（不經 LLM 轉述、不失真）。value 可為物件或字串。",
+    args: { key: "資料鍵（如 competitor_prices、research_notes）", value: "要存的資料（JSON 物件或字串）" },
+    risk: "read",
+    platforms: ["server"],
+    async execute(args, ctx) {
+      const key = String(args?.key ?? "").trim().slice(0, 100);
+      if (!key) return { ok: false, error: "缺 key" };
+      if (args?.value === undefined || args?.value === null) return { ok: false, error: "缺 value" };
+      let value: any = args.value;
+      if (typeof value === "string") { try { value = JSON.parse(value); } catch { /* 純字串就原樣存 */ value = { text: value.slice(0, 20000) }; } }
+      const admin = createSupabaseAdmin();
+      const { error } = await admin.from("agent_shared_data")
+        .upsert({ user_id: ctx.userId, key, value, updated_by_task: ctx.taskId, updated_at: new Date().toISOString() }, { onConflict: "user_id,key" });
+      if (error) return { ok: false, error: error.message };
+      return { ok: true, data: { saved: true, key } };
+    },
+  },
+  {
+    name: "data.read",
+    description: "讀取共享黑板上某個 key 的結構化資料（可能是別的分身/任務先存好的），拿到的是原始 jsonb、不是摘要。",
+    args: { key: "要讀的資料鍵" },
+    risk: "read",
+    platforms: ["server"],
+    async execute(args, ctx) {
+      const key = String(args?.key ?? "").trim().slice(0, 100);
+      if (!key) return { ok: false, error: "缺 key" };
+      const admin = createSupabaseAdmin();
+      const { data } = await admin.from("agent_shared_data")
+        .select("value, updated_at").eq("user_id", ctx.userId).eq("key", key).maybeSingle();
+      if (!data) return { ok: true, data: { found: false, note: "黑板上沒有這個 key" } };
+      return { ok: true, data: { found: true, key, value: data.value, updated_at: data.updated_at } };
+    },
+  },
+  {
+    name: "data.list",
+    description: "列出共享黑板上目前有哪些 key（看看其他分身/任務留下了什麼可用資料）。",
+    args: {},
+    risk: "read",
+    platforms: ["server"],
+    async execute(_args, ctx) {
+      const admin = createSupabaseAdmin();
+      const { data } = await admin.from("agent_shared_data")
+        .select("key, updated_at").eq("user_id", ctx.userId).order("updated_at", { ascending: false }).limit(50);
+      return { ok: true, data: { keys: (data ?? []).map((d: any) => ({ key: d.key, updated_at: d.updated_at })) } };
+    },
+  },
   // ── 省 token「Tool First」工具（Snow Orchestrator）：算數/日期/JSON 用程式、不燒大模型。安全、零 eval ──
   {
     name: "datetime.now",

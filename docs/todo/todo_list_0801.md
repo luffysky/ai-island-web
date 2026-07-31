@@ -174,7 +174,7 @@
 - [x] ~~2.6.1 自主任務規劃（員工自己決定今天做什麼）~~ ✅ 0801——排程加「autonomous」模式：開了 goal 欄改當『職責/使命』，每次觸發由 `planAutonomousGoal`(lib/agent/autonomous.ts) 依職責+近8筆任務歷史(避免重複)+agent_memory(對老闆的了解) 讓 LLM 挑一件此刻最該做的具體任務再跑。migration autonomous 欄已跑 prod；cron 自主分支；schedules API 收/回 autonomous；office 表單加「🧠 讓員工自己決定要做什麼」toggle + 清單自主 badge。
 - [x] ~~2.6.2 產出佇列（approvals 聚合 ✅；草稿全文預覽）~~ ✅ 0801——approvalSummary 偵測 outbound 內容欄位(text/content/body/message/caption/comment…)、附完整草稿(至 4000 字不截斷)；ApprovalCard 加「📝 送出前預覽(完整內容)」捲動框 → 發文/寄信前看得到要送的全文再按同意。
 - [ ] 2.6.3 員工協作（用 L5）；2.6.4 「登入＝AI 公司」世界觀（能力向量/招募/培訓/KPI）
-- [ ] 2.6.5 Agent 互相直接共享資料（寫 DB 不經 LLM）
+- [x] ~~2.6.5 Agent 互相直接共享資料（寫 DB 不經 LLM）~~ ✅ 0801——新增使用者範圍「共享黑板」表 `agent_shared_data`(RLS、已跑 prod) + 3 個工具 `data.write`/`data.read`/`data.list`(risk=read 自動執行、純內部無外部副作用)：agent A 存結構化 jsonb、agent B 直接讀原始資料，資料本身不經 LLM 重述(省 token、不失真)。
 - [ ] 2.6.6 工作空間 Hub（簡報/表格/文件生成器聚合入口——大工程）
 
 ### 2.7 省 token（Snow Orchestrator）＆ MCP／技能
