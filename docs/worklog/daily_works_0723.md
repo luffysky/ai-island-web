@@ -1,6 +1,6 @@
 # 工作日誌 2026-07-23
 
-> 待辦主檔：`docs/todo/todo_list_0723.md`（0722→0723 續用；本日改名）。
+> 待辦主檔：`docs/todo/todo_list_0801.md`（0722→0723 續用；本日改名）。
 > 本日主軸：**續辭典大量批次（22 批、+501 條 → 2348）＋翻譯 backlog 跑完（99%）**，收尾更新文件、全面 DB/API/UI 對齊健檢。
 
 ---
@@ -50,7 +50,7 @@
 
 ## 文件收尾
 
-- `todo_list_0722.md` → **改名 `todo_list_0723.md`**（git mv），標題日期改 0723；CLAUDE.md 主檔指標同步更新。
+- `todo_list_0722.md` → **改名 `todo_list_0801.md`**（git mv），標題日期改 0723；CLAUDE.md 主檔指標同步更新。
 - 本日完成項全部在 todo 劃線更新（辭典 43–64、翻譯 backlog、機會島三表/§3.6、使用說明、LINE 美化、CSP、apple-touch-icon）。
 - 補寫 0722 worklog 後半段（機會島三表 / §3.6 / FeatureGuide / LINE 通知美化 / CSP / apple-touch-icon）。
 
