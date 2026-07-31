@@ -8,6 +8,7 @@ import { getTool, describeToolList, effectiveTools, needsApproval, approvalSumma
 import { getOnlineDevice, dispatchToDevice } from "./bridge";
 import { sendPushToUser } from "@/lib/web-push";
 import { loadUserMcpTools } from "./mcp";
+import { maybeSuggestSkill } from "./skill-synth";
 
 // 手機遙控核心：關鍵時刻推播到使用者所有裝置（VAPID 未設會自動 no-op）。fire-and-forget。
 function pushSafe(userId: string, title: string, body: string, taskId: string, tag: string) {
@@ -453,6 +454,8 @@ export function runAgentTaskDetached(taskId: string, userId: string, goal: strin
     finally { RUNNING.delete(taskId); }
     // 若此任務來自 LINE（thread 標題前綴「📱 LINE」）→ 完成後把結果推回使用者的 LINE。
     await notifyLineIfFromLine(taskId, userId).catch(() => {});
+    // 2.1.3 執行中自動建 skill：任務成功且夠有重複價值 → 自動蒸餾一份技能建議存起來、前端一鍵採用（自我把關、fire-and-forget）。
+    await maybeSuggestSkill(createSupabaseAdmin(), taskId).catch(() => {});
   })();
 }
 

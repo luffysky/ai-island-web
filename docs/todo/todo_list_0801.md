@@ -132,7 +132,7 @@
 ### 2.1 引擎 L1–L5 進階（核心 L1–L5 ✅ 已上線）
 - [x] ~~2.1.1 L2 程式沙盒~~ ✅ 0722（見 §4.3：agent `code.run` 工具＝外部隔離沙盒 Piston/Judge0/Wandbox、20+ 語言、限時間/輸出、dangerous 逐次確認。＊非 isolated-vm/本機容器，是外部沙盒服務、免 env）
 - [ ] 2.1.2 L2 互動式伺服器瀏覽器（`browser.render` code done、仍 stub、需 🔴 env 驗活）
-- [ ] 2.1.3 L4 執行中自動建 skill（現為事後手動 synthesize）
+- [x] ~~2.1.3 L4 執行中自動建 skill~~ ✅ 0801——任務成功且夠有重複價值(非技能發起/≥2步)時，orchestrator 收尾自動蒸餾一份技能建議存 `agent_tasks.suggested_skill`(自我把關、fire-and-forget、用快 Haiku)；前端讀到就把「存成技能」升級成高亮「💡 存成技能「name」」、一鍵開預填視窗(不用等 AI)。synthesize 邏輯抽 `lib/agent/skill-synth.ts` 兩處共用、route 優先回已算好的建議省一次 AI。migration agent_tasks.suggested_skill 已跑 prod。
 - [ ] 2.1.4 L5 經理–專才階層調度（現只有平行 fan-out）
 - [ ] 2.1.5 真串流部分成果（partial results streaming）
 - [ ] 2.1.6 工具自動發現（OpenAPI → tools）

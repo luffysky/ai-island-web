@@ -83,6 +83,7 @@ export function AgentClient() {
   const [skillModal, setSkillModal] = useState(false);
   const [skillDraft, setSkillDraft] = useState<SkillDraft | null>(null);  // L4：從任務蒸餾出的技能草稿
   const [skillEditId, setSkillEditId] = useState<string | null>(null);    // CRUD：編輯既有自建技能/員工（null=新建/複製）
+  const [suggestedSkill, setSuggestedSkill] = useState<SkillDraft | null>(null);  // 2.1.3：任務成功後自動蒸餾的技能建議（一鍵採用）
   const [synthBusy, setSynthBusy] = useState(false);
   const [storeOpen, setStoreOpen] = useState(false);
   const [mcpServers, setMcpServers] = useState<{ id: string; name: string; tools: { name: string }[] }[]>([]);
@@ -325,7 +326,7 @@ export function AgentClient() {
   const run = useCallback(async (g: string) => {
     const text = g.trim();
     if (!text || busy) return;
-    setStarting(true); setSteps([]); setSummary(""); setApproval(null); setStatus("planning"); setTaskId(""); setWatching(""); setPlan([]);
+    setStarting(true); setSteps([]); setSummary(""); setApproval(null); setStatus("planning"); setTaskId(""); setWatching(""); setPlan([]); setSuggestedSkill(null);
     try {
       const res = await fetch("/api/agent/tasks", {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ goal: text, skillId: skillId || undefined, threadId: threadId || undefined, costMode }),
@@ -368,6 +369,7 @@ export function AgentClient() {
     const { task, steps: st, approvals } = await r.json();
     setTaskId(id); setGoal(task.goal); setStatus(task.status);
     setSummary(task.result?.summary ?? task.error ?? "");
+    setSuggestedSkill(task.suggested_skill ?? null);
     setSteps(mapSteps(st));
     setApproval(pendingApproval(approvals));
     setThreadId(task.thread_id ?? "");                    // 延續脈絡：回到該對話串
@@ -389,10 +391,17 @@ export function AgentClient() {
         setSteps(mapSteps(st));
         setApproval(pendingApproval(approvals));
         setPlan(task.plan ?? []);
+        setSuggestedSkill(task.suggested_skill ?? null);
         if (!LIVE.includes(task.status)) {
           setWatching(""); loadHistory();
           if (task.thread_id) loadThreadTurns(task.thread_id, watching);  // 完成 → 刷新本串前文
-          if (task.status === "succeeded") setTimeout(loadMemory, 1500);  // 完成 → 刷新分身記憶（抽取是背景進行）
+          if (task.status === "succeeded") {
+            setTimeout(loadMemory, 1500);  // 完成 → 刷新分身記憶（抽取是背景進行）
+            // 技能建議是背景蒸餾（幾秒後才好）→ 完成後再抓一次補上（2.1.3）
+            setTimeout(async () => {
+              try { const r2 = await fetch(`/api/agent/tasks/${watching}`); if (r2.ok) { const { task: t2 } = await r2.json(); if (t2?.suggested_skill) setSuggestedSkill(t2.suggested_skill); } } catch { /* ignore */ }
+            }, 4000);
+          }
         }
       } catch { /* ignore */ }
     }, 2000);
@@ -630,9 +639,16 @@ export function AgentClient() {
                   <div className="flex items-center gap-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400"><CheckCircle2 className="w-4 h-4" /> 結果</div>
                   <div className="flex items-center gap-1.5 flex-wrap justify-end">
                     {taskId && status === "succeeded" && (
-                      <button onClick={synthFromTask} disabled={synthBusy} title="把這次的做法存成可重複使用的技能" className="inline-flex items-center gap-1 text-xs rounded-full px-2 py-1 border border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10 disabled:opacity-50">
-                        {synthBusy ? <Loader2 className="w-3 h-3 animate-spin" /> : <Bot className="w-3 h-3" />} 存成技能
-                      </button>
+                      suggestedSkill ? (
+                        // 2.1.3：已自動蒸餾好建議 → 一鍵採用、直接開預填視窗（不用等 AI），並高亮提示
+                        <button onClick={() => { setSkillDraft(suggestedSkill); setSkillEditId(null); setSkillModal(true); }} title="這次的做法已自動整理成技能，點一下就能存起來重複用" className="inline-flex items-center gap-1 text-xs rounded-full px-2.5 py-1 bg-violet-500/15 border border-violet-500/50 text-violet-600 dark:text-violet-300 hover:bg-violet-500/25 font-medium">
+                          <Bot className="w-3 h-3" /> 💡 存成技能「{suggestedSkill.name}」
+                        </button>
+                      ) : (
+                        <button onClick={synthFromTask} disabled={synthBusy} title="把這次的做法存成可重複使用的技能" className="inline-flex items-center gap-1 text-xs rounded-full px-2 py-1 border border-violet-500/40 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10 disabled:opacity-50">
+                          {synthBusy ? <Loader2 className="w-3 h-3 animate-spin" /> : <Bot className="w-3 h-3" />} 存成技能
+                        </button>
+                      )
                     )}
                     <div className="flex items-center gap-0.5 mr-0.5 pr-1.5 border-r border-emerald-500/20">
                       <button onClick={() => exportAs("docx")} disabled={!!exporting} title="下載 Word（.docx）" className="inline-flex items-center gap-0.5 text-[11px] rounded-md px-1.5 py-1 text-sky-600 dark:text-sky-400 hover:bg-sky-500/10 disabled:opacity-40">{exporting === "docx" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />} Word</button>
