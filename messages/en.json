@@ -2625,6 +2625,14 @@
       "tarotQuestion": "🔮 Tarot:{q}",
       "baziLabel": "BaZi Chart (from your birthday)",
       "ichingLabel": "I-Ching (Plum Blossom)"
+    },
+    "guest": {
+      "title": "Today's Fortune · Free Try",
+      "subtitle": "Pick your zodiac to see today's basic fortune (for fun)",
+      "scoreUnit": "pts",
+      "upsell": "Want AI-personalized readings, plus Tarot, BaZi charts and I-Ching? Sign up to unlock everything (free to start).",
+      "cta": "Sign up / Log in to unlock",
+      "disclaimer": "For entertainment only — no predictions, no medical/financial/legal advice."
     }
   },
   "messageCoach": {

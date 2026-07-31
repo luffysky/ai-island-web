@@ -8,6 +8,7 @@ import {
   Link2, Download, X,
 } from "lucide-react";
 import { FeatureGuide } from "@/components/FeatureGuide";
+import { ZODIAC_ZH, ZODIAC_EMOJI, type Zodiac } from "@/lib/fortune";
 import { TarotSection } from "./TarotSection";
 import { BaziSection } from "./BaziSection";
 import { IChingSection } from "./IChingSection";
@@ -64,6 +65,11 @@ export function Fortune() {
         <p>{t("daily.loading")}</p>
       </div>
     );
+  }
+
+  // 未登入訪客：給免註冊的今日基本運勢試玩（塔羅/八字/梅花引導註冊）
+  if ((data as any)?.error === "unauthorized") {
+    return <GuestFortune />;
   }
 
   if (data?.needProfile) {
@@ -439,6 +445,78 @@ function BirthForm({ onSaved }: { onSaved: () => void }) {
         </button>
         <p className="text-xs text-black/40 dark:text-white/40 text-center leading-relaxed">{t("form.footer")}</p>
       </div>
+    </div>
+  );
+}
+
+// ── 未登入訪客：免註冊今日基本運勢（零 AI・娛樂），塔羅/八字/梅花引導註冊 ──
+function GuestFortune() {
+  const t = useTranslations("fortune");
+  const [zodiac, setZodiac] = useState<Zodiac | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [f, setF] = useState<FortunePayload | null>(null);
+
+  const pick = useCallback(async (z: Zodiac) => {
+    setZodiac(z); setLoading(true); setF(null);
+    try {
+      const r = await fetch(`/api/fortune/public?zodiac=${z}`);
+      const d = await r.json();
+      setF(d.fortune ?? null);
+    } catch { setF(null); } finally { setLoading(false); }
+  }, []);
+
+  const ZS = Object.keys(ZODIAC_ZH) as Zodiac[];
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-8">
+      <div className="text-center mb-5">
+        <h1 className="text-xl font-bold text-black/85 dark:text-white/90">{t("guest.title")}</h1>
+        <p className="text-sm text-black/50 dark:text-white/50 mt-1">{t("guest.subtitle")}</p>
+      </div>
+
+      {/* 星座選擇 */}
+      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-5">
+        {ZS.map((z) => (
+          <button key={z} onClick={() => pick(z)}
+            className={`flex flex-col items-center gap-0.5 py-2.5 rounded-xl border text-sm transition ${zodiac === z ? "bg-violet-600 text-white border-violet-600 shadow-sm" : "border-black/12 dark:border-white/12 text-black/65 dark:text-white/65 hover:border-violet-400/60"}`}>
+            <span className="text-lg leading-none">{ZODIAC_EMOJI[z]}</span>
+            <span className="text-xs">{ZODIAC_ZH[z]}</span>
+          </button>
+        ))}
+      </div>
+
+      {loading && (
+        <div className="flex items-center justify-center gap-2 text-black/50 dark:text-white/50 py-6"><Loader2 className="w-5 h-5 animate-spin" /> {t("daily.loading")}</div>
+      )}
+
+      {f && !loading && (
+        <div className="rounded-2xl border border-violet-500/20 bg-gradient-to-br from-violet-500/5 to-fuchsia-500/5 dark:from-violet-500/10 dark:to-fuchsia-500/10 p-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-lg font-bold text-black/80 dark:text-white/85">{zodiac && ZODIAC_EMOJI[zodiac]} {zodiac && ZODIAC_ZH[zodiac]}</span>
+            {typeof f.score === "number" && <span className="text-2xl font-bold text-violet-500">{f.score}<span className="text-sm text-black/40 dark:text-white/40"> {t("guest.scoreUnit")}</span></span>}
+          </div>
+          <p className="text-black/75 dark:text-white/80 leading-relaxed">{f.overall}</p>
+          <div className="grid sm:grid-cols-3 gap-2 text-sm">
+            <div className="rounded-xl bg-rose-500/10 border border-rose-500/15 p-2.5"><div className="text-xs text-rose-500 font-semibold mb-0.5">💗 {t("daily.love")}</div><p className="text-black/70 dark:text-white/75 text-[13px] leading-relaxed">{f.love}</p></div>
+            <div className="rounded-xl bg-sky-500/10 border border-sky-500/15 p-2.5"><div className="text-xs text-sky-500 font-semibold mb-0.5">💼 {t("daily.career")}</div><p className="text-black/70 dark:text-white/75 text-[13px] leading-relaxed">{f.career}</p></div>
+            <div className="rounded-xl bg-amber-500/10 border border-amber-500/15 p-2.5"><div className="text-xs text-amber-600 dark:text-amber-400 font-semibold mb-0.5">💰 {t("daily.wealth")}</div><p className="text-black/70 dark:text-white/75 text-[13px] leading-relaxed">{f.wealth}</p></div>
+          </div>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-black/55 dark:text-white/55">
+            <span>🎨 {t("daily.luckyColor")}：{f.luckyColor}</span>
+            <span>🔢 {t("daily.luckyNumber")}：{f.luckyNumber}</span>
+          </div>
+          {f.tip && <p className="text-xs text-amber-600 dark:text-amber-400">💡 {f.tip}</p>}
+        </div>
+      )}
+
+      {/* 註冊引導 */}
+      <div className="mt-5 rounded-2xl border border-violet-500/25 bg-violet-500/5 p-4 text-center space-y-2.5">
+        <p className="text-sm text-black/70 dark:text-white/75 leading-relaxed">{t("guest.upsell")}</p>
+        <a href="/login?next=/fortune" className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 transition">
+          <Sparkles className="w-4 h-4" /> {t("guest.cta")}
+        </a>
+      </div>
+      <p className="text-center text-[11px] text-black/35 dark:text-white/35 mt-3">{t("guest.disclaimer")}</p>
     </div>
   );
 }

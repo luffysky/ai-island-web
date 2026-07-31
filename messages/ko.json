@@ -2625,6 +2625,14 @@
       "tarotQuestion": "🔮 타로:{q}",
       "baziLabel": "사주 명반 (생일 기준)",
       "ichingLabel": "매화역수"
+    },
+    "guest": {
+      "title": "오늘의 운세 · 무료 체험",
+      "subtitle": "별자리를 골라 오늘의 기본 운세를 (재미용)",
+      "scoreUnit": "점",
+      "upsell": "AI 맞춤 해석에 타로, 사주 명반, 주역까지? 가입하면 모두 잠금 해제 (무료 시작).",
+      "cta": "가입 / 로그인하고 잠금 해제",
+      "disclaimer": "오락용일 뿐, 길흉 예언·의료·투자·법률 조언을 하지 않습니다."
     }
   },
   "messageCoach": {
