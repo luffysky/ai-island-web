@@ -2621,7 +2621,9 @@
       "loading": "載入中…",
       "empty": "還沒有紀錄，之後每天回來看運勢就會累積在這裡 ✨",
       "tarotLabel": "🔮 塔羅占卜",
-      "tarotQuestion": "🔮 塔羅：{q}"
+      "tarotQuestion": "🔮 塔羅：{q}",
+      "baziLabel": "八字命盤（依你的生日）",
+      "ichingLabel": "梅花易數"
     }
   },
   "messageCoach": {

@@ -2609,7 +2609,9 @@
       "loading": "読み込み中…",
       "empty": "まだ記録はありません。毎日戻ってあなたの運勢を確認すると、それがここに蓄積されます✨",
       "tarotLabel": "🔮タロット占い",
-      "tarotQuestion": "🔮タロット:{q}"
+      "tarotQuestion": "🔮タロット:{q}",
+      "baziLabel": "四柱推命（誕生日より）",
+      "ichingLabel": "梅花心易"
     }
   },
   "messageCoach": {

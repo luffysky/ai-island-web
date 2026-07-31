@@ -5,7 +5,14 @@ import { useTranslations } from "next-intl";
 import { History, Loader2, ChevronDown } from "lucide-react";
 
 type DailyPayload = { overall: string; luckyColor: string; luckyNumber: number; tip: string; score?: number };
-type HistItem = { date: string; daily?: DailyPayload; tarot?: { question: string; summary: string } };
+type IchingPayload = { gua?: { name?: string; question?: string }; reading?: { summary?: string; advice?: string } };
+type HistItem = {
+  date: string;
+  daily?: DailyPayload;
+  tarot?: { question: string; summary: string };
+  iching?: IchingPayload;
+};
+type BaziEntry = { date: string; payload?: { chart?: any; reading?: { overview?: string } } };
 
 export function HistorySection() {
   const t = useTranslations("fortune");
@@ -13,6 +20,7 @@ export function HistorySection() {
   const [loaded, setLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<HistItem[]>([]);
+  const [bazi, setBazi] = useState<BaziEntry | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -21,6 +29,7 @@ export function HistorySection() {
       const r = await fetch("/api/fortune/history");
       const d = await r.json();
       setItems(d.history ?? []);
+      setBazi(d.bazi ?? null);
     } catch { /* ignore */ } finally {
       setLoading(false); setLoaded(true);
     }
@@ -47,10 +56,27 @@ export function HistorySection() {
         <div className="px-4 pb-4">
           {loading ? (
             <div className="flex items-center gap-2 text-sm text-black/50 dark:text-white/50 py-4"><Loader2 className="w-4 h-4 animate-spin" /> {t("history.loading")}</div>
-          ) : items.length === 0 ? (
+          ) : items.length === 0 && !bazi ? (
             <p className="text-sm text-black/45 dark:text-white/45 py-4 text-center">{t("history.empty")}</p>
           ) : (
             <div className="space-y-2">
+              {/* 八字命盤（單張、依生日；置頂、明確標示、不再是裸日期） */}
+              {bazi?.payload?.reading?.overview && (
+                <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 overflow-hidden">
+                  <button onClick={() => setExpanded(expanded === "__bazi__" ? null : "__bazi__")}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition text-left">
+                    <span className="text-base shrink-0">🀄</span>
+                    <span className="flex-1 text-sm font-medium text-black/70 dark:text-white/75 truncate">{t("history.baziLabel")}</span>
+                    <span className="text-[11px] font-mono text-black/40 dark:text-white/40 shrink-0">{bazi.date}</span>
+                    <ChevronDown className={`w-4 h-4 text-black/30 dark:text-white/30 shrink-0 transition-transform ${expanded === "__bazi__" ? "rotate-180" : ""}`} />
+                  </button>
+                  {expanded === "__bazi__" && (
+                    <div className="px-3 pb-3 pt-1 text-sm text-black/70 dark:text-white/75 leading-relaxed">
+                      {bazi.payload.reading.overview}
+                    </div>
+                  )}
+                </div>
+              )}
               {items.map((it) => {
                 const isOpen = expanded === it.date;
                 return (
@@ -59,12 +85,13 @@ export function HistorySection() {
                       className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] transition text-left">
                       <span className="text-sm font-mono text-black/55 dark:text-white/55 shrink-0">{it.date}</span>
                       <span className="flex-1 text-xs text-black/50 dark:text-white/50 truncate">
-                        {it.daily?.overall ?? (it.tarot ? t("history.tarotLabel") : "")}
+                        {it.daily?.overall ?? (it.tarot ? t("history.tarotLabel") : it.iching?.gua?.name ? t("history.ichingLabel") : "")}
                       </span>
                       {typeof it.daily?.score === "number" && (
                         <span className="text-xs font-semibold text-violet-500 shrink-0">{it.daily.score}</span>
                       )}
                       {it.tarot && <span className="text-xs shrink-0">🔮</span>}
+                      {it.iching && <span className="text-xs shrink-0">☯️</span>}
                       <ChevronDown className={`w-4 h-4 text-black/30 dark:text-white/30 shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`} />
                     </button>
                     {isOpen && (
@@ -83,6 +110,19 @@ export function HistorySection() {
                           <div className="rounded-lg bg-violet-500/5 border border-violet-500/15 p-2.5">
                             <p className="text-xs text-black/45 dark:text-white/45 mb-1">{t("history.tarotQuestion", { q: it.tarot.question })}</p>
                             <p className="text-black/70 dark:text-white/75 leading-relaxed text-[13px]">{it.tarot.summary}</p>
+                          </div>
+                        )}
+                        {it.iching?.gua && (
+                          <div className="rounded-lg bg-sky-500/5 border border-sky-500/15 p-2.5">
+                            <p className="text-xs text-black/45 dark:text-white/45 mb-1">
+                              ☯️ {it.iching.gua.name}{it.iching.gua.question ? `　·　${it.iching.gua.question}` : ""}
+                            </p>
+                            {it.iching.reading?.summary && (
+                              <p className="text-black/70 dark:text-white/75 leading-relaxed text-[13px]">{it.iching.reading.summary}</p>
+                            )}
+                            {it.iching.reading?.advice && (
+                              <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">💡 {it.iching.reading.advice}</p>
+                            )}
                           </div>
                         )}
                       </div>

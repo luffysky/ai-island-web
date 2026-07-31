@@ -2609,7 +2609,9 @@
       "loading": "로드 중…",
       "empty": "아직 기록이 없습니다. 매일 오셔서 운세를 확인하시면 여기에 쌓이게 됩니다 ✨",
       "tarotLabel": "🔮 타로 점",
-      "tarotQuestion": "🔮 타로:{q}"
+      "tarotQuestion": "🔮 타로:{q}",
+      "baziLabel": "사주 명반 (생일 기준)",
+      "ichingLabel": "매화역수"
     }
   },
   "messageCoach": {
