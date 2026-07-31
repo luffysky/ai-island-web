@@ -1,4 +1,6 @@
-# AI 島待辦總表 2026-07-23（**現行主檔**·0721 建、0722/0723 續用更新）
+# AI 島待辦總表 2026-07-23（**現行主檔**·0721 建、0722/0723/0731 續用更新）
+
+> ＊0731 進度摘要：全 80 章清晰度審查修 21 處（§4.1）；命理三功能 232/233/234（§1.3.5-7）；教具大工程 ch26/ch7/ch16 三章 100% 覆蓋（§4.1.5）；Agent Rule-filter 2.7.1 + 熱門排序 2.7.12（§2.7）；docs/Platform.md（SnowRealm 平台整合看法）。
 
 > 本檔＝整合 `docs/todo/` 全部 10 個舊檔（MASTER_TODO / ROADMAP_2026Q3 / 0705new_todotask / todo_list_0713 / 0714 / 0715 / TODO / BACKLOG / BEGINNER_FRIENDLY_BACKLOG / REPORTS_TODO_2026-06-03）後的**唯一現行待辦**。
 > 狀態經 3 組 subagent 逐項對照「程式碼 + git 紀錄」核對過（2026-07-21）。舊檔全部降為**歷史存查**（見文末〈附錄 A：舊檔核對裁決〉），之後只更新本檔。
@@ -49,6 +51,9 @@
   - [x] ~~1.3.2 塔羅抽牌互動（`/fortune` 展開式 TarotSection：提問輸入→抽牌→三張牌陣+逐張解讀+總結+建議、回顯今日、付費可再抽）~~ ✅
   - [x] ~~1.3.3 分享卡：OG 圖卡（`/api/og/fortune` 1200x630、CJK 子集字型）+ 分享面板（Web Share 帶圖檔/複製連結/下載圖卡）+ `/fortune/share` 落地頁 og:image（LINE/FB 抓得到預覽）~~ ✅ 0722
   - [~] 1.3.4 RWD + 亮暗 ✅；付費分界：塔羅 ✅ + 易經 AI 深解 ✅（免費每日 1 次·付費無限、鎖住顯示升級卡→/pricing、0722）；八字排盤 AI 免費（快取自然收斂）
+  - [x] ~~1.3.5 未註冊訪客免註冊試「今日基本運勢」（232）~~ ✅ 0731——`/api/fortune/public`（?zodiac= 或 ?birth=、零 AI 決定性、複用 generateFreeFortune）+ Fortune.tsx GuestFortune（未登入→選星座即看整體/愛情/事業/財運+分數+幸運色數；底部引導註冊解鎖塔羅/八字/梅花→/login）；guest.* 四語 i18n。
+  - [x] ~~1.3.6 八字可改生日/時辰 + 幫別人算（233）~~ ✅ 0731——bazi API 加 POST 自訂排盤(不動 profile、依輸入編進 kind 快取)；BaziSection 加「改生日/幫別人算」表單(日期+12 時辰下拉〔記得時辰不記得幾點也能選、值取時辰中點〕+曆別+性別)；表單四語。
+  - [x] ~~1.3.7 歷史運勢納入八字命盤 + 梅花易數（234）~~ ✅ 0731——history API 折入 iching、八字改單獨回傳命盤卡(不再以裸生日混進日期列)；HistorySection 置頂🀄命盤卡 + 每日列☯️梅花明細；baziLabel/ichingLabel 四語。
 - [~] 1.4 LINE 每日推播
   - [x] ~~1.4.1 cron `/api/cron/fortune-daily`（撈綁 LINE + 開推播 + 有生日者、生成+推、dedupe、cap 500）~~ ✅
     - [x] ~~1.4.1.1 cron-job.org job #10（運勢每日推播）~~ ✅ 0722 林董已設好
@@ -207,6 +212,7 @@
 - [x] ~~**旗艦章 ch49 AI Agent / ch50 n8n**：de-can + 新教具 AgentLoop/WorkflowFlow~~ ✅ 0721
 - [x] ~~**薄章補厚 ch06/11/12/14/23/25/37/42**：de-can 91 題 + JsonTree/複用 ScenarioJudge·WorkflowFlow~~ ✅ 0721（ch15/ch24 本就 0 罐頭）
 - [x] ~~ch03/13/43/44/45/47/48/51–60/33(Rust)/76(Angular) 深度重寫~~ ✅（0717 起陸續）
+- [x] ~~**全 80 章清晰度/正確性審查 + 修正**~~ ✅ 0731——林董抓到 ch26.6 `*args/**kwargs`「所有」與範例矛盾為起點；6 平行子代理掃 ch01–79 找同類 bug（規則太絕對但範例是例外／規則與輸出矛盾／內容截斷），我逐條驗證後修 **21 處**：ch17.9 殘留作者註記「wait…」+竄改資料、ch10.8 Next15 fetch 預設講反、ch78.4/78.6 softmax/CrossEntropyLoss 算錯(本地驗算)、ch27.3 np.median、ch32.5/32.9 Go slice/goroutine、ch36.1/36.4/36.6 PHP coercive/Eloquent非JOIN/DB::prepared、ch64.4 正則交替、ch66.1 色名色碼不符、ch67.1/67.3 GDPR時限/OWASP版本+截斷補完、ch38.1 速查表截斷、ch53.1/ch63.1 型號一致 等。commit c1c6d2d3/d818ac08/1a14e3af。
 - [~] 4.1.1 **剩餘技術章 de-can**（audit：ch01–60 曾 74% 罐頭練習，只清了旗艦+薄章）：ch01/02/04/05/07/08/09/10/16/17/26–32/34/35/36/46… 逐章 de-can + 視情況疊教具
   - [x] ~~ch01 HTML 完整：25 節全 de-can~~ ✅ 0721（原本 1.2–1.25 全同一句「做個人介紹頁」+同 hint/answer、標籤 fill 常壞→換各節量身題）
   - [x] ~~ch02 CSS 完整：25 節全 de-can~~ ✅ 0721（原本 22/25 是「copy code 改 1-2 參數」罐頭→換各節量身題：選擇器/特異性排勝負/box-sizing 算寬/flex 導覽列/grid 相簿 auto-fill/position 五情境/HSL 深淺色/RWD mobile-first/CSS 變數切深色模式/transition vs animation/transform 效能/Sass mixin/Tailwind 取捨/CSS-in-JS/Design Token/動畫心理學/a11y 對比焦點/捲動效能/版面除錯三兇手/上線檢查表）
