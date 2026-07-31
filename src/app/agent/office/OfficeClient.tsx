@@ -9,7 +9,7 @@ import { popularTemplates } from "@/lib/agent/task-templates";
 interface SkillItem { id: string; name: string; description?: string; emoji: string; category: string; is_builtin: boolean; installed: boolean; usage?: { used: number; succeeded: number }; }
 interface DeviceItem { id: string; name: string; platform: string; online: boolean; last_seen_at?: string | null; }
 interface TaskItem { id: string; goal: string; status: string; step_count: number; created_at: string; }
-interface Schedule { id: string; skill_id: string | null; title: string; goal: string; frequency: Frequency; hour: number; weekday: number | null; enabled: boolean; last_run_at?: string | null; last_task_id?: string | null; next_run_at: string; run_count: number; }
+interface Schedule { id: string; skill_id: string | null; title: string; goal: string; frequency: Frequency; hour: number; weekday: number | null; enabled: boolean; autonomous?: boolean; last_run_at?: string | null; last_task_id?: string | null; next_run_at: string; run_count: number; }
 interface Approval { id: string; task_id: string; step_idx: number; tool_name: string; risk: string; summary: Record<string, string>; created_at: string; goal: string; }
 
 const STATUS: Record<string, { label: string; cls: string; Icon: any }> = {
@@ -62,6 +62,7 @@ export function OfficeClient() {
   const [sFreq, setSFreq] = useState<Frequency>("daily");
   const [sHour, setSHour] = useState(9);
   const [sWeekday, setSWeekday] = useState(1);
+  const [sAuto, setSAuto] = useState(false);   // 2.6.1 自主：員工自己決定要做什麼
   const [sBusy, setSBusy] = useState(false);
   const [sErr, setSErr] = useState("");
 
@@ -126,17 +127,17 @@ export function OfficeClient() {
 
   const addSchedule = async () => {
     const goal = sGoal.trim();
-    if (!goal || sBusy) { if (!goal) setSErr("先寫要自動執行的指令"); return; }
+    if (!goal || sBusy) { if (!goal) setSErr(sAuto ? "先寫這位員工的職責（要以什麼身份決定做什麼）" : "先寫要自動執行的指令"); return; }
     setSBusy(true); setSErr("");
     try {
       const r = await fetch("/api/agent/schedules", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ goal, skillId: sSkill || undefined, frequency: sFreq, hour: sHour, weekday: sFreq === "weekly" ? sWeekday : undefined }),
+        body: JSON.stringify({ goal, skillId: sSkill || undefined, frequency: sFreq, hour: sHour, weekday: sFreq === "weekly" ? sWeekday : undefined, autonomous: sAuto }),
       });
       const d = await r.json();
       if (!r.ok) { setSErr(d.error ?? "新增失敗"); return; }
       setSchedules((cur) => [d.schedule, ...cur]);
-      setSGoal(""); setSSkill(""); setSchedOpen(false);
+      setSGoal(""); setSSkill(""); setSAuto(false); setSchedOpen(false);
     } catch { setSErr("連線失敗"); } finally { setSBusy(false); }
   };
 
@@ -382,7 +383,14 @@ export function OfficeClient() {
         {/* 新增表單 */}
         {schedOpen && (
           <div className="rounded-xl border border-black/10 dark:border-white/10 p-3 mb-2.5 space-y-2.5">
-            <textarea value={sGoal} onChange={(e) => setSGoal(e.target.value)} rows={2} placeholder="要自動執行的指令（例：找 3 個近期截止的免費競賽，列出截止日和來源）" className="w-full resize-none rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-violet-400" />
+            {/* 2.6.1 自主任務規劃：開了就讓員工每次自己決定要做什麼 */}
+            <label className="flex items-start gap-2 rounded-lg bg-violet-500/5 border border-violet-500/20 px-2.5 py-2 cursor-pointer">
+              <input type="checkbox" checked={sAuto} onChange={(e) => setSAuto(e.target.checked)} className="mt-0.5 accent-violet-600" />
+              <span className="text-xs text-black/70 dark:text-white/70">🧠 <b>讓員工自己決定要做什麼</b>——下面改填「職責/使命」，每次觸發時員工會依職責＋最近做過的事＋對你的了解，自己挑一件最該做的具體任務。</span>
+            </label>
+            <textarea value={sGoal} onChange={(e) => setSGoal(e.target.value)} rows={2}
+              placeholder={sAuto ? "這位員工的職責/使命（例：當我的商業情報員，隨時幫我留意產業動態與可把握的機會）" : "要自動執行的指令（例：找 3 個近期截止的免費競賽，列出截止日和來源）"}
+              className="w-full resize-none rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-violet-400" />
             <div className="flex flex-wrap items-center gap-2 text-xs">
               <select value={sSkill} onChange={(e) => setSSkill(e.target.value)} className="rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2 py-1.5">
                 <option value="">通用分身（不指定員工）</option>
@@ -424,8 +432,8 @@ export function OfficeClient() {
                   <div className="flex items-start gap-2.5">
                     <span className="text-lg leading-none mt-0.5">{emp?.emoji ?? "🕒"}</span>
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm font-medium truncate">{s.title || describeSchedule(s.frequency, s.hour, s.weekday)}</div>
-                      <div className="text-[11px] text-black/50 dark:text-white/50 truncate">{s.goal}</div>
+                      <div className="text-sm font-medium truncate flex items-center gap-1.5">{s.autonomous && <span className="shrink-0 text-[10px] rounded-full bg-violet-500/15 text-violet-600 dark:text-violet-300 px-1.5 py-0.5 font-normal">🧠 自主</span>}<span className="truncate">{s.title || describeSchedule(s.frequency, s.hour, s.weekday)}</span></div>
+                      <div className="text-[11px] text-black/50 dark:text-white/50 truncate">{s.autonomous ? `職責：${s.goal}（每次自己決定任務）` : s.goal}</div>
                       <div className="text-[11px] text-black/40 dark:text-white/40 mt-0.5 flex flex-wrap items-center gap-x-2">
                         <span className="text-violet-500">{describeSchedule(s.frequency, s.hour, s.weekday)}</span>
                         {emp && <span>· {emp.name}</span>}

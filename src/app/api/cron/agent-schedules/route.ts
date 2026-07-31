@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
   const nowIso = new Date().toISOString();
 
   const { data: due, error } = await admin.from("agent_schedules")
-    .select("id, user_id, skill_id, title, goal, frequency, hour, weekday, run_count")
+    .select("id, user_id, skill_id, title, goal, frequency, hour, weekday, run_count, autonomous")
     .eq("enabled", true).lte("next_run_at", nowIso)
     .order("next_run_at", { ascending: true }).limit(BATCH);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -36,11 +36,17 @@ export async function GET(req: NextRequest) {
     // 先把 next_run_at 往未來推（即使這次啟動失敗也不會下一分鐘又重跑）
     const nextRun = computeNextRun(s.frequency as Frequency, s.hour, s.weekday ?? null, Date.now());
     try {
+      // 2.6.1 自主任務規劃：autonomous 排程 → 先讓員工依職責+近期歷史+記憶自己決定一個具體任務
+      let goal = s.goal;
+      if ((s as any).autonomous) {
+        const { planAutonomousGoal } = await import("@/lib/agent/autonomous");
+        goal = await planAutonomousGoal({ admin, userId: s.user_id, skillId: s.skill_id, mission: s.goal });
+      }
       const r = await launchAgentTask({
         userId: s.user_id,
-        goal: s.goal,
+        goal,
         skillId: s.skill_id,
-        threadTitle: `🕒 排程：${s.title || s.goal}`.slice(0, 80),
+        threadTitle: `🕒 ${(s as any).autonomous ? "自主" : "排程"}：${s.title || goal}`.slice(0, 80),
         skipDailyCap: true,   // 排程自動跑 → 不計入每日互動上限
       });
       if ("error" in r) {

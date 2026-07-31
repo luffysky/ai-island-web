@@ -15,7 +15,7 @@ export async function GET() {
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const admin = createSupabaseAdmin();
   const { data } = await admin.from("agent_schedules")
-    .select("id, skill_id, title, goal, frequency, hour, weekday, enabled, last_run_at, last_task_id, next_run_at, run_count, created_at")
+    .select("id, skill_id, title, goal, frequency, hour, weekday, enabled, autonomous, last_run_at, last_task_id, next_run_at, run_count, created_at")
     .eq("user_id", user.id).order("created_at", { ascending: false });
   return NextResponse.json({ schedules: data ?? [] });
 }
@@ -28,7 +28,8 @@ export async function POST(req: Request) {
 
   const body = await req.json().catch(() => ({} as any));
   const goal = String(body.goal ?? "").trim().slice(0, 500);
-  if (!goal) return NextResponse.json({ error: "缺 goal（要自動執行的指令）" }, { status: 400 });
+  const autonomous = !!body.autonomous;   // 2.6.1：true 時 goal 當「職責/使命」、每次自己決定任務
+  if (!goal) return NextResponse.json({ error: autonomous ? "缺職責描述（員工要以什麼身份決定做什麼）" : "缺 goal（要自動執行的指令）" }, { status: 400 });
   const frequency: Frequency = body.frequency === "weekly" ? "weekly" : "daily";
   const hour = Math.min(Math.max(Number(body.hour) || 9, 0), 23);
   const weekday = frequency === "weekly" ? Math.min(Math.max(Number(body.weekday) || 0, 0), 6) : null;
@@ -52,8 +53,8 @@ export async function POST(req: Request) {
   const nextRun = computeNextRun(frequency, hour, weekday, Date.now());
 
   const { data, error } = await admin.from("agent_schedules")
-    .insert({ user_id: user.id, skill_id: skillId, title, goal, frequency, hour, weekday, next_run_at: nextRun })
-    .select("id, skill_id, title, goal, frequency, hour, weekday, enabled, next_run_at, run_count, created_at")
+    .insert({ user_id: user.id, skill_id: skillId, title, goal, frequency, hour, weekday, autonomous, next_run_at: nextRun })
+    .select("id, skill_id, title, goal, frequency, hour, weekday, enabled, autonomous, next_run_at, run_count, created_at")
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ schedule: data });
