@@ -2,7 +2,17 @@
 
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Loader2, ScrollText, ChevronDown, Sparkles } from "lucide-react";
+import { Loader2, ScrollText, ChevronDown, Sparkles, Pencil } from "lucide-react";
+
+// 12 時辰對照：讓「記得時辰、不記得幾點」的人也能選（值＝該時辰中點，避開邊界誤差）
+const SHICHEN: Array<{ label: string; time: string }> = [
+  { label: "子時 23–01", time: "00:00" }, { label: "丑時 01–03", time: "02:00" },
+  { label: "寅時 03–05", time: "04:00" }, { label: "卯時 05–07", time: "06:00" },
+  { label: "辰時 07–09", time: "08:00" }, { label: "巳時 09–11", time: "10:00" },
+  { label: "午時 11–13", time: "12:00" }, { label: "未時 13–15", time: "14:00" },
+  { label: "申時 15–17", time: "16:00" }, { label: "酉時 17–19", time: "18:00" },
+  { label: "戌時 19–21", time: "20:00" }, { label: "亥時 21–23", time: "22:00" },
+];
 
 type Pillar = { ganzhi: string; gan: string; zhi: string; wuxing: string; nayin: string; shishen: string | null };
 type Chart = {
@@ -30,6 +40,13 @@ export function BaziSection() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<Resp | null>(null);
 
+  // 自訂/幫別人算 表單
+  const [showForm, setShowForm] = useState(false);
+  const [fDate, setFDate] = useState("");
+  const [fShichen, setFShichen] = useState("");      // "" = 不知道時辰
+  const [fCalendar, setFCalendar] = useState<"solar" | "lunar">("solar");
+  const [fGender, setFGender] = useState<"" | "male" | "female">("");
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
@@ -39,6 +56,26 @@ export function BaziSection() {
       setLoading(false); setLoaded(true);
     }
   }, []);
+
+  const submitCustom = useCallback(async () => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fDate)) return;
+    setLoading(true); setShowForm(false);
+    try {
+      const r = await fetch("/api/fortune/bazi", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          birthDate: fDate,
+          birthTime: fShichen || null,
+          calendarType: fCalendar,
+          gender: fGender || null,
+        }),
+      });
+      setData(await r.json());
+    } catch { setData({ error: "fetch_failed" }); } finally {
+      setLoading(false); setLoaded(true);
+    }
+  }, [fDate, fShichen, fCalendar, fGender]);
 
   const toggle = () => {
     const next = !open;
@@ -62,6 +99,55 @@ export function BaziSection() {
 
       {open && (
         <div className="px-4 pb-4">
+          {/* 改生日 / 幫別人算 */}
+          <div className="mb-3">
+            <button onClick={() => setShowForm((v) => !v)}
+              className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border border-amber-500/30 text-amber-700 dark:text-amber-300 hover:bg-amber-500/10 transition">
+              <Pencil className="w-3.5 h-3.5" /> {t("bazi.customToggle")}
+            </button>
+            {showForm && (
+              <div className="mt-2 rounded-xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 p-3 space-y-2.5">
+                <p className="text-[11px] text-black/50 dark:text-white/50">{t("bazi.customHint")}</p>
+                <div className="grid sm:grid-cols-2 gap-2.5">
+                  <label className="flex flex-col gap-1 text-xs text-black/55 dark:text-white/55">
+                    {t("bazi.fieldDate")}
+                    <input type="date" value={fDate} onChange={(e) => setFDate(e.target.value)}
+                      className="rounded-lg border border-black/15 dark:border-white/15 bg-white/80 dark:bg-black/30 px-2 py-1.5 text-sm text-black/80 dark:text-white/85" />
+                  </label>
+                  <label className="flex flex-col gap-1 text-xs text-black/55 dark:text-white/55">
+                    {t("bazi.fieldShichen")}
+                    <select value={fShichen} onChange={(e) => setFShichen(e.target.value)}
+                      className="rounded-lg border border-black/15 dark:border-white/15 bg-white/80 dark:bg-black/30 px-2 py-1.5 text-sm text-black/80 dark:text-white/85">
+                      <option value="">{t("bazi.shichenUnknown")}</option>
+                      {SHICHEN.map((s) => <option key={s.time} value={s.time}>{s.label}</option>)}
+                    </select>
+                  </label>
+                  <label className="flex flex-col gap-1 text-xs text-black/55 dark:text-white/55">
+                    {t("bazi.fieldCalendar")}
+                    <select value={fCalendar} onChange={(e) => setFCalendar(e.target.value as "solar" | "lunar")}
+                      className="rounded-lg border border-black/15 dark:border-white/15 bg-white/80 dark:bg-black/30 px-2 py-1.5 text-sm text-black/80 dark:text-white/85">
+                      <option value="solar">{t("bazi.calSolar")}</option>
+                      <option value="lunar">{t("bazi.calLunar")}</option>
+                    </select>
+                  </label>
+                  <label className="flex flex-col gap-1 text-xs text-black/55 dark:text-white/55">
+                    {t("bazi.fieldGender")}
+                    <select value={fGender} onChange={(e) => setFGender(e.target.value as "" | "male" | "female")}
+                      className="rounded-lg border border-black/15 dark:border-white/15 bg-white/80 dark:bg-black/30 px-2 py-1.5 text-sm text-black/80 dark:text-white/85">
+                      <option value="">{t("bazi.genderUnknown")}</option>
+                      <option value="male">{t("bazi.genderMale")}</option>
+                      <option value="female">{t("bazi.genderFemale")}</option>
+                    </select>
+                  </label>
+                </div>
+                <button onClick={submitCustom} disabled={!/^\d{4}-\d{2}-\d{2}$/.test(fDate)}
+                  className="w-full rounded-lg bg-amber-500 text-black text-sm font-semibold py-2 hover:opacity-90 disabled:opacity-40 transition">
+                  {t("bazi.customSubmit")}
+                </button>
+              </div>
+            )}
+          </div>
+
           {loading ? (
             <div className="flex items-center gap-2 text-sm text-black/50 dark:text-white/50 py-4"><Loader2 className="w-4 h-4 animate-spin" /> {t("bazi.calculating")}</div>
           ) : !chart ? (

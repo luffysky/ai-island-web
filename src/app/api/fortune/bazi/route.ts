@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase-server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { rateLimit } from "@/lib/rate-limit";
@@ -63,6 +63,67 @@ export async function GET() {
 
   await admin.from("fortune_daily")
     .upsert({ user_id: user.id, date: cacheDate, kind: "bazi", payload: { chart, reading } satisfies Stored }, { onConflict: "user_id,date,kind" })
+    .then(() => {}, () => {});
+
+  return NextResponse.json({ chart, reading, cached: false });
+}
+
+/**
+ * POST { birthDate, birthTime?, calendarType?, gender? }
+ * → 自訂生日排盤（改生日/補時辰／幫別人算）。不動 profile；依輸入內容快取（kind='bazi_custom'）。
+ */
+export async function POST(req: NextRequest) {
+  const supabase = await createSupabaseServer();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+
+  const body = await req.json().catch(() => ({} as any));
+  const birthDate = String(body.birthDate ?? "").trim();
+  const birthTime = body.birthTime ? String(body.birthTime).trim() : null;
+  const calendarType = body.calendarType === "lunar" ? "lunar" : "solar";
+  const gender = body.gender === "male" || body.gender === "female" ? body.gender : null;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) {
+    return NextResponse.json({ error: "invalid_birth_date" }, { status: 400 });
+  }
+
+  const chart = computeBazi(birthDate, birthTime, calendarType);
+  if (!chart) return NextResponse.json({ error: "invalid_birth_date" }, { status: 400 });
+
+  const admin = createSupabaseAdmin();
+  // 快取鍵：把輸入內容編進 date（同人同輸入 → 命中、不重燒 AI；與 profile 的 kind='bazi' 分開）
+  const cacheKey = `${birthDate}|${birthTime ?? "x"}|${calendarType}|${gender ?? "x"}`.slice(0, 60);
+  const { data: cached } = await admin
+    .from("fortune_daily")
+    .select("payload")
+    .eq("user_id", user.id).eq("date", cacheKey).eq("kind", "bazi_custom")
+    .maybeSingle();
+  if (cached?.payload?.reading) {
+    return NextResponse.json({ chart, reading: (cached.payload as Stored).reading, cached: true });
+  }
+
+  const rl = rateLimit(`fortune:bazi:${user.id}`, 6, 60_000);
+  if (!rl.ok) return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+
+  let reading: BaziReading | null = null;
+  try {
+    const { system, user: userPrompt } = buildBaziPrompt(chart, gender);
+    const res = await completeForUsage("agent_core", { system, user: userPrompt, maxTokens: 800, temperature: 0.75 });
+    reading = parseBaziReading(res.text);
+  } catch { reading = null; }
+
+  if (!reading) {
+    return NextResponse.json({
+      chart,
+      reading: {
+        overview: "命盤已排出，解讀暫時生不出來，稍後再試一次。",
+        strengths: "有自己的節奏與優勢。", watch: "別對自己太嚴。", advice: "順著本性、穩穩累積。",
+      } satisfies BaziReading,
+      cached: false, degraded: true,
+    });
+  }
+
+  await admin.from("fortune_daily")
+    .upsert({ user_id: user.id, date: cacheKey, kind: "bazi_custom", payload: { chart, reading } satisfies Stored }, { onConflict: "user_id,date,kind" })
     .then(() => {}, () => {});
 
   return NextResponse.json({ chart, reading, cached: false });

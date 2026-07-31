@@ -2588,7 +2588,20 @@
         "month": "月柱",
         "day": "日柱",
         "hour": "時間欄"
-      }
+      },
+      "customToggle": "誕生日を変更 / 他の人を占う",
+      "customHint": "別の誕生日で計算（記憶違い、家族・友人用）。プロフィールは上書きしません。",
+      "fieldDate": "生年月日",
+      "fieldShichen": "生まれた刻(時辰)",
+      "shichenUnknown": "不明 / スキップ",
+      "fieldCalendar": "暦",
+      "calSolar": "新暦",
+      "calLunar": "旧暦",
+      "fieldGender": "性別",
+      "genderUnknown": "未入力",
+      "genderMale": "男",
+      "genderFemale": "女",
+      "customSubmit": "この命盤を出す"
     },
     "iching": {
       "title": "易経・梅の花を数えやすい",

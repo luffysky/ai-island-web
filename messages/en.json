@@ -2588,7 +2588,20 @@
         "month": "moon pillar",
         "day": "day pillar",
         "hour": "hour column"
-      }
+      },
+      "customToggle": "Change birthday / for someone else",
+      "customHint": "Calculate with a different birthday (mis-remembered, or for family/friends). Won't overwrite your profile.",
+      "fieldDate": "Birth date",
+      "fieldShichen": "Birth hour (Shichen)",
+      "shichenUnknown": "Unknown / skip",
+      "fieldCalendar": "Calendar",
+      "calSolar": "Solar",
+      "calLunar": "Lunar",
+      "fieldGender": "Gender",
+      "genderUnknown": "Skip",
+      "genderMale": "Male",
+      "genderFemale": "Female",
+      "customSubmit": "Cast this chart"
     },
     "iching": {
       "title": "I Ching · Plum Blossoms Easy to Count",

@@ -2598,7 +2598,20 @@
         "month": "月柱",
         "day": "日柱",
         "hour": "時柱"
-      }
+      },
+      "customToggle": "改生日 / 幫別人算",
+      "customHint": "用別的生日算（自己記錯、或幫家人朋友算）。不會覆蓋你的個人資料。",
+      "fieldDate": "出生日期",
+      "fieldShichen": "出生時辰",
+      "shichenUnknown": "不知道 / 略過",
+      "fieldCalendar": "曆別",
+      "calSolar": "國曆(陽曆)",
+      "calLunar": "農曆(陰曆)",
+      "fieldGender": "性別",
+      "genderUnknown": "不填",
+      "genderMale": "男",
+      "genderFemale": "女",
+      "customSubmit": "排這個命盤"
     },
     "iching": {
       "title": "易經 · 梅花易數",
