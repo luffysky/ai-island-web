@@ -1235,13 +1235,22 @@ function ApprovalCard({ req, onDecide }: { req: ApprovalReq; onDecide: (d: "appr
         需要你確認：<span className="font-mono">{req.toolName}</span>
       </div>
       <dl className="space-y-1 text-xs mb-3">
-        {Object.entries(req.summary).map(([k, v]) => (
+        {Object.entries(req.summary).filter(([k]) => k !== "草稿全文").map(([k, v]) => (
           <div key={k} className="flex gap-2">
             <dt className="shrink-0 text-black/45 dark:text-white/45 w-12">{k}</dt>
             <dd className="min-w-0 break-words text-black/75 dark:text-white/75">{v}</dd>
           </div>
         ))}
       </dl>
+      {/* 2.6.2 草稿全文預覽：送出前看完整內容（捲動框、不截斷），確認要送的是什麼再按同意 */}
+      {req.summary["草稿全文"] && (
+        <div className="mb-3">
+          <div className="text-[11px] font-semibold text-black/50 dark:text-white/50 mb-1">📝 送出前預覽（完整內容）</div>
+          <div className="max-h-56 overflow-auto rounded-lg border border-black/10 dark:border-white/15 bg-black/[0.02] dark:bg-white/[0.03] p-2.5">
+            <p className="text-xs leading-relaxed whitespace-pre-wrap break-words text-black/80 dark:text-white/80">{req.summary["草稿全文"]}</p>
+          </div>
+        </div>
+      )}
       <div className="flex gap-2">
         <button onClick={() => onDecide("approved")} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 text-sm font-medium">
           <ShieldCheck className="w-4 h-4" /> 同意執行

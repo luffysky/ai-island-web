@@ -529,11 +529,20 @@ export function needsApproval(risk: RiskLevel): boolean {
 }
 
 /** 產生確認摘要（動作/影響/可復原）給前端彈窗。 */
+// 常見「內容欄位」：發文/寄信/留言等 outbound 工具，真正要人看的是這份草稿全文（2.6.2）
+const CONTENT_ARG_KEYS = ["text", "content", "body", "message", "caption", "html", "draft", "post", "comment", "reply"];
+
 export function approvalSummary(tool: AgentTool, args: any): Record<string, string> {
-  return {
+  const base: Record<string, string> = {
     動作: `${tool.name} ${JSON.stringify(args ?? {}).slice(0, 200)}`,
     位置: String(args?.path ?? args?.url ?? args?.command ?? "—"),
     影響: tool.risk === "dangerous" ? "高風險：可能改變系統狀態" : "會寫入/送出資料",
     可復原: tool.risk === "dangerous" ? "不一定" : "視情況",
   };
+  // 2.6.2 草稿全文預覽：若參數帶「要送出的內容」，把完整草稿附上（給前端用捲動框完整預覽、不截斷成 200 字）
+  for (const k of CONTENT_ARG_KEYS) {
+    const v = args?.[k];
+    if (typeof v === "string" && v.trim().length > 0) { base["草稿全文"] = v.slice(0, 4000); break; }
+  }
+  return base;
 }
