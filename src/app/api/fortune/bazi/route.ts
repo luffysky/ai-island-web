@@ -90,12 +90,13 @@ export async function POST(req: NextRequest) {
   if (!chart) return NextResponse.json({ error: "invalid_birth_date" }, { status: 400 });
 
   const admin = createSupabaseAdmin();
-  // 快取鍵：把輸入內容編進 date（同人同輸入 → 命中、不重燒 AI；與 profile 的 kind='bazi' 分開）
-  const cacheKey = `${birthDate}|${birthTime ?? "x"}|${calendarType}|${gender ?? "x"}`.slice(0, 60);
+  // 快取：date 欄是 DATE 型別 → 用合法日期(birthDate)；把時辰/曆別/性別編進 kind(TEXT)以區分不同輸入。
+  // 與 profile 的 kind='bazi' 分開；history 只認 kind==='bazi'、不會被 custom 汙染。
+  const cacheKind = `bazi_custom:${birthTime ?? "x"}:${calendarType}:${gender ?? "x"}`.slice(0, 60);
   const { data: cached } = await admin
     .from("fortune_daily")
     .select("payload")
-    .eq("user_id", user.id).eq("date", cacheKey).eq("kind", "bazi_custom")
+    .eq("user_id", user.id).eq("date", birthDate).eq("kind", cacheKind)
     .maybeSingle();
   if (cached?.payload?.reading) {
     return NextResponse.json({ chart, reading: (cached.payload as Stored).reading, cached: true });
@@ -123,7 +124,7 @@ export async function POST(req: NextRequest) {
   }
 
   await admin.from("fortune_daily")
-    .upsert({ user_id: user.id, date: cacheKey, kind: "bazi_custom", payload: { chart, reading } satisfies Stored }, { onConflict: "user_id,date,kind" })
+    .upsert({ user_id: user.id, date: birthDate, kind: cacheKind, payload: { chart, reading } satisfies Stored }, { onConflict: "user_id,date,kind" })
     .then(() => {}, () => {});
 
   return NextResponse.json({ chart, reading, cached: false });
