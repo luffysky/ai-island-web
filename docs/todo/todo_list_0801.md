@@ -134,7 +134,7 @@
 - [ ] 2.1.2 L2 互動式伺服器瀏覽器（`browser.render` code done、仍 stub、需 🔴 env 驗活）
 - [x] ~~2.1.3 L4 執行中自動建 skill~~ ✅ 0801——任務成功且夠有重複價值(非技能發起/≥2步)時，orchestrator 收尾自動蒸餾一份技能建議存 `agent_tasks.suggested_skill`(自我把關、fire-and-forget、用快 Haiku)；前端讀到就把「存成技能」升級成高亮「💡 存成技能「name」」、一鍵開預填視窗(不用等 AI)。synthesize 邏輯抽 `lib/agent/skill-synth.ts` 兩處共用、route 優先回已算好的建議省一次 AI。migration agent_tasks.suggested_skill 已跑 prod。
 - [x] ~~2.1.4 L5 經理–專才階層調度~~ ✅ 0801——平行 fan-out 之上加「經理→專才」層：`assignSpecialists()` 由經理依總目標替每個子任務指派專才角色(資料研究員/在地情報員/數據查證員…)，`runSubAgent` 帶 role → 專才用聚焦系統提示做事(比通用子代理精準)；步驟顯示「專才「角色」：子任務」、思考列「派 N 位專才(…)」。隔離實作、失敗退回通用行為、零風險序列路徑。
-- [ ] 2.1.5 真串流部分成果（partial results streaming）
+- [x] ~~2.1.5 真串流部分成果~~ ✅ 0801——序列路徑本就逐步寫 DB 串流；補齊平行路徑：專才改成「一做完就立刻寫步驟+串流(Promise.race 邊完成邊出)」而非 Promise.all 等全部→前端輪詢progressively看到各專才發現、不再一次冒出。（最終答案 token 級串流需 AI-router 全面支援串流、屬另案、暫緩）
 - [ ] 2.1.6 工具自動發現（OpenAPI → tools）
 - [x] ~~2.1.7 預算感知硬上限（free-first + 每日上限 + 省錢三檔 ✅；per-task 步數硬上限 STEP_CAP saver12/balanced40/quality80 ✅ 0722）~~
 - [~] 2.1.8 主動代理（daily-brief ✅；opt-in 主動 push 待補）

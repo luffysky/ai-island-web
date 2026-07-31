@@ -535,9 +535,18 @@ export async function* runAgentTask(taskId: string, userId: string, goal: string
       const roles = await assignSpecialists(goal, plan, freeModel);
       const named = roles.filter(Boolean);
       yield { type: "thought", idx: 0, thought: named.length ? `這任務較大，我當經理派 ${plan.length} 位專才同時處理（${named.join("、")}），再幫你彙整。` : `這任務較大，派 ${plan.length} 個子代理同時去查，再幫你彙整。` };
-      const results = await Promise.all(plan.map((sub, i) => runSubAgent(sub, userId, freeModel, taskId, 5, strongModel, roles[i]).catch(() => ({ goal: sub, summary: "", role: roles[i] || "" }))));
+      // 2.1.5 真串流部分成果：每位專才「一做完就立刻寫步驟＋串流出去」——不等最慢的那個，成果邊完成邊出現
+      // （前端輪詢/SSE 就會progressively看到各專才的發現，而非全部一起冒出來）。順序＝完成順序。
+      const pending = new Map(plan.map((sub, i) => [i,
+        runSubAgent(sub, userId, freeModel, taskId, 5, strongModel, roles[i])
+          .then((r) => ({ i, r })).catch(() => ({ i, r: { goal: sub, summary: "", role: roles[i] || "" } })),
+      ]));
+      const results: { goal: string; summary: string; role: string }[] = new Array(plan.length);
       let pIdx = 0;
-      for (const r of results) {
+      while (pending.size) {
+        const { i, r } = await Promise.race(pending.values());
+        pending.delete(i);
+        results[i] = r;
         const label = r.role ? `專才「${r.role}」：${r.goal}` : `子代理：${r.goal}`;
         const row: StepRow = { idx: pIdx, thought: label, toolName: "subagent", ok: !!r.summary, result: { goal: r.goal, role: r.role, summary: r.summary.slice(0, 600) } };
         history.push(row);
