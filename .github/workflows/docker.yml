@@ -75,6 +75,10 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          # 關掉 build-push-action 預設的 provenance / SBOM attestation：
+          # 少推幾個 artifact（image 更單純）、也少一個 GHCR push 的 403 觸發點。runtime 不受影響。
+          provenance: false
+          sbom: false
           cache-from: type=gha
           cache-to: type=gha,mode=max
           # NEXT_PUBLIC_* 在 build 階段被 inline 進前端 bundle，
@@ -132,3 +136,20 @@ jobs:
           else
             echo "✅ restartService 觸發成功"
           fi
+
+      # 根治儲存膨脹：image 裝了 Chromium(~1GB)、每個 commit 又推一個 sha-xxxx tag，
+      # 版本會越積越多、吃爆 GHCR 儲存配額（就會出現推 blob 403）。
+      # → 只保留最近 15 個版本（含 :latest 與最近幾個 sha- 可回滾），其餘自動刪。
+      # continue-on-error：清理失敗絕不能讓部署變紅（image 早已推成功）。
+      # ⚠️ user-owned package 刪版本可能需要 packages: delete 權限；GITHUB_TOKEN 不夠時
+      #    這步會 fail（已 continue-on-error 吞掉），可改放一顆有 delete:packages 的 PAT 到
+      #    secrets.GHCR_CLEANUP_PAT（沒有就沿用 GITHUB_TOKEN）。
+      - name: Prune old GHCR versions (keep latest 15)
+        continue-on-error: true
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: ai-island-web
+          package-type: container
+          min-versions-to-keep: 15
+          delete-only-untagged-versions: false
+          token: ${{ secrets.GHCR_CLEANUP_PAT || secrets.GITHUB_TOKEN }}
