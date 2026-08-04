@@ -10,10 +10,12 @@ export function useVoices(): VoiceOption[] {
   useEffect(() => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
     const load = () => {
-      const all = window.speechSynthesis.getVoices();
-      // 中文語音優先（zh-TW / zh-CN / zh-HK…）；沒有中文才退回全部
-      const zh = all.filter((v) => /^zh/i.test(v.lang));
-      const list = (zh.length ? zh : all).map((v) => ({ name: v.name, lang: v.lang }));
+      // 列出「全部」可用語音（讓使用者一個語言/國家可試多個音色）；中文排前面（中文文字用中文語音最準）。
+      const list = window.speechSynthesis.getVoices().map((v) => ({ name: v.name, lang: v.lang }));
+      list.sort((a, b) => {
+        const az = /^zh/i.test(a.lang) ? 0 : 1, bz = /^zh/i.test(b.lang) ? 0 : 1;
+        return az - bz || a.lang.localeCompare(b.lang) || a.name.localeCompare(b.name);
+      });
       setVoices(list);
     };
     load();

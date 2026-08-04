@@ -76,7 +76,7 @@ export function VoiceControls({ disabled, onTranscript, onSubmit, speaking, onSt
     <div className="relative flex items-center gap-1.5">
       {/* 即時辨識預覽 / 倒數 / 錯誤：浮在按鈕上方 */}
       {(listening || countdown || rec.error) && (
-        <div className="fixed sm:absolute left-3 right-3 bottom-3 sm:left-auto sm:right-0 sm:bottom-full sm:mb-2 sm:w-64 rounded-xl border border-black/10 dark:border-white/15 bg-white dark:bg-neutral-900 shadow-lg p-2.5 text-xs z-20">
+        <div className="fixed sm:absolute left-3 right-3 bottom-20 sm:left-auto sm:right-0 sm:bottom-full sm:mb-2 sm:w-64 rounded-xl border border-black/10 dark:border-white/15 bg-white dark:bg-neutral-900 shadow-lg p-2.5 text-xs z-20">
           {rec.error ? (
             <p className="text-rose-600 dark:text-rose-400">{speechErrorMessage(rec.error)}</p>
           ) : countdown ? (
@@ -112,7 +112,7 @@ export function VoiceControls({ disabled, onTranscript, onSubmit, speaking, onSt
           <Settings2 className="w-4 h-4" />
         </button>
         {settingsOpen && (
-          <div className="fixed sm:absolute left-3 right-3 bottom-3 sm:left-auto sm:right-0 sm:bottom-full sm:mb-2 sm:w-60 max-h-[75vh] overflow-y-auto rounded-xl border border-black/10 dark:border-white/15 bg-white dark:bg-neutral-900 shadow-lg p-3 text-xs z-30 space-y-2.5">
+          <div className="fixed sm:absolute left-3 right-3 bottom-20 sm:left-auto sm:right-0 sm:bottom-full sm:mb-2 sm:w-60 max-h-[75vh] overflow-y-auto rounded-xl border border-black/10 dark:border-white/15 bg-white dark:bg-neutral-900 shadow-lg p-3 text-xs z-30 space-y-2.5">
             <div className="flex items-center justify-between">
               <span className="font-medium">語音設定</span>
               <button onClick={() => setSettingsOpen(false)}><X className="w-3.5 h-3.5 text-black/40 dark:text-white/40" /></button>
@@ -137,7 +137,12 @@ export function VoiceControls({ disabled, onTranscript, onSubmit, speaking, onSt
                   <select value={prefs.preferredVoice ?? ""} onChange={(e) => update({ preferredVoice: e.target.value || undefined })}
                     className="flex-1 min-w-0 rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2 py-1 text-xs">
                     <option value="">預設</option>
-                    {voices.map((v) => <option key={v.name} value={v.name}>{v.name}（{v.lang}）</option>)}
+                    {Object.entries(voices.reduce((acc, v) => { (acc[v.lang] ||= []).push(v); return acc; }, {} as Record<string, typeof voices>))
+                      .map(([lang, vs]) => (
+                        <optgroup key={lang} label={lang}>
+                          {vs.map((v) => <option key={v.name} value={v.name}>{v.name}</option>)}
+                        </optgroup>
+                      ))}
                   </select>
                   <button type="button"
                     onClick={() => testTts.speak("嗨，我是你的分身，這是我現在的聲音，聽起來還可以嗎？", { rate: prefs.speechRate, pitch: prefs.speechPitch, voiceName: prefs.preferredVoice })}

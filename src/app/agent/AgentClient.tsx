@@ -83,6 +83,7 @@ export function AgentClient() {
   const [toolsOpen, setToolsOpen] = useState(false);        // 工具箱（辦公室/員工/技能）收合
   const [thinkingOpen, setThinkingOpen] = useState(true);   // 思考過程（計畫+步驟）收合；跑完自動收起
   const [actionsOpen, setActionsOpen] = useState(false);    // 結果的操作鈕（匯出/存技能）收合
+  const [sentGoal, setSentGoal] = useState("");             // 本輪送出的目標（渲染成使用者氣泡）
   const [threadId, setThreadId] = useState<string>("");    // Phase A：目前對話串（延續脈絡）
   const [threadTurns, setThreadTurns] = useState<{ id: string; goal: string; summary: string }[]>([]); // 本串先前回合
   const [threads, setThreads] = useState<{ id: string; title: string; created_at: string; last_message_at: string }[]>([]); // 歷史對話串
@@ -378,6 +379,7 @@ export function AgentClient() {
   const run = useCallback(async (g: string) => {
     const text = g.trim();
     if (!text || busy) return;
+    setSentGoal(text.replace(/^（[^）]*）：/, ""));   // 本輪目標（去掉模式前綴）→ 使用者氣泡
     setStarting(true); setSteps([]); setSummary(""); setApproval(null); setStatus("planning"); setTaskId(""); setWatching(""); setPlan([]); setSuggestedSkill(null);
     setClientActions([]); processedRef.current = new Set(); finalizedRef.current = "";   // 2.8.3 新任務 → 清 client-action 狀態
     setThinkingOpen(true); setActionsOpen(false);   // 新任務：展開思考過程、收起操作鈕
@@ -712,19 +714,33 @@ export function AgentClient() {
                 <button onClick={newConversation} disabled={busy} className="text-xs text-black/50 dark:text-white/50 hover:text-violet-600 dark:hover:text-violet-400 disabled:opacity-40">＋ 新對話</button>
               </div>
               {threadTurns.length > 0 && (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {threadTurns.map((t) => (
-                    <div key={t.id} className="rounded-xl border border-black/5 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.03] p-3">
-                      <div className="text-xs font-medium text-violet-600/80 dark:text-violet-400/80 mb-1.5">你：{t.goal}</div>
+                    <div key={t.id} className="space-y-2">
+                      {/* 使用者氣泡（靠右） */}
+                      <div className="flex justify-end">
+                        <div className="max-w-[85%] rounded-2xl rounded-tr-sm bg-violet-600 text-white px-3.5 py-2 text-sm whitespace-pre-wrap break-words">{t.goal}</div>
+                      </div>
+                      {/* 分身氣泡（靠左） */}
                       {t.summary && (
-                        <div className="prose-custom prose-sm max-w-none text-sm leading-relaxed text-black/75 dark:text-white/75">
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>{t.summary}</ReactMarkdown>
+                        <div className="flex justify-start gap-2">
+                          <div className="shrink-0 grid place-items-center w-7 h-7 rounded-full bg-violet-500/15 text-violet-600 dark:text-violet-300"><Bot className="w-4 h-4" /></div>
+                          <div className="max-w-[85%] rounded-2xl rounded-tl-sm bg-black/[0.03] dark:bg-white/[0.06] px-3.5 py-2.5 prose-custom prose-sm max-w-none text-sm leading-relaxed text-black/80 dark:text-white/80">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{t.summary}</ReactMarkdown>
+                          </div>
                         </div>
                       )}
                     </div>
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* 本輪使用者氣泡（靠右） */}
+          {sentGoal && (busy || status) && (
+            <div className="flex justify-end mt-3">
+              <div className="max-w-[85%] rounded-2xl rounded-tr-sm bg-violet-600 text-white px-3.5 py-2 text-sm whitespace-pre-wrap break-words">{sentGoal}</div>
             </div>
           )}
 
@@ -780,7 +796,9 @@ export function AgentClient() {
             {taskId && <ClientActionBar actions={clientActions} onExecute={(a) => executeClientAction(taskId, a)} />}
 
             {summary && !approval && (
-              <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-3.5 sm:p-4">
+              <div className="flex justify-start gap-2">
+                <div className="shrink-0 grid place-items-center w-7 h-7 rounded-full bg-violet-500/15 text-violet-600 dark:text-violet-300"><Bot className="w-4 h-4" /></div>
+                <div className="min-w-0 flex-1 rounded-2xl rounded-tl-sm border border-emerald-500/25 bg-emerald-500/5 p-3.5 sm:p-4">
                 <div className="flex items-center justify-between gap-2 flex-wrap mb-1.5">
                   <div className="flex items-center gap-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400"><CheckCircle2 className="w-4 h-4" /> 結果</div>
                   <button onClick={() => setActionsOpen((o) => !o)} className="inline-flex items-center gap-1 text-xs rounded-full px-2.5 py-1 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10">
@@ -811,6 +829,7 @@ export function AgentClient() {
                 )}
                 <div className="prose-custom prose-sm max-w-none text-sm leading-relaxed">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
+                </div>
                 </div>
               </div>
             )}

@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 // 資料來源見頁尾（已用 WebFetch/WebSearch 查證）。canonical 文件：docs/competitive/openclaw-nemoclaw-swot.md
 export default function StrategyPage() {
   return (
-    <div className="space-y-5 pb-16">
+    <div className="space-y-5 pb-16 break-words [overflow-wrap:anywhere]">
       <PageHero
         icon={Swords}
         title="競品技術戰略分析"
