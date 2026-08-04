@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Bot, Send, Loader2, CheckCircle2, XCircle, Wrench, Eye, ShieldAlert, ShieldCheck, History, Cpu, Square, Laptop, Plug, Copy, Trash2, X, Pencil, FileText, FileSpreadsheet, Presentation } from "lucide-react";
+import { Bot, Send, Loader2, CheckCircle2, XCircle, Wrench, Eye, ShieldAlert, ShieldCheck, History, Cpu, Square, Laptop, Plug, Copy, Trash2, X, Pencil, FileText, FileSpreadsheet, Presentation, ChevronDown } from "lucide-react";
 import { FeatureGuide } from "@/components/FeatureGuide";
 import { VoiceControls } from "@/features/voice/components/VoiceControls";
 import { useVoiceReply } from "@/features/voice/hooks/use-voice-agent";
@@ -79,6 +79,10 @@ export function AgentClient() {
   const [watching, setWatching] = useState<string>("");   // 目前輪詢觀看的 taskId（背景任務進行中就刷新）
   const [mode, setMode] = useState<string>("agent");        // 分身島模式（agent/ask/code/doc/slides/sheet/design）
   const [costMode, setCostMode] = useState<"saver" | "balanced" | "quality">("balanced");  // 省錢模式三檔
+  const [modesOpen, setModesOpen] = useState(false);        // 模式列收合（預設收起、減少畫面雜訊）
+  const [toolsOpen, setToolsOpen] = useState(false);        // 工具箱（辦公室/員工/技能）收合
+  const [thinkingOpen, setThinkingOpen] = useState(true);   // 思考過程（計畫+步驟）收合；跑完自動收起
+  const [actionsOpen, setActionsOpen] = useState(false);    // 結果的操作鈕（匯出/存技能）收合
   const [threadId, setThreadId] = useState<string>("");    // Phase A：目前對話串（延續脈絡）
   const [threadTurns, setThreadTurns] = useState<{ id: string; goal: string; summary: string }[]>([]); // 本串先前回合
   const [threads, setThreads] = useState<{ id: string; title: string; created_at: string; last_message_at: string }[]>([]); // 歷史對話串
@@ -376,6 +380,7 @@ export function AgentClient() {
     if (!text || busy) return;
     setStarting(true); setSteps([]); setSummary(""); setApproval(null); setStatus("planning"); setTaskId(""); setWatching(""); setPlan([]); setSuggestedSkill(null);
     setClientActions([]); processedRef.current = new Set(); finalizedRef.current = "";   // 2.8.3 新任務 → 清 client-action 狀態
+    setThinkingOpen(true); setActionsOpen(false);   // 新任務：展開思考過程、收起操作鈕
     try {
       const res = await fetch("/api/agent/tasks", {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ goal: text, skillId: skillId || undefined, threadId: threadId || undefined, costMode }),
@@ -451,6 +456,7 @@ export function AgentClient() {
         // 推理完成的收尾只跑一次（就算為了 client-action 還在輪詢）
         if (reasoningDone && finalizedRef.current !== watching) {
           finalizedRef.current = watching;
+          setThinkingOpen(false);   // 跑完 → 自動收起思考過程（可再展開看）
           loadHistory();
           maybeSpeakRef.current(watching, task.result?.summary ?? task.error ?? "");  // 語音回覆（開了才唸、同任務只一次）
           if (task.thread_id) loadThreadTurns(task.thread_id, watching);  // 完成 → 刷新本串前文
@@ -568,13 +574,23 @@ export function AgentClient() {
           {/* 輸入 */}
           <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 p-3 sm:p-4">
             {/* 模式切換：問問 / 寫程式 / 文件 / 簡報 / 表格 / 設計… */}
-            <div className="flex flex-wrap gap-1.5 mb-2">
-              {AGENT_MODES.map((m) => (
-                <button key={m.key} onClick={() => setMode(m.key)} disabled={busy}
-                  className={`text-xs rounded-full px-2.5 py-1 border transition disabled:opacity-50 ${mode === m.key ? "bg-violet-600 border-violet-600 text-white" : "border-black/10 dark:border-white/15 text-black/60 dark:text-white/60 hover:bg-black/5 dark:hover:bg-white/10"}`}>
-                  {m.emoji} {m.label}
-                </button>
-              ))}
+            <div className="mb-2">
+              <button onClick={() => setModesOpen((o) => !o)} disabled={busy}
+                className="inline-flex items-center gap-1.5 text-xs rounded-full px-2.5 py-1 border border-violet-500/40 bg-violet-500/10 text-violet-600 dark:text-violet-300 hover:bg-violet-500/15 disabled:opacity-50">
+                {(AGENT_MODES.find((m) => m.key === mode)?.emoji) ?? "🤖"} {(AGENT_MODES.find((m) => m.key === mode)?.label) ?? "分身任務"}
+                <span className="text-black/40 dark:text-white/40">· 切換</span>
+                <ChevronDown className={`w-3 h-3 transition-transform ${modesOpen ? "rotate-180" : ""}`} />
+              </button>
+              {modesOpen && (
+                <div className="flex flex-wrap gap-1.5 mt-1.5">
+                  {AGENT_MODES.map((m) => (
+                    <button key={m.key} onClick={() => { setMode(m.key); setModesOpen(false); }} disabled={busy}
+                      className={`text-xs rounded-full px-2.5 py-1 border transition disabled:opacity-50 ${mode === m.key ? "bg-violet-600 border-violet-600 text-white" : "border-black/10 dark:border-white/15 text-black/60 dark:text-white/60 hover:bg-black/5 dark:hover:bg-white/10"}`}>
+                      {m.emoji} {m.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             {/* 輸入框整整一欄；語音＋執行放下面 */}
             <div className="flex flex-col gap-2">
@@ -631,8 +647,17 @@ export function AgentClient() {
             )}
           </div>
 
-          {/* 辦公室 / 員工 —— 拉出來放顯眼、別埋在技能列裡（不然找不到）*/}
+          {/* 工具箱收合切換：辦公室/員工/技能，預設收起（減少畫面雜訊，237.jpg）*/}
           {!busy && (
+            <button onClick={() => setToolsOpen((o) => !o)}
+              className="mt-3 inline-flex items-center gap-1.5 text-xs rounded-full px-3 py-1.5 border border-black/10 dark:border-white/15 text-black/55 dark:text-white/55 hover:bg-black/5 dark:hover:bg-white/10">
+              🧰 辦公室 · 員工 · 技能
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${toolsOpen ? "rotate-180" : ""}`} />
+            </button>
+          )}
+
+          {/* 辦公室 / 員工 */}
+          {!busy && toolsOpen && (
             <div className="flex flex-wrap items-center gap-2 mt-3">
               <a href="/agent/office" className="inline-flex items-center gap-1.5 text-xs font-semibold rounded-full px-3.5 py-1.5 bg-violet-600 text-white hover:bg-violet-700 transition">
                 🏢 我的辦公室
@@ -657,7 +682,7 @@ export function AgentClient() {
           )}
 
           {/* 技能（已安裝）—— 選一個會限制工具集並套用它的任務框架 */}
-          {!busy && (
+          {!busy && toolsOpen && (
             <div className="flex flex-wrap items-center gap-1.5 mt-2">
               <span className="text-xs text-black/40 dark:text-white/40 mr-0.5">技能</span>
               {skills.filter((s) => s.installed).map((s) => {
@@ -716,8 +741,17 @@ export function AgentClient() {
             </div>
           )}
 
+          {/* 思考過程收合切換：計畫 + 步驟；跑完自動收起、可展開回看（238.jpg）*/}
+          {(steps.length > 0 || plan.length > 1) && (
+            <button onClick={() => setThinkingOpen((o) => !o)}
+              className="mt-3 inline-flex items-center gap-1.5 text-xs rounded-full px-3 py-1.5 border border-violet-500/25 bg-violet-500/[0.06] text-violet-600 dark:text-violet-300 hover:bg-violet-500/10">
+              💭 思考過程{steps.some((s) => s.kind === "step") ? `（${steps.filter((s) => s.kind === "step").length} 步）` : ""}
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${thinkingOpen ? "rotate-180" : ""}`} />
+            </button>
+          )}
+
           {/* L1 計畫（子任務 checklist） */}
-          {plan.length > 1 && (
+          {thinkingOpen && plan.length > 1 && (
             <div className="mt-3 rounded-2xl border border-violet-500/20 bg-violet-500/[0.04] p-3">
               <div className="text-xs font-semibold text-violet-600 dark:text-violet-400 mb-1.5">📋 分身的計畫（{plan.length} 步）</div>
               <ol className="space-y-1">
@@ -732,7 +766,7 @@ export function AgentClient() {
 
           {/* 步驟流 */}
           <div ref={scrollRef} className="mt-3 space-y-2 max-h-[52vh] overflow-y-auto pr-1">
-            {steps.map((s, i) => s.kind === "thought" ? (
+            {thinkingOpen && steps.map((s, i) => s.kind === "thought" ? (
               <div key={i} className="flex gap-2 text-sm text-black/55 dark:text-white/55 px-1 italic">
                 <span className="shrink-0">💭</span><span className="min-w-0">{s.thought}</span>
               </div>
@@ -749,7 +783,12 @@ export function AgentClient() {
               <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-3.5 sm:p-4">
                 <div className="flex items-center justify-between gap-2 flex-wrap mb-1.5">
                   <div className="flex items-center gap-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400"><CheckCircle2 className="w-4 h-4" /> 結果</div>
-                  <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                  <button onClick={() => setActionsOpen((o) => !o)} className="inline-flex items-center gap-1 text-xs rounded-full px-2.5 py-1 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10">
+                    複製 · 匯出 · 存技能 <ChevronDown className={`w-3 h-3 transition-transform ${actionsOpen ? "rotate-180" : ""}`} />
+                  </button>
+                </div>
+                {actionsOpen && (
+                  <div className="flex items-center gap-1.5 flex-wrap justify-end mb-2 pb-2 border-b border-emerald-500/15">
                     {taskId && status === "succeeded" && (
                       suggestedSkill ? (
                         // 2.1.3：已自動蒸餾好建議 → 一鍵採用、直接開預填視窗（不用等 AI），並高亮提示
@@ -769,7 +808,7 @@ export function AgentClient() {
                     </div>
                     <button onClick={() => { navigator.clipboard?.writeText(summary).catch(() => {}); }} title="複製" className="text-black/30 dark:text-white/30 hover:text-black/60 dark:hover:text-white/60"><Copy className="w-3.5 h-3.5" /></button>
                   </div>
-                </div>
+                )}
                 <div className="prose-custom prose-sm max-w-none text-sm leading-relaxed">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
                 </div>
