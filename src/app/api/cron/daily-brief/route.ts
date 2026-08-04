@@ -3,8 +3,8 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { verifyCronAuth } from "@/lib/cron-auth";
 import { buildDailyBrief } from "@/lib/daily-brief";
 import { notifyUserLine } from "@/lib/notify-user-line";
-import { buildListCard } from "@/lib/line-flex";
-import { getCityWeather, deterministicAdvice, type DailyWeather } from "@/lib/weather";
+import { buildMorningBriefCard } from "@/lib/line-flex";
+import { getCityWeather, deterministicAdvice, weatherEmoji, type DailyWeather } from "@/lib/weather";
 import { generateFreeFortune } from "@/lib/fortune-free";
 import type { Zodiac } from "@/lib/fortune";
 
@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
 
   // 同城市天氣一天只抓一次（零成本；本次 cron run 內快取）
   const cityCache = new Map<string, DailyWeather | null>();
-  async function weatherLineFor(u: any): Promise<string | null> {
+  async function weatherFor(u: any): Promise<{ place?: string; emoji: string; desc: string; tempMin: number; tempMax: number; tips: string[] } | null> {
     const consented = u.geo_consent_at && !u.geo_revoked_at;
     const city = String(u.geo_city ?? "").trim();
     if (!consented || !city) return null;
@@ -65,8 +65,7 @@ export async function GET(req: NextRequest) {
     if (!cityCache.has(key)) cityCache.set(key, await getCityWeather(city, u.geo_country || undefined));
     const w = cityCache.get(key);
     if (!w) return null;
-    const tip = deterministicAdvice(w)[0];
-    return `☀️ ${w.place ?? city} ${w.desc} ${w.tempMin}–${w.tempMax}°C · ${tip}`;
+    return { place: w.place ?? city, emoji: weatherEmoji(w.code), desc: w.desc, tempMin: w.tempMin, tempMax: w.tempMax, tips: deterministicAdvice(w) };
   }
 
   let sent = 0, skipped = 0, failed = 0;
@@ -74,20 +73,16 @@ export async function GET(req: NextRequest) {
     try {
       const items = await buildDailyBrief(u.id);
       if (!items.length) { skipped++; continue; }
-      const weather = await weatherLineFor(u).catch(() => null);  // 天氣失敗絕不擋晨報
-      const fortune = fortuneLineFor(u);                          // 運勢一句（零 AI、有星座才有）
-      const head = [weather, fortune].filter(Boolean) as string[];
-      const listItems = [...head.map((s) => ({ primary: s })), ...items.map((s) => ({ primary: s }))];
-      const textLines = [...head, ...items.map((s, i) => `${i + 1}. ${s}`)].filter(Boolean);
+      const weather = await weatherFor(u).catch(() => null);       // 天氣失敗絕不擋晨報
+      const fortune = fortuneLineFor(u) ?? undefined;              // 運勢一句（零 AI、有星座才有）
+      // 專屬晨報卡：☀️天氣區 + 🔮運勢一句 + ✅今天 3 件事
+      const flex = buildMorningBriefCard({ weather: weather ?? undefined, fortune, items, footerUri: SITE_URL });
+      const textLines = [
+        weather ? `${weather.emoji} ${weather.place} ${weather.desc} ${weather.tempMax}°/${weather.tempMin}°${weather.tips[0] ? " · " + weather.tips[0] : ""}` : null,
+        fortune,
+        ...items.map((s, i) => `${i + 1}. ${s}`),
+      ].filter(Boolean);
       const text = `🌅 今日晨報\n\n${textLines.join("\n")}\n\n（不想收：設定 → 通知偏好可關）`;
-      // 美化：改推 Flex 列表卡（天氣 + 今天值得做的 3 件事 + 打開 AI 島按鈕）
-      const flex = buildListCard({
-        title: "今日晨報",
-        emoji: "🌅",
-        items: listItems,
-        footerButton: { label: "☀️ 打開 AI 島", uri: SITE_URL },
-        accentColor: "#f59e0b",
-      });
       const r = await notifyUserLine({ userId: u.id, text, flex, category: "agent" });
       if (r.ok) sent++;
       else if (r.reason === "category_disabled" || r.reason === "user_disabled" || r.reason === "not_bound") skipped++;

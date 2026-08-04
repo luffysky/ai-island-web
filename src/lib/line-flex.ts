@@ -434,6 +434,82 @@ export function buildListCard(opts: {
   };
 }
 
+/** 每日晨報專屬卡：☀️天氣區（大字溫度+建議）→ 🔮運勢一句 → ✅今天 3 件事（才編號）。 */
+export function buildMorningBriefCard(opts: {
+  weather?: { place?: string; emoji: string; desc: string; tempMin: number; tempMax: number; tips: string[] };
+  fortune?: string;
+  items: string[];
+  footerUri: string;
+}): FlexMessage {
+  const color = "#f59e0b"; // amber
+  const body: any[] = [];
+
+  if (opts.weather) {
+    const w = opts.weather;
+    body.push({
+      type: "box", layout: "horizontal", alignItems: "center", spacing: "md",
+      contents: [
+        { type: "text", text: w.emoji, size: "xxl", flex: 0, gravity: "center" },
+        {
+          type: "box", layout: "vertical", flex: 1,
+          contents: [
+            { type: "text", text: `${w.place ? w.place + " · " : ""}${w.desc}`, size: "sm", weight: "bold", color: "#1a1d24", wrap: true },
+            { type: "text", text: `${w.tempMax}° / ${w.tempMin}°`, size: "xl", weight: "bold", color },
+          ],
+        },
+      ],
+    });
+    if (w.tips.length) {
+      body.push({
+        type: "box", layout: "vertical", margin: "sm", spacing: "xs",
+        contents: w.tips.slice(0, 3).map((t) => ({ type: "text", text: `· ${t}`, size: "xs", color: "#6a6f7a", wrap: true })),
+      });
+    }
+  }
+
+  if (opts.fortune) {
+    if (body.length) body.push({ type: "separator", margin: "lg", color: GLASS_SEPARATOR });
+    body.push({ type: "text", text: opts.fortune, size: "sm", color: "#7a5599", weight: "bold", wrap: true, margin: "md" });
+  }
+
+  if (opts.items.length) {
+    if (body.length) body.push({ type: "separator", margin: "lg", color: GLASS_SEPARATOR });
+    body.push({ type: "text", text: "✅ 今天值得做的 3 件事", size: "xs", weight: "bold", color: "#8a8f99", margin: "md" });
+    opts.items.slice(0, 5).forEach((it, i) => {
+      body.push({
+        type: "box", layout: "horizontal", spacing: "sm", margin: i === 0 ? "sm" : "md",
+        contents: [
+          { type: "text", text: `${i + 1}`, size: "sm", color, weight: "bold", flex: 0 },
+          { type: "text", text: it, size: "sm", color: "#1a1d24", wrap: true, flex: 1 },
+        ],
+      });
+    });
+  }
+
+  body.push({ type: "text", text: `🕐 ${nowTW()}`, size: "xxs", color: "#a8aab2", align: "end", margin: "lg" });
+
+  return {
+    type: "flex",
+    altText: "🌅 今日晨報",
+    contents: {
+      type: "bubble", size: "kilo",
+      styles: { header: { backgroundColor: lighten(color, 0.35) }, body: { backgroundColor: lighten(color, 0.92) }, footer: { backgroundColor: lighten(color, 0.86) } },
+      header: {
+        type: "box", layout: "horizontal", paddingAll: "lg", background: glassHeader(color), borderWidth: "1px", borderColor: lighten(color, 0.65), cornerRadius: "12px",
+        contents: [
+          { type: "text", text: "🌅", size: "xxl", color: "#ffffff", flex: 0, align: "center" },
+          { type: "text", text: "今日晨報", weight: "bold", size: "lg", color: "#ffffff", flex: 1, gravity: "center", margin: "md" },
+        ],
+      },
+      body: { type: "box", layout: "vertical", paddingAll: "lg", spacing: "sm", background: glassBody(color), borderWidth: "1px", borderColor: GLASS_BORDER, cornerRadius: "12px", contents: body },
+      footer: {
+        type: "box", layout: "horizontal", paddingAll: "md", background: glassFooter(color), borderWidth: "1px", borderColor: GLASS_BORDER, cornerRadius: "12px",
+        contents: [{ type: "button", action: { type: "uri", label: "☀️ 打開 AI 島", uri: opts.footerUri }, style: "primary", color: darken(color, 0.15), height: "sm" }],
+      },
+    },
+  };
+}
+
 /** AI 回覆卡：精緻版（更柔和、留白多）*/
 /**
  * AI 失敗 / 系統錯誤友善卡 — 紅色 accent + 提示 + 按鈕跳對應後台頁

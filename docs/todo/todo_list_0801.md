@@ -115,8 +115,9 @@
 > ＊戰略：早上一則 LINE 把「運勢＋天氣生活建議＋今日待辦＋提醒」整合成一張晨報卡＝最省力、最黏。純天氣別做（免費到處有），做成晨報的一塊才有價值。骨架大半已有（daily-brief cron + fortune + buildListCard Flex）。
 - [x] ~~5.1 天氣來源：`lib/weather.ts`（**Open-Meteo 免 key 免費**：geocode 城市→經緯度 + 當日天氣 code/溫度/降雨機率/紫外線；WMO→中文；防呆逾時）~~ ✅ 0804（6 測試；同城市 cron run 內快取零成本）
 - [~] 5.2 AI 天氣生活建議：`deterministicAdvice`（零 AI：帶傘/穿搭/防曬/溫差心血管/曬衣運動、含護欄）✅ 用於晨報；`buildWeatherAdvicePrompt`（LLM 版、醫療護欄）✅ 已備但 cron 先走零成本確定性版；⬜ LLM 版接線 + 節氣農民曆（複用 bazi.ts）待補
-- [~] 5.3 晨報整合卡：`/api/cron/daily-brief` 標題改「🌅 今日晨報」＝☀️天氣+生活建議（geo_consent 有效者）✅ + 🔮運勢一句（有星座者、`generateFreeFortune` 零 AI、批次撈避免 N+1）✅ + ✅今天值得做的 3 件事（既有 `buildDailyBrief`，含到期提醒邏輯）✅；⬜ 獨立 ⏰提醒塊（回診/自訂）之後可再擴
+- [x] ~~5.3 晨報整合卡：**專屬 `buildMorningBriefCard`**（玻璃風·☀️天氣區大字溫度+生活建議 → 🔮運勢一句 → ✅今天 3 件事才編號、`weatherEmoji`）取代原 buildListCard 編號混排~~ ✅ 0805。天氣 geo_consent 有效者、運勢有星座者(`generateFreeFortune` 零 AI 批次撈)、3 件事既有 `buildDailyBrief`（含到期提醒）；⬜ 獨立 ⏰提醒塊（回診/自訂）之後可再擴。＊仍僅 LINE 推播、無網頁；要網頁可見另做（見對話）。
 - [ ] 5.4 訂閱/偏好：`/settings` 加「每日晨報」開關（複用 line_pref_* 模式）；cron 08:30 推（複用現有 daily-brief job #10）。
+- [x] ~~5.6 天氣網頁可見 + 讀當下位置（0805）：`/api/weather?lat=&lng=`（即時查、不儲存 lat/lng＝隱私）+ `WeatherCard`（`navigator.geolocation` 讀當下位置→天氣+生活建議，拒絕/不支援有明確提示）放上 `/fortune` 頂部~~ ✅。＊隱私：web 即時用精準 lat/lng 但不存；LINE 晨報仍用 `geo_city`（只存縣市的承諾不變）。
 - [ ] 5.5 變現：晨報免費當黏著鉤子；進階（多地區天氣/更細健康建議/廣告置換）＝付費或 Z 幣。
 
 ### 6. 🆕 寵物系列（.pet 網域·對品牌·大眾變現漏斗）— 林董 0804 拍板：**做成「AI 島內新區」**

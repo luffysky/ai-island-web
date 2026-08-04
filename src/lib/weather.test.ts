@@ -1,5 +1,15 @@
 import { describe, it, expect } from "vitest";
-import { weatherCodeToText, parseForecast, deterministicAdvice, buildWeatherAdvicePrompt, type DailyWeather } from "./weather";
+import { weatherCodeToText, weatherEmoji, parseForecast, deterministicAdvice, buildWeatherAdvicePrompt, type DailyWeather } from "./weather";
+
+describe("weatherEmoji", () => {
+  it("代碼 → emoji", () => {
+    expect(weatherEmoji(0)).toBe("☀️");
+    expect(weatherEmoji(3)).toBe("☁️");
+    expect(weatherEmoji(65)).toBe("🌧️");
+    expect(weatherEmoji(95)).toBe("⛈️");
+    expect(weatherEmoji(999)).toBe("🌡️");
+  });
+});
 
 describe("weatherCodeToText", () => {
   it("WMO 代碼 → 中文，未知回多雲", () => {

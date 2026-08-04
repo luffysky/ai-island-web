@@ -8,6 +8,7 @@ import {
   Link2, Download, X,
 } from "lucide-react";
 import { FeatureGuide } from "@/components/FeatureGuide";
+import { WeatherCard } from "@/components/WeatherCard";
 import { ZODIAC_ZH, ZODIAC_EMOJI, type Zodiac } from "@/lib/fortune";
 import { TarotSection } from "./TarotSection";
 import { BaziSection } from "./BaziSection";
@@ -116,6 +117,7 @@ export function Fortune() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 sm:py-8 space-y-5">
+      <WeatherCard />
       <FeatureGuide
         id="fortune"
         title="每日運勢・命理 使用說明"
