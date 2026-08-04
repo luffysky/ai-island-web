@@ -19,3 +19,11 @@
 - `utils/sanitize-text-for-speech.ts`：去程式碼/行內 code/圖片/連結留字/裸網址→「連結」/JSON·工具紀錄行/Markdown 符號/HTML；過長截到句界標 truncated。
 - `utils/speech-error-message.ts`：錯誤碼→繁中（不吐原始 exception）+ `normalizeRecognitionError`。
 - 測試：`sanitize`（8）+ `speech-error-message`（3）= **11 綠**；tsc ✅、next build ✅。
+
+## Batch 2 ✅ AgentClient 語音 UI（驅動既有文字 pipeline、可獨立上線）
+- **移除**原本寫死在聊天元件的 inline STT（`toggleVoice`/`recRef`/`listening`/`voiceSupported` any 一把抓）——正是規格 §一 要避免的反模式。
+- `hooks/use-voice-prefs.ts`：偏好走 localStorage（autoSend/replyEnabled/語速…）、首渲染回預設免 hydration mismatch、custom event 跨元件同步。
+- `hooks/use-voice-agent.ts` `useVoiceReply`：語音輸出側——依偏好朗讀分身回覆（先 sanitize、同任務只唸一次）。
+- `components/VoiceControls.tsx`：麥克風＋即時 partial 預覽＋錯誤繁中＋autoSend 倒數（可取消）＋設定彈窗（autoSend/朗讀/語速）＋朗讀中停止鈕；**不支援自動不顯示（保留文字聊天）**；再次收音前先停播。
+- AgentClient 接線：輸入區換成 `<VoiceControls>`（STT 填輸入框、autoSend 走既有 `run()`）；輪詢完成時 `maybeSpeak` 朗讀 summary（用 ref 避免 effect 重設 interval）。
+- 語音**完全走既有 pipeline**（thread/記憶/RAG/預算/approval 不變）；tsc ✅、next build ✅（僅既有 admin/errors 警告）。

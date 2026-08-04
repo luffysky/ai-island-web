@@ -1,8 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Bot, Send, Loader2, CheckCircle2, XCircle, Wrench, Eye, ShieldAlert, ShieldCheck, History, Cpu, Square, Laptop, Plug, Copy, Trash2, X, Mic, Pencil, FileText, FileSpreadsheet, Presentation } from "lucide-react";
+import { Bot, Send, Loader2, CheckCircle2, XCircle, Wrench, Eye, ShieldAlert, ShieldCheck, History, Cpu, Square, Laptop, Plug, Copy, Trash2, X, Pencil, FileText, FileSpreadsheet, Presentation } from "lucide-react";
 import { FeatureGuide } from "@/components/FeatureGuide";
+import { VoiceControls } from "@/features/voice/components/VoiceControls";
+import { useVoiceReply } from "@/features/voice/hooks/use-voice-agent";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -77,7 +79,6 @@ export function AgentClient() {
   const [threadTurns, setThreadTurns] = useState<{ id: string; goal: string; summary: string }[]>([]); // 本串先前回合
   const [threads, setThreads] = useState<{ id: string; title: string; created_at: string; last_message_at: string }[]>([]); // 歷史對話串
   const [plan, setPlan] = useState<string[]>([]);          // L1：目前任務的計畫（子任務 checklist）
-  const [listening, setListening] = useState(false);
   const [skills, setSkills] = useState<SkillItem[]>([]);
   const [skillId, setSkillId] = useState<string>("");     // 選用的技能
   const [skillModal, setSkillModal] = useState(false);
@@ -107,9 +108,10 @@ export function AgentClient() {
   const [tavilyInput, setTavilyInput] = useState("");
   const [tavilyBusy, setTavilyBusy] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const recRef = useRef<any>(null);
   const deepLinkedRef = useRef(false);
-  const voiceSupported = typeof window !== "undefined" && !!((window as any).webkitSpeechRecognition || (window as any).SpeechRecognition);
+  const voiceReply = useVoiceReply();   // 語音輸出：依偏好朗讀分身回覆（先 sanitize、同任務只唸一次）
+  const maybeSpeakRef = useRef(voiceReply.maybeSpeak);
+  maybeSpeakRef.current = voiceReply.maybeSpeak;   // 用 ref 讓輪詢 effect 不必把 voiceReply 放進 deps（避免每次 render 重設 interval）
   const onlineDevice = devices.find((d) => d.online);
   const busy = starting || (!!taskId && LIVE.includes(status));   // 任務進行中（背景執行 + 輪詢觀看）
 
@@ -418,6 +420,7 @@ export function AgentClient() {
         setSuggestedSkill(task.suggested_skill ?? null);
         if (!LIVE.includes(task.status)) {
           setWatching(""); loadHistory();
+          maybeSpeakRef.current(watching, task.result?.summary ?? task.error ?? "");  // 語音回覆（開了才唸、同任務只一次）
           if (task.thread_id) loadThreadTurns(task.thread_id, watching);  // 完成 → 刷新本串前文
           if (task.status === "succeeded") {
             setTimeout(loadMemory, 1500);  // 完成 → 刷新分身記憶（抽取是背景進行）
@@ -445,19 +448,6 @@ export function AgentClient() {
     if (g) setGoal(g);
     if (sk) setSkillId(sk);
   }, [replay]);
-
-  const toggleVoice = useCallback(() => {
-    const SR = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-    if (!SR) return;
-    if (listening) { recRef.current?.stop?.(); return; }
-    const rec = new SR();
-    rec.lang = "zh-TW"; rec.interimResults = true; rec.continuous = false;
-    rec.onresult = (e: any) => { setGoal(Array.from(e.results).map((r: any) => r[0].transcript).join("")); };
-    rec.onend = () => setListening(false);
-    rec.onerror = () => setListening(false);
-    recRef.current = rec; setListening(true);
-    try { rec.start(); } catch { setListening(false); }
-  }, [listening]);
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
@@ -535,11 +525,13 @@ export function AgentClient() {
                   ))}
                 </div>
                 <div className="ml-auto flex items-center gap-2">
-                {voiceSupported && !busy && (
-                  <button onClick={toggleVoice} title="語音輸入" className={`shrink-0 grid place-items-center w-10 h-10 rounded-xl border ${listening ? "bg-rose-500 border-rose-500 text-white animate-pulse" : "border-black/10 dark:border-white/15 text-black/50 dark:text-white/50 hover:bg-black/5 dark:hover:bg-white/10"}`}>
-                    <Mic className="w-4 h-4" />
-                  </button>
-                )}
+                <VoiceControls
+                  disabled={busy}
+                  onTranscript={setGoal}
+                  onSubmit={(t) => { setGoal(t); run(withMode(t)); }}
+                  speaking={voiceReply.speaking}
+                  onStopSpeaking={voiceReply.stop}
+                />
                 {busy ? (
                   <button onClick={cancel} className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white px-4 py-2.5 text-sm font-medium">
                     <Square className="w-4 h-4" /> 停止
