@@ -72,7 +72,8 @@ export function VoiceControls({ disabled, onTranscript, onSubmit, speaking, onSt
     <div className="relative flex items-center gap-1.5">
       {/* 即時辨識預覽 / 倒數 / 錯誤：浮在按鈕上方 */}
       {(listening || countdown || rec.error) && (
-        <div className="absolute bottom-full right-0 mb-2 w-64 max-w-[70vw] rounded-xl border border-black/10 dark:border-white/15 bg-white dark:bg-neutral-900 shadow-lg p-2.5 text-xs z-20">
+        <div style={{ width: "16rem", maxWidth: "calc(100vw - 1.5rem)" }}
+          className="absolute bottom-full right-0 mb-2 rounded-xl border border-black/10 dark:border-white/15 bg-white dark:bg-neutral-900 shadow-lg p-2.5 text-xs z-20">
           {rec.error ? (
             <p className="text-rose-600 dark:text-rose-400">{speechErrorMessage(rec.error)}</p>
           ) : countdown ? (
@@ -108,7 +109,8 @@ export function VoiceControls({ disabled, onTranscript, onSubmit, speaking, onSt
           <Settings2 className="w-4 h-4" />
         </button>
         {settingsOpen && (
-          <div className="absolute bottom-full right-0 mb-2 w-60 rounded-xl border border-black/10 dark:border-white/15 bg-white dark:bg-neutral-900 shadow-lg p-3 text-xs z-30 space-y-2.5">
+          <div style={{ width: "15rem", maxWidth: "calc(100vw - 1.5rem)" }}
+            className="absolute bottom-full right-0 mb-2 rounded-xl border border-black/10 dark:border-white/15 bg-white dark:bg-neutral-900 shadow-lg p-3 text-xs z-30 space-y-2.5">
             <div className="flex items-center justify-between">
               <span className="font-medium">語音設定</span>
               <button onClick={() => setSettingsOpen(false)}><X className="w-3.5 h-3.5 text-black/40 dark:text-white/40" /></button>
