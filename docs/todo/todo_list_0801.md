@@ -1,6 +1,7 @@
 # AI 島待辦總表 2026-08-01（**現行主檔**·0721 建、0722/0723/0731 續用更新）
 
 > ＊0731 進度摘要：全 80 章清晰度審查修 21 處（§4.1）；命理三功能 232/233/234（§1.3.5-7）；教具大工程 ch26/ch7/ch16 三章 100% 覆蓋（§4.1.5）；Agent Rule-filter 2.7.1 + 熱門排序 2.7.12（§2.7）；docs/Platform.md（SnowRealm 平台整合看法）。
+> ＊0804-0805 進度摘要：**語音代理 Phase 1**（§2.8·STT/TTS+client-action+聊天氣泡）；**裝置控制端到端 §2.9 全 7 項**（桌面助手 ai-island-bridge：filesystem/browser/system/android + 打包 + 自適應輪詢 + 緊急停止）；**每日晨報+天氣**（§5.1-5.3·Open-Meteo）；**競品戰略**（§2.10·OpenClaw/NemoClaw + /admin/strategy）；**後台審計+入口修復+側欄獨立捲動**（§7.0）；社群誠實化；辭典前端計畫（§4.2.1.5）；CI 移除 concurrency 免 canceled 紅叉。
 
 > 本檔＝整合 `docs/todo/` 全部 10 個舊檔（MASTER_TODO / ROADMAP_2026Q3 / 0705new_todotask / todo_list_0713 / 0714 / 0715 / TODO / BACKLOG / BEGINNER_FRIENDLY_BACKLOG / REPORTS_TODO_2026-06-03）後的**唯一現行待辦**。
 > 狀態經 3 組 subagent 逐項對照「程式碼 + git 紀錄」核對過（2026-07-21）。舊檔全部降為**歷史存查**（見文末〈附錄 A：舊檔核對裁決〉），之後只更新本檔。

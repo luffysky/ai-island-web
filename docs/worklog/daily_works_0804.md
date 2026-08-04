@@ -1,4 +1,4 @@
-# 工作日誌 2026-08-04
+# 工作日誌 2026-08-04 ～ 08-05
 
 > 待辦主檔：`docs/todo/todo_list_0801.md` §2.8。
 > 本段主軸：**分身島語音代理 + client-action 中繼**（規格 `docs/speech_agent.md`，經 GPT 兩輪覆核強化契約）。分批進行，每批 tsc/vitest/next build 全綠才提交；push 依 ~30 分批次、不打斷 Zeabur build。
@@ -82,3 +82,17 @@
 - **2.9.6 Android adb**（六件）：AI 島 `android.list_devices/open_url/open_app/home/back/screenshot`(needsDevice)；桌面 adb 執行器（`execFileSync`+參數陣列不經 shell、url/package 驗證、多裝置 `adbTarget`、ENOENT 提示）；禁任意點擊/輸入密碼。
 - **2.9.7 自適應輪詢**：忙 700ms／閒退避到 6s。真 Realtime 卡在 device-token 非 Supabase JWT + Zeabur 無持久 WS → 需 JWT 簽發或專用 WS server（另立、已註記）。
 - bridge commits：12717b0(SEA)·f74a311(android)·874e4d4(自適應)。
+
+## I · 語音/後台體驗打磨 + 競品分析（0805）
+- **語音代理 Phase 1**（規格 speech_agent.md）：STT/TTS provider 抽象 + client-action 中繼（navigate_internal/open_url 白名單+原子 RPC+冪等）+ search_course/agent_status；一般聊天模式；修 TTS 唸一半停（chunk 接力）；音色分組全列；手機彈窗改底部面板避開 nav。
+- **/agent 聊天氣泡**：目標右泡泡、分身左泡泡；模式/工具箱/思考過程/操作鈕全可收合（跑完自動收起思考）。
+- **後台審計**：功能真假（~95% 真、4 空殼列 §7.0）+ 前端入口（補 assistant/blog-seed 等孤兒進側邊欄，共補 8 頁）+ 側欄獨立 sticky 捲動 + 目前頁高亮。
+- **競品戰略**：WebFetch/WebSearch 查證 OpenClaw（開源代理框架·安全崩壞 CVE/26%技能漏洞）+ NVIDIA NemoClaw（沙盒層）→ `docs/competitive/` + `/admin/strategy` 頁 + todo §2.10 三層策略。
+- **CI**：移除 concurrency（true/false 都會取消被取代 run→紅叉）→ 完全不再出現 canceled。
+
+## 🏁 收尾健檢（0805）
+- **建置**：tsc ✅ · vitest **221** ✅ · next build ✅。
+- **DB**：`agent_tasks.client_actions` 欄 + 2 個 client-action RPC + `agent_device_calls` 皆在；supabase/ 無未跑 migration（本段裝置控制全複用既有表）。
+- **API↔UI**：新路由 `cancel-all` / `client-action` 已接前端；android/device 工具走既有 bridge 佇列；route 註冊審計 459 支全有 export（fetch 對不到者皆 template-literal/.tsx 誤報）。
+- **RWD/PWA**：語音彈窗手機底部面板 + strategy overflow-wrap 修破版；聊天氣泡 max-w 不溢出；**PWA 未動**（manifest/SW 不受影響）。
+- **跨 repo**：桌面客戶端 `ai-island-bridge` 三平台打包待推 `v*` tag 觸發 release。
