@@ -1,15 +1,22 @@
 "use client";
 // 縣市 → 區 兩段下拉。選定後直接用「縣市靜態座標」查天氣（不走 Open-Meteo geocode——它對台灣
 // 極不可靠：查無、或把「中正區」配到南投的中正）。天氣是縣市級每日概況、市內差異可忽略。
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TW_REGIONS, TW_CITY_COORDS } from "@/lib/tw-regions";
 
 export type PickedLocation = { city: string; district: string; lat: number; lng: number };
 
-export function LocationPicker({ onPick, compact }: { onPick: (loc: PickedLocation) => void; compact?: boolean }) {
-  const [city, setCity] = useState(TW_REGIONS[0].city);
+// value：目前已選的地區（受控）→ 讓下拉停在使用者選過的那個、不會因為卡片切換分支而 remount 重置。
+export function LocationPicker({ value, onPick, compact }: { value?: { city: string; district: string } | null; onPick: (loc: PickedLocation) => void; compact?: boolean }) {
+  const [city, setCity] = useState(value?.city ?? TW_REGIONS[0].city);
   const districts = TW_REGIONS.find((r) => r.city === city)?.districts ?? [];
-  const [dist, setDist] = useState(districts[0] ?? "");
+  const [dist, setDist] = useState(value?.district ?? districts[0] ?? "");
+
+  // 外部已選地區變動（含 remount 帶入初值）→ 同步到下拉
+  useEffect(() => {
+    if (value?.city) setCity(value.city);
+    if (value?.district) setDist(value.district);
+  }, [value?.city, value?.district]);
 
   // 用實心底色 + 明確字色（並帶 color-scheme）→ 原生下拉展開的選項清單在深/淺色都看得到，
   // 不能用 bg-transparent（展開時瀏覽器給白底，字若淺灰就整片看不到）。

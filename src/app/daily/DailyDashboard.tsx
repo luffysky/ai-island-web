@@ -33,12 +33,13 @@ export function DailyDashboard({ word, moon, sentence, tip }: Props) {
   const [state, setState] = useState<"idle" | "loading" | "done" | "denied" | "error">("idle");
   const [w, setW] = useState<W | null>(null);
   const [advice, setAdvice] = useState<string[]>([]);
+  const [pick, setPick] = useState<PickedLocation | null>(null);   // 目前選的地區→讓下拉停在上面
 
   const apply = (d: { weather: W; advice?: string[] }) => { setW(d.weather); setAdvice(d.advice ?? []); setState("done"); };
 
   // 下拉選好的縣市/區 → 用縣市靜態座標查天氣（不 geocode），顯示地點用使用者選的名字、記住下次直接套用
   const loadPick = async (loc: PickedLocation) => {
-    setState("loading");
+    setState("loading"); setPick(loc);
     try {
       const r = await fetch(`/api/weather?lat=${loc.lat}&lng=${loc.lng}`);
       if (!r.ok) { setState("error"); return; }
@@ -103,7 +104,7 @@ export function DailyDashboard({ word, moon, sentence, tip }: Props) {
           </div>
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <button onClick={load} className="text-xs text-black/40 dark:text-white/40 hover:text-sky-500">重新整理</button>
-            <LocationPicker onPick={loadPick} compact />
+            <LocationPicker value={pick} onPick={loadPick} compact />
           </div>
         </section>
       ) : (
@@ -115,14 +116,14 @@ export function DailyDashboard({ word, moon, sentence, tip }: Props) {
               <p className="text-sm text-black/60 dark:text-white/60 text-center">
                 {state === "denied" ? "沒拿到定位權限。" : "定位失敗或暫時查不到。"}直接選你的縣市／區看天氣（其他情報照常顯示）。
               </p>
-              <div className="flex justify-center"><LocationPicker onPick={loadPick} /></div>
+              <div className="flex justify-center"><LocationPicker value={pick} onPick={loadPick} /></div>
               <button onClick={load} className="block mx-auto text-xs text-sky-600 dark:text-sky-400 underline">或再試一次定位</button>
             </div>
           ) : (
             <div className="text-center space-y-2.5">
               <button onClick={load} className="inline-flex items-center gap-1.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 text-sm font-medium"><MapPin className="w-4 h-4" /> 看我這裡的天氣</button>
               <div className="text-xs text-black/40 dark:text-white/40">或不想給定位 → 直接選地區：</div>
-              <div className="flex justify-center"><LocationPicker onPick={loadPick} compact /></div>
+              <div className="flex justify-center"><LocationPicker value={pick} onPick={loadPick} compact /></div>
             </div>
           )}
         </section>
