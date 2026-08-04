@@ -119,6 +119,13 @@
 - [ ] 5.4 訂閱/偏好：`/settings` 加「每日晨報」開關（複用 line_pref_* 模式）；cron 08:30 推（複用現有 daily-brief job #10）。
 - [x] ~~5.6 天氣網頁可見 + 讀當下位置（0805）：`/api/weather?lat=&lng=`（即時查、不儲存 lat/lng＝隱私）+ `WeatherCard`（`navigator.geolocation` 讀當下位置→天氣+生活建議，拒絕/不支援有明確提示）放上 `/fortune` 頂部~~ ✅。＊隱私：web 即時用精準 lat/lng 但不存；LINE 晨報仍用 `geo_city`（只存縣市的承諾不變）。
 - [ ] 5.5 變現：晨報免費當黏著鉤子；進階（多地區天氣/更細健康建議/廣告置換）＝付費或 Z 幣。
+- [~] 5.7 🆕 **每日情報儀表板 `/daily`**（widget.md / 241.jpg · 每天回來看的入口）
+  - [x] ~~Phase 1 固定版（0805）：`/daily`——天氣 hero(當下定位)+明細列(降雨/濕度/風/日出日落/UV)+AI 生活建議+每日一句+每日 AI 單字(dictionary)+今日 Tip+月相+運勢入口卡+今日待辦(localStorage)；首頁「🌅 每日情報」卡入口。新 lib：weather(擴 feelsLike/humidity/wind/sunrise/sunset)、moon、daily-content；`/api/weather`~~ ✅
+  - [ ] Phase 2 **可自訂/拖拉 widget（照抄 Space·github.com/luffysky/snowrealmspace）**：port Space 的 `widget-definitions`/`layouts` API + DB(user widget layout 表) + 拖拉/編輯 UI（模組化：核心永顯/AI 輪播/個人登入，依 widget.md）。
+  - [ ] 從 Space 搬的 widget（29 個挑好用）：TodoList✅簡版、FocusTimer/Breathing(番茄鐘/呼吸)、HabitTracker/GoalTracker、Countdown/Anniversary(節日倒數)、MiniCalendar/WorldClock/DateTime、Dice、MoodCheckin、QuickNote、SurpriseBox/DailyCard、CreativeStreak。
+  - [ ] AI 島特有 widget：AI Dot 餘額、學習連勝、今日學習任務、熱門 AI 新聞、匯率、GitHub commit、AQI 空品、節氣農民曆。
+  - [ ] Space 那邊也加對應 widget + 部署到 `github.com/luffysky/snowrealmspace`（跨 repo、另立一輪）。
+  - [ ] top nav 加「每日情報」入口（需補 4 語 i18n key，避免 missing message）。
 
 ### 6. 🆕 寵物系列（.pet 網域·對品牌·大眾變現漏斗）— 林董 0804 拍板：**做成「AI 島內新區」**
 > ＊觀察：網域就是 `snowrealm.pet`＝寵物本來就對品牌。完全符合「單一用途/情緒剛需/每日習慣/LINE 推播」打法。兩隻娛樂輕工具當漏斗 + 一隻訂閱黏著。

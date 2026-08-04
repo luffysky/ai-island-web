@@ -12,6 +12,11 @@ export interface DailyWeather {
   precipProb: number;    // 降雨機率 %
   uvMax: number;         // 紫外線指數
   place?: string;        // 地點名（geocode 回填）
+  feelsLike?: number;    // 體感溫度 °C（current apparent_temperature）
+  humidity?: number;     // 相對濕度 %
+  windSpeed?: number;    // 風速 km/h
+  sunrise?: string;      // 日出 HH:MM
+  sunset?: string;       // 日落 HH:MM
 }
 
 // WMO weather interpretation codes → 中文（Open-Meteo 用這套）。
@@ -42,7 +47,7 @@ export function weatherEmoji(code: number): string {
   if (code >= 61 && code <= 67) return "🌧️";
   if ((code >= 71 && code <= 77) || code === 85 || code === 86) return "🌨️";
   if (code >= 80 && code <= 82) return "🌦️";
-  if (code >= 95) return "⛈️";
+  if (code >= 95 && code <= 99) return "⛈️";
   return "🌡️";
 }
 
@@ -55,11 +60,18 @@ export function parseForecast(json: any): DailyWeather | null {
   const tempMin = Math.round(Number(d.temperature_2m_min?.[0] ?? 0));
   const precipProb = Math.round(Number(d.precipitation_probability_max?.[0] ?? 0));
   const uvMax = Math.round(Number(d.uv_index_max?.[0] ?? 0));
+  const cur = json?.current ?? {};
+  const hhmm = (iso: any) => (typeof iso === "string" && iso.length >= 16 ? iso.slice(11, 16) : undefined);
   return {
     date: String(d.time[0]),
     code, desc: weatherCodeToText(code),
     tempMax, tempMin, tempRange: Math.max(0, tempMax - tempMin),
     precipProb, uvMax,
+    feelsLike: cur.apparent_temperature != null ? Math.round(Number(cur.apparent_temperature)) : undefined,
+    humidity: cur.relative_humidity_2m != null ? Math.round(Number(cur.relative_humidity_2m)) : undefined,
+    windSpeed: cur.wind_speed_10m != null ? Math.round(Number(cur.wind_speed_10m)) : undefined,
+    sunrise: hhmm(d.sunrise?.[0]),
+    sunset: hhmm(d.sunset?.[0]),
   };
 }
 
@@ -110,7 +122,8 @@ export async function getDailyWeather(lat: number, lng: number): Promise<DailyWe
   if (!isFinite(lat) || !isFinite(lng)) return null;
   try {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}` +
-      `&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max&timezone=auto&forecast_days=1`;
+      `&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max,sunrise,sunset` +
+      `&current=apparent_temperature,relative_humidity_2m,wind_speed_10m&wind_speed_unit=kmh&timezone=auto&forecast_days=1`;
     const r = await fetch(url, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(9000) });
     if (!r.ok) return null;
     return parseForecast(await r.json());

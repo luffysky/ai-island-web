@@ -3,6 +3,7 @@ import { Sparkles, ArrowRight } from "lucide-react";
 
 const TOOLS = [
   { href: "/fortune", emoji: "🔮", title: "每日運勢", desc: "星座今日運勢＋塔羅占卜，正向陪你過每一天", accent: "from-violet-500/15 to-fuchsia-500/15 border-violet-500/25" },
+  { href: "/daily", emoji: "🌅", title: "每日情報", desc: "天氣＋生活建議＋每日 AI 單字／一句／Tip，每天回來看", accent: "from-sky-500/15 to-cyan-500/15 border-sky-500/25" },
   { href: "/message-coach", emoji: "💬", title: "訊息軍師", desc: "難開口的話——加薪、婉拒、道歉——幫你講得體", accent: "from-indigo-500/15 to-sky-500/15 border-indigo-500/25" },
   { href: "/me/job-kit", emoji: "🎒", title: "AI 求職包", desc: "履歷、自傳、求職信、模擬面試一站搞定", accent: "from-emerald-500/15 to-teal-500/15 border-emerald-500/25" },
   { href: "/agent/templates", emoji: "🤖", title: "生活助理", desc: "查補助、比價、旅遊規劃、育兒問答…一鍵幫你辦", accent: "from-amber-500/15 to-orange-500/15 border-amber-500/25" },
