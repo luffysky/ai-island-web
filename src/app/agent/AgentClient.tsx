@@ -312,6 +312,19 @@ export function AgentClient() {
     setApproval(null);   // 背景任務下輪迴圈會讀到 cancelled 而停；輪詢會反映狀態
   }, [taskId]);
 
+  // 2.9.4 緊急停止：取消我所有進行中的任務 + 派給裝置未做完的本機命令
+  const [cancellingAll, setCancellingAll] = useState(false);
+  const cancelAll = useCallback(async () => {
+    if (cancellingAll) return;
+    if (!confirm("停止你目前所有進行中的分身任務？（含背景任務與派給電腦的本機命令）")) return;
+    setCancellingAll(true);
+    try {
+      const r = await fetch("/api/agent/tasks/cancel-all", { method: "POST" });
+      if (r.ok) { const d = await r.json(); setStatus("cancelled"); setWatching(""); setApproval(null); loadHistory(); alert(`已停止 ${d.cancelledTasks ?? 0} 個任務、${d.cancelledCalls ?? 0} 個本機命令。`); }
+    } catch { /* ignore */ }
+    finally { setCancellingAll(false); }
+  }, [cancellingAll, loadHistory]);
+
   // 載入某對話串「先前回合」（成功的 goal → 摘要），排除目前這一則
   const loadThreadTurns = useCallback(async (tid: string, excludeId: string) => {
     if (!tid) { setThreadTurns([]); return; }
@@ -636,6 +649,10 @@ export function AgentClient() {
               <a href="/agent/social" className="inline-flex items-center gap-1.5 text-xs font-medium rounded-full px-3.5 py-1.5 border border-violet-500/50 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10">
                 📣 社群發布
               </a>
+              <button onClick={cancelAll} disabled={cancellingAll} title="停止所有進行中的分身任務（含背景任務與派給電腦的命令）"
+                className="inline-flex items-center gap-1.5 text-xs font-medium rounded-full px-3.5 py-1.5 border border-rose-500/50 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 disabled:opacity-50">
+                {cancellingAll ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Square className="w-3.5 h-3.5" />} 全部停止
+              </button>
             </div>
           )}
 

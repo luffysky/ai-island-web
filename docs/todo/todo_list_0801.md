@@ -236,19 +236,19 @@
   - 輪詢＝`status=done` 但仍有 pending action → **續輪詢**、UI 不顯示整體完成；全部終態才停並顯示整體完成；stale `acknowledged` → 標「需重試」、不自動重開。
   - 整合＝語音結果進既有 Agent、文字輸入不受影響、呼叫 `navigate_internal`/`open_url`、不支援 STT 退回文字、取消確認不執行、TTS 播放中按麥克風先停播。
 - [x] ~~**2.8.6 收尾**：`docs/agent-device-control-roadmap.md`（Phase 2/3 藍圖 + Whisper/Piper 替換點）；tsc/vitest/next build 全綠；工作日誌 `daily_works_0804.md`。~~ ✅ 0804
-- **Phase 2/3（架構預留、本輪不實作，接既有 2.5 桌面助手）**
-  - [ ] 2.8.7 手機語音→AI 島後端建 Device Command→已配對 Desktop Agent 執行白名單工具→回填（`device_connections`/`device_commands` 表、RLS、`DeviceTransport` 抽象；service role key 絕不放桌面端）
-  - [ ] 2.8.8 Desktop Agent 控 Android（Desktop→`AndroidDeviceAdapter`→ADB，**不從 AI 島伺服器直連手機**；listDevices/openApp/openUrl/home/back/screenshot；以 `deviceId` 為基礎、`DeviceTarget` single/group/all-authorized、每台獨立回報、設最大並行、執行前顯示將操作哪些裝置）
+- **Phase 2/3 → 已升級為 §2.9 端到端實作（0804），下列併入 §2.9、不再獨立追蹤**
+  - [x] ~~2.8.7 手機語音→Device Command→桌面執行~~ → 見 §2.9（伺服器側早已存在、客戶端 §2.9.1 開工）
+  - [ ] 2.8.8 Desktop 控 Android → 見 §2.9.6
 
 ---
 
 ### 2.9 裝置控制端到端（roadmap 落地 · `docs/agent-device-control-roadmap.md`）— 0804 拍板端到端做
 > ＊**盤點結論（0804）**：**Phase 2 伺服器側早已存在且可用**——表 `agent_device_bridges`(配對/token/在線) + `agent_device_calls`(命令佇列 pending→running→done/error) + 路由 `bridge/pair|poll|result` + orchestrator `dispatchToDevice`/`waitForDevice`/`getOnlineDevice`(needsDevice 工具自動排進佇列)。roadmap 提的 device_connections/device_commands ＝這兩張既有表，**不重造**。
 > ＊**真正缺的＝桌面客戶端**（repo `ai-island-bridge` 目前只有 README，要從零建）。合約：`GET /bridge/poll`(Bearer device token)→`{calls:[{id,tool,args}]}`；執行→`POST /bridge/result`{callId,ok,result}。
-- [~] 2.9.1 **桌面客戶端 MVP**（ai-island-bridge repo）：config(url/token/白名單 root) + poll 迴圈 + 執行器 + 回報。**安全先行**：`filesystem.list/read/write` 限白名單資料夾；`system.run_command`/`browser.*` MVP 先回「未實作」不亂跑。← 本輪開工
-- [ ] 2.9.2 桌面端 `browser.*`（Playwright headless：open/click/type/screenshot）——需 Playwright、較重，次批
-- [ ] 2.9.3 桌面端 `system.run_command`（白名單指令 npm test/git…、強制確認由伺服器 approval 已保證）
-- [ ] 2.9.4 **緊急停止**：AI 島加「⏹ 全部停止」（cancel 我所有 LIVE 任務 + 待辦 device_calls 整批 cancelled）；桌面端收到即停
+- [x] ~~2.9.1 **桌面客戶端 MVP**（ai-island-bridge repo）：config + poll 迴圈 + 執行器 + 回報；`filesystem.list/read/write` 限白名單資料夾~~ ✅ 0804（commit e8f2736）
+- [x] ~~2.9.2 桌面端 `browser.*`（Playwright headless：open/click/type/screenshot、延遲載入）~~ ✅ 0804（550fe7e）
+- [x] ~~2.9.3 桌面端 `system.run_command`（白名單、預設停用、擋 shell 串接；伺服器 approval 已保證）~~ ✅ 0804（eed01fd）
+- [x] ~~2.9.4 **緊急停止**：`/api/agent/tasks/cancel-all`（cancel 我所有 LIVE 任務 + 待辦 device_calls 整批 cancelled）+ `/agent`「⏹ 全部停止」鈕；桌面端下次輪詢就不會再領到~~ ✅ 0804
 - [ ] 2.9.5 打包 Windows `.exe`（pkg / node-sea）+ 更新 release + `DESKTOP_DOWNLOAD_URL` 版本；自動更新（§2.5.2）
 - [ ] 2.9.6 Phase 3 Android ADB Adapter（listDevices/openApp/openUrl/home/back/screenshot；唯讀低風險六件先做；多裝置 DeviceTarget）
 - [ ] 2.9.7 傳輸升級：Supabase Realtime / WebSocket（現為輪詢，堪用；即時性要再升）

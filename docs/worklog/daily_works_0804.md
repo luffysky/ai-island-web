@@ -67,3 +67,12 @@
 - **可選音色**：`useVoices`（列瀏覽器中文語音、等 voiceschanged）+ 設定彈窗加「音色」下拉 + 試聽鈕（選 Google/Microsoft 中文語音較自然）。preferredVoice 存 localStorage、朗讀時套用。
 - ＊誠實限制：真正「對話級自然語音」受限於瀏覽器 Web Speech；要更自然需雲端 TTS（roadmap 已預留 CloudTextToSpeechProvider，屬付費/後續）。
 - tsc ✅ · vitest **15 voice（+4）** ✅。
+
+## H · 裝置控制端到端（§2.9·跨 repo）
+- **盤點**：Phase 2 伺服器側早已存在（`agent_device_bridges`/`agent_device_calls` + `bridge/pair|poll|result` + orchestrator `dispatchToDevice`）→ roadmap 的 device 表就是這些、不重造。缺的只有桌面客戶端。
+- **桌面客戶端**（新 repo `ai-island-bridge`，原本只有 README）：
+  - 2.9.1 MVP：poll 迴圈 + `filesystem.list/read/write`（白名單資料夾、擋 `..` 穿越）+ 回報（e8f2736）
+  - 2.9.3 `system.run_command`（白名單、預設停用、擋 shell 串接；eed01fd）
+  - 2.9.2 `browser.*`（Playwright headless、延遲載入；550fe7e）
+- **2.9.4 緊急停止**（本 repo）：`/api/agent/tasks/cancel-all`（取消所有 LIVE 任務 + 待辦 device_calls）+ `/agent`「⏹ 全部停止」鈕。**檢查**：API✅新路由 · DB✅更新既有表無 migration · UI✅鈕接路由+刷新 · RWD✅在既有 flex-wrap 列 · PWA n/a。tsc/next build ✅。
+- 剩 2.9.5 `.exe` 打包 · 2.9.6 Android ADB · 2.9.7 傳輸升級。
