@@ -122,3 +122,9 @@
 - **導覽**：`/daily`（🌅 每日情報）加進 TopNav 探索島抽屜 `NAV_LINKS` **最上面** + `nav.daily` 四語 i18n（每日情報／Daily Brief／デイリー情報／데일리 브리핑）。
 - **答疑**：`/admin/strategy`(⚔️ 競品戰略分析) 本就在後台側欄「🏝️ 總覽」群組**最後一項**（🤖 數據問答助理 之下）。
 - **建置**：tsc ✅ · vitest 225 ✅ · next build ✅（`/daily` 8.37kB）。RWD：下拉 `flex-wrap`+`min-w-0` 窄螢幕不溢出。
+
+### 天氣下拉修 3 bug（0805）
+- **選鶯歌區→跳回台北中正區**：實測 Open-Meteo geocode 對台灣爛透——`鶯歌區`/`中正區` 查無（區綴害的）、`臺北市` 查無（要用「台」）、連縣市層都漏（`臺中/臺南/桃園市` MISS）、去綴又把「中正」配到南投的中正。**解**：`tw-regions.ts` 加 22 縣市**靜態座標** `TW_CITY_COORDS`，下拉選好縣市**直接用座標打 `/api/weather?lat=&lng=`**（零 geocode、100% 命中、不跑錯縣市），顯示地名用使用者選的「縣市+區」。
+- **下拉選項白底淺灰字看不到**：`<select>` 原本 `bg-transparent`、展開時瀏覽器給白底、字淺灰整片消失。改實心 `bg-white dark:bg-neutral-800` + 明確字色 + `color-scheme`，深/淺色都清楚。
+- **geocodeCity 仍補強**（給晨報 cron 用 geo_city 的路徑）：候選串接 原名→台化→去尾綴→台化去綴、優先 TW。
+- localStorage 改存 `{city,district,lat,lng}` JSON（key `ai_island_weather_pick`）、進頁直接套座標。tsc/vitest225/build 全綠。

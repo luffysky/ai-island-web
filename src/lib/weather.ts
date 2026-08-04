@@ -102,19 +102,29 @@ const UA = "AI-Island-Weather/1.0";
 
 /** 城市名 → 經緯度（Open-Meteo geocoding，免 key）。失敗回 null。 */
 export async function geocodeCity(city: string, country?: string): Promise<{ lat: number; lng: number; name: string } | null> {
-  const name = String(city ?? "").trim();
-  if (!name) return null;
-  try {
-    const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=5&language=zh&format=json`;
-    const r = await fetch(url, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(8000) });
-    if (!r.ok) return null;
-    const j = await r.json();
-    const list = (j?.results ?? []) as any[];
-    if (!list.length) return null;
-    // 有指定國家就優先同國
-    const hit = (country && list.find((x) => x.country_code === country || x.country === country)) || list[0];
-    return { lat: Number(hit.latitude), lng: Number(hit.longitude), name: String(hit.name ?? name) };
-  } catch { return null; }
+  const raw = String(city ?? "").trim();
+  if (!raw) return null;
+  // Open-Meteo 地理編碼是「單一地名比對」，台灣行政區有兩個坑：
+  //  ① 用「台」不用「臺」（臺北市→0 筆、台北市→命中）；② 區/鄉/鎮/市 等後綴常讓它查無（中正區/鶯歌區→0，中正/鶯歌→命中）。
+  // → 依序試多個候選：原名 → 台化 → 去尾綴 → 台化+去尾綴，命中就用（優先台灣）。
+  const taiwanize = (s: string) => s.replace(/臺/g, "台");
+  const strip = (s: string) => s.replace(/[區鄉鎮市里]$/u, "");
+  const candidates = Array.from(new Set([raw, taiwanize(raw), strip(raw), taiwanize(strip(raw))].map((s) => s.trim()).filter(Boolean)));
+  for (const name of candidates) {
+    try {
+      const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=5&language=zh&format=json`;
+      const r = await fetch(url, { headers: { "User-Agent": UA }, signal: AbortSignal.timeout(8000) });
+      if (!r.ok) continue;
+      const j = await r.json();
+      const list = (j?.results ?? []) as any[];
+      if (!list.length) continue;
+      // 有指定國家就優先同國；否則台灣優先（本站客群），再退第一筆
+      const hit = (country && list.find((x) => x.country_code === country || x.country === country))
+        || list.find((x) => x.country_code === "TW") || list[0];
+      return { lat: Number(hit.latitude), lng: Number(hit.longitude), name: String(hit.name ?? name) };
+    } catch { /* 試下一個候選 */ }
+  }
+  return null;
 }
 
 /** 經緯度 → 今日天氣。失敗回 null。 */
