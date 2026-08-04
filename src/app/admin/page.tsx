@@ -10,7 +10,7 @@ import { CountUp } from "@/components/ui/CountUp";
 import { PulseDot } from "@/components/ui/PulseDot";
 import { AdminGreeting } from "@/components/admin/AdminGreeting";
 import { RingGauge } from "@/components/ui/RingGauge";
-import { Crown, AlertTriangle, CheckCircle, Megaphone, Zap, Users, DollarSign, MessageSquare, Bot, Search, Trophy, Sparkles, Activity, BellRing, Sprout, Gamepad2, Banknote, CreditCard, Newspaper } from "lucide-react";
+import { Crown, AlertTriangle, CheckCircle, Megaphone, Zap, Users, DollarSign, MessageSquare, Bot, Search, Trophy, Sparkles, Activity, BellRing, Sprout, Gamepad2, Banknote, CreditCard, Newspaper, Swords } from "lucide-react";
 import { runOpsAlertChecks } from "@/lib/ops-alerts";
 
 export default async function AdminOverviewPage() {
@@ -586,6 +586,7 @@ export default async function AdminOverviewPage() {
           <QuickAction href="/admin/crm" label={<><MessageSquare className="w-4 h-4" /> 客服</>} />
           <QuickAction href="/admin/ai/models" label={<><Bot className="w-4 h-4" /> AI 模型</>} />
           <QuickAction href="/admin/seo" label={<><Search className="w-4 h-4" /> SEO</>} />
+          <QuickAction href="/admin/strategy" label={<><Swords className="w-4 h-4" /> 競品戰略</>} />
         </div>
       </div>
 
