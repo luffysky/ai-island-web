@@ -438,6 +438,9 @@
 - [ ] 讓 `/admin/strategy` 半動態：接 `competitor_snapshots`（`/admin/marketing/competitor` 已是真功能）自動追競品，靜態分析 + 動態快照並存
 - [ ] 後台「一鍵健檢」聚合頁：把 `health`/`site-audit`/`db-check`/`errors`/`ga4` 關鍵指標收成一張 admin 首屏卡（現在散在各頁）
 - [ ] `/admin/blog` 補上（marketing/publish 死連結指向它）或移除該連結
+- [x] ~~後台側欄獨立捲動（0805）：aside 改 `sticky top-4 self-start` + 自身 `overflow-y-auto` + 細捲軸 → 內容捲動時側欄不再跟著動、超長才自己內捲~~ ✅
+- [x] ~~後台側欄目前頁高亮（0805）：AdminLink 依 `currentPath` 標 active（bg-accent/12 + 粗體）~~ ✅
+- [ ] 後台整體視覺美化（持續）：卡片/間距/標題階層/圖示一致性、亮暗對比、hover 微互動；一區一區調、每次驗 RWD+亮暗不破版
 
 - [~] 7.1 **真 CSP header**：~~先上 Report-Only~~ ✅ 0722（`next.config.mjs` headers 加 `Content-Security-Policy-Report-Only`：default/base/object-none/frame-ancestors/form-action/img/font/style/script/connect/media/worker/manifest；只回報不阻擋、不會弄壞站）。待收斂：觀察 console/report 無誤 → 改 `Content-Security-Policy`（enforce）+ script-src 換 nonce（需 middleware 注入、去掉 unsafe-inline/eval）+ connect-src 收成明確網域
 - [ ] 7.2 **Cloudflare Turnstile + 蜜罐**（repo 零實作、只在章節 JSON 出現）

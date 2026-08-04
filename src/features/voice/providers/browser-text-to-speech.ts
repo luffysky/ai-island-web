@@ -40,10 +40,11 @@ export class BrowserTextToSpeechProvider implements TextToSpeechProvider {
         if (myGen !== this.gen) { resolve(); return; }   // 被 stop / 新 speak 取代 → 收手
         if (i >= chunks.length) { resolve(); return; }
         const u = new SpeechSynthesisUtterance(chunks[i++]);
-        u.lang = options.lang ?? "zh-TW";
         u.rate = clamp(options.rate ?? 1, 0.5, 2);
         u.pitch = clamp(options.pitch ?? 1, 0, 2);
-        const v = pickVoice(); if (v) u.voice = v;
+        const v = pickVoice();
+        if (v) { u.voice = v; u.lang = v.lang || options.lang || "zh-TW"; }  // lang 對齊選定音色，否則 Chrome 可能忽略 u.voice
+        else { u.lang = options.lang ?? "zh-TW"; }
         u.onend = () => next();
         u.onerror = () => next();   // 這段失敗 → 跳下一段、不整個停
         try { window.speechSynthesis.speak(u); } catch { next(); }

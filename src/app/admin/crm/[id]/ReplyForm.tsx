@@ -124,7 +124,7 @@ export function ReplyForm({
               <MessageSquareText size={12} /> 罐頭訊息 <ChevronDown size={12} />
             </button>
             {showCanned && (
-              <div className="absolute right-0 top-full mt-1 w-72 max-h-80 overflow-y-auto bg-bg-card border border-border rounded-xl shadow-2xl z-30">
+              <div className="absolute right-0 top-full mt-1 w-72 max-w-[calc(100vw-2rem)] max-h-80 overflow-y-auto bg-bg-card border border-border rounded-xl shadow-2xl z-30">
                 {loadingCanned ? (
                   <div className="p-4 text-center text-xs text-fg-muted">
                     <Loader2 size={14} className="animate-spin inline mr-1" />載入

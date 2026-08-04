@@ -130,7 +130,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             {ADMIN_NAV_TOP
               .filter((it) => (!it.ownerOnly || isOwner) && canAccessSection(role, isOwner, sectionForPath(it.href)))
               .map((it) => (
-                <AdminLink key={it.href} href={it.href}>{it.label}</AdminLink>
+                <AdminLink key={it.href} href={it.href} active={currentPath === it.href}>{it.label}</AdminLink>
               ))}
 
             {/* 側邊欄與 Cmd+K 指令面板共用 ./nav-items.ts 這一份資料。
@@ -146,7 +146,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               return (
                 <NavGroup key={g.title} title={g.title}>
                   {visible.map((it) => (
-                    <AdminLink key={it.href} href={it.href}>{it.label}</AdminLink>
+                    <AdminLink key={it.href} href={it.href} active={currentPath === it.href}>{it.label}</AdminLink>
                   ))}
                 </NavGroup>
               );
@@ -166,13 +166,18 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
 // NavGroup 抽到 ./NavGroup.tsx (client component、可折疊 + localStorage 記憶)
 
-function AdminLink({ href, children }: { href: string; children: React.ReactNode }) {
+function AdminLink({ href, children, active }: { href: string; children: React.ReactNode; active?: boolean }) {
   const publicHref = href === "/admin" ? ADMIN_BASE : href.replace(/^\/admin/, ADMIN_BASE);
 
   return (
     <Link
       href={publicHref as any}
-      className="block px-3 py-2 rounded-full hover:bg-bg-elevated hover:text-accent hover:translate-x-0.5 transition-all"
+      aria-current={active ? "page" : undefined}
+      className={`block px-3 py-2 rounded-full transition-all ${
+        active
+          ? "bg-accent/12 text-accent font-semibold shadow-sm"
+          : "text-fg-muted hover:bg-bg-elevated hover:text-accent hover:translate-x-0.5"
+      }`}
     >
       {children}
     </Link>

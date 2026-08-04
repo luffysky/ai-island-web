@@ -33,8 +33,9 @@ export function CollapsibleAside({ children }: { children: React.ReactNode }) {
 
   return (
     <aside
-      className={`shrink-0 overflow-hidden transition-[width] duration-300 ease-in-out ${
-        // 手機收合時 w-0（不佔左邊空間）；桌機保留 w-12 細軌。overflow-hidden + 固定寬內容 = 往左右滑開
+      className={`shrink-0 self-start sticky top-4 max-h-[calc(100vh-1.5rem)] overflow-x-hidden overflow-y-auto overscroll-contain admin-aside-scroll transition-[width] duration-300 ease-in-out ${
+        // 側欄獨立滾動：sticky+self-start 讓它捲動內容時「不跟著動」、超長才自己內捲。
+        // 手機收合時 w-0（不佔左邊空間）；桌機保留 w-12 細軌。overflow-x-hidden + 固定寬內容 = 往左右滑開
         collapsed ? "w-0 md:w-12" : "w-44 md:w-52"
       }`}
     >
