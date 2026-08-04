@@ -253,6 +253,26 @@
 - [ ] 2.9.6 Phase 3 Android ADB Adapter（listDevices/openApp/openUrl/home/back/screenshot；唯讀低風險六件先做；多裝置 DeviceTarget）
 - [ ] 2.9.7 傳輸升級：Supabase Realtime / WebSocket（現為輪詢，堪用；即時性要再升）
 
+### 2.10 站在 OpenClaw / NemoClaw 之上（競品啟發 · 0805 拍板做）
+> ＊分析：`docs/competitive/openclaw-nemoclaw-swot.md` · 後台 `/admin/strategy`。策略三層：**吸收他們的好設計（建立在其基礎）→ 補他們的漏洞（＝我們的賣點）→ 再疊分身島差異化**。
+> ＊OpenClaw＝開源個人代理框架(直接對手，60 天 25 萬 star)但**安全崩壞**（CVE-2026-25253 CVSS8.8、2.1 萬 instance 曝露公網被 RCE、26% 社群技能有洞、自主動作無把關）；NemoClaw＝NVIDIA 安全沙盒層(可為我所用)。
+
+**A. 吸收好設計（建立在他們基礎之上）**
+- [ ] 2.10.1 **檔案式透明記憶**：分身記憶可匯出/匯入 `AGENTS.md`/`SOUL.md`/`MEMORY.md`（可攜/git 版控/降鎖廠商疑慮），底層仍存 DB（多租戶）——學 OpenClaw 的透明，保留我們的托管
+- [ ] 2.10.2 **`SKILL.md` 相容 + 技能市集匯入**（併 §2.7.9）：吃 ClawHub/Claude Code 格式技能，一鍵招募
+- [ ] 2.10.3 **多通路 adapter 擴充**：WhatsApp(Baileys)/Signal/Slack（承 §2.2/2.3；OpenClaw 20+ 內建、我們 LINE 為主要補）
+- [ ] 2.10.4 心跳自主可讀策略：HEARTBEAT 式清單（補現有 autonomous，讓自主決策可讀可調）
+
+**B. 補他們的漏洞（把洞補起來＝差異化賣點）**
+- [ ] 2.10.5 **技能安全掃描**（解他們 26% 漏洞/惡意技能痛點）：匯入/發布技能前自動掃 prompt injection／資料外洩／越權指令，擋惡意技能上架——這是我們吃 OpenClaw 技能生態的**同時比他們安全**
+- [ ] 2.10.6 安全賣點明確化（我們已有→標出來對照）：**不曝露公網**（托管，無 CVE-2026-25253 那種曝露）+ 逐項 approval + 預算硬上限 + 伺服器隔離沙盒 + RLS 多租戶
+- [ ] 2.10.7 自主/破壞性動作永遠把關（紅線，已有→對照他們「自動寄申訴/談車價」失控案例）
+- [ ] 2.10.8 🆕 **行銷對照頁**「托管安全 vs 自架風險」：拿 CVE-2026-25253 / 26% 技能漏洞當佐證，打「不會架站也安全」
+
+**C. 再疊分身島差異化（在補好的基礎上接我們的）**
+- [ ] 2.10.9 零架設 + 繁中 + 大眾漏斗（運勢/寵物/教育）+ 變現（Z幣/訂閱/LINE）＝OpenClaw 完全沒碰的市場，持續強化
+- [ ] 2.10.10 enterprise 探索：NemoClaw/OpenShell 沙盒相容評估（egress/snapshot/network policy），主打「合規安全托管代理」
+
 ---
 
 ## 三、機會島（Opportunity Island · 承 0713/0714）
