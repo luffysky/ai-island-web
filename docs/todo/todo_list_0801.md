@@ -187,6 +187,56 @@
 - [ ] 2.7.10 技能 YAML 完整規格；2.7.11 內建技能 workflow 補齊（GitHub管家/檔案整理師…）
 - [x] ~~2.7.12 技能成效統計 + 熱門排序~~ ✅ 0731（usage 早已算〔used/succeeded〕；熱門排序＝skills API 依 used 次數穩定排序、常用技能浮上快速取用列與各分類內，無需 migration）；[ ] 2.7.13「用 Agent→學會建 Agent」教學閉環（未做）
 
+### 2.8 語音代理 + 裝置控制（0801 新增·規格 `docs/speech_agent.md`）
+> ＊**架構前提（已盤點）**：**七成地基已在、不重造**——① 統一 Tool Registry `tools.ts` `TOOLS[]`（`AgentTool{name,description,args,risk,platforms,execute}`）＝md §五要的 registry；② 風險分級確認 read自動／write·dangerous走 `awaiting_approval`+`approvalSummary`+前端[執行]/[取消]＝md §七；③ 語音走既有 `launchAgentTask` → 天生共用 thread／`agent_memory`／RAG／每日預算／approval（md §五「不建第二套 Agent、不繞權限」自動滿足）；④ 桌面助手/裝置配對已有雛形 `device.*` stub＋`/api/agent/bridge/pair`＋`/api/agent/devices`＝md §八/§九地基（＝既有 2.1.2/2.5）。
+> ＊**唯一真缺口＝執行位置**：Agent 跑在**伺服器背景**（`runAgentTaskDetached`、每工具 `platforms:["server"]`），但 `open_url`/`navigate_internal` 要動的是**使用者的瀏覽器分頁**。解法＝這兩支工具 `execute()` 回一個 **client-action 信封**（如 `{clientAction:{type:"navigate",path}}`），前端本就在輪詢 `/api/agent/tasks/[id]`、收到就 `router.push`/`window.open` 執行再 TTS——**同一條 pipeline、只多一層客戶端中繼**（見 2.8.3.1）。`search_course`/`agent_status` 純查資料→伺服器端直上。
+> ＊**紅線沿用**：對外/破壞性動作永遠逐項批准（語音回答「執行」只在畫面有 pending confirmation 時生效）；語音不直接執行 shell；不常駐監聽/無喚醒詞（push-to-talk）；預設不存錄音/音訊。
+
+- [ ] **2.8.1 語音 provider 抽象層（純前端·免費·零後端）**
+  - [ ] 2.8.1.1 介面 `SpeechToTextProvider` / `TextToSpeechProvider`（`src/features/voice/providers/`、不把 Web Speech API 寫死進聊天元件）
+  - [ ] 2.8.1.2 `BrowserSpeechToTextProvider`（`webkitSpeechRecognition`、預設 `zh-TW`、partial/final/error callback、非無限循環錄音）
+  - [ ] 2.8.1.3 `BrowserTextToSpeechProvider`（`speechSynthesis`、語速/音調/選音、可停/暫停/續播）
+  - [ ] 2.8.1.4 `isSupported()` 偵測 + **不支援自動退回文字模式**（不假設所有瀏覽器支援）
+  - [ ] 2.8.1.5 未來預留類別命名位（`WhisperLocalSTT`/`PiperLocalTTS`/`CloudSTT`/`CloudTTS`，僅介面不實作）
+- [ ] **2.8.2 語音 UI（掛既有 AgentClient 輸入區、不動文字輸入）**
+  - [ ] 2.8.2.1 麥克風按鈕 + `VoiceState`（idle/requesting-permission/listening/processing/agent-working/speaking/error）
+  - [ ] 2.8.2.2 listening：錄音動畫 + 即時 partial transcript + 停止鈕；transcript 預覽供確認（`transcript-preview`）
+  - [ ] 2.8.2.3 agent-working：顯示工具名稱與進度（複用既有任務輪詢/步驟串流）；speaking：立即停止播放鈕
+  - [ ] 2.8.2.4 error：繁中可讀訊息（未授權/不支援/沒偵測到語音/中斷/服務錯誤），不吐原始 exception（`speech-error-message.ts`）
+  - [ ] 2.8.2.5 再次按麥克風時**先停 TTS 再收音**；連續快點防抖
+  - [ ] 2.8.2.6 RWD + 亮暗（Android Chrome / Windows Chrome 都要顧）
+- [ ] **2.8.3 第一批安全工具（掛既有 `TOOLS[]` registry）**
+  - [ ] 2.8.3.1 **client-action 中繼層**（`open_url`/`navigate_internal` 執行地基）——**硬性契約（GPT 覆核）**：
+    - **結構化白名單 discriminated union**、拒任意 JS/函式名/模型生成碼：`{id,type:"navigate_internal",path}` | `{id,type:"open_url",url,target:"same-tab"|"new-tab"}`
+    - 每個 action 有**唯一 id**＋生命週期 `pending→acknowledged→completed|failed|cancelled`；前端保存 session 已處理 id（Set），re-render／重新輪詢／網路重試**都不重複開頁或導航**；ack route 冪等（終態不再轉移）
+    - **不繞既有 approval/權限**：需審批的（外部網域 open_url）先走 `awaiting_approval`+`/api/agent/approvals`，核准後 server 才派發信封
+    - **完成語意寫回 task/tool log**：server 派信封只標 `pending`（**不直接 completed**）；前端執行後回報，才更新該 action 狀態並補一筆步驟——Agent 看到的是「真完成/失敗/待操作」
+    - 存於 `agent_tasks.client_actions jsonb`（唯一 DB 變更＝加一欄、非新表；RLS 隨 task）＋ ack route `/api/agent/tasks/[id]/client-action`（POST 冪等）
+    - **原子更新（GPT-2 點4）**：append／狀態更新一律走 **SQL function/RPC 的單條 row-lock UPDATE**（append＝jsonb `||`；狀態＝`jsonb_agg` 重映射該 id、終態不覆寫），**嚴禁 Node 端 read-modify-write 整欄覆寫**（並行 action 會遺失）。函式 `agent_client_action_append` / `agent_client_action_update`（migration 跑 prod）。
+    - **new-tab 需使用者手勢（GPT-2 點1）**：`same-tab`→輪詢回呼可直接 `location.assign`；`new-tab`**不可**在輪詢回呼 auto `window.open`（會被擋）→ 顯示「待開啟」卡、使用者點「開啟」才在點擊事件內 `window.open`；被擋回 `failed`、**不自動重試**；一次任務最多開 1 個外部分頁。
+    - **輪詢不因 status=done 停（GPT-2 點2）**：只要還有 pending/acknowledged client-action 就續輪詢；UI 明確三態＝①Agent 推理完成 ②等待瀏覽器執行 ③整體操作完成（所有 action 終態才由②→③、未終態不得顯示整體完成）。
+    - **可恢復、不卡死（GPT-2 點3）**：action 帶 `createdAt/acknowledgedAt/completedAt`；`acknowledged` 逾時未終態＝stale → UI 顯示「需重試」由**使用者手動**重試（手勢內執行）；`failed`／stale **不自動重開**、必須再次確認。
+  - [ ] 2.8.3.2 `open_url`（只允許 `https:`＋本機 `http://localhost`；擋 `javascript:`/`data:`/`file:`；popup 被擋提示；不靜默開大量分頁；risk=low→顯示將做什麼）
+  - [ ] 2.8.3.3 `navigate_internal`（驗 path 屬允許站內 route、用 Next router 不整頁重載；risk=low）
+  - [ ] 2.8.3.4 `search_course`（伺服器端查教材/辭典/章節/功能，type=all|course|dictionary|feature；risk=read）
+  - [ ] 2.8.3.5 `agent_status`（查目前有哪些 agent 任務/是否執行中；risk=read）
+  - [ ] 2.8.3.6 風險等級對應：md `read/low/medium/high` ↔ 既有 `read/write/dangerous`（medium 要確認、high 第一版禁止或強制**畫面**手動確認、不可只靠語音）
+- [ ] **2.8.4 使用者設定（localStorage 先行、不無條件建表）**
+  - [ ] 2.8.4.1 語速/是否朗讀/autoSend/locale/preferredVoice **先存 localStorage**（純本機偏好、不跨裝置）；`user_voice_preferences` Supabase 表**延後**——確定有跨裝置同步需求才建（GPT 點 9：不為符合 md 無條件加表）。瀏覽器支援狀態一律不入庫。
+  - [ ] 2.8.4.2 `voiceAutoSend`（預設 false：填入框待確認；true：辨識結束倒數 1–2 秒自動送、期間可取消）
+  - [ ] 2.8.4.3 `voiceReplyEnabled`（開才朗讀）+ `sanitizeTextForSpeech()`（去 Markdown/程式碼/長網址/JSON/工具原始紀錄/system/推理；過長只讀摘要或前段、畫面仍顯示全文）
+- [ ] **2.8.5 測試（md §十三 + GPT-2 補案）**：
+  - 單元＝`sanitizeTextForSpeech`／URL scheme 驗證（擋 js:·data:·file:·blob:、只 https＋dev localhost）／`navigate_internal` path 驗證（須 `/` 開頭、站內白名單、擋 protocol＋`//` 跳轉＋外部）／工具 input schema／風險等級與確認判斷／語音錯誤轉繁中／voice state transition。
+  - client-action 狀態機＝`pending→acknowledged→completed|failed|cancelled` 合法轉移；**終態不再轉移（冪等）**；同 action id 二次收到不重複執行（去重）。
+  - 原子性＝**兩個並行 append 都保留不遺失**；並行 status update 只一個生效且不覆寫終態（RPC 行為測試）。
+  - new-tab **無使用者手勢不 auto-open**、same-tab 走 `location.assign`；**popup blocked → failed、不自動重試**；一次任務最多 1 外部分頁。
+  - 輪詢＝`status=done` 但仍有 pending action → **續輪詢**、UI 不顯示整體完成；全部終態才停並顯示整體完成；stale `acknowledged` → 標「需重試」、不自動重開。
+  - 整合＝語音結果進既有 Agent、文字輸入不受影響、呼叫 `navigate_internal`/`open_url`、不支援 STT 退回文字、取消確認不執行、TTS 播放中按麥克風先停播。
+- [ ] **2.8.6 收尾**：`docs/agent-device-control-roadmap.md`（Phase 2/3 藍圖：手機控電腦/Desktop Agent/裝置配對/多裝置並行/Android ADB Adapter/權限模型/確認/緊急停止/Whisper·Piper 未來替換點）；tsc/vitest/next build 全綠；更新工作日誌。
+- **Phase 2/3（架構預留、本輪不實作，接既有 2.5 桌面助手）**
+  - [ ] 2.8.7 手機語音→AI 島後端建 Device Command→已配對 Desktop Agent 執行白名單工具→回填（`device_connections`/`device_commands` 表、RLS、`DeviceTransport` 抽象；service role key 絕不放桌面端）
+  - [ ] 2.8.8 Desktop Agent 控 Android（Desktop→`AndroidDeviceAdapter`→ADB，**不從 AI 島伺服器直連手機**；listDevices/openApp/openUrl/home/back/screenshot；以 `deviceId` 為基礎、`DeviceTarget` single/group/all-authorized、每台獨立回報、設最大並行、執行前顯示將操作哪些裝置）
+
 ---
 
 ## 三、機會島（Opportunity Island · 承 0713/0714）
