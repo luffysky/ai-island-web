@@ -192,20 +192,20 @@
 > ＊**唯一真缺口＝執行位置**：Agent 跑在**伺服器背景**（`runAgentTaskDetached`、每工具 `platforms:["server"]`），但 `open_url`/`navigate_internal` 要動的是**使用者的瀏覽器分頁**。解法＝這兩支工具 `execute()` 回一個 **client-action 信封**（如 `{clientAction:{type:"navigate",path}}`），前端本就在輪詢 `/api/agent/tasks/[id]`、收到就 `router.push`/`window.open` 執行再 TTS——**同一條 pipeline、只多一層客戶端中繼**（見 2.8.3.1）。`search_course`/`agent_status` 純查資料→伺服器端直上。
 > ＊**紅線沿用**：對外/破壞性動作永遠逐項批准（語音回答「執行」只在畫面有 pending confirmation 時生效）；語音不直接執行 shell；不常駐監聽/無喚醒詞（push-to-talk）；預設不存錄音/音訊。
 
-- [ ] **2.8.1 語音 provider 抽象層（純前端·免費·零後端）**
+- [x] ~~**2.8.1 語音 provider 抽象層（純前端·免費·零後端）**~~ ✅ 0804（Browser STT/TTS + hooks + sanitize + 錯誤繁中；11 測試）
   - [ ] 2.8.1.1 介面 `SpeechToTextProvider` / `TextToSpeechProvider`（`src/features/voice/providers/`、不把 Web Speech API 寫死進聊天元件）
   - [ ] 2.8.1.2 `BrowserSpeechToTextProvider`（`webkitSpeechRecognition`、預設 `zh-TW`、partial/final/error callback、非無限循環錄音）
   - [ ] 2.8.1.3 `BrowserTextToSpeechProvider`（`speechSynthesis`、語速/音調/選音、可停/暫停/續播）
   - [ ] 2.8.1.4 `isSupported()` 偵測 + **不支援自動退回文字模式**（不假設所有瀏覽器支援）
   - [ ] 2.8.1.5 未來預留類別命名位（`WhisperLocalSTT`/`PiperLocalTTS`/`CloudSTT`/`CloudTTS`，僅介面不實作）
-- [ ] **2.8.2 語音 UI（掛既有 AgentClient 輸入區、不動文字輸入）**
+- [x] ~~**2.8.2 語音 UI（掛既有 AgentClient 輸入區、不動文字輸入）**~~ ✅ 0804（VoiceControls：麥克風+預覽+錯誤+autoSend 倒數+設定；移除舊 inline STT；TTS 朗讀回覆；不支援退回文字）
   - [ ] 2.8.2.1 麥克風按鈕 + `VoiceState`（idle/requesting-permission/listening/processing/agent-working/speaking/error）
   - [ ] 2.8.2.2 listening：錄音動畫 + 即時 partial transcript + 停止鈕；transcript 預覽供確認（`transcript-preview`）
   - [ ] 2.8.2.3 agent-working：顯示工具名稱與進度（複用既有任務輪詢/步驟串流）；speaking：立即停止播放鈕
   - [ ] 2.8.2.4 error：繁中可讀訊息（未授權/不支援/沒偵測到語音/中斷/服務錯誤），不吐原始 exception（`speech-error-message.ts`）
   - [ ] 2.8.2.5 再次按麥克風時**先停 TTS 再收音**；連續快點防抖
   - [ ] 2.8.2.6 RWD + 亮暗（Android Chrome / Windows Chrome 都要顧）
-- [ ] **2.8.3 第一批安全工具（掛既有 `TOOLS[]` registry）**
+- [~] **2.8.3 第一批安全工具（掛既有 `TOOLS[]` registry）** — client-action 中繼 + navigate_internal/open_url ✅ 0804；search_course/agent_status ⬜ 下批
   - [ ] 2.8.3.1 **client-action 中繼層**（`open_url`/`navigate_internal` 執行地基）——**硬性契約（GPT 覆核）**：
     - **結構化白名單 discriminated union**、拒任意 JS/函式名/模型生成碼：`{id,type:"navigate_internal",path}` | `{id,type:"open_url",url,target:"same-tab"|"new-tab"}`
     - 每個 action 有**唯一 id**＋生命週期 `pending→acknowledged→completed|failed|cancelled`；前端保存 session 已處理 id（Set），re-render／重新輪詢／網路重試**都不重複開頁或導航**；ack route 冪等（終態不再轉移）

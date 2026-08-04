@@ -3,6 +3,7 @@
 // MVP：web.fetch / dictionary.lookup 走伺服器真的能跑；device.* 是 stub（Phase 1b 接 Electron Bridge 才真的動使用者的機器）。
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { runCode } from "@/lib/code-runner";
+import { validateInternalPath, validateExternalUrl } from "@/lib/agent/client-actions";
 
 export type RiskLevel = "read" | "write" | "dangerous";
 export type Platform = "web" | "windows" | "macos" | "android" | "ios" | "server";
@@ -170,6 +171,20 @@ async function searchLinks(query: string, limit: number, userId?: string): Promi
   const brave = await braveSearch(query, limit, userId);
   if (brave.length) return brave;
   return ddg;  // 全部沒有 → 至少回 DDG 撈到的那一兩筆
+}
+
+// 派發一個 client-action 信封進 agent_tasks.client_actions（原子 RPC append）。
+// 只標 status:"pending"——完成/失敗由前端執行後回報（不因派發就算 completed）。
+async function dispatchClientAction(ctx: ToolContext, action: Record<string, unknown>): Promise<ToolResult> {
+  if (!ctx?.taskId || !ctx?.userId) return { ok: false, error: "缺任務內容，無法派發瀏覽器動作" };
+  const id = globalThis.crypto?.randomUUID?.() ?? `ca_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  const full = { id, status: "pending", createdAt: new Date().toISOString(), ...action };
+  try {
+    const admin = createSupabaseAdmin();
+    const { error } = await admin.rpc("agent_client_action_append", { p_task_id: ctx.taskId, p_user_id: ctx.userId, p_action: full });
+    if (error) return { ok: false, error: error.message };
+    return { ok: true, data: { dispatched: true, actionId: id, status: "pending", note: "已交給你的瀏覽器執行，完成後我會知道結果。" } };
+  } catch (e: any) { return { ok: false, error: e?.message ?? "派發失敗" }; }
 }
 
 export const TOOLS: AgentTool[] = [
@@ -467,6 +482,34 @@ export const TOOLS: AgentTool[] = [
       const { data } = await q;
       if (!data || !data.length) return { ok: true, data: { found: false, note: "機會島目前沒有符合的開放機會" } };
       return { ok: true, data: { found: true, results: data } };
+    },
+  },
+  // ── client-action 工具（platforms:["web"]）：execute() 只在伺服器「派發」信封進 agent_tasks.client_actions，
+  //     真正的導航/開頁由前端輪詢後在使用者分頁執行、再回報結果（見 client-actions.ts / ack route）──
+  {
+    name: "navigate_internal",
+    description: "帶使用者在 AI 島站內切換到指定頁面（用他目前分頁的前端路由、不重整）。只吃站內路徑（/ 開頭，如 /chapters/ch26、/dictionary、/fortune、/agent）。要開外部網站請用 open_url。",
+    args: { path: "站內路徑，必須 / 開頭（如 /chapters/ch26 或 /fortune）" },
+    risk: "read",
+    platforms: ["web"],
+    async execute(args, ctx) {
+      const v = validateInternalPath(args?.path);
+      if (!v.ok) return { ok: false, error: v.reason ?? "站內路徑不合法" };
+      return dispatchClientAction(ctx, { type: "navigate_internal", path: v.path });
+    },
+  },
+  {
+    name: "open_url",
+    description: "在使用者的瀏覽器打開一個外部網址（如 YouTube、某篇文章）。只允許 https。預設另開分頁（會請使用者點一下再開、避免被瀏覽器擋）。站內換頁請改用 navigate_internal。",
+    args: { url: "完整外部網址（https://…）", target: "same-tab 或 new-tab（預設 new-tab）" },
+    risk: "write",   // 對外開頁 → 走既有 approval，讓使用者先看到網址再放行
+    platforms: ["web"],
+    async execute(args, ctx) {
+      const allowLocalhost = process.env.NODE_ENV !== "production";
+      const v = validateExternalUrl(args?.url, { allowLocalhost });
+      if (!v.ok) return { ok: false, error: v.reason ?? "網址不合法" };
+      const target = args?.target === "same-tab" ? "same-tab" : "new-tab";
+      return dispatchClientAction(ctx, { type: "open_url", url: v.url, target });
     },
   },
   // ── 以下 device.* 為 Phase 1b stub：需本機桌面助手；現在會觸發權限流程、但回「尚未連接」 ──

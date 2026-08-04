@@ -5,6 +5,9 @@ import { Bot, Send, Loader2, CheckCircle2, XCircle, Wrench, Eye, ShieldAlert, Sh
 import { FeatureGuide } from "@/components/FeatureGuide";
 import { VoiceControls } from "@/features/voice/components/VoiceControls";
 import { useVoiceReply } from "@/features/voice/hooks/use-voice-agent";
+import { useRouter } from "next/navigation";
+import { ClientActionBar } from "./ClientActionBar";
+import { isTerminal, needsUserGesture, type ClientAction } from "@/lib/agent/client-actions";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -112,6 +115,10 @@ export function AgentClient() {
   const voiceReply = useVoiceReply();   // 語音輸出：依偏好朗讀分身回覆（先 sanitize、同任務只唸一次）
   const maybeSpeakRef = useRef(voiceReply.maybeSpeak);
   maybeSpeakRef.current = voiceReply.maybeSpeak;   // 用 ref 讓輪詢 effect 不必把 voiceReply 放進 deps（避免每次 render 重設 interval）
+  const router = useRouter();
+  const [clientActions, setClientActions] = useState<ClientAction[]>([]);   // 2.8.3 目前任務的 client-action（導航/開頁）
+  const processedRef = useRef<Set<string>>(new Set());   // 已自動執行過的 action id（session 去重、防 re-render/重輪詢重跑）
+  const finalizedRef = useRef<string>("");               // 已跑過完成收尾的 taskId（推理完成的 side-effect 只跑一次）
   const onlineDevice = devices.find((d) => d.online);
   const busy = starting || (!!taskId && LIVE.includes(status));   // 任務進行中（背景執行 + 輪詢觀看）
 
@@ -341,6 +348,7 @@ export function AgentClient() {
     if (busy) return;
     setThreadId(""); setThreadTurns([]); setSteps([]); setSummary("");
     setApproval(null); setStatus(""); setTaskId(""); setWatching(""); setGoal("");
+    setClientActions([]); processedRef.current = new Set(); finalizedRef.current = "";
   }, [busy]);
 
   // 依目前模式把使用者輸入導向對的輸出形式（加前綴；agent 模式不加）
@@ -353,6 +361,7 @@ export function AgentClient() {
     const text = g.trim();
     if (!text || busy) return;
     setStarting(true); setSteps([]); setSummary(""); setApproval(null); setStatus("planning"); setTaskId(""); setWatching(""); setPlan([]); setSuggestedSkill(null);
+    setClientActions([]); processedRef.current = new Set(); finalizedRef.current = "";   // 2.8.3 新任務 → 清 client-action 狀態
     try {
       const res = await fetch("/api/agent/tasks", {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ goal: text, skillId: skillId || undefined, threadId: threadId || undefined, costMode }),
@@ -401,7 +410,10 @@ export function AgentClient() {
     setThreadId(task.thread_id ?? "");                    // 延續脈絡：回到該對話串
     setPlan(task.plan ?? []);
     loadThreadTurns(task.thread_id ?? "", id);
-    setWatching(LIVE.includes(task.status) ? id : "");   // 還在跑 → 開始輪詢刷新
+    setClientActions(Array.isArray(task.client_actions) ? task.client_actions : []);
+    processedRef.current = new Set(); finalizedRef.current = "";
+    const hasPendingCA = (task.client_actions ?? []).some((a: ClientAction) => !isTerminal(a.status));
+    setWatching(LIVE.includes(task.status) || hasPendingCA ? id : "");   // 還在跑 / 有未結動作 → 輪詢
   }, [busy, loadThreadTurns]);
 
   // 遠端觀看：非本機發起（例如手機開推播連結）的進行中任務，靠輪詢刷新狀態/步驟/待確認
@@ -418,8 +430,14 @@ export function AgentClient() {
         setApproval(pendingApproval(approvals));
         setPlan(task.plan ?? []);
         setSuggestedSkill(task.suggested_skill ?? null);
-        if (!LIVE.includes(task.status)) {
-          setWatching(""); loadHistory();
+        const cas: ClientAction[] = Array.isArray(task.client_actions) ? task.client_actions : [];
+        setClientActions(cas);   // 2.8.3：驅動自動執行 effect + ClientActionBar
+        const reasoningDone = !LIVE.includes(task.status);
+        const hasPendingCA = cas.some((a) => !isTerminal(a.status));  // 還有導航/開頁沒完成
+        // 推理完成的收尾只跑一次（就算為了 client-action 還在輪詢）
+        if (reasoningDone && finalizedRef.current !== watching) {
+          finalizedRef.current = watching;
+          loadHistory();
           maybeSpeakRef.current(watching, task.result?.summary ?? task.error ?? "");  // 語音回覆（開了才唸、同任務只一次）
           if (task.thread_id) loadThreadTurns(task.thread_id, watching);  // 完成 → 刷新本串前文
           if (task.status === "succeeded") {
@@ -430,10 +448,49 @@ export function AgentClient() {
             }, 4000);
           }
         }
+        // 只有「推理完成」且「沒有未結的 client-action」才停止輪詢（GPT 點 2）
+        if (reasoningDone && !hasPendingCA) setWatching("");
       } catch { /* ignore */ }
     }, 2000);
     return () => clearInterval(iv);
   }, [watching, loadHistory, loadThreadTurns, loadMemory]);
+
+  // client-action 回報：前端執行導航/開頁後，把結果寫回 task（RPC 冪等）；回傳更新後的陣列刷新 UI
+  const reportClientAction = useCallback(async (tid: string, actionId: string, phase: string, error?: string) => {
+    try {
+      const r = await fetch(`/api/agent/tasks/${tid}/client-action`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ actionId, phase, error }),
+      });
+      if (r.ok) { const d = await r.json(); if (Array.isArray(d.client_actions)) setClientActions(d.client_actions); }
+    } catch { /* ignore */ }
+  }, []);
+
+  // 執行一個 client-action：new-tab 開頁需使用者手勢（由 ClientActionBar 按鈕呼叫）；其餘自動。
+  const executeClientAction = useCallback(async (tid: string, a: ClientAction) => {
+    if (a.type === "open_url" && a.target === "new-tab") {
+      const w = window.open(a.url, "_blank", "noopener,noreferrer");   // 必在點擊事件內才不會被擋
+      await reportClientAction(tid, a.id, "acknowledged");
+      await reportClientAction(tid, a.id, w ? "completed" : "failed", w ? undefined : "瀏覽器擋住彈出視窗，請允許彈窗或改用同分頁開啟");
+      return;
+    }
+    // 自動類（站內導航 / same-tab 開頁）會離開目前頁 → 先樂觀回報再導航
+    await reportClientAction(tid, a.id, "acknowledged");
+    await reportClientAction(tid, a.id, "completed");
+    if (a.type === "navigate_internal") router.push(a.path);
+    else window.location.assign(a.url);
+  }, [reportClientAction, router]);
+
+  // 自動執行：pending 且「不需手勢」的 client-action（站內導航 / same-tab）→ 去重後自動跑
+  useEffect(() => {
+    if (!taskId) return;
+    for (const a of clientActions) {
+      if (a.status !== "pending" || needsUserGesture(a)) continue;
+      if (processedRef.current.has(a.id)) continue;   // 已處理 → 不重跑（re-render/重輪詢/重試都安全）
+      processedRef.current.add(a.id);
+      void executeClientAction(taskId, a);
+    }
+  }, [clientActions, taskId, executeClientAction]);
 
   // 深連結 /agent?task=<id>（推播點進來）：自動載入該任務、若有待確認就顯示、可直接在手機上批准
   useEffect(() => {
@@ -663,6 +720,9 @@ export function AgentClient() {
             ))}
 
             {approval && <ApprovalCard req={approval} onDecide={decide} />}
+
+            {/* 2.8.3 需使用者手勢的 client-action：new-tab 開頁（點才開）、stale/失敗重試 */}
+            {taskId && <ClientActionBar actions={clientActions} onExecute={(a) => executeClientAction(taskId, a)} />}
 
             {summary && !approval && (
               <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-3.5 sm:p-4">

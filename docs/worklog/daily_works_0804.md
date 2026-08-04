@@ -27,3 +27,11 @@
 - `components/VoiceControls.tsx`：麥克風＋即時 partial 預覽＋錯誤繁中＋autoSend 倒數（可取消）＋設定彈窗（autoSend/朗讀/語速）＋朗讀中停止鈕；**不支援自動不顯示（保留文字聊天）**；再次收音前先停播。
 - AgentClient 接線：輸入區換成 `<VoiceControls>`（STT 填輸入框、autoSend 走既有 `run()`）；輪詢完成時 `maybeSpeak` 朗讀 summary（用 ref 避免 effect 重設 interval）。
 - 語音**完全走既有 pipeline**（thread/記憶/RAG/預算/approval 不變）；tsc ✅、next build ✅（僅既有 admin/errors 警告）。
+
+## Batch 3 ✅ client-action 中繼 + navigate_internal / open_url
+- `lib/agent/client-actions.ts`（純函式、10 測試）：discriminated union（navigate_internal / open_url）；`validateInternalPath`（/ 開頭+站內白名單+擋 //·scheme·traversal·空白；連字號路由如 /message-coach 過）；`validateExternalUrl`（正式只 https、dev 可 localhost、擋 js:·data:·file:·blob:）；狀態機 `canTransition`（completed/cancelled overwrite-protected 冪等；**failed 保留手動重試**推進＝GPT 點 3）；`needsUserGesture`（new-tab 開頁）；`isStale`（acknowledged 逾 30s）。
+- migration `agent_client_actions_migration.sql`（跑 prod）：`agent_tasks.client_actions jsonb` + **兩支原子 RPC**——`agent_client_action_append`（jsonb `||` 單條 row-lock、並行不遺失）、`agent_client_action_update`（jsonb_agg 重映射該 id、completed/cancelled 不覆寫）。**杜絕 Node 端 read-modify-write**（GPT 點 4）。
+- `tools.ts`：`dispatchClientAction`（只標 pending、不因派信封就 completed＝GPT 點 6）；`navigate_internal`(read 自動)、`open_url`(write→走既有 approval 讓使用者先看網址＝GPT 點 5/點 3)。
+- ack route `/api/agent/tasks/[id]/client-action`（POST 冪等，phase→status+時間戳）。
+- AgentClient 執行器：輪詢讀 `client_actions`→自動跑「導航/same-tab」（`processedRef` session 去重＝GPT 點 2）；**new-tab 開頁不 auto window.open**（會被擋）→ `ClientActionBar` 卡片由使用者點「開啟」在手勢內開、popup 被擋回 failed 不假裝完成（GPT 點 1）；**輪詢不因 status=done 停**（還有未結 client-action 就續輪詢、收尾只跑一次＝GPT 點 2）；stale/failed 顯示「重試」由使用者手動（GPT 點 3）。
+- 全綠：tsc ✅ · vitest **208**（+21）✅ · next build ✅。
