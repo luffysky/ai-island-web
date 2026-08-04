@@ -74,7 +74,10 @@ export function SocialClient() {
     <div className="space-y-5">
       <div>
         <h1 className="text-2xl font-bold inline-flex items-center gap-2"><Megaphone className="text-accent" size={24} /> 社群媒體發布中心</h1>
-        <p className="text-sm text-fg-muted mt-1">在一個地方寫、選平台、排程；你自己發或 AI 起草→你批准都走這裡。<Link href={"/settings/connections" as any} className="text-accent inline-flex items-center gap-0.5 hover:underline"><Link2 size={13} /> 連結帳號</Link></p>
+        <p className="text-sm text-fg-muted mt-1">在一個地方寫、選平台、存成草稿／排程草稿。<Link href={"/settings/connections" as any} className="text-accent inline-flex items-center gap-0.5 hover:underline"><Link2 size={13} /> 連結帳號</Link></p>
+        <div className="mt-2 rounded-xl border border-amber-500/40 bg-amber-500/5 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+          ⚠️ <b>發送功能開發中</b>：目前可撰稿、選平台、存草稿與排程草稿；<b>實際自動發送到各平台的功能尚未上線</b>（需先接各平台 send adapter／OAuth，見待辦 §2.3.2）。排程時間到目前不會自動發出，請先自行複製貼出。
+        </div>
       </div>
 
       {/* 撰稿器 */}
