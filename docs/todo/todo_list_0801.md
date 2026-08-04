@@ -425,6 +425,19 @@
 
 ## 七、安全 / 合規 / 品質 / 技術債
 
+### 7.0 後台空殼修復（0805 全 admin 審計 · subagent 讀遍 105 頁）
+> 結論：**後台 ~95% 是真的**（100+ 頁 fetch 端點全對應到有實作的 route、讀寫真表；沒發現打不存在 API/回假資料/501 stub）。**只有 4 個空殼**：
+- [ ] 7.0.1 🔴**高** `/admin/seo/redirects`：「＋新增轉址」是**裸 button 無 onClick/無 client/無 form**，且無 `seo-redirects` 寫入 API；**更嚴重——`seo_redirects` 表存在但全站沒有任何 middleware 去套用轉址**（加了也不會生效）。修：`RedirectsClient` + `/api/admin/seo-redirects`(POST/PATCH/DELETE) + **middleware 讀表套 301/302**（三件都要才算真）。
+- [ ] 7.0.2 **中** `/admin/marketing/publish`：「一鍵發佈」全是**寫死靜態卡、無任何 onClick/fetch**；FB/IG/X/Threads/LinkedIn 無發佈 route；`/admin/blog` **死連結**（頁不存在）。修：標題改「發佈通路狀態」或實作各平台 OAuth publish（併 §2.3.2，需🔴 token）+ 修死連結。
+- [ ] 7.0.3 **中** `/admin/achievements`：標「成就管理」實為**唯讀**、無 achievements CRUD route（`grant/achievement` 是發成就給人、非管理定義）。修：標題改「成就檢視」或補 `/api/admin/achievements` CRUD。
+- [ ] 7.0.4 **低** `/admin/strategy`（本次新建競品分析）：100% 靜態寫死文件——**刻意如此**（策略文檔非資料功能）。可加註「靜態分析文件」以免誤認動態頁。
+- [ ] 7.0.5 **DB schema 對照**（審計唯一保留項）：各查表頁的程式碼皆真實 query，但未逐表核對 migration 是否都建。跑一次 `scripts/audit-db-columns.mjs` + schema 對照確認無「查不存在的表」。
+
+### 7.0b 升級 / 新功能想法（0805 觀察）
+- [ ] 讓 `/admin/strategy` 半動態：接 `competitor_snapshots`（`/admin/marketing/competitor` 已是真功能）自動追競品，靜態分析 + 動態快照並存
+- [ ] 後台「一鍵健檢」聚合頁：把 `health`/`site-audit`/`db-check`/`errors`/`ga4` 關鍵指標收成一張 admin 首屏卡（現在散在各頁）
+- [ ] `/admin/blog` 補上（marketing/publish 死連結指向它）或移除該連結
+
 - [~] 7.1 **真 CSP header**：~~先上 Report-Only~~ ✅ 0722（`next.config.mjs` headers 加 `Content-Security-Policy-Report-Only`：default/base/object-none/frame-ancestors/form-action/img/font/style/script/connect/media/worker/manifest；只回報不阻擋、不會弄壞站）。待收斂：觀察 console/report 無誤 → 改 `Content-Security-Policy`（enforce）+ script-src 換 nonce（需 middleware 注入、去掉 unsafe-inline/eval）+ connect-src 收成明確網域
 - [ ] 7.2 **Cloudflare Turnstile + 蜜罐**（repo 零實作、只在章節 JSON 出現）
 - [x] ~~7.3 **GDPR `user_settings` 表**（無此表、gdpr/export 靜默略過）~~ ✅ 0721：移除死查詢、改匯出真的有的 per-user 設定表 `user_blog_settings` + `email_subscriptions`（通知/LINE 偏好本就在 profiles.* 已 dump）；DB 實測兩表 user_id OK。

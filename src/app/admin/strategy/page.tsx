@@ -15,6 +15,7 @@ export default function StrategyPage() {
       />
 
       <p className="text-sm text-fg-muted leading-relaxed">
+        <span className="inline-block mr-1.5 px-1.5 py-0.5 rounded bg-bg-elevated text-xs text-fg-dim">📄 靜態分析文件</span>
         更新 2026-08-05。資料經 WebFetch/WebSearch 逐一查證（非臆測），來源見頁尾。完整文件：
         <code className="mx-1 px-1 rounded bg-bg-elevated">docs/competitive/openclaw-nemoclaw-swot.md</code>
       </p>
