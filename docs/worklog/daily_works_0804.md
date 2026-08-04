@@ -76,3 +76,9 @@
   - 2.9.2 `browser.*`（Playwright headless、延遲載入；550fe7e）
 - **2.9.4 緊急停止**（本 repo）：`/api/agent/tasks/cancel-all`（取消所有 LIVE 任務 + 待辦 device_calls）+ `/agent`「⏹ 全部停止」鈕。**檢查**：API✅新路由 · DB✅更新既有表無 migration · UI✅鈕接路由+刷新 · RWD✅在既有 flex-wrap 列 · PWA n/a。tsc/next build ✅。
 - 剩 2.9.5 `.exe` 打包 · 2.9.6 Android ADB · 2.9.7 傳輸升級。
+
+## H2 · §2.9.5–2.9.7 完成（0805，bridge repo）
+- **2.9.5 打包**：Node SEA（`sea-config.json`+`build.mjs`→`npm run build` 單一執行檔）+ `release.yml`（matrix win/mac/linux、**macos-latest 免費 build Mac 版、不用有 Mac**）。iOS：沙盒禁 fs/shell/常駐→做不出等效桌面助手（平台限制非硬體）。
+- **2.9.6 Android adb**（六件）：AI 島 `android.list_devices/open_url/open_app/home/back/screenshot`(needsDevice)；桌面 adb 執行器（`execFileSync`+參數陣列不經 shell、url/package 驗證、多裝置 `adbTarget`、ENOENT 提示）；禁任意點擊/輸入密碼。
+- **2.9.7 自適應輪詢**：忙 700ms／閒退避到 6s。真 Realtime 卡在 device-token 非 Supabase JWT + Zeabur 無持久 WS → 需 JWT 簽發或專用 WS server（另立、已註記）。
+- bridge commits：12717b0(SEA)·f74a311(android)·874e4d4(自適應)。

@@ -658,6 +658,49 @@ export const TOOLS: AgentTool[] = [
     needsDevice: true,
     async execute() { return { ok: false, error: "需安裝並連接『AI 島桌面助手』並安裝 Playwright" }; },
   },
+  // ── Android 控制（Phase 3 · 2.9.6）：桌面助手用 adb 控制已授權手機。低風險六件先做，禁任意點擊/輸入密碼。──
+  {
+    name: "android.list_devices",
+    description: "列出桌面助手用 adb 偵測到的已連接 Android 裝置（需桌面助手＋adb）。先用這個拿 deviceId，再對指定手機下令。",
+    args: {},
+    risk: "read", platforms: ["android"], needsDevice: true,
+    async execute() { return { ok: false, error: "需安裝並連接『AI 島桌面助手』並安裝 adb" }; },
+  },
+  {
+    name: "android.open_url",
+    description: "在指定 Android 手機用預設瀏覽器打開網址（需桌面助手＋adb）。",
+    args: { deviceId: "手機 id（省略＝第一台）", url: "完整網址 https://…" },
+    risk: "write", platforms: ["android"], needsDevice: true,
+    async execute() { return { ok: false, error: "需安裝並連接『AI 島桌面助手』並安裝 adb" }; },
+  },
+  {
+    name: "android.open_app",
+    description: "在指定 Android 手機開啟已安裝的 App（需桌面助手＋adb）。用 package name（如 com.android.chrome）。",
+    args: { deviceId: "手機 id（省略＝第一台）", packageName: "App 的 package name" },
+    risk: "write", platforms: ["android"], needsDevice: true,
+    async execute() { return { ok: false, error: "需安裝並連接『AI 島桌面助手』並安裝 adb" }; },
+  },
+  {
+    name: "android.home",
+    description: "按指定 Android 手機的 Home 鍵（需桌面助手＋adb）。",
+    args: { deviceId: "手機 id（省略＝第一台）" },
+    risk: "write", platforms: ["android"], needsDevice: true,
+    async execute() { return { ok: false, error: "需安裝並連接『AI 島桌面助手』並安裝 adb" }; },
+  },
+  {
+    name: "android.back",
+    description: "按指定 Android 手機的返回鍵（需桌面助手＋adb）。",
+    args: { deviceId: "手機 id（省略＝第一台）" },
+    risk: "write", platforms: ["android"], needsDevice: true,
+    async execute() { return { ok: false, error: "需安裝並連接『AI 島桌面助手』並安裝 adb" }; },
+  },
+  {
+    name: "android.screenshot",
+    description: "把指定 Android 手機畫面截圖回傳（需桌面助手＋adb）。讓 Agent/你看見手機畫面。",
+    args: { deviceId: "手機 id（省略＝第一台）" },
+    risk: "read", platforms: ["android"], needsDevice: true,
+    async execute() { return { ok: false, error: "需安裝並連接『AI 島桌面助手』並安裝 adb" }; },
+  },
 ];
 
 export function getTool(name: string): AgentTool | undefined {

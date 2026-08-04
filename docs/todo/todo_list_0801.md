@@ -249,9 +249,9 @@
 - [x] ~~2.9.2 桌面端 `browser.*`（Playwright headless：open/click/type/screenshot、延遲載入）~~ ✅ 0804（550fe7e）
 - [x] ~~2.9.3 桌面端 `system.run_command`（白名單、預設停用、擋 shell 串接；伺服器 approval 已保證）~~ ✅ 0804（eed01fd）
 - [x] ~~2.9.4 **緊急停止**：`/api/agent/tasks/cancel-all`（cancel 我所有 LIVE 任務 + 待辦 device_calls 整批 cancelled）+ `/agent`「⏹ 全部停止」鈕；桌面端下次輪詢就不會再領到~~ ✅ 0804
-- [ ] 2.9.5 打包 Windows `.exe`（pkg / node-sea）+ 更新 release + `DESKTOP_DOWNLOAD_URL` 版本；自動更新（§2.5.2）
-- [ ] 2.9.6 Phase 3 Android ADB Adapter（listDevices/openApp/openUrl/home/back/screenshot；唯讀低風險六件先做；多裝置 DeviceTarget）
-- [ ] 2.9.7 傳輸升級：Supabase Realtime / WebSocket（現為輪詢，堪用；即時性要再升）
+- [x] ~~2.9.5 打包（Node SEA + GitHub Actions 三平台 release）~~ ✅ 0805——`sea-config.json`+`build.mjs`（`npm run build` 產出單一執行檔）+`release.yml`（matrix win/mac/linux、macos-latest 免費 build Mac 版不用有 Mac）。＊iOS 沙盒禁 fs/shell/常駐→做不出等效桌面助手（非硬體問題）。🔴 產出 exe+上傳 release+更新 `DESKTOP_DOWNLOAD_URL` 版本＝推 v* tag 觸發。
+- [x] ~~2.9.6 Android ADB Adapter（六件）~~ ✅ 0805——AI 島側 `android.list_devices/open_url/open_app/home/back/screenshot`(needsDevice)；桌面客戶端 adb 執行器（`execFileSync`+參數陣列不經 shell、url/package 驗證、`adbTarget` 多裝置、ENOENT 提示裝 adb）；禁任意點擊/輸入密碼。🔴 手機開 USB 偵錯+授權、桌面裝 platform-tools。
+- [~] 2.9.7 傳輸升級：Supabase Realtime / WebSocket——⚠️ **架構卡點**：桌面端只有自訂 device token（非 Supabase JWT），Realtime 需 JWT+RLS；Next.js on Zeabur 也難起持久 WS。→ 先做**自適應輪詢**（有活動加速、閒置退避）降延遲；真 Realtime 要 device-token→JWT 簽發 或 專用 WS server（另立）。
 
 ### 2.10 站在 OpenClaw / NemoClaw 之上（競品啟發 · 0805 拍板做）
 > ＊分析：`docs/competitive/openclaw-nemoclaw-swot.md` · 後台 `/admin/strategy`。策略三層：**吸收他們的好設計（建立在其基礎）→ 補他們的漏洞（＝我們的賣點）→ 再疊分身島差異化**。
