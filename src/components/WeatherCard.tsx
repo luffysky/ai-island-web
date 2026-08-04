@@ -1,8 +1,11 @@
 "use client";
 // 即時天氣卡：讀取使用者「當下位置」（瀏覽器定位）→ 查今日天氣 + 生活建議。
 // lat/lng 只用於這次查詢、不儲存（隱私）。定位被拒/不支援 → 明確提示、不擋其他內容。
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2, MapPin, CloudSun } from "lucide-react";
+import { LocationPicker } from "@/components/LocationPicker";
+
+const SAVED_CITY_KEY = "ai_island_weather_city";
 
 interface W {
   place?: string; emoji: string; desc: string;
@@ -14,6 +17,19 @@ export function WeatherCard() {
   const [w, setW] = useState<W | null>(null);
   const [advice, setAdvice] = useState<string[]>([]);
 
+  const apply = (d: { weather: W; advice?: string[] }) => { setW(d.weather); setAdvice(d.advice ?? []); setState("done"); };
+
+  // 用選好的「區名」查天氣（geocode 反查座標），記住選擇下次直接套用
+  const loadCity = async (district: string) => {
+    setState("loading");
+    try {
+      const r = await fetch(`/api/weather?city=${encodeURIComponent(district)}`);
+      if (!r.ok) { setState("error"); return; }
+      apply(await r.json());
+      try { localStorage.setItem(SAVED_CITY_KEY, district); } catch {}
+    } catch { setState("error"); }
+  };
+
   const load = () => {
     if (typeof navigator === "undefined" || !("geolocation" in navigator)) { setState("error"); return; }
     setState("loading");
@@ -23,14 +39,21 @@ export function WeatherCard() {
           const { latitude, longitude } = pos.coords;
           const r = await fetch(`/api/weather?lat=${latitude}&lng=${longitude}`);
           if (!r.ok) { setState("error"); return; }
-          const d = await r.json();
-          setW(d.weather); setAdvice(d.advice ?? []); setState("done");
+          apply(await r.json());
         } catch { setState("error"); }
       },
       () => setState("denied"),
       { maximumAge: 5 * 60 * 1000, timeout: 8000, enableHighAccuracy: false },
     );
   };
+
+  // 上次選過地區 → 直接套用（不再打擾定位權限）
+  useEffect(() => {
+    let saved: string | null = null;
+    try { saved = localStorage.getItem(SAVED_CITY_KEY); } catch {}
+    if (saved) loadCity(saved);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (state === "done" && w) {
     return (
@@ -53,7 +76,10 @@ export function WeatherCard() {
             {advice.slice(0, 4).map((t, i) => <li key={i} className="flex gap-1.5"><span className="text-amber-500">·</span><span>{t}</span></li>)}
           </ul>
         )}
-        <button onClick={load} className="mt-3 text-xs text-black/40 dark:text-white/40 hover:text-amber-500">重新整理</button>
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <button onClick={load} className="text-xs text-black/40 dark:text-white/40 hover:text-amber-500">重新整理</button>
+          <LocationPicker onPick={loadCity} compact />
+        </div>
       </div>
     );
   }
@@ -63,10 +89,14 @@ export function WeatherCard() {
       <div className="flex items-center gap-2 text-sm font-semibold text-amber-600 dark:text-amber-400 mb-1.5">
         <CloudSun className="w-4 h-4" /> 今日天氣 · 生活建議
       </div>
-      {state === "denied" ? (
-        <p className="text-sm text-black/60 dark:text-white/60">沒拿到定位權限。到瀏覽器允許「位置」後再試，或直接看下方運勢。</p>
-      ) : state === "error" ? (
-        <p className="text-sm text-black/60 dark:text-white/60">這個瀏覽器不支援定位，或暫時查不到天氣，稍後再試。</p>
+      {state === "denied" || state === "error" ? (
+        <>
+          <p className="text-sm text-black/60 dark:text-white/60 mb-2.5">
+            {state === "denied" ? "沒拿到定位權限。" : "定位失敗或暫時查不到。"}可以直接在下面選你的縣市／區看天氣。
+          </p>
+          <LocationPicker onPick={loadCity} />
+          <button onClick={load} className="mt-2 block text-xs text-black/40 dark:text-white/40 hover:text-amber-500">或再試一次定位</button>
+        </>
       ) : (
         <>
           <p className="text-sm text-black/60 dark:text-white/60 mb-2.5">用你「當下的位置」看今天天氣＋要不要帶傘/防曬/穿搭（位置只用來查這次、不會儲存）。</p>
@@ -75,6 +105,8 @@ export function WeatherCard() {
             {state === "loading" ? <Loader2 className="w-4 h-4 animate-spin" /> : <MapPin className="w-4 h-4" />}
             {state === "loading" ? "定位中…" : "看我這裡的天氣"}
           </button>
+          <div className="mt-2.5 text-xs text-black/40 dark:text-white/40">或不想給定位 → 直接選地區：</div>
+          <div className="mt-1.5"><LocationPicker onPick={loadCity} compact /></div>
         </>
       )}
     </div>

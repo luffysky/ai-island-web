@@ -4,6 +4,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Loader2, MapPin, Umbrella, Droplets, Wind, Sunrise, Sunset, Sun, BookOpen, Lightbulb, Sparkles } from "lucide-react";
+import { LocationPicker } from "@/components/LocationPicker";
+
+const SAVED_CITY_KEY = "ai_island_weather_city";
 
 interface W {
   place?: string; emoji: string; desc: string; tempMax: number; tempMin: number;
@@ -31,6 +34,19 @@ export function DailyDashboard({ word, moon, sentence, tip }: Props) {
   const [w, setW] = useState<W | null>(null);
   const [advice, setAdvice] = useState<string[]>([]);
 
+  const apply = (d: { weather: W; advice?: string[] }) => { setW(d.weather); setAdvice(d.advice ?? []); setState("done"); };
+
+  // 用選好的「區名」查天氣（geocode 反查座標），記住選擇下次直接套用
+  const loadCity = async (district: string) => {
+    setState("loading");
+    try {
+      const r = await fetch(`/api/weather?city=${encodeURIComponent(district)}`);
+      if (!r.ok) { setState("error"); return; }
+      apply(await r.json());
+      try { localStorage.setItem(SAVED_CITY_KEY, district); } catch {}
+    } catch { setState("error"); }
+  };
+
   const load = () => {
     if (typeof navigator === "undefined" || !("geolocation" in navigator)) { setState("error"); return; }
     setState("loading");
@@ -39,15 +55,20 @@ export function DailyDashboard({ word, moon, sentence, tip }: Props) {
         try {
           const r = await fetch(`/api/weather?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}`);
           if (!r.ok) { setState("error"); return; }
-          const d = await r.json();
-          setW(d.weather); setAdvice(d.advice ?? []); setState("done");
+          apply(await r.json());
         } catch { setState("error"); }
       },
       () => setState("denied"),
       { maximumAge: 5 * 60 * 1000, timeout: 8000, enableHighAccuracy: false },
     );
   };
-  useEffect(() => { load(); }, []);   // 進頁自動嘗試定位（拒絕/失敗有 fallback）
+  // 進頁：上次選過地區 → 直接套用；否則自動嘗試定位（拒絕/失敗有下拉 fallback）
+  useEffect(() => {
+    let saved: string | null = null;
+    try { saved = localStorage.getItem(SAVED_CITY_KEY); } catch {}
+    if (saved) loadCity(saved); else load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-6 sm:py-8 space-y-4">
@@ -79,15 +100,29 @@ export function DailyDashboard({ word, moon, sentence, tip }: Props) {
             {w.sunset && <Detail icon={<Sunset className="w-4 h-4" />} label="日落" value={w.sunset} />}
             <Detail icon={<Sun className="w-4 h-4" />} label="紫外線" value={String(w.uvMax)} warn={w.uvMax >= 8} />
           </div>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <button onClick={load} className="text-xs text-black/40 dark:text-white/40 hover:text-sky-500">重新整理</button>
+            <LocationPicker onPick={loadCity} compact />
+          </div>
         </section>
       ) : (
-        <section className="rounded-3xl border border-sky-500/20 bg-sky-500/5 p-5 sm:p-6 text-center">
+        <section className="rounded-3xl border border-sky-500/20 bg-sky-500/5 p-5 sm:p-6">
           {state === "loading" ? (
-            <p className="text-sm text-black/60 dark:text-white/60 inline-flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> 定位中…</p>
-          ) : state === "denied" ? (
-            <p className="text-sm text-black/60 dark:text-white/60">沒拿到定位權限。<button onClick={load} className="text-sky-600 dark:text-sky-400 underline">再試一次</button>（其他情報照常顯示）</p>
+            <p className="text-sm text-black/60 dark:text-white/60 inline-flex items-center gap-2 justify-center w-full"><Loader2 className="w-4 h-4 animate-spin" /> 讀取天氣中…</p>
+          ) : state === "denied" || state === "error" ? (
+            <div className="space-y-2.5">
+              <p className="text-sm text-black/60 dark:text-white/60 text-center">
+                {state === "denied" ? "沒拿到定位權限。" : "定位失敗或暫時查不到。"}直接選你的縣市／區看天氣（其他情報照常顯示）。
+              </p>
+              <div className="flex justify-center"><LocationPicker onPick={loadCity} /></div>
+              <button onClick={load} className="block mx-auto text-xs text-sky-600 dark:text-sky-400 underline">或再試一次定位</button>
+            </div>
           ) : (
-            <button onClick={load} className="inline-flex items-center gap-1.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 text-sm font-medium"><MapPin className="w-4 h-4" /> 看我這裡的天氣</button>
+            <div className="text-center space-y-2.5">
+              <button onClick={load} className="inline-flex items-center gap-1.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 text-sm font-medium"><MapPin className="w-4 h-4" /> 看我這裡的天氣</button>
+              <div className="text-xs text-black/40 dark:text-white/40">或不想給定位 → 直接選地區：</div>
+              <div className="flex justify-center"><LocationPicker onPick={loadCity} compact /></div>
+            </div>
           )}
         </section>
       )}

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 import { useAuth } from "@/lib/auth-context";
-import { Flame, Coins, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, Palmtree, Crown, BarChart3, Key, BookOpen, BookA, Swords, MessagesSquare, Newspaper, Route, Palette, Brain, Compass, Gamepad2, NotebookPen, Images, Languages, Bot, Heart, Sparkles, MessageSquareHeart } from "lucide-react";
+import { Flame, Coins, LogOut, Settings, Trophy, User as UserIcon, ChevronDown, Menu, X, Palmtree, Crown, BarChart3, Key, BookOpen, BookA, Swords, MessagesSquare, Newspaper, Route, Palette, Brain, Compass, Gamepad2, NotebookPen, Images, Languages, Bot, Heart, Sparkles, MessageSquareHeart, Sunrise } from "lucide-react";
 import { TodoDropdownButton } from "@/components/todo/TodoDropdown";
 import { CountUp } from "@/components/ui/CountUp";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -15,6 +15,7 @@ import { useTranslations } from "next-intl";
 import { devLog } from "@/lib/dev-log";
 
 const NAV_LINKS = [
+  { href: "/daily", key: "daily", icon: Sunrise },
   { href: "/chapters", key: "chapters", icon: BookOpen },
   { href: "/dictionary", key: "dictionary", icon: BookA },
   { href: "/courses", key: "courses", icon: Swords },

@@ -114,3 +114,11 @@
 - **API↔UI**：`/api/weather` ↔ WeatherCard/DailyDashboard 接對；首頁「每日情報」→ `/daily`；route 全註冊。
 - **RWD/PWA**：語音彈窗/strategy/儀表板/後台側欄皆響應式不破版；**PWA 未動**。
 - **全部 commit + push**（本 repo + `ai-island-bridge`）；`docs/widget.md`(Phase 2 spec) 已納入。
+
+### 天氣定位下拉 fallback + /daily 進側邊欄（0805）
+- **痛點**：WeatherCard/DailyDashboard 定位被拒 → 只剩一句「沒拿到定位權限」死路。
+- **解**：照抄 Space `tw-regions.ts`（22 縣市→區靜態表）新增 `src/lib/tw-regions.ts` + 共用 `LocationPicker.tsx`（縣市→區兩段下拉，選「區名」打 `/api/weather?city=`，Open-Meteo geocode 反查、不外呼、不存 lat/lng）。
+- **接法**：WeatherCard(`/fortune`) + DailyDashboard(`/daily`) 的 denied/error/idle **與** done 狀態都放 picker；選過的區存 `localStorage(ai_island_weather_city)`、進頁優先直接套用（不再打擾定位）。`/api/weather?city=` 早已支援、**零新 DB**。
+- **導覽**：`/daily`（🌅 每日情報）加進 TopNav 探索島抽屜 `NAV_LINKS` **最上面** + `nav.daily` 四語 i18n（每日情報／Daily Brief／デイリー情報／데일리 브리핑）。
+- **答疑**：`/admin/strategy`(⚔️ 競品戰略分析) 本就在後台側欄「🏝️ 總覽」群組**最後一項**（🤖 數據問答助理 之下）。
+- **建置**：tsc ✅ · vitest 225 ✅ · next build ✅（`/daily` 8.37kB）。RWD：下拉 `flex-wrap`+`min-w-0` 窄螢幕不溢出。
