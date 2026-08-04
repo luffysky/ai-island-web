@@ -6,7 +6,9 @@ name: Build & push image to GHCR
 # 💸 省 Actions 分鐘數：
 #  - paths-ignore：純文件 / SQL / 腳本的 commit「不會」觸發 build（這些不進 runtime image）。
 #    DB migration 是本地手動跑、章節內容是同步進 DB，都不需要重建 image。
-#  - concurrency cancel-in-progress：連續推好幾個 commit 時、只 build 最後一個、舊的取消。
+#  - concurrency（cancel-in-progress:false）：連續推好幾個 commit 時，同組會「排隊依序跑完」，
+#    不強制取消進行中的 run。→ 不會再出現「Error: The operation was canceled」的紅色假失敗；
+#    代價是舊 commit 也會各自 build+部署一次（累加式、最後一個仍是最新版），較耗 Actions 分鐘。
 on:
   push:
     branches: [main]
@@ -21,7 +23,7 @@ on:
 
 concurrency:
   group: docker-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false   # 排隊依序跑完、不取消進行中 → 不再出現「operation was canceled」紅叉
 
 env:
   REGISTRY: ghcr.io
