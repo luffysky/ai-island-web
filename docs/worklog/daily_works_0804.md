@@ -49,3 +49,14 @@
 - 走既有 Agent pipeline（不建第二套、共用記憶/RAG/預算/approval）；STT 不支援自動退回文字；autoSend 預設 false；不存錄音。
 - client-action 中繼滿足 GPT 兩輪全部契約（白名單 union／唯一 id 生命週期＋三重去重／不繞 approval／完成寫回不假裝／原子 RPC／new-tab 需手勢／輪詢不因 done 停／stale·failed 手動重試）。
 - 全綠：tsc ✅ · **vitest 211（+24）** ✅ · next build ✅。DB：`agent_tasks.client_actions` 欄 + 2 RPC 已上 prod。
+
+---
+
+## F · 遠端加工批（林董陸續丟需求）
+- **CI hardening**（`docker.yml`）：GHCR push 403 診斷＝暫時性（重跑綠）；順手 `provenance:false`+`sbom:false`、加自動 prune 舊版本（留最近 15、防儲存爆）。
+- **語音設定彈窗直排 bug**（235.jpg）：VoiceControls 兩個彈窗用 inline width（覆蓋 runtime 寬度覆寫、杜絕 CJK 直排）+ 視窗寬度守衛。
+- **生活助理接口**：`/agent` 按鈕列加「🧰 生活助理範本」→ `/agent/templates`（原本只能從首頁進）。
+- **分身島全面審計**（subagent）：結論＝**唯一假功能是 `/agent/social` 社群發布中心**（無 send adapter/`src/lib/social/` 不存在/排程無 cron/永遠只存 draft）；templates/office/主任務/工具/匯出**皆真接後端可用**。→ social 頁加「⚠️ 發送功能開發中」橫幅、header 不再宣稱自動發（誠實化，等 §2.3.2 接 adapter）。
+- **辭典前端大補計畫**（todo §4.2.1.5）：8 批~160 條 HTML/CSS/JS 零基礎白話詞條（補現有 seed 偏後端的缺口），每批先 slug 去重。
+- **§5 每日晨報+天氣**（§5.1✅/5.2~/5.3~）：`lib/weather.ts`（Open-Meteo 免 key 免費、geocode+forecast+WMO 中文+確定性生活建議+LLM prompt、6 測試）；`daily-brief` cron 標題改「🌅 今日晨報」、有同意定位者首列加天氣+建議（同城快取零成本、失敗不擋）。剩運勢一句/重要提醒兩塊 + LLM 建議接線待補。
+- 全程 tsc ✅ · vitest **217（+6 weather）** ✅；分批 commit/push（rebase 遠端）。

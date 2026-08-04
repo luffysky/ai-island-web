@@ -112,9 +112,9 @@
 
 ### 5. 🆕 每日晨報（整合天氣·CP 值最高·複用現成 infra）— 林董 0723 拍板做
 > ＊戰略：早上一則 LINE 把「運勢＋天氣生活建議＋今日待辦＋提醒」整合成一張晨報卡＝最省力、最黏。純天氣別做（免費到處有），做成晨報的一塊才有價值。骨架大半已有（daily-brief cron + fortune + buildListCard Flex）。
-- [ ] 5.1 天氣來源：接 **Open-Meteo（免 key、免費、含逐時/紫外線/降雨機率）** 或 **中央氣象署開放資料平台 CWA（需免費 API key、在地精準）**——抽 `lib/weather.ts`（依使用者地區→經緯度→抓當日天氣，24h 快取、零成本）。＊經緯度可用現有 IP 定位或讓使用者設地區。
-- [ ] 5.2 AI 天氣生活建議：把天氣（溫度/溫差/降雨/紫外線/空品）丟 LLM → 生**穿搭 / 帶不帶傘 / 適不適合曬衣運動 / 健康提醒**（溫差大心血管、空品差過敏、防曬）；綁節氣農民曆（複用 `bazi.ts` 農曆 infra）。護欄：不做醫療斷言。
-- [ ] 5.3 晨報整合卡：擴充 `/api/cron/daily-brief` → 一張 LINE Flex 卡＝☀️天氣生活建議 + 🔮今日運勢一句 + ✅今天值得做的 3 件事 + ⏰重要提醒（機會截止/回診等）。用 buildListCard/新 buildMorningBriefCard。
+- [x] ~~5.1 天氣來源：`lib/weather.ts`（**Open-Meteo 免 key 免費**：geocode 城市→經緯度 + 當日天氣 code/溫度/降雨機率/紫外線；WMO→中文；防呆逾時）~~ ✅ 0804（6 測試；同城市 cron run 內快取零成本）
+- [~] 5.2 AI 天氣生活建議：`deterministicAdvice`（零 AI：帶傘/穿搭/防曬/溫差心血管/曬衣運動、含護欄）✅ 用於晨報；`buildWeatherAdvicePrompt`（LLM 版、醫療護欄）✅ 已備但 cron 先走零成本確定性版；⬜ LLM 版接線 + 節氣農民曆（複用 bazi.ts）待補
+- [~] 5.3 晨報整合卡：`/api/cron/daily-brief` 標題改「🌅 今日晨報」、有同意定位者卡片首列加 ☀️天氣+生活建議（只對 geo_consent 有效者、失敗不擋）✅；⬜ 🔮運勢一句 + ⏰重要提醒兩塊待補（併現有 fortune-service / opportunity-deadline）
 - [ ] 5.4 訂閱/偏好：`/settings` 加「每日晨報」開關（複用 line_pref_* 模式）；cron 08:30 推（複用現有 daily-brief job #10）。
 - [ ] 5.5 變現：晨報免費當黏著鉤子；進階（多地區天氣/更細健康建議/廣告置換）＝付費或 Z 幣。
 

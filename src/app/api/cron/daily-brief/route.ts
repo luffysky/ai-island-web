@@ -4,6 +4,7 @@ import { verifyCronAuth } from "@/lib/cron-auth";
 import { buildDailyBrief } from "@/lib/daily-brief";
 import { notifyUserLine } from "@/lib/notify-user-line";
 import { buildListCard } from "@/lib/line-flex";
+import { getCityWeather, deterministicAdvice, type DailyWeather } from "@/lib/weather";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
 
@@ -26,25 +27,43 @@ export async function GET(req: NextRequest) {
   const admin = createSupabaseAdmin();
 
   // 候選：綁了 LINE 且沒關總開關的人（分類偏好交給 notifyUserLine 再判）
+  // 帶 geo 欄位：有同意定位（geo_consent_at 有、未撤回）才附天氣（§5，Open-Meteo 免費）。
   const { data: users, error } = await admin
     .from("profiles")
-    .select("id")
+    .select("id, geo_city, geo_country, geo_consent_at, geo_revoked_at")
     .not("line_user_id", "is", null)
     .neq("line_notify_enabled", false)
     .limit(MAX_USERS);
   if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
+
+  // 同城市天氣一天只抓一次（零成本；本次 cron run 內快取）
+  const cityCache = new Map<string, DailyWeather | null>();
+  async function weatherLineFor(u: any): Promise<string | null> {
+    const consented = u.geo_consent_at && !u.geo_revoked_at;
+    const city = String(u.geo_city ?? "").trim();
+    if (!consented || !city) return null;
+    const key = `${city}|${u.geo_country ?? ""}`;
+    if (!cityCache.has(key)) cityCache.set(key, await getCityWeather(city, u.geo_country || undefined));
+    const w = cityCache.get(key);
+    if (!w) return null;
+    const tip = deterministicAdvice(w)[0];
+    return `☀️ ${w.place ?? city} ${w.desc} ${w.tempMin}–${w.tempMax}°C · ${tip}`;
+  }
 
   let sent = 0, skipped = 0, failed = 0;
   for (const u of users ?? []) {
     try {
       const items = await buildDailyBrief(u.id);
       if (!items.length) { skipped++; continue; }
-      const text = `🌅 今天值得做的 3 件事\n\n${items.map((s, i) => `${i + 1}. ${s}`).join("\n")}\n\n（不想收：設定 → 通知偏好可關）`;
-      // 美化：改推 Flex 列表卡（清晰的序號清單 + 打開 AI 島按鈕）
+      const weather = await weatherLineFor(u).catch(() => null);  // 天氣失敗絕不擋晨報
+      const listItems = weather ? [{ primary: weather }, ...items.map((s) => ({ primary: s }))] : items.map((s) => ({ primary: s }));
+      const textLines = [weather, ...items.map((s, i) => `${i + 1}. ${s}`)].filter(Boolean);
+      const text = `🌅 今日晨報\n\n${textLines.join("\n")}\n\n（不想收：設定 → 通知偏好可關）`;
+      // 美化：改推 Flex 列表卡（天氣 + 今天值得做的 3 件事 + 打開 AI 島按鈕）
       const flex = buildListCard({
-        title: "今天值得做的 3 件事",
+        title: "今日晨報",
         emoji: "🌅",
-        items: items.map((s) => ({ primary: s })),
+        items: listItems,
         footerButton: { label: "☀️ 打開 AI 島", uri: SITE_URL },
         accentColor: "#f59e0b",
       });
