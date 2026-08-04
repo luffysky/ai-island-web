@@ -17,6 +17,7 @@ interface ToolInfo { name: string; description: string; risk: Risk; needsDevice:
 // 分身島模式：切換「意圖」→ 幫你把輸出導向對的形式（多半只是加一段前綴 prompt，重用同一套任務引擎）。
 const AGENT_MODES: { key: string; emoji: string; label: string; prefix: string; placeholder: string }[] = [
   { key: "agent", emoji: "🤖", label: "分身任務", prefix: "", placeholder: "想讓分身幫你做什麼？（會規劃、用工具完成）" },
+  { key: "chat", emoji: "🗣️", label: "一般聊天", prefix: "（像朋友聊天一樣自然回覆：輕鬆、口語、簡短，一次別講太長，可以有來有往、適時反問。不要列點、不要長篇大論、不要像在念文件或報告。）：", placeholder: "隨便聊聊～想說什麼都可以" },
   { key: "ask", emoji: "💬", label: "問問", prefix: "（用你的知識直接回答、給實用建議與思路；除非需要即時/在地/最新資料否則不用上網）：", placeholder: "想問什麼？找分身聊聊、要點建議…" },
   { key: "code", emoji: "💻", label: "寫程式", prefix: "（寫程式：給完整、可直接用的程式碼＋簡短說明與註解，用 markdown 程式碼區塊；需要的話附使用方式）：", placeholder: "要寫什麼程式？（語言、功能、需求）" },
   { key: "doc", emoji: "📄", label: "文件", prefix: "（寫一份結構清楚的文件：標題／章節／重點清單／必要時表格，用 markdown）：", placeholder: "要寫什麼文件？（主題、對象、重點）" },

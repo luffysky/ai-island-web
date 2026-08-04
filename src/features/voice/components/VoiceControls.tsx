@@ -4,7 +4,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Mic, Square, Volume2, Settings2, X } from "lucide-react";
 import { useSpeechRecognition } from "../hooks/use-speech-recognition";
+import { useSpeechSynthesis } from "../hooks/use-speech-synthesis";
 import { useVoicePrefs } from "../hooks/use-voice-prefs";
+import { useVoices } from "../hooks/use-voices";
 import { speechErrorMessage } from "../utils/speech-error-message";
 
 interface Props {
@@ -24,6 +26,8 @@ const AUTO_SEND_MS = 1600;
 export function VoiceControls({ disabled, onTranscript, onSubmit, speaking, onStopSpeaking }: Props) {
   const rec = useSpeechRecognition();
   const { prefs, update } = useVoicePrefs();
+  const voices = useVoices();
+  const testTts = useSpeechSynthesis();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [countdown, setCountdown] = useState<{ text: string } | null>(null);
   const countdownTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -128,7 +132,22 @@ export function VoiceControls({ disabled, onTranscript, onSubmit, speaking, onSt
               <input type="range" min={0.6} max={1.6} step={0.1} value={prefs.speechRate}
                 onChange={(e) => update({ speechRate: Number(e.target.value) })} className="w-full mt-1" />
             </label>
-            <p className="text-[11px] text-black/40 dark:text-white/40">設定只存在這個瀏覽器。語音不支援時自動退回文字。</p>
+            {voices.length > 0 && (
+              <label className="block">
+                <span className="text-black/60 dark:text-white/60">音色</span>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <select value={prefs.preferredVoice ?? ""} onChange={(e) => update({ preferredVoice: e.target.value || undefined })}
+                    className="flex-1 min-w-0 rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-2 py-1 text-xs">
+                    <option value="">預設</option>
+                    {voices.map((v) => <option key={v.name} value={v.name}>{v.name}（{v.lang}）</option>)}
+                  </select>
+                  <button type="button"
+                    onClick={() => testTts.speak("嗨，我是你的分身，這是我現在的聲音，聽起來還可以嗎？", { rate: prefs.speechRate, pitch: prefs.speechPitch, voiceName: prefs.preferredVoice })}
+                    className="shrink-0 rounded-lg px-2 py-1 bg-black/5 dark:bg-white/10 hover:bg-black/10">試聽</button>
+                </div>
+              </label>
+            )}
+            <p className="text-[11px] text-black/40 dark:text-white/40">音色由瀏覽器提供（選 Google／Microsoft 的中文語音通常較自然）。設定只存在這個瀏覽器；語音不支援時自動退回文字。</p>
           </div>
         )}
       </div>

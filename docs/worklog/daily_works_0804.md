@@ -60,3 +60,10 @@
 - **辭典前端大補計畫**（todo §4.2.1.5）：8 批~160 條 HTML/CSS/JS 零基礎白話詞條（補現有 seed 偏後端的缺口），每批先 slug 去重。
 - **§5 每日晨報+天氣**（§5.1✅/5.2~/5.3~）：`lib/weather.ts`（Open-Meteo 免 key 免費、geocode+forecast+WMO 中文+確定性生活建議+LLM prompt、6 測試）；`daily-brief` cron 標題改「🌅 今日晨報」、有同意定位者首列加天氣+建議（同城快取零成本、失敗不擋）。剩運勢一句/重要提醒兩塊 + LLM 建議接線待補。
 - 全程 tsc ✅ · vitest **217（+6 weather）** ✅；分批 commit/push（rebase 遠端）。
+
+## G · 語音體驗 + 一般聊天模式（林董遠端）
+- **一般聊天模式**：AGENT_MODES 加「🗣️ 一般聊天」（prefix 導向朋友式口語、簡短、不列點不念稿）——配語音回覆聽起來像聊天而非念文件。
+- **修 TTS 唸到一半自己停**：Chrome 對長 utterance 有 ~15 秒看門狗會砍掉 → `chunkForSpeech` 把長文切句子級小段（≤160 字、標點後切、無標點硬切）逐段接力唸；`stop()` 用世代序號真正中止（cancel 後不會又接著唸）。4 測試。
+- **可選音色**：`useVoices`（列瀏覽器中文語音、等 voiceschanged）+ 設定彈窗加「音色」下拉 + 試聽鈕（選 Google/Microsoft 中文語音較自然）。preferredVoice 存 localStorage、朗讀時套用。
+- ＊誠實限制：真正「對話級自然語音」受限於瀏覽器 Web Speech；要更自然需雲端 TTS（roadmap 已預留 CloudTextToSpeechProvider，屬付費/後續）。
+- tsc ✅ · vitest **15 voice（+4）** ✅。
