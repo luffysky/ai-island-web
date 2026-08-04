@@ -242,6 +242,19 @@
 
 ---
 
+### 2.9 裝置控制端到端（roadmap 落地 · `docs/agent-device-control-roadmap.md`）— 0804 拍板端到端做
+> ＊**盤點結論（0804）**：**Phase 2 伺服器側早已存在且可用**——表 `agent_device_bridges`(配對/token/在線) + `agent_device_calls`(命令佇列 pending→running→done/error) + 路由 `bridge/pair|poll|result` + orchestrator `dispatchToDevice`/`waitForDevice`/`getOnlineDevice`(needsDevice 工具自動排進佇列)。roadmap 提的 device_connections/device_commands ＝這兩張既有表，**不重造**。
+> ＊**真正缺的＝桌面客戶端**（repo `ai-island-bridge` 目前只有 README，要從零建）。合約：`GET /bridge/poll`(Bearer device token)→`{calls:[{id,tool,args}]}`；執行→`POST /bridge/result`{callId,ok,result}。
+- [~] 2.9.1 **桌面客戶端 MVP**（ai-island-bridge repo）：config(url/token/白名單 root) + poll 迴圈 + 執行器 + 回報。**安全先行**：`filesystem.list/read/write` 限白名單資料夾；`system.run_command`/`browser.*` MVP 先回「未實作」不亂跑。← 本輪開工
+- [ ] 2.9.2 桌面端 `browser.*`（Playwright headless：open/click/type/screenshot）——需 Playwright、較重，次批
+- [ ] 2.9.3 桌面端 `system.run_command`（白名單指令 npm test/git…、強制確認由伺服器 approval 已保證）
+- [ ] 2.9.4 **緊急停止**：AI 島加「⏹ 全部停止」（cancel 我所有 LIVE 任務 + 待辦 device_calls 整批 cancelled）；桌面端收到即停
+- [ ] 2.9.5 打包 Windows `.exe`（pkg / node-sea）+ 更新 release + `DESKTOP_DOWNLOAD_URL` 版本；自動更新（§2.5.2）
+- [ ] 2.9.6 Phase 3 Android ADB Adapter（listDevices/openApp/openUrl/home/back/screenshot；唯讀低風險六件先做；多裝置 DeviceTarget）
+- [ ] 2.9.7 傳輸升級：Supabase Realtime / WebSocket（現為輪詢，堪用；即時性要再升）
+
+---
+
 ## 三、機會島（Opportunity Island · 承 0713/0714）
 
 - [~] 3.1 **V2 精準推薦**：recommend/問卷/profile/subscriptions ✅。待：⬜ AI 聊天追問、⬜ 能力圖譜、⬜ AI 島專屬頁、⬜ 推薦透明化
