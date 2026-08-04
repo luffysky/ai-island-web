@@ -205,7 +205,7 @@
   - [ ] 2.8.2.4 error：繁中可讀訊息（未授權/不支援/沒偵測到語音/中斷/服務錯誤），不吐原始 exception（`speech-error-message.ts`）
   - [ ] 2.8.2.5 再次按麥克風時**先停 TTS 再收音**；連續快點防抖
   - [ ] 2.8.2.6 RWD + 亮暗（Android Chrome / Windows Chrome 都要顧）
-- [~] **2.8.3 第一批安全工具（掛既有 `TOOLS[]` registry）** — client-action 中繼 + navigate_internal/open_url ✅ 0804；search_course/agent_status ⬜ 下批
+- [x] ~~**2.8.3 第一批安全工具（掛既有 `TOOLS[]` registry）**~~ ✅ 0804 — client-action 中繼 + navigate_internal/open_url + search_course/agent_status（章節路徑修正為數字 id）
   - [ ] 2.8.3.1 **client-action 中繼層**（`open_url`/`navigate_internal` 執行地基）——**硬性契約（GPT 覆核）**：
     - **結構化白名單 discriminated union**、拒任意 JS/函式名/模型生成碼：`{id,type:"navigate_internal",path}` | `{id,type:"open_url",url,target:"same-tab"|"new-tab"}`
     - 每個 action 有**唯一 id**＋生命週期 `pending→acknowledged→completed|failed|cancelled`；前端保存 session 已處理 id（Set），re-render／重新輪詢／網路重試**都不重複開頁或導航**；ack route 冪等（終態不再轉移）
@@ -216,23 +216,22 @@
     - **new-tab 需使用者手勢（GPT-2 點1）**：`same-tab`→輪詢回呼可直接 `location.assign`；`new-tab`**不可**在輪詢回呼 auto `window.open`（會被擋）→ 顯示「待開啟」卡、使用者點「開啟」才在點擊事件內 `window.open`；被擋回 `failed`、**不自動重試**；一次任務最多開 1 個外部分頁。
     - **輪詢不因 status=done 停（GPT-2 點2）**：只要還有 pending/acknowledged client-action 就續輪詢；UI 明確三態＝①Agent 推理完成 ②等待瀏覽器執行 ③整體操作完成（所有 action 終態才由②→③、未終態不得顯示整體完成）。
     - **可恢復、不卡死（GPT-2 點3）**：action 帶 `createdAt/acknowledgedAt/completedAt`；`acknowledged` 逾時未終態＝stale → UI 顯示「需重試」由**使用者手動**重試（手勢內執行）；`failed`／stale **不自動重開**、必須再次確認。
-  - [ ] 2.8.3.2 `open_url`（只允許 `https:`＋本機 `http://localhost`；擋 `javascript:`/`data:`/`file:`；popup 被擋提示；不靜默開大量分頁；risk=low→顯示將做什麼）
-  - [ ] 2.8.3.3 `navigate_internal`（驗 path 屬允許站內 route、用 Next router 不整頁重載；risk=low）
-  - [ ] 2.8.3.4 `search_course`（伺服器端查教材/辭典/章節/功能，type=all|course|dictionary|feature；risk=read）
-  - [ ] 2.8.3.5 `agent_status`（查目前有哪些 agent 任務/是否執行中；risk=read）
-  - [ ] 2.8.3.6 風險等級對應：md `read/low/medium/high` ↔ 既有 `read/write/dangerous`（medium 要確認、high 第一版禁止或強制**畫面**手動確認、不可只靠語音）
-- [ ] **2.8.4 使用者設定（localStorage 先行、不無條件建表）**
-  - [ ] 2.8.4.1 語速/是否朗讀/autoSend/locale/preferredVoice **先存 localStorage**（純本機偏好、不跨裝置）；`user_voice_preferences` Supabase 表**延後**——確定有跨裝置同步需求才建（GPT 點 9：不為符合 md 無條件加表）。瀏覽器支援狀態一律不入庫。
-  - [ ] 2.8.4.2 `voiceAutoSend`（預設 false：填入框待確認；true：辨識結束倒數 1–2 秒自動送、期間可取消）
-  - [ ] 2.8.4.3 `voiceReplyEnabled`（開才朗讀）+ `sanitizeTextForSpeech()`（去 Markdown/程式碼/長網址/JSON/工具原始紀錄/system/推理；過長只讀摘要或前段、畫面仍顯示全文）
-- [ ] **2.8.5 測試（md §十三 + GPT-2 補案）**：
+  - [x] ~~2.8.3.2 `open_url`（只允許 https＋dev localhost；擋 js:/data:/file:/blob:；popup 擋回 failed；一次最多 1 外部分頁；risk=write→approval）~~ ✅ 0804
+  - [x] ~~2.8.3.3 `navigate_internal`（驗 path 站內白名單、Next router 不整頁重載；risk=read）~~ ✅ 0804
+  - [x] ~~2.8.3.4 `search_course`（查 chapters/dictionary_terms/功能頁；risk=read）~~ ✅ 0804
+  - [x] ~~2.8.3.5 `agent_status`（查該使用者近 8 任務狀態；risk=read）~~ ✅ 0804
+  - [x] ~~2.8.3.6 風險映射：md read/low/medium/high ↔ 既有 read/write/dangerous（navigate=read 自動、open_url=write 走 approval）~~ ✅ 0804
+- [x] ~~**2.8.4 使用者設定（localStorage 先行、不無條件建表）**~~ ✅ 0804（`useVoicePrefs` + VoiceControls 設定彈窗：autoSend/朗讀/語速/locale 存 localStorage；`user_voice_preferences` 表延後，確定要跨裝置才建）
+  - [x] ~~2.8.4.2 `voiceAutoSend`（預設 false；true：辨識結束倒數 1–2 秒自動送、期間可取消）~~ ✅ 0804
+  - [x] ~~2.8.4.3 `voiceReplyEnabled` + `sanitizeTextForSpeech()`（去 Markdown/程式碼/長網址/JSON/工具紀錄；過長只讀前段）~~ ✅ 0804
+- [~] **2.8.5 測試（md §十三 + GPT-2 補案）**——**單元全綠**（sanitize/URL scheme/path 驗證/狀態機冪等/feature 比對＝共 24 測試）；⬜ 剩「瀏覽器手動測試」（Android/Windows Chrome、拒權限、中英混合、popup 擋）待 🔴 林董實機驗：
   - 單元＝`sanitizeTextForSpeech`／URL scheme 驗證（擋 js:·data:·file:·blob:、只 https＋dev localhost）／`navigate_internal` path 驗證（須 `/` 開頭、站內白名單、擋 protocol＋`//` 跳轉＋外部）／工具 input schema／風險等級與確認判斷／語音錯誤轉繁中／voice state transition。
   - client-action 狀態機＝`pending→acknowledged→completed|failed|cancelled` 合法轉移；**終態不再轉移（冪等）**；同 action id 二次收到不重複執行（去重）。
   - 原子性＝**兩個並行 append 都保留不遺失**；並行 status update 只一個生效且不覆寫終態（RPC 行為測試）。
   - new-tab **無使用者手勢不 auto-open**、same-tab 走 `location.assign`；**popup blocked → failed、不自動重試**；一次任務最多 1 外部分頁。
   - 輪詢＝`status=done` 但仍有 pending action → **續輪詢**、UI 不顯示整體完成；全部終態才停並顯示整體完成；stale `acknowledged` → 標「需重試」、不自動重開。
   - 整合＝語音結果進既有 Agent、文字輸入不受影響、呼叫 `navigate_internal`/`open_url`、不支援 STT 退回文字、取消確認不執行、TTS 播放中按麥克風先停播。
-- [ ] **2.8.6 收尾**：`docs/agent-device-control-roadmap.md`（Phase 2/3 藍圖：手機控電腦/Desktop Agent/裝置配對/多裝置並行/Android ADB Adapter/權限模型/確認/緊急停止/Whisper·Piper 未來替換點）；tsc/vitest/next build 全綠；更新工作日誌。
+- [x] ~~**2.8.6 收尾**：`docs/agent-device-control-roadmap.md`（Phase 2/3 藍圖 + Whisper/Piper 替換點）；tsc/vitest/next build 全綠；工作日誌 `daily_works_0804.md`。~~ ✅ 0804
 - **Phase 2/3（架構預留、本輪不實作，接既有 2.5 桌面助手）**
   - [ ] 2.8.7 手機語音→AI 島後端建 Device Command→已配對 Desktop Agent 執行白名單工具→回填（`device_connections`/`device_commands` 表、RLS、`DeviceTransport` 抽象；service role key 絕不放桌面端）
   - [ ] 2.8.8 Desktop Agent 控 Android（Desktop→`AndroidDeviceAdapter`→ADB，**不從 AI 島伺服器直連手機**；listDevices/openApp/openUrl/home/back/screenshot；以 `deviceId` 為基礎、`DeviceTarget` single/group/all-authorized、每台獨立回報、設最大並行、執行前顯示將操作哪些裝置）

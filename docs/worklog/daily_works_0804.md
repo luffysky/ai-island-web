@@ -34,4 +34,18 @@
 - `tools.ts`：`dispatchClientAction`（只標 pending、不因派信封就 completed＝GPT 點 6）；`navigate_internal`(read 自動)、`open_url`(write→走既有 approval 讓使用者先看網址＝GPT 點 5/點 3)。
 - ack route `/api/agent/tasks/[id]/client-action`（POST 冪等，phase→status+時間戳）。
 - AgentClient 執行器：輪詢讀 `client_actions`→自動跑「導航/same-tab」（`processedRef` session 去重＝GPT 點 2）；**new-tab 開頁不 auto window.open**（會被擋）→ `ClientActionBar` 卡片由使用者點「開啟」在手勢內開、popup 被擋回 failed 不假裝完成（GPT 點 1）；**輪詢不因 status=done 停**（還有未結 client-action 就續輪詢、收尾只跑一次＝GPT 點 2）；stale/failed 顯示「重試」由使用者手動（GPT 點 3）。
-- 全綠：tsc ✅ · vitest **208**（+21）✅ · next build ✅。
+- 全綠：tsc ✅ · vitest **208**（+21）✅ · next build ✅。已 push（與遠端 rebase 後）。
+
+## Batch 4 ✅ search_course + agent_status（伺服器工具）
+- `search_course`（read/server）：查 `chapters`（title/description ilike）＋`dictionary_terms`（term/zh_name/slug）＋站內功能頁（`matchSiteFeatures` 純函式），回標題＋站內 path。找到→可接 `navigate_internal`。
+- `agent_status`（read/server）：查該使用者近 8 筆 `agent_tasks` 狀態，回 active 數＋清單（回答「現在有哪些代理在工作」）。
+- **修正**：章節路徑是數字 id（`/chapters/26`、非 ch26）——`navigate_internal` 說明同步更正、並提示不確定 path 先 search_course。
+- 3 測試（matchSiteFeatures 命中/空/不亂配）；tsc ✅ · vitest **211** ✅ · next build ✅。
+
+## Batch 5 ✅ Roadmap 文件 + 收尾
+- `docs/agent-device-control-roadmap.md`：Phase 2（手機控電腦 Desktop Agent、`device_connections`/`device_commands`、`DeviceTransport`、service key 不落端）＋ Phase 3（Android ADB Adapter、多裝置並行）＋ 權限/確認/緊急停止/日誌隱私 ＋ **Whisper/Piper 未來替換點**（provider 介面已預留、換注入即可）。點出「決策在雲·執行在端·回報」骨架＝Phase 1 client-action 的放大版。
+
+## 🏁 Phase 1 網頁語音代理 MVP — 驗收
+- 走既有 Agent pipeline（不建第二套、共用記憶/RAG/預算/approval）；STT 不支援自動退回文字；autoSend 預設 false；不存錄音。
+- client-action 中繼滿足 GPT 兩輪全部契約（白名單 union／唯一 id 生命週期＋三重去重／不繞 approval／完成寫回不假裝／原子 RPC／new-tab 需手勢／輪詢不因 done 停／stale·failed 手動重試）。
+- 全綠：tsc ✅ · **vitest 211（+24）** ✅ · next build ✅。DB：`agent_tasks.client_actions` 欄 + 2 RPC 已上 prod。

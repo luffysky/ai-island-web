@@ -173,6 +173,29 @@ async function searchLinks(query: string, limit: number, userId?: string): Promi
   return ddg;  // 全部沒有 → 至少回 DDG 撈到的那一兩筆
 }
 
+// 站內功能頁（search_course 的 feature 類）。title 命中或關鍵字互含即算符合。
+const SITE_FEATURES: { title: string; path: string; kw: string[] }[] = [
+  { title: "每日運勢 / AI 命理", path: "/fortune", kw: ["運勢", "命理", "星座", "塔羅", "八字", "算命", "梅花", "占卜"] },
+  { title: "訊息軍師", path: "/message-coach", kw: ["訊息", "軍師", "講話", "怎麼說", "道歉", "加薪", "婉拒", "開口"] },
+  { title: "分身島 AI 代理", path: "/agent", kw: ["分身", "代理", "agent", "員工", "自動化", "助理"] },
+  { title: "程式辭典", path: "/dictionary", kw: ["辭典", "術語", "名詞", "字典", "定義"] },
+  { title: "課程章節", path: "/chapters", kw: ["課程", "章節", "教材", "學程式", "上課"] },
+  { title: "機會島", path: "/opportunities", kw: ["機會", "競賽", "比賽", "徵件", "獎金"] },
+  { title: "排行榜", path: "/leaderboard", kw: ["排行", "排名", "榜"] },
+  { title: "我的學習紀錄", path: "/me", kw: ["學習紀錄", "我的", "進度", "個人"] },
+  { title: "訂閱方案", path: "/pricing", kw: ["訂閱", "付費", "方案", "價格", "升級"] },
+];
+
+/** 依關鍵字比對站內功能頁（純函式、可測）。 */
+export function matchSiteFeatures(query: string): { title: string; path: string }[] {
+  const q = String(query ?? "").trim();
+  if (!q) return [];
+  const ql = q.toLowerCase();
+  return SITE_FEATURES
+    .filter((f) => f.title.includes(q) || f.kw.some((k) => ql.includes(k.toLowerCase()) || k.toLowerCase().includes(ql)))
+    .map((f) => ({ title: f.title, path: f.path }));
+}
+
 // 派發一個 client-action 信封進 agent_tasks.client_actions（原子 RPC append）。
 // 只標 status:"pending"——完成/失敗由前端執行後回報（不因派發就算 completed）。
 async function dispatchClientAction(ctx: ToolContext, action: Record<string, unknown>): Promise<ToolResult> {
@@ -488,8 +511,8 @@ export const TOOLS: AgentTool[] = [
   //     真正的導航/開頁由前端輪詢後在使用者分頁執行、再回報結果（見 client-actions.ts / ack route）──
   {
     name: "navigate_internal",
-    description: "帶使用者在 AI 島站內切換到指定頁面（用他目前分頁的前端路由、不重整）。只吃站內路徑（/ 開頭，如 /chapters/ch26、/dictionary、/fortune、/agent）。要開外部網站請用 open_url。",
-    args: { path: "站內路徑，必須 / 開頭（如 /chapters/ch26 或 /fortune）" },
+    description: "帶使用者在 AI 島站內切換到指定頁面（用他目前分頁的前端路由、不重整）。只吃站內路徑（/ 開頭，如 /chapters/26、/dictionary、/fortune、/agent）。章節路徑是數字 id（/chapters/<數字>）；不確定路徑時先用 search_course 查到正確 path。要開外部網站請用 open_url。",
+    args: { path: "站內路徑，必須 / 開頭（如 /chapters/26 或 /fortune）" },
     risk: "read",
     platforms: ["web"],
     async execute(args, ctx) {
@@ -510,6 +533,55 @@ export const TOOLS: AgentTool[] = [
       if (!v.ok) return { ok: false, error: v.reason ?? "網址不合法" };
       const target = args?.target === "same-tab" ? "same-tab" : "new-tab";
       return dispatchClientAction(ctx, { type: "open_url", url: v.url, target });
+    },
+  },
+  {
+    name: "search_course",
+    description: "搜尋 AI 島站內：教材章節、程式辭典詞條、功能頁面，回傳標題＋站內路徑（唯讀）。找到後可用 navigate_internal 帶使用者過去。type 可選 all/course/dictionary/feature（預設 all）。",
+    args: { query: "搜尋關鍵字（如 迴圈、async、運勢）", type: "all｜course｜dictionary｜feature（預設 all，可省略）" },
+    risk: "read",
+    platforms: ["server"],
+    async execute(args) {
+      const q = String(args?.query ?? "").trim().slice(0, 60);
+      if (!q) return { ok: false, error: "缺 query" };
+      const type = ["course", "dictionary", "feature"].includes(String(args?.type)) ? String(args?.type) : "all";
+      const admin = createSupabaseAdmin();
+      const like = `%${q.replace(/[%_]/g, "")}%`;
+      const results: { kind: string; title: string; path: string; note?: string }[] = [];
+      if (type === "all" || type === "course") {
+        try {
+          const { data } = await admin.from("chapters").select("id,title,description")
+            .or(`title.ilike.${like},description.ilike.${like}`).order("sort_index").limit(6);
+          for (const c of (data ?? []) as any[]) results.push({ kind: "course", title: c.title, path: `/chapters/${c.id}`, note: c.description ? String(c.description).slice(0, 80) : undefined });
+        } catch { /* ignore */ }
+      }
+      if (type === "all" || type === "dictionary") {
+        try {
+          const { data } = await admin.from("dictionary_terms").select("slug,term,zh_name")
+            .or(`term.ilike.${like},zh_name.ilike.${like},slug.ilike.${like}`).limit(6);
+          for (const t of (data ?? []) as any[]) results.push({ kind: "dictionary", title: `${t.term}${t.zh_name ? "（" + t.zh_name + "）" : ""}`, path: `/dictionary/${t.slug}` });
+        } catch { /* ignore */ }
+      }
+      if (type === "all" || type === "feature") {
+        for (const f of matchSiteFeatures(q)) results.push({ kind: "feature", title: f.title, path: f.path });
+      }
+      return { ok: true, data: { query: q, count: results.length, results: results.slice(0, 15) } };
+    },
+  },
+  {
+    name: "agent_status",
+    description: "查目前這位使用者有哪些分身任務、狀態如何（規劃中/執行中/等你確認/完成/失敗）。回答「現在有哪些代理在工作」「剛才那個任務好了嗎」用這個（唯讀）。",
+    args: {},
+    risk: "read",
+    platforms: ["server"],
+    async execute(_args, ctx) {
+      if (!ctx?.userId) return { ok: false, error: "缺使用者" };
+      const admin = createSupabaseAdmin();
+      const { data } = await admin.from("agent_tasks").select("goal,status,step_count,created_at")
+        .eq("user_id", ctx.userId).order("created_at", { ascending: false }).limit(8);
+      const LIVE = ["planning", "running", "awaiting_approval", "awaiting_device"];
+      const recent = ((data ?? []) as any[]).map((t) => ({ goal: String(t.goal ?? "").slice(0, 60), status: t.status, working: LIVE.includes(t.status), steps: t.step_count }));
+      return { ok: true, data: { active: recent.filter((t) => t.working).length, recent } };
     },
   },
   // ── 以下 device.* 為 Phase 1b stub：需本機桌面助手；現在會觸發權限流程、但回「尚未連接」 ──
