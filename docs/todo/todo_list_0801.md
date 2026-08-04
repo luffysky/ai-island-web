@@ -432,6 +432,7 @@
 - [ ] 7.0.3 **中** `/admin/achievements`：標「成就管理」實為**唯讀**、無 achievements CRUD route（`grant/achievement` 是發成就給人、非管理定義）。修：標題改「成就檢視」或補 `/api/admin/achievements` CRUD。
 - [ ] 7.0.4 **低** `/admin/strategy`（本次新建競品分析）：100% 靜態寫死文件——**刻意如此**（策略文檔非資料功能）。可加註「靜態分析文件」以免誤認動態頁。
 - [ ] 7.0.5 **DB schema 對照**（審計唯一保留項）：各查表頁的程式碼皆真實 query，但未逐表核對 migration 是否都建。跑一次 `scripts/audit-db-columns.mjs` + schema 對照確認無「查不存在的表」。
+- [x] ~~7.0.6 **前端入口審計**（0805）：96 頁 vs `nav-items.ts` 85 項側邊欄。真孤兒（無 nav、無任何連結、只能打網址）＝`/admin/assistant`、`/admin/blog-seed` → **已補進側邊欄**~~ ✅。其餘（payments/payouts/seed-studio/quest-levels/strategy/app-settings/users/batch/broadcasts/new）走 Dashboard 快速操作或子頁按鈕可達、非孤兒；可選：也補進側邊欄 nav 求一致。
 
 ### 7.0b 升級 / 新功能想法（0805 觀察）
 - [ ] 讓 `/admin/strategy` 半動態：接 `competitor_snapshots`（`/admin/marketing/competitor` 已是真功能）自動追競品，靜態分析 + 動態快照並存
