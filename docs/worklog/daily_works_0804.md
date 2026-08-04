@@ -96,3 +96,21 @@
 - **API↔UI**：新路由 `cancel-all` / `client-action` 已接前端；android/device 工具走既有 bridge 佇列；route 註冊審計 459 支全有 export（fetch 對不到者皆 template-literal/.tsx 誤報）。
 - **RWD/PWA**：語音彈窗手機底部面板 + strategy overflow-wrap 修破版；聊天氣泡 max-w 不溢出；**PWA 未動**（manifest/SW 不受影響）。
 - **跨 repo**：桌面客戶端 `ai-island-bridge` 三平台打包待推 `v*` tag 觸發 release。
+
+## J · 0805 下半場（UI/天氣/儀表板/競品/裝置 release/Phase2 規劃）
+- **/agent 聊天氣泡 + 收合**：目標右泡泡/分身左泡泡；模式/工具箱/思考過程/操作鈕可收合、跑完自動收思考。
+- **語音**：修「唸一半自己停」(chunk 接力)、音色依語言分組全列、手機彈窗改底部面板避開底部 nav。
+- **RWD 一批**：voice/strategy/ReplyForm 破版修；後台側欄 `sticky` 獨立捲動+目前頁高亮；後台補 6 頁側欄入口 + 2 孤兒(assistant/blog-seed)。
+- **競品戰略**：查證 OpenClaw(安全崩壞 CVE/26%技能漏洞)/NVIDIA NemoClaw(沙盒層) → `/admin/strategy` + `docs/competitive/` + §2.10 三層策略。
+- **裝置控制 §2.9 全 7 項完成 + 上架**：桌面 bridge(filesystem/browser/system/android adb)、SEA + GitHub Actions 三平台 release(**v0.1.0 已推、win/mac/linux zip 皆 HTTP 200**)、自適應輪詢、緊急停止；`DESKTOP_DOWNLOAD_URL` 修 `releases/latest`。本機也 build 出 91MB exe 實測可跑。
+- **天氣/晨報**：`lib/weather`(擴體感/濕度/風/日出日落) + `/api/weather`(不存 lat/lng·隱私) + `WeatherCard`(讀當下定位) + `buildMorningBriefCard` 專屬 LINE 卡；查核所有 LINE 通知卡皆用 `buildSimpleCard/buildListCard/buildFortuneCard`（已美化、無醜卡）。
+- **每日情報儀表板 `/daily` Phase 1**：天氣 hero+明細+生活建議+每日一句/單字/Tip+月相+運勢卡+**今日待辦(localStorage)**；首頁「🌅 每日情報」入口；新 lib `moon`/`daily-content`；修 `weatherEmoji(999)` 測試。
+- **CI**：移除 `concurrency` → 徹底不再出現「operation was canceled」紅叉。
+- **Phase 2 規劃**：subagent 完整盤 Space 架構 → §5.7 port 計畫（theme/background/lottie/字體/後台字體安裝器/拖拉 widget）。主題需拆 palette/mode 雙軸(動全站 `dark:`、風險高) → 林董拍板 **B：下輪專注 session 專心做**。
+
+## 🏁 收尾健檢（0805 晚·B 收工）
+- **建置**：tsc ✅ · vitest **225**（33 檔）✅ · next build ✅（`/daily` 27kB）。
+- **DB**：**無未跑 migration**（天氣/儀表板/裝置全複用既有表或零 DB；今日新 DB 物件＝無）。
+- **API↔UI**：`/api/weather` ↔ WeatherCard/DailyDashboard 接對；首頁「每日情報」→ `/daily`；route 全註冊。
+- **RWD/PWA**：語音彈窗/strategy/儀表板/後台側欄皆響應式不破版；**PWA 未動**。
+- **全部 commit + push**（本 repo + `ai-island-bridge`）；`docs/widget.md`(Phase 2 spec) 已納入。
