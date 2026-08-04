@@ -34,7 +34,7 @@ interface SkillItem { id: string; name: string; description?: string; emoji: str
 const CAT_LABEL: Record<string, string> = { employee: "🏢 你的 AI 員工", research: "網頁 · 研究", write: "寫作 · 建議", code: "程式碼", dev: "開發者本機", learn: "站內 · 學習", other: "其他" };
 
 // 桌面助手安裝檔下載連結（公開 GitHub release；出新版跑 scripts/publish-bridge-release.mjs 換版本號）
-const DESKTOP_DOWNLOAD_URL = "https://github.com/luffysky/ai-island-bridge/releases/download/v0.1.0/ai-island-bridge-0.1.0-win.zip";
+const DESKTOP_DOWNLOAD_URL = "https://github.com/luffysky/ai-island-bridge/releases/latest/download/ai-island-bridge-win.zip";
 
 const RISK_BADGE: Record<Risk, { label: string; cls: string; Icon: any }> = {
   read: { label: "唯讀", cls: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400", Icon: Eye },
