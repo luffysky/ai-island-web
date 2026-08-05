@@ -29,6 +29,7 @@ import { Pet } from "@/components/pet/Pet";
 import { ToastProvider } from "@/components/ui/Toast";
 import { ConfirmProvider } from "@/components/ui/ConfirmDialog";
 import { WebVitalsReporter } from "@/components/WebVitalsReporter";
+import { ThemeFontLoader } from "@/components/theme/ThemeFontLoader";
 import { PWAInstall } from "@/components/PWAInstall";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { LineBindBanner } from "@/components/LineBindBanner";
@@ -201,6 +202,7 @@ gtag('config', '${gaId}');`}
               <CookieBanner />
               <InteractionTracker />
               <WebVitalsReporter />
+              <ThemeFontLoader />
               <PWAInstall />
               <OfflineBanner />
               <LineBindBanner />

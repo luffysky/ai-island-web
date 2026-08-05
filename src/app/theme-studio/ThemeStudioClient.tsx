@@ -22,6 +22,7 @@ import {
   applyThemeToPreview,
   currentMode,
 } from "@/lib/theme/apply";
+import { loadThemeFonts, type FontCatalog, type FontCatalogEntry } from "@/lib/theme/font-loader";
 
 export type SavedTheme = {
   id: string;
@@ -77,16 +78,41 @@ export function ThemeStudioClient({ initialThemes, initialActiveDefinition }: Pr
   const [themes, setThemes] = useState<SavedTheme[]>(initialThemes);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [fontCatalog, setFontCatalog] = useState<FontCatalog>({ fonts: [], pairs: [] });
 
   // 掛載後讀真正的站台模式
   useEffect(() => {
     setPreviewMode(currentMode());
   }, []);
 
+  // 掛載時抓字體目錄（給字體選單用）
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/fonts", { cache: "no-store" });
+        if (!res.ok) return;
+        const json = (await res.json()) as FontCatalog;
+        if (!cancelled) setFontCatalog(json);
+      } catch {
+        /* ignore */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // 草稿變動 → 即時刷新右側預覽（不碰 :root）
   useEffect(() => {
     if (previewRef.current) applyThemeToPreview(draft, previewMode, previewRef.current);
   }, [draft, previewMode]);
+
+  // 預覽字體：在 applyThemeToPreview 之後跑（用 setProperty、不會被 cssText 覆蓋）→
+  // 標題/內文/介面選了字體、右側預覽即時看得到（@font-face 注入 <head>、swap）。
+  useEffect(() => {
+    if (previewRef.current) loadThemeFonts(draft, fontCatalog, previewRef.current);
+  }, [draft, fontCatalog, previewMode]);
 
   const report = useMemo(() => analyzeTheme(draft), [draft]);
 
@@ -303,6 +329,31 @@ export function ThemeStudioClient({ initialThemes, initialActiveDefinition }: Pr
           <section className="rounded-xl border border-border bg-bg-card p-4">
             <h2 className="mb-3 text-sm font-semibold text-fg">字體</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <FontRoleField
+                label="標題字體"
+                value={draft.typography.headingFontId}
+                catalog={fontCatalog}
+                onChange={(v) => setTypography("headingFontId", v)}
+              />
+              <FontRoleField
+                label="內文字體"
+                value={draft.typography.bodyFontId}
+                catalog={fontCatalog}
+                onChange={(v) => setTypography("bodyFontId", v)}
+              />
+              <FontRoleField
+                label="介面字體"
+                value={draft.typography.uiFontId}
+                catalog={fontCatalog}
+                onChange={(v) => setTypography("uiFontId", v)}
+              />
+            </div>
+            {fontCatalog.fonts.length === 0 && (
+              <p className="mt-2 text-xs text-fg-muted">
+                目前沒有已安裝的自訂字體（後台「字體安裝器」可上傳）。
+              </p>
+            )}
+            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
               <RangeField
                 label="標題縮放"
                 min={0.8}
@@ -693,6 +744,42 @@ function SelectField({
         {options.map((o) => (
           <option key={o} value={o}>
             {o}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+/** 字體角色選單：選項 = 已安裝字體目錄 + 目前值（若不在目錄裡也保留可見）。 */
+function FontRoleField({
+  label,
+  value,
+  catalog,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  catalog: FontCatalog;
+  onChange: (v: string) => void;
+}) {
+  const inCatalog = catalog.fonts.some(
+    (f: FontCatalogEntry) => f.slug === value || f.id === value,
+  );
+  return (
+    <label className="block">
+      <span className="text-xs text-fg-muted">{label}</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="mt-1 w-full rounded-lg border border-border bg-bg px-2 py-2 text-sm text-fg"
+      >
+        {/* 目前值不在目錄（預設 slug 或已停用）→ 保留一個選項讓下拉停在原值 */}
+        {value && !inCatalog && <option value={value}>{value}（目前）</option>}
+        <option value="">系統預設 / 繼承</option>
+        {catalog.fonts.map((f: FontCatalogEntry) => (
+          <option key={f.id} value={f.slug}>
+            {f.family}
           </option>
         ))}
       </select>

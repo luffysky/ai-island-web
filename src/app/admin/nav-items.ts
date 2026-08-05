@@ -67,6 +67,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { href: "/admin/forum-seed", label: "🌱 討論區種子生成器" },
       { href: "/admin/blog-seed", label: "🌱 部落格種子生成器" },
       { href: "/admin/seed-studio", label: "🌾 種子工作室" },
+      { href: "/admin/fonts", label: "🔤 字體管理（上傳／安裝）" },
       { href: "/admin/gamification", label: "🎮 遊戲化規則" },
       { href: "/admin/quest-levels", label: "🎯 AI 關卡" },
       { href: "/admin/changelog", label: "📜 更新日誌" },
