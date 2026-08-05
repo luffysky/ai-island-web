@@ -338,7 +338,7 @@
         "options": [
           {
             "value": "a",
-            "label": "用 z.coerce.date() 或 Field() 自動把字串轉成數字，驗證後資料就是正確的型別"
+            "label": "用 z.coerce.number() 或 Field() 自動把字串轉成數字，驗證後資料就是正確的型別"
           },
           {
             "value": "b",
@@ -354,7 +354,7 @@
           }
         ],
         "answer": "a",
-        "explanation": "Zod 的 z.coerce 和 Pydantic 的 Field 設定可以在驗證時自動把字串轉成正確的型別（如 coerce.date() 把字串轉 Date）。選項 b 會直接拒絕，c 把責任丟給前端不安全，d 是純定義規格不能真的驗證。"
+        "explanation": "Zod 的 z.coerce.number() 和 Pydantic 的 Field/型別設定可以在驗證時自動把字串 \"25\" 轉成數字 25（注意是 coerce.number()，不是 coerce.date()——後者是把字串轉成日期 Date）。選項 b 直接拒絕（可行但較嚴格）、c 把責任丟給前端不安全、d 是純定義規格不能真的驗證。"
       }
     },
     {

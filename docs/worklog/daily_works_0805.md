@@ -25,4 +25,21 @@
 - **術語沒白話/英中對照**：`ch65.4` GEO 消歧義（地理位置優化 vs 生成式引擎優化）、`ch67.3` 補 IDOR/SSRF 定義（oneLine 有列卻內文沒解釋）。
 - **比喻錯置**：`ch31.5`(fs→ESM/CJS)、`ch31.7`(Express→TypeScript)、`ch32.4`(goroutine→函數多回傳)、`ch32.6`(error→struct)、`ch16.9`(auth→queue) 各換成貼合本課主題的比喻。
 
-**第二波（待續）**：generic `<>` 被吃掉的 ch05/07/31/46；ch34–36 大量 content 被截斷（Java/C#/PHP 課上到一半斷句）；ch49/50 n8n 啟動步驟/表格損壞；ch17/18/22/27/28/29 SQL/Mongo/Docker/pandas/scraping 的符號重載與 stale API（LINE Notify 已停）等；分批修、避免一次開太多子代理燒額度。
+## C段：第二波——壞碼＋矛盾硬傷（已修一批、DB 同步）
+
+**壞碼：generic `<>` 被 HTML strip 吃光（同 ch32.3 那類）**
+- **ch05（TypeScript 整章 generic）**：`<T>`/`<K,V>`/`<number>`/`Promise<T>`/`Record<K,V>`/`Repository<T>`… 共 **111 處**被吃掉、變無效 TS，全部依上下文/註解推回正確型別（含 mangled `Promise>` → `Promise<Result<T>>`、`useRef<...>` 等）。已驗 parse＋無 `&lt;` 殘留＋無重複。
+  - ⚠️ ch05 還有**非 generic 的連帶損壞**（同一次 strip 把 `<…>` 之間內容吃掉）：5.5/5.18 JSX `return (...)` 被清空、5.16 掉了 strictNullChecks/strictFunctionTypes 段——需**內容重建**（另開 wave-3，不在這批）。
+- **ch07 / ch31（Rust `Vec<>`/`Option<>` + TS `Promise<>`）**：子代理處理中。ch46「`result: Result`」查證為**誤報**（合法 Pydantic 型別標註、非 generic）。
+
+**矛盾／事實錯誤（已修、DB 同步）**
+- ch06.5 小測驗 `z.coerce.date()`→`z.coerce.number()`（題目是字串轉數字）
+- ch17.6 `LIKE '%i'` 註解 `Nami/Robin(沒有)`→`Nami/Sanji`（Robin 結尾 n）
+- ch14.2 SWR「（最佳）」→「（次要資料折衷）」與測驗一致
+- ch28.6 免費 proxy「別用會偷密碼」vs「學習夠用」→ 統一為條件式
+- ch28.7 主範例用已停服 LINE Notify(2025-04)→ 改 Telegram Bot 可用範例
+- ch22.6 `EXPOSE #開放port`（與表格「純文件」矛盾）→ 改「只是宣告」＋補冒號 host:container vs name:tag
+- ch18.15 CAP「NoSQL 通常 AP」→ 補「MongoDB 預設偏 CP、別一刀切」
+- ch10.8 重點回顧/表格「force-cache(預設)」→「no-store 才是 Next15 預設」
+
+**第三波（待續）**：ch05 連帶 JSX/內容重建；ch34–36 content 大量截斷（Java/C#/PHP 斷句、連 miniQuiz 考的段落都沒出現，需重生成）；ch49/50 n8n 啟動步驟/表格損壞；ch27（loc含端點vs iloc、axis 行列、effect_size 對不上）、ch08.4/ch09.16/ch10.9（React/Vue/Next 符號重載）、ch23(CAP)、ch58/59(stack/onboard/ROI/NPS)等術語白話；分批修、少開子代理。
