@@ -86,3 +86,34 @@ PostgREST 預設一次最多回 **1000 筆**。`lessons` 表已 1258 筆、任�
 - ⚠️ 辭典已收很多 Python 條目(含常見模組 requests/pandas/numpy/os/json…)，續寫 Python 模組前先查既有 slug 避免重複。新增批次後可跑 `node scripts/translate-sync-all.mjs` 補 i18n(免費 Google、長跑、頁面沒譯 fallback 中文)。
 - **i18n**：辭典已接翻譯管線（`content-i18n.ts` + `translate-sync-all.mjs` 的 `dictionary` scope，翻 zh_name/plain/analogy，term/example 不翻）。新增批次後跑 `node scripts/translate-sync-all.mjs`（免費 Google、長跑會斷、冪等重跑即可）補譯。頁面已在地化（切語言看譯文、沒譯 fallback 中文）。
 - **頁面**：`/dictionary`（搜尋+分類/語言篩選，`DictionaryBrowse.tsx`）、`/dictionary/[slug]`（白話+比喻+範例+相關詞、`DefinedTerm` JSON-LD）。nav 已加「程式辭典」（四語 i18n）。Hero 用自建 `public/lotties/dict-sparkle.json`。
+
+---
+
+## 主題 / 字體 / 背景系統（Theme Studio · /daily Phase 2，0806 上線）
+
+port 自 SnowRealmSpace（`D:\SnowRealmRebirth\SnowRealmSpace`）。**DB 權限已給、刪除前一定先問**（此系統全部 migration 純新增）。
+
+### 主題（Theme Studio）
+- **引擎** `src/lib/theme/engine/`（移植 Space `packages/theme-engine`、純 TS 只依賴 zod）。⚠️ **emit key `--sr-*` 已重映成 AI 島的 `--color-*`**（背景→bg、surface→bg-card、primary→accent…，重映表在 `compile.ts`）。`effectiveTheme(def, mode)` 執行期推導亮/暗變體。
+- **兩軸**：`data-mode`(亮/暗，`@custom-variant dark` 綁它) + `data-palette`(色盤 accent)。**別再把亮暗跟色盤擠回同一個屬性**（那是 0805 修掉的雷）。
+- **持久化**：套用主題＝寫 `profiles.active_theme_id` + `ai_theme` cookie(encodeURIComponent(JSON))；亮暗＝`ai_mode` cookie。`layout.tsx` 讀 cookie→`compileThemeToCssVars(effectiveTheme())` 塞 `<html style>`→**SSR 首屏無 FOUC、重整不掉**。改主題相關別破壞這條。
+- 頁面 `/theme-studio`（`ThemeStudioClient.tsx`）、API `/api/themes*`、`themes` 表（RLS owner-only、軟刪）。
+
+### 字體
+- **表**：`fonts`（全域、非 user-scoped）+ `font_pairs` + `fonts` storage bucket（public）。RLS 公開讀 enabled、寫僅 service_role。
+- **兩種來源**：① `css_url` 有值 → 外部 webfont（Google Fonts CSS2 API），前台 font-loader 用受管 `<link data-sr-theme-font>` 載、Google 做 CJK 子集＋供檔、**零上傳**；② `css_url` null → 自架，`file_manifest` 路徑走 `fonts` bucket 公開 URL 出 @font-face。
+- **目錄種子** `node scripts/seed-fonts-catalog.mjs`（冪等、依 slug upsert、**不覆寫管理員已改的 enabled/file_manifest**）：25 支 Space 字體，19 Google 即用 + 6 CJK 佔位待上傳。**加字體先查既有 slug**。中文名在 `display_name` 欄 + 種子的 `ZH` map。
+- **後台安裝器** `/admin/fonts`（`requireAdmin`）+ `/api/admin/fonts`（上傳 .ttf/.otf/.woff/.woff2≤15MB→bucket→寫表）。前台 GET `/api/fonts` + `src/lib/theme/font-loader.ts`（解析主題 heading/body/ui 三角→注入→設 `--font-*`）+ `<ThemeFontLoader>`(layout 掛一次)。Theme Studio 字體面板選字。
+- CSP（`next.config.mjs`，Report-Only）已加 `fonts.gstatic.com`(font-src) + `fonts.googleapis.com`(style-src)。
+
+### 背景
+- **DB**：`profiles.active_background jsonb`（存選擇的 spec）+ `backgrounds` bucket（Phase 4b 圖片用）。前台 `ai_bg` cookie 做首屏。
+- **場景目錄** `src/lib/background/scenes.ts`（335 個 procedural/static，資料驅動 behavior×shape×colors×density×speed，6 類）。渲染 `src/components/background/ProceduralScene.tsx`（Canvas-2D 粒子引擎、單一 rAF、上限 600、隱藏分頁暫停、prefers-reduced-motion/saveData 只畫底漸層）。
+- **全站掛載** `BackgroundLayer.tsx`（fixed z-index:-10、pointer-events:none、`window 'ai-bg-change'` 即時更新、切 `html[data-bg-active]`→body 透明才看得到）。頁面 `/background`（`BackgroundPicker.tsx`）、API `/api/background/apply`。
+- ⬜ **Phase 4b 未做**：lottie 動態場景（用現成 `dotlottie-wc` CDN）+ 自訂圖片上傳（bucket 已備）。
+
+### 選單玻璃
+- `.menu-surface`（globals.css）＝磨砂玻璃選單表面（底色 `--color-bg-card-opaque` fallback `--color-bg-card` + backdrop-blur），透明度 `--menu-opacity`(0.5 全玻璃→1 實色、預設 0.82) 由 ThemeToggle 存 localStorage `ai_menu_opacity`、mount 套 :root。所有浮動選單（Popover 共用底 / 色盤下拉 / 手機 mobileMenu / 桌機 navDrawer）都用它。**玻璃要保留、別改回不透明**。手機外觀（模式/色盤/透明度）在頭像下拉的 `<ThemeToggle menu />`。
+
+### Widget 首頁（尚未做）
+- 計畫 doc `docs/widget_homepage_port_plan.md`（Space 拖拉編輯 widget 首頁的完整移植藍圖：DB per-user / 照抄 grid.ts·config-fields.ts·WidgetGrid·WidgetBoundary / 5 Phase）。開工前先讀它。

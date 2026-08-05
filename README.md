@@ -108,8 +108,15 @@
 
 ### 🛠️ 大眾變現輕工具
 - 訊息軍師（難開口的話幫你講好）、AI 求職包（履歷+自傳+面試模擬）、生活助理範本庫
-- **每日情報儀表板** `/daily`：讀當下位置的天氣 hero（體感/降雨/濕度/風/日出日落/紫外線·Open-Meteo 免費·lat/lng 不儲存）+ AI 生活建議 + 每日一句/AI 單字/Tip + 月相 + 運勢入口卡 + 今日待辦——「每天打開 AI 島學一點」的入口。＊未來：可拖拉 widget + 多主題/背景/字體（port 自 Space，見 `docs/todo` §5.7）
+- **每日情報儀表板** `/daily`：讀當下位置的天氣 hero（體感/降雨/濕度/風/日出日落/紫外線·Open-Meteo 免費·lat/lng 不儲存）+ AI 生活建議 + 每日一句/AI 單字/Tip + 月相 + 運勢入口卡 + 今日待辦——「每天打開 AI 島學一點」的入口。
 - **每日晨報（LINE 推播）**：☀️天氣生活建議 + 🔮運勢一句 + ✅今天 3 件事，專屬 Flex 晨報卡（僅同意定位者附天氣、零 AI 成本）
+
+### 🎨 個人化：主題 / 字體 / 背景（Theme Studio，port 自 Space）
+- **Theme Studio** `/theme-studio`：任意自訂主題——13 色 token + 字型/表面/效果/動態，live 預覽、~100 內建 preset、a11y 對比檢查、儲存並套用。引擎移植 Space `theme-engine`（`--sr-*`→AI 島 `--color-*`），`effectiveTheme` 執行期推導亮/暗變體。
+- **亮暗 × 色盤兩軸**：`data-mode`(亮/暗/跟系統) + `data-palette`(森/海/櫻/薰衣草/珊瑚/薄荷)，header 具名色盤下拉；套用後 **SSR inline 注入、重整不掉、首屏無 FOUC**。
+- **字體系統**：內建 Space 全字體目錄 25 支——**19 支 Google Fonts「找到即裝」零上傳**（Google 動態子集 CJK + CDN 供檔，思源黑/宋、jf open 粉圓、芫荽、Inter、JetBrains Mono…）、6 支 CJK（台北黑/昭源/霞鶩文楷/朱雀仿宋/清松手寫）走後台上傳安裝。後台 **`/admin/fonts` 字體安裝器**（上傳 .ttf/.otf/.woff/.woff2→Storage→即可在 Theme Studio 選字），字體中文名 display_name。
+- **背景系統** `/background`：**335 個 canvas 粒子動態場景 + 漸層**（6 類：天氣/星空/自然/慶祝/簡約/城市夜景，純 Canvas-2D、零儲存、prefers-reduced-motion/省電模式自動降級為靜態），一鍵套用、跨裝置同步（`profiles.active_background`）。＊Phase 4b（lottie + 自訂圖片上傳）進行中。
+- **選單玻璃可調**：磨砂玻璃選單表面（`.menu-surface`），透明度使用者可調（玻璃↔實色）；手機版外觀（模式/色盤/透明度）收進頭像下拉。
 
 ---
 
