@@ -113,6 +113,8 @@ const MIGRATIONS = [
   "blog_article_chapter_link_migration.sql",
   // 2026-07-09 — 學習反應（懂了/卡住/太神…每節課情緒反饋條）
   "lesson_reactions_migration.sql",
+  // 2026-08-06 — Theme Studio：自訂主題表 themes + profiles.active_theme_id（/daily Phase 2）
+  "theme_studio_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
