@@ -450,6 +450,29 @@ html[data-theme="light"] {
   --chip-neutral-fg: #1f2937;   /* gray-800 — 對比 13:1 AAA */
 }
 
+/* ============================================================
+   主題色盤（data-palette）— Phase 2a
+   只覆蓋 accent 家族 4 個 token（accent / -contrast / -2 / -3），
+   不動 bg / 文字 / chip / border → 亮暗仍由 data-theme 管，可讀性不受影響。
+   每個色盤同時給「暗底」與「亮底」兩組值；light+palette 特異性(0,2,1) > 純 light(0,1,1)，正確勝出。
+   admin-skin 與 lesson 容器各自的 accent 就近優先，仍蓋過色盤（不受影響）。
+   預設（無 data-palette）＝原本的森綠。
+   ============================================================ */
+html[data-palette="ocean"]   { --color-accent:#38bdf8; --color-accent-contrast:#04121e; --color-accent-2:#22d3ee; --color-accent-3:#818cf8; }
+html[data-theme="light"][data-palette="ocean"]   { --color-accent:#0284c7; --color-accent-contrast:#ffffff; --color-accent-2:#0891b2; --color-accent-3:#4f46e5; }
+
+html[data-palette="sakura"]  { --color-accent:#fb7185; --color-accent-contrast:#1a0410; --color-accent-2:#f9a8d4; --color-accent-3:#c084fc; }
+html[data-theme="light"][data-palette="sakura"]  { --color-accent:#e11d48; --color-accent-contrast:#ffffff; --color-accent-2:#db2777; --color-accent-3:#9333ea; }
+
+html[data-palette="lavender"] { --color-accent:#a78bfa; --color-accent-contrast:#120425; --color-accent-2:#c4b5fd; --color-accent-3:#f0abfc; }
+html[data-theme="light"][data-palette="lavender"] { --color-accent:#7c3aed; --color-accent-contrast:#ffffff; --color-accent-2:#6d28d9; --color-accent-3:#a21caf; }
+
+html[data-palette="coral"]   { --color-accent:#fb923c; --color-accent-contrast:#1a0a02; --color-accent-2:#fdba74; --color-accent-3:#f87171; }
+html[data-theme="light"][data-palette="coral"]   { --color-accent:#ea580c; --color-accent-contrast:#ffffff; --color-accent-2:#d97706; --color-accent-3:#dc2626; }
+
+html[data-palette="mint"]    { --color-accent:#34d399; --color-accent-contrast:#05130d; --color-accent-2:#6ee7b7; --color-accent-3:#5eead4; }
+html[data-theme="light"][data-palette="mint"]    { --color-accent:#059669; --color-accent-contrast:#ffffff; --color-accent-2:#0d9488; --color-accent-3:#0891b2; }
+
 html[data-theme="light"] ::selection { background: var(--color-accent); color: #fff; }
 html[data-theme="light"] ::-webkit-scrollbar-track { background: var(--color-bg-elevated); }
 
