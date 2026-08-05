@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Sun, Moon, Monitor } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Sun, Moon, Monitor, ChevronDown, Check } from "lucide-react";
 
 /**
  * 暗黑 / 明亮 / 跟系統 三段切換 + 主題色盤（accent 換色）。
@@ -51,6 +51,23 @@ function applyPalette(key: string | null) {
 export function ThemeToggle({ compact = false }: { compact?: boolean } = {}) {
   const [theme, setTheme] = useState<Theme>("dark");
   const [palette, setPalette] = useState<string | null>(null);
+  const [palOpen, setPalOpen] = useState(false);
+  const palRef = useRef<HTMLDivElement>(null);
+
+  // 點外面 / 按 Esc 關閉色盤下拉
+  useEffect(() => {
+    if (!palOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (palRef.current && !palRef.current.contains(e.target as Node)) setPalOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setPalOpen(false); };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [palOpen]);
 
   useEffect(() => {
     const saved = (localStorage.getItem(STORAGE_KEY) as Theme | null) ?? "dark";
@@ -126,18 +143,48 @@ export function ThemeToggle({ compact = false }: { compact?: boolean } = {}) {
           <Sun size={13} />
         </button>
       </div>
-      <div className="inline-flex items-center gap-1 p-1 rounded-full bg-bg-card border border-border" role="group" aria-label="主題色盤">
-        {PALETTES.map((p) => (
-          <button
-            key={p.label}
-            onClick={() => setPal(p.key)}
-            title={`色盤：${p.label}`}
-            aria-label={`主題色盤 ${p.label}`}
-            aria-pressed={palette === p.key}
-            className={`w-4 h-4 rounded-full transition ${palette === p.key ? "ring-2 ring-fg ring-offset-1 ring-offset-bg-card" : "border border-black/20 dark:border-white/25 hover:scale-110"}`}
-            style={{ background: p.dot }}
+      <div className="relative" ref={palRef}>
+        <button
+          type="button"
+          onClick={() => setPalOpen((o) => !o)}
+          aria-haspopup="listbox"
+          aria-expanded={palOpen}
+          title="主題色盤"
+          className="inline-flex items-center gap-1.5 pl-2 pr-1.5 py-1 rounded-full bg-bg-card border border-border text-sm text-fg-muted hover:text-fg transition"
+        >
+          <span
+            className="w-3.5 h-3.5 rounded-full border border-black/20 dark:border-white/25 shrink-0"
+            style={{ background: (PALETTES.find((p) => p.key === palette) ?? PALETTES[0]).dot }}
           />
-        ))}
+          <span>{(PALETTES.find((p) => p.key === palette) ?? PALETTES[0]).label}</span>
+          <ChevronDown size={13} className={`transition-transform ${palOpen ? "rotate-180" : ""}`} />
+        </button>
+        {palOpen && (
+          <ul
+            role="listbox"
+            aria-label="主題色盤"
+            className="absolute right-0 z-50 mt-1 w-36 max-h-72 overflow-y-auto rounded-xl bg-bg-card border border-border shadow-lg py-1"
+          >
+            {PALETTES.map((p) => (
+              <li key={p.label}>
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={palette === p.key}
+                  onClick={() => { setPal(p.key); setPalOpen(false); }}
+                  className={`w-full flex items-center gap-2 px-3 py-1.5 text-sm text-left hover:bg-bg-elevated transition ${palette === p.key ? "text-fg font-medium" : "text-fg-muted"}`}
+                >
+                  <span
+                    className="w-3.5 h-3.5 rounded-full border border-black/20 dark:border-white/25 shrink-0"
+                    style={{ background: p.dot }}
+                  />
+                  <span className="flex-1">{p.label}</span>
+                  {palette === p.key && <Check size={14} className="text-accent shrink-0" />}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
