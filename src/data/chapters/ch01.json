@@ -533,27 +533,27 @@
         }
       ],
       "miniQuiz": {
-        "question": "Email 輸入框、要瀏覽器自動驗證格式、用哪個 type？",
+        "question": "把網頁分享到 FB / LINE 想要顯示縮圖，og:image 官方建議用什麼尺寸？",
         "options": [
           {
-            "label": "type=\"text\"",
+            "label": "1200 × 630 px（約 1.91:1）",
             "value": "a"
           },
           {
-            "label": "type=\"email\"",
+            "label": "16 × 16 px",
             "value": "b"
           },
           {
-            "label": "type=\"mail\"",
+            "label": "越大越好、尺寸不用管",
             "value": "c"
           },
           {
-            "label": "type=\"validate\"",
+            "label": "一定要正方形 1:1",
             "value": "d"
           }
         ],
-        "answer": "b",
-        "explanation": "type=\"email\" 瀏覽器自動驗證格式、手機 keyboard 也會切換成 email 模式。"
+        "answer": "a",
+        "explanation": "og:image 官方建議 1200×630（約 1.91:1），且要用可公開存取的「絕對網址」（https://…）。沒寫或尺寸不對，分享到 LINE / FB 會沒圖、或自動抓一張被裁醜的圖。"
       },
       "files": [
         {

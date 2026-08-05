@@ -361,7 +361,7 @@
         "options": [
           {
             "value": "a",
-            "label": "Sprint Backlog 是 PO 排序優先序的所有想做事項清單，Team 從中挑選要做的"
+            "label": "Product Backlog 是 PO 排序優先序的所有想做事項清單，Team 從中挑選要做的"
           },
           {
             "value": "b",

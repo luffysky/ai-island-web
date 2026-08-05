@@ -64,7 +64,11 @@
 - 27.3 `axis` 同一個 axis=0 又叫「行」又叫「列」 → 加 row/column 英文對照＋教材約定 legend，統一不混淆
 - 27.4 `df.loc[0:2]` vs `df.iloc[0:3]` 都註「第 0-2 列」卻數字差 1 → 補「loc 含結尾、iloc 不含結尾」說明
 
-**剩餘波次（非壞碼、純 gloss/比喻，可緩）**：
-- 第 5 波 符號重載 gloss：ch17.5/17.12、ch18.2、ch28.2/28.8、ch08.4/09.16/10.9、ch12.4、ch29.1
-- 第 6 波 系統性比喻錯位（ch02/04/07/08/10 analogy 錯開一課，幾十課，量最大）
-- 第 7 波 術語 gloss：ch23(CAP)、ch58/59、ch22、ch28.11 + 雜項(ch01.9 quiz、ch43.3 Backlog、ch22 下一課指錯)
+## G段：第五＋七波——符號重載 + 術語 gloss（22 處，2 支子代理，已修+DB 同步）
+
+**第 5 波 符號重載 gloss（12 處）**：ch17.5（`*` 乘號 vs SELECT * 全欄）、17.12（`=` 賦值 vs 比較）、ch18.2（Mongo `$` 動作 vs 欄位值、`_id` 分組依據 vs 主鍵）、ch28.2（CSS `#` id vs Python 註解）、28.8（XPath `@` 屬性 vs 裝飾器＋速查表）、28.11（TLS 指紋「口音」比喻）、ch08.4（`...rest` 收集 vs `{...rest}` 展開）、ch09.16（Vue 響應式 ref vs 樣板 ref）、ch10.9（`export const dynamic` vs `next/dynamic`）、ch12.4（session/CSRF/JWT 都叫 token）、ch29.1（Python `.text` 屬性 vs cheerio `.text()` 方法）
+
+**第 7 波 術語 gloss + 雜項（10 處）**：ch23.5（CAP 三詞白話＋為何 P 必選）、23.4（garbled「不過 server」→「不經過你的伺服器」×3）、ch58.2（stack 技術棧）、ch59.11（onboard）、59.12（ROI）、ch22.1（12-Factor 白話重點＋修「下一課」指錯→Docker）、22.3（同 pointer bug→Vercel）、22.4（Node API/連線池 pool）、ch01.9（SEO 課的 miniQuiz 誤放表單題→換成 og:image SEO 題）、ch43.3（miniQuiz 選項「Sprint Backlog」誤標→改 Product Backlog）
+
+**剩最後一波**：
+- 第 6 波 **系統性比喻錯位**（ch02/04/07/08/10）——經掃描確認**不是整齊 +1 位移**（有的 +1 有的 -1），需**逐課依該課主題重寫比喻**（各課 `☕ 用人話講` 已有正確比喻可取材）。用 5 支子代理、一章一支處理。
