@@ -160,6 +160,21 @@ html[data-mode="light"] body::before {
   border: 1px solid color-mix(in srgb, var(--color-border) 80%, transparent);
   border-radius: var(--radius-card);
 }
+/* 選單／下拉／側欄的表面：磨砂玻璃、可讀（帶 backdrop-blur）、透明度可調。
+   玻璃材質保留——底下背景被模糊化、不會跟選單內容糊在一起看不清。
+   --menu-opacity（0.5 全玻璃 → 1 實色）與 --menu-blur 由使用者外觀設定控制、
+   套在 :root 全站生效（見 ThemeToggle）。用不透明的 bg-card-opaque 當底、
+   custom 玻璃主題也不會透到底。 */
+.menu-surface {
+  background-color: color-mix(
+    in srgb,
+    var(--color-bg-card-opaque, var(--color-bg-card))
+      calc(var(--menu-opacity, 0.82) * 100%),
+    transparent
+  );
+  backdrop-filter: blur(var(--menu-blur, 16px)) saturate(1.15);
+  -webkit-backdrop-filter: blur(var(--menu-blur, 16px)) saturate(1.15);
+}
 .hover-lift {
   transition: transform 0.22s cubic-bezier(0.4,0,0.2,1),
               box-shadow 0.22s cubic-bezier(0.4,0,0.2,1),

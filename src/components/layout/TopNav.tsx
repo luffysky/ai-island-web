@@ -285,6 +285,11 @@ export function TopNav() {
                       <span>{t("userMenu.settings")}</span>
                     </Link>
 
+                    {/* 外觀：模式 + 色盤 + 選單材質（手機版沒有 header 那排、收進這；桌面也可用） */}
+                    <div className="border-t border-border mt-1 pt-1">
+                      <ThemeToggle menu />
+                    </div>
+
                     <Link
                       href={"/theme-studio" as any}
                       className="flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition"
@@ -355,7 +360,7 @@ export function TopNav() {
       </div>
 
       {mobileMenu && (
-        <div className="md:hidden animate-slide-in-left origin-left absolute left-0 right-0 top-full z-40 shadow-2xl border-t border-border bg-bg-card/80 supports-[backdrop-filter]:bg-bg-card/65 backdrop-blur-xl backdrop-saturate-150 px-3 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))] max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain">
+        <div className="menu-surface md:hidden animate-slide-in-left origin-left absolute left-0 right-0 top-full z-40 shadow-2xl border-t border-border px-3 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))] max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain">
           <div className="px-2 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-fg-muted">
             {t("nav.explore")}
           </div>
@@ -384,7 +389,7 @@ export function TopNav() {
       {navDrawer && (
         <div className="hidden md:block">
           <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setNavDrawer(false)} />
-          <aside className="fixed top-0 right-0 h-screen w-72 z-50 bg-bg-card/80 supports-[backdrop-filter]:bg-bg-card/65 backdrop-blur-xl backdrop-saturate-150 border-l border-border flex flex-col shadow-2xl animate-[slideInRight_.25s_ease-out]">
+          <aside className="menu-surface fixed top-0 right-0 h-screen w-72 z-50 border-l border-border flex flex-col shadow-2xl animate-[slideInRight_.25s_ease-out]">
             <div className="flex shrink-0 items-center justify-between p-3 border-b border-border">
               <div className="font-bold flex items-center gap-2">
                 <Compass size={18} className="text-accent" /> <span>{t("nav.exploreIsland")}</span>

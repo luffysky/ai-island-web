@@ -13,6 +13,8 @@ type Theme = "dark" | "light" | "system";
 
 const STORAGE_KEY = "ai_island_theme";
 const PALETTE_KEY = "ai_island_palette";
+const MENU_OPACITY_KEY = "ai_menu_opacity"; // 選單/下拉/側欄表面不透明度（0.5 全玻璃 → 1 實色）
+const MENU_OPACITY_DEFAULT = 0.82;
 
 // 主題色盤：只換 accent（不動背景/文字，亮暗照舊）。key=null → 預設森綠、移除 data-palette。dot=暗底代表色。
 const PALETTES: { key: string | null; label: string; dot: string }[] = [
@@ -48,10 +50,17 @@ function applyPalette(key: string | null) {
   else html.removeAttribute("data-palette");
 }
 
-export function ThemeToggle({ compact = false }: { compact?: boolean } = {}) {
+// 選單表面不透明度：套在 :root 的 --menu-opacity（.menu-surface 讀它）。玻璃仍帶 backdrop-blur。
+function applyMenuOpacity(v: number) {
+  if (typeof window === "undefined") return;
+  document.documentElement.style.setProperty("--menu-opacity", String(v));
+}
+
+export function ThemeToggle({ compact = false, menu = false }: { compact?: boolean; menu?: boolean } = {}) {
   const [theme, setTheme] = useState<Theme>("dark");
   const [palette, setPalette] = useState<string | null>(null);
   const [palOpen, setPalOpen] = useState(false);
+  const [menuOpacity, setMenuOpacity] = useState(MENU_OPACITY_DEFAULT);
   const palRef = useRef<HTMLDivElement>(null);
 
   // 點外面 / 按 Esc 關閉色盤下拉
@@ -76,7 +85,17 @@ export function ThemeToggle({ compact = false }: { compact?: boolean } = {}) {
     const savedPal = localStorage.getItem(PALETTE_KEY);
     setPalette(savedPal);
     applyPalette(savedPal);
+    const rawOpacity = Number(localStorage.getItem(MENU_OPACITY_KEY));
+    const savedOpacity = Number.isFinite(rawOpacity) && rawOpacity > 0 ? rawOpacity : MENU_OPACITY_DEFAULT;
+    setMenuOpacity(savedOpacity);
+    applyMenuOpacity(savedOpacity);
   }, []);
+
+  const setMenuOp = (v: number) => {
+    setMenuOpacity(v);
+    localStorage.setItem(MENU_OPACITY_KEY, String(v));
+    applyMenuOpacity(v);
+  };
 
   useEffect(() => {
     if (theme !== "system") return;
@@ -98,6 +117,70 @@ export function ThemeToggle({ compact = false }: { compact?: boolean } = {}) {
     else localStorage.removeItem(PALETTE_KEY);
     applyPalette(key);
   };
+
+  // menu：下拉選單內的外觀區塊（手機版把主題/色盤/選單材質收進頭像下拉）。
+  if (menu) {
+    return (
+      <div className="px-4 py-3 space-y-3">
+        <div className="text-[11px] font-semibold uppercase tracking-wide text-fg-muted">外觀</div>
+
+        {/* 亮暗模式 */}
+        <div>
+          <div className="mb-1 text-xs text-fg-muted">模式</div>
+          <div className="inline-flex items-center gap-0.5 p-0.5 rounded-full bg-bg-elevated border border-border" role="group" aria-label="亮暗切換">
+            <button onClick={() => set("dark")} className={`px-2.5 py-1 rounded-full text-xs inline-flex items-center gap-1 ${theme === "dark" ? "bg-accent text-accent-contrast" : "text-fg-muted"}`}><Moon size={12} /> 暗</button>
+            <button onClick={() => set("system")} className={`px-2.5 py-1 rounded-full text-xs inline-flex items-center gap-1 ${theme === "system" ? "bg-accent text-accent-contrast" : "text-fg-muted"}`}><Monitor size={12} /> 系統</button>
+            <button onClick={() => set("light")} className={`px-2.5 py-1 rounded-full text-xs inline-flex items-center gap-1 ${theme === "light" ? "bg-accent text-accent-contrast" : "text-fg-muted"}`}><Sun size={12} /> 亮</button>
+          </div>
+        </div>
+
+        {/* 主題色盤 */}
+        <div>
+          <div className="mb-1 text-xs text-fg-muted">色盤</div>
+          <div className="flex flex-wrap gap-1.5">
+            {PALETTES.map((p) => {
+              const active = palette === p.key;
+              return (
+                <button
+                  key={p.label}
+                  type="button"
+                  onClick={() => setPal(p.key)}
+                  aria-label={p.label}
+                  aria-pressed={active}
+                  title={p.label}
+                  className={`w-7 h-7 rounded-full border flex items-center justify-center transition ${active ? "border-accent ring-2 ring-accent/40" : "border-black/20 dark:border-white/25"}`}
+                  style={{ background: p.dot }}
+                >
+                  {active && <Check size={13} className="text-black/70" />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 選單材質：玻璃 ↔ 實色（玻璃保留 backdrop-blur、讀得清） */}
+        <div>
+          <div className="mb-1 flex items-center justify-between text-xs text-fg-muted">
+            <span>選單透明度</span>
+            <span className="tabular-nums">{Math.round(menuOpacity * 100)}%</span>
+          </div>
+          <input
+            type="range"
+            min={50}
+            max={100}
+            step={2}
+            value={Math.round(menuOpacity * 100)}
+            onChange={(e) => setMenuOp(Number(e.target.value) / 100)}
+            className="w-full accent-[var(--color-accent)]"
+            aria-label="選單透明度"
+          />
+          <div className="mt-0.5 flex justify-between text-[10px] text-fg-muted">
+            <span>玻璃</span><span>實色</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // compact：單顆 on/off 鈕、在深↔淺之間切換（手機 nav 用、省空間；色盤在完整版切）
   if (compact) {
@@ -163,7 +246,7 @@ export function ThemeToggle({ compact = false }: { compact?: boolean } = {}) {
           <ul
             role="listbox"
             aria-label="主題色盤"
-            className="absolute right-0 z-50 mt-1 w-36 max-h-72 overflow-y-auto rounded-xl bg-bg-card border border-border shadow-lg py-1"
+            className="menu-surface absolute right-0 z-50 mt-1 w-36 max-h-72 overflow-y-auto rounded-xl border border-border shadow-lg py-1"
           >
             {PALETTES.map((p) => (
               <li key={p.label}>
