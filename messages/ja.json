@@ -37,7 +37,9 @@
     "aiMemory": "AIメモリ・プロンプト",
     "aiKeys": "自分のAIキー (BYOK)",
     "adminOwner": "プラットフォーム管理",
-    "admin": "管理"
+    "admin": "管理",
+    "theme": "テーマ",
+    "background": "背景"
   },
   "footer": {
     "madeBy": "© 2026 AI島 · SnowRealm 制作 · 🐹 が見守る",

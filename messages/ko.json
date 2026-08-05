@@ -37,7 +37,9 @@
     "aiMemory": "AI 메모리 · 프롬프트",
     "aiKeys": "내 AI 키 (BYOK)",
     "adminOwner": "플랫폼 관리자",
-    "admin": "관리"
+    "admin": "관리",
+    "theme": "테마",
+    "background": "배경"
   },
   "footer": {
     "madeBy": "© 2026 AI 섬 · SnowRealm 제작 · 🐹 가 지킴",

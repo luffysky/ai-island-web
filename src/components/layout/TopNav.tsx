@@ -286,6 +286,24 @@ export function TopNav() {
                     </Link>
 
                     <Link
+                      href={"/theme-studio" as any}
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition"
+                      onClick={() => setOpen(false)}
+                    >
+                      <Palette size={16} />
+                      <span>{t("userMenu.theme")}</span>
+                    </Link>
+
+                    <Link
+                      href={"/settings" as any}
+                      className="flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition"
+                      onClick={() => setOpen(false)}
+                    >
+                      <Images size={16} />
+                      <span>{t("userMenu.background")}</span>
+                    </Link>
+
+                    <Link
                       href={"/me/ai" as any}
                       className="flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition"
                       onClick={() => setOpen(false)}

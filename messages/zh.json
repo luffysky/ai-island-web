@@ -37,7 +37,9 @@
     "aiMemory": "AI 記憶 · 提示詞",
     "aiKeys": "我的 AI Keys（BYOK）",
     "adminOwner": "平台後台 (林董)",
-    "admin": "後台管理"
+    "admin": "後台管理",
+    "theme": "主題（Theme Studio）",
+    "background": "背景"
   },
   "footer": {
     "madeBy": "© 2026 AI 島 · 由 SnowRealm 製作 · 招財 🐹 守護",

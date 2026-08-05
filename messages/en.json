@@ -37,7 +37,9 @@
     "aiMemory": "AI Memory · Prompts",
     "aiKeys": "My AI Keys (BYOK)",
     "adminOwner": "Platform Admin",
-    "admin": "Admin"
+    "admin": "Admin",
+    "theme": "Theme Studio",
+    "background": "Background"
   },
   "footer": {
     "madeBy": "© 2026 AI Island · Made by SnowRealm · Guarded by 🐹",
