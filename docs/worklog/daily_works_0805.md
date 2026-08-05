@@ -42,4 +42,11 @@
 - ch18.15 CAP「NoSQL 通常 AP」→ 補「MongoDB 預設偏 CP、別一刀切」
 - ch10.8 重點回顧/表格「force-cache(預設)」→「no-store 才是 Next15 預設」
 
-**第三波（待續）**：ch05 連帶 JSX/內容重建；ch34–36 content 大量截斷（Java/C#/PHP 斷句、連 miniQuiz 考的段落都沒出現，需重生成）；ch49/50 n8n 啟動步驟/表格損壞；ch27（loc含端點vs iloc、axis 行列、effect_size 對不上）、ch08.4/ch09.16/ch10.9（React/Vue/Next 符號重載）、ch23(CAP)、ch58/59(stack/onboard/ROI/NPS)等術語白話；分批修、少開子代理。
+## D段：第三波——內容重建（ch05 起）
+
+同一次 HTML strip 除了吃 generic，也把 `<...>` 之間**整段內容/JSX**吃掉，這批要重寫（不是補括號）。已重建並同步 DB：
+- **ch05 5.5**：`renderForm` state machine 的 4 個 JSX return 被清空 → 依 FormState 補回 `<EditForm/>`/`<Spinner/>`/`<SuccessMessage data={state.data}/>`/`<ErrorBanner message={state.message}/>`。
+- **ch05 5.16**：strict 模式「6 個檢查」中 strictNullChecks 尾段被截、**第 2 項 noImplicitAny 整段消失**、strictFunctionTypes 標題+`type StringCallback` 行被吃 → 補回 getUser 完整範例、重寫 noImplicitAny 段、補回 strictFunctionTypes 標題與型別宣告（6 項齊全）。
+- **ch05 5.18**（React+TS 實戰）：**~15 處 JSX return 全被清空**（Button/Card/Input/Form/MyInput/UserProfile/UserList/AuthProvider/ProfileButton…）→ 整課 content 重寫、每個元件補回正確 type-safe JSX（`<AuthContext.Provider value={{user,login,logout}}>`、`<input ref={inputRef}/>`、event handler `<HTMLInputElement>` 等），保留原有 prose/註解不動。
+
+**第三波剩餘（待續）**：ch07/ch31 塌掉的 `for (i < N)` 迴圈、`if 10 < len`、比較/位移運算子、JSX（同 ch32.3 那類，數量多）；ch34–36 content 大量截斷（Java/C#/PHP 斷句、連 miniQuiz 考的段落都沒出現，需重生成）；ch49/50 n8n 啟動步驟/表格損壞；ch27（loc含端點vs iloc、axis 行列、effect_size 對不上）、ch08.4/ch09.16/ch10.9（React/Vue/Next 符號重載）、ch23(CAP)、ch58/59(stack/onboard/ROI/NPS)等術語白話；分批修、少開子代理。
