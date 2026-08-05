@@ -70,5 +70,11 @@
 
 **第 7 波 術語 gloss + 雜項（10 處）**：ch23.5（CAP 三詞白話＋為何 P 必選）、23.4（garbled「不過 server」→「不經過你的伺服器」×3）、ch58.2（stack 技術棧）、ch59.11（onboard）、59.12（ROI）、ch22.1（12-Factor 白話重點＋修「下一課」指錯→Docker）、22.3（同 pointer bug→Vercel）、22.4（Node API/連線池 pool）、ch01.9（SEO 課的 miniQuiz 誤放表單題→換成 og:image SEO 題）、ch43.3（miniQuiz 選項「Sprint Backlog」誤標→改 Product Backlog）
 
-**剩最後一波**：
-- 第 6 波 **系統性比喻錯位**（ch02/04/07/08/10）——經掃描確認**不是整齊 +1 位移**（有的 +1 有的 -1），需**逐課依該課主題重寫比喻**（各課 `☕ 用人話講` 已有正確比喻可取材）。用 5 支子代理、一章一支處理。
+## H段：第六波——系統性比喻錯位（ch02/04/07/08/10，已修+DB 同步）
+
+各課的 `analogy` 被整體錯開、描述到別課主題。逐課依「該課自己的 `☕ 用人話講`」重寫成貼合本課主題的比喻，**只動 `analogy` 欄位**（每章 diff 驗證＝0 非 analogy 變動）：
+- **ch02**（CSS）22 課、**ch04**（JS）20 課、**ch07**（程式基礎）21 課 —— 3 支子代理，各自逐課重寫，已驗 analogy-only。
+- **ch08**（React）3 課（8.6 事件處理誤用 useEffect 比喻／8.9 useRef 誤用 useReducer／8.18 效能優化誤用 RSC）、**ch10**（Next/Nuxt）2 課（10.10 Error Handling 誤用 Server Action／10.19 Nuxt routeRules 誤用 Vercel 部署）—— 我自己修（錯位少），重寫自各課 ☕。
+
+**✅ 全站內容審計 waves 1–7 全部完成**（Nami `*args` 起 → 壞碼/矛盾/事實/截斷/符號重載/術語/比喻）。
+**未動（另議）**：`/daily` Phase 2 主題引擎 port（2a–2e）——依 todo 自身警告，留待專注 session＋你在場逐步驗證（會動全站主題 CSS 軸，馬拉松尾巴不硬幹）。
