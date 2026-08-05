@@ -5,8 +5,8 @@ import { Sun, Moon, Monitor } from "lucide-react";
 
 /**
  * 暗黑 / 明亮 / 跟系統 三段切換 + 主題色盤（accent 換色）。
- * 用 localStorage 記憶 + 寫到 <html data-theme="..." data-palette="...">。
- * globals.css：[data-theme="light"] 覆寫亮暗 token；[data-palette] 只覆寫 accent 家族。
+ * 用 localStorage 記憶 + 寫到 <html data-mode="..." data-palette="...">。
+ * globals.css：[data-mode="light"] 覆寫亮暗 token；[data-palette] 只覆寫 accent 家族。
  */
 
 type Theme = "dark" | "light" | "system";
@@ -30,7 +30,7 @@ function applyTheme(t: Theme) {
   const effective = t === "system"
     ? (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark")
     : t;
-  html.setAttribute("data-theme", effective);
+  html.setAttribute("data-mode", effective);
 }
 
 function effectiveTheme(t: Theme): "dark" | "light" {

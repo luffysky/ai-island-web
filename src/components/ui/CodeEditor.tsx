@@ -22,7 +22,7 @@ import { useEffect, useMemo, useState } from "react";
 import { snippetsForLang } from "./code-snippets";
 import { emmetTabKeymap } from "./emmet-tab";
 
-// 明亮模式：淺灰底 + 深字（atom-one-light 系語法色），對應全站 data-theme="light"
+// 明亮模式：淺灰底 + 深字（atom-one-light 系語法色），對應全站 data-mode="light"
 const lightEditorTheme = EditorView.theme(
   {
     "&": { color: "#1f2328", backgroundColor: "#f3f5f7" },
@@ -58,14 +58,14 @@ const lightHighlightStyle = HighlightStyle.define([
 ]);
 const lightTheme: Extension = [lightEditorTheme, syntaxHighlighting(lightHighlightStyle)];
 
-/** 跟著全站 data-theme 切換（light → 淺色 IDE） */
+/** 跟著全站 data-mode 切換（light → 淺色 IDE） */
 function useIsLight() {
   const [light, setLight] = useState(false);
   useEffect(() => {
-    const read = () => setLight(document.documentElement.getAttribute("data-theme") === "light");
+    const read = () => setLight(document.documentElement.getAttribute("data-mode") === "light");
     read();
     const obs = new MutationObserver(read);
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-mode"] });
     return () => obs.disconnect();
   }, []);
   return light;

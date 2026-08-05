@@ -20,10 +20,10 @@ function toVariant(src: string, to: "light" | "dark"): string {
 function useIsLight() {
   const [light, setLight] = useState(false);
   useEffect(() => {
-    const read = () => setLight(document.documentElement.getAttribute("data-theme") === "light");
+    const read = () => setLight(document.documentElement.getAttribute("data-mode") === "light");
     read();
     const obs = new MutationObserver(read);
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-mode"] });
     return () => obs.disconnect();
   }, []);
   return light;

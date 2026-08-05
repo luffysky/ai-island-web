@@ -2,14 +2,14 @@
 @import "highlight.js/styles/atom-one-dark.css";
 
 /**
- * 把 Tailwind v4 的 `dark:` variant 綁到本站的 [data-theme] 切換、
+ * 把 Tailwind v4 的 `dark:` variant 綁到本站的 [data-mode] 切換、
  * 跟 OS `prefers-color-scheme` 解耦。
  *
- * 規則：沒 attr 或 data-theme="dark" → 暗色；data-theme="light" → 亮色。
+ * 規則：沒 attr 或 data-mode="dark" → 暗色；data-mode="light" → 亮色。
  * 沒這條的話、使用者選 light theme 但 OS = dark 時、`dark:` 還會觸發、
  * 全站會出現「淺底卡片 + 深主題字色」這類對比看不見的混亂。
  */
-@custom-variant dark (&:where(html:not([data-theme="light"]), html:not([data-theme="light"]) *));
+@custom-variant dark (&:where(html:not([data-mode="light"]), html:not([data-mode="light"]) *));
 
 @theme {
   --color-bg: #0a0e14;
@@ -31,7 +31,7 @@
   --color-pink: #ff79c6;
   --color-gold: #ffd700;
 
-  /* 語意 chip token：每組都驗過 WCAG AAA (≥7:1)、跟 [data-theme] 動態切 */
+  /* 語意 chip token：每組都驗過 WCAG AAA (≥7:1)、跟 [data-mode] 動態切 */
   --chip-success-bg: #064e3b;   /* emerald-950 on dark */
   --chip-success-fg: #6ee7b7;   /* emerald-300 — 對比 13:1 AAA */
   --chip-info-bg: #0c4a6e;      /* sky-900 on dark */
@@ -133,7 +133,7 @@ body::before {
     radial-gradient(48rem 48rem at 100% 2%, color-mix(in srgb, var(--color-accent-3) 16%, transparent), transparent 52%),
     radial-gradient(65rem 40rem at 50% 118%, color-mix(in srgb, var(--color-accent-2) 12%, transparent), transparent 58%);
 }
-html[data-theme="light"] body::before {
+html[data-mode="light"] body::before {
   background:
     radial-gradient(60rem 60rem at 12% -10%, color-mix(in srgb, var(--color-accent) 6%, transparent), transparent 60%),
     radial-gradient(50rem 50rem at 100% 0%, color-mix(in srgb, var(--color-accent-3) 7%, transparent), transparent 55%);
@@ -396,9 +396,9 @@ article table {
 }
 
 /* 主題切換時、用 CSS var 的色彩元件一起 fade、視覺更平順 */
-html[data-theme] *,
-html[data-theme] *::before,
-html[data-theme] *::after {
+html[data-mode] *,
+html[data-mode] *::before,
+html[data-mode] *::after {
   transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
               border-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
               color 200ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -408,7 +408,7 @@ html[data-theme] *::after {
 
 /* 尊重系統 reduce-motion */
 @media (prefers-reduced-motion: reduce) {
-  html, body, html[data-theme] *, html[data-theme] *::before, html[data-theme] *::after {
+  html, body, html[data-mode] *, html[data-mode] *::before, html[data-mode] *::after {
     transition-duration: 0ms !important;
     animation-duration: 0.01ms !important;
   }
@@ -417,7 +417,7 @@ html[data-theme] *::after {
 /* ============================================================
    主題切換 — light 模式（S12 polish）
    ============================================================ */
-html[data-theme="light"] {
+html[data-mode="light"] {
   --color-bg: #fafbfc;
   --color-bg-elevated: #f0f3f7;
   --color-bg-card: #ffffff;
@@ -453,28 +453,28 @@ html[data-theme="light"] {
 /* ============================================================
    主題色盤（data-palette）— Phase 2a
    只覆蓋 accent 家族 4 個 token（accent / -contrast / -2 / -3），
-   不動 bg / 文字 / chip / border → 亮暗仍由 data-theme 管，可讀性不受影響。
+   不動 bg / 文字 / chip / border → 亮暗仍由 data-mode 管，可讀性不受影響。
    每個色盤同時給「暗底」與「亮底」兩組值；light+palette 特異性(0,2,1) > 純 light(0,1,1)，正確勝出。
    admin-skin 與 lesson 容器各自的 accent 就近優先，仍蓋過色盤（不受影響）。
    預設（無 data-palette）＝原本的森綠。
    ============================================================ */
 html[data-palette="ocean"]   { --color-accent:#38bdf8; --color-accent-contrast:#04121e; --color-accent-2:#22d3ee; --color-accent-3:#818cf8; }
-html[data-theme="light"][data-palette="ocean"]   { --color-accent:#0284c7; --color-accent-contrast:#ffffff; --color-accent-2:#0891b2; --color-accent-3:#4f46e5; }
+html[data-mode="light"][data-palette="ocean"]   { --color-accent:#0284c7; --color-accent-contrast:#ffffff; --color-accent-2:#0891b2; --color-accent-3:#4f46e5; }
 
 html[data-palette="sakura"]  { --color-accent:#fb7185; --color-accent-contrast:#1a0410; --color-accent-2:#f9a8d4; --color-accent-3:#c084fc; }
-html[data-theme="light"][data-palette="sakura"]  { --color-accent:#e11d48; --color-accent-contrast:#ffffff; --color-accent-2:#db2777; --color-accent-3:#9333ea; }
+html[data-mode="light"][data-palette="sakura"]  { --color-accent:#e11d48; --color-accent-contrast:#ffffff; --color-accent-2:#db2777; --color-accent-3:#9333ea; }
 
 html[data-palette="lavender"] { --color-accent:#a78bfa; --color-accent-contrast:#120425; --color-accent-2:#c4b5fd; --color-accent-3:#f0abfc; }
-html[data-theme="light"][data-palette="lavender"] { --color-accent:#7c3aed; --color-accent-contrast:#ffffff; --color-accent-2:#6d28d9; --color-accent-3:#a21caf; }
+html[data-mode="light"][data-palette="lavender"] { --color-accent:#7c3aed; --color-accent-contrast:#ffffff; --color-accent-2:#6d28d9; --color-accent-3:#a21caf; }
 
 html[data-palette="coral"]   { --color-accent:#fb923c; --color-accent-contrast:#1a0a02; --color-accent-2:#fdba74; --color-accent-3:#f87171; }
-html[data-theme="light"][data-palette="coral"]   { --color-accent:#ea580c; --color-accent-contrast:#ffffff; --color-accent-2:#d97706; --color-accent-3:#dc2626; }
+html[data-mode="light"][data-palette="coral"]   { --color-accent:#ea580c; --color-accent-contrast:#ffffff; --color-accent-2:#d97706; --color-accent-3:#dc2626; }
 
 html[data-palette="mint"]    { --color-accent:#34d399; --color-accent-contrast:#05130d; --color-accent-2:#6ee7b7; --color-accent-3:#5eead4; }
-html[data-theme="light"][data-palette="mint"]    { --color-accent:#059669; --color-accent-contrast:#ffffff; --color-accent-2:#0d9488; --color-accent-3:#0891b2; }
+html[data-mode="light"][data-palette="mint"]    { --color-accent:#059669; --color-accent-contrast:#ffffff; --color-accent-2:#0d9488; --color-accent-3:#0891b2; }
 
-html[data-theme="light"] ::selection { background: var(--color-accent); color: #fff; }
-html[data-theme="light"] ::-webkit-scrollbar-track { background: var(--color-bg-elevated); }
+html[data-mode="light"] ::selection { background: var(--color-accent); color: #fff; }
+html[data-mode="light"] ::-webkit-scrollbar-track { background: var(--color-bg-elevated); }
 
 ::selection { background: var(--color-accent); color: #000; }
 
@@ -482,78 +482,78 @@ html[data-theme="light"] ::-webkit-scrollbar-track { background: var(--color-bg-
    （暗色模式 accent 是亮綠 #50fa7b、配黑字；明亮模式深綠配黑字看不清）*/
 /* 課程圖片深淺色雙版本：預設(暗色)顯示 dark 版、明亮模式顯示 light 版 */
 .lesson-img-light { display: none; }
-html[data-theme="light"] .lesson-img-light { display: block; }
-html[data-theme="light"] .lesson-img-dark { display: none; }
+html[data-mode="light"] .lesson-img-light { display: block; }
+html[data-mode="light"] .lesson-img-dark { display: none; }
 
-html[data-theme="light"] .bg-accent { color: #fff; }
-html[data-theme="light"] .bg-accent.text-black,
-html[data-theme="light"] .bg-accent .text-black,
-html[data-theme="light"] .bg-accent .text-fg { color: #fff; }
+html[data-mode="light"] .bg-accent { color: #fff; }
+html[data-mode="light"] .bg-accent.text-black,
+html[data-mode="light"] .bg-accent .text-black,
+html[data-mode="light"] .bg-accent .text-fg { color: #fff; }
 
 /* AI 導師 / 寵物等聊天室的「使用者訊息泡泡」用漸層 from-accent→to-accent-2
    （明亮模式是深綠 #1f883d → 藍 #218bff），上面配 text-black 看不到 → 一律改白字。
    上面那組只蓋實心 .bg-accent、漏掉漸層泡泡，這裡補上。 */
-html[data-theme="light"] [class*="from-accent"].text-black,
-html[data-theme="light"] [class*="from-accent"] .text-black,
-html[data-theme="light"] [class*="from-accent"] .text-fg { color: #fff; }
+html[data-mode="light"] [class*="from-accent"].text-black,
+html[data-mode="light"] [class*="from-accent"] .text-black,
+html[data-mode="light"] [class*="from-accent"] .text-fg { color: #fff; }
 
 /* ============================================================
    程式碼 / 終端機區塊 — 明亮模式：淺灰底 + 深字
    暗色介面不該沿用到 light theme；語法 token 改 atom-one-light 系。
    （暗色模式維持原本 atom-one-dark，不受影響）
    ============================================================ */
-html[data-theme="light"] .cb-root { border-color: #d1d9e0; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08); }
-html[data-theme="light"] .cb-root.cb-terminal { background: #f3f5f7; border-color: #cdd6e0; }
-html[data-theme="light"] .cb-root.cb-file { background: #f6f8fa; border-color: #d1d9e0; }
-html[data-theme="light"] .cb-head { border-color: #d8dee4; }
-html[data-theme="light"] .cb-root.cb-terminal .cb-head { background: #e8edf2; }
-html[data-theme="light"] .cb-root.cb-file .cb-head { background: #eaeef2; }
-html[data-theme="light"] .cb-root.cb-terminal .cb-label { color: #15803d; }
-html[data-theme="light"] .cb-root.cb-file .cb-label { color: #1d4ed8; }
-html[data-theme="light"] .cb-copy { color: #59636e; }
-html[data-theme="light"] .cb-copy:hover { background: rgba(15, 23, 42, 0.07); }
-html[data-theme="light"] .cb-gloss,
-html[data-theme="light"] .cb-gloss span { color: #15803d; }
-html[data-theme="light"] .cb-gloss:hover { background: rgba(15, 23, 42, 0.05); }
-html[data-theme="light"] .cb-gloss-code { background: rgba(22, 163, 74, 0.12); color: #15803d; }
+html[data-mode="light"] .cb-root { border-color: #d1d9e0; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08); }
+html[data-mode="light"] .cb-root.cb-terminal { background: #f3f5f7; border-color: #cdd6e0; }
+html[data-mode="light"] .cb-root.cb-file { background: #f6f8fa; border-color: #d1d9e0; }
+html[data-mode="light"] .cb-head { border-color: #d8dee4; }
+html[data-mode="light"] .cb-root.cb-terminal .cb-head { background: #e8edf2; }
+html[data-mode="light"] .cb-root.cb-file .cb-head { background: #eaeef2; }
+html[data-mode="light"] .cb-root.cb-terminal .cb-label { color: #15803d; }
+html[data-mode="light"] .cb-root.cb-file .cb-label { color: #1d4ed8; }
+html[data-mode="light"] .cb-copy { color: #59636e; }
+html[data-mode="light"] .cb-copy:hover { background: rgba(15, 23, 42, 0.07); }
+html[data-mode="light"] .cb-gloss,
+html[data-mode="light"] .cb-gloss span { color: #15803d; }
+html[data-mode="light"] .cb-gloss:hover { background: rgba(15, 23, 42, 0.05); }
+html[data-mode="light"] .cb-gloss-code { background: rgba(22, 163, 74, 0.12); color: #15803d; }
 
 /* 明亮模式語法上色（覆寫 atom-one-dark）*/
-html[data-theme="light"] .hljs { color: #383a42; background: transparent; }
-html[data-theme="light"] .hljs-comment,
-html[data-theme="light"] .hljs-quote { color: #5b6673; font-style: italic; }
-html[data-theme="light"] .hljs-keyword,
-html[data-theme="light"] .hljs-doctag,
-html[data-theme="light"] .hljs-formula,
-html[data-theme="light"] .hljs-meta .hljs-keyword { color: #a626a4; }
-html[data-theme="light"] .hljs-section,
-html[data-theme="light"] .hljs-name,
-html[data-theme="light"] .hljs-selector-tag,
-html[data-theme="light"] .hljs-deletion,
-html[data-theme="light"] .hljs-subst { color: #d1431f; }
-html[data-theme="light"] .hljs-literal,
-html[data-theme="light"] .hljs-number,
-html[data-theme="light"] .hljs-bullet { color: #0184bb; }
-html[data-theme="light"] .hljs-string,
-html[data-theme="light"] .hljs-regexp,
-html[data-theme="light"] .hljs-addition,
-html[data-theme="light"] .hljs-meta .hljs-string { color: #3d8b40; }
-html[data-theme="light"] .hljs-attr,
-html[data-theme="light"] .hljs-attribute,
-html[data-theme="light"] .hljs-variable,
-html[data-theme="light"] .hljs-template-variable,
-html[data-theme="light"] .hljs-type,
-html[data-theme="light"] .hljs-selector-class,
-html[data-theme="light"] .hljs-selector-attr,
-html[data-theme="light"] .hljs-selector-pseudo { color: #986801; }
-html[data-theme="light"] .hljs-symbol,
-html[data-theme="light"] .hljs-link,
-html[data-theme="light"] .hljs-meta,
-html[data-theme="light"] .hljs-selector-id,
-html[data-theme="light"] .hljs-title,
-html[data-theme="light"] .hljs-params { color: #2f6df0; }
-html[data-theme="light"] .hljs-built_in,
-html[data-theme="light"] .hljs-title.class_,
-html[data-theme="light"] .hljs-class .hljs-title { color: #b06800; }
+html[data-mode="light"] .hljs { color: #383a42; background: transparent; }
+html[data-mode="light"] .hljs-comment,
+html[data-mode="light"] .hljs-quote { color: #5b6673; font-style: italic; }
+html[data-mode="light"] .hljs-keyword,
+html[data-mode="light"] .hljs-doctag,
+html[data-mode="light"] .hljs-formula,
+html[data-mode="light"] .hljs-meta .hljs-keyword { color: #a626a4; }
+html[data-mode="light"] .hljs-section,
+html[data-mode="light"] .hljs-name,
+html[data-mode="light"] .hljs-selector-tag,
+html[data-mode="light"] .hljs-deletion,
+html[data-mode="light"] .hljs-subst { color: #d1431f; }
+html[data-mode="light"] .hljs-literal,
+html[data-mode="light"] .hljs-number,
+html[data-mode="light"] .hljs-bullet { color: #0184bb; }
+html[data-mode="light"] .hljs-string,
+html[data-mode="light"] .hljs-regexp,
+html[data-mode="light"] .hljs-addition,
+html[data-mode="light"] .hljs-meta .hljs-string { color: #3d8b40; }
+html[data-mode="light"] .hljs-attr,
+html[data-mode="light"] .hljs-attribute,
+html[data-mode="light"] .hljs-variable,
+html[data-mode="light"] .hljs-template-variable,
+html[data-mode="light"] .hljs-type,
+html[data-mode="light"] .hljs-selector-class,
+html[data-mode="light"] .hljs-selector-attr,
+html[data-mode="light"] .hljs-selector-pseudo { color: #986801; }
+html[data-mode="light"] .hljs-symbol,
+html[data-mode="light"] .hljs-link,
+html[data-mode="light"] .hljs-meta,
+html[data-mode="light"] .hljs-selector-id,
+html[data-mode="light"] .hljs-title,
+html[data-mode="light"] .hljs-params { color: #2f6df0; }
+html[data-mode="light"] .hljs-built_in,
+html[data-mode="light"] .hljs-title.class_,
+html[data-mode="light"] .hljs-class .hljs-title { color: #b06800; }
 
 /* ============================================================
    便利貼筆記內容（我的筆記卡片）— TipTap 所見即所得 + 緊湊排版
@@ -900,20 +900,20 @@ select {
 /* 世界背景 — 隨主題切「日/夜」：預設(暗)＝黃昏→深夜；亮色主題＝白天天空漸層。
    星空只在夜晚(暗色)顯示。 */
 .world-zone-bg { background: linear-gradient(to bottom, #1a1533 0%, #0d1030 46%, #05060f 100%); }
-html[data-theme="light"] .world-zone-bg { background: linear-gradient(to bottom, #d7e5ff 0%, #e7eefb 52%, #f6f8fc 100%); }
+html[data-mode="light"] .world-zone-bg { background: linear-gradient(to bottom, #d7e5ff 0%, #e7eefb 52%, #f6f8fc 100%); }
 .hero-bottom-seam { background: linear-gradient(to bottom, transparent, #1a1533); }
-html[data-theme="light"] .hero-bottom-seam { background: linear-gradient(to bottom, transparent, #d7e5ff); }
-html[data-theme="light"] .starfield, html[data-theme="light"] .starfield-2 { display: none; }
+html[data-mode="light"] .hero-bottom-seam { background: linear-gradient(to bottom, transparent, #d7e5ff); }
+html[data-mode="light"] .starfield, html[data-mode="light"] .starfield-2 { display: none; }
 
 /* 學員自訂背景（BG_PRESETS 全是深色漸層）只在「深色主題」套用；
    淺色主題強制回歸淺色底 → 否則深底 + 深色字(側欄/文字)看不到。
    用實心 var(--color-bg)（不是 transparent）+ !important：不論 inline style 或背後任何深色元素都蓋掉。 */
-html[data-theme="light"] .me-page-bg { background: var(--color-bg) !important; }
+html[data-mode="light"] .me-page-bg { background: var(--color-bg) !important; }
 
 /* 主視覺日/夜雙圖：暗色顯示夜晚版、亮色顯示白天版（同構圖、無縫切）*/
 .img-day { display: none; }
-html[data-theme="light"] .img-night { display: none; }
-html[data-theme="light"] .img-day { display: block; }
+html[data-mode="light"] .img-night { display: none; }
+html[data-mode="light"] .img-day { display: block; }
 
 /* Chat 訊息進場（共用：所有 AI 對話介面） */
 @keyframes chat-bubble-in {

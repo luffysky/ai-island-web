@@ -61,14 +61,14 @@ function defineMonacoLight(monaco: any) {
   });
 }
 
-// 跟著全站 data-theme 切換
+// 跟著全站 data-mode 切換
 function useIsLight() {
   const [light, setLight] = useState(false);
   useEffect(() => {
-    const read = () => setLight(document.documentElement.getAttribute("data-theme") === "light");
+    const read = () => setLight(document.documentElement.getAttribute("data-mode") === "light");
     read();
     const obs = new MutationObserver(read);
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-mode"] });
     return () => obs.disconnect();
   }, []);
   return light;
