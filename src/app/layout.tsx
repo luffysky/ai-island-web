@@ -3,6 +3,8 @@ import Script from "next/script";
 import { Inter, Outfit, JetBrains_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
+import { cookies } from "next/headers";
+import { compileThemeToCssVars, effectiveTheme, themeDefinitionSchema } from "@/lib/theme/engine";
 import "./globals.css";
 
 // 字體系統：Inter=內文、Outfit=標題(圓潤幾何顯示體)、JetBrains Mono=程式碼。
@@ -102,8 +104,31 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const locale = await getLocale();
   const messages = await getMessages();
   const t = await getTranslations();
+
+  // Theme Studio SSR：從 cookie 讀「亮暗模式 + 目前套用的主題定義」，於首屏就把 CSS 變數
+  // 以 inline style 寫在 <html>（inline 勝過 globals.css :root 與 data-palette →
+  // 全自訂主題正確覆蓋快速色盤；與 client applyThemeToDom 的 inline 機制一致、無 FOUC）。
+  // 任何一步失敗 → 不注入、回退 globals.css 預設（絕不因主題壞掉而整站爆版）。
+  const cookieStore = await cookies();
+  const mode: "light" | "dark" = cookieStore.get("ai_mode")?.value === "light" ? "light" : "dark";
+  let themeStyle: React.CSSProperties | undefined;
+  try {
+    const raw = cookieStore.get("ai_theme")?.value;
+    if (raw) {
+      const def = themeDefinitionSchema.parse(JSON.parse(decodeURIComponent(raw)));
+      themeStyle = compileThemeToCssVars(effectiveTheme(def, mode)) as React.CSSProperties;
+    }
+  } catch {
+    themeStyle = undefined;
+  }
+
   return (
-    <html lang={locale === "en" ? "en" : locale === "ja" ? "ja" : locale === "ko" ? "ko" : "zh-Hant-TW"} className={`${inter.variable} ${outfit.variable} ${jbMono.variable}`}>
+    <html
+      lang={locale === "en" ? "en" : locale === "ja" ? "ja" : locale === "ko" ? "ko" : "zh-Hant-TW"}
+      data-mode={mode}
+      style={themeStyle}
+      className={`${inter.variable} ${outfit.variable} ${jbMono.variable}`}
+    >
       <head>
         {/* 中文網頁字體：Noto Sans TC（Google 自動 unicode 分段、只下載用到的字）→ 全站中文變清爽 */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />

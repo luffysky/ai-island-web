@@ -14,10 +14,10 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
 
   const { id } = await params;
 
-  // 確認主題存在且屬於本人（RLS 會把非本人的濾掉）。
+  // 確認主題存在且屬於本人（RLS 會把非本人的濾掉）；一併取 definition 寫進 cookie 供 SSR。
   const { data: theme, error: themeErr } = await supabase
     .from("themes")
-    .select("id")
+    .select("id, definition")
     .eq("id", id)
     .is("deleted_at", null)
     .single();
@@ -41,5 +41,16 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
 
   if (updErr) return NextResponse.json({ error: updErr.message }, { status: 500 });
 
-  return NextResponse.json({ themeId: id, previousThemeId });
+  // 寫 ai_theme cookie（整包 definition）→ 下次載入 layout 於首屏 inline 套用、無 FOUC。
+  const res = NextResponse.json({ themeId: id, previousThemeId });
+  try {
+    res.cookies.set("ai_theme", encodeURIComponent(JSON.stringify(theme.definition)), {
+      path: "/",
+      maxAge: 31536000,
+      sameSite: "lax",
+    });
+  } catch {
+    // definition 太大或序列化失敗 → 不寫 cookie（仍會即時套用、只是重整後回預設）
+  }
+  return res;
 }

@@ -31,6 +31,8 @@ function applyTheme(t: Theme) {
     ? (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark")
     : t;
   html.setAttribute("data-mode", effective);
+  // 同步 cookie，供 SSR 首屏就知道亮暗（layout 讀 ai_mode）→ 消除亮暗 FOUC
+  document.cookie = `ai_mode=${effective}; path=/; max-age=31536000; samesite=lax`;
 }
 
 function effectiveTheme(t: Theme): "dark" | "light" {
