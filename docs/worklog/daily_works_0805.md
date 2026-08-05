@@ -56,4 +56,15 @@
 - **ch07 + ch31（塌掉的迴圈/運算子，12 處 / 8 課）**：strip 從 `<` 吃到下一個 `>`，把整個迴圈體＋下一句開頭都吞掉。重建：ch07 7.4 比較/位移運算子（`< <= << >>`）、7.6 JS for-loop＋`nums.map`、7.12 分離 Ruby 繼承 vs Python 封裝、7.20 拆 Go for-loop 與 Rust thread、7.27 斷句；ch31 31.8（4 處：CPU 迴圈+Worker、worker sum、retry+backoff、p-limit 併發）、31.22 RAG insert 迴圈＋pgvector `<=>` 查詢。
 - **ch34–36（截斷內容重生成，14 課）**：多課 content 斷在半句/半個 code block（連 miniQuiz 考的段落都不存在）。依各課 `outline`／`☕`／`miniQuiz` 補完到完整結尾、關閉未閉合 fence、補齊測驗要考的程式碼（如 34.5 `@Transactional` placeOrder rollback、35.3 接案「SaaS 不流行」段），並修 35.1 誇大宣稱「快一百倍」→ 條件式說法。接案/報價一律 hedged、不掛保證。⚠️ **此批屬「重生成新內容」**、非原作者原文，建議 Codex/人再 skim ch34–36。
 
-**尚未處理（第四波候補）**：ch27（loc含端點vs iloc、axis 行列、effect_size 對不上）、ch08.4/ch09.16/ch10.9（React/Vue/Next 符號重載）、ch23(CAP)、ch58/59(stack/onboard/ROI/NPS)等術語白話——多為「加一句 gloss」的輕修，非壞碼。
+## F段：第四波——ch27 資料科學 gloss（6 處，已修+DB 同步）
+
+- 27.16 `effect_size=0.025` 憑空出現 → 補 `proportion_effectsize(0.05, 0.055)` 換算過程（不是直接填 0.5%）
+- 27.15 `p_value < 0.05` 在 p 值教之前(L16)就用 → 補白話 gloss（0~1、越小越有把握、0.05 是慣例門檻）
+- 27.21 `curse of dimensionality` → 補「維度災難」白話；`data leakage`/`cross-validation` → 補「資料洩漏/交叉驗證」白話
+- 27.3 `axis` 同一個 axis=0 又叫「行」又叫「列」 → 加 row/column 英文對照＋教材約定 legend，統一不混淆
+- 27.4 `df.loc[0:2]` vs `df.iloc[0:3]` 都註「第 0-2 列」卻數字差 1 → 補「loc 含結尾、iloc 不含結尾」說明
+
+**剩餘波次（非壞碼、純 gloss/比喻，可緩）**：
+- 第 5 波 符號重載 gloss：ch17.5/17.12、ch18.2、ch28.2/28.8、ch08.4/09.16/10.9、ch12.4、ch29.1
+- 第 6 波 系統性比喻錯位（ch02/04/07/08/10 analogy 錯開一課，幾十課，量最大）
+- 第 7 波 術語 gloss：ch23(CAP)、ch58/59、ch22、ch28.11 + 雜項(ch01.9 quiz、ch43.3 Backlog、ch22 下一課指錯)
