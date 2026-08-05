@@ -37,8 +37,8 @@ const nextConfig = {
       "frame-ancestors 'self'",            // 等同 X-Frame-Options、防點擊劫持
       "form-action 'self'",                // 表單只能送同源
       "img-src 'self' data: blob: https:", // 上傳圖/OG/avatar 走 https + data/blob
-      "font-src 'self' data:",
-      "style-src 'self' 'unsafe-inline'",  // Tailwind/內聯樣式需要（之後可收）
+      "font-src 'self' data: https://fonts.gstatic.com",   // 自架字體 + Google Fonts 供檔
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", // Tailwind/內聯 + Google Fonts CSS
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // Next 內聯 bootstrap；之後改 nonce
       "connect-src 'self' https: wss:",    // API/Supabase/AI/WS；收斂時改列明確網域
       "media-src 'self' data: blob: https:",

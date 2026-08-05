@@ -11,6 +11,7 @@ export type FontRow = {
   supported_languages: string[] | null;
   file_manifest: Record<string, { path?: string }> | null;
   fallback_stack: string | null;
+  css_url: string | null;
   license_name: string | null;
   license_url: string | null;
   enabled: boolean | null;
@@ -18,6 +19,14 @@ export type FontRow = {
 };
 
 const CATEGORIES = ["sans", "serif", "mono", "display", "handwriting"] as const;
+
+/** 字體來源：Google Fonts 內建 / 已上傳自架 / 佔位待上傳。 */
+function fontSource(f: FontRow): { label: string; cls: string } {
+  if (f.css_url) return { label: "Google 內建", cls: "text-emerald-500" };
+  if (f.file_manifest && Object.keys(f.file_manifest).length > 0)
+    return { label: "自架", cls: "text-sky-500" };
+  return { label: "待上傳", cls: "text-amber-500" };
+}
 
 export function FontsAdminClient({ initialFonts }: { initialFonts: FontRow[] }) {
   const [fonts, setFonts] = useState<FontRow[]>(initialFonts);
@@ -122,9 +131,10 @@ export function FontsAdminClient({ initialFonts }: { initialFonts: FontRow[] }) 
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-xl font-bold text-fg">字體安裝器</h1>
+        <h1 className="text-xl font-bold text-fg">字體管理（安裝器）</h1>
         <p className="mt-1 text-sm text-fg-muted">
-          上傳字型檔（.ttf/.otf/.woff/.woff2），安裝後可在主題工作室指定給標題／內文／介面，前台即時 @font-face 渲染。v1 整檔提供、不做 subsetting。
+          目錄已內建 Space 全部字體。標「Google 內建」的直接啟用即可用（Google Fonts 供檔＋CJK 動態子集、免上傳）；
+          標「待上傳」的是 Google 沒有的字體，用下方表單上傳字型檔安裝。安裝／啟用後可在主題工作室指定給標題／內文／介面。
         </p>
       </header>
 
@@ -254,6 +264,7 @@ export function FontsAdminClient({ initialFonts }: { initialFonts: FontRow[] }) 
                 <tr className="border-b border-border">
                   <th className="px-2 py-2">family</th>
                   <th className="px-2 py-2">slug</th>
+                  <th className="px-2 py-2">來源</th>
                   <th className="px-2 py-2">分類</th>
                   <th className="px-2 py-2">字重</th>
                   <th className="px-2 py-2">啟用</th>
@@ -265,6 +276,9 @@ export function FontsAdminClient({ initialFonts }: { initialFonts: FontRow[] }) 
                   <tr key={f.id} className="border-b border-border/60">
                     <td className="px-2 py-2 text-fg">{f.family}</td>
                     <td className="px-2 py-2 font-mono text-xs text-fg-muted">{f.slug}</td>
+                    <td className={`px-2 py-2 text-xs font-medium ${fontSource(f).cls}`}>
+                      {fontSource(f).label}
+                    </td>
                     <td className="px-2 py-2 text-fg-muted">{f.category ?? "—"}</td>
                     <td className="px-2 py-2 text-fg-muted">
                       {(f.weights ?? []).join(" / ") || "—"}

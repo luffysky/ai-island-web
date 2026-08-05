@@ -21,6 +21,8 @@ export type FontCatalogEntry = {
   weights: number[];
   fallback_stack: string | null;
   files: Record<string, string>;
+  /** 外部 webfont CSS（如 Google Fonts CSS2 API）→ 用 <link> 載入、由供應商做子集/供檔。 */
+  css_url?: string | null;
 };
 
 export type FontCatalog = {
@@ -29,6 +31,45 @@ export type FontCatalog = {
 };
 
 const STYLE_ID = "sr-theme-fonts";
+const LINK_ATTR = "data-sr-theme-font";
+
+/** 一個字體是否能用（自架檔或外部 css_url 皆可）。 */
+function isUsable(font: FontCatalogEntry): boolean {
+  return Object.keys(font.files).length > 0 || !!(font.css_url && font.css_url.trim());
+}
+
+/**
+ * 同步外部 webfont <link>（Google Fonts 等）：加缺的、移不再需要的。冪等。
+ * 這些 <link> 帶 data-sr-theme-font 屬性、只受本函式管理。
+ */
+function syncFontLinks(hrefs: Set<string>): void {
+  const existing = new Map<string, HTMLLinkElement>();
+  document
+    .querySelectorAll<HTMLLinkElement>(`link[${LINK_ATTR}]`)
+    .forEach((l) => existing.set(l.href, l));
+
+  // 移除不再需要的
+  for (const [href, el] of existing) {
+    // href 是絕對化後的字串；用 getAttribute 原值比對較穩
+    const raw = el.getAttribute("href") ?? href;
+    if (!hrefs.has(raw)) el.remove();
+  }
+  // 加缺的
+  const present = new Set(
+    Array.from(document.querySelectorAll<HTMLLinkElement>(`link[${LINK_ATTR}]`)).map(
+      (l) => l.getAttribute("href") ?? "",
+    ),
+  );
+  for (const href of hrefs) {
+    if (present.has(href)) continue;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.setAttribute(LINK_ATTR, "");
+    link.setAttribute("crossorigin", "anonymous");
+    link.href = href;
+    document.head.appendChild(link);
+  }
+}
 
 type Role = "heading" | "body" | "ui";
 const ROLE_KEYS: Record<Role, keyof ThemeDefinition["typography"]> = {
@@ -110,24 +151,33 @@ export function loadThemeFonts(
 
   const el = target ?? document.documentElement;
   const faces: string[] = [];
+  const links = new Set<string>();
   const seen = new Set<string>();
 
   for (const role of Object.keys(ROLE_KEYS) as Role[]) {
     const idOrSlug = def.typography?.[ROLE_KEYS[role]] as string | undefined;
     const font = resolveRole(idOrSlug, catalog);
-    if (!font || Object.keys(font.files).length === 0) {
-      // 解析不到 → 不動該變數（fall through 到 globals 的 --font-*）
+    if (!font || !isUsable(font)) {
+      // 解析不到 / 無檔無 css_url → 不動該變數（fall through 到 globals 的 --font-*）
       continue;
     }
     if (!seen.has(font.slug)) {
       seen.add(font.slug);
-      const css = fontFaceCss(font);
-      if (css) faces.push(css);
+      if (font.css_url && font.css_url.trim()) {
+        // 外部 webfont（Google Fonts 等）→ 用 <link> 載，供應商做子集/供檔
+        links.add(font.css_url.trim());
+      } else {
+        const css = fontFaceCss(font);
+        if (css) faces.push(css);
+      }
     }
     el.style.setProperty(ROLE_VARS[role], familyStack(font));
   }
 
-  // 冪等：整份取代 <style id="sr-theme-fonts">
+  // 外部 webfont <link> 同步（冪等：加缺移多）
+  syncFontLinks(links);
+
+  // 自架檔 @font-face：整份取代 <style id="sr-theme-fonts">（冪等）
   let style = document.getElementById(STYLE_ID) as HTMLStyleElement | null;
   if (faces.length === 0) {
     if (style) style.textContent = "";
