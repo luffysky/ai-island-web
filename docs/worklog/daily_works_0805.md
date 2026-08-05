@@ -49,4 +49,11 @@
 - **ch05 5.16**：strict 模式「6 個檢查」中 strictNullChecks 尾段被截、**第 2 項 noImplicitAny 整段消失**、strictFunctionTypes 標題+`type StringCallback` 行被吃 → 補回 getUser 完整範例、重寫 noImplicitAny 段、補回 strictFunctionTypes 標題與型別宣告（6 項齊全）。
 - **ch05 5.18**（React+TS 實戰）：**~15 處 JSX return 全被清空**（Button/Card/Input/Form/MyInput/UserProfile/UserList/AuthProvider/ProfileButton…）→ 整課 content 重寫、每個元件補回正確 type-safe JSX（`<AuthContext.Provider value={{user,login,logout}}>`、`<input ref={inputRef}/>`、event handler `<HTMLInputElement>` 等），保留原有 prose/註解不動。
 
-**第三波剩餘（待續）**：ch07/ch31 塌掉的 `for (i < N)` 迴圈、`if 10 < len`、比較/位移運算子、JSX（同 ch32.3 那類，數量多）；ch34–36 content 大量截斷（Java/C#/PHP 斷句、連 miniQuiz 考的段落都沒出現，需重生成）；ch49/50 n8n 啟動步驟/表格損壞；ch27（loc含端點vs iloc、axis 行列、effect_size 對不上）、ch08.4/ch09.16/ch10.9（React/Vue/Next 符號重載）、ch23(CAP)、ch58/59(stack/onboard/ROI/NPS)等術語白話；分批修、少開子代理。
+## E段：第三波 3b——塌掉迴圈/運算子 + 截斷內容重生成（7 章）
+
+派 3 支子代理平行重建（各改不相交檔案），全部驗證（parse／`&lt;` 殘留 0／code fence 平衡／無殘留損壞簽名）後同步 DB：
+
+- **ch07 + ch31（塌掉的迴圈/運算子，12 處 / 8 課）**：strip 從 `<` 吃到下一個 `>`，把整個迴圈體＋下一句開頭都吞掉。重建：ch07 7.4 比較/位移運算子（`< <= << >>`）、7.6 JS for-loop＋`nums.map`、7.12 分離 Ruby 繼承 vs Python 封裝、7.20 拆 Go for-loop 與 Rust thread、7.27 斷句；ch31 31.8（4 處：CPU 迴圈+Worker、worker sum、retry+backoff、p-limit 併發）、31.22 RAG insert 迴圈＋pgvector `<=>` 查詢。
+- **ch34–36（截斷內容重生成，14 課）**：多課 content 斷在半句/半個 code block（連 miniQuiz 考的段落都不存在）。依各課 `outline`／`☕`／`miniQuiz` 補完到完整結尾、關閉未閉合 fence、補齊測驗要考的程式碼（如 34.5 `@Transactional` placeOrder rollback、35.3 接案「SaaS 不流行」段），並修 35.1 誇大宣稱「快一百倍」→ 條件式說法。接案/報價一律 hedged、不掛保證。⚠️ **此批屬「重生成新內容」**、非原作者原文，建議 Codex/人再 skim ch34–36。
+
+**尚未處理（第四波候補）**：ch27（loc含端點vs iloc、axis 行列、effect_size 對不上）、ch08.4/ch09.16/ch10.9（React/Vue/Next 符號重載）、ch23(CAP)、ch58/59(stack/onboard/ROI/NPS)等術語白話——多為「加一句 gloss」的輕修，非壞碼。
