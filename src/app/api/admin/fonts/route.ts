@@ -49,6 +49,7 @@ export async function POST(req: NextRequest) {
 
   const file = form.get("file");
   const family = String(form.get("family") ?? "").trim();
+  const displayName = String(form.get("display_name") ?? "").trim() || null;
   const slug = String(form.get("slug") ?? "").trim().toLowerCase();
   const category = String(form.get("category") ?? "sans").trim() || "sans";
   const weightRaw = Number(form.get("weight") ?? 400);
@@ -112,6 +113,7 @@ export async function POST(req: NextRequest) {
     const row: Record<string, unknown> = {
       slug,
       family,
+      display_name: displayName,
       category,
       weights,
       file_manifest: manifest,
@@ -178,7 +180,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
-  const allowed = ["enabled", "family", "category", "fallback_stack", "sort_order", "license_name", "license_url", "preview_text"] as const;
+  const allowed = ["enabled", "family", "display_name", "category", "fallback_stack", "sort_order", "license_name", "license_url", "preview_text"] as const;
   for (const k of allowed) {
     if (k in body) patch[k] = body[k];
   }

@@ -6,6 +6,7 @@ export type FontRow = {
   id: string;
   slug: string;
   family: string;
+  display_name: string | null;
   category: string | null;
   weights: number[] | null;
   supported_languages: string[] | null;
@@ -36,6 +37,7 @@ export function FontsAdminClient({ initialFonts }: { initialFonts: FontRow[] }) 
   // 上傳表單狀態
   const [file, setFile] = useState<File | null>(null);
   const [family, setFamily] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [slug, setSlug] = useState("");
   const [category, setCategory] = useState<string>("sans");
   const [weight, setWeight] = useState("400");
@@ -67,6 +69,7 @@ export function FontsAdminClient({ initialFonts }: { initialFonts: FontRow[] }) 
       const fd = new FormData();
       fd.set("file", file);
       fd.set("family", family);
+      fd.set("display_name", displayName);
       fd.set("slug", slug);
       fd.set("category", category);
       fd.set("weight", weight);
@@ -159,11 +162,22 @@ export function FontsAdminClient({ initialFonts }: { initialFonts: FontRow[] }) 
           </label>
 
           <label className="block">
-            <span className="text-xs text-fg-muted">顯示名稱 family</span>
+            <span className="text-xs text-fg-muted">CSS 名稱 family（英文）</span>
             <input
               value={family}
               onChange={(e) => setFamily(e.target.value)}
-              placeholder="jf open 粉圓"
+              placeholder="jf-tsingsung"
+              className="mt-1 w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-fg"
+              spellCheck={false}
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-xs text-fg-muted">中文名 display_name（給人看）</span>
+            <input
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              placeholder="清松手寫體"
               className="mt-1 w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-fg"
             />
           </label>
@@ -262,6 +276,7 @@ export function FontsAdminClient({ initialFonts }: { initialFonts: FontRow[] }) 
             <table className="w-full text-sm">
               <thead className="text-left text-xs text-fg-muted">
                 <tr className="border-b border-border">
+                  <th className="px-2 py-2">中文名</th>
                   <th className="px-2 py-2">family</th>
                   <th className="px-2 py-2">slug</th>
                   <th className="px-2 py-2">來源</th>
@@ -274,7 +289,8 @@ export function FontsAdminClient({ initialFonts }: { initialFonts: FontRow[] }) 
               <tbody>
                 {fonts.map((f) => (
                   <tr key={f.id} className="border-b border-border/60">
-                    <td className="px-2 py-2 text-fg">{f.family}</td>
+                    <td className="px-2 py-2 text-fg">{f.display_name ?? "—"}</td>
+                    <td className="px-2 py-2 text-fg-muted">{f.family}</td>
                     <td className="px-2 py-2 font-mono text-xs text-fg-muted">{f.slug}</td>
                     <td className={`px-2 py-2 text-xs font-medium ${fontSource(f).cls}`}>
                       {fontSource(f).label}

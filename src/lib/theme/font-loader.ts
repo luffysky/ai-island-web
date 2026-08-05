@@ -17,6 +17,7 @@ export type FontCatalogEntry = {
   id: string;
   slug: string;
   family: string;
+  display_name?: string | null;
   category: string;
   weights: number[];
   fallback_stack: string | null;

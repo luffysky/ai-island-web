@@ -779,7 +779,7 @@ function FontRoleField({
         <option value="">系統預設 / 繼承</option>
         {catalog.fonts.map((f: FontCatalogEntry) => (
           <option key={f.id} value={f.slug}>
-            {f.family}
+            {f.display_name ? `${f.display_name}（${f.family}）` : f.family}
           </option>
         ))}
       </select>

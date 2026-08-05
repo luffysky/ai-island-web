@@ -33,6 +33,7 @@ const CATALOG = [
   { slug: "chiron-sung-hk", family: "Chiron Sung HK", category: "serif", langs: ["zh-Hant", "latin"], weights: [300, 400, 500, 700], fallback: '"Songti TC", serif', manual: "昭源宋體（OFL）。需自 github.com/chiron-fonts/chiron-sung-hk 下載字體檔上傳。" },
   { slug: "lxgw-wenkai-tc", family: "LXGW WenKai TC", category: "handwriting", langs: ["zh-Hant", "latin"], weights: [300, 400, 700], fallback: '"Kaiti TC", "DFKai-SB", serif', manual: "霞鶩文楷 TC（OFL）。檔案大、需自 github.com/lxgw/LxgwWenKaiTC 下載字體檔上傳。" },
   { slug: "zhuque-fangsong", family: "Zhuque Fangsong", category: "serif", langs: ["zh-Hant", "latin"], weights: [400], fallback: '"FangSong", "STFangsong", serif', manual: "朱雀仿宋（OFL）。需自 github.com/TrionesType/zhuque 下載字體檔上傳。" },
+  { slug: "qingsong-handwriting", family: "jf-tsingsung", category: "handwriting", langs: ["zh-Hant", "latin", "bopomofo"], weights: [400], fallback: '"Kaiti TC", "DFKai-SB", cursive', manual: "清松手寫體（justfont，OFL）。Google Fonts 無、需自 justfont 下載字體檔上傳安裝。" },
 
   // 拉丁（全部 Google 有）
   { slug: "inter", family: "Inter", category: "sans", langs: ["latin"], weights: [400, 500, 600, 700], fallback: "system-ui, sans-serif", gfFamily: "Inter", gfWeights: [400, 500, 600, 700] },
@@ -57,6 +58,21 @@ const CATALOG = [
   // 阿拉伯（Google 有）
   { slug: "noto-naskh-arabic", family: "Noto Naskh Arabic", category: "serif", langs: ["arabic", "latin"], weights: [400, 500, 600, 700], fallback: "serif", gfFamily: "Noto Naskh Arabic", gfWeights: [400, 500, 600, 700] },
 ];
+
+// 中文顯示名（給後台/選字 UI 看「這是什麼字體」）
+const ZH = {
+  "noto-sans-tc": "思源黑體", "noto-serif-tc": "思源宋體",
+  "jf-open-huninn": "jf open 粉圓", "iansui": "芫荽",
+  "taipei-sans-tc": "台北黑體", "chiron-hei-hk": "昭源黑體", "chiron-sung-hk": "昭源宋體",
+  "lxgw-wenkai-tc": "霞鶩文楷", "zhuque-fangsong": "朱雀仿宋", "qingsong-handwriting": "清松手寫體",
+  "inter": "Inter 無襯線", "playfair-display": "Playfair 襯線標題", "cormorant-garamond": "Cormorant 襯線",
+  "source-serif-4": "Source Serif 襯線", "jetbrains-mono": "JetBrains 等寬程式", "lora": "Lora 襯線",
+  "nunito": "Nunito 圓潤無襯線", "space-grotesk": "Space Grotesk 幾何無襯線",
+  "noto-sans-jp": "思源黑體 日文", "noto-serif-jp": "思源宋體 日文",
+  "mplus-rounded-1c": "M PLUS 圓體", "zen-maru-gothic": "Zen 丸黑體",
+  "noto-sans-kr": "思源黑體 韓文", "noto-serif-kr": "思源宋體 韓文",
+  "noto-naskh-arabic": "Noto Naskh 阿拉伯",
+};
 
 function loadEnv() {
   const lines = readFileSync(".env.local", "utf8").split(/\r?\n/);
@@ -86,17 +102,17 @@ for (let i = 0; i < CATALOG.length; i++) {
   const previewText = f.langs.includes("zh-Hant") ? "雪隅是一座會長大的島" : "The quick brown fox 0123";
   await client.query(
     `insert into public.fonts
-       (family, slug, category, supported_languages, weights, styles, preview_text,
+       (family, display_name, slug, category, supported_languages, weights, styles, preview_text,
         file_manifest, subset_strategy, fallback_stack, css_url, enabled, sort_order, updated_at)
-     values ($1,$2,$3,$4,$5,'{normal}',$6,'{}'::jsonb,$7,$8,$9,$10,$11, now())
+     values ($1,$2,$3,$4,$5,$6,'{normal}',$7,'{}'::jsonb,$8,$9,$10,$11,$12, now())
      on conflict (slug) do update set
-       family=excluded.family, category=excluded.category,
+       family=excluded.family, display_name=excluded.display_name, category=excluded.category,
        supported_languages=excluded.supported_languages, weights=excluded.weights,
        preview_text=excluded.preview_text, subset_strategy=excluded.subset_strategy,
        fallback_stack=excluded.fallback_stack, css_url=excluded.css_url,
        sort_order=excluded.sort_order, updated_at=now()`,
     // 注意：do update 不覆寫 enabled / file_manifest —— 若管理員已上傳/停用過，保留其狀態
-    [f.family, f.slug, f.category, f.langs, f.weights, previewText,
+    [f.family, ZH[f.slug] ?? f.family, f.slug, f.category, f.langs, f.weights, previewText,
      cssUrl ? "unicode_range" : "static", f.fallback, cssUrl, enabled, i],
   );
   ok++;

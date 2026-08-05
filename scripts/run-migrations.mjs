@@ -121,6 +121,8 @@ const MIGRATIONS = [
   "fonts_css_url_migration.sql",
   // 2026-08-06 — 背景系統：profiles.active_background + backgrounds bucket（/daily Phase 4）
   "background_migration.sql",
+  // 2026-08-06 — 字體中文名 display_name（後台/選字 UI 顯示）（/daily Phase 5e）
+  "fonts_display_name_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）

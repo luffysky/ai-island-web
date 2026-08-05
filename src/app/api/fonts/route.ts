@@ -24,7 +24,7 @@ export async function GET() {
     const { data: fontRows, error: fontErr } = await supabase
       .from("fonts")
       .select(
-        "id, slug, family, category, weights, fallback_stack, file_manifest, css_url, enabled, sort_order",
+        "id, slug, family, display_name, category, weights, fallback_stack, file_manifest, css_url, enabled, sort_order",
       )
       .eq("enabled", true)
       .order("sort_order", { ascending: true });
@@ -54,6 +54,7 @@ export async function GET() {
         id: row.id,
         slug: row.slug,
         family: row.family,
+        display_name: row.display_name ?? null,
         category: row.category,
         weights,
         fallback_stack: row.fallback_stack ?? null,
