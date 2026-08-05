@@ -77,4 +77,14 @@
 - **ch08**（React）3 課（8.6 事件處理誤用 useEffect 比喻／8.9 useRef 誤用 useReducer／8.18 效能優化誤用 RSC）、**ch10**（Next/Nuxt）2 課（10.10 Error Handling 誤用 Server Action／10.19 Nuxt routeRules 誤用 Vercel 部署）—— 我自己修（錯位少），重寫自各課 ☕。
 
 **✅ 全站內容審計 waves 1–7 全部完成**（Nami `*args` 起 → 壞碼/矛盾/事實/截斷/符號重載/術語/比喻）。
-**未動（另議）**：`/daily` Phase 2 主題引擎 port（2a–2e）——依 todo 自身警告，留待專注 session＋你在場逐步驗證（會動全站主題 CSS 軸，馬拉松尾巴不硬幹）。
+## I段：/daily Phase 2 主題系統（0805–0806）
+
+- **色盤 v1（安全增量）** `de442e11`：新增獨立 `data-palette`「只換 accent 家族」，不碰亮暗機制→無 palette 時 byte-identical、可讀性零風險。5 色盤（海/櫻/薰衣草/珊瑚/薄荷）+ ThemeToggle 色點 + localStorage。瀏覽器實測：預設綠正常、切櫻全站 accent 變粉、版面/可讀性不變。
+- **2a 完整拆軸** `61d44be6`：解掉「亮暗與色盤同擠 `data-theme`」的雷。參考 Space（`packages/theme-engine` 的 `effectiveTheme`/`deriveDark|Light` + `data-color-mode` 兩軸），但因 AI 島是**固定色盤集**、不需 Space 的 runtime 色彩運算引擎（那是給 Theme Studio 任意主題用的）→ 改**靜態烘焙**：
+  - `data-theme`→`data-mode`（亮暗軸）：`@custom-variant dark` 改綁 `data-mode`；globals.css 88 處 + 3 元件（LessonImage/PlaygroundCard/CodeEditor）機械式遷移；`data-palette` 維持色盤軸。
+  - 每色盤烘焙暗底+亮底兩組 accent；`[data-mode=light][data-palette=X]` 特異性(0,2,1)>純 light 正確勝出。
+  - 沿用 `ai_island_theme` localStorage key（舊使用者亮暗偏好無縫）。
+  - 驗證：tsc/build 綠、編譯後 CSS 確認 dark: 綁 data-mode（450 處）、0 殘留 data-theme、light+palette 組合選擇器已生成、預設暗色不變。⚠️ Chrome 擴充中途斷線，light+palette 未能即時截圖，但 CSS 由特異性/烘焙值構造正確、色盤機制先前已截圖證實。
+
+**Phase 2 待續**（DB 權限已給、刪除前先問）：2c 字體（可先 localStorage 版）→ 2b 背景庫（DB `background_items`）→ 2d 拖拉 widget 引擎（DB `layouts`/`widget_instances`，Space 已有完整參考含 todo_list widget）；no-flash inline script + 各色盤淡色底 tint 可增量補。
+＊Space 端 TodoList widget 查證＝**早已存在且已 push**（engine registry + `impl/TodoListWidget.tsx` + react registry 三層齊全），無需動作。
