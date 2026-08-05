@@ -119,6 +119,8 @@ const MIGRATIONS = [
   "fonts_migration.sql",
   // 2026-08-06 — 字體 catalog：外部 webfont（Google Fonts CSS URL）欄位（/daily Phase 5d）
   "fonts_css_url_migration.sql",
+  // 2026-08-06 — 背景系統：profiles.active_background + backgrounds bucket（/daily Phase 4）
+  "background_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）

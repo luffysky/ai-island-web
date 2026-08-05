@@ -30,6 +30,8 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { ConfirmProvider } from "@/components/ui/ConfirmDialog";
 import { WebVitalsReporter } from "@/components/WebVitalsReporter";
 import { ThemeFontLoader } from "@/components/theme/ThemeFontLoader";
+import { BackgroundLayer } from "@/components/background/BackgroundLayer";
+import type { BackgroundSpec } from "@/lib/background/scenes";
 import { PWAInstall } from "@/components/PWAInstall";
 import { OfflineBanner } from "@/components/OfflineBanner";
 import { LineBindBanner } from "@/components/LineBindBanner";
@@ -123,6 +125,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     themeStyle = undefined;
   }
 
+  // 自訂背景：從 ai_bg cookie 讀 BackgroundSpec（SSR 首屏）；壞掉就當沒有。
+  let bgSpec: BackgroundSpec = null;
+  try {
+    const rawBg = cookieStore.get("ai_bg")?.value;
+    if (rawBg) bgSpec = JSON.parse(decodeURIComponent(rawBg)) as BackgroundSpec;
+  } catch {
+    bgSpec = null;
+  }
+
   return (
     <html
       lang={locale === "en" ? "en" : locale === "ja" ? "ja" : locale === "ko" ? "ko" : "zh-Hant-TW"}
@@ -203,6 +214,7 @@ gtag('config', '${gaId}');`}
               <InteractionTracker />
               <WebVitalsReporter />
               <ThemeFontLoader />
+              <BackgroundLayer initial={bgSpec} />
               <PWAInstall />
               <OfflineBanner />
               <LineBindBanner />

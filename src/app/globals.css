@@ -288,6 +288,12 @@ body {
   overflow-x: hidden;
 }
 
+/* 自訂背景層（BackgroundLayer, z-index:-10）啟用時，讓 body 底色透明、
+   固定背景層才透得出來；卡片仍各自帶不透明 bg-bg-card → 內容照樣可讀。 */
+html[data-bg-active] body {
+  background-color: transparent;
+}
+
 /* 全站防止任何 fixed/absolute 浮層超出視口（toast / bubble / popup / dropdown）
    用 100%（相對包含塊）而非 100vw：100vw 含桌面捲軸寬(約15px)、本身就會製造水平溢出 */
 [class*="fixed"],

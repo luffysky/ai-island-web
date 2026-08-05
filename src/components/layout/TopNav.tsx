@@ -295,7 +295,7 @@ export function TopNav() {
                     </Link>
 
                     <Link
-                      href={"/settings" as any}
+                      href={"/background" as any}
                       className="flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition"
                       onClick={() => setOpen(false)}
                     >

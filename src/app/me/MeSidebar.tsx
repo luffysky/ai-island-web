@@ -107,7 +107,7 @@ const ME_GROUPS: MeGroup[] = [
     emoji: "🎨",
     items: [
       { href: "/theme-studio", icon: <span>🎨</span>, label: "主題（Theme Studio）" },
-      { href: "/settings", icon: <span>🖼️</span>, label: "背景" },
+      { href: "/background", icon: <span>🖼️</span>, label: "背景" },
       { href: "/profile", icon: <span>👤</span>, label: "個人檔案" },
       { href: "/settings", icon: <span>⚙️</span>, label: "設定" },
       { href: "/me/email-prefs", icon: <span>✉️</span>, label: "信件偏好" },
