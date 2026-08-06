@@ -1,4 +1,4 @@
-# AI 島待辦總表 2026-08-01（**現行主檔**·0721 建、0722/0723/0731 續用更新）
+# AI 島待辦總表 2026-08-06（**現行主檔**·0721 建、0722/0723/0731/0806 續用更新·由 0801 改名沿用）
 
 > ＊0731 進度摘要：全 80 章清晰度審查修 21 處（§4.1）；命理三功能 232/233/234（§1.3.5-7）；教具大工程 ch26/ch7/ch16 三章 100% 覆蓋（§4.1.5）；Agent Rule-filter 2.7.1 + 熱門排序 2.7.12（§2.7）；docs/Platform.md（SnowRealm 平台整合看法）。
 > ＊0804-0805 進度摘要：**語音代理 Phase 1**（§2.8·STT/TTS+client-action+聊天氣泡）；**裝置控制端到端 §2.9 全 7 項**（桌面助手 ai-island-bridge：filesystem/browser/system/android + 打包 + 自適應輪詢 + 緊急停止）；**每日晨報+天氣**（§5.1-5.3·Open-Meteo）；**競品戰略**（§2.10·OpenClaw/NemoClaw + /admin/strategy）；**後台審計+入口修復+側欄獨立捲動**（§7.0）；社群誠實化；辭典前端計畫（§4.2.1.5）；CI 移除 concurrency 免 canceled 紅叉。
@@ -16,6 +16,7 @@
 - [ ] 🔴 **Zeabur env `ENABLE_SERVER_BROWSER=1`**：L2 伺服器瀏覽器啟用（image 已裝 Chromium），設完 Restart、盯 RAM，太吃就拿掉。
 - [ ] 🔴 **cron-job.org 排程**：確認 job #7 agent-schedules（15 分）、#8 opportunity-deadlines（每日 09:00）、#9 opportunity-radar 都在跑；**加 job #10 daily-brief**（每天 08:30 `GET /api/cron/daily-brief?secret=<CRON_SECRET>`）。
 - [ ] 🔴 **金流**：Stripe 正式金鑰、bootstrap 3 產品 + price_ids 貼 env、webhook signing secret、redeploy、4242 測試。
+- [ ] 🔴 **LINE 登入設定**（0806）：`NEXT_PUBLIC_LINE_CHANNEL_ID` 要加進 **GitHub repo secrets/vars**（build 時 inline；local/Zeabur 有、GitHub 漏了）；`LINE_CHANNEL_SECRET` 確認 Zeabur runtime 有且**對應同一個 Login channel**（251 是 token 交換失敗＝多半 secret 錯或 redirect_uri 不符）；LINE Console 的 Callback URL 要**完全等於** `https://ai-island-web.snowrealm.pet/auth/line/callback`。程式端 0806 已修：callback 會把 LINE 真實錯誤吐到登入頁、redirect_uri 兩端改用正規網域、listUsers 分頁（破 50 人不壞）。
 - [ ] 🔴 **VAPID / EMAIL_FROM / Google 同意畫面**：Web Push VAPID 貼 Zeabur；確認寄件 `EMAIL_FROM`；OAuth 同意畫面去掉 supabase.co 字樣。
 - [ ] 🔴 **通路帳號/審核**（分身島 outbound + bot 前置）：TG BotFather token、Discord bot token + VIP role 設定、Meta App(FB/IG/Threads 審核)、X 開發者、YT/抖音 開發者帳號+App 審核。LINE 已可用。
 - [ ] 🔴 **搜尋金鑰加量**：Brave/Tavily 各官網申請 key 貼 `/settings/ai-keys`。
@@ -535,3 +536,30 @@
 | `BEGINNER_FRIENDLY_BACKLOG.md` | 歷史（被 0717 audit 取代） | 「用人話講」100% ✅；深度重寫改由 `content_audit_0717.md` 主導、未完章併入 §4.1。 |
 
 > **重要修正**：PWA 192/512 icon（多檔列為未做）**現已完成**（`public/logo-192.png`/`logo-512.png` + `manifest.ts` maskable），只剩 apple-touch-icon（§7.9）。TG/Discord 現有 webhook 是 **admin AI-chat bot、非 agent 入口**（§2.2.2/2.2.3 仍未做）。社群 send adapter 是最大半成品（§2.3.2）。
+
+---
+
+## 🆕 0806 收尾批（孤兒盤點 + 回饋修復 + 續作）
+
+> 來源：0806 對話。子代理掃 418 元件抓「寫好沒掛/沒入口」孤兒 10 個；加使用者回饋一串。
+
+### 已修（0806 已 commit/push）
+- [x] ~~筆記環形選單 item 被壓扁成細條（GPU 合成 bug：零尺寸 spoke+反轉 rotate+will-change）→ 改 translate 定位、不旋轉；點擊才開/再點收合、外面點一下關；玻璃+白邊+偏移黑線~~（245/247）
+- [x] ~~筆記工具列「背景」選單一直條疊卡片破版 → createPortal 置中懸浮視窗~~（246）
+- [x] ~~晨報天氣缺線：兩套定位掛錯邊 → `PreciseLocationToggle` 補 POST /api/me/geolocation 持久化 geo_city；刪孤兒 GeolocationConsent；geocodeCity 支援「縣市 區」帶空格~~（248）
+- [x] ~~下拉/Popover 太長被裁：`PopoverPanel` overflow-hidden→overflow-y-auto（有 maxHeight 卻裁掉）~~（252）
+- [x] ~~LINE callback listUsers 只撈前 50 → 分頁；token 失敗吐 LINE 真實原因；redirect_uri 兩端用正規網域~~（251，設定仍需林董，見 🅰）
+- [x] ~~死碼刪除：AppSettingsClient / DashboardView / NextLesson（舊頁已 redirect）~~
+
+### 待確認/待做
+- [ ] **孤兒 A-1 PaywallOverlay**（`components/chapter/PaywallOverlay.tsx`）：完整付費章節遮罩，但 `ChapterView` 無任何 premium/鎖定判斷 → 付費牆沒接。**先查 server 端有無 gating**，再決定要不要接、怎麼接（變現決策）。
+- [ ] **孤兒 A-3 EmojiButton**（`components/blog/tiptap/emoji-picker.tsx`）：部落格編輯器表情鈕沒接進工具列。小功能缺入口。
+- [ ] **孤兒 C（純樣式 primitive，決定去留）**：SectionHeader / StaggerList / MotionCard（建議刪）、CodeArea（建議留、接程式練習輸入框）。
+- [ ] **天氣元件「時有時無」**（/daily、/fortune WeatherCard）：進頁靠瀏覽器定位、失敗/timeout 就退回選地區、天氣數字消失。修向：優先用已存 geo_city / 上次的 pick、失敗保留上次天氣不清空。待點頭。
+- [ ] **FeatureGuide「兩條紫色說明有時掉一條」**（/agent 兩張）：目前程式只會收合成標題、不會整個消失；若真的整張不見需「壞掉當下」截圖再抓。
+- [ ] **農民曆 widget**（跨 AI 島 + Space）：把 Space 的月曆 widget 跟「國立月曆」合併；顯示**年份**；國立除西元外加**民國年**；AI 島與 Space 兩邊都做。（併入 §5.7 widget 引擎）
+
+### §5 每日晨報/情報 未完（延續既有 §5）
+- [ ] 5.4 `/settings` 加「每日晨報」開關（複用 line_pref_*）；確認 cron 08:30。
+- [ ] 5.5 變現：進階天氣/健康建議/廣告置換＝付費或 Z 幣。
+- [ ] 5.7 Phase 2d 拖拉 widget 引擎（計畫 doc 已備）；top nav「每日情報」入口（補 4 語 i18n）。

@@ -84,8 +84,20 @@
 - 連帶修：`geo_city` 存的是「縣市 區」帶空格（例：新北市 板橋區），Open-Meteo 單一地名比對兩個詞會查 0 筆 → `geocodeCity` 改成拆空格、由細(區)到粗(縣市)逐一試變體（台化/去尾綴），命中即用。
 - 生效：使用者到 **設定 → 精準位置** 啟用後，**下一次晨報**（cron 08:30）就會帶天氣。tsc 0 錯、vitest 225 passed、build 綠。
 
+## J段：孤兒盤點 + LINE 登入/下拉修復 + 死碼清理（回饋 249-252）
+
+- **孤兒功能盤點**（子代理掃 418 元件）：零引用 10 個。真功能缺入口＝`PaywallOverlay`（付費章節遮罩·ChapterView 沒接）、`GeolocationConsent`（已於 I 段整合刪除）、`EmojiButton`（部落格表情鈕沒接工具列）；重構殘留死碼＝`AppSettingsClient`/`DashboardView`/`NextLesson`（舊頁已 redirect）；無害 primitive＝`CodeArea`/`SectionHeader`/`StaggerList`/`MotionCard`。
+- **死碼刪除**：`AppSettingsClient`/`DashboardView`/`NextLesson`（三者對應舊頁都 `redirect` 到新頁、零引用）。
+- **LINE 登入**（251）：診斷＝**不是壞、是設定沒到位**——`NEXT_PUBLIC_LINE_CHANNEL_ID` 有生效（能發起），卡在 token 交換（`line_token`）。程式端修：①callback `listUsers()` 只撈前 50 → **分頁掃到底**（破 50 人不壞）②token 失敗把 **LINE 真實錯誤**（invalid_client/redirect_uri…）帶到登入頁顯示 ③redirect_uri 前後端**都改用正規 `NEXT_PUBLIC_SITE_URL`**（消除網域不一致）。設定面（GitHub env / Zeabur secret / Console callback URL）需林董操作，寫進 🅰。
+- **下拉被裁**（252）：頭像下拉太長、底部項目被裁沒 scroll。根因＝`PopoverPanel` 的 `size` middleware 有給 `maxHeight`、但 class 是 `overflow-hidden` → 超出被裁。改 `overflow-y-auto overflow-x-hidden overscroll-contain`（共用元件、全站下拉一起修好，圓角保留）。
+- **待辦主檔改名** `todo_list_0801.md` → `todo_list_0806.md`（沿用內容）；CLAUDE.md 現行主檔引用同步更新；新增〈🆕 0806 收尾批〉整理孤兒 A/B/C、天氣時有時無、FeatureGuide、農民曆 widget、§5 未完。
+- tsc 0 錯、vitest 225 passed、build 綠。
+
 ## 待續（下次）
 
+- **農民曆 widget**（跨 AI 島 + Space）：Space 月曆 widget × 國立月曆合併、加年份（西元＋民國）。
+- 孤兒 A：PaywallOverlay（先查 server gating）、EmojiButton（接工具列）；C 決定去留。
+- 天氣時有時無修穩（優先用 geo_city/上次 pick、失敗不清空）。
 - 背景 **Phase 4b**：lottie 動態場景（dotlottie-wc）+ 自訂圖片上傳（`backgrounds` bucket 已備）。
 - 字體：5 支 CJK 佔位（台北黑體/昭源/霞鶩/朱雀/清松手寫）需去後台上傳字體檔啟用。
 - **Widget 首頁**：計畫 doc 已備（`docs/widget_homepage_port_plan.md`），待點頭開工。

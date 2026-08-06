@@ -105,7 +105,7 @@ export function PopoverPanel({
       ref={api.refs.setFloating}
       style={{ ...api.floatingStyles, ...style }}
       {...api.getFloatingProps()}
-      className={`menu-surface z-50 border border-border rounded-xl shadow-2xl overflow-hidden ${className}`}
+      className={`menu-surface z-50 border border-border rounded-xl shadow-2xl overflow-y-auto overflow-x-hidden overscroll-contain ${className}`}
     >
       {children}
     </div>

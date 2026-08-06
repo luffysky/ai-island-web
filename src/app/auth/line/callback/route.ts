@@ -12,8 +12,14 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 //    - NEXT_PUBLIC_SITE_URL（production domain、必設）
 
 function getOrigin(req: NextRequest): string {
-  // LINE token exchange 的 redirect_uri 必須和前端送去 LINE 的 window.location.origin 完全一致。
-  // 所以這裡優先信任實際 request host，再 fallback 到 env。
+  // LINE token exchange 的 redirect_uri 必須和前端送去 LINE authorize 的完全一致。
+  // 前端也優先用 NEXT_PUBLIC_SITE_URL（見 login page），所以這裡也優先正規網域 → 兩端保證一致，
+  // 消除「x-forwarded-host 跟公開網域不一致造成 redirect_uri mismatch」的可能。
+  const env = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
+  if (env && !env.includes("localhost")) {
+    return env;
+  }
+
   const fwdHost = req.headers.get("x-forwarded-host");
   const fwdProto = req.headers.get("x-forwarded-proto") || "https";
   if (fwdHost && !fwdHost.includes("localhost")) {
@@ -23,11 +29,6 @@ function getOrigin(req: NextRequest): string {
   const host = req.headers.get("host");
   if (host && !host.includes("localhost")) {
     return `https://${host}`;
-  }
-
-  const env = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
-  if (env && !env.includes("localhost")) {
-    return env;
   }
 
   return new URL(req.url).origin;
@@ -71,8 +72,14 @@ export async function GET(req: NextRequest) {
 
     if (!tokenRes.ok) {
       const err = await tokenRes.text();
-      console.error("LINE token error:", err);
-      return NextResponse.redirect(`${origin}/login?error=line_token`);
+      console.error("LINE token error:", err, "redirect_uri used:", `${origin}/auth/line/callback`);
+      // 把 LINE 回傳的真實原因帶到登入頁（invalid_client=secret錯 / redirect_uri mismatch=網址不符…）
+      let reason = "";
+      try { const j = JSON.parse(err); reason = j.error_description || j.error || ""; } catch { reason = err.slice(0, 120); }
+      const u = new URL(`${origin}/login`);
+      u.searchParams.set("error", "line_token");
+      if (reason) u.searchParams.set("line_reason", reason.slice(0, 160));
+      return NextResponse.redirect(u);
     }
 
     const tokenData = await tokenRes.json();
@@ -112,14 +119,20 @@ export async function GET(req: NextRequest) {
 
     let userId: string;
     const admin = createSupabaseAdmin();
-    const { data: usersData, error: listError } = await admin.auth.admin.listUsers();
 
-    if (listError) {
-      console.error("LINE list users error:", listError);
-      return NextResponse.redirect(`${origin}/login?error=line_admin`);
+    // ⚠️ listUsers() 預設只回第一頁（50 筆）→ 使用者破 50 後，回訪的 LINE 帳號會找不到、
+    // 走到 createUser 撞 email 而登入失敗。這裡分頁掃到底（perPage 1000、上限 50 頁＝50k 人）。
+    let existingUser: { id: string } | undefined;
+    for (let page = 1; page <= 50; page++) {
+      const { data: usersData, error: listError } = await admin.auth.admin.listUsers({ page, perPage: 1000 });
+      if (listError) {
+        console.error("LINE list users error:", listError);
+        return NextResponse.redirect(`${origin}/login?error=line_admin`);
+      }
+      const hit = usersData.users.find((u) => u.email === lineEmail);
+      if (hit) { existingUser = hit; break; }
+      if (usersData.users.length < 1000) break; // 最後一頁、掃完
     }
-
-    const existingUser = usersData.users.find((u) => u.email === lineEmail);
 
     if (existingUser) {
       // 既有 user

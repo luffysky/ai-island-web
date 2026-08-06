@@ -33,9 +33,12 @@ export default function LoginPage() {
   const supabase = createSupabaseBrowser();
 
   useEffect(() => {
-    const code = new URLSearchParams(window.location.search).get("error");
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("error");
     if (code) {
-      setError(AUTH_ERROR_LABELS[code] ?? t("loginFailedCode", { code }));
+      const base = AUTH_ERROR_LABELS[code] ?? t("loginFailedCode", { code });
+      const reason = params.get("line_reason");   // LINE 回傳的真實錯誤（invalid_client / redirect_uri mismatch…）
+      setError(reason ? `${base}（LINE：${reason}）` : base);
     }
   }, []);
 
@@ -74,7 +77,9 @@ export default function LoginPage() {
       setError(t("lineNotConfigured"));
       return;
     }
-    const redirectUri = encodeURIComponent(`${window.location.origin}/auth/line/callback`);
+    // 用正規網域（跟後端 callback 一致）→ redirect_uri 兩端保證一致，避免 token 交換 mismatch
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || window.location.origin;
+    const redirectUri = encodeURIComponent(`${siteUrl}/auth/line/callback`);
     const state = crypto.randomUUID();
     sessionStorage.setItem("line_oauth_state", state);
     const url = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${channelId}&redirect_uri=${redirectUri}&state=${state}&scope=profile%20openid%20email`;
