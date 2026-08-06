@@ -131,3 +131,15 @@
 - **AI 島特有 widget**：學習連勝（profile 連勝/等級/XP/Z幣）、AI 額度（/api/me/ai-quota）、今日學習任務（/api/me/next-lesson）掛進 /daily。top nav /daily i18n 核對 en/ja/ko/zh 完整。
 - **§5.7 2d 拖拉 widget 引擎 MVP（P1–P3）**：per-user `widget_layouts`/`widget_instances`+RLS；照抄 Space `grid.ts`（碰撞/重力/斷點推導/reflow）+`config-fields.ts`（zod→表單）；重寫 `registry.ts`（8 Phase A widget）；`/home` 頁（server 首訪自動建預設）+ `HomeGrid`（desktop/tablet 格線拖拉移動/右下縮放/加入目錄/移除/樂觀更新存 DB；手機依 mobile.order 單欄）+ 3 API（POST add、PATCH bulk 重驗不靜默修正、PATCH/DELETE widget）+ 8 widget 實作 + me 側欄「我的首頁」入口。⬜ WidgetSettings 齒輪設定（zod 自動表單）、多 layout 版面管理、P4 更多 Phase A、P5 Phase B data widget、Space 2e 同步。
 - **⚠️ 部署卡 GitHub Actions 重大中斷（major_outage）**：所有 docker build 卡「Set up job」拿不到 runner（`Failed to resolve action download info` / `The job was not acquired by Runner` / Internal server error）——**與程式無關**（同 commit 的 CI lint/tsc/test/build 都綠）。程式全數 push 進 repo；DB 改動（字體/geo/晨報欄/widget 表）已直接寫 prod 生效。**GitHub 恢復後 re-run 最新 docker build 即一次部署**今天全部程式面改動。
+
+## 收尾健檢 3（0807·widget 引擎接線驗收·鐵規則）
+
+- **widget 引擎 API↔DB↔UI 接對**：HomeGrid 打的 3 支 API（`/api/layouts/[id]/widgets` POST、`.../bulk` PATCH、`/api/widgets/[id]` PATCH/DELETE）都有對應 route 檔；API select/insert 欄位與 `widget_layouts`(id/user_id/name/breakpoint_config/is_active/…)、`widget_instances`(id/user_id/layout_id/widget_type/position/config/hidden/locked) 實際欄位全對。
+- **registry 一致性**：`registry.ts` WIDGET_IDS（8）＝渲染器 COMPONENTS keys（8）；`presets.ts` 用的 5 個 ⊂ registry（無孤兒）；`isWidgetId` 守 add API。
+- **DB 審計** `audit-db-columns.mjs` exit 0（`✅ 每支 route 都有 export HTTP method`、無欄位錯接）。
+- **建置三連**：`tsc` 0 錯、`vitest` 225 passed、`next build` 綠（含 /home 新頁）。
+- **UI 入口**：`/home` 在 me 側欄「個人化」；widget 引擎非空殼（加入/拖拉/縮放/移除/存 DB 全接）。
+- **RWD**：`/home` desktop 12 欄 / tablet 8 欄格線、手機依 `mobile.order` 單欄堆疊（不拖拉）；widget 卡 `overflow-hidden` 內容自適應。
+- **PWA**：未動 manifest/service worker。
+- **RLS/權限**：`widget_layouts`/`widget_instances` RLS `auth.uid()=user_id`（只能動自己的）；migration 純新增。
+- **待辦**：WidgetSettings 齒輪設定、多 layout 版面管理、P4/P5 widget、Space 2e 均已入 todo §5.7。

@@ -114,9 +114,10 @@
 ### 🎨 個人化：主題 / 字體 / 背景（Theme Studio，port 自 Space）
 - **Theme Studio** `/theme-studio`：任意自訂主題——13 色 token + 字型/表面/效果/動態，live 預覽、~100 內建 preset、a11y 對比檢查、儲存並套用。引擎移植 Space `theme-engine`（`--sr-*`→AI 島 `--color-*`），`effectiveTheme` 執行期推導亮/暗變體。
 - **亮暗 × 色盤兩軸**：`data-mode`(亮/暗/跟系統) + `data-palette`(森/海/櫻/薰衣草/珊瑚/薄荷)，header 具名色盤下拉；套用後 **SSR inline 注入、重整不掉、首屏無 FOUC**。
-- **字體系統**：內建 Space 全字體目錄 25 支——**19 支 Google Fonts「找到即裝」零上傳**（Google 動態子集 CJK + CDN 供檔，思源黑/宋、jf open 粉圓、芫荽、Inter、JetBrains Mono…）、6 支 CJK（台北黑/昭源/霞鶩文楷/朱雀仿宋/清松手寫）走後台上傳安裝。後台 **`/admin/fonts` 字體安裝器**（上傳 .ttf/.otf/.woff/.woff2→Storage→即可在 Theme Studio 選字），字體中文名 display_name。
+- **字體系統**：25 支字體目錄、**23 支即用**——19 支 Google Fonts + 霞鶩文楷（Google，動態子集 CJK）「找到即裝」零上傳；昭源黑/宋、朱雀仿宋照 Space 從 GitHub 下載**自架**（`scripts/install-cjk-fonts.mjs`→`fonts` bucket）。台北黑/清松手寫無自動來源、走後台 **`/admin/fonts` 上傳安裝器**（.ttf/.otf/.woff/.woff2）。＊主題選字套用：`font-loader` 設 `--font-heading/body/ui`、globals `--font-sans/display` 橋接吃它 → 選字真的套到頁面。
 - **背景系統** `/background`：**335 個 canvas 粒子動態場景 + 漸層**（6 類：天氣/星空/自然/慶祝/簡約/城市夜景，純 Canvas-2D、零儲存、prefers-reduced-motion/省電模式自動降級為靜態），一鍵套用、跨裝置同步（`profiles.active_background`）。＊Phase 4b（lottie + 自訂圖片上傳）進行中。
 - **選單玻璃可調**：磨砂玻璃選單表面（`.menu-surface`），透明度使用者可調（玻璃↔實色）；手機版外觀（模式/色盤/透明度）收進頭像下拉。
+- **可編輯 widget 首頁** `/home`（port 自 Space·MVP）：per-user 可拖拉/縮放/加入/移除的個人儀表板——desktop/tablet 12/8 欄格線、手機單欄，存 `widget_layouts`/`widget_instances`（RLS 自己的才能動）、跨裝置同步。引擎照抄 Space（**無外部拖拉套件、只 zod**）：`grid.ts` 碰撞/重力/斷點推導、8 個 Phase A widget（時鐘/擲骰/倒數/紀念日/農民曆/世界時鐘/待辦/呼吸）。＊待補：齒輪設定（zod 自動表單）、多 layout、Phase B 串資料 widget。
 
 ---
 
