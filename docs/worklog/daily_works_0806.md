@@ -120,3 +120,14 @@
 - 背景 **Phase 4b**：lottie 動態場景（dotlottie-wc）+ 自訂圖片上傳（`backgrounds` bucket 已備）。
 - 字體：5 支 CJK 佔位（台北黑體/昭源/霞鶩/朱雀/清松手寫）需去後台上傳字體檔啟用。
 - **Widget 首頁**：計畫 doc 已備（`docs/widget_homepage_port_plan.md`），待點頭開工。
+
+---
+
+## L段：§5 續作 + 2d 拖拉 widget 引擎 MVP（0807 凌晨·GitHub Actions 中斷期）
+
+- **字體選了沒反應修復**：font-loader 設 `--font-heading/body/ui`、頁面吃 `--font-sans/--font-display` → var 名沒接。globals.css 橋接（`--font-sans: var(--font-body,…)`、`--font-display: var(--font-heading,…)`）→ 主題選字真的套到頁面。＋霞鶩文楷上 Google Fonts；昭源黑/宋、朱雀仿宋照 Space 從 GitHub 下載自架（`scripts/install-cjk-fonts.mjs` + zhuque release zip），共 23 字體可用。台北黑體/清松手寫無自動來源（Space 亦 manual）待人工上傳。
+- **§5.4 每日晨報獨立開關**：`line_pref_daily_brief` 欄（migration 已跑）+ notify daily_brief 分類 + cron 改用 + /settings 開關。
+- **§5.2 節氣**：`solar-terms.ts`（壽星公式·21 世紀常數·立春/清明/立秋/冬至驗算全對）+ CalendarWidget 標節氣＋下一節氣。
+- **AI 島特有 widget**：學習連勝（profile 連勝/等級/XP/Z幣）、AI 額度（/api/me/ai-quota）、今日學習任務（/api/me/next-lesson）掛進 /daily。top nav /daily i18n 核對 en/ja/ko/zh 完整。
+- **§5.7 2d 拖拉 widget 引擎 MVP（P1–P3）**：per-user `widget_layouts`/`widget_instances`+RLS；照抄 Space `grid.ts`（碰撞/重力/斷點推導/reflow）+`config-fields.ts`（zod→表單）；重寫 `registry.ts`（8 Phase A widget）；`/home` 頁（server 首訪自動建預設）+ `HomeGrid`（desktop/tablet 格線拖拉移動/右下縮放/加入目錄/移除/樂觀更新存 DB；手機依 mobile.order 單欄）+ 3 API（POST add、PATCH bulk 重驗不靜默修正、PATCH/DELETE widget）+ 8 widget 實作 + me 側欄「我的首頁」入口。⬜ WidgetSettings 齒輪設定（zod 自動表單）、多 layout 版面管理、P4 更多 Phase A、P5 Phase B data widget、Space 2e 同步。
+- **⚠️ 部署卡 GitHub Actions 重大中斷（major_outage）**：所有 docker build 卡「Set up job」拿不到 runner（`Failed to resolve action download info` / `The job was not acquired by Runner` / Internal server error）——**與程式無關**（同 commit 的 CI lint/tsc/test/build 都綠）。程式全數 push 進 repo；DB 改動（字體/geo/晨報欄/widget 表）已直接寫 prod 生效。**GitHub 恢復後 re-run 最新 docker build 即一次部署**今天全部程式面改動。
