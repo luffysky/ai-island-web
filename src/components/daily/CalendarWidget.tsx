@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { CalendarDays } from "lucide-react";
 import { moonPhase } from "@/lib/moon";
+import { solarTermsInMonth, nextSolarTerm } from "@/lib/solar-terms";
 
 const WEEKDAYS = ["日", "一", "二", "三", "四", "五", "六"];
 const LUNAR_DAYS = [
@@ -53,6 +54,10 @@ export function CalendarWidget() {
 
   const todayLunar = lunarOf(today);
   const moon = moonPhase(today.getTime());
+  // 本月節氣（標在對應日）＋下一個節氣
+  const termByDay = new Map<number, string>();
+  for (const t of solarTermsInMonth(year, month + 1)) termByDay.set(t.day, t.name);
+  const nextTerm = nextSolarTerm(today);
 
   return (
     <section className="rounded-2xl border border-indigo-500/20 bg-indigo-500/[0.04] p-4">
@@ -71,22 +76,33 @@ export function CalendarWidget() {
         {cells.map((d, i) => {
           if (d === null) return <div key={`blank-${i}`} />;
           const isToday = d === todayDate;
+          const term = termByDay.get(d);                         // 該日若是節氣
           const lu = lunarOf(new Date(year, month, d));
-          const luLabel = lu ? (lu.isFirst ? lu.month : lu.day) : "";
+          const subLabel = term ?? (lu ? (lu.isFirst ? lu.month : lu.day) : "");
+          const subClass = isToday
+            ? "text-white/85"
+            : term
+            ? "text-amber-600 dark:text-amber-400 font-medium"    // 節氣＝琥珀色標出
+            : lu?.isFirst
+            ? "text-indigo-500 dark:text-indigo-300 font-medium"  // 農曆初一＝月名
+            : "text-black/40 dark:text-white/40";
           return (
             <div
               key={`d-${d}`}
               className={`rounded-lg py-1 leading-tight ${isToday ? "bg-indigo-500 text-white" : "text-black/80 dark:text-white/85"}`}
             >
               <div className="text-sm font-semibold tabular-nums">{d}</div>
-              <div className={`text-[9px] ${isToday ? "text-white/85" : lu?.isFirst ? "text-indigo-500 dark:text-indigo-300 font-medium" : "text-black/40 dark:text-white/40"}`}>{luLabel}</div>
+              <div className={`text-[9px] ${subClass}`}>{subLabel}</div>
             </div>
           );
         })}
       </div>
 
-      <div className="mt-2.5 flex items-center justify-between gap-2 text-xs text-black/60 dark:text-white/60">
+      <div className="mt-2.5 flex items-center justify-between gap-2 text-xs text-black/60 dark:text-white/60 flex-wrap">
         <span>今日{todayLunar ? `農曆 ${todayLunar.month}${todayLunar.day}` : ""}</span>
+        <span className="text-amber-600 dark:text-amber-400">
+          {nextTerm.daysUntil === 0 ? `今日${nextTerm.name}` : `下一節氣 ${nextTerm.name}·${nextTerm.daysUntil} 天後`}
+        </span>
         <span className="inline-flex items-center gap-1">{moon.emoji} {moon.name}</span>
       </div>
     </section>
