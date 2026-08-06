@@ -552,10 +552,10 @@
 - [x] ~~死碼刪除：AppSettingsClient / DashboardView / NextLesson（舊頁已 redirect）~~
 
 ### 待確認/待做
-- [ ] **孤兒 A-1 PaywallOverlay**（`components/chapter/PaywallOverlay.tsx`）：完整付費章節遮罩，但 `ChapterView` 無任何 premium/鎖定判斷 → 付費牆沒接。**先查 server 端有無 gating**，再決定要不要接、怎麼接（變現決策）。
-- [ ] **孤兒 A-3 EmojiButton**（`components/blog/tiptap/emoji-picker.tsx`）：部落格編輯器表情鈕沒接進工具列。小功能缺入口。
-- [ ] **孤兒 C（純樣式 primitive，決定去留）**：SectionHeader / StaggerList / MotionCard（建議刪）、CodeArea（建議留、接程式練習輸入框）。
-- [ ] **天氣元件「時有時無」**（/daily、/fortune WeatherCard）：進頁靠瀏覽器定位、失敗/timeout 就退回選地區、天氣數字消失。修向：優先用已存 geo_city / 上次的 pick、失敗保留上次天氣不清空。待點頭。
+- [~] **孤兒 A-1 PaywallOverlay**：已查——**全站無「付費章節」概念**（chapters 無 is_premium 欄、ChapterView 無判斷、server 無 gating；訂閱系統只 gate AI 額度/導師/assistant）。→ 不是漏擋，是**從沒建的功能殘留 UI**，目前所有章節免費。**留著當模板**；要不要建付費章節（DB 欄+後台開關+server gating+遮罩）＝**變現產品決策，等林董點頭**。
+- [x] ~~**孤兒 A-3 EmojiButton**：查後發現 BlogEditor 工具列早已用 `AnimatedEmojiPicker`（3D emoji）插入 → EmojiButton 是被取代的舊版、非缺入口 → 已刪 emoji-picker.tsx~~
+- [x] ~~**孤兒 C**：SectionHeader / StaggerList / MotionCard（純樣式、零引用）已刪；CodeArea 留著（之後接程式練習輸入框）~~
+- [x] ~~**天氣元件「時有時無」**（/daily、/fortune）：改成快取上次成功天氣（localStorage `ai_island_weather_last`）→ 進頁即時顯示、背景刷新；刷新失敗（定位拒/timeout/API 失敗）**保留上次天氣不清空**（wRef+softFail）~~
 - [ ] **FeatureGuide「兩條紫色說明有時掉一條」**（/agent 兩張）：目前程式只會收合成標題、不會整個消失；若真的整張不見需「壞掉當下」截圖再抓。
 - [ ] **農民曆 widget**（跨 AI 島 + Space）：把 Space 的月曆 widget 跟「國立月曆」合併；顯示**年份**；國立除西元外加**民國年**；AI 島與 Space 兩邊都做。（併入 §5.7 widget 引擎）
 

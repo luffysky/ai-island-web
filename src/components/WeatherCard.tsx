@@ -1,11 +1,12 @@
 "use client";
 // 即時天氣卡：讀取使用者「當下位置」（瀏覽器定位）→ 查今日天氣 + 生活建議。
 // lat/lng 只用於這次查詢、不儲存（隱私）。定位被拒/不支援 → 明確提示、不擋其他內容。
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2, MapPin, CloudSun } from "lucide-react";
 import { LocationPicker, type PickedLocation } from "@/components/LocationPicker";
 
 const SAVED_CITY_KEY = "ai_island_weather_pick";
+const WEATHER_CACHE_KEY = "ai_island_weather_last";   // 上次成功的天氣 → 進頁即時顯示、刷新失敗不清空
 
 interface W {
   place?: string; emoji: string; desc: string;
@@ -17,40 +18,50 @@ export function WeatherCard() {
   const [w, setW] = useState<W | null>(null);
   const [advice, setAdvice] = useState<string[]>([]);
   const [pick, setPick] = useState<PickedLocation | null>(null);   // 目前選的地區→讓下拉停在上面
+  const wRef = useRef<W | null>(null);                             // 即時反映有沒有天氣（closure 不會過期）
 
-  const apply = (d: { weather: W; advice?: string[] }) => { setW(d.weather); setAdvice(d.advice ?? []); setState("done"); };
+  const apply = (d: { weather: W; advice?: string[] }) => {
+    setW(d.weather); wRef.current = d.weather; setAdvice(d.advice ?? []); setState("done");
+    try { localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ weather: d.weather, advice: d.advice ?? [] })); } catch {}
+  };
+  // 刷新失敗：已有天氣就維持顯示（不清空）、沒有才顯示錯誤/選地區
+  const softFail = (kind: "denied" | "error") => setState(wRef.current ? "done" : kind);
 
   // 下拉選好的縣市/區 → 用縣市靜態座標查天氣（不 geocode），顯示地點用使用者選的名字、記住下次直接套用
   const loadPick = async (loc: PickedLocation) => {
     setState("loading"); setPick(loc);
     try {
       const r = await fetch(`/api/weather?lat=${loc.lat}&lng=${loc.lng}`);
-      if (!r.ok) { setState("error"); return; }
+      if (!r.ok) { softFail("error"); return; }
       const d = await r.json();
       apply({ weather: { ...d.weather, place: `${loc.city}${loc.district}` }, advice: d.advice });
       try { localStorage.setItem(SAVED_CITY_KEY, JSON.stringify(loc)); } catch {}
-    } catch { setState("error"); }
+    } catch { softFail("error"); }
   };
 
   const load = () => {
-    if (typeof navigator === "undefined" || !("geolocation" in navigator)) { setState("error"); return; }
+    if (typeof navigator === "undefined" || !("geolocation" in navigator)) { softFail("error"); return; }
     setState("loading");
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         try {
           const { latitude, longitude } = pos.coords;
           const r = await fetch(`/api/weather?lat=${latitude}&lng=${longitude}`);
-          if (!r.ok) { setState("error"); return; }
+          if (!r.ok) { softFail("error"); return; }
           apply(await r.json());
-        } catch { setState("error"); }
+        } catch { softFail("error"); }
       },
-      () => setState("denied"),
+      () => softFail("denied"),
       { maximumAge: 5 * 60 * 1000, timeout: 8000, enableHighAccuracy: false },
     );
   };
 
-  // 上次選過地區 → 直接套用（不再打擾定位權限）
+  // 進頁：先用上次成功的天氣即時顯示（消除「時有時無」）；上次選過地區 → 背景刷新（不打擾定位權限）
   useEffect(() => {
+    try {
+      const cached = localStorage.getItem(WEATHER_CACHE_KEY);
+      if (cached) { const c = JSON.parse(cached); if (c?.weather) { setW(c.weather); wRef.current = c.weather; setAdvice(c.advice ?? []); setState("done"); } }
+    } catch {}
     let loc: PickedLocation | null = null;
     try { const s = localStorage.getItem(SAVED_CITY_KEY); if (s) loc = JSON.parse(s); } catch {}
     if (loc && Number.isFinite(loc.lat) && Number.isFinite(loc.lng)) loadPick(loc);
