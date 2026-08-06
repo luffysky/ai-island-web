@@ -557,7 +557,7 @@
 - [x] ~~**孤兒 C**：SectionHeader / StaggerList / MotionCard（純樣式、零引用）已刪；CodeArea 留著（之後接程式練習輸入框）~~
 - [x] ~~**天氣元件「時有時無」**（/daily、/fortune）：改成快取上次成功天氣（localStorage `ai_island_weather_last`）→ 進頁即時顯示、背景刷新；刷新失敗（定位拒/timeout/API 失敗）**保留上次天氣不清空**（wRef+softFail）~~
 - [ ] **FeatureGuide「兩條紫色說明有時掉一條」**（/agent 兩張）：目前程式只會收合成標題、不會整個消失；若真的整張不見需「壞掉當下」截圖再抓。
-- [ ] **農民曆 widget**（跨 AI 島 + Space）：把 Space 的月曆 widget 跟「國立月曆」合併；顯示**年份**；國立除西元外加**民國年**；AI 島與 Space 兩邊都做。（併入 §5.7 widget 引擎）
+- [x] ~~**農民曆 widget**（跨 AI 島 + Space）：AI 島新增 `CalendarWidget`（國曆月曆格＋每格農曆〔Intl chinese，農曆初一顯月名〕＋今天高亮＋**西元＋民國年**＋今日農曆＋月相）掛進 /daily；Space `MiniCalendarWidget` 升級（民國年＋每格農曆）。兩 repo 各自 tsc 綠~~（節氣待後續補）
 
 ### §5 每日晨報/情報 未完（延續既有 §5）
 - [ ] 5.4 `/settings` 加「每日晨報」開關（複用 line_pref_*）；確認 cron 08:30。

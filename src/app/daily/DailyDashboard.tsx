@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Loader2, MapPin, Umbrella, Droplets, Wind, Sunrise, Sunset, Sun, BookOpen, Lightbulb, Sparkles } from "lucide-react";
 import { LocationPicker, type PickedLocation } from "@/components/LocationPicker";
+import { CalendarWidget } from "@/components/daily/CalendarWidget";
 
 const SAVED_CITY_KEY = "ai_island_weather_pick";
 const WEATHER_CACHE_KEY = "ai_island_weather_last";   // 上次成功的天氣 → 進頁即時顯示、刷新失敗不清空
@@ -190,6 +191,9 @@ export function DailyDashboard({ word, moon, sentence, tip }: Props) {
           <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">去上課 →</p>
         </Widget>
       </div>
+
+      {/* 農民曆月曆（國曆格 + 每格農曆 + 西元/民國年 + 今日農曆 + 月相） */}
+      <CalendarWidget />
 
       {/* 待辦清單 widget（localStorage、免登入） */}
       <TodoWidget />
