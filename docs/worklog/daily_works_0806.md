@@ -93,11 +93,30 @@
 - **待辦主檔改名** `todo_list_0801.md` → `todo_list_0806.md`（沿用內容）；CLAUDE.md 現行主檔引用同步更新；新增〈🆕 0806 收尾批〉整理孤兒 A/B/C、天氣時有時無、FeatureGuide、農民曆 widget、§5 未完。
 - tsc 0 錯、vitest 225 passed、build 綠。
 
+## K段：佇列連續清（孤兒/天氣/農民曆·「一個接一個做」）
+
+使用者授權自訂順序連續做完，逐項 commit/push：
+- **PaywallOverlay 查明**：全站**無「付費章節」概念**（chapters 無 is_premium、ChapterView 無判斷、server 無 gating；訂閱系統只 gate AI 額度/導師/assistant）→ 非漏擋、是從沒建的功能殘留 UI，所有章節目前免費。留模板；建不建付費章節＝變現決策待定。
+- **孤兒清理**：`EmojiButton`（BlogEditor 已用 `AnimatedEmojiPicker` 取代 → 刪）、C 純樣式 `SectionHeader`/`StaggerList`/`MotionCard`（零引用 → 刪）；`CodeArea` 留（之後接程式練習）。
+- **天氣「時有時無」修穩**（`DailyDashboard` /daily + `WeatherCard` /fortune）：快取上次成功天氣（localStorage `ai_island_weather_last`）→ 進頁即時顯示、背景刷新；刷新失敗（定位拒/timeout/API 失敗）以 `wRef`+`softFail` **保留上次天氣不清空**。
+- **農民曆 widget**（跨 repo）：AI 島新 `CalendarWidget`（國曆月曆格＋每格農曆〔Intl chinese、農曆初一顯月名〕＋今天高亮＋**西元＋民國年**＋今日農曆＋月相）掛進 /daily；**Space `MiniCalendarWidget` 同步升級**（民國年＋每格農曆），push 到 snowrealmspace repo（pre-commit secrets/lint/typecheck 全過）。節氣待補。
+- /daily top nav 入口確認**已存在**（`TopNav.tsx`，Sunrise），舊 todo 已完成。
+
+## 收尾健檢 2（0806 晚·鐵規則）
+
+- **DB/API**：`audit-db-columns.mjs` exit 0（`✅ 每支 route 都有 export HTTP method`；`✗` 全是動態路徑插值假陽性、非欄位錯接）。本日**無新 migration**（geo 用既有 `geo_consent` 欄位）。
+- **建置三連**：`tsc` 0 錯、`vitest` 225 passed（33 檔）、`next build` 綠（92/92）。Space 端 `typecheck` 綠。
+- **UI 入口**：農民曆（/daily）、天氣（/daily·/fortune）、精準位置（設定，補寫 geo_city）、下拉 scroll（全站 Popover）——皆有入口、非空殼。
+- **RWD**：農民曆 `grid-cols-7` 響應、天氣卡 flex-wrap；`PopoverPanel` 改 `overflow-y-auto` 手機下拉不再被裁；筆記環形改 translate 定位手機也點得到。桌機同檢無破版。
+- **PWA**：未動 manifest/service worker。
+- **機密**：無新增金鑰；`.env.local` 未 commit。
+
 ## 待續（下次）
 
-- **農民曆 widget**（跨 AI 島 + Space）：Space 月曆 widget × 國立月曆合併、加年份（西元＋民國）。
-- 孤兒 A：PaywallOverlay（先查 server gating）、EmojiButton（接工具列）；C 決定去留。
-- 天氣時有時無修穩（優先用 geo_city/上次 pick、失敗不清空）。
+- **PaywallOverlay / 付費章節**：變現決策——要建就上 `chapters.is_premium` 欄 + 後台開關 + server gating + 遮罩。
+- **FeatureGuide「掉一條」**：需壞掉當下截圖才能重現（目前程式只會收合不會消失）。
+- **LINE 登入設定**（🅰）：GitHub 補 `NEXT_PUBLIC_LINE_CHANNEL_ID` + 確認 Zeabur `LINE_CHANNEL_SECRET`/Console callback；重按看 LINE 真實錯誤。
+- §5.4 `/settings` 每日晨報開關、§5.7 拖拉 widget 引擎、農民曆節氣。
 - 背景 **Phase 4b**：lottie 動態場景（dotlottie-wc）+ 自訂圖片上傳（`backgrounds` bucket 已備）。
 - 字體：5 支 CJK 佔位（台北黑體/昭源/霞鶩/朱雀/清松手寫）需去後台上傳字體檔啟用。
 - **Widget 首頁**：計畫 doc 已備（`docs/widget_homepage_port_plan.md`），待點頭開工。
