@@ -109,7 +109,13 @@ export async function geocodeCity(city: string, country?: string): Promise<{ lat
   // → 依序試多個候選：原名 → 台化 → 去尾綴 → 台化+去尾綴，命中就用（優先台灣）。
   const taiwanize = (s: string) => s.replace(/臺/g, "台");
   const strip = (s: string) => s.replace(/[區鄉鎮市里]$/u, "");
-  const candidates = Array.from(new Set([raw, taiwanize(raw), strip(raw), taiwanize(strip(raw))].map((s) => s.trim()).filter(Boolean)));
+  // geo_city 可能是「縣市 區」帶空格（例：新北市 板橋區）→ Open-Meteo 單一地名比對會查 0 筆。
+  // 依序試：整串 → 區（較細、通常精準）→ 縣市，每個再做「台化 / 去尾綴」變體，命中即用。
+  const parts = raw.split(/\s+/).map((s) => s.trim()).filter(Boolean);
+  const bases = Array.from(new Set([raw, ...parts.slice().reverse()]));
+  const candidates = Array.from(new Set(
+    bases.flatMap((s) => [s, taiwanize(s), strip(s), taiwanize(strip(s))]).map((s) => s.trim()).filter(Boolean),
+  ));
   for (const name of candidates) {
     try {
       const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=5&language=zh&format=json`;

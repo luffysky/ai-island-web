@@ -73,6 +73,17 @@
 - 症狀：工具列「背景」下拉的色票排成一直條、疊在卡片上破版（246.jpg）。
 - 修法（`NotesBackgroundPicker.tsx`）：從 `absolute` inline 下拉改成**置中懸浮視窗**（`createPortal` 到 body、半透明遮罩、Esc/點外面關、開啟鎖背景捲動）；色票改 `grid grid-cols-6 sm:grid-cols-8` 整齊格線、`aspect-square`；加標題列＋關閉鈕。tsc/vitest/build 綠。
 
+## I段：LINE 晨報天氣「全端接好但缺一段線」修復 + 兩套定位系統整合（回饋 248）
+
+- 症狀：LINE「今日晨報」Flex 沒有天氣（248.jpg）。
+- 追根：`daily-brief` cron **有**接天氣（`weatherFor` → `getCityWeather` → 塞卡片），但只有在 `profiles.geo_city` + `geo_consent_at` 有值時才帶。追下去發現**兩套定位系統、掛錯邊**：
+  - 有掛在設定頁的 `PreciseLocationToggle` 走 `geo-precise.ts`：只在瀏覽器取座標→Nominatim 轉區、存 **sessionStorage、完全沒寫回 DB** → 不會設 `geo_city`。
+  - 會寫 `geo_city`/`geo_consent_at` 的 `/api/me/geolocation` **只被孤兒元件 `GeolocationConsent` 呼叫**，而它**沒被任何頁面 import** → 無入口。
+  - 結果 `geo_city` 對所有人永遠空 → 晨報天氣永遠不出現（有 UI/有 API 但沒真接的典型）。
+- **整合（單一入口餵兩邊）**：`PreciseLocationToggle` 啟用時，除了原本的 client 端 geo-precise，**再把座標 POST 到 `/api/me/geolocation` 持久化**（server 反查縣市寫 `geo_city`+`geo_consent_at`）；停用時 DELETE 撤回。刪掉重複的孤兒 `GeolocationConsent.tsx`。設定頁說明加「啟用後晨報會帶天氣」＋好處清單補「🌦️ 晨報天氣」。
+- 連帶修：`geo_city` 存的是「縣市 區」帶空格（例：新北市 板橋區），Open-Meteo 單一地名比對兩個詞會查 0 筆 → `geocodeCity` 改成拆空格、由細(區)到粗(縣市)逐一試變體（台化/去尾綴），命中即用。
+- 生效：使用者到 **設定 → 精準位置** 啟用後，**下一次晨報**（cron 08:30）就會帶天氣。tsc 0 錯、vitest 225 passed、build 綠。
+
 ## 待續（下次）
 
 - 背景 **Phase 4b**：lottie 動態場景（dotlottie-wc）+ 自訂圖片上傳（`backgrounds` bucket 已備）。

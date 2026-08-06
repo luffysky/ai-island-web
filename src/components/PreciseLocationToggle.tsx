@@ -26,10 +26,20 @@ export function PreciseLocationToggle() {
     const geo = await getPreciseLocation();
     if (!geo) {
       setError("無法取得位置（可能拒絕授權或網路問題）");
-    } else if (!geo.district) {
-      setError("已取得座標但解析不出區（OpenStreetMap 沒對應）");
     } else {
-      setDistrict(geo.district);
+      if (geo.district) setDistrict(geo.district);
+      else setError("已取得座標但解析不出區（OpenStreetMap 沒對應）");
+      // 持久化到 profile：server 端用座標反查縣市、寫 geo_city + geo_consent_at
+      // → LINE 今日晨報的天氣、異常登入警告等「讀 profile.geo_city」的功能才用得到。
+      // （純瀏覽器端的 geo-precise 只存 sessionStorage、不會寫 DB）
+      try {
+        await fetch("/api/me/geolocation", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ lat: geo.lat, lng: geo.lng }),
+        });
+      } catch { /* 持久化失敗不擋 UI；下次啟用會再試 */ }
     }
     setBusy(false);
   };
@@ -39,6 +49,8 @@ export function PreciseLocationToggle() {
     setEnabled(false);
     setDistrict(null);
     setError(null);
+    // 撤回 server 端位置（清 geo_city、記 geo_revoked_at）→ 晨報不再帶天氣
+    fetch("/api/me/geolocation", { method: "DELETE", credentials: "include" }).catch(() => {});
   };
 
   return (
@@ -50,13 +62,14 @@ export function PreciseLocationToggle() {
       <p className="text-sm text-fg-muted leading-relaxed">
         預設站台只用 IP 看到城市級。啟用後瀏覽器會請你授權 GPS、用
         OpenStreetMap 把座標轉成「○○區」、寫入站內分析（不會給第三方）。
-        每個 session 只查一次。
+        每個 session 只查一次。<b className="text-fg">啟用後，LINE 今日晨報也會帶上你所在城市的天氣。</b>
       </p>
 
-      {/* 8 條好處（透明告知） */}
+      {/* 9 條好處（透明告知） */}
       <details className="text-xs text-fg-muted">
-        <summary className="cursor-pointer text-accent hover:underline mb-2">📋 為什麼我們需要精準位置？（8 條好處）</summary>
+        <summary className="cursor-pointer text-accent hover:underline mb-2">📋 為什麼我們需要精準位置？（9 條好處）</summary>
         <ul className="space-y-1.5 pl-3">
+          <li>🌦️ <b>晨報天氣</b>：LINE 今日晨報加上你所在城市的天氣與提醒</li>
           <li>🔒 <b>異常登入警告</b>：從陌生城市登入立刻寄 email、防帳號被盜</li>
           <li>🕒 <b>時間在地化</b>：課程截止 / 提醒用你的時區、不用設定</li>
           <li>🌏 <b>語系自動</b>：繁中 / 簡中 / 英文依國家自動帶</li>
