@@ -5,7 +5,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const COLS = ["line_notify_enabled", "line_pref_deadlines", "line_pref_subscriptions", "line_pref_agent", "line_pref_learning", "line_pref_fortune"] as const;
+const COLS = ["line_notify_enabled", "line_pref_daily_brief", "line_pref_deadlines", "line_pref_subscriptions", "line_pref_agent", "line_pref_learning", "line_pref_fortune"] as const;
 
 // GET — 我的 LINE 通知偏好
 export async function GET() {

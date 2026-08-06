@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Bell, Loader2 } from "lucide-react";
 
 const ROWS: { key: string; label: string; desc: string }[] = [
+  { key: "line_pref_daily_brief", label: "每日晨報", desc: "每天早上一則：天氣生活建議 + 今日運勢 + 今天值得做的 3 件事" },
   { key: "line_pref_deadlines", label: "機會截止提醒", desc: "收藏的機會距報名截止 30/14/7/3/1 天" },
   { key: "line_pref_subscriptions", label: "機會訂閱符合", desc: "有新機會符合你訂閱的條件" },
   { key: "line_pref_agent", label: "分身島任務", desc: "任務完成 / 需要你確認的動作" },

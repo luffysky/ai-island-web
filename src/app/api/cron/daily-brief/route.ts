@@ -17,8 +17,8 @@ export const maxDuration = 120;
 /**
  * 每日主動推播「今天值得做的 3 件事」到 LINE（opt-in）。
  * 觸發：GET /api/cron/daily-brief?secret=<CRON_SECRET>（建議每天早上一次，如 08:30）。
- * 對象：有綁 LINE + 未關總開關 + 未關「分身島」分類（line_pref_agent）的使用者。
- *   （`notifyUserLine(category:"agent")` 內部會再次核對偏好，關了就不送。）
+ * 對象：有綁 LINE + 未關總開關 + 未關「每日晨報」分類（line_pref_daily_brief）的使用者。
+ *   （`notifyUserLine(category:"daily_brief")` 內部會再次核對偏好，關了就不送。）
  * 純推播、不寫任何資料；規則式產生內容、零 AI 成本。
  */
 const MAX_USERS = 500; // 保護：一次最多處理的人數上限
@@ -83,7 +83,7 @@ export async function GET(req: NextRequest) {
         ...items.map((s, i) => `${i + 1}. ${s}`),
       ].filter(Boolean);
       const text = `🌅 今日晨報\n\n${textLines.join("\n")}\n\n（不想收：設定 → 通知偏好可關）`;
-      const r = await notifyUserLine({ userId: u.id, text, flex, category: "agent" });
+      const r = await notifyUserLine({ userId: u.id, text, flex, category: "daily_brief" });
       if (r.ok) sent++;
       else if (r.reason === "category_disabled" || r.reason === "user_disabled" || r.reason === "not_bound") skipped++;
       else failed++;

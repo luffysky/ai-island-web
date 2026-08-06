@@ -123,6 +123,8 @@ const MIGRATIONS = [
   "background_migration.sql",
   // 2026-08-06 — 字體中文名 display_name（後台/選字 UI 顯示）（/daily Phase 5e）
   "fonts_display_name_migration.sql",
+  // 2026-08-06 — 每日晨報獨立通知開關 line_pref_daily_brief（§5.4）
+  "line_pref_daily_brief_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
