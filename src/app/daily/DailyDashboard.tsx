@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Loader2, MapPin, Umbrella, Droplets, Wind, Sunrise, Sunset, Sun, BookOpen, Lightbulb, Sparkles } from "lucide-react";
 import { LocationPicker, type PickedLocation } from "@/components/LocationPicker";
 import { CalendarWidget } from "@/components/daily/CalendarWidget";
+import { LearningStatusWidgets } from "@/components/daily/LearningStatusWidgets";
 import { useAuth } from "@/lib/auth-context";
 
 const SAVED_CITY_KEY = "ai_island_weather_pick";
@@ -168,6 +169,9 @@ export function DailyDashboard({ word, moon, sentence, tip }: Props) {
             <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">今天上一課、把連勝續下去 →</p>
           </Widget>
         )}
+
+        {/* AI 額度 + 今日學習任務（登入者、站內資料） */}
+        <LearningStatusWidgets />
 
         <Widget title="AI 每日一句" icon={<Sparkles className="w-4 h-4" />} accent="violet">
           <p className="text-sm text-black/60 dark:text-white/60">今天適合：</p>
