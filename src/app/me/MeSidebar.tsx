@@ -106,6 +106,7 @@ const ME_GROUPS: MeGroup[] = [
     label: "個人化",
     emoji: "🎨",
     items: [
+      { href: "/home", icon: <span>🏠</span>, label: "我的首頁（可編輯 widget）" },
       { href: "/theme-studio", icon: <span>🎨</span>, label: "主題（Theme Studio）" },
       { href: "/background", icon: <span>🖼️</span>, label: "背景" },
       { href: "/profile", icon: <span>👤</span>, label: "個人檔案" },
