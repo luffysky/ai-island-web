@@ -125,6 +125,8 @@ const MIGRATIONS = [
   "fonts_display_name_migration.sql",
   // 2026-08-06 — 每日晨報獨立通知開關 line_pref_daily_brief（§5.4）
   "line_pref_daily_brief_migration.sql",
+  // 2026-08-07 — 可編輯 widget 首頁 /home：widget_layouts + widget_instances + RLS（§5.7 P1）
+  "widget_homepage_migration.sql",
 ];
 
 // 從 .env.local 讀（不依賴 dotenv pkg）
