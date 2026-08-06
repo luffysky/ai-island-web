@@ -115,9 +115,9 @@
 ### 5. 🆕 每日晨報（整合天氣·CP 值最高·複用現成 infra）— 林董 0723 拍板做
 > ＊戰略：早上一則 LINE 把「運勢＋天氣生活建議＋今日待辦＋提醒」整合成一張晨報卡＝最省力、最黏。純天氣別做（免費到處有），做成晨報的一塊才有價值。骨架大半已有（daily-brief cron + fortune + buildListCard Flex）。
 - [x] ~~5.1 天氣來源：`lib/weather.ts`（**Open-Meteo 免 key 免費**：geocode 城市→經緯度 + 當日天氣 code/溫度/降雨機率/紫外線；WMO→中文；防呆逾時）~~ ✅ 0804（6 測試；同城市 cron run 內快取零成本）
-- [~] 5.2 AI 天氣生活建議：`deterministicAdvice`（零 AI：帶傘/穿搭/防曬/溫差心血管/曬衣運動、含護欄）✅ 用於晨報；`buildWeatherAdvicePrompt`（LLM 版、醫療護欄）✅ 已備但 cron 先走零成本確定性版；⬜ LLM 版接線 + 節氣農民曆（複用 bazi.ts）待補
+- [~] 5.2 AI 天氣生活建議：`deterministicAdvice`（零 AI：帶傘/穿搭/防曬/溫差心血管/曬衣運動、含護欄）✅ 用於晨報；`buildWeatherAdvicePrompt`（LLM 版、醫療護欄）✅ 已備但 cron 先走零成本確定性版；⬜ LLM 版接線待補；[x] ~~節氣農民曆已做（solar-terms.ts 壽星公式 + CalendarWidget）~~
 - [x] ~~5.3 晨報整合卡：**專屬 `buildMorningBriefCard`**（玻璃風·☀️天氣區大字溫度+生活建議 → 🔮運勢一句 → ✅今天 3 件事才編號、`weatherEmoji`）取代原 buildListCard 編號混排~~ ✅ 0805。天氣 geo_consent 有效者、運勢有星座者(`generateFreeFortune` 零 AI 批次撈)、3 件事既有 `buildDailyBrief`（含到期提醒）；⬜ 獨立 ⏰提醒塊（回診/自訂）之後可再擴。＊仍僅 LINE 推播、無網頁；要網頁可見另做（見對話）。
-- [ ] 5.4 訂閱/偏好：`/settings` 加「每日晨報」開關（複用 line_pref_* 模式）；cron 08:30 推（複用現有 daily-brief job #10）。
+- [x] ~~5.4 訂閱/偏好：`/settings` 加「每日晨報」獨立開關（`line_pref_daily_brief` 欄 + notify daily_brief 分類 + cron 改用；migration 已跑）~~（0806）
 - [x] ~~5.6 天氣網頁可見 + 讀當下位置（0805）：`/api/weather?lat=&lng=`（即時查、不儲存 lat/lng＝隱私）+ `WeatherCard`（`navigator.geolocation` 讀當下位置→天氣+生活建議，拒絕/不支援有明確提示）放上 `/fortune` 頂部~~ ✅。＊隱私：web 即時用精準 lat/lng 但不存；LINE 晨報仍用 `geo_city`（只存縣市的承諾不變）。
 - [ ] 5.5 變現：晨報免費當黏著鉤子；進階（多地區天氣/更細健康建議/廣告置換）＝付費或 Z 幣。
 - [~] 5.7 🆕 **每日情報儀表板 `/daily`**（widget.md / 241.jpg · 每天回來看的入口）
@@ -130,9 +130,9 @@
     - **2e Space 端**：同步在 Space repo 加對應/AI 島特有 widget，部署 `github.com/luffysky/snowrealmspace`。
     - ＊安裝式套用（主題/背景/字體「下載安裝」）＝把每個當一筆 DB row + 一鍵 apply(寫 active_* + reload)，同 Space `POST /api/themes/[id]/apply` 模式。
   - [ ] 從 Space 搬的 widget（見計畫 doc §4）：Phase A 免後端(DateTime/WorldClock/MiniCalendar/Countdown/Anniversary/TodoList/HabitTracker/Dice/Breathing/DailyWords/Fortune/ThemeSwitcher/BackgroundControl) → Phase B 串資料(Weather/CreativeStreak/GoalTracker/DailyCard/AgentMessage…)。
-  - [ ] AI 島特有 widget：AI Dot 餘額、學習連勝、今日學習任務、熱門 AI 新聞、匯率、GitHub commit、AQI 空品、節氣農民曆。
+  - [~] AI 島特有 widget：[x] ~~學習連勝（/daily，用 useAuth profile 連勝/等級/XP/Z幣）~~、[x] ~~節氣農民曆（CalendarWidget + solar-terms 壽星公式）~~（0806）；⬜ AI Dot 餘額、今日學習任務、熱門 AI 新聞、匯率、GitHub commit、AQI 空品（需各自 API/資料）
   - [ ] Space 那邊也加對應 widget + 部署到 `github.com/luffysky/snowrealmspace`（跨 repo、另立一輪）。
-  - [ ] top nav 加「每日情報」入口（需補 4 語 i18n key，避免 missing message）。
+  - [x] ~~top nav「每日情報」入口 + 4 語 i18n（en/ja/ko/zh nav.daily 皆有、無 missing）~~（早已完成、0806 核對）
 
 ### 6. 🆕 寵物系列（.pet 網域·對品牌·大眾變現漏斗）— 林董 0804 拍板：**做成「AI 島內新區」**
 > ＊觀察：網域就是 `snowrealm.pet`＝寵物本來就對品牌。完全符合「單一用途/情緒剛需/每日習慣/LINE 推播」打法。兩隻娛樂輕工具當漏斗 + 一隻訂閱黏著。

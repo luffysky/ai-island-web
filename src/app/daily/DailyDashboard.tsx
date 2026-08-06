@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Loader2, MapPin, Umbrella, Droplets, Wind, Sunrise, Sunset, Sun, BookOpen, Lightbulb, Sparkles } from "lucide-react";
 import { LocationPicker, type PickedLocation } from "@/components/LocationPicker";
 import { CalendarWidget } from "@/components/daily/CalendarWidget";
+import { useAuth } from "@/lib/auth-context";
 
 const SAVED_CITY_KEY = "ai_island_weather_pick";
 const WEATHER_CACHE_KEY = "ai_island_weather_last";   // 上次成功的天氣 → 進頁即時顯示、刷新失敗不清空
@@ -32,6 +33,7 @@ function greeting(): string {
 }
 
 export function DailyDashboard({ word, moon, sentence, tip }: Props) {
+  const { profile } = useAuth();   // 登入者才顯示「學習連勝」widget
   const [state, setState] = useState<"idle" | "loading" | "done" | "denied" | "error">("idle");
   const [w, setW] = useState<W | null>(null);
   const [advice, setAdvice] = useState<string[]>([]);
@@ -156,6 +158,17 @@ export function DailyDashboard({ word, moon, sentence, tip }: Props) {
 
       {/* ── AI 區 + 月相 + 運勢：widget grid ── */}
       <div className="grid sm:grid-cols-2 gap-3">
+        {profile && (
+          <Widget title="學習連勝" icon={<span className="text-base">🔥</span>} accent="amber" href="/me">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-3xl font-bold text-amber-600 dark:text-amber-400">{profile.streak_days ?? 0}</span>
+              <span className="text-sm text-black/55 dark:text-white/55">天連勝</span>
+            </div>
+            <p className="text-xs text-black/60 dark:text-white/60 mt-1">Lv {profile.level ?? 1} · {profile.xp ?? 0} XP · 🪙 {profile.z_coin ?? 0}</p>
+            <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">今天上一課、把連勝續下去 →</p>
+          </Widget>
+        )}
+
         <Widget title="AI 每日一句" icon={<Sparkles className="w-4 h-4" />} accent="violet">
           <p className="text-sm text-black/60 dark:text-white/60">今天適合：</p>
           <p className="text-lg font-bold mt-1 text-black/85 dark:text-white/90">「{sentence}」</p>
