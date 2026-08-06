@@ -395,15 +395,25 @@ export function NoteCard({
                     // 它的氣泡才不會被其他項目（DOM 較後者）蓋住
                     zIndex: hoveredItem === it.key ? 60 : undefined,
                   };
+                  // 玻璃底 + 1px border：深色項目（整頁開啟/跳轉）用深玻璃、其餘用白玻璃。
+                  // backdrop-blur 讓底下卡片糊化 → 玻璃感；圖示（it.color）維持實心不透明、看得清。
+                  const isDarkItem = !!it.bg;
                   const btnStyle: React.CSSProperties = {
                     transform: `translate(-50%, -50%) rotate(${-angle}deg)`,      // 置中於端點 + 反轉保持圖示正立
                     transition: `transform 600ms ${ease} ${delay}ms, opacity 260ms ease ${delay}ms`,
                     opacity: actionsOpen ? 1 : 0,
                     pointerEvents: actionsOpen ? "auto" : "none",
-                    background: it.bg ?? "rgba(255,255,255,0.95)",
-                    color: it.color ?? "#444",
+                    background: isDarkItem ? "rgba(26,26,26,0.72)" : "rgba(255,255,255,0.72)",
+                    // 只有展開時才掛 backdrop-blur（避免 9×N 顆收合中的按鈕常駐玻璃、拖垮捲動）
+                    backdropFilter: actionsOpen ? "blur(8px) saturate(160%)" : undefined,
+                    WebkitBackdropFilter: actionsOpen ? "blur(8px) saturate(160%)" : undefined,
+                    // 內圈 1px 白邊（高光）；外圈用往右下偏移的硬邊黑線當「陰影」＝立體感
+                    border: "1px solid rgba(255,255,255,0.92)",
+                    boxShadow: "1.5px 1.5px 0 0 rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.18)",
+                    color: it.color ?? (isDarkItem ? "#fff" : "#444"),  // 圖示實心色、不透明
                   };
-                  const btnCls = "absolute left-0 top-0 w-8 h-8 rounded-full flex items-center justify-center shadow-md ring-1 ring-black/5 will-change-transform";
+                  // border / shadow 都改走 inline（白邊＋偏移黑線）；class 不再掛 ring/shadow
+                  const btnCls = "absolute left-0 top-0 w-8 h-8 rounded-full flex items-center justify-center will-change-transform";
                   return (
                     <div key={it.key} style={spokeStyle}>
                       {it.href ? (

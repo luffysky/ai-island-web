@@ -58,8 +58,15 @@
 - **PWA**：未動 manifest/service worker；新頁皆 dynamic/client，不影響安裝/離線。
 - **DB 權限**：今天所有 migration 純新增（fonts/font_pairs/css_url/display_name、profiles.active_theme_id/active_background、themes 表、bucket）——**無任何刪除**，符合「刪除前先問」。
 
+## G段：筆記環形選單 item 玻璃化（回饋 245/246）
+
+- 使用者回報筆記卡片「環形（旋鈕扇出）選單」的 item 看起來透明/空心（245.jpg）。實測（瀏覽器 computed）：item 展開時 `opacity:1`、bg 實心白 `rgba(255,255,255,0.95)`、祖先鏈無任何 filter/opacity/backdrop 壓它、圖示 `#444` 也實心——非真透明，觀感來自白圓圈扇到卡片右緣外＋動畫時序。
+- 依使用者指示把 item 改成**玻璃+立體**（`NoteCard.tsx` btnStyle）：玻璃底（白/深各 0.72，**只展開時**掛 `backdrop-blur` 顧捲動效能）＋**內圈 1px 白邊**（高光）＋**外圈往右下偏移的硬邊黑線當陰影**（`box-shadow: 1.5px 1.5px 0 rgba(0,0,0,0.5)` + 一層柔陰影）；圖示維持實心色不透明。移除原 `ring-1`/`shadow-md` class 改走 inline。
+- tsc 0 錯、vitest 225 passed、next build 綠。
+
 ## 待續（下次）
 
+- **筆記工具列「背景」選單**：色票排成一直條疊在卡片上破版（246.jpg）→ 改懸浮視窗（`NotesBackgroundPicker`）。
 - 背景 **Phase 4b**：lottie 動態場景（dotlottie-wc）+ 自訂圖片上傳（`backgrounds` bucket 已備）。
 - 字體：5 支 CJK 佔位（台北黑體/昭源/霞鶩/朱雀/清松手寫）需去後台上傳字體檔啟用。
 - **Widget 首頁**：計畫 doc 已備（`docs/widget_homepage_port_plan.md`），待點頭開工。
