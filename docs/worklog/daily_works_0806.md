@@ -58,15 +58,23 @@
 - **PWA**：未動 manifest/service worker；新頁皆 dynamic/client，不影響安裝/離線。
 - **DB 權限**：今天所有 migration 純新增（fonts/font_pairs/css_url/display_name、profiles.active_theme_id/active_background、themes 表、bucket）——**無任何刪除**，符合「刪除前先問」。
 
-## G段：筆記環形選單 item 玻璃化（回饋 245/246）
+## G段：筆記環形選單「item 被壓扁成細條」根因修復（回饋 245/247）
 
-- 使用者回報筆記卡片「環形（旋鈕扇出）選單」的 item 看起來透明/空心（245.jpg）。實測（瀏覽器 computed）：item 展開時 `opacity:1`、bg 實心白 `rgba(255,255,255,0.95)`、祖先鏈無任何 filter/opacity/backdrop 壓它、圖示 `#444` 也實心——非真透明，觀感來自白圓圈扇到卡片右緣外＋動畫時序。
-- 依使用者指示把 item 改成**玻璃+立體**（`NoteCard.tsx` btnStyle）：玻璃底（白/深各 0.72，**只展開時**掛 `backdrop-blur` 顧捲動效能）＋**內圈 1px 白邊**（高光）＋**外圈往右下偏移的硬邊黑線當陰影**（`box-shadow: 1.5px 1.5px 0 rgba(0,0,0,0.5)` + 一層柔陰影）；圖示維持實心色不透明。移除原 `ring-1`/`shadow-md` class 改走 inline。
+- 症狀：環形（旋鈕扇出）選單展開後 item **看不到、點了也沒反應、只會展開/收合**（244/245/247.jpg）。
+- 誤判與釐清：一開始以為是「透明」（245）→ 實測 computed `opacity:1`、bg 實心、祖先無 filter/opacity → 非透明。再看 247 放大 = item 被渲染成 **~2px 寬的細直條**。
+- **真根因**：每顆 item 圓圈外包「零尺寸 spoke（width:0/height:0）」＋圓圈用 `translate(-50%,-50%) rotate(-angle)` 抵消 spoke 旋轉 ＋ `will-change:transform`（＋我一度加的 `backdrop-filter`）。這串**巢狀 transform + will-change + backdrop-filter** 觸發瀏覽器 GPU 合成 bug，把 32×32 圓「投影壓扁成細條」→ 圓/圖示都沒畫出來，且真正可點區域跟著偏掉 → 點擊穿透到卡片 `toggleExpand`（＝只會展開收合）。程式化 `editBtn.click()` 能開編輯器 → 證明 handler 正常、純渲染/命中問題。
+- **修法**（`NoteCard.tsx`）：拿掉 spoke 雙重 transform 與 will-change，改成每顆 item **直接 `translate(x,y)` 定位、不旋轉**（圖示自然正立）→ 圓圈正常、點得到。保留原本**整圈 360° 均分環繞**。
+- 同時依回饋改互動：**點旋鈕才展開、再點收合**（移除 hover 展開 + 3.2s 自動收合的競態）、展開時**全域遮罩點外面即收**（桌機手機一致、z 低於項目不擋點）。item 沿用玻璃底＋1px 白邊＋偏移黑線立體感（白 0.86 在淺卡也看得到）。
+- 加 `console.debug`（旋鈕開關 / item 點擊 / 點擊落到卡片）只進 console、方便日後在裝置上快速定位。
 - tsc 0 錯、vitest 225 passed、next build 綠。
+
+## H段：筆記工具列「背景」選單改懸浮視窗（回饋 246）
+
+- 症狀：工具列「背景」下拉的色票排成一直條、疊在卡片上破版（246.jpg）。
+- 修法（`NotesBackgroundPicker.tsx`）：從 `absolute` inline 下拉改成**置中懸浮視窗**（`createPortal` 到 body、半透明遮罩、Esc/點外面關、開啟鎖背景捲動）；色票改 `grid grid-cols-6 sm:grid-cols-8` 整齊格線、`aspect-square`；加標題列＋關閉鈕。tsc/vitest/build 綠。
 
 ## 待續（下次）
 
-- **筆記工具列「背景」選單**：色票排成一直條疊在卡片上破版（246.jpg）→ 改懸浮視窗（`NotesBackgroundPicker`）。
 - 背景 **Phase 4b**：lottie 動態場景（dotlottie-wc）+ 自訂圖片上傳（`backgrounds` bucket 已備）。
 - 字體：5 支 CJK 佔位（台北黑體/昭源/霞鶩/朱雀/清松手寫）需去後台上傳字體檔啟用。
 - **Widget 首頁**：計畫 doc 已備（`docs/widget_homepage_port_plan.md`），待點頭開工。

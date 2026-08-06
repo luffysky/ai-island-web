@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
-import { Palette, Upload, Loader2, Check } from "lucide-react";
+import { Palette, Upload, Loader2, Check, X } from "lucide-react";
 import { NOTES_BG_PRESETS, type NotesBgConfig } from "@/lib/notes-background";
 
 const GROUPS = ["純色", "漸層", "圖樣"] as const;
@@ -18,7 +19,19 @@ export function NotesBackgroundPicker({
   const t = useTranslations("notes");
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => setMounted(true), []);
+  // 開啟時鎖背景捲動 + Esc 關閉
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    window.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { window.removeEventListener("keydown", onKey); document.body.style.overflow = prev; };
+  }, [open]);
 
   const upload = async (file: File) => {
     setUploading(true);
@@ -37,22 +50,34 @@ export function NotesBackgroundPicker({
   };
 
   return (
-    <div className="relative">
+    <>
       <button
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => setOpen(true)}
         className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-bg-card text-sm hover:border-accent transition"
       >
         <Palette size={15} /> {t("background")}
       </button>
 
-      {open && (
-        <>
-          <div className="fixed inset-0 z-20" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 z-30 mt-2 w-[300px] max-w-[calc(100vw-1.5rem)] max-h-[72vh] overflow-auto space-y-3 rounded-2xl border border-border bg-bg-card p-3 shadow-xl">
+      {/* 懸浮視窗（置中 modal + 遮罩，portal 到 body，不再疊在卡片上破版） */}
+      {mounted && open && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setOpen(false)} aria-hidden />
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="relative w-full max-w-md max-h-[85vh] overflow-auto rounded-2xl border border-border bg-bg-card p-4 shadow-2xl space-y-4"
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold inline-flex items-center gap-1.5"><Palette size={16} /> {t("background")}</h3>
+              <button onClick={() => setOpen(false)} className="text-fg-muted hover:text-fg transition" aria-label={t("close")}>
+                <X size={18} />
+              </button>
+            </div>
+
             {GROUPS.map((g) => (
               <div key={g}>
                 <div className="text-xs text-fg-muted mb-1.5">{t(GROUP_KEY[g])}</div>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="grid grid-cols-6 sm:grid-cols-8 gap-2">
                   {NOTES_BG_PRESETS.filter((p) => p.group === g).map((p) => {
                     const sel = cfg.preset === p.id;
                     const hasBg = !!(p.style.background || p.style.backgroundImage || p.style.backgroundColor);
@@ -61,7 +86,7 @@ export function NotesBackgroundPicker({
                         key={p.id}
                         onClick={() => onChange({ ...cfg, preset: p.id })}
                         title={p.label}
-                        className={`relative w-10 h-10 rounded-lg border overflow-hidden ${sel ? "border-accent ring-2 ring-accent/40" : "border-border"}`}
+                        className={`relative aspect-square w-full rounded-lg border overflow-hidden transition ${sel ? "border-accent ring-2 ring-accent/40" : "border-border hover:border-accent/60"}`}
                         style={hasBg ? p.style : { background: "repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 10px 10px" }}
                       >
                         {sel && <Check size={14} className="absolute inset-0 m-auto text-accent drop-shadow" />}
@@ -123,8 +148,9 @@ export function NotesBackgroundPicker({
               )}
             </div>
           </div>
-        </>
+        </div>,
+        document.body,
       )}
-    </div>
+    </>
   );
 }
