@@ -43,10 +43,12 @@
   --chip-neutral-bg: #1f2937;   /* gray-800 on dark */
   --chip-neutral-fg: #d1d5db;   /* gray-300 — 對比 11:1 AAA */
 
-  /* 字體：Latin 走 next/font 自架（--font-inter/outfit/jbmono）、中文走系統 CJK（清晰又免下載）*/
+  /* 字體：Latin 走 next/font 自架（--font-inter/outfit/jbmono）、中文走系統 CJK（清晰又免下載）
+     主題工作室選的字體由 font-loader 設 --font-heading/body/ui；這裡讓 sans/display 優先吃它、
+     沒選時 fall back 原本預設 → 主題選字才會真的套到頁面（body 用 sans、標題用 display）。 */
   --font-cjk: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Heiti TC", sans-serif;
-  --font-sans: var(--font-inter), var(--font-cjk), system-ui, sans-serif;
-  --font-display: var(--font-outfit), var(--font-inter), var(--font-cjk), system-ui, sans-serif;
+  --font-sans: var(--font-body, var(--font-inter)), var(--font-cjk), system-ui, sans-serif;
+  --font-display: var(--font-heading, var(--font-outfit)), var(--font-inter), var(--font-cjk), system-ui, sans-serif;
   --font-mono: var(--font-jbmono), "JetBrains Mono", ui-monospace, "Fira Code", monospace;
 
   /* 圓角階梯 */
