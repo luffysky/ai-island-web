@@ -4,6 +4,7 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { decryptKey } from "@/lib/ai-crypto";
 import { callAI } from "@/lib/ai-providers";
 import { tryAnthropicToolRun } from "@/lib/bot-anthropic-tool";
+import { ADMIN_SLUG } from "@/lib/admin-href";
 import {
   getOrCreateAdminConversation,
   loadAdminHistory,
@@ -89,7 +90,7 @@ const COLOR = {
 
 function adminConsoleUrl(): string {
   const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
-  const slug = process.env.NEXT_PUBLIC_ADMIN_SLUG ?? "console-x7k2";
+  const slug = ADMIN_SLUG;
   return `${site}/${slug}/admin`;
 }
 

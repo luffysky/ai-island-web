@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { AuditClient } from "./AuditClient";
 import { PageHero } from "@/components/admin/PageHero";
 import { Stethoscope } from "lucide-react";
+import { ADMIN_SLUG } from "@/lib/admin-href";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,6 @@ export type RouteEntry = {
   is_dynamic: boolean;
 };
 
-const ADMIN_SLUG = process.env.ADMIN_SLUG || process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
 
 function scanRoutes(dir: string, urlPrefix = ""): RouteEntry[] {
   const out: RouteEntry[] = [];

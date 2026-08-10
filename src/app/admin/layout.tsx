@@ -12,6 +12,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Crown, ArrowLeft } from "lucide-react";
 import { ADMIN_NAV_TOP, ADMIN_NAV_GROUPS } from "./nav-items";
 import { CommandPalette } from "@/components/admin/CommandPalette";
+import { ADMIN_BASE, ADMIN_SLUG } from "@/lib/admin-href";
 import {
   isAdminStaff,
   isScopedRole,
@@ -25,8 +26,6 @@ import {
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-const ADMIN_SLUG = process.env.ADMIN_SLUG || process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
-const ADMIN_BASE = `/${ADMIN_SLUG}/admin`;
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createSupabaseServer();

@@ -3,11 +3,12 @@ import Link from "next/link";
 import { PageHero, AdminStatCard } from "@/components/admin/PageHero";
 import { RowActionButton } from "@/components/admin/RowActionButton";
 import { AlertTriangle, Coins, Info } from "lucide-react";
+import { ADMIN_SLUG } from "@/lib/admin-href";
 
 export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 50;
-const SLUG = process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
+const SLUG = ADMIN_SLUG;
 
 type Tab = "orders" | "zcoin" | "subs";
 

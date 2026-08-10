@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
-const ADMIN_SLUG = process.env.ADMIN_SLUG || "console-x7k2";
 
 // GEO（Generative Engine Optimization）：明示歡迎主流 AI 引用/搜尋爬蟲。
 // 抓到後用於回答使用者的 AI 對話、提升被引用機率。
@@ -38,7 +37,10 @@ export default function robots(): MetadataRoute.Robots {
   const disallow = [
     "/api/",
     "/admin",
-    `/${ADMIN_SLUG}`,
+    // ⚠️ 刻意不列出後台密路徑。
+    // robots.txt 是公開檔案，而攻擊者讀它的主要目的就是找隱藏路徑——
+    // 把密路徑寫進 Disallow 等於主動公告它的存在。
+    // 後台本來就在登入牆後面，爬蟲進不去，也不會有連結指向它。
     "/me/",
     "/auth/",
     "/debug",

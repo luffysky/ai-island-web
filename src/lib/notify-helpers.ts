@@ -5,9 +5,9 @@
 import { createSupabaseAdmin } from "./supabase-admin";
 import { notifyAdmin } from "./notify-admin";
 import { buildSimpleCard } from "./line-flex";
+import { ADMIN_SLUG } from "@/lib/admin-href";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
-const ADMIN_SLUG = process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
 
 export type NotifKind =
   | "achievement" | "level_up" | "forum_reply" | "comment"

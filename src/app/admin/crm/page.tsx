@@ -3,6 +3,7 @@ import Link from "next/link";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHero, AdminStatCard } from "@/components/admin/PageHero";
 import { ArrowRight, Flame, AlertTriangle, MessageSquare, Heart, Inbox } from "lucide-react";
+import { ADMIN_BASE } from "@/lib/admin-href";
 
 export default async function CRMPage({ searchParams }: { searchParams: Promise<{ status?: string; priority?: string }> }) {
   const params = await searchParams;
@@ -32,7 +33,7 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
         gradient="from-blue-500/10 via-cyan-500/10 to-purple-500/10"
         borderColor="border-blue-500/30"
       >
-        <Link href={(`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/tickets`) as any} className="text-xs px-3 py-1.5 rounded-full border border-border hover:border-accent hover:text-accent inline-flex items-center gap-1">
+        <Link href={(`${ADMIN_BASE}/tickets`) as any} className="text-xs px-3 py-1.5 rounded-full border border-border hover:border-accent hover:text-accent inline-flex items-center gap-1">
           <ArrowRight className="w-3.5 h-3.5" /> 去工單管理
         </Link>
       </PageHero>
@@ -82,7 +83,7 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
                   return (
                   <tr key={t.id} className="border-t border-border hover:bg-bg-elevated">
                     <td className="px-4 py-3">
-                      <Link href={`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/crm/${t.id}` as any} className="hover:text-accent font-medium inline-flex items-center gap-1.5">
+                      <Link href={`${ADMIN_BASE}/crm/${t.id}` as any} className="hover:text-accent font-medium inline-flex items-center gap-1.5">
                         {isLine && <span className="text-[10px] px-1 rounded bg-green-500/15 text-green-900 dark:text-green-200 inline-flex items-center gap-1"><Heart size={10} /> LINE</span>}
                         {t.subject}
                       </Link>
@@ -108,7 +109,7 @@ export default async function CRMPage({ searchParams }: { searchParams: Promise<
 
 function FilterLink({ href, active, children }: { href: string; active?: boolean; children: React.ReactNode }) {
   return (
-    <Link href={(href.startsWith("/admin") ? href.replace(/^\/admin/, `/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin`) : href) as any} className={`px-3 py-1.5 rounded-lg ${active ? "bg-accent text-black" : "bg-bg-card hover:bg-bg-elevated"}`}>
+    <Link href={(href.startsWith("/admin") ? href.replace(/^\/admin/, `${ADMIN_BASE}`) : href) as any} className={`px-3 py-1.5 rounded-lg ${active ? "bg-accent text-black" : "bg-bg-card hover:bg-bg-elevated"}`}>
       {children}
     </Link>
   );

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { verifyCronAuth } from "@/lib/cron-auth";
+import { ADMIN_BASE } from "@/lib/admin-href";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -181,7 +182,7 @@ function buildHtml(opts: any): string {
         </div>` : ""}
 
         <div style="margin-top:24px;text-align:center;">
-          <a href="${process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet"}/${process.env.NEXT_PUBLIC_ADMIN_SLUG ?? "console-x7k2"}/admin/kpi" style="display:inline-block;padding:12px 28px;background:${accent};color:#0a0e14;text-decoration:none;border-radius:24px;font-weight:bold;font-size:14px;">📊 打開後台看細節</a>
+          <a href="${process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet"}${ADMIN_BASE}/kpi" style="display:inline-block;padding:12px 28px;background:${accent};color:#0a0e14;text-decoration:none;border-radius:24px;font-weight:bold;font-size:14px;">📊 打開後台看細節</a>
         </div>
       </div>
 

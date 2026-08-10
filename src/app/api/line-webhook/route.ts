@@ -16,6 +16,7 @@ import {
 } from "@/lib/bot-admin-conversation";
 import { pickModelForUsage } from "@/lib/ai-usage-models";
 import { checkOwner, OWNER_NAME_TW } from "@/lib/is-owner";
+import { ADMIN_BASE, ADMIN_SLUG } from "@/lib/admin-href";
 
 async function logLineError(code: string, message: string, extra: any = {}) {
   try {
@@ -37,7 +38,6 @@ export const maxDuration = 60;
 
 const ENDPOINT = "https://api.line.me/v2/bot";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
-const ADMIN_SLUG = process.env.NEXT_PUBLIC_ADMIN_SLUG ?? "console-x7k2";
 const ADMIN_ACCENT = "#bd93f9";  // admin LINE 紫色（區別 user 紫 #a78bfa）
 const SUCCESS_ACCENT = "#50fa7b";
 const WARN_ACCENT = "#ffb86c";
@@ -517,7 +517,7 @@ export async function POST(req: NextRequest) {
         const isModelErr = /模型.*不存在|model.*not.*found|沒設定|未設定/i.test(errMsg);
         const isDecryptErr = /解密失敗|AI_KEY_SECRET/i.test(errMsg);
         const fixUrl = isAuthErr || isModelErr || isDecryptErr
-          ? `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet"}/${process.env.NEXT_PUBLIC_ADMIN_SLUG ?? "console-x7k2"}/admin/ai-models`
+          ? `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet"}${ADMIN_BASE}/ai-models`
           : undefined;
         const hint = isAuthErr ? "去後台貼新 API key（Anthropic Console 重發一支）"
           : isModelErr ? "去後台 AI 模型管理啟用 / 換 model"

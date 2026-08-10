@@ -11,6 +11,7 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { NotificationsDropdown } from "@/components/layout/NotificationsDropdown";
 import { usePopover, PopoverPanel } from "@/components/ui/Popover";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
+import { useAdminBase } from "@/lib/use-admin-base";
 import { useTranslations } from "next-intl";
 import { devLog } from "@/lib/dev-log";
 
@@ -35,6 +36,8 @@ const NAV_LINKS = [
 ];
 
 export function TopNav() {
+  // 後台路徑不寫進 bundle（密路徑不能對匿名訪客公開），
+  // 改由 /api/admin/base 在執行期只發給已驗證的後台人員。
   // 用全站 AuthContext、不再各自 race
   const { user, profile } = useAuth();
   const t = useTranslations();
@@ -68,6 +71,12 @@ export function TopNav() {
     level: 1,
     role: "member",
   };
+
+  // 只有 admin / owner 才會去要後台路徑；其他人這個 hook 永遠回傳 null，
+  // 也就不會發出任何請求，密路徑自然不會抵達他們的瀏覽器。
+  const adminBase = useAdminBase(
+    displayProfile.role === "admin" || displayProfile.role === "owner",
+  );
 
   async function handleLogout() {
     if (loggingOut) return;
@@ -326,9 +335,9 @@ export function TopNav() {
                       <span>{t("userMenu.aiKeys")}</span>
                     </Link>
 
-                    {(displayProfile.role === "admin" || displayProfile.role === "owner") && (
+                    {(displayProfile.role === "admin" || displayProfile.role === "owner") && adminBase && (
                       <Link
-                        href={`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin` as any}
+                        href={adminBase as any}
                         className="flex items-center gap-3 px-4 py-2 hover:bg-bg-elevated transition text-warning"
                         onClick={() => setOpen(false)}
                       >

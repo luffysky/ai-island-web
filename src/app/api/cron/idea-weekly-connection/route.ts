@@ -3,6 +3,7 @@ import { verifyCronAuth } from "@/lib/cron-auth";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { notifyAdmin } from "@/lib/notify-admin";
 import { generateIdeaRows, fetchSurprisingPairs } from "@/lib/idea-ai";
+import { ADMIN_SLUG } from "@/lib/admin-href";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -41,7 +42,7 @@ export async function GET(req: NextRequest) {
   const row = { ...gen.rows[0], saved: false };
   const { data: idea } = await admin.from("generated_ideas").insert(row).select("*").single();
 
-  const slug = process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
+  const slug = ADMIN_SLUG;
   const site = (process.env.NEXT_PUBLIC_SITE_URL || "").replace(/\/$/, "");
   const link = `${site}/${slug}/admin/idea-fragments`;
   const conn = (idea?.connections?.[0] as string) || (idea?.why_it_works as string) || "";

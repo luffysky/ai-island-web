@@ -1,6 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
-import { adminHref } from "@/lib/admin-href";
+import { ADMIN_BASE, adminHref } from "@/lib/admin-href";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHero } from "@/components/admin/PageHero";
 import { Send, AlertTriangle, Megaphone, ArrowLeft, ArrowRight } from "lucide-react";
@@ -35,7 +35,7 @@ export default async function BroadcastsPage({
         gradient="from-rose-500/10 via-pink-500/10 to-fuchsia-500/10"
         borderColor="border-rose-500/30"
       >
-        <Link href={`/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/broadcasts/new` as any} className="px-3 py-1.5 bg-accent text-black rounded-full font-bold text-xs hover:scale-105 transition-transform">
+        <Link href={`${ADMIN_BASE}/broadcasts/new` as any} className="px-3 py-1.5 bg-accent text-black rounded-full font-bold text-xs hover:scale-105 transition-transform">
           + 新建
         </Link>
       </PageHero>
@@ -48,7 +48,7 @@ export default async function BroadcastsPage({
             icon={Megaphone}
             title="還沒發過任何公告"
             desc="支援站內訊息 / Email / LINE / Push Notification、點右上「+ 新建」開始"
-            action={{ label: "+ 新建公告", href: `/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/broadcasts/new` }}
+            action={{ label: "+ 新建公告", href: `${ADMIN_BASE}/broadcasts/new` }}
           />
         </div>
       ) : (

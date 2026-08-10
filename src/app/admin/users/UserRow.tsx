@@ -1,4 +1,5 @@
 "use client";
+import { useAdminBase } from "@/lib/use-admin-base";
 import { ShieldCheck, Shield, Ban, Sparkles, Gift, Flame, Check } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -6,11 +7,14 @@ import { GrantModal } from "./GrantModal";
 import { formatTWDate, formatTWRelative } from "@/lib/format-date";
 import { useUserActions } from "./_useUserActions";
 
-const ADMIN_SLUG = process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
+// 密路徑由 useAdminBase() 在執行期取得，不寫進 bundle。
+// 這三個元件雖然只在後台頁面渲染，但它們的 chunk 仍是公開可下載的靜態檔案。
 
 export function UserRow({ user, isOwner }: { user: any; isOwner?: boolean }) {
+  // 本元件只在後台頁面渲染，使用者必然已通過身分驗證
+  const adminBase = useAdminBase(true);
   const a = useUserActions(user);
-  const detailHref = `/${ADMIN_SLUG}/admin/users/${user.id}`;
+  const detailHref = `${adminBase ?? ""}/users/${user.id}`;
 
   return (
     <>

@@ -1,4 +1,5 @@
 "use client";
+import { useAdminBase } from "@/lib/use-admin-base";
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -16,9 +17,8 @@ import {
 import { useAuth } from "@/lib/auth-context";
 import { useModalOverlayCount } from "@/lib/overlay-stack";
 
-const ADMIN_SLUG =
-  process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
-const ADMIN_BASE = `/${ADMIN_SLUG}/admin`;
+// 密路徑由 useAdminBase() 在執行期取得，不寫進 bundle。
+// 這三個元件雖然只在後台頁面渲染，但它們的 chunk 仍是公開可下載的靜態檔案。
 
 const POS_KEY = "admin-toolbar-pos";
 const HIDDEN_KEY = "admin-toolbar-hidden";
@@ -84,8 +84,13 @@ export function AdminFloatingToolbar() {
   }, []);
 
   const overlayCount = useModalOverlayCount();
-  if (profile?.role !== "admin" && profile?.role !== "owner") return null;
-  if (pathname.startsWith(`${ADMIN_BASE}`)) return null;
+  // 只有後台人員會去要路徑；其他人 hook 直接回 null、不發任何請求
+  const isStaff = profile?.role === "admin" || profile?.role === "owner";
+  const adminBase = useAdminBase(isStaff);
+
+  if (!isStaff) return null;
+  if (!adminBase) return null;
+  if (pathname.startsWith(adminBase)) return null;
   if (pathname.startsWith("/admin")) return null;
   if (pathname.startsWith("/island")) return null;
   if (hidden) return null;
@@ -102,26 +107,26 @@ export function AdminFloatingToolbar() {
     actions.push({
       icon: <Edit3 size={14} />,
       label: `編輯 Ch${chapterMatch[1]}`,
-      href: `${ADMIN_BASE}/chapters`,
+      href: `${adminBase}/chapters`,
     });
   } else if (blogMatch) {
     actions.push({
       icon: <Edit3 size={14} />,
       label: `審核這篇`,
-      href: `${ADMIN_BASE}/audit?action=blog`,
+      href: `${adminBase}/audit?action=blog`,
     });
   } else if (forumMatch) {
     actions.push({
       icon: <Edit3 size={14} />,
       label: "討論區後台",
-      href: `${ADMIN_BASE}/audit?action=forum`,
+      href: `${adminBase}/audit?action=forum`,
     });
   }
 
   actions.push(
-    { icon: <Shield size={14} />, label: "後台首頁", href: ADMIN_BASE },
-    { icon: <ListChecks size={14} />, label: "Audit log", href: `${ADMIN_BASE}/audit` },
-    { icon: <Eye size={14} />, label: "使用者列表", href: `${ADMIN_BASE}/users` },
+    { icon: <Shield size={14} />, label: "後台首頁", href: adminBase },
+    { icon: <ListChecks size={14} />, label: "Audit log", href: `${adminBase}/audit` },
+    { icon: <Eye size={14} />, label: "使用者列表", href: `${adminBase}/users` },
   );
 
   // ── 拖移 ──

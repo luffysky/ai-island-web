@@ -1,3 +1,4 @@
+import { ADMIN_SLUG } from "@/lib/admin-href";
 /**
  * LINE Flex Message 卡片 helper v2 — 美化版
  * 設計重點：
@@ -50,7 +51,6 @@ export function buildTextWithQR(text: string, qr?: QuickReply): LineTextMessage 
 }
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
-const ADMIN_SLUG = process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
 
 // 時間戳記（台北時區、HH:mm）
 function nowTW(): string {

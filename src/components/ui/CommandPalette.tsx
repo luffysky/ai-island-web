@@ -1,5 +1,7 @@
 "use client";
 
+import { useAdminBase } from "@/lib/use-admin-base";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -30,6 +32,7 @@ export function CommandPalette() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const { user, profile } = useAuth();
+  const adminBase = useAdminBase(profile?.role === "admin" || profile?.role === "owner");
   const [islandEnabled, setIslandEnabled] = useState(true);
 
   useEffect(() => {
@@ -91,8 +94,10 @@ export function CommandPalette() {
         keywords: [`chapter${i}`, `章節${i}`],
       });
     }
-    if (profile?.role === "admin" || profile?.role === "owner") {
-      const slug = process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
+    // adminBase 由 /api/admin/base 在執行期供給，且只發給已驗證的後台人員。
+    // 密路徑不寫進 bundle，因此未登入者連這幾個項目都無從得知。
+    if (adminBase && (profile?.role === "admin" || profile?.role === "owner")) {
+      const slug = adminBase.replace(/\/admin$/, "").replace(/^\//, "");
       list.push(
         { id: "admin", label: profile?.role === "owner" ? "👑 平台後台 (林董)" : "後台首頁", icon: <Settings size={14} />, href: `/${slug}/admin`, group: "管理" },
         { id: "admin-kpi", label: "KPI 報表", icon: <Trophy size={14} />, href: `/${slug}/admin/kpi`, group: "管理" },
@@ -102,7 +107,7 @@ export function CommandPalette() {
       );
     }
     return list;
-  }, [user, profile?.role, islandEnabled]);
+  }, [user, profile?.role, islandEnabled, adminBase]);
 
   const filtered = useMemo(() => {
     if (!query.trim()) return items.slice(0, 30);

@@ -10,6 +10,7 @@ import { buildTutorSystemPrompt } from "@/lib/ai-tutor-prompt";
 import { getUserLearningState, formatLearningStateForPrompt } from "@/lib/user-learning-state";
 import { checkOwner } from "@/lib/is-owner";
 import { askStudentAIWithTools } from "@/lib/line-user-ai-tools";
+import { ADMIN_BASE } from "@/lib/admin-href";
 
 // in-memory fallback：未綁定 user（profile=null）沒法存 DB、暫存 in-memory
 type Msg = { role: "user" | "assistant"; content: string };
@@ -1434,7 +1435,7 @@ export async function POST(req: NextRequest) {
         notifyAdmin({
           kind: "user_ticket",
           dedupeKey: `support:${ticket?.id ?? userId}:${Date.now()}`,
-          text: `🆘 ${senderName} 主動求助：\n「${issueText.slice(0, 200)}」\n\n回覆：${SITE_URL}/${process.env.NEXT_PUBLIC_ADMIN_SLUG ?? "console-x7k2"}/admin/crm${ticket?.id ? `/${ticket.id}` : ""}`,
+          text: `🆘 ${senderName} 主動求助：\n「${issueText.slice(0, 200)}」\n\n回覆：${SITE_URL}${ADMIN_BASE}/crm${ticket?.id ? `/${ticket.id}` : ""}`,
         }).catch(() => {});
         await lineReply(replyToken, buildSimpleCard({
           emoji: "📩",
@@ -2010,7 +2011,7 @@ export async function POST(req: NextRequest) {
       notifyAdmin({
         kind: "user_ticket",
         dedupeKey: `ticket:${ticket?.id ?? userId}:${Date.now()}`,
-        text: `💌 ${senderName} 透過 LINE 提問：\n「${text.slice(0, 200)}」\n\n回覆：${SITE_URL}/${process.env.NEXT_PUBLIC_ADMIN_SLUG ?? "console-x7k2"}/admin/crm${ticket?.id ? `/${ticket.id}` : ""}`,
+        text: `💌 ${senderName} 透過 LINE 提問：\n「${text.slice(0, 200)}」\n\n回覆：${SITE_URL}${ADMIN_BASE}/crm${ticket?.id ? `/${ticket.id}` : ""}`,
       }).catch(() => {});
 
       // 回 user：已收到（美化 Flex 卡）

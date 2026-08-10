@@ -130,7 +130,13 @@ const SEGMENT_MAP: Record<string, SegInfo> = {
   edit: { label: "編輯" },
 };
 
-const HIDE_SEGMENTS = new Set(["console-x7k2", process.env.NEXT_PUBLIC_ADMIN_SLUG ?? ""].filter(Boolean));
+// 後台密路徑段落要從麵包屑隱藏，但不能靠列舉它的值——
+// 這個模組被 client 元件引用，寫死或用 NEXT_PUBLIC_ 都會讓密路徑進入
+// 瀏覽器 bundle（實測曾出現在每位訪客都會載入的根版面 chunk）。
+//
+// 改用結構判斷：若某段的下一段是 "admin"，那一段就是密路徑前綴。
+// 不需要知道它長什麼樣子。
+const HIDE_SEGMENTS = new Set<string>();
 
 /**
  * 「有子路由、但自己沒有 page」的群組資料夾 → 麵包屑點了會 404。

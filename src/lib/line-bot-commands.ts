@@ -5,9 +5,9 @@
 import { createSupabaseAdmin } from "./supabase-admin";
 import { type AdminLineUser } from "./admin-line-users";
 import { buildKpiCard, buildListCard, buildSimpleCard, type FlexMessage } from "./line-flex";
+import { ADMIN_BASE, ADMIN_SLUG } from "@/lib/admin-href";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
-const ADMIN_SLUG = process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
 
 export function isCommand(text: string): boolean {
   return text.trim().startsWith("/");
@@ -717,7 +717,7 @@ async function cmdLaunchpadAdd(text: string, board: "todo" | "wishlist"): Promis
     if (error) return errReply(`❌ DB error: ${error.message}`, "寫入看板失敗", error.message);
 
     return okReply(
-      `✨ 已加進 ${board === "wishlist" ? "許願池" : "待辦"}：\n📝 ${parsed.title}\n${parsed.description ? `   ${parsed.description}\n` : ""}🏷️ ${parsed.category ?? "—"}\n\n看：${process.env.NEXT_PUBLIC_SITE_URL}/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin/launchpad`,
+      `✨ 已加進 ${board === "wishlist" ? "許願池" : "待辦"}：\n📝 ${parsed.title}\n${parsed.description ? `   ${parsed.description}\n` : ""}🏷️ ${parsed.category ?? "—"}\n\n看：${process.env.NEXT_PUBLIC_SITE_URL}${ADMIN_BASE}/launchpad`,
       {
         emoji: "✨",
         title: `已加進${board === "wishlist" ? "許願池" : "待辦"}`,

@@ -1,14 +1,17 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-const ADMIN_SLUG = process.env.ADMIN_SLUG || process.env.NEXT_PUBLIC_ADMIN_SLUG || 'console-x7k2';
+// 只讀伺服器端變數、且沒有預設值。
+// NEXT_PUBLIC_ 會被寫進瀏覽器 bundle，硬編字串更是直接躺在原始碼裡——
+// 兩者都會讓密路徑對所有訪客公開（見 src/lib/admin-href.ts 的說明）。
+const ADMIN_SLUG = process.env.ADMIN_SLUG?.trim() || '';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 1. /[ADMIN_SLUG]/admin/* → internal rewrite 到 /admin/*
-  const adminBase = `/${ADMIN_SLUG}/admin`;
-  if (pathname === adminBase || pathname.startsWith(`${adminBase}/`)) {
+  const adminBase = ADMIN_SLUG ? `/${ADMIN_SLUG}/admin` : '';
+  if (adminBase && (pathname === adminBase || pathname.startsWith(`${adminBase}/`))) {
     const rest = pathname.slice(adminBase.length);
     const newPath = `/admin${rest}`;
     const url = request.nextUrl.clone();

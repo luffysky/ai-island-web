@@ -4,6 +4,7 @@ import { createSupabaseServer } from "@/lib/supabase-server";
 import { requireAdmin } from "@/lib/admin-guard";
 import { notifyAdmin } from "@/lib/notify-admin";
 import { buildSimpleCard } from "@/lib/line-flex";
+import { ADMIN_BASE } from "@/lib/admin-href";
 
 export const dynamic = "force-dynamic";
 
@@ -67,7 +68,7 @@ export async function POST(req: NextRequest) {
       ],
       buttons: [
         { label: "打開 Zeabur", uri: "https://zeabur.com/dashboard", primary: true },
-        { label: "後台檢視", uri: `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/${process.env.NEXT_PUBLIC_ADMIN_SLUG ?? "console-x7k2"}/admin/env` },
+        { label: "後台檢視", uri: `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}${ADMIN_BASE}/env` },
       ],
     }),
   }).catch(() => {});

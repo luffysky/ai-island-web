@@ -1,3 +1,4 @@
+import { ADMIN_SLUG } from "@/lib/admin-href";
 /**
  * 多通道 admin 即時通知
  *
@@ -321,7 +322,7 @@ async function sendTelegram(botToken: string, chatId: string, text: string, kind
 
     if (path) {
       const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
-      const slug = process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
+      const slug = ADMIN_SLUG;
       body.reply_markup = {
         inline_keyboard: [[
           { text: `📊 打開後台 ${path}`, url: `${site}/${slug}/admin${path}` },
@@ -435,7 +436,7 @@ async function sendDiscord(url: string, text: string) {
       const style = discordKindStyle(kind);
       const path = kindToAdminPath(kind);
       const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://ai-island-web.snowrealm.pet";
-      const slug = process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2";
+      const slug = ADMIN_SLUG;
       const embed: any = {
         title: `${style.emoji} [${kind}] ${summary.slice(0, 240)}`,
         description: rest.trim().slice(0, 3800) || null,

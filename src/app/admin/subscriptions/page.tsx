@@ -1,6 +1,6 @@
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import Link from "next/link";
-import { adminHref } from "@/lib/admin-href";
+import { ADMIN_BASE, adminHref } from "@/lib/admin-href";
 import { PageHero, AdminStatCard } from "@/components/admin/PageHero";
 import { AlertTriangle, Gem, ArrowLeft, ArrowRight } from "lucide-react";
 
@@ -108,7 +108,7 @@ export default async function SubscriptionsPage({ searchParams }: { searchParams
 
 function FilterLink({ href, active, children }: { href: string; active?: boolean; children: React.ReactNode }) {
   return (
-    <Link href={(href.startsWith("/admin") ? href.replace(/^\/admin/, `/${process.env.NEXT_PUBLIC_ADMIN_SLUG || "console-x7k2"}/admin`) : href) as any} className={`px-3 py-1.5 rounded-lg ${active ? "bg-accent text-black" : "bg-bg-card hover:bg-bg-elevated"}`}>
+    <Link href={(href.startsWith("/admin") ? href.replace(/^\/admin/, `${ADMIN_BASE}`) : href) as any} className={`px-3 py-1.5 rounded-lg ${active ? "bg-accent text-black" : "bg-bg-card hover:bg-bg-elevated"}`}>
       {children}
     </Link>
   );
