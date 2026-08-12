@@ -160,7 +160,7 @@
 | 3 | 市集抽成 | 規格 15% ‖ TODO 0% ‖ **code 10%** | **以 code 10% 為準** |
 | 4 | plus vs pro 分層 | 規格分兩層 ‖ 後端多為布林 isPro | 落地 tier-aware gating（技術債） |
 | 5 | 家譜 | TODO done ‖ 誠實文件「不存在」 | 不對外承諾 |
-| 6 | 幣種命名 | 使用者說 Z幣/AI dot/Coco ‖ 實際 Z幣/AI 能源/Dust | AI dot＝AI 能源；Coco＝新增；Dust 維持「非錢」不動 |
+| 6 | 幣種命名/定位 | 使用者說 Z幣/AI dot/Coco ‖ 實際 Z幣/AI 能源/Dust | **AI dot＝AI 能源（人·聊天）；Coco＝Agent 專用代幣（Agent Economy 計價單位，1Z=100Coco，非會員點數）＝新增；Dust 維持創作島「非錢」不動**。三者服務對象不同：Z幣=人的錢、Coco=Agent 的錢、Dust=創作資源 |
 
 ---
 

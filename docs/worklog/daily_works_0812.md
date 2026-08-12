@@ -21,4 +21,18 @@
      - 月淨利 100 萬 → ~5,600 付費 / **14 萬 MAU**
      - 附完整敏感度表（ARPPU 150/250/400 × 轉付費 2/4/6%）+ 營運節奏換算 + 對照 grant `ch9-kpi` 保守模型（ARPU 1500/年≈125/月）+ 現實基線（現真人 MAU≈4、營收 0、金流未開）誠實校準。
 
-**待辦（落地 Coco幣）**：`profiles.coco` + `coco_transactions` + earn/spend/cap helper（比照 `zcoin.ts`）+ 社群 sink + 創作者 Coco→Z幣 限額閥；統一 `requirePaidOrCharge` 402 gate。詳見閉環文件 §9。
+**待辦（落地 Coco幣）**：詳見閉環文件 §9 + Agent Economy 專章。
+
+## B. Coco 幣定位重大更正（同日）
+
+林董指正：**Coco ≠ 一般會員/社群點數**，而是 **SnowRealm Agent 專用代幣＝Agent Economy 計價單位**（我初版設計成「社群榮譽幣」，已全面改寫）。鎖定設定：
+- **1 Z幣 = 100 Coco**（1 Coco≈NT$0.01）。
+- Coco 主要給 **Agent** 用；**Agent 只能動自己錢包的 Coco**，不碰使用者/他人資產。
+- Agent 間可**委外/接任務/分潤**（A 接 500 Coco 單→花 100 Coco 找 B→價差＝A 的成本/收益）→ Agent 有「預算決策」。
+- 連動**能力鏈**（技能/經驗/等級/解鎖）。願景＝Agent Economy 計價單位。
+
+**已改寫**：閉環文件新增「⭐ Agent Economy」核心專章，逐一回答林董點出的七個必答問題（Coco→Z 能否換回、能否囤、誰發行、一次任務怎麼定價、模型成本怎麼映射、Agent 能否自訂報價、失敗成本誰吞），拆 v1(MVP)/v2(Agent 市場)。三幣改成「兩個經濟層（人 × Agent）」框架；閉環圖/valves/收入/合規/roadmap 全部同步更新。摘取文件 §9 幣種定位列同步更正。
+
+**記憶**：新增 memory `coco-agent-economy`（Agent 專用代幣核心設定 + 待定義經濟規則）。
+
+**待辦（Coco v1）**：`agent_wallets` + `coco_transactions` + 費率表 `coco_rate_table` + Z幣→Coco(1:100) 撥款 + 單 Agent 執行扣款 + escrow + 預算上限（比照 `zcoin.ts`）；Coco→Z v1 關死。v2＝委外/工作鏈/自訂報價/能力鏈升等/結算閥。
