@@ -1,0 +1,200 @@
+[
+  {
+    "slug": "cannot-read-property-undefined",
+    "term": "Cannot read properties of undefined",
+    "zh_name": "讀取 undefined 的屬性",
+    "category": "error",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "JS 最常見的錯誤：你在一個 undefined（或 null）上點屬性，如 user.name 但 user 根本沒值。什麼時候在意：多半是資料還沒載到、API 回空、或打錯屬性名。解法：先確認來源有值、用可選鏈 user?.name、給預設值 (user ?? {}).name、或在渲染前擋 loading 狀態。",
+    "analogy": "像打開一個空抽屜想拿裡面的筆——抽屜（undefined）根本不存在，當然拿不到。",
+    "example": "const n = data.user.name; // data.user 是 undefined → 爆錯",
+    "related": [
+      "optional-chaining",
+      "nan-undefined-null",
+      "uncaught-typeerror"
+    ]
+  },
+  {
+    "slug": "undefined-is-not-a-function",
+    "term": "x is not a function",
+    "zh_name": "這個不是函式",
+    "category": "error",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "你用 () 呼叫了一個『不是函式』的東西。什麼時候發生：打錯方法名（.mpa 而非 .map）、import 錯（拿到 undefined 去呼叫）、變數被覆蓋成別的型別、或該物件根本沒這方法。解法：console.log 看那個東西到底是什麼型別、檢查拼字與 import。",
+    "analogy": "像對著一顆蘋果按『播放』——它不是播放器，沒有那個按鈕。",
+    "example": "const s='hi'; s.push('!'); // 字串沒有 push → 爆錯",
+    "related": [
+      "js-data-types",
+      "cannot-read-property-undefined",
+      "reference-error-not-defined"
+    ]
+  },
+  {
+    "slug": "uncaught-typeerror",
+    "term": "Uncaught TypeError",
+    "zh_name": "型別錯誤（未捕捉）",
+    "category": "error",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "值的『型別不對』時丟出的錯，上面兩條都屬於它。Uncaught＝沒有 try/catch 接住、直接中斷程式。什麼時候在意：看錯誤訊息後半句最關鍵（讀 undefined 屬性？當函式呼叫？）；點開 console 的堆疊(stack)找到出錯那一行往回追資料來源。",
+    "analogy": "像把螺絲起子當鎚子用——工具（型別）用錯了，工作當場停擺。",
+    "example": "null.toUpperCase() // TypeError",
+    "related": [
+      "cannot-read-property-undefined",
+      "undefined-is-not-a-function",
+      "then-catch"
+    ]
+  },
+  {
+    "slug": "reference-error-not-defined",
+    "term": "ReferenceError: x is not defined",
+    "zh_name": "變數沒定義",
+    "category": "error",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "用到一個『根本沒宣告』的變數。什麼時候發生：打錯變數名、忘了 import、變數在別的作用域裡（this scope 看不到）、或在宣告之前就用（let/const 的暫時死區）。跟 TypeError 不同：TypeError 是東西存在但型別錯，ReferenceError 是東西『找不到』。",
+    "analogy": "像喊一個不在名單上的名字點名——系統根本不認得這個人。",
+    "example": "console.log(total); // 從沒宣告 total → ReferenceError",
+    "related": [
+      "js-scope",
+      "js-variable",
+      "hoisting"
+    ]
+  },
+  {
+    "slug": "failed-to-fetch",
+    "term": "TypeError: Failed to fetch",
+    "zh_name": "請求送不出去",
+    "category": "error",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "fetch 連『網路層』就失敗（還沒收到任何 HTTP 回應）。常見原因：網址錯/伺服器沒開、被 CORS 擋、網路斷、混合內容(https 頁打 http)、或請求被瀏覽器擴充/廣告擋器攔。什麼時候在意：這不是 404/500（那些算『成功收到回應』）；打開 Network 分頁看那筆請求紅在哪、看 Console 有沒有 CORS 字樣。",
+    "analogy": "像信根本寄不出去（地址錯、郵局沒開）——連『查無此人』的回條都收不到。",
+    "example": "await fetch('http://localhost:9999') // 服務沒開 → Failed to fetch",
+    "related": [
+      "cors-error",
+      "fetch-js",
+      "network-error-fetch"
+    ]
+  },
+  {
+    "slug": "network-error-fetch",
+    "term": "NetworkError / ERR_CONNECTION",
+    "zh_name": "連線錯誤",
+    "category": "error",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "瀏覽器連不上伺服器：ERR_CONNECTION_REFUSED（對方沒在聽這個 port）、ERR_NAME_NOT_RESOLVED（網域解析不到、打錯或 DNS 問題）、ERR_CONNECTION_TIMED_OUT（連上但沒回應）。什麼時候在意：先確認服務有沒有啟動、port 對不對、網址拼字、是不是防火牆/VPN 擋。",
+    "analogy": "像打電話：拒接（refused）、查無此號（name not resolved）、響很久沒人接（timeout）——三種不同的接不通。",
+    "example": "ERR_CONNECTION_REFUSED → 後端 server 沒開",
+    "related": [
+      "failed-to-fetch",
+      "dns-resolution",
+      "cors-error"
+    ]
+  },
+  {
+    "slug": "unexpected-token-json",
+    "term": "Unexpected token < in JSON",
+    "zh_name": "JSON 解析失敗（拿到 HTML）",
+    "category": "error",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "res.json() 想解析 JSON，卻拿到 < 開頭的東西——通常是伺服器回了一頁 HTML 錯誤頁（404/500）而不是 JSON。什麼時候在意：API 網址錯、後端崩了回錯誤頁、或打到前端路由。解法：先 res.text() 印出到底收到什麼、檢查 res.ok 與網址、確認後端真的回 JSON。",
+    "analogy": "像點『數位檔案』結果收到一張紙本錯誤通知——格式根本不是你要解析的那種。",
+    "example": "await res.json() // 伺服器回 <html>404… → Unexpected token <",
+    "related": [
+      "json-parse-stringify",
+      "fetch-js",
+      "unexpected-end-of-input"
+    ]
+  },
+  {
+    "slug": "unexpected-end-of-input",
+    "term": "Unexpected end of input / JSON",
+    "zh_name": "輸入意外結束",
+    "category": "error",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "程式或 JSON『沒寫完』：少了一個右括號 }、)、]，或 JSON 字串被截斷/是空的。什麼時候在意：寫程式時多半是括號沒配對（編輯器的括號highlight幫你找）；解析 JSON 時是拿到空回應或被截斷的資料。解法：檢查括號配對、確認回應不是空字串。",
+    "analogy": "像一句話講到一半就斷了『如果你——』——聽的人不知道怎麼收尾。",
+    "example": "JSON.parse('') // Unexpected end of JSON input",
+    "related": [
+      "unexpected-token-json",
+      "json-parse-stringify",
+      "syntax-error"
+    ]
+  },
+  {
+    "slug": "maximum-call-stack-exceeded",
+    "term": "Maximum call stack size exceeded",
+    "zh_name": "呼叫堆疊爆掉（無限遞迴）",
+    "category": "error",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "函式一直呼叫自己、沒有停止條件，把『呼叫堆疊』塞爆。什麼時候發生：遞迴忘了寫終止條件(base case)、兩個函式互相呼叫成環、或 React 在 render 裡直接呼叫 setState 造成無限循環。解法：加終止條件、檢查遞迴一定會收斂。",
+    "analogy": "像兩面鏡子對照無限反射——一層套一層永遠停不下來，記憶體先撐爆。",
+    "example": "function f(){ return f(); } f(); // 爆堆疊",
+    "related": [
+      "infinite-render-loop",
+      "too-many-rerenders",
+      "stack-vs-heap"
+    ]
+  },
+  {
+    "slug": "too-many-rerenders",
+    "term": "Too many re-renders (React)",
+    "zh_name": "React 無限重繪",
+    "category": "error",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "React 元件不斷重繪、停不下來。最常見主因：在 render 過程中『直接呼叫』setState（如 onClick={setX(1)} 少了箭頭、應為 onClick={()=>setX(1)}），或 useEffect 少了依賴陣列/依賴一直變。解法：事件要傳函式參照不是立即呼叫、useEffect 補正確依賴。",
+    "analogy": "像照鏡子時每照一次就自動再照一次——畫面陷入無止盡的自我更新。",
+    "example": "onClick={setCount(count+1)} // 錯，應 {()=>setCount(count+1)}",
+    "related": [
+      "infinite-render-loop",
+      "maximum-call-stack-exceeded",
+      "reactivity"
+    ]
+  },
+  {
+    "slug": "infinite-render-loop",
+    "term": "Infinite render / update loop",
+    "zh_name": "無限渲染迴圈",
+    "category": "error",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "狀態更新觸發重繪、重繪又觸發更新，形成死循環。典型：useEffect 裡 setState 但依賴陣列放了每次都變的新物件/函式、或漏了依賴陣列。什麼時候在意：頁面卡死、CPU 飆高、console 洗版。解法：依賴放穩定值、用 useMemo/useCallback 固定參照、或把該邏輯搬出 effect。",
+    "analogy": "像水管接成一個圈——水（更新）一直繞著跑，永遠出不去。",
+    "example": "useEffect(()=>{ setData({}) }) // 沒依賴陣列 → 每次繪都 set → 無限",
+    "related": [
+      "too-many-rerenders",
+      "reactivity",
+      "memoization"
+    ]
+  }
+]

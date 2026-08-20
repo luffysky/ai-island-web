@@ -1,0 +1,218 @@
+[
+  {
+    "slug": "devtools-console",
+    "term": "DevTools Console",
+    "zh_name": "主控台",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "按 F12（或右鍵→檢查）打開開發者工具的 Console 分頁：看程式的 log/警告/錯誤、也能直接打 JS 當計算機測試。什麼時候用：任何前端出錯先看這裡的紅色訊息——它會告訴你錯在哪個檔案第幾行；點錯誤旁的檔名可跳到出錯那行。",
+    "analogy": "像汽車的儀表板警示燈區——引擎有狀況、第一個亮給你看的地方。",
+    "example": "F12 → Console → 看紅字錯誤 + 點檔名跳到該行",
+    "related": [
+      "console-log-debug",
+      "console-methods",
+      "uncaught-typeerror"
+    ]
+  },
+  {
+    "slug": "console-log-debug",
+    "term": "console.log()",
+    "zh_name": "印出除錯",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "最基本的除錯法：把變數印到 Console 看它此刻的值。什麼時候用：不確定資料長怎樣、程式有沒有跑到某段時，插一行印出來看。技巧：console.log('user:', user) 加標籤好認；印物件用 console.log(obj) 可展開；上線前記得清掉 log。進階可改用中斷點更精準。",
+    "analogy": "像在流程各關卡貼便利貼寫『我到這了、目前手上拿的是這個』——事後回頭看走到哪、帶了什麼。",
+    "example": "console.log('抓到的資料 →', data);",
+    "related": [
+      "devtools-console",
+      "console-methods",
+      "devtools-breakpoint"
+    ]
+  },
+  {
+    "slug": "console-methods",
+    "term": "console.table / warn / error",
+    "zh_name": "console 進階方法",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "console 不只 log：console.table(陣列) 把資料印成表格好讀、console.warn/error 出黃/紅色分級、console.dir 展開 DOM 物件、console.group 收合分組、console.time/timeEnd 量耗時、console.count 計次。什麼時候用：一堆物件陣列用 table 一目了然、想量某段多慢用 time。",
+    "analogy": "像同一支筆有多種顏色與模式——畫表格、標紅警告、計時碼錶，看場合換用。",
+    "example": "console.table(users); console.time('fetch'); …; console.timeEnd('fetch');",
+    "related": [
+      "console-log-debug",
+      "devtools-console",
+      "devtools-performance-tab"
+    ]
+  },
+  {
+    "slug": "inspect-element",
+    "term": "Inspect Element",
+    "zh_name": "檢查元素",
+    "category": "tool",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 1,
+    "plain": "右鍵頁面任一處→檢查，直接跳到那塊 HTML。什麼時候用：想知道某個東西是什麼標籤、套了哪些 class、為什麼長這樣。配左上角的『選取游標』圖示，滑到哪就高亮哪、點了就定位到對應原始碼。",
+    "analogy": "像用放大鏡點畫面上任何一處，立刻告訴你『這是用什麼做的』。",
+    "example": "右鍵按鈕 → 檢查 → 看到 <button class=\"btn\">",
+    "related": [
+      "devtools-elements-inspector",
+      "html-attribute",
+      "class-selector"
+    ]
+  },
+  {
+    "slug": "devtools-elements-inspector",
+    "term": "Elements 分頁",
+    "zh_name": "元素檢視器",
+    "category": "tool",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "看與『即時改』頁面的 HTML 結構和 CSS：右側 Styles 面板顯示套在選中元素上的所有規則（被劃掉的＝被覆蓋）、可勾選/改數值即時預覽、Computed 看最終計算值、盒模型圖看 margin/padding/border。什麼時候用：調樣式、找『為什麼這條 CSS 沒生效』（多半被更高權重覆蓋）。",
+    "analogy": "像 3D 模型的即時編輯器——點一個零件就看到它的所有設定，還能當場拉數值看效果。",
+    "example": "Elements → 選元素 → Styles 面板改 padding 看即時變化",
+    "related": [
+      "inspect-element",
+      "specificity",
+      "box-model"
+    ]
+  },
+  {
+    "slug": "devtools-network-tab",
+    "term": "Network 分頁",
+    "zh_name": "網路請求檢視",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "列出頁面發出的每一筆請求：狀態碼、耗時、大小、回傳內容。什麼時候用：API 有問題先看這裡——請求真的送出了嗎？狀態 200 還是 404/500？送了什麼 payload、回了什麼？點該筆看 Headers/Payload/Response/Timing。紅色＝失敗，Preview 看 JSON。",
+    "analogy": "像快遞追蹤總表——每個包裹（請求）寄到哪、成功了嗎、多久到、裡面裝什麼，一列列查。",
+    "example": "Network → 篩 Fetch/XHR → 點該請求看 Response",
+    "related": [
+      "failed-to-fetch",
+      "http-methods",
+      "network-throttling"
+    ]
+  },
+  {
+    "slug": "network-throttling",
+    "term": "Network Throttling",
+    "zh_name": "網速模擬",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "在 Network 分頁把網速故意調慢（Slow 3G）或模擬離線，測『慢網路/沒網路』下的體驗。什麼時候用：檢查 loading 狀態有沒有做、離線頁(PWA)會不會出現、圖片有沒有 lazy load。也可清快取重載（Disable cache + 重整）測第一次進站的真實速度。",
+    "analogy": "像把水龍頭轉小測水壓——看在細水流下你的系統還撐不撐得住。",
+    "example": "Network → Throttling → Slow 3G / Offline",
+    "related": [
+      "devtools-network-tab",
+      "lazy-image",
+      "service-worker"
+    ]
+  },
+  {
+    "slug": "devtools-breakpoint",
+    "term": "Breakpoint",
+    "zh_name": "中斷點除錯",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "在 Sources 分頁的某行程式點一下設中斷點，程式跑到那行會『暫停』，讓你逐步(step)執行、檢視每個變數當下的值。什麼時候用：比 console.log 更強——不必一直加印、可即時看整個 scope、單步追邏輯。也能設條件中斷點（某變數等於某值才停）。",
+    "analogy": "像看影片時按暫停格放——停在關鍵一格，仔細看此刻畫面裡每個角色在幹嘛。",
+    "example": "Sources → 點行號設中斷點 → 觸發後看 Scope 面板變數",
+    "related": [
+      "console-log-debug",
+      "debugger",
+      "js-scope"
+    ]
+  },
+  {
+    "slug": "devtools-application-tab",
+    "term": "Application 分頁",
+    "zh_name": "儲存/PWA 檢視",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "看與清理瀏覽器存的東西：localStorage / sessionStorage / Cookies（看登入 token、可手動改/刪）、IndexedDB、Cache Storage、Service Worker（PWA 狀態、可 unregister/更新）、Manifest。什麼時候用：除錯登入狀態、清 cookie 重測、檢查 PWA 有沒有裝好、離線快取內容。",
+    "analogy": "像打開這個網站在你電腦上的『置物櫃』——看它偷偷存了什麼、隨手清掉重來。",
+    "example": "Application → Local Storage → 看/刪 key",
+    "related": [
+      "web-storage",
+      "service-worker",
+      "httponly-samesite-secure-cookie"
+    ]
+  },
+  {
+    "slug": "devtools-performance-tab",
+    "term": "Performance 分頁",
+    "zh_name": "效能分析",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "錄一段頁面互動，分析卡頓在哪：主執行緒火焰圖(哪個函式吃時間)、掉幀、layout/paint 成本、長任務。什麼時候用：頁面卡卡的、捲動不順、動畫掉幀時找兇手。搭配 Lighthouse 看整體評分、Coverage 看有多少 CSS/JS 沒被用到。",
+    "analogy": "像替網頁做健康檢查的心電圖——錄一段活動，看哪一刻心跳（效能）異常。",
+    "example": "Performance → 錄製 → 停 → 看火焰圖找長任務",
+    "related": [
+      "devtools-lighthouse",
+      "console-methods",
+      "reflow-repaint"
+    ]
+  },
+  {
+    "slug": "devtools-lighthouse",
+    "term": "Lighthouse",
+    "zh_name": "網站體檢報告",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "DevTools 內建的自動體檢：一鍵跑出效能(Performance)、無障礙(Accessibility)、最佳實踐、SEO、PWA 五項評分＋具體改善建議。什麼時候用：上線前健檢、想知道 Core Web Vitals(LCP/CLS/INP) 落在哪、有哪些 a11y/SEO 缺失。分數是參考、照它列的『機會』逐項改最實在。",
+    "analogy": "像帶網站去做全身健檢——一次量五項指標，還附一張『你該改這些』的醫囑清單。",
+    "example": "Lighthouse → Analyze page load → 看五項分數 + 建議",
+    "related": [
+      "devtools-performance-tab",
+      "core-web-vitals",
+      "on-page-seo"
+    ]
+  },
+  {
+    "slug": "responsive-design-mode",
+    "term": "Device Toolbar",
+    "zh_name": "響應式檢視模式",
+    "category": "tool",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 1,
+    "plain": "DevTools 左上角的手機/平板圖示，切換成模擬各種螢幕尺寸看 RWD 有沒有破版。什麼時候用：改完手機版一定要開來檢查（本專案鐵規則：手機+桌面都不能破版）；可選 iPhone/Pixel 等預設裝置、自訂寬度、轉直橫、模擬觸控。＊它是模擬、最終仍要真機驗。",
+    "analogy": "像試衣鏡的多角度模式——同一件衣服（頁面）換不同身形（螢幕）照照看合不合身。",
+    "example": "F12 → 手機圖示 → 選 iPhone / 拖寬度看斷點",
+    "related": [
+      "media-query",
+      "css-units",
+      "devtools-elements-inspector"
+    ]
+  }
+]

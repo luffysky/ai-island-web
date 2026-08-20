@@ -27,6 +27,9 @@
 
 跑 `node scripts/import-dictionary.mjs` → upsert 2436、失敗 0、全站辭典 2436 條。全 71 seed 無 slug 衝突。（i18n 補譯 `translate-sync-all.mjs` 可之後長跑。）
 
+- **seed-72** 常見前端錯誤訊息 11（`category=error`，todo 點名的下批主題）：讀 undefined 屬性/x is not a function/Uncaught TypeError/ReferenceError not defined/Failed to fetch/NetworkError-ERR_CONNECTION/Unexpected token < in JSON/Unexpected end of input/Maximum call stack/Too many re-renders/無限渲染迴圈。撞既有 5 條（cors-error/hydration-error/module-not-found/port-in-use/syntax-error）已剔除。→ 辭典 **2447**。
+- **seed-73** 瀏覽器開發者工具 12（`category=tool`）：Console/console.log/console 進階(table/warn/time)/檢查元素/Elements 檢視器/Network 分頁/網速模擬/中斷點/Application(儲存·PWA)/Performance/Lighthouse/響應式檢視模式。12 條全新無衝突。→ 辭典 **2459**。
+
 ## B. 後台成就管理真正可 CRUD（§7.0.3）
 
 原 `/admin/achievements` 標題「成就管理」實為唯讀（只 `.select("*")` 印卡、無任何寫入）＝空殼。補齊：
