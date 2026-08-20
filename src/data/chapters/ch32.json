@@ -461,7 +461,16 @@
         ],
         "answer": "b",
         "explanation": "值 receiver 只會複製一份 struct，改了也只是改複製品；指標 receiver 才能改到原本的 struct。Scale 例子就示範了這點。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "32.6.auto",
+          "language": "go",
+          "title": "struct + method（值 vs 指標接收者）",
+          "initialCode": "package main\n\nimport \"fmt\"\n\ntype Rect struct {\n\tW, H float64\n}\n\n// 值接收者：只讀取用\nfunc (r Rect) Area() float64 { return r.W * r.H }\n\n// 指標接收者：要改到本體時用\nfunc (r *Rect) Scale(f float64) {\n\tr.W *= f\n\tr.H *= f\n}\n\nfunc main() {\n\tr := Rect{W: 3, H: 4}\n\tfmt.Println(\"面積:\", r.Area())\n\tr.Scale(2)\n\tfmt.Printf(\"放大後: %+v 面積: %v\\n\", r, r.Area())\n}",
+          "hint": "值接收者只讀、指標接收者能改本體。把 Scale 的 *Rect 改成 Rect 看放大是否失效。"
+        }
+      ]
     },
     {
       "id": "32.7",
@@ -528,7 +537,16 @@
         ],
         "answer": "a",
         "explanation": "Slice 是引用型別，底層指向同一個陣列，所以修改元素會影響外面；但 append 可能配置新的底層陣列（當超過容量時），所以不一定影響。選項 b 錯：Go 刻意移除指標運算來提升安全性。選項 c 錯：解引用 nil pointer 會 panic。選項 d 錯：&T{} 支援初始化，new(T) 不行。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "32.7.auto",
+          "language": "go",
+          "title": "指標：傳值改不到、傳指標才改得到",
+          "initialCode": "package main\n\nimport \"fmt\"\n\nfunc addOne(n int)    { n++ }   // 傳值：改不到外面的 x\nfunc addOnePtr(n *int) { *n++ } // 傳指標：改得到\n\nfunc main() {\n\tx := 10\n\taddOne(x)\n\tfmt.Println(\"傳值後:\", x) // 還是 10\n\n\taddOnePtr(&x) // 傳位址 &x\n\tfmt.Println(\"傳指標後:\", x) // 11\n\n\tp := &x\n\tfmt.Println(\"p 指向的值:\", *p)\n\t*p = 99\n\tfmt.Println(\"透過 p 改後 x =\", x)\n}",
+          "hint": "Go 預設傳值(複製)。要在函式內改動外面的變數就傳 &x、函式收 *int、用 *n 存取。"
+        }
+      ]
     },
     {
       "id": "32.8",
@@ -591,7 +609,16 @@
         ],
         "answer": "a",
         "explanation": "隱式實作是指不用明確寫 implements，只要 struct 有符合 interface 要求的方法就算。這樣做的好處是靈活性高、可以後來才定義 interface（duck typing），不用提前規劃。b、c、d 都是誤會 Go 的設計理念。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "32.8.auto",
+          "language": "go",
+          "title": "interface：一個 Area() 通吃圓與方",
+          "initialCode": "package main\n\nimport \"fmt\"\n\ntype Shape interface {\n\tArea() float64\n}\n\ntype Circle struct{ R float64 }\n\nfunc (c Circle) Area() float64 { return 3.14159 * c.R * c.R }\n\ntype Square struct{ Side float64 }\n\nfunc (s Square) Area() float64 { return s.Side * s.Side }\n\n// 不管圓還是方，只要有 Area() 就能算\nfunc totalArea(shapes []Shape) float64 {\n\tsum := 0.0\n\tfor _, s := range shapes {\n\t\tsum += s.Area()\n\t}\n\treturn sum\n}\n\nfunc main() {\n\tshapes := []Shape{Circle{R: 1}, Square{Side: 2}}\n\tfmt.Printf(\"總面積: %.2f\\n\", totalArea(shapes))\n}",
+          "hint": "介面是『能做什麼』的約定。只要型別有 Area() 就自動滿足 Shape，不用宣告 implements。加一個三角形試試。"
+        }
+      ]
     },
     {
       "id": "32.9",
@@ -650,7 +677,16 @@
         ],
         "answer": "a",
         "explanation": "迴圈變數 i 只有一份，所有 goroutine 都指向同一個 i。當迴圈跑完 i 已經是最後值，各 goroutine 再去讀 i 就都拿到最後的數字。正確做法是用參數 `go func(n int){ ... }(i)` 把當下的 i 值傳進去，每個 goroutine 就能各自持有一份副本。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "32.9.auto",
+          "language": "go",
+          "title": "Goroutine + WaitGroup 並發",
+          "initialCode": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n)\n\nfunc main() {\n\tvar wg sync.WaitGroup\n\tfor i := 1; i <= 5; i++ {\n\t\twg.Add(1)\n\t\tgo func(n int) { // 把 i 當參數傳進去，各自一份\n\t\t\tdefer wg.Done()\n\t\t\tfmt.Printf(\"worker %d 完成\\n\", n)\n\t\t}(i)\n\t}\n\twg.Wait() // 等全部 goroutine 做完\n\tfmt.Println(\"全部完成（順序每次可能不同）\")\n}",
+          "hint": "go 開一條輕量執行緒、WaitGroup 等它們全做完。順序每次不同＝並發特性；把 i 當參數傳是避坑關鍵。"
+        }
+      ]
     },
     {
       "id": "32.10",
@@ -713,7 +749,16 @@
         ],
         "answer": "c",
         "explanation": "只有發送方該 close channel，不是任意 goroutine 都能關。對已關閉的 channel 發送會 panic，所以關閉的權責要明確。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "32.10.auto",
+          "language": "go",
+          "title": "Channel：goroutine 間安全傳值",
+          "initialCode": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tch := make(chan int)\n\n\tgo func() {\n\t\tfor i := 1; i <= 3; i++ {\n\t\t\tch <- i * 10 // 送進 channel\n\t\t}\n\t\tclose(ch) // 送完一定要關，range 才會結束\n\t}()\n\n\tfor v := range ch { // 一直收到 channel 關閉為止\n\t\tfmt.Println(\"收到:\", v)\n\t}\n\tfmt.Println(\"channel 已關閉\")\n}",
+          "hint": "channel 是 goroutine 溝通的管道。送完記得 close()，range 才會結束、不然會 deadlock。"
+        }
+      ]
     },
     {
       "id": "32.11",
@@ -772,7 +817,16 @@
         ],
         "answer": "a",
         "explanation": "select 就是為了「同時等多個 channel」設計的——case 分別對應三個 API 的 channel，哪個先回應就處理哪個。context 是用來傳遞取消/超時信號，goroutine 配 if-else 則無法優雅地「誰先就用誰」，switch 也不適合等待 channel。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "32.11.auto",
+          "language": "go",
+          "title": "select + context 逾時取消",
+          "initialCode": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc main() {\n\tctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)\n\tdefer cancel()\n\n\tdone := make(chan string)\n\tgo func() {\n\t\ttime.Sleep(300 * time.Millisecond) // 假裝工作要 300ms\n\t\tdone <- \"工作完成\"\n\t}()\n\n\tselect {\n\tcase res := <-done:\n\t\tfmt.Println(res)\n\tcase <-ctx.Done(): // 100ms 先到 → 走這條\n\t\tfmt.Println(\"逾時取消:\", ctx.Err())\n\t}\n}",
+          "hint": "select 等多個 channel 誰先來；context 逾時到就從 ctx.Done() 收到訊號。把 timeout 改 400ms 看結果反轉。"
+        }
+      ]
     },
     {
       "id": "32.12",
@@ -960,7 +1014,38 @@
         ],
         "answer": "b",
         "explanation": "Go 用大小寫控制 export，小寫開頭的函數只能在同 package 內使用，其他 package 無法存取，不管有沒有 import。這是 Go 的命名規則，不需要 public/private 關鍵字。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Go package / module 判官",
+          "note": "判斷這些 Go 專案組織做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "用 go.mod 定義 module 路徑與依賴版本",
+                "correct": "ok",
+                "why": "go.mod 是現代 Go 依賴管理的核心，記錄 module 名與相依。"
+              },
+              {
+                "text": "想讓別的 package 用到的函式/型別，名字首字母大寫",
+                "correct": "ok",
+                "why": "Go 靠首字母大小寫決定匯出(exported)：大寫對外、小寫套件內私有。"
+              },
+              {
+                "text": "import 了一個套件但沒用到，先留著之後再說",
+                "correct": "no",
+                "why": "Go 編譯器對『未使用的 import/變數』直接報錯、不給過，必須移除。"
+              },
+              {
+                "text": "整個專案全塞進一個 package、不分層",
+                "correct": "risk",
+                "why": "小專案還好，長大後難維護；依職責分 package(handler/service/repo)較清楚。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "32.14",
@@ -1015,7 +1100,16 @@
         ],
         "answer": "b",
         "explanation": "課堂直接示範在 HTTP handler 裡用 json.NewDecoder(r.Body).Decode(&u) 來解析請求的 JSON，這是標準 Stream decoding 做法。a 雖然也能動，但不是課堂教的推薦方式；c 和 d 都是把用途搞反了。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "32.14.auto",
+          "language": "go",
+          "title": "標準庫導覽 strings / time / json",
+          "initialCode": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"strings\"\n\t\"time\"\n)\n\ntype User struct {\n\tName string `json:\"name\"`\n\tAge  int    `json:\"age\"`\n}\n\nfunc main() {\n\t// strings\n\tfmt.Println(strings.ToUpper(\"hello\"), strings.Contains(\"golang\", \"go\"))\n\tfmt.Println(strings.Split(\"a,b,c\", \",\"))\n\n\t// time（用固定時間、輸出才穩定）\n\tt := time.Date(2026, 8, 21, 9, 0, 0, 0, time.UTC)\n\tfmt.Println(t.Format(\"2006-01-02 15:04\")) // Go 的神奇參考時間\n\n\t// json 編碼/解碼\n\tb, _ := json.Marshal(User{Name: \"小明\", Age: 20})\n\tfmt.Println(string(b))\n\tvar u User\n\tjson.Unmarshal([]byte(`{\"name\":\"小華\",\"age\":18}`), &u)\n\tfmt.Printf(\"%+v\\n\", u)\n}",
+          "hint": "Go 標準庫很夠用。注意 time 格式是神奇參考時間 2006-01-02 15:04；struct tag `json:\"name\"` 決定 JSON 欄位名。"
+        }
+      ]
     },
     {
       "id": "32.15",
@@ -1078,7 +1172,38 @@
         ],
         "answer": "a",
         "explanation": "課程重點是強調 Go 1.22+ 前 ServeMux 太弱需要框架，但 1.22 後內建路由和參數支援變強，所以「不一定要框架」。其他選項都是誇大或歪曲課意。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Go net/http server 判官",
+          "note": "判斷這些標準庫 HTTP 寫法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "用 http.HandleFunc 註冊路由、http.ListenAndServe 起服務",
+                "correct": "ok",
+                "why": "標準庫就能寫出堪用的 HTTP server，不一定要框架。"
+              },
+              {
+                "text": "擔心並發，自己在每個 handler 裡再 go 一條 goroutine 處理",
+                "correct": "no",
+                "why": "net/http 本來就『每個請求一條 goroutine』，自己再開反而製造 race/洩漏。"
+              },
+              {
+                "text": "出錯時用 http.Error 回對應狀態碼與訊息",
+                "correct": "ok",
+                "why": "回正確的狀態碼(4xx/5xx)是 API 基本禮貌。"
+              },
+              {
+                "text": "讀 r.Body 不設大小上限、不關閉",
+                "correct": "risk",
+                "why": "大 body 會吃爆記憶體/被攻擊；用 http.MaxBytesReader 限制、記得關閉。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "32.16",
@@ -1137,7 +1262,82 @@
         ],
         "answer": "c",
         "explanation": "Chi 的定位就是『輕量、不偏離標準』，底層使用 net/http 而非自訂實現，這讓你的程式更符合 Go 社群慣例。Gin 雖然最普及但不是為了輕量設計，Fiber 則因為用 fasthttp 反而無法直接用標準庫 middleware。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "Gin / Fiber / Chi 選誰？",
+          "note": "Go web 框架看你要什麼。",
+          "config": {
+            "intro": "三個都很快，差在生態、風格與底層。",
+            "questions": [
+              {
+                "q": "最重要的考量？",
+                "options": [
+                  {
+                    "label": "生態最大、範例最多、最主流",
+                    "scores": {
+                      "gin": 2
+                    }
+                  },
+                  {
+                    "label": "極致效能、Express 般的 API 手感",
+                    "scores": {
+                      "fiber": 2
+                    }
+                  },
+                  {
+                    "label": "貼近標準庫 net/http、輕薄可組合",
+                    "scores": {
+                      "chi": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "團隊背景？",
+                "options": [
+                  {
+                    "label": "多數 Go 開發者、要好招人",
+                    "scores": {
+                      "gin": 2
+                    }
+                  },
+                  {
+                    "label": "從 Node/Express 過來",
+                    "scores": {
+                      "fiber": 1
+                    }
+                  },
+                  {
+                    "label": "想保持 Go 慣用、少魔法",
+                    "scores": {
+                      "chi": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "gin": {
+                "emoji": "🍸",
+                "title": "Gin",
+                "desc": "最主流、生態與中介層最多、效能好。Go web 的安全牌。"
+              },
+              "fiber": {
+                "emoji": "🧵",
+                "title": "Fiber",
+                "desc": "基於 fasthttp、極快、API 像 Express。注意不完全相容標準 net/http 生態。"
+              },
+              "chi": {
+                "emoji": "🪶",
+                "title": "Chi",
+                "desc": "極輕、100% 相容 net/http、慣用可組合。喜歡少魔法選它。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "32.17",
@@ -1208,7 +1408,38 @@
         ],
         "answer": "b",
         "explanation": "課程明確指出標準庫 database/sql 的缺點是「寫 Scan 很煩、容易 bug」，這正是 GORM 和 sqlx 要解決的問題。其他選項都超出課程範圍或是錯誤説法。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Go 資料庫存取判官（GORM/sqlx/sqlc）",
+          "note": "判斷這些 DB 存取做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "用 sqlc 從手寫 SQL 產生型別安全的 Go code",
+                "correct": "ok",
+                "why": "sqlc 兼得原生 SQL 的可控與編譯期型別安全，Go 圈很受歡迎。"
+              },
+              {
+                "text": "用字串拼接把使用者輸入直接組進 SQL",
+                "correct": "no",
+                "why": "SQL injection 大門；一律用參數化查詢($1/?)。"
+              },
+              {
+                "text": "GORM 查關聯資料時用 Preload 避免逐筆查(N+1)",
+                "correct": "ok",
+                "why": "Preload 一次帶出關聯，避免迴圈裡狂查。"
+              },
+              {
+                "text": "全用 GORM 的自動遷移+隱式查詢、不看它實際發什麼 SQL",
+                "correct": "risk",
+                "why": "ORM 方便但會藏效能問題；正式環境要開 log 看實際 SQL、控制遷移。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "32.18",
@@ -1275,7 +1506,38 @@
         ],
         "answer": "a",
         "explanation": "bcrypt 是單向 hash 函數，用來安全地儲存和驗證密碼；JWT 是簽名的 token，用來在登入後代表使用者身份。兩者在認證流程中分工不同、缺一不可。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Go JWT + middleware 判官",
+          "note": "判斷這些認證做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "middleware 驗證 JWT、失敗就回 401 擋在 handler 前",
+                "correct": "ok",
+                "why": "認證放 middleware、集中把關，未通過不進業務邏輯。"
+              },
+              {
+                "text": "把簽章密鑰(secret)寫死在原始碼裡",
+                "correct": "no",
+                "why": "密鑰進版控＝外洩；放環境變數、可輪替。"
+              },
+              {
+                "text": "把使用者密碼/信用卡放進 JWT payload",
+                "correct": "risk",
+                "why": "JWT payload 只是 base64『編碼』不是加密，人人可解讀；別放敏感資料。"
+              },
+              {
+                "text": "驗證通過後把 user 放進 context 傳給後續 handler",
+                "correct": "ok",
+                "why": "用 context 傳請求範圍的值是 Go 慣用做法。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "32.19",
@@ -1346,7 +1608,16 @@
         ],
         "answer": "a",
         "explanation": "Go 的測試檔案必須以 _test.go 結尾（如 math_test.go），且要在同一個 package 內。這樣 `go test` 才能自動發現並執行。選項 b、c、d 都是常見的錯誤迷思。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "32.19.auto",
+          "language": "go",
+          "title": "手刻迷你測試（理解 go test）",
+          "initialCode": "package main\n\nimport \"fmt\"\n\nfunc add(a, b int) int { return a + b }\n\nfunc divide(a, b int) (int, error) {\n\tif b == 0 {\n\t\treturn 0, fmt.Errorf(\"cannot divide by zero\")\n\t}\n\treturn a / b, nil\n}\n\n// 手刻迷你測試（理解 go test 在做什麼：收集一堆檢查、報告通過/失敗）\nfunc main() {\n\tpass, fail := 0, 0\n\tcheck := func(name string, got, want int) {\n\t\tif got == want {\n\t\t\tfmt.Printf(\"  \\u2713 %s\\n\", name)\n\t\t\tpass++\n\t\t} else {\n\t\t\tfmt.Printf(\"  \\u2717 %s：得到 %d 期望 %d\\n\", name, got, want)\n\t\t\tfail++\n\t\t}\n\t}\n\tcheck(\"add 2+3\", add(2, 3), 5)\n\tcheck(\"add -1+1\", add(-1, 1), 0)\n\tq, _ := divide(10, 2)\n\tcheck(\"divide 10/2\", q, 5)\n\tcheck(\"這題故意寫錯\", add(1, 1), 3)\n\tfmt.Printf(\"\\n結果：%d 通過、%d 失敗\\n\", pass, fail)\n}",
+          "hint": "go test 幫你做的就是收集檢查、報告通過/失敗。把故意寫錯那題改對看 ✗ 變 ✓。"
+        }
+      ]
     },
     {
       "id": "32.20",
@@ -1409,7 +1680,38 @@
         ],
         "answer": "a",
         "explanation": "課程的核心優勢就是 Go 編譯出單一 binary 無需依賴，搭配 multi-stage Dockerfile 和 CGO_ENABLED=0，最終 image 可以只有 5-30MB，遠小於 Node.js（200-500MB）或 Python（300-1000MB）的應用。其他選項雖然都是課程提到的技巧，但不是 Go 部署的根本優勢。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Go 部署 / 跨平台編譯判官",
+          "note": "判斷這些 Go 部署做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "用 GOOS/GOARCH 交叉編譯出各平台的單一 binary",
+                "correct": "ok",
+                "why": "Go 一大優勢：一台機器編出 windows/mac/linux 各版 binary。"
+              },
+              {
+                "text": "Docker 用 scratch 或 distroless 當最終 image 基底",
+                "correct": "ok",
+                "why": "Go 靜態 binary 不需 OS 依賴，最小 image 又小又安全。"
+              },
+              {
+                "text": "需要靜態 binary，卻又開著 CGO 依賴系統 C 函式庫",
+                "correct": "risk",
+                "why": "CGO 會讓 binary 依賴 glibc，換環境可能跑不動；純 Go 設 CGO_ENABLED=0。"
+              },
+              {
+                "text": "把 Go 原始碼與整套工具鏈打進正式 image 一起出貨",
+                "correct": "risk",
+                "why": "image 又肥又多攻擊面；用多階段 build，最終只放編好的 binary。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Go HTTP server：net/http + Gin / Fiber",

@@ -57,3 +57,10 @@
 - **4 個自足 JS 沙盒（node 本地實跑驗過、無外部套件依賴、可在 server sandbox 跑）**：31.8 Event Loop 執行順序親眼看（同步→微任務→巨任務）、31.12 手刻迷你驗證器（理解 Zod）、31.17 手刻迷你測試框架（理解 Vitest，用 node:assert）、31.18 手刻結構化 logger（理解 Pino）。
 - **11 個概念教具**（需 server/DB/infra 或純概念、用既有 scenario-judge / decision-quiz 型別、renderer 免改）：31.6 套件管理器選型、31.7 TS 用法判官、31.9 Express 判官、31.10 框架選型、31.11 Prisma 判官、31.14 WebSocket 判官、31.15 BullMQ 判官、31.16 Redis 快取判官、31.19 部署平台選型、31.21 tRPC 判官、31.22 AI SDK 判官。
 - 以 Python 注入（indent=2 round-trip 與原檔逐字一致、只動到目標課）；`import_chapters_to_db.mjs ch31` 同步進 DB（lessons.playgrounds/demos 欄）。⚠️ 章節讀 DB 不讀 JSON，已跑 import。
+
+## F. 教具大工程 §4.1.5：ch32 Go 100% 覆蓋
+
+原 10 沙盒 + 1 教具、14 課無互動 → **25 課 0 GAP（18 playgrounds + 7 demos）**：
+- **8 個 Go 沙盒**：32.6 struct+method(值vs指標接收者)、32.7 指標傳值vs傳指標、32.8 interface 多型、32.9 goroutine+WaitGroup、32.10 channel、32.11 select+context 逾時、32.14 標準庫 strings/time/json、32.19 手刻迷你測試(理解 go test)。
+- **6 個概念教具**：32.13 package/module 判官、32.15 net/http 判官、32.16 Gin/Fiber/Chi 選型、32.17 GORM/sqlx/sqlc 判官、32.18 JWT+middleware 判官、32.20 部署/跨平台編譯 判官。
+- ⚠️ 本機無 go 工具鏈、Go 沙盒為手寫 canonical（未本地 compile，靠 server sandbox 執行；已逐支目視審 syntax）。`import_chapters_to_db.mjs ch32` 同步 DB。`tsc --noEmit` 0 error（驗 bundle 內章節 JSON 型別）。

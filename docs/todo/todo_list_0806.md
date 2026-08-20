@@ -359,7 +359,8 @@
     - [x] ~~**ch7 程式邏輯共通（跨語言概念章）100% 覆蓋**~~ ✅ 0731——原 5 沙盒 → **17 沙盒 + 14 教具、28 課 0 課沒互動**。12 個新 JS 沙盒(每段 node 實跑驗過)＋11 個概念教具(記憶體/Big O/並發/設計模式/測試等純概念用 decision-quiz/scenario-judge/workflow-flow)。commit de9ae5d1。
     - [x] ~~**ch16 後端世界全圖（架構/策略章）100% 覆蓋**~~ ✅ 0731——原 12 沙盒 → 14 沙盒 + 11 教具、25 課 0 沒互動。2 個可跑 JS 沙盒(Token Bucket 限流 / N+1 查詢數暴增，node 驗)＋11 概念教具(語言選型/認證/快取/即時通訊/可觀測性/架構/趨勢等)。
     - [x] ~~**ch31 Node.js 100% 覆蓋**~~ ✅ 0820——原 8PG+2demo、15 課無互動 → 補 4 個 node 實跑驗過的自足 JS 沙盒(Event Loop 執行序/手刻迷你驗證器≈Zod/手刻測試框架≈Vitest/手刻結構化 logger≈Pino) + 11 個概念教具(套件管理器/TS/Express/框架選型/Prisma/WebSocket/BullMQ/Redis 快取/部署平台/tRPC/AI SDK 用 scenario-judge·decision-quiz)。25 課 0 GAP、12PG+13demo。import_chapters_to_db ch31 已同步 DB。
-    - [ ] 下一章：ch32 Go(25課10PG)、ch47 AI應用(25課8PG)、ch48 Vibe(29課14PG) 補沙盒；非程式大章鋪領域道具。
+    - [x] ~~**ch32 Go 100% 覆蓋**~~ ✅ 0820——原 10PG+1demo、14 課無互動 → 補 8 個 Go 沙盒(struct/method·指標·interface·goroutine+WaitGroup·channel·select+context·標準庫 strings/time/json·手刻測試) + 6 個概念教具(package/module·net/http·Gin/Fiber/Chi 選型·GORM/sqlx/sqlc·JWT+middleware·部署跨平台編譯)。25 課 0 GAP、18PG+7demo。⚠️ 環境無 go、Go 沙盒為手寫 canonical(未本地 compile 驗、靠 server sandbox 跑)。import ch32 已同步 DB。
+    - [ ] 下一章：ch47 AI應用(25課8PG)、ch48 Vibe(29課14PG) 補沙盒；非程式大章鋪領域道具。
     - **驗證方法定調**：Python 沙盒本地 exec 驗、JS 沙盒 node 驗、教具 schema 驗——每個都確認能跑/合法才掛。
 - [ ] 4.1.4 圖文解說圖：概念/B/D/E/F 區操作圖 110+ 張（🔴 等林董生圖；A 區 29 張 ✅）
 
