@@ -76,3 +76,24 @@
 - **ch48（14 課 GAP → 0 GAP）**：補 vibe coding 核心判斷 scenario-judge——任務粒度、該不該信 AI 測試(鎖 bug 的假測試=no)、該不該讓 AI 直接改、用 AI vs 自己寫、AI 輸出紅旗(偷加依賴=no)、多/雙 agent 分工、大重構節奏、0→上線、prompt 寫法、心態 + 48.21 終端 agent vs 編輯器決策測驗。
 - 以 Python 注入（indent=2 逐字一致）；`import_chapters_to_db.mjs ch47 ch48` 同步 DB（0 errors）；`tsc --noEmit` 0 error。
 - 里程碑：**ch1-11/15-22/26/7/16/31/32/47/48 已 100% 互動覆蓋**。
+
+---
+
+## 📦 0820 session 總結（7 commit 全部 push、部署中）
+
+| commit | 內容 |
+|---|---|
+| `646d30d9` | 辭典 seed 65-71 前端零基礎 +88 → 2436 |
+| `0d1b5c6c` | 後台成就管理真 CRUD（§7.0.3）+ 全專案待辦掃描日誌 |
+| `a7ad2763` | 辭典 seed 72-73 錯誤訊息+開發者工具 +23 → 2459 |
+| `a637fd94` | 機會島雷達 §3.3.3 每欄原文證據+信心分 |
+| `0ff062e3` | 教具 ch31 Node.js 100% 覆蓋 |
+| `ee3e8d0e` | 教具 ch32 Go 100% 覆蓋 |
+| `3d4ad5f5` | 教具 ch47/ch48 100% 覆蓋 + 辭典終端機基礎 +15 → 2474 |
+
+**三軌具體待辦全清**：辭典續寫(+126)、機會島雷達 §3.3.3、教具 ch31/32/47/48。
+
+**下一步候選（未做、等林董挑）**：
+- 辭典續往 5000（基礎詞條漸稀）；機會島雷達 §3.3.1 API/sitemap 來源、§3.3.2 hash 變動偵測（要動 radar cron）；教具非程式大章鋪領域道具。
+- 需林董在線才好驗/授權的：§7.0.1 SEO 轉址(動 middleware)、§7.6 作業自動批改、§2.3 social adapter；商業決策 Coco v1 / §6.8 付費 gating。
+- 全掃描地圖見本檔 §0；master 未收錄新工作：Coco/Agent Economy、`upgrade.md` infra 技術債、Creator FIE、`docs/admin_upgrade/`。
