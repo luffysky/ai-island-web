@@ -50,3 +50,10 @@
 - **UI** `RadarClient`：`load()` 從 parsed/confidence 還原 sug/ev/conf；待審卡加信心分色標 badge（≥75%綠/≥40%黃/否紅）+ 可展開「原文佐證（核對用）」逐欄列出 + 提醒仍需比對原文。無 migration（用既有欄）、後台限定、`requireAdmin` 守。
 
 **建置**：`npx tsc --noEmit` 0 error、`npx vitest run` 225/225、`npx next build` 綠（含 A/B/D 全部改動）。
+
+## E. 教具大工程 §4.1.5：ch31 Node.js 100% 覆蓋
+
+原 8 沙盒 + 2 教具、15 課無任何互動。補到 **25 課 0 GAP（12 playgrounds + 13 demos）**：
+- **4 個自足 JS 沙盒（node 本地實跑驗過、無外部套件依賴、可在 server sandbox 跑）**：31.8 Event Loop 執行順序親眼看（同步→微任務→巨任務）、31.12 手刻迷你驗證器（理解 Zod）、31.17 手刻迷你測試框架（理解 Vitest，用 node:assert）、31.18 手刻結構化 logger（理解 Pino）。
+- **11 個概念教具**（需 server/DB/infra 或純概念、用既有 scenario-judge / decision-quiz 型別、renderer 免改）：31.6 套件管理器選型、31.7 TS 用法判官、31.9 Express 判官、31.10 框架選型、31.11 Prisma 判官、31.14 WebSocket 判官、31.15 BullMQ 判官、31.16 Redis 快取判官、31.19 部署平台選型、31.21 tRPC 判官、31.22 AI SDK 判官。
+- 以 Python 注入（indent=2 round-trip 與原檔逐字一致、只動到目標課）；`import_chapters_to_db.mjs ch31` 同步進 DB（lessons.playgrounds/demos 欄）。⚠️ 章節讀 DB 不讀 JSON，已跑 import。

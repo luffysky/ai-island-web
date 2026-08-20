@@ -478,7 +478,83 @@
         ],
         "answer": "a",
         "explanation": "課程明確推薦 2026 新專案用 pnpm：速度快（比 npm 快 2-3x）、硬碟省 70%、命令相同容易上手。雖然 bun 很快，但生態還在追趕、生產案例少；npm 雖然內建但較慢；yarn 已被 pnpm 超車。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "npm / pnpm / yarn / bun 選誰？",
+          "note": "套件管理器不是越新越好，看你的專案。",
+          "config": {
+            "intro": "四個都能裝套件、跑 script，差在速度、硬碟、嚴格度與生態。答幾題看你這情境。",
+            "questions": [
+              {
+                "q": "這是什麼性質的專案？",
+                "options": [
+                  {
+                    "label": "公司/接案、要好招人、長期維護",
+                    "scores": {
+                      "pnpm": 2,
+                      "npm": 1
+                    }
+                  },
+                  {
+                    "label": "個人 indie、想快想試新",
+                    "scores": {
+                      "bun": 2
+                    }
+                  },
+                  {
+                    "label": "很多 package 的 monorepo",
+                    "scores": {
+                      "pnpm": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "最在意哪件事？",
+                "options": [
+                  {
+                    "label": "硬碟省、安裝快、依賴嚴格",
+                    "scores": {
+                      "pnpm": 2
+                    }
+                  },
+                  {
+                    "label": "一個 binary、跑 TS 免編譯、最快",
+                    "scores": {
+                      "bun": 2
+                    }
+                  },
+                  {
+                    "label": "零學習、生態最相容、最保險",
+                    "scores": {
+                      "npm": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "pnpm": {
+                "emoji": "🟢",
+                "title": "pnpm",
+                "desc": "2026 主流首選：比 npm 快 2-3x、硬碟共享、嚴格擋 phantom dependency、monorepo 強。命令幾乎同 npm。"
+              },
+              "bun": {
+                "emoji": "🟠",
+                "title": "Bun",
+                "desc": "最快、一個 binary、直接跑 TS/JSX。適合個人/prototype；正式服務再評估生態相容性。"
+              },
+              "npm": {
+                "emoji": "⚪",
+                "title": "npm",
+                "desc": "Node 內建、零安裝、生態最相容。夠用最保險，只是較慢、node_modules 較肥。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "31.7",
@@ -549,7 +625,38 @@
         ],
         "answer": "a",
         "explanation": "課程明確指出 TypeScript 的核心優勢是「編譯時抓 bug」，比純 JS 的例子更能即時發現型別不符的問題。速度、零設定、取代 JS 都不是 TS 的主要目的。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "TypeScript 用法判官",
+          "note": "判斷這些 TS 寫法是慣用、有風險、還是別這樣",
+          "config": {
+            "scenarios": [
+              {
+                "text": "外部進來的資料(API/表單)先用 zod 驗證再當成有型別的物件用",
+                "correct": "ok",
+                "why": "型別只在編譯期存在、擋不住執行期髒資料；邊界用 zod 驗證是正解。"
+              },
+              {
+                "text": "編譯報錯就到處加 any 讓它閉嘴",
+                "correct": "no",
+                "why": "any 等於關掉型別檢查、把 bug 留到執行期。不確定型別用 unknown 再收窄。"
+              },
+              {
+                "text": "拿到 unknown 後用 typeof / 屬性檢查收窄型別才使用",
+                "correct": "ok",
+                "why": "unknown 逼你先確認型別，安全。"
+              },
+              {
+                "text": "用 as 硬轉型繞過紅線，覺得『我知道它是什麼』",
+                "correct": "risk",
+                "why": "as 是關掉檢查的承諾，錯了編譯器不會救你；偶爾必要但別當常態。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "31.8",
@@ -624,7 +731,16 @@
         ],
         "answer": "b",
         "explanation": "單純依序 await 會讓每個 API 等上一個完成才開始（串行），改用 Promise.all([...]) 能讓三個同時發出去（並行），大幅縮短總時間。這是 async/await 優化並發的核心技巧。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "31.8.auto",
+          "language": "javascript",
+          "title": "Event Loop 執行順序親眼看",
+          "initialCode": "// Promise 與 Event Loop：同步碼 → 微任務(Promise) → 巨任務(setTimeout)\nconsole.log(\"1 同步\");\nsetTimeout(() => console.log(\"5 setTimeout（巨任務、最後）\"), 0);\nPromise.resolve().then(() => console.log(\"4 Promise.then（微任務）\"));\nconsole.log(\"2 同步\");\nasync function demo() {\n  console.log(\"3 async 內、await 之前（仍同步）\");\n  await null;\n  console.log(\"6 await 之後（被排進微任務）\");\n}\ndemo();\n(async () => {\n  const t0 = Date.now();\n  const wait = (label, ms) => new Promise(r => setTimeout(() => r(label), ms));\n  await Promise.all([wait(\"A\", 80), wait(\"B\", 80)]); // 並行≈80ms 不是 160\n  console.log(\"7 Promise.all 並行耗時約\", Date.now() - t0, \"ms（序列會是兩倍）\");\n})();",
+          "hint": "同步碼先全跑完 → 微任務(Promise / await 之後) → 巨任務(setTimeout)。加幾個 setTimeout / Promise 猜印出順序。"
+        }
+      ]
     },
     {
       "id": "31.9",
@@ -695,7 +811,38 @@
         ],
         "answer": "b",
         "explanation": "Router 就是用來組織和模組化路由的工具。課程明確展示用 usersRouter 和 productsRouter 分離後，再用 app.use('/api/users', usersRouter) 掛載，這是 Express 推薦的做法。其他選項要麼不符合最佳實踐（a），要麼誤解 Middleware 用途（c、d）。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Express 判官",
+          "note": "判斷這些 Express 寫法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "錯誤處理 middleware 寫成 (err, req, res, next) 四參數放最後",
+                "correct": "ok",
+                "why": "Express 靠『四個參數』辨識錯誤處理器，要放最後才接得到前面 next(err)。"
+              },
+              {
+                "text": "async route 裡 await 出錯，但沒 try/catch 也沒包 wrapper",
+                "correct": "no",
+                "why": "Express 4 不會自動接 async 的 reject → 請求會掛住；要 try/catch 或用 asyncHandler 包。"
+              },
+              {
+                "text": "驗證登入的 auth middleware 放在受保護路由『之前』",
+                "correct": "ok",
+                "why": "middleware 依序執行，保護要在 handler 前先擋。"
+              },
+              {
+                "text": "把使用者狀態存在模組層級的可變全域變數",
+                "correct": "risk",
+                "why": "多請求/多實例會互相污染；狀態放 DB/redis/req 範圍。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "31.10",
@@ -758,7 +905,77 @@
         ],
         "answer": "b",
         "explanation": "Hono 的核心賣點就是『超輕量 + 跨 runtime』，同一份 code 可以無縫改部署到 Cloudflare Workers、Deno、Node 等。其他三個框架都是 Node-only 或傳統方案，無法做到這種跨平台靈活性。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "Express / Fastify / Hono 選誰？",
+          "note": "後端框架看需求，不是看誰潮。",
+          "config": {
+            "intro": "都能做 API，差在速度、體積、型別、跑的環境。",
+            "questions": [
+              {
+                "q": "最重要的考量？",
+                "options": [
+                  {
+                    "label": "生態最大、教學最多、最保險",
+                    "scores": {
+                      "express": 2
+                    }
+                  },
+                  {
+                    "label": "高吞吐、內建 schema 驗證與 log",
+                    "scores": {
+                      "fastify": 2
+                    }
+                  },
+                  {
+                    "label": "超輕量、要能跑在 edge/CF Workers",
+                    "scores": {
+                      "hono": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "部署在哪？",
+                "options": [
+                  {
+                    "label": "傳統 Node 伺服器/容器",
+                    "scores": {
+                      "express": 1,
+                      "fastify": 1
+                    }
+                  },
+                  {
+                    "label": "Edge / Serverless / 多 runtime",
+                    "scores": {
+                      "hono": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "express": {
+                "emoji": "🟫",
+                "title": "Express",
+                "desc": "最老牌、生態與範例最多、招人好招。夠用且穩，缺點偏舊、要自己拼 middleware。"
+              },
+              "fastify": {
+                "emoji": "🟦",
+                "title": "Fastify",
+                "desc": "效能佳、內建 JSON schema 驗證 + Pino log、外掛體系完整。要高吞吐選它。"
+              },
+              "hono": {
+                "emoji": "🔥",
+                "title": "Hono",
+                "desc": "超輕、型別好、能跑 Node/Bun/Deno/CF Workers/edge。新專案想跨 runtime 首選。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "31.11",
@@ -821,7 +1038,38 @@
         ],
         "answer": "a",
         "explanation": "Prisma 支援在 include 的關聯物件內部直接寫 where 和 orderBy，可以在一次查詢中同時篩選和排序相關資料。選項 b 雖然可行但不是最佳做法，c 和 d 都誤解了 Prisma 的查詢語法。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Prisma 判官",
+          "note": "判斷這些 Prisma 用法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "要一起拿使用者和他的訂單，用 include: { orders: true } 一次查",
+                "correct": "ok",
+                "why": "一次帶出關聯，避免 N+1。"
+              },
+              {
+                "text": "先查一批 user，再在迴圈裡對每個 user 逐一 await 查訂單",
+                "correct": "no",
+                "why": "典型 N+1：100 個 user 打 101 次查詢。用 include 或 in 批次查。"
+              },
+              {
+                "text": "用 select 只取需要的欄位、不整列撈",
+                "correct": "ok",
+                "why": "少傳資料、快又省記憶體。"
+              },
+              {
+                "text": "多筆寫入要嘛全成功嘛全失敗，用 $transaction 包起來",
+                "correct": "ok",
+                "why": "保證原子性，避免寫一半的髒狀態。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "31.12",
@@ -892,7 +1140,16 @@
         ],
         "answer": "a",
         "explanation": "Zod 的核心價值是一份 schema 既能驗證執行時資料，又能透過 z.infer 自動推導型別，避免重複定義。其他選項都誤解或誇大了 Zod 的角色—它是驗證 library，不是型別系統的替代品。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "31.12.auto",
+          "language": "javascript",
+          "title": "手刻迷你驗證器（理解 Zod）",
+          "initialCode": "// 手刻迷你 schema 驗證器（理解 Zod：驗證 + 之後能安心信任型別）\nconst S = {\n  string: (rules = []) => ({ t: \"string\", rules }),\n  number: (rules = []) => ({ t: \"number\", rules }),\n  object: (shape) => ({ t: \"object\", shape }),\n};\nfunction parse(schema, value, path = \"root\") {\n  if (schema.t === \"object\") {\n    if (typeof value !== \"object\" || value === null) throw new Error(path + \" 必須是物件\");\n    const out = {};\n    for (const k in schema.shape) out[k] = parse(schema.shape[k], value[k], path + \".\" + k);\n    return out;\n  }\n  if (typeof value !== schema.t) throw new Error(`${path} 必須是 ${schema.t}，收到 ${typeof value}`);\n  for (const r of schema.rules) { const e = r(value); if (e) throw new Error(path + \" \" + e); }\n  return value;\n}\nconst min = (n) => (v) => v.length < n ? `至少 ${n} 字` : null;\nconst email = () => (v) => /^[^@]+@[^@]+\\.[^@]+$/.test(v) ? null : \"email 格式錯\";\nconst positive = () => (v) => v > 0 ? null : \"必須為正數\";\nconst UserSchema = S.object({ name: S.string([min(1)]), email: S.string([email()]), age: S.number([positive()]) });\nconsole.log(\"通過:\", parse(UserSchema, { name: \"小明\", email: \"a@b.com\", age: 20 }));\ntry { parse(UserSchema, { name: \"\", email: \"bad\", age: -3 }); }\ncatch (e) { console.log(\"擋下壞資料:\", e.message); }",
+          "hint": "Zod 幫你做的就是這個：驗證外部資料、壞的當場報錯、過關後能安心信任。試加一條 max 規則或新欄位。"
+        }
+      ]
     },
     {
       "id": "31.13",
@@ -1076,7 +1333,38 @@
         ],
         "answer": "c",
         "explanation": "Socket.io 具備房間(聊天室)、自動重連、跨瀏覽器支援等完整生態，最適合聊天應用。ws 太輕量、Node 內建只適合簡單需求、Hono 是 Edge 環境用的。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "WebSocket 判官",
+          "note": "判斷這些即時通訊做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "部署多台伺服器，broadcast 只用單機記憶體的連線清單",
+                "correct": "no",
+                "why": "訊息只送到剛好連那台的人；跨實例要靠 Redis pub/sub 轉發。"
+              },
+              {
+                "text": "用 ping/pong 心跳定時偵測、清掉斷掉的連線",
+                "correct": "ok",
+                "why": "TCP 斷線不一定即時可知，心跳才抓得到殭屍連線。"
+              },
+              {
+                "text": "連線建立時就驗 token、未授權直接關閉",
+                "correct": "ok",
+                "why": "WebSocket 沒有每次請求的 header，握手時就要認證。"
+              },
+              {
+                "text": "不限制單一連線的訊息大小與頻率",
+                "correct": "risk",
+                "why": "易被灌爆(DoS)；要設訊息大小上限與速率限制。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "31.15",
@@ -1147,7 +1435,38 @@
         ],
         "answer": "a",
         "explanation": "課程的核心目的是解決「慢 task 擋住使用者回應」的問題。用 Queue 把任務丟到背景，API 立刻回應；Worker 慢慢處理並自動重試，這正是 BullMQ 的價值。其他選項都是課程沒提到或錯誤的說法。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "BullMQ / 佇列判官",
+          "note": "判斷這些背景任務做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "job 設計成可重複執行不出錯(冪等)",
+                "correct": "ok",
+                "why": "任務可能被重試，冪等才不會重複扣款/重複寄信。"
+              },
+              {
+                "text": "把整個上傳的檔案 buffer 塞進 job 的 payload",
+                "correct": "no",
+                "why": "payload 進 Redis 會爆記憶體；存檔案路徑/URL，worker 再去拿。"
+              },
+              {
+                "text": "不設 retry 次數與 backoff，失敗就沒了",
+                "correct": "risk",
+                "why": "暫時性失敗(網路抖動)應退避重試，否則任務默默掉。"
+              },
+              {
+                "text": "重試前先確認副作用不會重複(如先查有沒有寄過)",
+                "correct": "ok",
+                "why": "配合冪等，避免重試造成重複副作用。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "31.16",
@@ -1222,7 +1541,38 @@
         ],
         "answer": "a",
         "explanation": "Cache-Aside Pattern 的核心邏輯就是：查不到 cache 時，從 DB 撈資料，然後寫回 cache 供下次使用。這樣下次同樣查詢就能直接從 Redis 取得，達到加速效果。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Redis 快取判官",
+          "note": "判斷這些快取做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "讀先查快取、沒有才查 DB 再寫回快取並設 TTL(cache-aside)",
+                "correct": "ok",
+                "why": "最常用的快取模式，TTL 讓資料最終會刷新。"
+              },
+              {
+                "text": "熱門 key 到期的瞬間大量請求同時打 DB",
+                "correct": "no",
+                "why": "快取雪崩/stampede；用隨機化 TTL、單飛(single-flight)或提前刷新。"
+              },
+              {
+                "text": "查不到的 key 不做處理，讓它每次都穿透到 DB",
+                "correct": "risk",
+                "why": "快取穿透；對不存在的結果也快取空值(短 TTL)。"
+              },
+              {
+                "text": "更新資料時同步讓對應快取失效",
+                "correct": "ok",
+                "why": "避免讀到過期資料，維持一致性。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "31.17",
@@ -1297,7 +1647,16 @@
         ],
         "answer": "a",
         "explanation": "課程開頭明確提到 Vitest 是 2026 年的測試主流，優勢就是「比 Jest 快 10x、Vite 生態、TS 友善」三大特點。其他選項都超出課程內容或不符合主要亮點。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "31.17.auto",
+          "language": "javascript",
+          "title": "手刻迷你測試框架（理解 Vitest）",
+          "initialCode": "// 用 Node 內建 assert 手刻迷你測試框架（理解 Vitest 在做什麼）\nconst assert = require(\"node:assert\");\nlet pass = 0, fail = 0;\nconst describe = (name, fn) => { console.log(name); fn(); };\nconst it = (name, fn) => {\n  try { fn(); console.log(\"  ✓ \" + name); pass++; }\n  catch (e) { console.log(\"  ✗ \" + name + \" → \" + e.message); fail++; }\n};\nconst add = (a, b) => a + b;\nconst divide = (a, b) => { if (b === 0) throw new Error(\"Cannot divide by zero\"); return a / b; };\ndescribe(\"add()\", () => {\n  it(\"加兩數\", () => assert.strictEqual(add(2, 3), 5));\n  it(\"含負數\", () => assert.strictEqual(add(-1, 1), 0));\n});\ndescribe(\"divide()\", () => {\n  it(\"正常相除\", () => assert.strictEqual(divide(10, 2), 5));\n  it(\"除以零要丟錯\", () => assert.throws(() => divide(1, 0), /Cannot divide/));\n  it(\"這題故意寫錯看紅字\", () => assert.strictEqual(add(1, 1), 3));\n});\nconsole.log(`\\n結果：${pass} 通過、${fail} 失敗`);",
+          "hint": "測試框架的核心就是 assert + 收集通過/失敗。把故意寫錯那題改對，看紅字消失。"
+        }
+      ]
     },
     {
       "id": "31.18",
@@ -1372,7 +1731,16 @@
         ],
         "answer": "b",
         "explanation": "Pino 的核心優勢是結構化 JSON 輸出（例如 userId、ip 等變成獨立欄位），讓 Production 環境可以用工具搜尋、aggregate 和分析；console.log 只輸出純字串，難以查詢。速度提升和自動修復都不是結構化 log 的直接目的。"
-      }
+      },
+      "playgrounds": [
+        {
+          "key": "31.18.auto",
+          "language": "javascript",
+          "title": "手刻結構化 logger（理解 Pino）",
+          "initialCode": "// 手刻迷你結構化 logger（理解 Pino：為什麼 log 要 JSON 不要純字串）\nconst LEVELS = { info: 30, warn: 40, error: 50 };\nfunction makeLogger(base = {}) {\n  const emit = (lvl, obj, msg) => console.log(JSON.stringify({ level: LEVELS[lvl], ...base, ...obj, msg }));\n  return {\n    info: (o, m) => emit(\"info\", o, m), warn: (o, m) => emit(\"warn\", o, m), error: (o, m) => emit(\"error\", o, m),\n    child: (b) => makeLogger({ ...base, ...b }),\n  };\n}\nconst logger = makeLogger({ service: \"api\" });\nlogger.info({ userId: 123, ip: \"1.2.3.4\" }, \"user logged in\");\nlogger.warn({ ms: 812 }, \"slow query\");\n// child：帶固定欄位（如每個 request 的 reqId），之後每行都自動有\nconst reqLog = logger.child({ reqId: \"abc-123\" });\nreqLog.info({ path: \"/orders\" }, \"handling request\");\nreqLog.error({ err: \"timeout\" }, \"upstream failed\");\n// 對比：純字串 log，production 很難搜尋/聚合\nconsole.log(\"user 123 logged in from 1.2.3.4  ← 這種難查\");",
+          "hint": "結構化 log = 每行一個 JSON、可搜尋/聚合；child logger 帶固定欄位。對照最後那行純字串為何難查。"
+        }
+      ]
     },
     {
       "id": "31.19",
@@ -1447,7 +1815,89 @@
         ],
         "answer": "b",
         "explanation": "Railway 最適合這類需求：一鍵整合 PostgreSQL、Redis、多個 worker 的完整 stack。Vercel 是 Serverless 架構，有 10-60 秒 timeout 限制，不適合背景任務和長連線；自己管 EC2 則失去 Indie maker 的簡便性。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "部署 Node 服務選哪個平台？",
+          "note": "看你要多少控制權與心力。",
+          "config": {
+            "intro": "從『幾乎零設定』到『全控制』有光譜，選你現在需要的。",
+            "questions": [
+              {
+                "q": "你想花多少心力管伺服器？",
+                "options": [
+                  {
+                    "label": "越少越好、推上去就會動",
+                    "scores": {
+                      "vercel": 2,
+                      "railway": 1
+                    }
+                  },
+                  {
+                    "label": "願意管一點、要背景常駐/DB 方便",
+                    "scores": {
+                      "railway": 2
+                    }
+                  },
+                  {
+                    "label": "要完全控制、成本可控",
+                    "scores": {
+                      "vps": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "應用型態？",
+                "options": [
+                  {
+                    "label": "Next.js/前端為主 + API routes",
+                    "scores": {
+                      "vercel": 2
+                    }
+                  },
+                  {
+                    "label": "長駐 server / worker / WebSocket",
+                    "scores": {
+                      "railway": 1,
+                      "vps": 2
+                    }
+                  },
+                  {
+                    "label": "要跑在邊緣、全球低延遲",
+                    "scores": {
+                      "cf": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "vercel": {
+                "emoji": "▲",
+                "title": "Vercel",
+                "desc": "Next.js 最順、推 git 即部署。serverless 有冷啟動與執行時間限制、長駐/WS 不適合。"
+              },
+              "railway": {
+                "emoji": "🚄",
+                "title": "Railway / Render",
+                "desc": "接近零設定又能跑長駐 process + 附 DB，中小專案 CP 值高。"
+              },
+              "vps": {
+                "emoji": "🖥️",
+                "title": "VPS + Docker",
+                "desc": "完全控制、成本可預測，但要自己顧更新/監控/安全。本專案用 Zeabur+GHCR 即這類。"
+              },
+              "cf": {
+                "emoji": "🟧",
+                "title": "Cloudflare Workers",
+                "desc": "跑在邊緣、全球低延遲、便宜，但有 runtime 限制(非完整 Node)、配 Hono 佳。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "31.20",
@@ -1705,7 +2155,38 @@
         ],
         "answer": "a",
         "explanation": "tRPC 的核心特色就是前後端共享型別（import type），後端改了型別或欄位名稱，前端 TS 會立刻紅線提示，避免傳統 REST 需要寫 schema 檔案同步的麻煩。b 錯因為 tRPC 還是透過 HTTP；c 是額外工具；d 是 GraphQL 的特色，不是 tRPC。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "tRPC 判官",
+          "note": "判斷這些 tRPC 用法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "前後端同一 repo，用 tRPC 讓型別自動端到端安全",
+                "correct": "ok",
+                "why": "tRPC 最強場景：內部全端、改後端型別前端立刻紅、免手寫型別。"
+              },
+              {
+                "text": "要給第三方/外部團隊用的公開 API 也用 tRPC",
+                "correct": "risk",
+                "why": "tRPC 綁 TS 客戶端；對外通用性差，公開 API 用 REST/OpenAPI 或 GraphQL 較合適。"
+              },
+              {
+                "text": "每個 procedure 的 input 用 zod 定義並驗證",
+                "correct": "ok",
+                "why": "tRPC 靠 zod 驗 input 兼推型別，安全又有型別。"
+              },
+              {
+                "text": "信任前端傳來的 input、不驗直接用",
+                "correct": "no",
+                "why": "前端可被繞過，input 永遠要在後端驗。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "31.22",
@@ -1780,7 +2261,38 @@
         ],
         "answer": "a",
         "explanation": "Vercel AI SDK 的核心賣點就是統一介面 (unified API)，讓你用同一套 generateText/streamText 的寫法，只需要改 model 參數就能切換 OpenAI、Claude 等不同提供商。選項 b 錯在兩個 SDK API 其實不同；c 和 d 都不是 Vercel AI SDK 的設計目的。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "AI SDK 整合判官",
+          "note": "判斷這些串接 LLM 的做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "把 OpenAI/Anthropic API key 直接寫在前端呼叫",
+                "correct": "no",
+                "why": "金鑰會外洩被盜刷；一律只在後端 route 使用、前端打自家 API。"
+              },
+              {
+                "text": "金鑰只放後端環境變數、前端呼叫自家 /api 再轉發",
+                "correct": "ok",
+                "why": "金鑰不進 bundle，正確做法。"
+              },
+              {
+                "text": "回應用串流(stream)逐字吐出改善等待體感",
+                "correct": "ok",
+                "why": "LLM 回應慢，串流讓使用者馬上看到字、體感好很多。"
+              },
+              {
+                "text": "不設 maxTokens 也不記帳，隨使用者無限生成",
+                "correct": "risk",
+                "why": "成本會失控；要設上限、記帳、必要時限流。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Node.js 22+ 新特性：內建 test runner / fetch / WebSocket",
