@@ -1,0 +1,236 @@
+[
+  {
+    "slug": "class-selector",
+    "term": ".class",
+    "zh_name": "類別選擇器",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 1,
+    "plain": "用 .名稱 選中所有 class 含該名稱的元素——CSS 最常用的選法。什麼時候在意：class 可重複、可一個元素掛多個（空格分隔），是套樣式的主力；相對地 id 選擇器（#）權重高又只能一個，別拿來當通用樣式鉤子。",
+    "analogy": "像幫一群人別上同款『貴賓』識別證——所有掛這證的都套同一套招待規則。",
+    "example": ".btn { color: white; }  對應 <button class=\"btn\">",
+    "related": [
+      "id-selector",
+      "css-selector",
+      "specificity"
+    ]
+  },
+  {
+    "slug": "id-selector",
+    "term": "#id",
+    "zh_name": "ID 選擇器",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 1,
+    "plain": "用 #名稱 選中那個唯一 id 的元素。什麼時候在意：id 全頁唯一、權重比 class 高很多（覆蓋規則時很麻煩），所以樣式盡量用 class、把 id 留給 JS 抓元素或錨點跳轉（#section2）。",
+    "analogy": "像身分證字號——全國唯一、指名道姓，威力大但別拿來當分類標籤。",
+    "example": "#header { height: 60px; }  對應 <div id=\"header\">",
+    "related": [
+      "class-selector",
+      "specificity",
+      "html-attribute"
+    ]
+  },
+  {
+    "slug": "attribute-selector",
+    "term": "[attr]",
+    "zh_name": "屬性選擇器",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "依『屬性』選元素：[type=\"email\"] 選 email 欄位、[href^=\"https\"] 開頭是 https、[class*=\"btn\"] 含 btn、[disabled] 有這屬性就中。什麼時候用：表單依 type 上樣式、依 data-* 狀態換外觀、選外部連結加圖示，不必特地多加 class。",
+    "analogy": "像用『條件篩選』找人：所有『職稱含經理』或『信箱結尾是 @gmail』的都挑出來。",
+    "example": "input[required] { border-color: red; }",
+    "related": [
+      "class-selector",
+      "css-selector",
+      "dataset-js"
+    ]
+  },
+  {
+    "slug": "descendant-child-selector",
+    "term": "A B / A > B",
+    "zh_name": "後代與子選擇器",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "組合關係：『A B』（空格）選 A 底下『任何層』的 B（後代）；『A > B』只選 A 的『直接兒子』B（子）；還有 A + B 緊鄰的下一個、A ~ B 之後的兄弟。什麼時候在意：空格是後代很好用但範圍廣，要精準限定層級就用 >。",
+    "analogy": "空格=『這個部門裡所有人』（含孫輩）；> =『只有我直屬的下一級』。",
+    "example": "nav a {…}  選 nav 內所有連結；ul > li {…} 只選直接子項",
+    "related": [
+      "css-selector",
+      "pseudo-class",
+      "css-cascade"
+    ]
+  },
+  {
+    "slug": "inheritance-css",
+    "term": "CSS Inheritance",
+    "zh_name": "CSS 繼承",
+    "category": "concept",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "某些屬性（文字相關：color、font-family、line-height…）會自動從父元素『傳給』子元素，不必每個都寫；但盒子相關（margin、border、background…）不繼承。什麼時候在意：在 body 設 font-family 全站就通用；想強制繼承用 inherit 值，想拔掉用 initial/unset。",
+    "analogy": "像家族遺傳——膚色髮色（文字樣式）會傳給小孩，但爸媽住的房子大小（盒子樣式）不會自動變成小孩的。",
+    "example": "body { color:#333 }  → 內層文字預設都變 #333",
+    "related": [
+      "css-cascade",
+      "specificity",
+      "font-properties"
+    ]
+  },
+  {
+    "slug": "box-sizing",
+    "term": "box-sizing",
+    "zh_name": "盒模型計寬方式",
+    "category": "concept",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "決定 width 算不算 padding/border。預設 content-box：width 只算內容，加 padding/border 會『撐更寬』常爆版。設 border-box：width 就是最終寬度（含 padding/border），直覺很多。什麼時候在意：幾乎所有現代專案第一條 CSS 就是 *{box-sizing:border-box} 全站統一。",
+    "analogy": "content-box 像報衣服『只量身體』，穿上外套後實際更寬；border-box 像報『含外套的最終尺寸』——你要的通常是後者。",
+    "example": "*, *::before, *::after { box-sizing: border-box; }",
+    "related": [
+      "box-model",
+      "padding",
+      "border"
+    ]
+  },
+  {
+    "slug": "margin",
+    "term": "margin",
+    "zh_name": "外距",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 1,
+    "plain": "元素『外面』的留白，推開跟旁邊的距離。什麼時候在意：上下相鄰元素的 margin 會『合併（collapse）』取大值不是相加，常讓新手困惑；margin:0 auto 可讓固定寬度區塊水平置中；負 margin 可拉近重疊。",
+    "analogy": "像每個人身邊的『社交距離』——把自己跟隔壁推開多遠。",
+    "example": "margin: 16px auto;  上下 16、左右自動置中",
+    "related": [
+      "padding",
+      "box-model",
+      "vertical-centering"
+    ]
+  },
+  {
+    "slug": "padding",
+    "term": "padding",
+    "zh_name": "內距",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 1,
+    "plain": "元素『裡面』內容跟邊框之間的留白，讓內容不要貼邊。什麼時候在意：按鈕、卡片靠 padding 撐出呼吸感；padding 會影響盒子總寬（除非 box-sizing:border-box）；背景色/點擊範圍會延伸到 padding 區。",
+    "analogy": "像相框的『卡紙邊』——照片（內容）跟外框之間墊一圈留白，好看又不擁擠。",
+    "example": "padding: 8px 16px;  上下 8、左右 16",
+    "related": [
+      "margin",
+      "box-sizing",
+      "box-model"
+    ]
+  },
+  {
+    "slug": "border",
+    "term": "border",
+    "zh_name": "邊框",
+    "category": "syntax",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 1,
+    "plain": "元素的外框線，三合一寫法 border: 寬度 樣式 顏色（1px solid #ccc）。什麼時候在意：只要一邊用 border-top 等；圓角配 border-radius；想畫線又不撐版面可用 outline（不佔空間）或 box-shadow 假邊框。",
+    "analogy": "像替盒子描一圈邊——粗細、實線虛線、顏色三個一起講。",
+    "example": "border: 1px solid #e5e7eb;",
+    "related": [
+      "border-radius",
+      "box-shadow",
+      "box-model"
+    ]
+  },
+  {
+    "slug": "css-display",
+    "term": "display",
+    "zh_name": "顯示模式",
+    "category": "concept",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "決定元素怎麼排：block 佔一整行（div/p）、inline 只佔內容寬不換行也不能設寬高（span/a）、inline-block 不換行但能設寬高、none 完全隱藏（不佔位）、flex/grid 開啟彈性/格線排版。什麼時候在意：排版問題一大半是搞懂 display 就解決。",
+    "analogy": "像規定每個人排隊的方式：block 一人一排、inline 大家擠同一排、flex/grid 是有隊形的排法。",
+    "example": "nav a { display: inline-block; }",
+    "related": [
+      "flexbox",
+      "grid",
+      "css-position"
+    ]
+  },
+  {
+    "slug": "float-clear",
+    "term": "float / clear",
+    "zh_name": "浮動與清除",
+    "category": "concept",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "float 讓元素靠左/右浮起、文字繞著它排（原本設計給『文繞圖』）。什麼時候在意：以前被拿來排整個版面，現在版面請改用 flex/grid；float 現在只該用在真正的文繞圖。float 會讓父容器『高度塌陷』，需要 clear 或 clearfix 收拾。",
+    "analogy": "像雜誌裡一張靠右的插圖，文字自動繞著它流——但別再拿插圖來搭整本書的骨架。",
+    "example": "img { float: left; margin-right: 12px; }",
+    "related": [
+      "css-display",
+      "flexbox",
+      "css-position"
+    ]
+  },
+  {
+    "slug": "css-overflow",
+    "term": "overflow",
+    "zh_name": "溢出處理",
+    "category": "concept",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "內容超出盒子時怎麼辦：visible 溢出照顯示（預設）、hidden 切掉、scroll 一定給捲軸、auto 需要才給捲軸。什麼時候在意：手機 RWD 破版時『超出的用 overflow-x:auto 給捲軸、別用 hidden 硬切』（本專案鐵規則）；overflow 非 visible 還會建立 BFC 順便清 float。",
+    "analogy": "像抽屜塞不下時的選擇：攤出來（visible）、切齊塞不下的（hidden）、還是換成可拉開的軌道（scroll）。",
+    "example": "pre { overflow-x: auto; }  程式碼過寬給橫向捲軸",
+    "related": [
+      "box-model",
+      "css-display",
+      "text-overflow-ellipsis"
+    ]
+  },
+  {
+    "slug": "vertical-centering",
+    "term": "Vertical Centering",
+    "zh_name": "垂直置中",
+    "category": "concept",
+    "langs": [
+      "css"
+    ],
+    "difficulty": 2,
+    "plain": "把東西上下置中——CSS 的經典難題，現在很簡單：容器設 display:flex; align-items:center（垂直）+ justify-content:center（水平）一次搞定；或 grid + place-items:center。什麼時候在意：舊招（absolute + transform、line-height）還會遇到，但新專案 flex/grid 就對了。",
+    "analogy": "以前要靠一堆偏方才能把字擺盒子正中央，現在 flex 一句『置中』就聽話了。",
+    "example": ".box { display:flex; align-items:center; justify-content:center; }",
+    "related": [
+      "flexbox",
+      "css-display",
+      "margin"
+    ]
+  }
+]

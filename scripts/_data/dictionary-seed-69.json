@@ -1,0 +1,164 @@
+[
+  {
+    "slug": "js-variable",
+    "term": "let / const / var",
+    "zh_name": "變數宣告",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "宣告變數三種：const 不可重新指派（預設就用它）、let 之後會改值才用、var 舊語法（函式作用域＋提升，容易出錯、現在別用）。什麼時候在意：const 綁的物件『內容』仍可改（只是不能換整個物件）；優先 const、需要重新賦值才 let、幾乎永遠不用 var。",
+    "analogy": "const 像刻在名牌上的名字（不換人）、let 像白板可擦寫、var 是老式便條紙常黏錯地方。",
+    "example": "const PI = 3.14; let count = 0; count++;",
+    "related": [
+      "js-scope",
+      "hoisting",
+      "js-data-types"
+    ]
+  },
+  {
+    "slug": "js-data-types",
+    "term": "JS 資料型別",
+    "zh_name": "JavaScript 型別",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "七種原始型別：string、number、boolean、null、undefined、symbol、bigint；其餘都是 object（含陣列、函式）。什麼時候在意：JS 是動態型別、變數可隨時換型別；用 typeof 檢查（但 typeof null 是 'object' 是歷史 bug）；陣列要用 Array.isArray 判斷。原始值比對看『值』、物件比對看『參照』。",
+    "analogy": "像分類東西：數字、文字、是非題是『單一小物件』，陣列/物件/函式是『裝東西的盒子』。",
+    "example": "typeof 42 // 'number'；typeof [] // 'object'",
+    "related": [
+      "type-coercion-js",
+      "nan-undefined-null",
+      "equality-js"
+    ]
+  },
+  {
+    "slug": "js-operator",
+    "term": "JS Operators",
+    "zh_name": "JavaScript 運算子",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "運算符號：算術 + - * / %（餘數）** (次方)、比較 === !== > <、邏輯 && || !、賦值 = += ??=、展開 ...。什麼時候在意：+ 遇到字串會變『字串串接』(1+'2'==='12')是常見坑；比較一律用 === 不用 ==；% 判斷奇偶或循環。",
+    "analogy": "像計算機與邏輯閘的按鍵——加減乘除之外還有『而且/或者/相等嗎』這些判斷鍵。",
+    "example": "10 % 3 // 1；2 ** 8 // 256；'a' + 'b' // 'ab'",
+    "related": [
+      "equality-js",
+      "short-circuit",
+      "ternary"
+    ]
+  },
+  {
+    "slug": "equality-js",
+    "term": "== vs ===",
+    "zh_name": "相等比較",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "=== 嚴格相等：型別＋值都要一樣（不做轉換）；== 寬鬆相等：會先『偷偷轉型別』再比，產生一堆怪結果（0=='' 為真、null==undefined 為真）。什麼時候在意：永遠用 ===，除非你就是要 x==null 一次擋掉 null 和 undefined。物件用 === 比的是『同一個參照』不是內容。",
+    "analogy": "=== 像核對『同款又同色』才算同一件；== 像只要『看起來差不多』就當一樣——常認錯。",
+    "example": "0 === '0' // false；0 == '0' // true（別依賴）",
+    "related": [
+      "type-coercion-js",
+      "truthy-falsy",
+      "nan-undefined-null"
+    ]
+  },
+  {
+    "slug": "js-scope",
+    "term": "Scope",
+    "zh_name": "作用域",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "變數『能被看到的範圍』：全域、函式作用域、{ } 區塊作用域（let/const 才有）。什麼時候在意：內層找不到變數會往外層一層層找（作用域鏈）；for 迴圈用 let 每圈各自一份、用 var 會共用一份（經典 setTimeout 印同一個數的 bug）；少用全域變數避免污染與衝突。",
+    "analogy": "像公司權限：辦公室內的東西外面看不到，但你能用到公司公共區（外層）的資源。",
+    "example": "if(true){ let x=1 } // 外面看不到 x",
+    "related": [
+      "js-variable",
+      "hoisting",
+      "closure"
+    ]
+  },
+  {
+    "slug": "default-params",
+    "term": "Default Parameters",
+    "zh_name": "預設參數",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "函式參數沒傳(undefined)時用預設值：function f(x = 10){}。什麼時候在意：只有傳 undefined 才會套預設，傳 null 不會；預設值可用前面的參數或函式運算；比舊寫法 x = x || 10 安全（後者會把 0/'' 也當沒傳）。",
+    "analogy": "像點餐『不特別講就給原味』——你沒指定，廚房就用預設配方。",
+    "example": "function greet(name = '訪客'){ return 'Hi ' + name }",
+    "related": [
+      "arrow-function",
+      "destructuring",
+      "short-circuit"
+    ]
+  },
+  {
+    "slug": "short-circuit",
+    "term": "Short-circuit Evaluation",
+    "zh_name": "短路求值",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "&& 和 || 一旦能決定結果就停手：a && b 若 a 假就回 a、真才回 b（可當條件執行）；a || b 若 a 真就回 a、假才回 b（可設備援值）。什麼時候在意：cond && <Component/> 是 React 條件渲染慣用；備援值遇到 0/'' 這種 falsy 會誤觸發，改用 ?? 更準。",
+    "analogy": "像面試第一關就刷掉就不用面第二關——結果已定，後面免評。",
+    "example": "const name = input || '匿名'；show && render()",
+    "related": [
+      "truthy-falsy",
+      "nullish-coalescing",
+      "js-operator"
+    ]
+  },
+  {
+    "slug": "type-coercion-js",
+    "term": "Type Coercion",
+    "zh_name": "型別自動轉換",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "JS 在運算時會『偷偷幫你轉型別』：+ 有字串就全變字串、- * / 會把字串轉數字、if() 會轉 boolean。什麼時候在意：'5'-1===4 但 '5'+1==='51' 這種坑；表單取到的值都是字串、算數學前記得 Number()/parseInt；用 === 避免比較時的隱式轉換。",
+    "analogy": "像自動翻譯機自作主張幫你轉語言——方便但常翻錯意思，最好自己講清楚。",
+    "example": "'5' + 1 // '51'；'5' - 1 // 4",
+    "related": [
+      "equality-js",
+      "truthy-falsy",
+      "js-data-types"
+    ]
+  },
+  {
+    "slug": "nan-undefined-null",
+    "term": "NaN / undefined / null",
+    "zh_name": "三種「空/非值」",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "undefined＝『沒給值』(變數沒賦值、函式沒回傳、物件沒這屬性)；null＝『刻意設空』(你主動清掉)；NaN＝『非數字』(算術失敗，如 Number('abc'))。什麼時候在意：NaN 連自己都不相等(NaN===NaN 為 false)，要用 Number.isNaN() 判斷；?. 和 ?? 專門優雅處理 null/undefined。",
+    "analogy": "undefined 是『欄位還沒填』、null 是『特意畫叉表示無』、NaN 是『這格算出來不是數字』。",
+    "example": "Number('x') // NaN；let a; // undefined；let b=null;",
+    "related": [
+      "optional-chaining",
+      "nullish-coalescing",
+      "js-data-types"
+    ]
+  }
+]

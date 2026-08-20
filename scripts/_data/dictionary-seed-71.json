@@ -1,0 +1,218 @@
+[
+  {
+    "slug": "array-map-filter-reduce",
+    "term": "map / filter / reduce",
+    "zh_name": "陣列三大高階方法",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "處理陣列的核心三招：map 每個元素『變形』成新陣列(等長)、filter 篩出『符合條件』的(可能變短)、reduce 把整個陣列『累積』成一個值(加總、分組)。什麼時候在意：它們回傳新陣列、不改原陣列(純函式友善)、可串接(.filter().map())；比 for 迴圈更宣告式好讀。",
+    "analogy": "map 像整批加工(每顆蘋果削皮)、filter 像品管挑貨(只留好的)、reduce 像結帳把一車商品加成一個總價。",
+    "example": "[1,2,3].filter(n=>n>1).map(n=>n*10) // [20,30]",
+    "related": [
+      "foreach",
+      "array-find-some-every",
+      "array-sort"
+    ]
+  },
+  {
+    "slug": "foreach",
+    "term": "forEach()",
+    "zh_name": "陣列逐一走訪",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "對陣列每個元素跑一次函式，用來做『副作用』(印出、操作 DOM)。什麼時候在意：它沒有回傳值(回 undefined)、要產生新陣列請用 map；不能用 break/continue 中途跳出(要能中斷改用 for...of)；跳過空洞、不等 async(裡面 await 不會照順序等)。",
+    "analogy": "像點名——把名單每個人叫一遍做一件事，但不產生新名單。",
+    "example": "items.forEach(x => console.log(x));",
+    "related": [
+      "array-map-filter-reduce",
+      "array-find-some-every",
+      "async-await"
+    ]
+  },
+  {
+    "slug": "array-find-some-every",
+    "term": "find / some / every",
+    "zh_name": "陣列查找與判斷",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "find 回『第一個符合』的元素(沒有回 undefined)、findIndex 回位置；some 只要『有一個』符合就 true；every 要『全部』符合才 true。什麼時候用：從物件陣列撈特定一筆用 find；表單『有沒有任何欄位沒填』用 some；『是否全部通過』用 every。都會短路提前結束。",
+    "analogy": "find 像人群裡找到第一個戴紅帽的；some 像問『有沒有人舉手』；every 像問『是不是全體都到齊』。",
+    "example": "users.find(u=>u.id===7)；nums.some(n=>n<0)",
+    "related": [
+      "array-map-filter-reduce",
+      "array-includes",
+      "short-circuit"
+    ]
+  },
+  {
+    "slug": "array-includes",
+    "term": "includes()",
+    "zh_name": "是否包含",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "檢查陣列(或字串)『有沒有含某個值』回 true/false，比舊的 indexOf!==-1 直覺。什麼時候在意：它用嚴格相等比、對物件是比參照(找不到內容相同的另一個物件)；要判斷字串開頭/結尾用 startsWith/endsWith；大量成員判斷用 Set 更快。",
+    "analogy": "像問『這份名單裡有沒有小明』——有就 true。",
+    "example": "['a','b'].includes('b') // true",
+    "related": [
+      "array-find-some-every",
+      "object-keys-values-entries",
+      "equality-js"
+    ]
+  },
+  {
+    "slug": "array-sort",
+    "term": "sort()",
+    "zh_name": "陣列排序",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "排序陣列。大坑：預設把元素『當字串』比，所以 [10,2,1].sort() 會變 [1,10,2]！數字要給比較函式 sort((a,b)=>a-b)(升冪)。什麼時候在意：sort 會『改動原陣列』(要保留先複製 [...arr].sort())；比較函式回負/正/0 決定前後；物件依欄位排 (a,b)=>a.age-b.age。",
+    "analogy": "像整理撲克牌——不告訴它規則，它會按『字面』亂排(把 10 排在 2 前面)。",
+    "example": "[10,2,1].sort((a,b)=>a-b) // [1,2,10]",
+    "related": [
+      "array-map-filter-reduce",
+      "array-find-some-every",
+      "array-from"
+    ]
+  },
+  {
+    "slug": "object-keys-values-entries",
+    "term": "Object.keys/values/entries",
+    "zh_name": "走訪物件",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "把物件轉成陣列好遍歷：Object.keys(o) 拿所有鍵、values 拿所有值、entries 拿 [鍵,值] 配對(可配 for...of 或 map)。什麼時候用：物件本身不能直接 map，先轉陣列處理再用 Object.fromEntries 轉回去。entries 常搭解構 for(const [k,v] of Object.entries(o))。",
+    "analogy": "像把一本通訊錄攤成三張清單：只有名字、只有電話、名字配電話。",
+    "example": "Object.entries({a:1,b:2}) // [['a',1],['b',2]]",
+    "related": [
+      "array-map-filter-reduce",
+      "destructuring",
+      "json-parse-stringify"
+    ]
+  },
+  {
+    "slug": "json-parse-stringify",
+    "term": "JSON.parse / stringify",
+    "zh_name": "JSON 與物件互轉",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "stringify 把物件轉成 JSON 字串(存 localStorage、送 API)、parse 把 JSON 字串轉回物件。什麼時候在意：parse 收到壞字串會丟例外(用 try/catch)；stringify 會丟掉 undefined/函式、Date 變字串；常被拿來『深拷貝』(JSON.parse(JSON.stringify(o)))但有上述限制、正式深拷貝用 structuredClone。",
+    "analogy": "像把家具拆平打包成紙箱(stringify)寄出，收到再組裝回來(parse)。",
+    "example": "localStorage.setItem('u', JSON.stringify(user));",
+    "related": [
+      "object-keys-values-entries",
+      "fetch-js",
+      "js-data-types"
+    ]
+  },
+  {
+    "slug": "array-from",
+    "term": "Array.from / 展開",
+    "zh_name": "轉成真陣列",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "把『類陣列/可迭代』的東西變成真陣列：Array.from(nodeList) 或 [...nodeList]。什麼時候用：querySelectorAll、字串、Set、arguments 這些不是真陣列不能直接 map，轉一下就能用陣列方法。Array.from 第二參數還能順便 map；Array.from({length:5},(_,i)=>i) 產生序列。",
+    "analogy": "像把一疊散裝東西倒進標準收納盒——之後就能用盒子的所有功能。",
+    "example": "[...document.querySelectorAll('li')].map(el=>el.textContent)",
+    "related": [
+      "queryselector",
+      "array-map-filter-reduce",
+      "array-sort"
+    ]
+  },
+  {
+    "slug": "async-await-basics",
+    "term": "async / await",
+    "zh_name": "非同步入門",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "讓非同步程式『看起來像同步』：函式標 async、裡面用 await 等 Promise 完成再往下。什麼時候在意：await 只能在 async 函式內；錯誤用 try/catch 接；別把該平行的請求寫成一個個 await(慢)、獨立的用 Promise.all 一起等；await 會擋住『同函式後面』但不擋整個程式。",
+    "analogy": "像排隊等咖啡——await 是站著等這杯好了再走下一步，比不斷回頭問『好了嗎』(callback)清爽。",
+    "example": "async function load(){ const r=await fetch('/api'); const d=await r.json(); }",
+    "related": [
+      "fetch-js",
+      "then-catch",
+      "promise-all"
+    ]
+  },
+  {
+    "slug": "fetch-js",
+    "term": "fetch()",
+    "zh_name": "發送 HTTP 請求",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "瀏覽器內建的發請求 API，回 Promise。什麼時候在意：fetch 只有『網路失敗』才 reject——HTTP 404/500 仍算成功(要自己看 res.ok)！讀 JSON 要再 await res.json()；POST 要設 method/headers/body(JSON.stringify)；帶 cookie 設 credentials；可用 AbortController 取消。",
+    "analogy": "像寄出一張要求單、等對方回件——但『對方回你一張錯誤通知』也算『有回信』，得自己拆開看內容對不對。",
+    "example": "const res=await fetch('/api/x'); if(!res.ok) throw Error(); const d=await res.json();",
+    "related": [
+      "async-await-basics",
+      "then-catch",
+      "json-parse-stringify"
+    ]
+  },
+  {
+    "slug": "then-catch",
+    "term": ".then() / .catch()",
+    "zh_name": "Promise 鏈式處理",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "Promise 的另一種寫法：.then(成功值=>…) 接結果、.catch(err=>…) 接錯誤、.finally() 收尾。什麼時候在意：then 回傳值會傳給下一個 then(可串接)；忘了 catch 的 Promise 出錯會變 unhandledRejection；現代多改用 async/await(更好讀)，但短鏈或某些 API 仍常見 then。",
+    "analogy": "像設好『成功就這樣做、失敗就那樣處理、最後不管怎樣都收尾』的一連串應變。",
+    "example": "fetch(url).then(r=>r.json()).then(show).catch(handleErr);",
+    "related": [
+      "async-await-basics",
+      "promise",
+      "fetch-js"
+    ]
+  },
+  {
+    "slug": "settimeout-setinterval",
+    "term": "setTimeout / setInterval",
+    "zh_name": "計時器",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "setTimeout(fn, ms) 延遲一次、setInterval(fn, ms) 每隔一段重複。什麼時候在意：時間不精準(排進事件迴圈、至少 ms 後才跑)；setInterval 記得 clearInterval 清掉否則洩漏、換頁還在跑；做防抖/節流常用 setTimeout；連續動畫改用 requestAnimationFrame 更順。",
+    "analogy": "setTimeout 像設一次性鬧鐘、setInterval 像每小時報時的鐘——不用了要記得關。",
+    "example": "const id=setInterval(tick,1000); // 停：clearInterval(id)",
+    "related": [
+      "async-await-basics",
+      "addeventlistener",
+      "promise-all"
+    ]
+  }
+]

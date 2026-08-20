@@ -1,0 +1,254 @@
+[
+  {
+    "slug": "html-form",
+    "term": "<form>",
+    "zh_name": "form 表單",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 2,
+    "plain": "把一組輸入欄位包起來、能『送出』的容器，靠 action 指定送去哪、method 指定用 GET 還是 POST。什麼時候在意：真正送出前一定要在『後端』再驗一次資料（前端驗證只是體驗、擋不住惡意）；現代 SPA 常改用 JS 攔截 submit 事件用 fetch 送、不讓瀏覽器整頁重刷。",
+    "analogy": "像一張紙本申請表——欄位填一填，按『送出』整張交到櫃台（action 指定的地址）。",
+    "example": "<form action=\"/signup\" method=\"post\">…欄位…<button>送出</button></form>",
+    "related": [
+      "form-action-method",
+      "form-submit-event",
+      "html-validation"
+    ]
+  },
+  {
+    "slug": "input-types",
+    "term": "<input type>",
+    "zh_name": "input 輸入類型",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 2,
+    "plain": "同一個 <input> 靠 type 變出不同輸入：text 文字、email 信箱（手機跳 @ 鍵盤）、password 遮點、number 數字、date 日曆、file 選檔、range 拉桿、color 選色、tel/url/search。什麼時候在意：選對 type 手機會跳對應鍵盤、瀏覽器也幫你做基本格式檢查與 UI，體驗差很多。",
+    "analogy": "像瑞士刀——同一把刀，切換出不同刀頭（文字/數字/日期/檔案）。",
+    "example": "<input type=\"email\" name=\"mail\" required>",
+    "related": [
+      "html-form",
+      "checkbox",
+      "html-validation"
+    ]
+  },
+  {
+    "slug": "checkbox",
+    "term": "<input type=checkbox>",
+    "zh_name": "核取方塊（多選）",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 1,
+    "plain": "可以『勾好幾個』的方框，或當單一開關（同意條款）。什麼時候在意：一組相關的多選給它們相同 name（後端收到陣列）；讀勾沒勾用 JS 的 .checked（不是 .value）；一定要配 <label> 讓文字也能點。",
+    "analogy": "像問卷『喜歡的口味（可複選）』——想勾幾個就勾幾個。",
+    "example": "<label><input type=\"checkbox\" name=\"agree\"> 我同意</label>",
+    "related": [
+      "radio-button",
+      "label-for",
+      "input-types"
+    ]
+  },
+  {
+    "slug": "radio-button",
+    "term": "<input type=radio>",
+    "zh_name": "單選圓鈕",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 1,
+    "plain": "一組『只能選一個』的圓鈕。關鍵：同一組要給『相同 name』才會互斥（選了 B 就自動取消 A）；不同 name 就變成各自獨立、全都能選——這是新手最常踩的坑。",
+    "analogy": "像單選題的 A/B/C/D——只能塗一個，塗了新的舊的自動消掉。",
+    "example": "<input type=\"radio\" name=\"size\" value=\"S\"> S <input type=\"radio\" name=\"size\" value=\"M\"> M",
+    "related": [
+      "checkbox",
+      "html-select",
+      "label-for"
+    ]
+  },
+  {
+    "slug": "html-select",
+    "term": "<select>/<option>",
+    "zh_name": "下拉選單",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 1,
+    "plain": "點開一個下拉清單選一項，每個選項是 <option>，可用 <optgroup> 分組、加 multiple 變多選。什麼時候用：選項多又固定（國家、縣市）用它比一堆 radio 省空間。第一個常放 <option value=\"\" disabled selected>請選擇</option> 當提示。",
+    "analogy": "像自動販賣機的下拉選鈕——點開一整排，挑一個。",
+    "example": "<select name=\"city\"><option>台北</option><option>高雄</option></select>",
+    "related": [
+      "radio-button",
+      "input-types",
+      "label-for"
+    ]
+  },
+  {
+    "slug": "textarea",
+    "term": "<textarea>",
+    "zh_name": "多行文字框",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 1,
+    "plain": "可以打好幾行的文字輸入框（留言、自我介紹）。跟 <input> 不同：它有開合標籤、預設值寫在標籤『中間』不是 value 屬性；rows/cols 設初始大小，實務常用 CSS 或 resize 控制。",
+    "analogy": "像信紙的一整塊書寫區——不是只有一行的簽名欄。",
+    "example": "<textarea name=\"bio\" rows=\"4\">預設文字</textarea>",
+    "related": [
+      "input-types",
+      "html-form",
+      "placeholder"
+    ]
+  },
+  {
+    "slug": "html-button",
+    "term": "<button>",
+    "zh_name": "按鈕",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 1,
+    "plain": "可點的按鈕。關鍵：在 <form> 裡的 <button> 預設 type=\"submit\" 會送出表單並重刷頁面——不想送出（純 JS 動作）一定要寫 type=\"button\"，這是超常見的 bug。type=\"reset\" 則清空表單。",
+    "analogy": "像電梯按鈕，但要標清楚是『送出樓層』還是『只是亮個燈』——預設它會直接把你送出去。",
+    "example": "<button type=\"button\" onclick=\"do()\">點我</button>",
+    "related": [
+      "html-anchor",
+      "form-submit-event",
+      "addeventlistener"
+    ]
+  },
+  {
+    "slug": "label-for",
+    "term": "<label for>",
+    "zh_name": "label 標籤關聯",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 1,
+    "plain": "欄位的文字說明，用 for=\"欄位id\" 綁到對應輸入（或直接把 input 包在 label 裡）。什麼時候在意：綁好之後『點文字也能勾/聚焦』那個欄位、報讀器也會念出欄位名——這是無障礙的基本功，別只放個裸文字。",
+    "analogy": "像行李吊牌綁在對應的行李箱上——點吊牌就知道是哪一件。",
+    "example": "<label for=\"em\">信箱</label><input id=\"em\" type=\"email\">",
+    "related": [
+      "checkbox",
+      "aria-label",
+      "html-form"
+    ]
+  },
+  {
+    "slug": "placeholder",
+    "term": "placeholder",
+    "zh_name": "佔位提示文字",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 1,
+    "plain": "欄位空的時候顯示的『灰字範例』，一打字就消失。什麼時候在意：它不是 label！別拿 placeholder 當唯一說明——打字後提示就不見了、對比度低看不清、報讀器支援差。placeholder 放範例格式（如 09xx-xxx-xxx），label 才放欄位名。",
+    "analogy": "像表格欄位裡的淺色示範字『例：王小明』——提醒你怎麼填，但它不是欄位標題。",
+    "example": "<input type=\"tel\" placeholder=\"09xx-xxx-xxx\">",
+    "related": [
+      "label-for",
+      "input-types",
+      "html-validation"
+    ]
+  },
+  {
+    "slug": "required-attr",
+    "term": "required",
+    "zh_name": "必填屬性",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 1,
+    "plain": "加在欄位上、沒填就不讓表單送出並跳提示。什麼時候在意：這是『免寫 JS 的最基本前端驗證』，但只是體驗——後端一定要再驗一次，因為使用者可以用開發者工具拿掉 required 硬送。配 type=email/pattern 可做更多格式檢查。",
+    "analogy": "像申請表上的紅色米字號＊——沒填櫃台不收件。",
+    "example": "<input name=\"name\" required>",
+    "related": [
+      "html-validation",
+      "input-types",
+      "form-action-method"
+    ]
+  },
+  {
+    "slug": "form-action-method",
+    "term": "action / method",
+    "zh_name": "表單送出目標與方法",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 2,
+    "plain": "action=送去哪個網址、method=用什麼 HTTP 方法。GET：資料接在網址 ?後面（搜尋、可分享、別放密碼）；POST：資料藏在請求主體（登入、送出敏感/大量資料）。什麼時候在意：登入註冊一律 POST，別讓密碼出現在網址列與瀏覽紀錄。",
+    "analogy": "action 是收件地址，method 是寄法：GET 像明信片（內容寫在外面誰都看得到），POST 像密封信封。",
+    "example": "<form action=\"/login\" method=\"post\">",
+    "related": [
+      "html-form",
+      "http-methods",
+      "required-attr"
+    ]
+  },
+  {
+    "slug": "html-validation",
+    "term": "表單驗證屬性",
+    "zh_name": "HTML 內建驗證",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 2,
+    "plain": "瀏覽器免寫 JS 就能做的檢查：required 必填、type=email/url 格式、min/max/step 數值範圍、minlength/maxlength 長度、pattern 用正則自訂規則。什麼時候在意：這些只提升體驗、擋不住惡意（可繞過）→ 後端必須重驗；自訂錯誤訊息用 JS 的 setCustomValidity。",
+    "analogy": "像門口的基本安檢——擋掉粗心大意的，但真正的把關還在後面的後端保全。",
+    "example": "<input type=\"text\" pattern=\"[0-9]{4}\" title=\"四位數字\">",
+    "related": [
+      "required-attr",
+      "input-types",
+      "html-form"
+    ]
+  },
+  {
+    "slug": "fieldset-legend",
+    "term": "<fieldset>/<legend>",
+    "zh_name": "欄位群組與標題",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 2,
+    "plain": "把相關欄位框成一組（fieldset）、給這組一個標題（legend）。什麼時候用：一組 radio/checkbox（如『性別』『付款方式』）用 fieldset 包起來、legend 當共同問題——報讀器會把 legend 念給每個選項當上下文，無障礙加分。",
+    "analogy": "像申請表上的分區外框『聯絡資訊』『帳單地址』——把同類欄位圈在一起、標上小標題。",
+    "example": "<fieldset><legend>性別</legend><label><input type=\"radio\" name=\"g\">男</label>…</fieldset>",
+    "related": [
+      "radio-button",
+      "label-for",
+      "html-form"
+    ]
+  },
+  {
+    "slug": "autocomplete-attr",
+    "term": "autocomplete",
+    "zh_name": "自動填入屬性",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 2,
+    "plain": "告訴瀏覽器這欄是什麼、好自動帶入（autocomplete=\"email\" \"name\" \"tel\" \"street-address\" \"one-time-code\"…）。什麼時候在意：填對能大幅加速手機填單、密碼欄配 \"new-password\"/\"current-password\" 讓密碼管理員正確運作；敏感或不想被記住的欄位設 autocomplete=\"off\"。",
+    "analogy": "像在欄位上貼標籤告訴系統『這格是電話』——它就自動從你的通訊錄帶號碼進來。",
+    "example": "<input name=\"email\" autocomplete=\"email\">",
+    "related": [
+      "input-types",
+      "placeholder",
+      "html-form"
+    ]
+  }
+]

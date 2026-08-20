@@ -1,0 +1,288 @@
+[
+  {
+    "slug": "html-div",
+    "term": "<div>",
+    "zh_name": "div 區塊容器",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 1,
+    "plain": "最通用的『無意義區塊盒子』，用來把一群東西framed起來好排版或套樣式。本身佔一整行（block）。什麼時候用：需要一個容器來包一組元素、再用 CSS 排版時；但『有語意的位置』該優先用 header/nav/section 等語意標籤，別整頁都是 div。",
+    "analogy": "像搬家用的空紙箱——本身沒標示裝什麼，純粹拿來分裝、堆疊。",
+    "example": "<div class=\"card\">…卡片內容…</div>",
+    "related": [
+      "html-span",
+      "html-semantic-tags",
+      "css-display"
+    ]
+  },
+  {
+    "slug": "html-span",
+    "term": "<span>",
+    "zh_name": "span 行內容器",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 1,
+    "plain": "跟 div 一樣是『無意義容器』，但它是行內（inline）——不換行，只框住一小段文字或圖示。什麼時候用：想單獨對一句話裡的『某幾個字』上色/加樣式時，用 span 把那幾個字包起來。",
+    "analogy": "像用螢光筆在一整句話裡『只圈幾個字』，不會把整行另起一段。",
+    "example": "價格 <span class=\"red\">$99</span> 元",
+    "related": [
+      "html-div",
+      "css-display",
+      "html-paragraph"
+    ]
+  },
+  {
+    "slug": "html-anchor",
+    "term": "<a>",
+    "zh_name": "a 超連結",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 1,
+    "plain": "做『可以點的連結』的標籤，靠 href 屬性指定要去哪。什麼時候用：跳到別頁、跳到同頁某段（#id）、開外部網站（配 target=\"_blank\" 另開分頁、記得加 rel=\"noopener\"）、或 mailto:/tel: 撥號寄信。整個網頁能互相跳的核心。",
+    "analogy": "像書裡的『see p.42』指路標——點一下就翻到那一頁。",
+    "example": "<a href=\"/about\">關於我們</a>",
+    "related": [
+      "html-attribute",
+      "html-button",
+      "dom"
+    ]
+  },
+  {
+    "slug": "html-img",
+    "term": "<img>",
+    "zh_name": "img 圖片",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 1,
+    "plain": "在頁面放圖片，src 指圖片網址、alt 寫『圖片說明文字』。什麼時候在意：alt 一定要寫（報讀器念給看不到的人聽、圖破圖時也顯示、對 SEO 有幫助）；大圖記得設 width/height 或用 loading=\"lazy\" 免得拖慢頁面。它是『自閉合』標籤，沒有 </img>。",
+    "analogy": "像相框——src 是裡面那張照片，alt 是相框底下的手寫說明。",
+    "example": "<img src=\"cat.jpg\" alt=\"一隻橘貓在睡覺\">",
+    "related": [
+      "html-media",
+      "html-attribute",
+      "lazy-image"
+    ]
+  },
+  {
+    "slug": "html-list",
+    "term": "<ul>/<ol>/<li>",
+    "zh_name": "清單（無序/有序）",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 1,
+    "plain": "做條列：<ul> 是無序清單（項目前面點點）、<ol> 是有序清單（自動編號 1.2.3.），裡面每一項都用 <li> 包。什麼時候用：任何『一條一條』的東西——導覽列、步驟、功能列表。導覽選單通常也是 ul+li 做的。",
+    "analogy": "像購物清單：ul 是隨手列的點點清單，ol 是有先後順序的食譜步驟。",
+    "example": "<ul><li>蘋果</li><li>牛奶</li></ul>",
+    "related": [
+      "html-semantic-tags",
+      "html-paragraph"
+    ]
+  },
+  {
+    "slug": "html-table",
+    "term": "<table>",
+    "zh_name": "table 表格",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 2,
+    "plain": "呈現『列 × 欄』的表格資料：table 外框、tr 一列、th 標題儲存格、td 一般儲存格，配 thead/tbody 分頭身。什麼時候用：真正的表格資料（價目表、成績單）才用它；別再拿 table 來排整個版面（那是 20 年前的老做法，現在用 CSS grid/flex）。",
+    "analogy": "像 Excel 的一張工作表——一列列、一格格填資料。",
+    "example": "<table><tr><th>品項</th><th>價</th></tr><tr><td>咖啡</td><td>60</td></tr></table>",
+    "related": [
+      "html-list",
+      "grid",
+      "css-display"
+    ]
+  },
+  {
+    "slug": "html-heading",
+    "term": "<h1>–<h6>",
+    "zh_name": "標題階層",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 1,
+    "plain": "六級標題，h1 最大最重要、h6 最小。什麼時候在意：一頁通常只放一個 h1（主標）、下面依內容大小接 h2、h3…別為了『字大』亂跳級（那是 CSS 的事）。標題階層清楚，SEO 和報讀器才讀得懂結構。",
+    "analogy": "像書的目錄層級：h1 是書名、h2 是章、h3 是節，一層包一層。",
+    "example": "<h1>文章大標</h1><h2>第一段小標</h2>",
+    "related": [
+      "html-semantic-tags",
+      "html-paragraph",
+      "on-page-seo"
+    ]
+  },
+  {
+    "slug": "html-paragraph",
+    "term": "<p>",
+    "zh_name": "p 段落",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 1,
+    "plain": "一段文字。瀏覽器會在段落上下自動留空白。什麼時候用：正文的每一段。注意 <p> 裡面不能塞 <div> 這種 block 元素（會被瀏覽器自動拆開、版面亂掉），只放文字和行內元素（span/a/strong）。",
+    "analogy": "像作文的一個自然段——講完一個小意思就換段。",
+    "example": "<p>這是第一段。</p><p>這是第二段。</p>",
+    "related": [
+      "html-span",
+      "html-heading",
+      "css-display"
+    ]
+  },
+  {
+    "slug": "html-semantic-tags",
+    "term": "header/nav/main/section/article/aside/footer",
+    "zh_name": "語意標籤",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 2,
+    "plain": "『有意義的區塊標籤』：header 頁首、nav 導覽、main 主要內容（一頁一個）、section 一個主題段、article 一則可獨立的內容（文章/貼文）、aside 側欄補充、footer 頁尾。什麼時候在意：用它們取代滿頁 div——報讀器、搜尋引擎、其他工程師都能一眼看懂版面結構。",
+    "analogy": "像報紙的版面分區有名字：報頭、導覽、主新聞、花邊、報尾——而不是一堆沒標示的空白框。",
+    "example": "<header>…</header><main><article>…</article></main><footer>…</footer>",
+    "related": [
+      "html-div",
+      "aria-label",
+      "on-page-seo"
+    ]
+  },
+  {
+    "slug": "html-media",
+    "term": "<video>/<audio>",
+    "zh_name": "影音媒體標籤",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 2,
+    "plain": "內嵌影片/音訊，controls 顯示播放列、poster 設封面圖、可放多個 <source> 提供不同格式讓瀏覽器挑。什麼時候在意：autoplay 多數瀏覽器要求同時 muted 才准自動播；大影片別直接塞，考慮串流；記得字幕 <track> 顧無障礙。",
+    "analogy": "像內建的迷你播放器——你把影片檔交給它，它自己長出播放/暫停/音量按鈕。",
+    "example": "<video src=\"clip.mp4\" controls poster=\"cover.jpg\"></video>",
+    "related": [
+      "html-img",
+      "adaptive-streaming",
+      "html-canvas"
+    ]
+  },
+  {
+    "slug": "html-canvas",
+    "term": "<canvas>",
+    "zh_name": "canvas 畫布",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 3,
+    "plain": "一塊『用 JavaScript 畫圖』的空白畫布，透過 getContext('2d') 或 WebGL 逐像素畫線條/圖形/動畫。什麼時候用：遊戲、資料視覺化、粒子動畫、影像處理。缺點：畫上去的東西不是 DOM 元素（報讀器讀不到、不能直接點選），需要另外顧無障礙。",
+    "analogy": "像一張空白畫紙——HTML 只給你紙，畫什麼全靠 JS 這支筆。",
+    "example": "<canvas id=\"c\" width=\"300\" height=\"150\"></canvas>",
+    "related": [
+      "dom",
+      "html-media",
+      "rasterization"
+    ]
+  },
+  {
+    "slug": "html-iframe",
+    "term": "<iframe>",
+    "zh_name": "iframe 內嵌框架",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 2,
+    "plain": "在頁面裡『開一個小窗嵌別的網頁』（YouTube、Google Maps、金流頁）。什麼時候在意：安全上用 sandbox 屬性限制它能做什麼、跨網域時父子頁不能隨意互相讀資料（同源政策）；載入慢又影響效能，非必要別濫用。",
+    "analogy": "像牆上開一扇窗，窗外是『另一棟房子（另一個網站）』，你只能透過窗看、不能伸手進去搬東西。",
+    "example": "<iframe src=\"https://maps.google.com/…\" sandbox></iframe>",
+    "related": [
+      "same-origin-policy",
+      "csp-header",
+      "html-media"
+    ]
+  },
+  {
+    "slug": "html-head-tags",
+    "term": "<head> 內標籤",
+    "zh_name": "head 標籤（meta/link/script/style/title）",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 2,
+    "plain": "<head> 放『給瀏覽器和搜尋引擎看、不直接顯示』的資訊：<title> 分頁標題、<meta> 描述/viewport/charset、<link> 接 CSS 或 favicon、<script> 引 JS、<style> 內嵌樣式。什麼時候在意：<meta name=\"viewport\"> 是手機 RWD 的關鍵、<meta charset=\"utf-8\"> 防中文亂碼、OG meta 決定分享到 LINE/FB 的預覽卡。",
+    "analogy": "像書的版權頁與書名頁——讀者不一定翻，但書名、ISBN、出版資訊都在這。",
+    "example": "<head><meta charset=\"utf-8\"><title>我的網站</title></head>",
+    "related": [
+      "doctype",
+      "on-page-seo",
+      "web-manifest"
+    ]
+  },
+  {
+    "slug": "doctype",
+    "term": "<!DOCTYPE html>",
+    "zh_name": "文件類型宣告",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 1,
+    "plain": "每個 HTML 檔案第一行寫的 <!DOCTYPE html>，告訴瀏覽器『用現代標準模式（HTML5）解析我』。什麼時候在意：漏寫會掉進『怪異模式（quirks mode）』——瀏覽器模擬老 IE 的錯誤行為、盒模型算寬度會跑掉、版面莫名其妙壞。永遠放第一行就對了。",
+    "analogy": "像文件開頭寫『本合約依 2024 年版法規解釋』——先講清楚用哪套規則讀後面。",
+    "example": "<!DOCTYPE html>\\n<html lang=\"zh-Hant\">…",
+    "related": [
+      "html-head-tags",
+      "box-sizing"
+    ]
+  },
+  {
+    "slug": "html-attribute",
+    "term": "屬性 (id/class/data-*)",
+    "zh_name": "HTML 屬性",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 1,
+    "plain": "寫在標籤裡的『設定值』，格式 name=\"value\"：id 全頁唯一識別、class 分組套 CSS/多個空格分隔、data-* 自訂資料給 JS 用、href/src/alt 等各標籤專屬。什麼時候在意：id 唯一、class 可重複；要存自訂資料給 JS 讀就用 data-xxx（JS 端用 dataset 取）。",
+    "analogy": "像商品上的標籤貼紙：id 是唯一條碼、class 是『促銷/新品』分類貼、data-* 是你自己加的備註便利貼。",
+    "example": "<button id=\"buy\" class=\"btn primary\" data-sku=\"A1\">買</button>",
+    "related": [
+      "class-selector",
+      "id-selector",
+      "dataset-js"
+    ]
+  },
+  {
+    "slug": "html-entity",
+    "term": "HTML Entity",
+    "zh_name": "HTML 實體字元",
+    "category": "reference",
+    "langs": [
+      "html"
+    ],
+    "difficulty": 2,
+    "plain": "用 &代碼; 寫出『不能直接打的字元』：&lt; = <、&gt; = >、&amp; = &、&nbsp; = 不換行空格、&copy; = ©。什麼時候在意：要在畫面上『顯示』< 或 & 這種本身是 HTML 語法的符號時，必須用實體，否則瀏覽器會當成標籤解析而壞掉；也常見於防 XSS 的『跳脫（escape）』。",
+    "analogy": "像打字時用『半形括號的替身』——因為真符號會被系統當指令，只好用暗號代替。",
+    "example": "顯示標籤：&lt;div&gt; 會印出 <div>",
+    "related": [
+      "html-attribute",
+      "cross-site-scripting",
+      "unicode"
+    ]
+  }
+]

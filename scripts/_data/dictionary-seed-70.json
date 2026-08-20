@@ -1,0 +1,236 @@
+[
+  {
+    "slug": "queryselector",
+    "term": "querySelector()",
+    "zh_name": "查詢元素",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "用『CSS 選擇器字串』抓 DOM 元素：querySelector 回第一個符合的、querySelectorAll 回全部(NodeList)。什麼時候用：現代取元素的主力，比 getElementById 靈活(能用 .class、[attr]、後代)。querySelectorAll 回的不是真陣列、要遍歷用 forEach 或 [...list] 轉陣列。",
+    "analogy": "像用搜尋條件在頁面上『找出符合這個樣式描述的元素』——跟 CSS 同一套語法。",
+    "example": "document.querySelector('.btn'); document.querySelectorAll('li')",
+    "related": [
+      "getelementbyid",
+      "css-selector",
+      "dom"
+    ]
+  },
+  {
+    "slug": "getelementbyid",
+    "term": "getElementById()",
+    "zh_name": "依 ID 取元素",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "用 id 抓單一元素，最老牌也最快。什麼時候用：知道確切 id 時很直接；但只能用 id、不如 querySelector 通用。找不到回 null（後面直接 .value 會爆錯，記得先確認存在）。",
+    "analogy": "像喊某人的身分證字號直接找到那個人——精準但只認證號。",
+    "example": "const el = document.getElementById('email');",
+    "related": [
+      "queryselector",
+      "id-selector",
+      "dom"
+    ]
+  },
+  {
+    "slug": "createelement",
+    "term": "createElement()",
+    "zh_name": "建立元素",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "用 JS 動態生出新的 DOM 節點：document.createElement('div')，設好 textContent/class 再插進頁面。什麼時候用：程式產生清單、卡片。大量插入時先組好、用 DocumentFragment 或一次 append 減少重排(reflow)；比拼 innerHTML 字串安全(不會 XSS)。",
+    "analogy": "像現場做一塊新積木——先做好、上色，再卡進既有的模型裡。",
+    "example": "const li=document.createElement('li'); li.textContent='新項';",
+    "related": [
+      "appendchild",
+      "innerhtml-vs-textcontent",
+      "dom"
+    ]
+  },
+  {
+    "slug": "appendchild",
+    "term": "appendChild() / append()",
+    "zh_name": "插入節點",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "把節點掛進父元素：appendChild(node) 老方法只吃單一節點；append() 新方法可一次多個、還能直接放字串。相關還有 prepend(開頭)、before/after(前後)、remove(移除自己)。什麼時候在意：append 把同一節點加去別處是『搬家』不是複製(要複製用 cloneNode)。",
+    "analogy": "像把做好的積木卡到模型的某個位置——append 掛在最後、prepend 塞最前。",
+    "example": "ul.append(li);  // 或 ul.appendChild(li)",
+    "related": [
+      "createelement",
+      "dom",
+      "innerhtml-vs-textcontent"
+    ]
+  },
+  {
+    "slug": "addeventlistener",
+    "term": "addEventListener()",
+    "zh_name": "綁定事件",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "監聽元素上的事件：el.addEventListener('click', handler)。什麼時候在意：同一事件可綁多個(不像 onclick 只能一個)；移除要用 removeEventListener 且函式要同一個參照(匿名函式移不掉)；options 可設 once(觸發一次)、passive(捲動效能)。用具名函式或 AbortController 好清理。",
+    "analogy": "像在門上裝一個感應器：『有人按門鈴(click)就執行這段程式』。",
+    "example": "btn.addEventListener('click', () => alert('hi'));",
+    "related": [
+      "event-object",
+      "event-delegation",
+      "preventdefault"
+    ]
+  },
+  {
+    "slug": "event-object",
+    "term": "Event Object",
+    "zh_name": "事件物件",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "事件處理函式收到的 e 參數，裝著這次事件的資訊：e.target 觸發的元素、e.type 事件類型、e.currentTarget 綁監聽的元素、滑鼠的 e.clientX/Y、鍵盤的 e.key。什麼時候在意：表單提交用 e.preventDefault() 擋預設；委派時靠 e.target 判斷點到誰。",
+    "analogy": "像事件發生時附上的一張『現場報告』——誰按的、按哪、什麼時候按。",
+    "example": "input.addEventListener('input', e => console.log(e.target.value));",
+    "related": [
+      "addeventlistener",
+      "preventdefault",
+      "event-bubbling-capturing"
+    ]
+  },
+  {
+    "slug": "event-bubbling-capturing",
+    "term": "Bubbling / Capturing",
+    "zh_name": "事件冒泡與捕獲",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "事件傳遞兩階段：捕獲(由外往內)→到目標→冒泡(由內往外)。預設監聽在『冒泡』階段，所以點子元素、父元素的監聽也會被觸發。什麼時候在意：這是事件委派的原理；要阻止往上傳用 e.stopPropagation()；想在捕獲階段攔截把第三參數設 true。",
+    "analogy": "像水底的氣泡往上冒——點在最裡層，事件一路『冒』過每一層父元素。",
+    "example": "parent.addEventListener('click', h); // 點子元素也會觸發",
+    "related": [
+      "event-delegation",
+      "event-object",
+      "addeventlistener"
+    ]
+  },
+  {
+    "slug": "preventdefault",
+    "term": "preventDefault()",
+    "zh_name": "阻止預設行為",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "取消瀏覽器對事件的『內建反應』：擋表單 submit 的整頁重刷、擋 <a> 的跳轉、擋右鍵選單。什麼時候用：用 JS 接管表單送出(fetch)前先 e.preventDefault()。注意它不等於 stopPropagation(那是擋冒泡)，兩者管的事不同。",
+    "analogy": "像按住自動門的『暫停』——不讓它做本來會自動做的動作，改由你決定。",
+    "example": "form.addEventListener('submit', e => { e.preventDefault(); /* 自己送 */ });",
+    "related": [
+      "event-object",
+      "form-submit-event",
+      "html-form"
+    ]
+  },
+  {
+    "slug": "classlist",
+    "term": "classList",
+    "zh_name": "操作 class",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "用 JS 增刪切換元素的 class：el.classList.add('active')、.remove()、.toggle('open')、.contains()。什麼時候用：切換樣式狀態(展開/選中/深色模式)的標準做法——改 class 讓 CSS 決定長相，比直接改 style 乾淨。toggle 開關選單超好用。",
+    "analogy": "像替元素貼/撕標籤貼紙——貼上『選中』標籤，CSS 就照那個標籤變樣子。",
+    "example": "menu.classList.toggle('open');",
+    "related": [
+      "class-selector",
+      "dom",
+      "addeventlistener"
+    ]
+  },
+  {
+    "slug": "innerhtml-vs-textcontent",
+    "term": "innerHTML vs textContent",
+    "zh_name": "設內容：HTML 或純文字",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "innerHTML 讀寫『HTML 字串』(會解析成元素)；textContent 讀寫『純文字』(不解析)。什麼時候在意：放使用者輸入用 textContent，用 innerHTML 塞未過濾的內容＝XSS 漏洞；只是換文字用 textContent 更快更安全；真要插 HTML 也建議 createElement 或先消毒。",
+    "analogy": "innerHTML 像貼一段會被『照做』的指令、textContent 像貼一段『純文字照抄』——對外來內容當然選照抄。",
+    "example": "el.textContent = userInput; // 安全",
+    "related": [
+      "createelement",
+      "cross-site-scripting",
+      "dom"
+    ]
+  },
+  {
+    "slug": "dataset-js",
+    "term": "dataset",
+    "zh_name": "讀寫 data-* 屬性",
+    "category": "syntax",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 1,
+    "plain": "用 el.dataset 讀寫 HTML 的 data-* 自訂屬性：data-user-id → el.dataset.userId(自動轉小駝峰)。什麼時候用：把小筆資料存在元素上給 JS 用(哪個項目的 id、狀態)，比另建對照表方便；事件委派時常用 e.target.dataset 判斷點到哪張卡。",
+    "analogy": "像在元素上貼一張『隱形便利貼』寫小備註，JS 隨時撕下來看。",
+    "example": "<div data-id=\"7\">→ div.dataset.id // '7'",
+    "related": [
+      "html-attribute",
+      "attribute-selector",
+      "event-delegation"
+    ]
+  },
+  {
+    "slug": "domcontentloaded",
+    "term": "DOMContentLoaded",
+    "zh_name": "DOM 就緒事件",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "HTML 解析完(DOM 建好)就觸發，不等圖片/CSS 全載完。什麼時候在意：把 script 放 <head> 又要操作元素時，要等這事件否則抓到 null；但現代把 <script> 放 body 尾或加 defer 就不需要它了。跟 window.onload(等所有資源含圖片)不同、後者更慢。",
+    "analogy": "像餐廳『骨架佈置好就開工』——不必等每張桌上的花(圖片)都擺好。",
+    "example": "document.addEventListener('DOMContentLoaded', init);",
+    "related": [
+      "dom",
+      "queryselector",
+      "addeventlistener"
+    ]
+  },
+  {
+    "slug": "form-submit-event",
+    "term": "submit event",
+    "zh_name": "表單送出事件",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "表單被送出時觸發(按 submit 鈕或在欄位按 Enter)。什麼時候用：現代 SPA 監聽 form 的 submit、e.preventDefault() 擋整頁重刷、再用 fetch 送資料。監聽要綁在 <form> 上不是按鈕上；用 new FormData(form) 一次收集所有欄位值。",
+    "analogy": "像櫃台按下『收件』鈴——你攔下來先檢查、蓋章，再決定怎麼處理這張表。",
+    "example": "form.addEventListener('submit', e => { e.preventDefault(); const d=new FormData(form); });",
+    "related": [
+      "preventdefault",
+      "html-form",
+      "fetch-js"
+    ]
+  }
+]
