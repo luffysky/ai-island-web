@@ -1,0 +1,272 @@
+[
+  {
+    "slug": "terminal-cd",
+    "term": "cd",
+    "zh_name": "切換目錄",
+    "category": "tool",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 1,
+    "plain": "change directory：走進某個資料夾。cd 專案名 進去、cd .. 回上一層、cd ~ 回家目錄、cd - 回上一個待過的地方、單獨 cd 也回家。什麼時候在意：路徑有空格要用引號 cd \"my folder\"；Tab 鍵可自動補完資料夾名少打字。",
+    "analogy": "像在檔案總管裡『雙擊資料夾走進去』，只是用打字的。",
+    "example": "cd src/components   # 走進 src 底下的 components",
+    "related": [
+      "terminal-ls",
+      "terminal-pwd",
+      "relative-absolute-path"
+    ]
+  },
+  {
+    "slug": "terminal-ls",
+    "term": "ls",
+    "zh_name": "列出檔案",
+    "category": "tool",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 1,
+    "plain": "list：列出目前資料夾裡有什麼。ls -l 詳細清單(權限/大小/日期)、ls -a 連隱藏檔(.開頭)也列、ls -la 兩個一起。什麼時候用：進到一個資料夾先 ls 看看有什麼。Windows 的 cmd 是 dir，但 PowerShell/Git Bash 也能用 ls。",
+    "analogy": "像打開檔案總管看『這個資料夾裡有哪些東西』。",
+    "example": "ls -la   # 含隱藏檔的詳細清單",
+    "related": [
+      "terminal-cd",
+      "hidden-file-dotfile",
+      "terminal-pwd"
+    ]
+  },
+  {
+    "slug": "terminal-pwd",
+    "term": "pwd",
+    "zh_name": "顯示目前位置",
+    "category": "tool",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 1,
+    "plain": "print working directory：印出『我現在人在哪個資料夾』的完整路徑。什麼時候用：迷路時、或指令怪怪的時候先 pwd 確認自己站在對的位置(很多錯是因為『在錯的資料夾下指令』)。",
+    "analogy": "像地圖上的『你在這裡』標記——先搞清楚自己站在哪。",
+    "example": "pwd   # /Users/me/projects/ai-island",
+    "related": [
+      "terminal-cd",
+      "working-directory",
+      "relative-absolute-path"
+    ]
+  },
+  {
+    "slug": "terminal-mkdir",
+    "term": "mkdir",
+    "zh_name": "建立資料夾",
+    "category": "tool",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 1,
+    "plain": "make directory：建一個新資料夾。mkdir -p a/b/c 可一次建好多層(沒有的中間層自動補)。什麼時候用：開新專案/整理檔案時。名稱有空格記得引號。",
+    "analogy": "像在檔案總管按右鍵『新增資料夾』。",
+    "example": "mkdir -p src/components/ui",
+    "related": [
+      "terminal-touch",
+      "terminal-rm",
+      "terminal-cd"
+    ]
+  },
+  {
+    "slug": "terminal-rm",
+    "term": "rm",
+    "zh_name": "刪除檔案",
+    "category": "tool",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 2,
+    "plain": "remove：刪檔案。rm -r 資料夾 連裡面一起刪、rm -f 強制不問。⚠️ 命令列的 rm 不進資源回收筒、刪了就沒了！什麼時候在意：rm -rf 是最危險的指令之一，執行前務必看清楚路徑，尤其別在錯的地方對 * 或 / 下手。",
+    "analogy": "像碎紙機不是垃圾桶——丟進去直接絞碎，撿不回來。",
+    "example": "rm old.txt      # 刪單檔；rm -r temp/  刪整個資料夾",
+    "related": [
+      "terminal-mv",
+      "terminal-cp",
+      "terminal-mkdir"
+    ]
+  },
+  {
+    "slug": "terminal-cp",
+    "term": "cp",
+    "zh_name": "複製",
+    "category": "tool",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 1,
+    "plain": "copy：複製檔案或資料夾。cp 來源 目的、複製整個資料夾要加 -r。什麼時候用：備份、複製範本。目的地若是已存在的檔名會覆蓋(不問)，小心別蓋掉重要檔。",
+    "analogy": "像 Ctrl+C 貼上，但要自己講清楚『貼到哪』。",
+    "example": "cp config.example.js config.js",
+    "related": [
+      "terminal-mv",
+      "terminal-rm",
+      "terminal-ls"
+    ]
+  },
+  {
+    "slug": "terminal-mv",
+    "term": "mv",
+    "zh_name": "移動 / 改名",
+    "category": "tool",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 1,
+    "plain": "move：移動檔案，或『同資料夾內 mv 舊名 新名』就是改名。什麼時候用：搬檔案、重新命名。跟 cp 一樣會覆蓋同名目的檔、不問，注意別誤蓋。",
+    "analogy": "像用剪下貼上搬東西；在原地『剪下再換名字貼回』就是改名。",
+    "example": "mv draft.md final.md   # 改名；mv a.txt docs/  搬進 docs",
+    "related": [
+      "terminal-cp",
+      "terminal-rm",
+      "terminal-mkdir"
+    ]
+  },
+  {
+    "slug": "terminal-cat",
+    "term": "cat",
+    "zh_name": "印出檔案內容",
+    "category": "tool",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 1,
+    "plain": "concatenate：把檔案內容整個印到畫面。什麼時候用：快速瞄一個小檔(設定檔、log)。檔案很大用 less(可捲動、按 q 離開)或 head/tail(看頭/尾幾行)較好，別 cat 幾萬行洗版。",
+    "analogy": "像把檔案『攤在桌上整份念出來』——小紙條可以，整本書就別。",
+    "example": "cat package.json",
+    "related": [
+      "terminal-echo",
+      "terminal-ls",
+      "file-extension"
+    ]
+  },
+  {
+    "slug": "terminal-touch",
+    "term": "touch",
+    "zh_name": "建立空檔案",
+    "category": "tool",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 1,
+    "plain": "建立一個空白檔案(檔案已存在則更新它的時間戳、不改內容)。什麼時候用：快速開一個新檔再用編輯器打開來寫。Windows PowerShell 沒有 touch，用 New-Item 檔名。",
+    "analogy": "像先擺一張空白紙在桌上，等等再往上寫。",
+    "example": "touch .env.local",
+    "related": [
+      "terminal-mkdir",
+      "hidden-file-dotfile",
+      "terminal-cat"
+    ]
+  },
+  {
+    "slug": "terminal-echo",
+    "term": "echo",
+    "zh_name": "印出文字",
+    "category": "tool",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 1,
+    "plain": "把後面的文字印到畫面。配 > 可寫進檔案(echo \"hi\" > a.txt 覆蓋)、>> 附加到檔尾。也常用來看環境變數 echo $PATH。什麼時候用：測試、把一行內容快速寫進檔案、除錯看變數值。",
+    "analogy": "像對著終端機『複誦一句話』；加上 > 就順手記到紙上(檔案)。",
+    "example": "echo \"node_modules\" >> .gitignore",
+    "related": [
+      "env-variable-shell",
+      "terminal-cat",
+      "redirect"
+    ]
+  },
+  {
+    "slug": "terminal-chmod",
+    "term": "chmod",
+    "zh_name": "改檔案權限",
+    "category": "tool",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 2,
+    "plain": "change mode：改檔案的讀(r)/寫(w)/執行(x)權限。常見 chmod +x script.sh 讓腳本可執行。數字寫法 755=擁有者全權+其他人讀執行、644=擁有者讀寫+其他人只讀。什麼時候在意：下載的 .sh 腳本說『permission denied』多半就是少了執行權限。Windows 無此概念。",
+    "analogy": "像設定一份文件『誰能看、誰能改、誰能拿去執行』。",
+    "example": "chmod +x deploy.sh",
+    "related": [
+      "terminal-ls",
+      "file-permission",
+      "terminal-man"
+    ]
+  },
+  {
+    "slug": "terminal-man",
+    "term": "man / --help",
+    "zh_name": "查指令用法",
+    "category": "tool",
+    "langs": [
+      "shell"
+    ],
+    "difficulty": 1,
+    "plain": "man 指令 打開該指令的使用手冊(按 q 離開)；更快的是 指令 --help 印出簡短說明與所有選項。什麼時候用：忘記某個 flag 怎麼用、或想知道一個指令能做什麼，先問它自己而不是急著 Google。",
+    "analogy": "像家電附的說明書——不會用先翻它，比亂按快。",
+    "example": "ls --help   # 或 man ls",
+    "related": [
+      "terminal-ls",
+      "terminal-chmod",
+      "tab-completion"
+    ]
+  },
+  {
+    "slug": "home-directory",
+    "term": "Home Directory (~)",
+    "zh_name": "家目錄",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "你這個使用者的個人根資料夾，用 ~ 代表(如 /Users/me 或 C:\\Users\\me)。cd ~ 回家、~/Downloads 就是你的下載夾。什麼時候在意：很多設定檔(.gitconfig、.ssh、.zshrc)都放在家目錄；教學寫 ~ 就是叫你放到自己的家目錄下。",
+    "analogy": "像你的『個人房間』——所有你自己的東西的起點。",
+    "example": "cd ~/projects",
+    "related": [
+      "relative-absolute-path",
+      "hidden-file-dotfile",
+      "terminal-cd"
+    ]
+  },
+  {
+    "slug": "hidden-file-dotfile",
+    "term": "Dotfile（.開頭檔案）",
+    "zh_name": "隱藏檔 / 點檔",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "檔名以 . 開頭的檔案(.env、.gitignore、.zshrc)預設『隱藏』、一般 ls 看不到、要 ls -a 才現形。什麼時候在意：專案的設定檔常是 dotfile；.env 放密鑰(絕不能進版控)；檔案總管也要開『顯示隱藏檔案』才看得到。",
+    "analogy": "像抽屜最底層的私人文件——平常收起來，要特地翻才看得到。",
+    "example": ".env  .gitignore  .eslintrc.json",
+    "related": [
+      "terminal-ls",
+      "gitignore",
+      "home-directory"
+    ]
+  },
+  {
+    "slug": "file-extension",
+    "term": "副檔名",
+    "zh_name": "File Extension",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 1,
+    "plain": "檔名最後 . 之後的部分(.js .css .json .png)，暗示這是什麼類型的檔、該用什麼程式開。什麼時候在意：它只是『命名慣例』不改變內容本質(把 a.js 改名 a.txt 內容一樣是 JS)；程式常靠它判斷處理方式；Windows 預設藏副檔名、建議開『顯示副檔名』免得看不出 .exe 假裝成圖片。",
+    "analogy": "像商品外包裝的類別標籤——告訴你這是什麼、怎麼用。",
+    "example": "index.html / style.css / app.js",
+    "related": [
+      "hidden-file-dotfile",
+      "terminal-cat",
+      "html-head-tags"
+    ]
+  }
+]

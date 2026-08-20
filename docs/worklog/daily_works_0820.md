@@ -64,3 +64,15 @@
 - **8 個 Go 沙盒**：32.6 struct+method(值vs指標接收者)、32.7 指標傳值vs傳指標、32.8 interface 多型、32.9 goroutine+WaitGroup、32.10 channel、32.11 select+context 逾時、32.14 標準庫 strings/time/json、32.19 手刻迷你測試(理解 go test)。
 - **6 個概念教具**：32.13 package/module 判官、32.15 net/http 判官、32.16 Gin/Fiber/Chi 選型、32.17 GORM/sqlx/sqlc 判官、32.18 JWT+middleware 判官、32.20 部署/跨平台編譯 判官。
 - ⚠️ 本機無 go 工具鏈、Go 沙盒為手寫 canonical（未本地 compile，靠 server sandbox 執行；已逐支目視審 syntax）。`import_chapters_to_db.mjs ch32` 同步 DB。`tsc --noEmit` 0 error（驗 bundle 內章節 JSON 型別）。
+
+## G. 辭典再一批：終端機/命令列基礎（+15 → 2474）
+
+- **seed-74** 終端機/命令列基礎 15（beginner 必備、`category=tool`/`concept`）：cd/ls/pwd/mkdir/rm/cp/mv/cat/touch/echo/chmod/man/家目錄~/隱藏檔dotfile/副檔名。（撞既有 relative-absolute-path、working-directory 已剔除。）import upsert 2474、失敗 0。
+
+## H. 教具大工程 §4.1.5：ch47 AI應用 + ch48 Vibe Coding 100% 覆蓋
+
+盤點結論：這兩章的 GAP 課**全是概念課、0 個可跑沙盒**（ch47 是各產業 AI 應用目錄、ch48 是工作流/心態）——照 §4.1.5「概念課給對題道具、沙盒只放程式章別亂塞」原則，全用 scenario-judge / decision-quiz。
+- **ch47（17 課 GAP → 0 GAP）**：每個產業補「AI 應用判官」scenario-judge，判斷該產業的 AI 點子 可行(ok)/有風險(risk)/別做(no)——教育/醫療/法律/金融/電商/房仲/餐旅/製造/HR/設計/媒體/開發/資料/生產力/兒少長照/政府 + 47.22 一人公司決策測驗。**特別把醫療/法律/金融/長照/政府的紅線判斷寫進去**（診斷處方/編造判例/投資保證/黑箱核定/唯一照護＝no），教的是領域判斷不是充數選擇題。
+- **ch48（14 課 GAP → 0 GAP）**：補 vibe coding 核心判斷 scenario-judge——任務粒度、該不該信 AI 測試(鎖 bug 的假測試=no)、該不該讓 AI 直接改、用 AI vs 自己寫、AI 輸出紅旗(偷加依賴=no)、多/雙 agent 分工、大重構節奏、0→上線、prompt 寫法、心態 + 48.21 終端 agent vs 編輯器決策測驗。
+- 以 Python 注入（indent=2 逐字一致）；`import_chapters_to_db.mjs ch47 ch48` 同步 DB（0 errors）；`tsc --noEmit` 0 error。
+- 里程碑：**ch1-11/15-22/26/7/16/31/32/47/48 已 100% 互動覆蓋**。

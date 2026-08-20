@@ -360,7 +360,9 @@
     - [x] ~~**ch16 後端世界全圖（架構/策略章）100% 覆蓋**~~ ✅ 0731——原 12 沙盒 → 14 沙盒 + 11 教具、25 課 0 沒互動。2 個可跑 JS 沙盒(Token Bucket 限流 / N+1 查詢數暴增，node 驗)＋11 概念教具(語言選型/認證/快取/即時通訊/可觀測性/架構/趨勢等)。
     - [x] ~~**ch31 Node.js 100% 覆蓋**~~ ✅ 0820——原 8PG+2demo、15 課無互動 → 補 4 個 node 實跑驗過的自足 JS 沙盒(Event Loop 執行序/手刻迷你驗證器≈Zod/手刻測試框架≈Vitest/手刻結構化 logger≈Pino) + 11 個概念教具(套件管理器/TS/Express/框架選型/Prisma/WebSocket/BullMQ/Redis 快取/部署平台/tRPC/AI SDK 用 scenario-judge·decision-quiz)。25 課 0 GAP、12PG+13demo。import_chapters_to_db ch31 已同步 DB。
     - [x] ~~**ch32 Go 100% 覆蓋**~~ ✅ 0820——原 10PG+1demo、14 課無互動 → 補 8 個 Go 沙盒(struct/method·指標·interface·goroutine+WaitGroup·channel·select+context·標準庫 strings/time/json·手刻測試) + 6 個概念教具(package/module·net/http·Gin/Fiber/Chi 選型·GORM/sqlx/sqlc·JWT+middleware·部署跨平台編譯)。25 課 0 GAP、18PG+7demo。⚠️ 環境無 go、Go 沙盒為手寫 canonical(未本地 compile 驗、靠 server sandbox 跑)。import ch32 已同步 DB。
-    - [ ] 下一章：ch47 AI應用(25課8PG)、ch48 Vibe(29課14PG) 補沙盒；非程式大章鋪領域道具。
+    - [x] ~~**ch47 AI應用 100% 覆蓋**~~ ✅ 0820——17 課 GAP 全是「產業 AI 應用目錄」概念課、0 可跑沙盒 → 每課補 scenario-judge「該產業 AI 應用判官」(判斷點子 可行/有風險/別做，含醫療/法律/金融/長照/政府紅線判斷) + 47.22 indie 決策測驗。25 課 0 GAP。
+    - [x] ~~**ch48 Vibe Coding 100% 覆蓋**~~ ✅ 0820——14 課 GAP 全是工作流/心態課、0 可跑沙盒 → 補 scenario-judge 判斷課(任務粒度/該不該信 AI 測試/該不該讓 AI 改/用 AI vs 自己寫/AI 輸出紅旗/大重構/心態…) + 48.21 工具選型決策測驗。29 課 0 GAP。
+    - [ ] 下一章（教具續）：非程式大章鋪領域道具；ch26 ML 段等視需要深化。＊ch1-11/16/26/7/31/32/47/48 已 100% 互動覆蓋。
     - **驗證方法定調**：Python 沙盒本地 exec 驗、JS 沙盒 node 驗、教具 schema 驗——每個都確認能跑/合法才掛。
 - [ ] 4.1.4 圖文解說圖：概念/B/D/E/F 區操作圖 110+ 張（🔴 等林董生圖；A 區 29 張 ✅）
 
@@ -368,7 +370,7 @@
 - [x] ~~seed 36–40：Python 模組 128 個（stdlib+外部）→ 1773 條~~ ✅ 0721
 - [x] ~~seed 41：DB查詢/Git/K8s雲原生/LLM/分散式系統 33 條 → **1806 條**~~ ✅ 0721
 - [x] ~~seed 42：網路協定/Web/資安/加密驗證 41 條 → **1847 條**（全查過無 slug 衝突）~~ ✅ 0721
-- [ ] 4.2.1 續寫到 5000（現 **2459**，從 `dictionary-seed-74.json` 接）〔0820 前端零基礎大補 +88→2436、常見錯誤訊息 +11→2447、開發者工具 +12→2459〕
+- [ ] 4.2.1 續寫到 5000（現 **2474**，從 `dictionary-seed-75.json` 接）〔0820 前端零基礎大補 +88→2436、常見錯誤訊息 +11→2447、開發者工具 +12→2459、終端機/命令列基礎 +15→2474〕
   - [x] ~~seed 64：分散式系統進階 + 硬體/底層 + 深度學習 22 條 → **2348**~~ ✅ 0723（Raft/Paxos/腦裂/向量時鐘/CRDT/分散式鎖/outbox/Saga · CPU核心執行緒/GPU運算/SIMD/快取階層/RAM-vs-storage/韌體/硬體中斷 · 神經網路/反向傳播/激活函數/梯度消失爆炸/嵌入層/遷移學習/softmax溫度）
   - [x] ~~seed 63：資料庫進階 + 測試 + API 設計 22 條 → **2326**~~ ✅ 0723（MVCC/ACID-vs-BASE/髒讀/幻讀/視窗函數/遞迴CTE/觸發器/CDC · 測試金字塔/單元整合E2E/mock-vs-stub/性質測試/快照測試/契約測試/負載vs壓力 · REST成熟度/HATEOAS/API限流/API-Key-vs-OAuth/GraphQL-N+1/webhook安全/API淘汰）
   - [x] ~~seed 62：商業/產品 + SEO + 行銷成長 21 條 → **2304**~~ ✅ 0723（TAM-SAM-SOM/GTM/JTBD/MVP-MLP/pivot/PLG/飛輪 · on-page SEO/backlink/SERP/CWV/結構化資料/canonical/sitemap · 轉換漏斗/AARRR/歸因模型/再行銷/滴灌郵件/社會證明/誘餌內容）

@@ -700,7 +700,33 @@
         ],
         "answer": "b",
         "explanation": "課程明確指出 Claude Design 是給「有想法、不會設計」的人用的，特別強調「快速做出能展示、能對齊需求的視覺」，產出是「活的 HTML」可互動。選項 a 是 v0 的定位、c 是 Lovable 的定位、d 超出本課範圍。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "何時該用 Claude Design（視覺設計工具）？",
+          "note": "判斷這些情境該用視覺設計工具還是直接寫 code",
+          "config": {
+            "scenarios": [
+              {
+                "text": "要跟客戶/團隊對『畫面長相與版面』先達成共識再開發",
+                "correct": "ok",
+                "why": "視覺稿最省溝通成本、改圖比改 code 快，這正是設計工具的甜蜜點。"
+              },
+              {
+                "text": "只是要調一個已上線元件的間距、直接叫 AI 改 CSS 更快時，硬要先進設計工具",
+                "correct": "risk",
+                "why": "小改動繞一圈反而慢；工具是為了溝通與探索版面，不是每次都要。"
+              },
+              {
+                "text": "把設計工具產出的稿直接當『正式可上線程式』、跳過工程整合與真資料",
+                "correct": "no",
+                "why": "設計稿是外觀共識、不等於能跑的產品；仍要接資料、狀態、a11y。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "48.6",
@@ -1005,7 +1031,33 @@
         ],
         "answer": "a",
         "explanation": "課程強調「避免『一個 AI 又想又做』—忘規格的問題」和「Review 是新的 context—不會被自己『合理化』騙」。多 Agent 分工的關鍵是隔離 context 和角色，讓不同 AI 各司其職、互相監督，而不是 AI 的能力不足（b 錯）、成本考量（c 只是附加好處）或框架限制（d 錯）。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "多 Agent 工作流判官",
+          "note": "判斷這些多 agent 協作做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "用一個 agent 規劃拆解、另一個專心實作、再一個做審查",
+                "correct": "ok",
+                "why": "分工讓每個 agent 專注、審查 agent 抓錯，是有效的多代理模式。"
+              },
+              {
+                "text": "所有 agent 共用一個超長 context、什麼都塞進去",
+                "correct": "risk",
+                "why": "context 爆炸會失焦、變貴變糊；各 agent 只給它該任務需要的資訊。"
+              },
+              {
+                "text": "讓 agent 之間自動互相觸發、對外送出結果都不經人確認",
+                "correct": "no",
+                "why": "自動連鎖+對外動作無把關會失控；破壞性/對外步驟要人核可。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "48.10",
@@ -1088,7 +1140,33 @@
         ],
         "answer": "b",
         "explanation": "課程展示 Claude 在 Phase 1 做規劃產出 spec 和 design、Phase 3 做審查檢查品質，Codex 在 Phase 2 逐步執行 TODO 清單，體現了分工模式：高層思考用 Claude、細節實作用 Codex，最後再用 Claude 審查。這不是工具限制，而是發揮各自優勢的策略。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "雙 Agent 實戰分工判官",
+          "note": "判斷這些『規劃 agent + 執行 agent』分工對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "規劃 agent 先產出明確的步驟與驗收標準，執行 agent 才動手",
+                "correct": "ok",
+                "why": "先有清楚規格、執行才不會亂長；規格即護欄。"
+              },
+              {
+                "text": "執行 agent 每做完一步就把結果回報、對照規格驗收",
+                "correct": "ok",
+                "why": "小步驗收能及早抓偏、不會做一大坨才發現全錯。"
+              },
+              {
+                "text": "規劃與執行混在同一段對話裡邊想邊做、沒有清楚交接",
+                "correct": "risk",
+                "why": "邊想邊做易失焦、難回溯；分清『先定規格再實作』更穩。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "48.11",
@@ -1135,7 +1213,33 @@
         ],
         "answer": "b",
         "explanation": "課程強調「縱切而非橫切」的原則：橫切（所有 schema、再所有 API、再所有 UI）要等很久才能看到完整功能，縱切（一個 feature 從 schema 到 API 到 UI）每個階段都能 demo 和驗收。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "任務粒度判官",
+          "note": "判斷這樣拆任務給 AI 是太大 / 剛好 / 太小",
+          "config": {
+            "scenarios": [
+              {
+                "text": "『幫我做一個完整的社群平台』一句話丟給 AI",
+                "correct": "no",
+                "why": "太大太模糊、AI 會亂猜亂長；要拆成一個個明確可驗收的小任務。"
+              },
+              {
+                "text": "『在 X 檔加一個 Y 函式、輸入 A 回傳 B、附測試』",
+                "correct": "ok",
+                "why": "邊界清楚、可驗收、AI 寫得動——剛好的粒度。"
+              },
+              {
+                "text": "把每一行程式都拆成一次對話問 AI 該怎麼寫",
+                "correct": "risk",
+                "why": "太碎反而慢、失去整體脈絡；一個有意義的小功能為單位較好。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "48.12",
@@ -1386,7 +1490,33 @@
         ],
         "answer": "a",
         "explanation": "課程開篇明確指出「AI 寫 code 看似對、實際細微 bug 多。測試是『機器幫機器把關』」—這是測試在 AI 時代變更重要的核心原因。b、c 描述錯誤（不能只靠 AI、不能完全取代人工），d 只是結果而非原因。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "AI 測試判官",
+          "note": "判斷這些『AI 幫寫測試』的情況該不該信",
+          "config": {
+            "scenarios": [
+              {
+                "text": "AI 產的測試涵蓋正常、邊界、錯誤三類情況，且你看得懂在測什麼",
+                "correct": "ok",
+                "why": "好測試要涵蓋邊界與失敗路徑、且可讀；符合就可信。"
+              },
+              {
+                "text": "測試全過、但你發現它只是把『目前的錯誤輸出』寫進斷言",
+                "correct": "no",
+                "why": "測試在鎖住 bug、不是驗正確；斷言要對照『應該的答案』不是現況。"
+              },
+              {
+                "text": "AI 只測 happy path、沒有任何錯誤/邊界案例",
+                "correct": "risk",
+                "why": "只測順風局給人假安全感；要補邊界與失敗情況。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "48.15",
@@ -1469,7 +1599,33 @@
         ],
         "answer": "a",
         "explanation": "課程強調「驗證很重要」—AI 的 fix 不一定對，必須理解『為什麼會是 null』而不是盲目加 null check。其他選項雖然也是常見錯誤，但課程把「相信 AI 修法、沒驗證」列為最危險的誤區，因為它會讓你陷入『修症狀、隱藏根因』的死循環。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "AI Debug 判官",
+          "note": "判斷這些讓 AI 幫除錯的做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "把完整錯誤訊息+相關程式碼貼給 AI、請它先解釋病因再改",
+                "correct": "ok",
+                "why": "先懂病因再改、你也學到東西；比盲目試好。"
+              },
+              {
+                "text": "AI 說『我改好了』就直接相信、不重現也不驗證",
+                "correct": "no",
+                "why": "AI 常『自信地改錯』；一定要重現問題並確認真的修好。"
+              },
+              {
+                "text": "同一個 bug 讓 AI 一直盲改、每次都沒重現就再叫它改",
+                "correct": "risk",
+                "why": "沒有驗證的盲改會越改越亂；停下來重現、縮小範圍再改。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "48.16",
@@ -1704,7 +1860,33 @@
         ],
         "answer": "b",
         "explanation": "這課強調「架構決策」是 AI 不適合做的事，因為 AI 不知道商業背景和產品脈絡。權限系統更是關鍵，一個漏洞會造成災難。而 a、c、d 都是課程列舉的「AI 適合做」的事務（boilerplate、產假資料、已知模式）。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "用 AI 還是自己寫？判官",
+          "note": "判斷這些情況該交 AI 還是自己動手",
+          "config": {
+            "scenarios": [
+              {
+                "text": "樣板式、重複性高、你很清楚該長怎樣的 code",
+                "correct": "ok",
+                "why": "AI 最擅長這種——你知道對錯、它幫你快速產出。"
+              },
+              {
+                "text": "牽涉金流/權限/安全的關鍵邏輯，你自己也不確定對錯",
+                "correct": "risk",
+                "why": "高風險又無法判斷 AI 對不對＝危險；先自己搞懂或找人 review。"
+              },
+              {
+                "text": "你完全不懂的領域，讓 AI 全寫、你看不懂也照上",
+                "correct": "no",
+                "why": "看不懂就無法維護與把關、出事無法收拾；至少要能讀懂它寫什麼。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "48.19",
@@ -1783,7 +1965,33 @@
         ],
         "answer": "b",
         "explanation": "課程明確指出 AI 強的領域特徵是「訓練資料量大、模式固定、可即時驗證」（前端具備），而 DevOps 是「環境特定、錯誤影響面大、訓練資料相對少」，這是技術特性差異而非工作難度差異。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "AI 在前端/後端/DevOps 各放多少？判官",
+          "note": "判斷這些放手程度對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "前端 UI/樣式/元件，讓 AI 大量生成、你視覺驗收微調",
+                "correct": "ok",
+                "why": "前端可見即所得、錯了看得出來，適合放較多給 AI。"
+              },
+              {
+                "text": "資料庫 migration/刪改正式資料，讓 AI 直接對 production 執行",
+                "correct": "no",
+                "why": "不可逆且影響全站；一定要人審、先備份、先在測試環境跑。"
+              },
+              {
+                "text": "後端商業邏輯讓 AI 寫，但你 review + 補測試確認正確",
+                "correct": "ok",
+                "why": "後端錯不易察覺，靠你 review 與測試把關就能放心用 AI。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "48.20",
@@ -1850,7 +2058,33 @@
         ],
         "answer": "a",
         "explanation": "課文強調『每 commit 都能 demo、每天 push staging、每週部署 production』，這才是 Vibe Coding 的核心節奏。選項 b、c 是傳統瀑布式開發，d 誤會了 AI 的角色—AI 是協作夥伴，不是全自動化。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "一人 0→上線 workflow 判官",
+          "note": "判斷 solo 從零到上線這些做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "先用 AI 快速做出能動的 MVP、拿去驗證有沒有人要，再談完善",
+                "correct": "ok",
+                "why": "solo 最怕做半年沒人要；先驗需求是對的順序。"
+              },
+              {
+                "text": "上線前把 AI 幫接的金流/登入/權限逐一自己測過",
+                "correct": "ok",
+                "why": "這些出錯代價最高、又常是 AI 埋雷處；務必人工驗。"
+              },
+              {
+                "text": "AI 幫做好就直接上正式站、沒有任何監控與錯誤追蹤",
+                "correct": "risk",
+                "why": "上線才開始面對真實流量與錯誤；至少要有錯誤追蹤與基本監控。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "終端 agent 三巨頭 + 編輯器怎麼選",
@@ -1929,7 +2163,72 @@
         ],
         "answer": "b",
         "explanation": "課程選擇建議表明「已付 ChatGPT」的人應該用「Cursor + Codex 雙軌」——Cursor 處理日常 90% 的快速寫 code，Codex 則用於 refactor / 新 feature 等複雜任務。選 a 忽視了已有 ChatGPT 資源，選 c 和 d 都不符合課程推薦的組合策略。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "終端 agent 三巨頭 + 編輯器怎麼選？",
+          "note": "沒有最好、只有最適合你現在的。",
+          "config": {
+            "intro": "Claude Code / Codex / Gemini CLI 這類終端 agent，跟 Cursor 這類 AI 編輯器，適合的人不同。",
+            "questions": [
+              {
+                "q": "你比較習慣怎麼工作？",
+                "options": [
+                  {
+                    "label": "在終端機下指令、讓 agent 自己跑多步",
+                    "scores": {
+                      "cli": 2
+                    }
+                  },
+                  {
+                    "label": "在編輯器裡邊看 code 邊叫 AI 改",
+                    "scores": {
+                      "editor": 2
+                    }
+                  },
+                  {
+                    "label": "還在摸索、想要最好上手的",
+                    "scores": {
+                      "editor": 1,
+                      "cli": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "任務性質？",
+                "options": [
+                  {
+                    "label": "跨多檔的大改動/自動化流程",
+                    "scores": {
+                      "cli": 2
+                    }
+                  },
+                  {
+                    "label": "一個檔內精修、即時補全",
+                    "scores": {
+                      "editor": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "cli": {
+                "emoji": "⌨️",
+                "title": "終端 agent（Claude Code / Codex / Gemini CLI）",
+                "desc": "適合讓 AI 自主跑多步、跨檔案大改、接 git 與腳本。掌控感強、適合已有開發習慣的人。"
+              },
+              "editor": {
+                "emoji": "🖱️",
+                "title": "AI 編輯器（Cursor 等）",
+                "desc": "邊看 code 邊改、即時補全與 inline 對話，最好上手。適合精修與逐步理解程式。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "title": "Prompt 寫法：給 AI 寫對 code",
@@ -2004,7 +2303,33 @@
         ],
         "answer": "b",
         "explanation": "選項 b 包含了課程強調的四個要素：CONTEXT（Next.js 15 + Supabase）、TASK（具體路徑和行為）、CONSTRAINTS（redirect 到哪）、EXAMPLES（貼既有 code 參考風格）。其他選項都太模糊，AI 容易寫出不符合你 codebase 的 generic 代碼。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "給 AI 寫 code 的 Prompt 判官",
+          "note": "判斷這些 prompt 寫法好不好",
+          "config": {
+            "scenarios": [
+              {
+                "text": "給明確需求+輸入輸出範例+限制(用哪個庫/風格)+驗收標準",
+                "correct": "ok",
+                "why": "資訊越具體 AI 越寫得準；範例與驗收是關鍵。"
+              },
+              {
+                "text": "只丟『幫我優化這段』、不說目標是速度、可讀還是省記憶體",
+                "correct": "risk",
+                "why": "『優化』太模糊、AI 會亂猜方向；講清楚要優化什麼。"
+              },
+              {
+                "text": "要求 AI『不要有 bug、要完美』當作 prompt 的品質保證",
+                "correct": "no",
+                "why": "喊口號沒用、AI 不會因此變準；靠具體規格+你驗收+測試。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "AI 寫完一定要做的 3 件事",
@@ -2115,7 +2440,33 @@
         ],
         "answer": "b",
         "explanation": "這堂課的 3 件核心事就是 Review（看邏輯、抓紅旗）、Test（跑現有 + 寫新測試）、Commit + PR（清楚的訊息、小 PR 易 review）。選項 b 涵蓋了這三步，是正確流程；a、c 是「不看直接 ship」的反 pattern；d 踩了安全紅旗。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "AI 寫完必做的事 · 紅旗判官",
+          "note": "判斷 AI 產出後這些收尾該不該做 / 是不是紅旗",
+          "config": {
+            "scenarios": [
+              {
+                "text": "讀過一遍 AI 寫的每一行、確認你看得懂在幹嘛",
+                "correct": "ok",
+                "why": "看不懂就無法維護與負責；讀懂是最低要求。"
+              },
+              {
+                "text": "AI 悄悄加了一個你沒要求的新套件依賴、你沒注意就合併",
+                "correct": "no",
+                "why": "來路不明的依賴是供應鏈與體積風險；每個新依賴都要知情審核。"
+              },
+              {
+                "text": "跑一次測試+實際操作一遍，確認真的能動再收工",
+                "correct": "ok",
+                "why": "『看起來對』不等於能動；跑起來驗證是必要收尾。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "AI 大 refactor：codebase 改造工作流",
@@ -2214,7 +2565,33 @@
         ],
         "answer": "b",
         "explanation": "課程明確強調「不要混重構 + 新 feature」，因為混在一起會難以 debug 跟 review。正確做法是分開：PR 1 純改造（行為不變）→ PR 2 加新功能（在已改造的基礎上）。這樣每個 PR 都是獨立、可測試、可控的。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "AI 大重構 workflow 判官",
+          "note": "判斷這些讓 AI 做大重構的做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "重構前先確保有測試/可回滾，讓行為有基準可對照",
+                "correct": "ok",
+                "why": "重構＝不改行為改結構；沒有基準就不知道有沒有改壞。"
+              },
+              {
+                "text": "一次讓 AI 把整個大 codebase 全部重寫、再一起看結果",
+                "correct": "no",
+                "why": "大爆改難 review、出錯難定位；分小塊漸進、每塊驗證。"
+              },
+              {
+                "text": "每重構一小塊就跑測試+提交一個 commit，壞了好回溯",
+                "correct": "ok",
+                "why": "小步提交讓每一步可驗證、可回滾，是安全重構節奏。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Vibe Coding 心態 + 學習方式",
@@ -2321,7 +2698,33 @@
         ],
         "answer": "a",
         "explanation": "課程重點強調 AI review、debug、引導 AI 都需要你懂 code，不是說學 code 有道德高地，而是實務上根本做不了事。其他選項都偏離了課程核心的『能力』和『context』需求。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Vibe Coding 心態判官",
+          "note": "判斷這些學習/使用心態健不健康",
+          "config": {
+            "scenarios": [
+              {
+                "text": "把 AI 當加速器，但持續搞懂它寫的東西、累積自己的判斷力",
+                "correct": "ok",
+                "why": "AI 放大你的能力、不取代理解；能判斷對錯才走得遠。"
+              },
+              {
+                "text": "完全不學原理，反正不會就問 AI、出事也只能再問 AI",
+                "correct": "risk",
+                "why": "無法判斷 AI 對錯就會被它的錯誤帶著走、卡住也解不了。"
+              },
+              {
+                "text": "因為 AI 會寫就覺得基礎不用學了",
+                "correct": "no",
+                "why": "看得懂、能除錯、能判斷取捨仍靠基礎；基礎讓 AI 為你所用而非反過來。"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "boss": {
