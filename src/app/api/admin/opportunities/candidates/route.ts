@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   const status = new URL(req.url).searchParams.get("status") || "pending";
   const admin = createSupabaseAdmin();
   const { data } = await admin.from("opportunity_candidates")
-    .select("id, source_id, source_name, raw_title, raw_url, raw_summary, raw_published_at, status, opportunity_id, created_at")
+    .select("id, source_id, source_name, raw_title, raw_url, raw_summary, raw_published_at, status, opportunity_id, created_at, parsed, confidence")
     .eq("status", status).order("created_at", { ascending: false }).limit(200);
   return NextResponse.json({ candidates: data ?? [] });
 }

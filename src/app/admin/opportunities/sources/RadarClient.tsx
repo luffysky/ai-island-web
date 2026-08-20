@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { Rss, Plus, Trash2, Power, Check, X, ExternalLink, Loader2, AlertTriangle, RefreshCw, Sparkles } from "lucide-react";
 
 interface Source { id: string; name: string; url: string; kind: string; category_hint?: string | null; enabled: boolean; last_fetched_at?: string | null; last_status?: string | null; last_count?: number | null; notes?: string | null; }
-interface Candidate { id: string; source_name?: string | null; raw_title: string; raw_url?: string | null; raw_summary?: string | null; raw_published_at?: string | null; created_at: string; }
+interface Candidate { id: string; source_name?: string | null; raw_title: string; raw_url?: string | null; raw_summary?: string | null; raw_published_at?: string | null; created_at: string; parsed?: Record<string, any> | null; confidence?: number | null; }
+type FieldEvidence = { category: string | null; application_deadline: string | null; prize_text: string | null; is_free: string | null; organizer: string | null };
 
 export function RadarClient() {
   const [sources, setSources] = useState<Source[]>([]);
@@ -23,7 +24,10 @@ export function RadarClient() {
   const [busyId, setBusyId] = useState("");
   // AI 抽取結果（供核准時當 overrides）
   const [sug, setSug] = useState<Record<string, { category: string | null; application_deadline: string | null; prize_text: string | null; is_free: boolean | null; organizer: string | null }>>({});
+  const [ev, setEv] = useState<Record<string, FieldEvidence>>({});       // 每欄原文佐證
+  const [conf, setConf] = useState<Record<string, number | null>>({});   // 整體信心分 0~1
   const [extractingId, setExtractingId] = useState("");
+  const [showEv, setShowEv] = useState<Record<string, boolean>>({});     // 展開/收合原文佐證
 
   const load = async () => {
     const [s, c] = await Promise.all([
@@ -32,7 +36,20 @@ export function RadarClient() {
     ]);
     setSources(s.sources ?? []);
     setPendingCount(s.pendingCandidates ?? 0);
-    setCandidates(c.candidates ?? []);
+    const cands: Candidate[] = c.candidates ?? [];
+    setCandidates(cands);
+    // 從已存的 parsed/confidence 還原 AI 抽取結果（reload 後仍看得到、不用重抽）
+    const sHy: Record<string, any> = {}, eHy: Record<string, FieldEvidence> = {}, cHy: Record<string, number | null> = {}, catHy: Record<string, string> = {};
+    for (const cand of cands) {
+      const p = cand.parsed;
+      if (p && typeof p === "object" && (p.category || p.application_deadline || p.prize_text || p.organizer || p.is_free != null)) {
+        sHy[cand.id] = { category: p.category ?? null, application_deadline: p.application_deadline ?? null, prize_text: p.prize_text ?? null, is_free: p.is_free ?? null, organizer: p.organizer ?? null };
+        if (p.evidence && typeof p.evidence === "object") eHy[cand.id] = p.evidence as FieldEvidence;
+        if (typeof cand.confidence === "number") cHy[cand.id] = cand.confidence;
+        if (p.category) catHy[cand.id] = String(p.category);
+      }
+    }
+    if (Object.keys(sHy).length) { setSug((m) => ({ ...sHy, ...m })); setEv((m) => ({ ...eHy, ...m })); setConf((m) => ({ ...cHy, ...m })); setCatOverride((m) => ({ ...catHy, ...m })); }
     setLoading(false);
   };
   useEffect(() => { load(); }, []);
@@ -73,6 +90,8 @@ export function RadarClient() {
       const d = await r.json();
       if (r.ok && d.suggestion) {
         setSug((m) => ({ ...m, [id]: d.suggestion }));
+        if (d.evidence) setEv((m) => ({ ...m, [id]: d.evidence }));
+        setConf((m) => ({ ...m, [id]: typeof d.confidence === "number" ? d.confidence : null }));
         if (d.suggestion.category) setCatOverride((m) => ({ ...m, [id]: d.suggestion.category }));
       }
     } catch { /* ignore */ } finally { setExtractingId(""); }
@@ -162,14 +181,41 @@ export function RadarClient() {
                 {c.raw_summary && <div className="text-xs text-fg-muted mt-1 line-clamp-3">{c.raw_summary}</div>}
                 {c.raw_url && <a href={c.raw_url} target="_blank" rel="noreferrer" className="text-[11px] text-accent hover:underline inline-flex items-center gap-1 mt-1 break-all">看原文 <ExternalLink className="w-3 h-3 shrink-0" /></a>}
                 {sug[c.id] && (
-                  <div className="mt-2 text-[11px] text-fg-muted flex flex-wrap gap-x-3 gap-y-0.5 rounded-lg bg-accent/5 px-2 py-1.5">
-                    <span className="text-accent font-medium">🤖 AI 讀原文抽到：</span>
-                    {sug[c.id].category && <span>分類：{sug[c.id].category}</span>}
-                    {sug[c.id].application_deadline && <span>截止：{sug[c.id].application_deadline}</span>}
-                    {sug[c.id].prize_text && <span>獎金：{sug[c.id].prize_text}</span>}
-                    {sug[c.id].organizer && <span>主辦：{sug[c.id].organizer}</span>}
-                    {sug[c.id].is_free != null && <span>{sug[c.id].is_free ? "免費" : "需報名費"}</span>}
-                    <span className="text-amber-600 dark:text-amber-400">（核准會一起帶入，仍請核對）</span>
+                  <div className="mt-2 rounded-lg bg-accent/5 px-2 py-1.5">
+                    <div className="text-[11px] text-fg-muted flex flex-wrap items-center gap-x-3 gap-y-0.5">
+                      <span className="text-accent font-medium">🤖 AI 讀原文抽到：</span>
+                      {sug[c.id].category && <span>分類：{sug[c.id].category}</span>}
+                      {sug[c.id].application_deadline && <span>截止：{sug[c.id].application_deadline}</span>}
+                      {sug[c.id].prize_text && <span>獎金：{sug[c.id].prize_text}</span>}
+                      {sug[c.id].organizer && <span>主辦：{sug[c.id].organizer}</span>}
+                      {sug[c.id].is_free != null && <span>{sug[c.id].is_free ? "免費" : "需報名費"}</span>}
+                      {(() => {
+                        const v = conf[c.id];
+                        if (typeof v !== "number") return null;
+                        const pct = Math.round(v * 100);
+                        const tone = v >= 0.75 ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" : v >= 0.4 ? "bg-amber-500/15 text-amber-600 dark:text-amber-400" : "bg-rose-500/15 text-rose-600 dark:text-rose-400";
+                        return <span className={`px-1.5 py-0.5 rounded font-medium ${tone}`} title="AI 對整體抽取的信心（原文越明確越高）">信心 {pct}%</span>;
+                      })()}
+                    </div>
+                    {ev[c.id] && Object.values(ev[c.id]).some(Boolean) && (
+                      <div className="mt-1">
+                        <button onClick={() => setShowEv((m) => ({ ...m, [c.id]: !m[c.id] }))} className="text-[10px] text-fg-muted hover:text-accent inline-flex items-center gap-1">
+                          {showEv[c.id] ? "▾ 收合原文佐證" : "▸ 原文佐證（核對用）"}
+                        </button>
+                        {showEv[c.id] && (
+                          <div className="mt-1 space-y-0.5 border-l-2 border-accent/20 pl-2">
+                            {([["category", "分類"], ["application_deadline", "截止"], ["prize_text", "獎金"], ["is_free", "費用"], ["organizer", "主辦"]] as const).map(([k, label]) =>
+                              ev[c.id][k] ? (
+                                <div key={k} className="text-[10px] text-fg-muted leading-snug">
+                                  <span className="text-accent">{label}</span> 佐證：「{ev[c.id][k]}」
+                                </div>
+                              ) : null,
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <div className="text-[10px] text-amber-600 dark:text-amber-400 mt-0.5">（核准會一起帶入，佐證僅供核對、仍請比對原文）</div>
                   </div>
                 )}
                 <div className="flex flex-wrap items-center gap-2 mt-2.5">

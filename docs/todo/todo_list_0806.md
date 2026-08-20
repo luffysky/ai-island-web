@@ -297,7 +297,7 @@
 - [~] 3.2 **V3「幫你贏」**：mock-judge/fit-analysis/缺件/generate/rules-summary ✅、AI 作品分析 ✅、長 PDF 規則 ✅。待：⬜ AI 成熟度、⬜ 缺點/對手/歷屆評審分析、🚧 生成海報/影片腳本、⬜ 排程接 Google Calendar、⬜ 練習階梯（電梯簡報→10 分）、⬜ 學習閉環/路線圖
 - [~] 3.3 **V4 智慧雷達**（安全基礎 ✅：sources/candidates 表 + admin/sources + cron/radar）。待：
   - [ ] 3.3.1 API/sitemap/爬蟲來源；3.3.2 三層 hash 變動偵測
-  - [ ] 3.3.3 每欄原文證據 + 信心分（AI 幫填 ✅、證據分未做）
+  - [x] ~~3.3.3 每欄原文證據 + 信心分（AI 幫填 ✅、證據分未做）~~ ✅ 0820——extract route 讓 AI 逐欄回傳「原文佐證」(逐字擷取、抽不到 null 不捏造)＋整體 confidence 0~1；寫回候選列既有 `parsed`/`confidence` 欄(本來留空)；候選 GET 帶回 parsed/confidence→RadarClient reload 免重抽；待審卡顯示信心分色標(≥75%綠/≥40%黃/否紅)＋可展開逐欄佐證供人工核對。
   - [ ] 3.3.4 PDF 解析 + **版本比較**（存歷次規則 diff：截止/獎金/資格變動）
   - [ ] 3.3.5 cron 分頻；3.3.6 Sentry 監控
 - [ ] 3.4 **V5 Opportunity OS**：十層機會（補助/獎學金/VC/徵件/標案/工作/實習/海外/證照）、AI 配對組隊、成長時間軸、Team/Enterprise、AI 代報名（授權+守條款）

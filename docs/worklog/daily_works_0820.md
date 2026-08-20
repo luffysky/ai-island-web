@@ -42,4 +42,11 @@
 - §7.0.4 `/admin/strategy` 靜態註記 → **實查已存在**（page 第 18 行已有「📄 靜態分析文件」badge），無需再動。
 - §7.0.5 跑 `scripts/audit-db-columns.mjs`：無新增破綻（既有 ✗ 全是 `${POST_COLS}` 這類 template-literal 欄位名的靜態分析誤判 + route 前綴誤判，非真錯）。
 
-**建置**：`npx tsc --noEmit` 0 error、`npx vitest run` 225/225、`npx next build` 綠。
+## D. 機會島雷達：每欄原文證據 + 信心分（§3.3.3）
+
+原 candidates/extract 只回 5 欄值、`opportunity_candidates.parsed`/`confidence` 欄留空（migration 註明「本版先 null」）。補齊：
+- **API** `candidates/extract`：SYSTEM prompt 加要求 AI 逐欄回傳 `evidence`（原文逐字佐證、抽不到 null、明令不可捏造）+ 整體 `confidence` 0~1；`cleanEvidence` 淨化；**寫回候選列** `parsed={5欄+evidence}`、`confidence=數字`（填滿本來留空的欄）。
+- **API** `candidates` GET：select 加 `parsed, confidence` → reload 後 RadarClient 能還原、不用重抽。
+- **UI** `RadarClient`：`load()` 從 parsed/confidence 還原 sug/ev/conf；待審卡加信心分色標 badge（≥75%綠/≥40%黃/否紅）+ 可展開「原文佐證（核對用）」逐欄列出 + 提醒仍需比對原文。無 migration（用既有欄）、後台限定、`requireAdmin` 守。
+
+**建置**：`npx tsc --noEmit` 0 error、`npx vitest run` 225/225、`npx next build` 綠（含 A/B/D 全部改動）。

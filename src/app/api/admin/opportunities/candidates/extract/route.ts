@@ -14,8 +14,26 @@ const SYSTEM = `你是把「競賽／補助公告」抽成結構化欄位的工�
  "application_deadline": "報名截止日 YYYY-MM-DD | null",
  "prize_text": "獎金/資源一句話 | null",
  "is_free": true/false/null,
- "organizer": "主辦單位 | null"
-}`;
+ "organizer": "主辦單位 | null",
+ "evidence": {
+   "category": "原文中支持此分類的字句（≤60字，逐字擷取）| null",
+   "application_deadline": "原文中出現截止日的那句（逐字）| null",
+   "prize_text": "原文中提到獎金/資源的那句（逐字）| null",
+   "is_free": "原文中提到費用/免費的那句（逐字）| null",
+   "organizer": "原文中提到主辦單位的那句（逐字）| null"
+ },
+ "confidence": 0~1 的數字（你對整體抽取正確的信心：原文越明確越高、靠推測越低）
+}
+每個 evidence 必須是原文『真的出現過』的字句（給人工核對用），抽不到就填 null，**絕不可捏造或改寫**。`;
+
+// 淨化 AI 給的每欄原文佐證（≤200 字、字串或 null）
+function cleanEvidence(ev: any): Record<string, string | null> {
+  const keys = ["category", "application_deadline", "prize_text", "is_free", "organizer"];
+  const out: Record<string, string | null> = {};
+  const src = ev && typeof ev === "object" ? ev : {};
+  for (const k of keys) out[k] = typeof src[k] === "string" && src[k].trim() ? String(src[k]).trim().slice(0, 200) : null;
+  return out;
+}
 
 // POST { id } — 讀候選的原文（raw_url 頁面 or raw_summary），AI 抽結構化欄位供人工核准前預填。
 export async function POST(req: NextRequest) {
@@ -53,15 +71,24 @@ export async function POST(req: NextRequest) {
     try { parsed = JSON.parse(m[0]); } catch { return NextResponse.json({ error: "AI 回傳非合法 JSON" }, { status: 502 }); }
     // 淨化 deadline 格式
     const dl = typeof parsed.application_deadline === "string" && /^\d{4}-\d{2}-\d{2}$/.test(parsed.application_deadline) ? parsed.application_deadline : null;
-    return NextResponse.json({
-      suggestion: {
-        category: parsed.category ? String(parsed.category).slice(0, 40) : null,
-        application_deadline: dl,
-        prize_text: parsed.prize_text ? String(parsed.prize_text).slice(0, 200) : null,
-        is_free: typeof parsed.is_free === "boolean" ? parsed.is_free : null,
-        organizer: parsed.organizer ? String(parsed.organizer).slice(0, 120) : null,
-      },
-    });
+    const suggestion = {
+      category: parsed.category ? String(parsed.category).slice(0, 40) : null,
+      application_deadline: dl,
+      prize_text: parsed.prize_text ? String(parsed.prize_text).slice(0, 200) : null,
+      is_free: typeof parsed.is_free === "boolean" ? parsed.is_free : null,
+      organizer: parsed.organizer ? String(parsed.organizer).slice(0, 120) : null,
+    };
+    const evidence = cleanEvidence(parsed.evidence);
+    const cn = Number(parsed.confidence);
+    const confidence = Number.isFinite(cn) ? Math.max(0, Math.min(1, cn)) : null;
+
+    // 寫回候選列（填滿本來留空的 parsed/confidence 欄；供 reload 後仍看得到、非只即時預填）
+    await admin
+      .from("opportunity_candidates")
+      .update({ parsed: { ...suggestion, evidence }, confidence })
+      .eq("id", id);
+
+    return NextResponse.json({ suggestion, evidence, confidence });
   } catch (e: any) {
     return NextResponse.json({ error: `抽取失敗：${String(e?.message ?? e).slice(0, 120)}` }, { status: 502 });
   }
