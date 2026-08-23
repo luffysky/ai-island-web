@@ -375,7 +375,8 @@
     - [x] ~~**ch77 機器學習入門 100% 互動覆蓋**~~ ✅ 0823——25 課 ML 概念章、補 23 個 GAP 課、0 GAP：20 scenario-judge(該不該用ML/三大類型/sklearn baseline/資料清理/特徵縮放編碼/造特徵/線性迴歸/邏輯迴歸/決策樹/隨機森林/XGBoost/過擬合欠擬合/交叉驗證/分類指標/Pipeline/K-means/PCA/不平衡+部署/解釋性/心法) + 3 decision-quiz(KNN vs SVM、迴歸指標 MAE/MSE/R²、GridSearch vs Randomized)。**ML 經典陷阱全標紅線**：資料洩漏(縮放/PCA 在切分前=洩漏)、accuracy 在不平衡資料騙人、相關≠因果、目標洩漏特徵、測試集動手腳(SMOTE)、只看訓練分數。import ch77 已同步 DB。
     - [x] ~~**ch78 深度學習入門 + ch79 語言模型入門 100% 互動覆蓋**~~ ✅ 0823——ML 三部曲收官。**ch78**(25 課、補 23 GAP)：20 sj + 3 dq(激活函數選/優化器學習率/架構 CNN-RNN-Transformer)，DL 經典紅線全標(忘 zero_grad 梯度累加/推論忘 eval Dropout 亂跳/double-softmax/loss NaN=LR太大/兩邊loss都高是欠擬合非過擬合/生成模型會幻覺)。**ch79**(9 課、補 7 GAP)：6 sj + 1 dq(Prompt vs RAG vs Fine-tune 三層決策)，LLM 紅線(把 LLM 當事實庫/few-shot 不會永久記住/token≠字數/prompt injection 直拼使用者輸入)。import ch78/ch79 已同步 DB。
     - [x] ~~**ch68 附錄 H 高階工程師修煉路徑 100% 互動覆蓋**~~ ✅ 0823——20 課資深工程判斷章、補 17 個 GAP 課、0 GAP：16 scenario-judge(整合E2E測試/可觀測性/效能優化先量測/資安基礎/並發分散式/資料工程/technical writing/code review/mentoring/跨組溝通/PM/business sense/first principles/healthy skepticism/接受不確定/長期思維技術債) + 1 decision-quiz(持續學習：基本功 vs 工作要用 vs 潮但未定觀望)。＊此為資深工程「判斷力」內容、非速查表塞題。import ch68 已同步 DB。
-    - [ ] 下一章（教具續）：**純速查附錄 ch61-67/69-70 刻意不塞教具**（reference 表塞選擇題＝違反「非充數」原則）；ch71 Debug/ch72-75 進階視需要。＊ch1-11/13/16/26/7/31/32/43/44/45/47/48/51/52/53/54/55/56/57/58/59/60/68/77/78/79 已 100% 互動覆蓋（**主線 1-60 + ML 77-79 + 高階修煉 68**）。
+    - [x] ~~**ch71 除錯聖經 Debug 思維 100% 互動覆蓋**~~ ✅ 0823——補 71.1(AI 也會卡 bug：解不掉時停下重現縮範圍餵精準線索、AI 說改好也要驗)、71.4(Debug mindset：先假設是自己的問題系統性縮範圍、讀懂錯誤訊息、修好回頭理解根因)2 個 scenario-judge。import ch71 已同步 DB。
+    - [ ] 下一章（教具續）：**純速查附錄 ch61-67/69-70 刻意不塞教具**（reference 表塞選擇題＝違反「非充數」原則）；ch72-75 進階(React/Vue/Vite/HTTP)視需要。＊ch1-11/13/16/26/7/31/32/43/44/45/47/48/51/52/53/54/55/56/57/58/59/60/68/71/77/78/79 已 100% 互動覆蓋（**主線 1-60 + ML 77-79 + 高階修煉 68 + Debug 71**）。
     - **驗證方法定調**：Python 沙盒本地 exec 驗、JS 沙盒 node 驗、教具 schema 驗——每個都確認能跑/合法才掛。
 - [ ] 4.1.4 圖文解說圖：概念/B/D/E/F 區操作圖 110+ 張（🔴 等林董生圖；A 區 29 張 ✅）
 
