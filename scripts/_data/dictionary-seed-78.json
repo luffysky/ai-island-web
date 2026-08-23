@@ -1,0 +1,294 @@
+[
+  {
+    "slug": "etl-elt",
+    "term": "ETL vs ELT",
+    "zh_name": "資料萃取轉換載入",
+    "category": "concept",
+    "langs": [
+      "data"
+    ],
+    "difficulty": 2,
+    "plain": "把資料從來源搬到分析倉庫的兩種順序。ETL：先萃取(Extract)→在中途轉換(Transform)乾淨→再載入(Load)倉庫。ELT：先萃取→直接載入倉庫→在倉庫裡用它的算力轉換。什麼時候用：雲端倉庫(BigQuery/Snowflake)算力便宜又強 → 現代多走 ELT(先倒進去再變形)；來源雜、要先清洗或減量時用 ETL。",
+    "analogy": "ETL 像進門前先在玄關把菜洗好切好；ELT 像先把整袋菜丟進廚房、要煮時再處理。",
+    "example": "來源 DB → BigQuery(載入) → dbt 在倉庫轉換(ELT)",
+    "related": [
+      "data-pipeline",
+      "dbt",
+      "data-warehouse"
+    ]
+  },
+  {
+    "slug": "airflow",
+    "term": "Apache Airflow",
+    "zh_name": "工作流排程器",
+    "category": "tool",
+    "langs": [
+      "data",
+      "python"
+    ],
+    "difficulty": 2,
+    "plain": "用 Python 把資料管線寫成 DAG(有向無環圖，定義任務先後依賴)，定時排程執行、失敗重試、看每步狀態。什麼時候用：每天要按順序跑一串資料任務(抽數→清洗→彙整→出報表)、且要監控與重跑時。是資料工程最常見的編排工具。類似的有 Dagster、Prefect。",
+    "analogy": "像工廠生產線的排程主管——規定哪道工序先做、卡住了通知你、還能只重跑壞掉那一段。",
+    "example": "DAG：extract >> transform >> load，每天 03:00 跑",
+    "related": [
+      "data-orchestration",
+      "data-pipeline",
+      "dag"
+    ]
+  },
+  {
+    "slug": "dbt",
+    "term": "dbt（data build tool）",
+    "zh_name": "倉庫內資料轉換",
+    "category": "tool",
+    "langs": [
+      "data",
+      "sql"
+    ],
+    "difficulty": 2,
+    "plain": "讓你用『SELECT 查詢 + 版本控管』在資料倉庫裡做轉換(ELT 的 T)：把清洗/彙整邏輯寫成一個個 model(SQL 檔)，dbt 幫你管相依順序、測試、產文件。什麼時候用：資料已進倉庫、要用 SQL 把原始表變成分析可用的乾淨表，還想要像寫程式一樣測試與版控。是現代資料棧的核心工具。",
+    "analogy": "像替 SQL 轉換裝上 Git + 測試 + 自動文件——把『倉庫裡的加工步驟』工程化。",
+    "example": "stg_orders.sql → dim_customers.sql（dbt 管相依）",
+    "related": [
+      "etl-elt",
+      "data-warehouse",
+      "data-lineage"
+    ]
+  },
+  {
+    "slug": "batch-vs-streaming",
+    "term": "Batch vs Streaming",
+    "zh_name": "批次 vs 串流",
+    "category": "concept",
+    "langs": [
+      "data"
+    ],
+    "difficulty": 2,
+    "plain": "處理資料的兩種節奏。Batch(批次)：攢一批(每小時/每天)一次算完，簡單、便宜、有延遲。Streaming(串流)：資料一來就即時處理，低延遲但複雜。什麼時候用：日報表、月結算用批次就好；詐欺偵測、即時儀表板、推薦要串流。很多系統兩者並用(Lambda/Kappa 架構)。",
+    "analogy": "批次像每天集中洗一次衣服；串流像穿過就即時清洗——即時但費工。",
+    "example": "日營收報表=batch；刷卡盜刷偵測=streaming",
+    "related": [
+      "stream-processing",
+      "windowing-stream",
+      "kafka"
+    ]
+  },
+  {
+    "slug": "windowing-stream",
+    "term": "Windowing（串流視窗）",
+    "zh_name": "串流時間視窗",
+    "category": "concept",
+    "langs": [
+      "data"
+    ],
+    "difficulty": 3,
+    "plain": "串流資料無止盡，要算『最近 N 分鐘的量』就得把時間切成視窗。常見：tumbling(不重疊固定窗，如每 5 分一格)、sliding(滑動重疊窗)、session(依活動間隔切)。什麼時候在意：還要處理『遲到的資料』(event time vs processing time)與 watermark(判斷一個視窗何時算收齊)。是串流計算的核心難點。",
+    "analogy": "像把一直流動的河水，用固定間隔的桶去接、每桶各自計量。",
+    "example": "每 1 分鐘 tumbling window 算該分鐘點擊數",
+    "related": [
+      "stream-processing",
+      "batch-vs-streaming",
+      "exactly-once"
+    ]
+  },
+  {
+    "slug": "exactly-once",
+    "term": "Exactly-once 語意",
+    "zh_name": "精確一次處理",
+    "category": "concept",
+    "langs": [
+      "data"
+    ],
+    "difficulty": 3,
+    "plain": "訊息/事件被處理的保證等級：at-most-once(最多一次，可能漏)、at-least-once(至少一次，可能重複)、exactly-once(不多不少剛好一次)。什麼時候在意：金流、計數這種重複會出大事的場景要 exactly-once(或用冪等讓重複也無害)。真正的 exactly-once 很難、成本高，實務常用『at-least-once + 冪等』達到等效。",
+    "analogy": "像轉帳——最怕『扣兩次』(重複)或『沒扣到』(遺漏)，要剛好一次。",
+    "example": "Kafka + 冪等消費者達成等效 exactly-once",
+    "related": [
+      "idempotency",
+      "message-queue",
+      "idempotent-pipeline"
+    ]
+  },
+  {
+    "slug": "idempotent-pipeline",
+    "term": "Idempotent Pipeline",
+    "zh_name": "冪等管線",
+    "category": "concept",
+    "langs": [
+      "data"
+    ],
+    "difficulty": 2,
+    "plain": "資料管線設計成『重跑同一批不會產生重複或錯誤結果』。什麼時候在意：管線失敗要重跑、或補歷史資料(backfill)時，若不冪等就會灌出重複資料。做法：用『覆寫某分區』而非『附加』、用唯一鍵去重(upsert)、以 run 的邏輯日期分區。冪等是資料工程能安心重跑的前提。",
+    "analogy": "像鉛筆填答案卡——重寫同一格會蓋掉舊的、不會越描越多；不冪等就像用印章一直蓋出重複。",
+    "example": "每次重跑先刪當日分區再寫，而非直接 append",
+    "related": [
+      "idempotency",
+      "backfill",
+      "exactly-once"
+    ]
+  },
+  {
+    "slug": "cdc-change-data",
+    "term": "CDC（Change Data Capture）",
+    "zh_name": "變更資料擷取",
+    "category": "concept",
+    "langs": [
+      "data"
+    ],
+    "difficulty": 3,
+    "plain": "即時捕捉來源資料庫的每一筆新增/修改/刪除(常靠讀 DB 的交易日誌 WAL/binlog)，同步到別處。什麼時候用：想把交易庫的變動幾乎即時餵進倉庫/搜尋引擎/快取，又不想每次全表撈(貴又慢)。工具如 Debezium。是現代『即時資料同步』的主流做法。",
+    "analogy": "像只把帳本『今天新寫的那幾筆』抄過去，而不是每天整本重抄一遍。",
+    "example": "Debezium 讀 MySQL binlog → Kafka → 倉庫",
+    "related": [
+      "write-ahead-log",
+      "kafka",
+      "etl-elt"
+    ]
+  },
+  {
+    "slug": "star-schema",
+    "term": "Star Schema",
+    "zh_name": "星型模型",
+    "category": "concept",
+    "langs": [
+      "data",
+      "sql"
+    ],
+    "difficulty": 2,
+    "plain": "資料倉庫的經典建模：中間一張 fact table(事實表，存事件與數值，如每筆訂單金額)，周圍連多張 dimension table(維度表，描述屬性，如客戶/商品/日期)，長得像星星。什麼時候用：做 BI 報表與分析查詢時，這種結構好懂、查詢快。維度再正規化拆細就變 snowflake schema(雪花模型)。",
+    "analogy": "像訂單明細(中心)配上一疊查詢卡(誰買的、買什麼、哪天)——中間一張大表牽著周圍小表。",
+    "example": "fact_sales 連 dim_customer / dim_product / dim_date",
+    "related": [
+      "snowflake-schema",
+      "olap-oltp",
+      "data-warehouse"
+    ]
+  },
+  {
+    "slug": "snowflake-schema",
+    "term": "Snowflake Schema",
+    "zh_name": "雪花模型",
+    "category": "concept",
+    "langs": [
+      "data",
+      "sql"
+    ],
+    "difficulty": 2,
+    "plain": "星型模型的維度表再進一步正規化、拆成多層小表(如商品→類別→部門各自成表)，形狀像雪花。什麼時候用：想減少維度資料重複、維護一致性時。代價是查詢要 join 更多表、較複雜。實務上星型(較扁、查得快)常比雪花受歡迎。注意：跟雲倉庫 Snowflake 只是同名、不同東西。",
+    "analogy": "像把一張大查詢卡再拆成好幾張互相參照的小卡——省重複但查起來要翻更多張。",
+    "example": "dim_product → dim_category → dim_department",
+    "related": [
+      "star-schema",
+      "normalization",
+      "data-warehouse"
+    ]
+  },
+  {
+    "slug": "parquet",
+    "term": "Apache Parquet",
+    "zh_name": "欄式儲存格式",
+    "category": "tool",
+    "langs": [
+      "data"
+    ],
+    "difficulty": 2,
+    "plain": "大數據常用的欄式(columnar)檔案格式：同一欄的資料存在一起，分析查詢只讀要用的欄、壓縮率高。什麼時候用：存進 data lake、要跑分析(只挑幾欄算 sum/avg)時比 CSV/JSON 快很多也小很多。相對的 Avro 是列式(適合逐筆寫入與訊息)。是資料湖的事實標準格式之一。",
+    "analogy": "像把試算表『整欄整欄』收納——要算某一欄總和時，直接抽那一疊、不用翻每一列。",
+    "example": "df.to_parquet('sales.parquet')  # 比 CSV 小又快",
+    "related": [
+      "columnar-storage",
+      "avro",
+      "data-lake"
+    ]
+  },
+  {
+    "slug": "avro",
+    "term": "Apache Avro",
+    "zh_name": "列式序列化格式",
+    "category": "tool",
+    "langs": [
+      "data"
+    ],
+    "difficulty": 2,
+    "plain": "帶 schema 的二進位序列化格式，列式(row-based)、適合『逐筆寫入/傳輸』與訊息串流；schema 跟資料一起走、支援欄位演進(加欄不破舊資料)。什麼時候用：Kafka 訊息、需要嚴謹 schema 演進的資料交換。跟 Parquet 的取捨：Avro 適合寫入/傳輸、Parquet 適合分析讀取。",
+    "analogy": "像每個包裹都附一張標準規格單(schema)——收件方照單就拆得開，換規格也向下相容。",
+    "example": "Kafka 訊息用 Avro + Schema Registry 管版本",
+    "related": [
+      "parquet",
+      "schema-registry",
+      "protobuf"
+    ]
+  },
+  {
+    "slug": "schema-registry",
+    "term": "Schema Registry",
+    "zh_name": "結構描述登錄中心",
+    "category": "tool",
+    "langs": [
+      "data"
+    ],
+    "difficulty": 3,
+    "plain": "集中管理訊息 schema(如 Avro/Protobuf)的服務：生產者/消費者都跟它註冊與查驗 schema，並強制相容性規則(新版不能破壞舊消費者)。什麼時候用：Kafka 這類串流系統多方共用訊息格式時，防止某人改壞欄位讓下游全炸。是串流資料治理的關鍵一環。",
+    "analogy": "像公文格式的中央核備處——大家都照登記過的表格版本走，改版要先過相容審查。",
+    "example": "Confluent Schema Registry 檔 Kafka 訊息 schema",
+    "related": [
+      "avro",
+      "kafka",
+      "data-catalog"
+    ]
+  },
+  {
+    "slug": "data-catalog",
+    "term": "Data Catalog",
+    "zh_name": "資料目錄",
+    "category": "concept",
+    "langs": [
+      "data"
+    ],
+    "difficulty": 2,
+    "plain": "全公司資料資產的『目錄+說明書』：有哪些表、欄位意義、誰擁有、從哪來、品質如何、能不能用。什麼時候用：資料一多就沒人知道『那個數字該查哪張表、可不可信』——目錄讓人找得到、看得懂、信得過資料。常搭 data lineage(血緣，追資料從哪流來哪去)。",
+    "analogy": "像圖書館的館藏目錄——不用一櫃櫃翻，查目錄就知道書在哪、內容是什麼、誰負責。",
+    "example": "在目錄搜『月營收』→ 找到權威表 + 定義 + owner",
+    "related": [
+      "data-lineage",
+      "data-mesh",
+      "schema-registry"
+    ]
+  },
+  {
+    "slug": "medallion-architecture",
+    "term": "Medallion Architecture",
+    "zh_name": "獎牌分層架構",
+    "category": "concept",
+    "langs": [
+      "data"
+    ],
+    "difficulty": 2,
+    "plain": "資料湖倉的分層慣例：Bronze(銅，原始生資料照收)→ Silver(銀，清洗、去重、對齊結構)→ Gold(金，彙整成可直接分析/報表用的表)。什麼時候用：讓資料處理有清楚階段、每層職責分明、出錯好回溯。是 Lakehouse(如 Databricks)常見的組織方式。",
+    "analogy": "像礦石提煉：原礦(銅)→ 初煉(銀)→ 成品金飾(金)，一層層越來越精純好用。",
+    "example": "raw logs(bronze) → 清洗(silver) → 日彙總(gold)",
+    "related": [
+      "data-lake",
+      "etl-elt",
+      "data-warehouse"
+    ]
+  },
+  {
+    "slug": "data-mesh",
+    "term": "Data Mesh",
+    "zh_name": "資料網格",
+    "category": "concept",
+    "langs": [
+      "data"
+    ],
+    "difficulty": 3,
+    "plain": "一種資料組織理念：不再把所有資料塞給一個中央資料團隊，而是讓各業務領域『自己擁有並把資料當產品經營』(有品質、有文件、可被別人取用)，中央只提供共通平台與治理標準。什麼時候用：大組織中央資料團隊變瓶頸時。是組織/文化的轉變多於某個工具。",
+    "analogy": "從『中央大廚房煮全公司的菜』改成『各部門自營攤位、但都遵守市集的衛生與標示規範』。",
+    "example": "訂單團隊自營『訂單資料產品』供他隊訂閱",
+    "related": [
+      "data-catalog",
+      "data-lineage",
+      "microservices"
+    ]
+  }
+]

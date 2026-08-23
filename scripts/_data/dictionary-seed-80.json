@@ -1,0 +1,242 @@
+[
+  {
+    "slug": "redux",
+    "term": "Redux",
+    "zh_name": "集中式狀態容器",
+    "category": "tool",
+    "langs": [
+      "javascript",
+      "react"
+    ],
+    "difficulty": 2,
+    "plain": "老牌的前端狀態管理：全 app 一個唯一的 store，狀態唯讀，只能 dispatch action 經 reducer(純函式)算出新狀態。什麼時候用：大型 app 有很多跨頁共享、變動邏輯複雜的狀態時。現在多用 Redux Toolkit(RTK)大幅減少樣板。小 app 常覺得它太重——先想想是不是 useState/Context 就夠。",
+    "analogy": "像公司唯一的官方帳本——誰都不能偷改，要動就填一張正式申請單(action)照流程記。",
+    "example": "dispatch({ type: 'cart/add', payload: item })",
+    "related": [
+      "flux",
+      "usereducer",
+      "zustand"
+    ]
+  },
+  {
+    "slug": "flux",
+    "term": "Flux 架構",
+    "zh_name": "單向資料流",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "Facebook 提出的前端資料流模式：資料永遠單向流動(action → dispatcher → store → view → 再 action)，不能雙向亂改。什麼時候在意：它是 Redux 等狀態庫的思想源頭——單向流讓狀態變化可預測、好追蹤除錯。理解 Flux 就懂了大多數狀態庫在幹嘛。",
+    "analogy": "像工廠輸送帶——東西只能順著一個方向走，不會逆流回頭亂竄，所以好追蹤。",
+    "example": "action → store 更新 → UI 重繪 → 使用者再觸發 action",
+    "related": [
+      "redux",
+      "reactivity",
+      "unidirectional-data-flow"
+    ]
+  },
+  {
+    "slug": "zustand",
+    "term": "Zustand",
+    "zh_name": "極簡狀態庫",
+    "category": "tool",
+    "langs": [
+      "javascript",
+      "react"
+    ],
+    "difficulty": 1,
+    "plain": "輕量的 React 狀態庫：用一個 hook 建 store、直接讀寫，幾乎零樣板、不用 Provider 包。什麼時候用：想要全域狀態但覺得 Redux 太繁重時的熱門選擇。元件只訂閱它用到的那部分狀態、其餘變動不會害它重繪。跟 Jotai(原子式)、Redux(集中式)是不同取向的替代品。",
+    "analogy": "像桌上一本共用便條本——要記就記、要看就看，沒有一堆繁文縟節。",
+    "example": "const useStore = create(set => ({ count: 0, inc: () => set(s => ({count: s.count+1})) }))",
+    "related": [
+      "redux",
+      "jotai",
+      "reactivity"
+    ]
+  },
+  {
+    "slug": "jotai",
+    "term": "Jotai",
+    "zh_name": "原子式狀態",
+    "category": "tool",
+    "langs": [
+      "javascript",
+      "react"
+    ],
+    "difficulty": 2,
+    "plain": "把狀態拆成一顆顆小『原子(atom)』，元件用哪顆就訂哪顆、只有那顆變才重繪。什麼時候用：想要細粒度、由下而上組合的狀態管理(相對 Redux 由上而下一個大 store)。適合狀態彼此獨立、想避免不必要重繪的場景。Recoil 是同類的先行者。",
+    "analogy": "像把一大鍋湯改成一杯杯小飲料——你只拿你要的那杯，別杯換了也不影響你。",
+    "example": "const countAtom = atom(0); const [c, setC] = useAtom(countAtom)",
+    "related": [
+      "zustand",
+      "recoil",
+      "reactivity"
+    ]
+  },
+  {
+    "slug": "recoil",
+    "term": "Recoil",
+    "zh_name": "原子狀態庫（Meta）",
+    "category": "tool",
+    "langs": [
+      "javascript",
+      "react"
+    ],
+    "difficulty": 2,
+    "plain": "Meta 出的原子式狀態庫，把狀態拆成 atom、還能用 selector 從 atom 衍生計算值(會自動快取)。什麼時候在意：它推廣了『原子式狀態』的概念，但近年維護放緩，新專案多改用 Jotai/Zustand。知道它是這類設計的代表即可。",
+    "analogy": "像一組可互相組裝的樂高小塊(atom)，selector 是用它們拼出的成品、零件沒變就不重拼。",
+    "example": "const doubled = selector({ get: ({get}) => get(countAtom)*2 })",
+    "related": [
+      "jotai",
+      "zustand",
+      "memoization-react"
+    ]
+  },
+  {
+    "slug": "tanstack-query",
+    "term": "TanStack Query (React Query)",
+    "zh_name": "伺服器狀態管理",
+    "category": "tool",
+    "langs": [
+      "javascript",
+      "react"
+    ],
+    "difficulty": 2,
+    "plain": "專門管『伺服器資料』的庫：幫你處理抓取、快取、背景重新整理、過期、重試、去重。什麼時候用：以前常把 API 資料硬塞進 Redux 手動管 loading/error——其實那是『伺服器狀態』，交給 React Query 這種工具處理省掉大量樣板。關鍵觀念：分清『客戶端狀態』(用 Zustand 等)與『伺服器狀態』(用 Query)。",
+    "analogy": "像一個聰明的助理，幫你記住問過的答案(快取)、過期了自動去重問、還會合併重複的詢問。",
+    "example": "useQuery({ queryKey: ['user', id], queryFn: fetchUser })",
+    "related": [
+      "swr",
+      "stale-while-revalidate",
+      "optimistic-update"
+    ]
+  },
+  {
+    "slug": "swr",
+    "term": "SWR",
+    "zh_name": "資料抓取 Hook",
+    "category": "tool",
+    "langs": [
+      "javascript",
+      "react"
+    ],
+    "difficulty": 2,
+    "plain": "Vercel 出的資料抓取庫，名字來自 stale-while-revalidate 策略：先回快取的舊資料讓畫面立刻有東西、同時背景抓新資料再更新。什麼時候用：想要輕量、簡單的『抓 API + 快取 + 自動重新驗證』。跟 TanStack Query 定位相似、更精簡；Query 功能更全。",
+    "analogy": "像先端上昨天做好的餐(舊快取)讓你先吃，廚房同時做新鮮的來換——不用空等。",
+    "example": "const { data } = useSWR('/api/user', fetcher)",
+    "related": [
+      "tanstack-query",
+      "stale-while-revalidate",
+      "cache-invalidation"
+    ]
+  },
+  {
+    "slug": "normalized-state",
+    "term": "Normalized State",
+    "zh_name": "正規化狀態",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "前端存清單資料時，別存成巢狀重複，改成『用 id 當 key 的字典 + 一串 id 順序』(像資料庫正規化)。什麼時候用：同一筆資料(如某使用者)出現在多處、要更新一次到處同步時。避免『同一個東西存了三份、改了一份其他沒跟上』的不一致 bug。",
+    "analogy": "像通訊錄——聯絡人資料只存一份(by id)，各群組只放『id 參照』，改號碼一處全對。",
+    "example": "{ byId: {1:{...}}, allIds: [1,2,3] }",
+    "related": [
+      "normalization",
+      "redux",
+      "single-source-of-truth"
+    ]
+  },
+  {
+    "slug": "immer",
+    "term": "Immer",
+    "zh_name": "不可變更新工具",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "讓你用『看起來像直接改』的寫法安全地產生不可變(immutable)的新狀態：你在一個 draft 上隨意 mutate，Immer 幫你算出對應的新物件、不動到原本的。什麼時候用：Redux/reducer 裡更新巢狀狀態時，免去手寫一堆展開運算子(...)。Redux Toolkit 內建它。",
+    "analogy": "像在文件的『修訂模式』上塗改——你隨手改，系統自動幫你產出一份乾淨的新版、留著原稿不動。",
+    "example": "produce(state, draft => { draft.user.name = 'A' })",
+    "related": [
+      "immutability",
+      "redux",
+      "spread-operator"
+    ]
+  },
+  {
+    "slug": "optimistic-ui-update",
+    "term": "Optimistic UI",
+    "zh_name": "樂觀更新介面",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "使用者一動作(按讚/送出)，介面『先假設會成功』立刻更新，再默默送請求；若失敗才回滾。什麼時候用：想讓互動感覺瞬間、無延遲(如即時通訊、按讚)。關鍵要處理好失敗回滾與衝突。跟它相對的是等伺服器回應才更新(pessimistic，較慢但單純)。",
+    "analogy": "像餐廳先把你的點餐寫上白板讓大家看到，廚房若說做不出來再劃掉——多數時候順、偶爾要更正。",
+    "example": "按讚數先 +1 顯示，API 失敗再退回",
+    "related": [
+      "optimistic-update",
+      "tanstack-query",
+      "rollback"
+    ]
+  },
+  {
+    "slug": "state-machine-xstate",
+    "term": "State Machine / XState",
+    "zh_name": "狀態機",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "把 UI/流程的所有可能狀態與『允許的轉換』明確定義成有限狀態機(如 idle→loading→success/error)，只能照定義的邊移動。什麼時候用：複雜流程(多步表單、播放器、結帳)容易出現『不可能卻發生了』的狀態組合時，狀態機讓非法狀態直接無法存在。XState 是 JS 的代表庫。",
+    "analogy": "像紅綠燈——只能綠→黃→紅照規則轉，不會突然『又綠又紅』這種矛盾狀態。",
+    "example": "states: idle → loading → { success | error }",
+    "related": [
+      "finite-state-machine",
+      "usereducer",
+      "flux"
+    ]
+  },
+  {
+    "slug": "mvvm",
+    "term": "MVVM",
+    "zh_name": "模型-視圖-視圖模型",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "UI 架構模式：Model(資料)、View(畫面)、ViewModel(中間層，把 Model 整理成 View 好用的形狀並雙向綁定)。什麼時候在意：Vue、Angular、SwiftUI、WPF 等框架的資料綁定思想源於此——你改 ViewModel、View 自動更新。跟 MVC(控制器)、MVP(展示器)是同家族的不同分工方式。",
+    "analogy": "像翻譯官(ViewModel)站在原始資料(Model)與觀眾(View)之間，把資料翻成觀眾看得懂的樣子、雙向傳話。",
+    "example": "Vue：data(Model) ↔ 綁定 ↔ template(View)",
+    "related": [
+      "mvc",
+      "mvp-pattern",
+      "two-way-binding"
+    ]
+  },
+  {
+    "slug": "mvp-pattern",
+    "term": "MVP（Model-View-Presenter）",
+    "zh_name": "模型-視圖-展示器",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "MVC 的變體：View 很笨、只負責顯示與轉發事件，所有邏輯都在 Presenter，Presenter 主動更新 View。什麼時候在意：常見於 Android(早期)與桌面應用;因為 View 被抽乾邏輯,較好做單元測試。別跟創業的 MVP(最小可行產品)搞混——同縮寫不同意思。",
+    "analogy": "像主播(View)只負責照稿播報,幕後編輯(Presenter)才是決定內容的人。",
+    "example": "View 收到點擊 → 交給 Presenter → Presenter 更新 View",
+    "related": [
+      "mvc",
+      "mvvm",
+      "separation-of-concerns"
+    ]
+  }
+]

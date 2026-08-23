@@ -17,7 +17,19 @@
   - GCP：BigQuery/Cloud Run/Cloud Functions
   - 每條都點出「什麼時候用、代價/雷」（如 S3 公開設定=外洩經典事故、Lambda 冷啟動、DynamoDB 要先想好怎麼查）
 
-`node scripts/import-dictionary.mjs` → **upsert 2508、失敗 0**。下一批從 `dictionary-seed-77.json` 接。
+`node scripts/import-dictionary.mjs` → **upsert 2508、失敗 0**。
+
+### 0823b 續寫 5 批 → 2583（+75）
+
+同 session 續往 5000，再攻 5 個工程實務主題（每批續寫前掃全部既有 slug 去重、遇撞就改更精確的 slug）：
+
+- **seed 77 · 可觀測性 / 監控（16 → 2524）**：三支柱(metrics/logs/traces)、Prometheus、metric 型別、p95/p99 分位數、長尾延遲、Jaeger、OTel Collector、日誌集中化、Grafana Loki、告警(告警疲勞)、合成監控 vs RUM、遙測取樣(head/tail)、cardinality 爆炸、Istio、Envoy。
+- **seed 78 · 資料工程（16 → 2540）**：ETL vs ELT、Airflow、dbt、批次 vs 串流、串流視窗、exactly-once、冪等管線、CDC、星型/雪花模型、Parquet/Avro、Schema Registry、資料目錄、獎牌分層、Data Mesh。
+- **seed 79 · 認證 / 資安進階（17 → 2557）**：OAuth PKCE、OIDC、Passkey/WebAuthn、access/refresh token、CSRF token、CORS preflight、clickjacking 防護、session fixation、ACL、威脅建模(STRIDE)、供應鏈安全、SBOM、相依掃描/Dependabot、密鑰外洩掃描、bug bounty。
+- **seed 80 · 前端狀態管理（13 → 2570）**：Redux/Flux、Zustand、Jotai、Recoil、TanStack Query、SWR、normalized state、Immer、樂觀更新 UI、狀態機/XState、MVVM/MVP（分清「客戶端狀態 vs 伺服器狀態」）。
+- **seed 81 · 行動開發（13 → 2583）**：SwiftUI、Jetpack Compose、Flutter widget、RN bridge、native module、Expo、Flutter vs RN、WebView/Hybrid、deep linking、OTA/CodePush、local-first、SQLite 行動端、App 生命週期、App 權限請求。
+
+每條都寫「什麼時候用 / 什麼時候別用 / 代價與雷」＋比喻＋範例。撞名改精確 slug：`alerting→alerting-monitoring`、`sampling→telemetry-sampling`；`stale-while-revalidate` 已存(seed-57)故移除重複。`import-dictionary.mjs` → upsert 2583、失敗 0。下一批從 `dictionary-seed-82.json` 接。
 
 ---
 

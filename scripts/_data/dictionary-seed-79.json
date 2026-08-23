@@ -1,0 +1,291 @@
+[
+  {
+    "slug": "oauth-pkce",
+    "term": "OAuth PKCE",
+    "zh_name": "授權碼防攔截擴充",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 3,
+    "plain": "OAuth 授權碼流程的安全擴充(Proof Key for Code Exchange)：客戶端先產一個隨機祕密 code_verifier、送它的雜湊 code_challenge 去要授權碼，最後換 token 時再出示原始 verifier 對驗。什麼時候用：手機 App / 純前端 SPA 這種『存不住 client secret』的公開客戶端，用 PKCE 防授權碼被攔截盜用。現在幾乎所有公開客戶端都該用。",
+    "analogy": "像寄物櫃：先把『鑰匙的照片』交給櫃檯，領取時要出示『真鑰匙』對得上才給——中途偷到照片也沒用。",
+    "example": "SPA 登入走 Authorization Code + PKCE",
+    "related": [
+      "oauth",
+      "openid-connect",
+      "refresh-token"
+    ]
+  },
+  {
+    "slug": "openid-connect-oidc",
+    "term": "OpenID Connect (OIDC)",
+    "zh_name": "身分驗證層",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 2,
+    "plain": "架在 OAuth 2.0 之上的『身分認證』標準。OAuth 管『授權』(能不能存取你的資源)，OIDC 補上『認證』(你是誰)——登入後拿到一個 ID Token(JWT)裡有使用者身分資訊。什麼時候用：做『用 Google/Apple 登入』這種第三方登入時，底層就是 OIDC。別把 OAuth 拿來硬幹認證(常見誤用)。",
+    "analogy": "OAuth 像給你一張『能開哪些門的門禁卡』；OIDC 再附上一張『證明你是誰的身分證』。",
+    "example": "用 Google 登入 → 拿 ID Token 得知 email/sub",
+    "related": [
+      "oauth-pkce",
+      "jwt",
+      "saml"
+    ]
+  },
+  {
+    "slug": "passkey-webauthn",
+    "term": "Passkey / WebAuthn",
+    "zh_name": "通行金鑰",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 3,
+    "plain": "用『裝置上的生物辨識/PIN + 公私鑰』取代密碼登入的標準(WebAuthn 是瀏覽器 API，Passkey 是它的消費者品牌)。網站只存你的公鑰、私鑰永遠留在你裝置、登入靠簽章。什麼時候用：想根除密碼被釣魚/外洩的問題——passkey 天生防釣魚(綁網域)、沒有可被偷的共享祕密。是取代密碼的未來主流。",
+    "analogy": "像用指紋開自家保險箱——鑰匙(私鑰)從不離開你手上，網站只留一把『對得上你』的鎖。",
+    "example": "用臉部辨識登入、無密碼(FaceID → passkey 簽章)",
+    "related": [
+      "public-key-crypto",
+      "mfa-2fa",
+      "phishing"
+    ]
+  },
+  {
+    "slug": "jwt-refresh",
+    "term": "Access / Refresh Token",
+    "zh_name": "存取與更新權杖",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 2,
+    "plain": "常見的權杖搭配：access token 短命(幾分鐘~1 小時)、帶著到處存取 API；refresh token 長命、只用來『換一張新的 access token』。什麼時候在意：access 短命是為了外洩傷害小；refresh 要嚴加保管(常放 HttpOnly cookie)、可撤銷、最好每次用完就輪替(rotation)防重放。登出/被盜就撤 refresh token。",
+    "analogy": "access token 像當日有效的臨時通行證；refresh token 像去櫃檯換新通行證的長期會員卡——會員卡更要顧好。",
+    "example": "access 15 分鐘過期 → 用 refresh 靜默換新",
+    "related": [
+      "refresh-token",
+      "jwt",
+      "httponly-samesite-secure-cookie"
+    ]
+  },
+  {
+    "slug": "csrf-token",
+    "term": "CSRF Token",
+    "zh_name": "跨站請求偽造防護",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 2,
+    "plain": "CSRF 攻擊是誘騙『已登入』的你在不知情下對某站送出動作(如轉帳)，因為瀏覽器會自動帶上你的 cookie。防法之一是 CSRF token：伺服器發一個隨機值、要求敏感請求附上它，攻擊者網站拿不到這個值就偽造不了。什麼時候用：用 cookie 做登入的表單/動作。搭 SameSite cookie 一起防更穩。",
+    "analogy": "像銀行臨櫃要你唸出『這次專屬的動態通關語』——別人就算冒用你的名字也講不出來。",
+    "example": "表單藏 <input name=csrf value=隨機>，後端比對",
+    "related": [
+      "csrf",
+      "httponly-samesite-secure-cookie",
+      "cors-preflight"
+    ]
+  },
+  {
+    "slug": "cors-preflight",
+    "term": "CORS Preflight",
+    "zh_name": "跨來源預檢請求",
+    "category": "concept",
+    "langs": [
+      "security",
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "瀏覽器在送某些跨來源請求(如帶自訂標頭、PUT/DELETE)前，會先自動送一個 OPTIONS『預檢』問伺服器『你允許這種跨站請求嗎』，伺服器回對的 CORS 標頭才放行真正的請求。什麼時候在意：前端打別的網域 API 出現 CORS error，多半是後端沒回對 Access-Control-Allow-* 標頭。CORS 是瀏覽器保護、不是後端授權，別把它當成安全機制。",
+    "analogy": "像進門前先探頭問一句『我這樣進來可以嗎？』——警衛點頭(對的標頭)才真的走進去。",
+    "example": "OPTIONS 預檢 → 200 + Allow-Origin → 才送 PUT",
+    "related": [
+      "same-origin-policy",
+      "preflight-request",
+      "csrf-token"
+    ]
+  },
+  {
+    "slug": "clickjacking-defense",
+    "term": "Clickjacking 防護",
+    "zh_name": "點擊劫持防護",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 2,
+    "plain": "Clickjacking 是把你的網站用透明 iframe 疊在誘餌頁上，讓用戶以為點的是 A、其實點到你站上的敏感按鈕。防法：回應 X-Frame-Options: DENY 或 CSP 的 frame-ancestors，禁止別人把你的頁面嵌進他們的 iframe。什麼時候用：有敏感操作(轉帳/授權/刪除)的頁面都該設，防被偷嵌。",
+    "analogy": "像有人在你家門鈴上貼一張假貼紙誘你按——你規定『我的門鈴不准被別人蓋東西上去』。",
+    "example": "回應頭 X-Frame-Options: DENY",
+    "related": [
+      "clickjacking",
+      "security-headers",
+      "content-security-policy"
+    ]
+  },
+  {
+    "slug": "session-fixation",
+    "term": "Session Fixation",
+    "zh_name": "會話固定攻擊",
+    "category": "error",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 3,
+    "plain": "攻擊者先拿到一個 session id、想辦法讓受害者用『這個 id』登入，登入後攻擊者就共享了已認證的 session。防法：登入成功後一定要『重新產生一個新的 session id』(regenerate)，讓登入前的舊 id 作廢。什麼時候在意：任何 session 型登入,權限提升(登入/改密碼)的那一刻都要換新 session id。",
+    "analogy": "像有人先塞給你一張他複製過的房卡叫你去開通——你一開通他手上那張也能進；正解是開通當下直接換一張全新卡。",
+    "example": "登入成功 → session.regenerate() → 舊 id 失效",
+    "related": [
+      "session-hijacking",
+      "httponly-samesite-secure-cookie",
+      "jwt-refresh"
+    ]
+  },
+  {
+    "slug": "access-control-list",
+    "term": "ACL（Access Control List）",
+    "zh_name": "存取控制清單",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 2,
+    "plain": "直接列出『哪個主體(用戶/群組)對哪個資源有什麼權限』的清單。什麼時候用：權限關係較單純、要對『個別資源』細指定時(如某檔案允許 A 讀、B 讀寫)。相對 RBAC(靠角色)、ABAC(靠屬性條件)較適合規模化。三者常混用：粗用角色、細用 ACL。",
+    "analogy": "像每個房間門口貼一張名單——誰能進、能不能動東西，一個個列清楚。",
+    "example": "file.acl = { alice: read, bob: write }",
+    "related": [
+      "rbac-abac",
+      "least-privilege",
+      "idor"
+    ]
+  },
+  {
+    "slug": "threat-modeling",
+    "term": "Threat Modeling",
+    "zh_name": "威脅建模",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 3,
+    "plain": "在設計階段就系統性地問『這東西會被誰、怎麼攻擊，我們怎麼防』。常用 STRIDE 分類(偽冒/竄改/否認/資訊洩漏/阻斷服務/權限提升)逐項檢視資料流。什麼時候用：新功能/系統設計時先做，比上線後被打再補便宜太多。不必大張旗鼓——畫個資料流圖、對每條邊問『這裡可能出什麼事』就很有用。",
+    "analogy": "像蓋房子前先想『小偷會從哪進、火從哪燒』再決定裝哪些鎖與感測器，而不是被闖空門才補。",
+    "example": "對登入流程跑 STRIDE，補上速率限制與 MFA",
+    "related": [
+      "defense-in-depth",
+      "owasp-top-10",
+      "penetration-test"
+    ]
+  },
+  {
+    "slug": "supply-chain-security",
+    "term": "Supply Chain Security",
+    "zh_name": "軟體供應鏈安全",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 3,
+    "plain": "你的軟體多半是一堆第三方套件堆成的——供應鏈安全就是防『你依賴的東西被下毒』(惡意套件、被入侵的相依、被竄改的 build)。做法：鎖版本(lockfile)、掃描已知漏洞、驗證來源與簽章、產 SBOM(軟體物料清單)。什麼時候在意：一個被投毒的 npm 小套件就能打穿整條產線(如 event-stream、SolarWinds 事件)。",
+    "analogy": "像食品要能追溯每樣原料來源——不然一顆有問題的原料就污染整批成品。",
+    "example": "CI 跑相依漏洞掃描 + 產 SBOM + 驗簽",
+    "related": [
+      "supply-chain-attack",
+      "sbom",
+      "dependency-scanning"
+    ]
+  },
+  {
+    "slug": "sbom",
+    "term": "SBOM（軟體物料清單）",
+    "zh_name": "軟體物料清單",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 2,
+    "plain": "一份列出『你的軟體包含哪些元件與版本』的清單(像食品成分表)。什麼時候用：某個套件爆重大漏洞(如 Log4Shell)時，有 SBOM 你能『秒查我哪些系統中招』；沒有就得一個個翻。格式有 CycloneDX、SPDX，可由工具自動產生。越來越多法規與企業採購要求提供。",
+    "analogy": "像食品的成分標示——出事召回時，能立刻知道哪些產品含到那個問題原料。",
+    "example": "syft 產 CycloneDX SBOM 存進發布物件",
+    "related": [
+      "supply-chain-security",
+      "dependency-scanning",
+      "cve"
+    ]
+  },
+  {
+    "slug": "dependency-scanning",
+    "term": "Dependency Scanning (SCA)",
+    "zh_name": "相依套件掃描",
+    "category": "tool",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 2,
+    "plain": "軟體組成分析(SCA)：自動比對你用的第三方套件與已知漏洞資料庫(CVE)，告訴你哪個相依有洞、該升到哪版。什麼時候用：CI 裡常態跑(如 Dependabot、Snyk、Trivy)，讓有漏洞的相依在合併前就被抓到並提 PR 升級。是供應鏈安全最基本、最高投報的一步。",
+    "analogy": "像定期健檢比對你吃的每種保健品有沒有被列入回收名單——有就通知你換。",
+    "example": "Dependabot 發現 lodash 漏洞 → 自動開升級 PR",
+    "related": [
+      "dependabot",
+      "sbom",
+      "supply-chain-security"
+    ]
+  },
+  {
+    "slug": "dependabot",
+    "term": "Dependabot",
+    "zh_name": "相依自動更新機器人",
+    "category": "tool",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 1,
+    "plain": "GitHub 內建的機器人：定期檢查你的相依有沒有新版或已知漏洞，自動開 PR 幫你升級。什麼時候用：想讓套件更新與資安修補不再靠人記得。設定 dependabot.yml 選要顧的生態(npm/pip…)與頻率。小提醒：升級 PR 仍要看 changelog 與跑測試再合，別無腦全合(可能有破壞性變更)。",
+    "analogy": "像有個助理定期幫你看『哪些訂閱該續、哪個產品被召回』並先把換貨單填好等你確認。",
+    "example": "dependabot 每週開 npm 相依升級 PR",
+    "related": [
+      "dependency-scanning",
+      "supply-chain-security",
+      "ci-cd-pipeline"
+    ]
+  },
+  {
+    "slug": "secret-scanning",
+    "term": "Secret Scanning",
+    "zh_name": "密鑰外洩掃描",
+    "category": "tool",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 2,
+    "plain": "自動掃程式碼/提交紀錄裡有沒有不小心寫死的密鑰(API key、密碼、token)。什麼時候用：防金鑰誤進版控——很多外洩就是有人把 AWS key commit 上去被爬走。工具如 GitHub secret scanning、gitleaks、trufflehog，可設 pre-commit hook 提前擋。重點：一旦洩漏，光刪 commit 沒用，要立刻『輪替(換掉)那把金鑰』。",
+    "analogy": "像出門前有人幫你檢查有沒有把家裡鑰匙插在門上忘了拔——插了就得馬上換鎖。",
+    "example": "gitleaks 在 CI 掃到 AWS key → 擋下 + 通知輪替",
+    "related": [
+      "secrets-management",
+      "key-rotation",
+      "supply-chain-security"
+    ]
+  },
+  {
+    "slug": "bug-bounty",
+    "term": "Bug Bounty",
+    "zh_name": "漏洞懸賞",
+    "category": "concept",
+    "langs": [
+      "security"
+    ],
+    "difficulty": 1,
+    "plain": "公開邀請外部資安研究者找你系統的漏洞、依嚴重度發獎金的計畫(平台如 HackerOne、Bugcrowd)。什麼時候用：想用『眾人之眼』持續補強安全、又只在真的有成果時付費。要搭配清楚的範圍(scope)、安全港(safe harbor 免責)條款與負責任揭露流程。跟滲透測試互補：pentest 是定點深挖、bounty 是持續廣掃。",
+    "analogy": "像懸賞抓小偷——找到真漏洞的白帽駭客領獎金，比你自己防更多雙眼睛。",
+    "example": "HackerOne 上開賞：RCE 漏洞獎 $5000",
+    "related": [
+      "penetration-test",
+      "threat-modeling",
+      "responsible-disclosure"
+    ]
+  }
+]

@@ -1,0 +1,256 @@
+[
+  {
+    "slug": "ios-swiftui",
+    "term": "SwiftUI",
+    "zh_name": "iOS 宣告式 UI",
+    "category": "tool",
+    "langs": [
+      "swift"
+    ],
+    "difficulty": 2,
+    "plain": "Apple 的現代宣告式 UI 框架：用 Swift 描述『畫面長怎樣』，狀態一變 UI 自動更新(跟 React 同精神)。什麼時候用：開發 iOS/macOS/watchOS 原生 App。相對的是老的 UIKit(命令式、要手動操作畫面元件)。新專案多用 SwiftUI，但複雜或要相容舊系統時仍會混用 UIKit。",
+    "analogy": "像填一張『我要什麼版面』的表單交出去，系統自動照著畫、資料變了自動重畫。",
+    "example": "Text(name).font(.title)  // 狀態變自動更新",
+    "related": [
+      "declarative-ui",
+      "react",
+      "android-jetpack-compose"
+    ]
+  },
+  {
+    "slug": "android-jetpack-compose",
+    "term": "Jetpack Compose",
+    "zh_name": "Android 宣告式 UI",
+    "category": "tool",
+    "langs": [
+      "kotlin"
+    ],
+    "difficulty": 2,
+    "plain": "Google 的現代 Android UI 框架：用 Kotlin 以宣告式寫 UI(對應 iOS 的 SwiftUI)，狀態變 UI 自動重組(recompose)。什麼時候用：開發原生 Android App 的新首選。相對的是老的 XML layout + View 系統(命令式)。Compose 讓 UI 程式更簡潔、可組合、好預覽。",
+    "analogy": "跟 SwiftUI 同理——描述畫面該長怎樣，資料一變畫面自己跟著換,不用手動一個個改元件。",
+    "example": "Text(text = name, style = MaterialTheme.typography.h1)",
+    "related": [
+      "ios-swiftui",
+      "declarative-ui",
+      "kotlin"
+    ]
+  },
+  {
+    "slug": "flutter-widget",
+    "term": "Flutter Widget",
+    "zh_name": "Flutter 元件",
+    "category": "concept",
+    "langs": [
+      "dart"
+    ],
+    "difficulty": 2,
+    "plain": "Flutter(Google 的跨平台框架)裡『一切皆 widget』——畫面、排版、甚至間距都是 widget 組合成的樹。什麼時候在意：Flutter 用 Dart、自帶渲染引擎(不套用系統原生元件)畫出一致的 UI，一套碼跑 iOS/Android/Web/桌面。widget 分 Stateless(無狀態)與 Stateful(有狀態)兩種。",
+    "analogy": "像用樂高積木蓋房子——牆、窗、甚至螺絲都是同一種積木(widget)一層層拼起來。",
+    "example": "Column(children: [Text('Hi'), Icon(Icons.star)])",
+    "related": [
+      "flutter-vs-react-native",
+      "declarative-ui",
+      "dart"
+    ]
+  },
+  {
+    "slug": "react-native-bridge",
+    "term": "React Native Bridge",
+    "zh_name": "RN 原生橋接",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 3,
+    "plain": "React Native 讓你用 JS/React 寫 App，畫面對應到『真的原生元件』。JS 與原生之間靠 bridge 傳訊息溝通。什麼時候在意：舊架構的 bridge 是非同步、資料要序列化,過度頻繁溝通會成效能瓶頸;新架構(JSI/Fabric/TurboModules)改成直接呼叫、更快。要用原生功能時常需寫 native module。",
+    "analogy": "像兩國之間的翻譯窗口——JS 講的話要翻成原生聽得懂的再傳過去,翻太頻繁就塞車。",
+    "example": "JS 呼叫相機 → bridge → 原生相機 API",
+    "related": [
+      "native-module",
+      "flutter-vs-react-native",
+      "expo-framework"
+    ]
+  },
+  {
+    "slug": "native-module",
+    "term": "Native Module",
+    "zh_name": "原生模組",
+    "category": "concept",
+    "langs": [
+      "javascript",
+      "dart"
+    ],
+    "difficulty": 3,
+    "plain": "跨平台框架(RN/Flutter)想用某個框架沒包好的原生功能(特殊感測器、SDK、藍牙)時，要自己寫一小段原生碼(Swift/Kotlin)、再暴露給 JS/Dart 呼叫。什麼時候在意：多數常見功能都有現成套件;要寫 native module 代表你踩到跨平台的邊界，得懂一點原生開發、也要兩個平台各寫一份。",
+    "analogy": "像通用遙控器少了某台冷氣的按鈕,你得自己接一條專線去控它。",
+    "example": "寫 Kotlin module 包某支付 SDK 給 RN 用",
+    "related": [
+      "react-native-bridge",
+      "flutter-widget",
+      "platform-channel"
+    ]
+  },
+  {
+    "slug": "expo-framework",
+    "term": "Expo",
+    "zh_name": "RN 開發框架",
+    "category": "tool",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "建構在 React Native 上的框架與工具鏈：免碰 Xcode/Android Studio 就能開發、內建大量原生 API、能 OTA 更新、雲端出包(EAS)。什麼時候用：想快速開始 RN、少碰原生設定。以前的限制(不能用任意原生模組)已被 dev client/config plugins 大幅解除。是現在 RN 官方推薦的起手方式。",
+    "analogy": "像開箱即用的露營套裝——帳篷睡袋爐具都幫你備好,不用自己一件件張羅裝備。",
+    "example": "npx create-expo-app; expo start",
+    "related": [
+      "react-native-bridge",
+      "code-push-ota",
+      "native-module"
+    ]
+  },
+  {
+    "slug": "flutter-vs-react-native",
+    "term": "Flutter vs React Native",
+    "zh_name": "兩大跨平台之爭",
+    "category": "reference",
+    "langs": [
+      "dart",
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "兩大跨平台框架的取捨。Flutter：用 Dart、自帶渲染引擎、UI 各平台一致、效能穩,但語言較冷門、包較大。React Native：用 JS/React、貼近既有前端生態、可漸進接原生,但畫面走原生元件、複雜動畫較吃橋接。什麼時候選：團隊已有前端(JS)底子多半 RN;要極致一致 UI 與效能可考慮 Flutter。沒有絕對輸贏。",
+    "analogy": "像自帶畫布的畫家(Flutter,自己畫到底) vs 指揮當地工班的包商(RN,用在地原生元件)。",
+    "example": "既有 React 團隊 → RN;要一致像素級 UI → Flutter",
+    "related": [
+      "flutter-widget",
+      "react-native-bridge",
+      "cross-platform"
+    ]
+  },
+  {
+    "slug": "webview-hybrid",
+    "term": "WebView / Hybrid App",
+    "zh_name": "混合式 App",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用一個內嵌的瀏覽器(WebView)把網頁包成 App 的做法(如 Cordova/Capacitor,或某些頁面內嵌)。什麼時候用：想用既有網頁快速上架、內容常變的頁面。代價:效能與原生體驗較差、複雜互動卡卡、審核有時較嚴。相對於此的是 RN/Flutter(接真原生元件)與純原生。LIFF、多數 App 的活動頁常是 WebView。",
+    "analogy": "像把一台平板嵌進 App 的殼裡顯示網頁——快,但終究隔著一層玻璃、不如原生跟手。",
+    "example": "Capacitor 把 web app 包成 iOS/Android",
+    "related": [
+      "pwa",
+      "flutter-vs-react-native",
+      "liff"
+    ]
+  },
+  {
+    "slug": "deep-linking",
+    "term": "Deep Linking",
+    "zh_name": "深層連結",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "點一個連結能直接打開 App 內的『特定頁面』(而非只開首頁),甚至沒裝就導去商店(deferred deep link)。什麼時候用：行銷活動、分享、通知想把人精準帶到某商品/頁面。技術上靠 Universal Links(iOS)/App Links(Android)綁網域驗證,或自訂 URL scheme。設定不完整常見『點了只開首頁』的雷。",
+    "analogy": "像大樓的直達電梯——不用從一樓大廳慢慢找,連結直接送你到 8 樓那間辦公室。",
+    "example": "myapp://product/123 或 https://app.com/product/123",
+    "related": [
+      "universal-links",
+      "deferred-deep-link",
+      "push-notification"
+    ]
+  },
+  {
+    "slug": "code-push-ota",
+    "term": "OTA Update / CodePush",
+    "zh_name": "空中更新",
+    "category": "concept",
+    "langs": [
+      "javascript"
+    ],
+    "difficulty": 2,
+    "plain": "跨平台 App(RN/Expo)能不經 App Store 審核、直接推送 JS/資源更新到已安裝的 App(over-the-air)。什麼時候用：修小 bug、改文案、換設定想立刻上、不想等審核。限制:只能更新 JS/資產那層,動到原生碼(加套件、改權限)仍要重新送審。且各平台商店有規範,別拿 OTA 繞過審核大改功能。",
+    "analogy": "像遊戲的線上更新包——不用重新下載整個遊戲,連上線就補好小修正。",
+    "example": "Expo EAS Update 推 JS bundle 更新",
+    "related": [
+      "expo-framework",
+      "app-store-review",
+      "react-native-bridge"
+    ]
+  },
+  {
+    "slug": "local-first",
+    "term": "Local-First",
+    "zh_name": "在地優先",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "App 資料主要存在使用者本機、直接讀寫(所以飛快、離線也能用),再於背景與雲端同步、跨裝置合併。什麼時候用：想要即時無延遲、離線可用、又能多裝置同步(如筆記、待辦類 App)。難點在同步衝突解決(常用 CRDT)。相對於此的是傳統『每次操作都要連伺服器』。",
+    "analogy": "像先寫在自己的隨身筆記本(本機),有空再跟雲端對帳同步——不用每寫一個字都連線。",
+    "example": "本機 SQLite 立即寫 + 背景同步雲端(CRDT 合併)",
+    "related": [
+      "offline-first",
+      "crdt",
+      "sqlite-mobile"
+    ]
+  },
+  {
+    "slug": "sqlite-mobile",
+    "term": "SQLite（行動端）",
+    "zh_name": "手機內嵌資料庫",
+    "category": "tool",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "SQLite 是超輕量、單檔、零設定的嵌入式資料庫,是 iOS/Android App 存本機結構化資料的標配(也用在瀏覽器、桌面、邊緣)。什麼時候用：App 要在本機存清單、快取、離線資料時。上層常包一個 ORM(Room/Core Data/Drift/WatermelonDB)好操作。它是全世界部署量最大的資料庫之一。",
+    "analogy": "像放在你手機裡的一個小抽屜櫃——不用連任何伺服器,自己就能整齊收納與查找資料。",
+    "example": "Android Room / iOS Core Data 底層就是 SQLite",
+    "related": [
+      "local-first",
+      "offline-first",
+      "orm"
+    ]
+  },
+  {
+    "slug": "app-lifecycle-states",
+    "term": "App Lifecycle",
+    "zh_name": "App 生命週期",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "App 會在幾種狀態間切換:前景執行(active)、進背景(background)、被系統暫停甚至回收(terminated)。什麼時候在意:進背景時要存好狀態、暫停計時/連線;因為系統可能為省電或記憶體隨時把背景 App 殺掉,回來要能『復原到剛剛』。背景久跑的工作要用系統給的背景任務機制,不能假設 App 一直活著。",
+    "analogy": "像店家的營業狀態——營業中、暫停營業、拉下鐵門;拉門前要把帳結好、東西收好,免得被強制打烊時遺失。",
+    "example": "onPause/onResume(Android)、scenePhase(SwiftUI)",
+    "related": [
+      "background-task-mobile",
+      "state-persistence",
+      "push-notification"
+    ]
+  },
+  {
+    "slug": "mobile-permissions",
+    "term": "App Permissions",
+    "zh_name": "App 權限請求",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "App 要用相機、定位、通知、相簿等敏感功能,得在執行期向使用者請求授權。什麼時候在意:要在對的時機請求(用到那功能的當下、先說明為什麼),別一開 App 就把所有權限一次要光——那最容易被拒。被拒要能優雅降級。過度索取權限也會被商店審核與使用者反感。",
+    "analogy": "像借東西要在真的要用時、講清楚用途才開口,而不是一見面就把人家整個工具箱都要走。",
+    "example": "要傳照片時才請求相簿權限 + 說明用途",
+    "related": [
+      "app-store-review",
+      "least-privilege",
+      "app-lifecycle-states"
+    ]
+  }
+]

@@ -379,7 +379,7 @@
 - [x] ~~seed 36–40：Python 模組 128 個（stdlib+外部）→ 1773 條~~ ✅ 0721
 - [x] ~~seed 41：DB查詢/Git/K8s雲原生/LLM/分散式系統 33 條 → **1806 條**~~ ✅ 0721
 - [x] ~~seed 42：網路協定/Web/資安/加密驗證 41 條 → **1847 條**（全查過無 slug 衝突）~~ ✅ 0721
-- [ ] 4.2.1 續寫到 5000（現 **2508**，從 `dictionary-seed-77.json` 接）〔0820 前端零基礎大補 +88→2436、常見錯誤訊息 +11→2447、開發者工具 +12→2459、終端機/命令列基礎 +15→2474；0823 React Hooks 深入+TS 進階型別 seed 75 +16→2490、雲端服務 AWS/GCP seed 76 +18→2508〕
+- [ ] 4.2.1 續寫到 5000（現 **2583**，從 `dictionary-seed-82.json` 接）〔0820 前端零基礎大補 +88→2436、常見錯誤訊息 +11→2447、開發者工具 +12→2459、終端機/命令列基礎 +15→2474；0823 React Hooks 深入+TS 進階型別 seed 75 +16→2490、雲端服務 AWS/GCP seed 76 +18→2508；0823b seed 77 可觀測性/監控 +16→2524、seed 78 資料工程 +16→2540、seed 79 認證/資安進階 +17→2557、seed 80 前端狀態管理 +13→2570、seed 81 行動開發 +13→2583〕
   - [x] ~~seed 64：分散式系統進階 + 硬體/底層 + 深度學習 22 條 → **2348**~~ ✅ 0723（Raft/Paxos/腦裂/向量時鐘/CRDT/分散式鎖/outbox/Saga · CPU核心執行緒/GPU運算/SIMD/快取階層/RAM-vs-storage/韌體/硬體中斷 · 神經網路/反向傳播/激活函數/梯度消失爆炸/嵌入層/遷移學習/softmax溫度）
   - [x] ~~seed 63：資料庫進階 + 測試 + API 設計 22 條 → **2326**~~ ✅ 0723（MVCC/ACID-vs-BASE/髒讀/幻讀/視窗函數/遞迴CTE/觸發器/CDC · 測試金字塔/單元整合E2E/mock-vs-stub/性質測試/快照測試/契約測試/負載vs壓力 · REST成熟度/HATEOAS/API限流/API-Key-vs-OAuth/GraphQL-N+1/webhook安全/API淘汰）
   - [x] ~~seed 62：商業/產品 + SEO + 行銷成長 21 條 → **2304**~~ ✅ 0723（TAM-SAM-SOM/GTM/JTBD/MVP-MLP/pivot/PLG/飛輪 · on-page SEO/backlink/SERP/CWV/結構化資料/canonical/sitemap · 轉換漏斗/AARRR/歸因模型/再行銷/滴灌郵件/社會證明/誘餌內容）

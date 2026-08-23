@@ -1,0 +1,290 @@
+[
+  {
+    "slug": "three-pillars-observability",
+    "term": "Observability 三支柱",
+    "zh_name": "可觀測性三支柱",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "要搞懂線上系統發生什麼事，靠三種資料：Metrics(指標，數字趨勢如 CPU/延遲/錯誤率)、Logs(日誌，一條條事件紀錄)、Traces(追蹤，一個請求跨服務的完整旅程)。什麼時候用：出事時三者互補——指標告訴你『哪裡不對勁』、追蹤告訴你『慢在哪一段』、日誌告訴你『那一刻發生什麼』。",
+    "analogy": "像看病：指標是體溫血壓(趨勢)、追蹤是把整條消化道走一遍(定位)、日誌是病歷逐筆紀錄(細節)。",
+    "example": "延遲飆高(metric) → 追蹤看卡在 DB(trace) → 日誌看到 timeout(log)",
+    "related": [
+      "metric-types",
+      "distributed-tracing",
+      "structured-logging"
+    ]
+  },
+  {
+    "slug": "prometheus",
+    "term": "Prometheus",
+    "zh_name": "指標監控系統",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "雲原生最主流的開源指標監控：定時去各服務『拉』(pull)指標存成時間序列，用 PromQL 查詢、配 Alertmanager 設告警。什麼時候用：想監控服務的 CPU/記憶體/請求量/錯誤率並在異常時告警。常搭 Grafana 畫儀表板。是 CNCF 畢業專案、K8s 生態標配。",
+    "analogy": "像定時巡邏的抄表員——固定去每個電表(服務)抄數字、記成一長條走勢圖。",
+    "example": "rate(http_requests_total[5m])  # PromQL 算每秒請求數",
+    "related": [
+      "grafana",
+      "metric-types",
+      "alerting-monitoring"
+    ]
+  },
+  {
+    "slug": "metric-types",
+    "term": "Metric Types",
+    "zh_name": "指標型別",
+    "category": "concept",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "監控指標常見四型：Counter(只增不減，如累計請求數)、Gauge(可上可下，如當前記憶體)、Histogram(分佈統計，如延遲落在各區間幾筆)、Summary(類似 histogram 但算分位數)。什麼時候在意：選錯型別會量錯東西——累計量用 counter、瞬時值用 gauge、要看 p95 延遲用 histogram。",
+    "analogy": "像不同的量具：里程表(counter 只往前)、油量表(gauge 上下)、成績分佈圖(histogram)。",
+    "example": "http_request_duration_seconds (histogram) → 算 p95",
+    "related": [
+      "prometheus",
+      "percentile-latency",
+      "three-pillars-observability"
+    ]
+  },
+  {
+    "slug": "percentile-latency",
+    "term": "p50 / p95 / p99 延遲",
+    "zh_name": "延遲分位數",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "看延遲不能只看平均(會被少數極端值騙)，要看分位數：p95=95% 的請求比這個快(只有最慢的 5% 更慢)、p99 同理。什麼時候在意：平均 100ms 看似很好，但 p99 可能 3 秒——那 1% 的慘用戶體驗最差、也最會客訴。SLO 幾乎都用 p95/p99 定。",
+    "analogy": "像考試看『你贏過幾成的人』比看『全班平均』更懂自己的位置——尾端那群才是痛點。",
+    "example": "p99 latency < 500ms  # 99% 請求要在半秒內",
+    "related": [
+      "metric-types",
+      "slo-sli",
+      "tail-latency"
+    ]
+  },
+  {
+    "slug": "tail-latency",
+    "term": "Tail Latency",
+    "zh_name": "長尾延遲",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 3,
+    "plain": "少數請求特別慢(分佈的『尾巴』)造成的延遲。什麼時候在意：一個頁面要打十個服務、只要有一個偶爾很慢，整頁就慢——尾延遲會被放大。成因常是 GC 暫停、鎖競爭、快取沒命中、重試。對付它靠：逾時+重試對沖、減少扇出、快取。",
+    "analogy": "像團體照只要一個人眨眼就得重拍——最慢的那個決定整體體驗。",
+    "example": "10 個服務各 p99=1%，全中一次的機率≈10%",
+    "related": [
+      "percentile-latency",
+      "timeout",
+      "fan-out"
+    ]
+  },
+  {
+    "slug": "jaeger",
+    "term": "Jaeger",
+    "zh_name": "分散式追蹤系統",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "開源的分散式追蹤工具：把一個請求經過的每個服務、每段耗時串成一條 trace 視覺化，看得出『慢在哪一段』。什麼時候用：微服務下一個請求跨十個服務，出事很難定位，追蹤讓瓶頸一目了然。常搭 OpenTelemetry 收資料。類似的有 Zipkin、Tempo。",
+    "analogy": "像宅配的物流追蹤——看得到包裹卡在哪個轉運站、每站待多久。",
+    "example": "一條 trace：API 20ms → DB 480ms → 回傳 → 定位 DB 慢",
+    "related": [
+      "distributed-tracing",
+      "opentelemetry",
+      "span-trace"
+    ]
+  },
+  {
+    "slug": "opentelemetry-collector",
+    "term": "OpenTelemetry Collector",
+    "zh_name": "遙測資料收集器",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 3,
+    "plain": "OpenTelemetry(OTel)是收集 metrics/logs/traces 的開放標準；Collector 是它的中繼站，統一接收、處理(過濾/取樣/加標籤)、再轉發給後端(Jaeger/Prometheus/雲廠商)。什麼時候用：想用一套標準埋點、又能自由換監控後端不綁死廠商。是雲原生可觀測性的黏合層。",
+    "analogy": "像郵件分揀中心——各地信件(遙測)先集中、分類處理，再送去對的目的地。",
+    "example": "App → OTel SDK → Collector → Jaeger + Prometheus",
+    "related": [
+      "opentelemetry",
+      "jaeger",
+      "telemetry-sampling"
+    ]
+  },
+  {
+    "slug": "log-aggregation",
+    "term": "Log Aggregation",
+    "zh_name": "日誌集中化",
+    "category": "concept",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "把分散在很多台機器/容器的日誌集中收到一處，能統一搜尋、關聯、告警。什麼時候用：容器動不動就重啟、日誌隨之消失，且十幾個服務的日誌散各處根本沒法查——集中化(如 ELK、Grafana Loki、雲的 Logging)才查得動。搭結構化日誌(JSON)更好搜。",
+    "analogy": "像把各分店的帳本每天送回總部彙整——要查帳才不用一家家跑。",
+    "example": "Fluent Bit 收 → Loki 存 → Grafana 查",
+    "related": [
+      "structured-logging",
+      "grafana-loki",
+      "three-pillars-observability"
+    ]
+  },
+  {
+    "slug": "grafana-loki",
+    "term": "Grafana Loki",
+    "zh_name": "日誌彙整系統",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "Grafana 出的開源日誌系統，設計『像 Prometheus 但存日誌』：只索引標籤(label)不索引全文，所以便宜、輕量。什麼時候用：想要低成本的日誌集中查詢、又已用 Grafana 生態。跟重量級的 Elasticsearch 取捨：Loki 省資源、但全文搜尋能力較弱。",
+    "analogy": "像只按『分類標籤』歸檔的資料櫃——找得快又省空間，但不幫你逐字建索引。",
+    "example": "{app=\"api\",level=\"error\"} |= \"timeout\"",
+    "related": [
+      "log-aggregation",
+      "grafana",
+      "structured-logging"
+    ]
+  },
+  {
+    "slug": "alerting-monitoring",
+    "term": "Alerting",
+    "zh_name": "告警",
+    "category": "concept",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "設定條件，當指標越界(如錯誤率>5% 持續 5 分鐘)自動通知值班的人(Slack/簡訊/PagerDuty)。什麼時候在意：告警要『可行動』——半夜吵醒人的必須是真的要立刻處理的事。過多假警報會造成『告警疲勞』讓人麻木、真出事反而漏看。對症狀(用戶受影響)告警、別對每個原因告警。",
+    "analogy": "像家裡的煙霧警報器——要在真失火時響、但別煎個蛋就狂叫到你把電池拔掉。",
+    "example": "error_rate > 0.05 for 5m → 通知 on-call",
+    "related": [
+      "prometheus",
+      "slo-sli",
+      "on-call-incident"
+    ]
+  },
+  {
+    "slug": "synthetic-monitoring",
+    "term": "Synthetic Monitoring",
+    "zh_name": "合成監控",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "用機器人定時模擬真實用戶操作(打開登入頁、下單流程)，主動檢查服務通不通、快不快。什麼時候用：想在『真實用戶遇到之前』先發現網站掛了或變慢；也能量各地存取速度。相對的是 RUM(真實用戶監控，收集真人的實際體驗數據)。",
+    "analogy": "像餐廳自己派人假扮客人定時試菜——不用等客訴就先知道出餐慢了。",
+    "example": "每 1 分鐘跑一次登入流程、失敗就告警",
+    "related": [
+      "uptime-monitoring",
+      "real-user-monitoring",
+      "alerting-monitoring"
+    ]
+  },
+  {
+    "slug": "real-user-monitoring",
+    "term": "RUM（Real User Monitoring）",
+    "zh_name": "真實用戶監控",
+    "category": "concept",
+    "langs": [
+      "general"
+    ],
+    "difficulty": 2,
+    "plain": "從真實用戶的瀏覽器/App 收集實際體驗數據(載入時間、Core Web Vitals、錯誤、裝置/地區分佈)。什麼時候用：想知道『真人實際感受到多慢』，而非實驗室理想值。跟合成監控互補：RUM 看真實但被動、合成看主動但模擬。",
+    "analogy": "像收集真實食客的用餐回饋——反映實況，但要有人上門才收得到。",
+    "example": "收集各地用戶的 LCP，發現某區特別慢",
+    "related": [
+      "synthetic-monitoring",
+      "core-web-vitals",
+      "three-pillars-observability"
+    ]
+  },
+  {
+    "slug": "telemetry-sampling",
+    "term": "Sampling（遙測取樣）",
+    "zh_name": "取樣",
+    "category": "concept",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 3,
+    "plain": "流量大時，全部 trace/log 都存會爆量又貴，所以只留一部分(如 1%)——這就是取樣。head sampling(請求一開始就決定收不收)省資源但可能漏掉出錯的；tail sampling(等請求跑完，優先保留出錯/很慢的)較聰明但較複雜。什麼時候在意：取樣率與策略決定你出事時『有沒有留到那筆證據』。",
+    "analogy": "像民調抽樣——不用問每個人，但要抽得聰明(尤其別漏掉關鍵少數)。",
+    "example": "tail sampling：錯誤與 p99 慢的 100% 留、其餘 1%",
+    "related": [
+      "opentelemetry-collector",
+      "distributed-tracing",
+      "cardinality"
+    ]
+  },
+  {
+    "slug": "cardinality",
+    "term": "Cardinality（基數）",
+    "zh_name": "標籤基數",
+    "category": "concept",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 3,
+    "plain": "指標/日誌的標籤有多少種不同組合。什麼時候在意：把高基數的東西(如 user_id、完整 URL、request_id)當標籤，會讓時間序列數量爆炸(cardinality explosion)、拖垮 Prometheus 甚至打爆記憶體。原則：標籤放『種類有限』的維度(如 status_code、region)，高基數的東西放日誌別放指標標籤。",
+    "analogy": "像做樞紐分析表——欄位維度選『地區』還好，選『每個人的身分證號』就會炸成天文數字。",
+    "example": "label=user_id（幾百萬種）→ 基數爆炸、別這樣",
+    "related": [
+      "metric-types",
+      "prometheus",
+      "telemetry-sampling"
+    ]
+  },
+  {
+    "slug": "istio",
+    "term": "Istio",
+    "zh_name": "服務網格",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 3,
+    "plain": "最知名的 service mesh(服務網格)：在每個服務旁掛一個 sidecar 代理(Envoy)，把服務間通訊的流量管理、加密(mTLS)、重試、觀測都從程式碼抽出來、由網格統一處理。什麼時候用：微服務多到要統一治理通訊與安全時。代價是複雜度與資源開銷高——小系統別為了潮而上。",
+    "analogy": "像幫每棟樓派一位管家(sidecar)，所有進出門(流量)的登記、安檢、記錄都交給管家統一辦。",
+    "example": "Istio 自動對服務間流量加 mTLS + 收 metrics",
+    "related": [
+      "service-mesh",
+      "envoy-proxy",
+      "mtls"
+    ]
+  },
+  {
+    "slug": "envoy-proxy",
+    "term": "Envoy Proxy",
+    "zh_name": "邊車代理",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 3,
+    "plain": "高效能的開源網路代理，常當 service mesh 的資料面(sidecar)或 API 閘道。什麼時候在意：它負責實際搬運與治理流量(負載平衡、重試、熔斷、觀測)，Istio 等網格底層就是靠它。你多半不直接寫它、而是透過網格設定它。",
+    "analogy": "像大樓門口那位實際執勤的警衛——管家(Istio)下的規矩，是他一筆筆落實在每次進出。",
+    "example": "Envoy sidecar 攔截 pod 進出流量做治理",
+    "related": [
+      "istio",
+      "service-mesh",
+      "load-balancer"
+    ]
+  }
+]
