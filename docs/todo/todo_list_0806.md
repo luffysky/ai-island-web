@@ -457,7 +457,7 @@
 
 ### 7.0 後台空殼修復（0805 全 admin 審計 · subagent 讀遍 105 頁）
 > 結論：**後台 ~95% 是真的**（100+ 頁 fetch 端點全對應到有實作的 route、讀寫真表；沒發現打不存在 API/回假資料/501 stub）。**只有 4 個空殼**：
-- [ ] 7.0.1 🔴**高** `/admin/seo/redirects`：「＋新增轉址」是**裸 button 無 onClick/無 client/無 form**，且無 `seo-redirects` 寫入 API；**更嚴重——`seo_redirects` 表存在但全站沒有任何 middleware 去套用轉址**（加了也不會生效）。修：`RedirectsClient` + `/api/admin/seo-redirects`(POST/PATCH/DELETE) + **middleware 讀表套 301/302**（三件都要才算真）。
+- [x] ~~7.0.1 🔴**高** `/admin/seo/redirects`：裸 button 無 API、且無 middleware 套轉址~~ ✅ 0823（林董授權後做）——三件到齊：①`RedirectsClient.tsx`(新增表單+啟用停用切換+兩段刪除確認+列表)②`/api/admin/seo-redirects`(GET/POST/PATCH?id=/DELETE?id=，`requireStaff(['admin','editor'])`，from/to 路徑格式驗證、301/302/307/308、重複 from 擋)③**middleware 讀表套 301/302**(模組層 60 秒快取避免每請求打 DB、直接打 Supabase PostgREST anon、讀失敗放行不擋站；只對 GET 一般頁面套用、跳過 /api /_next /admin、結尾斜線正規化)。安全升級 migration `seo_redirects_rls_migration.sql`(原表無 RLS=對 anon 全開 → 改 RLS 開 + 只公開讀 enabled 列)已跑 prod。端到端驗過(service 插入→anon 查詢即 middleware 資料路徑→命中→清除)。tsc/vitest(242)/build 綠。
 - [ ] 7.0.2 **中** `/admin/marketing/publish`：「一鍵發佈」全是**寫死靜態卡、無任何 onClick/fetch**；FB/IG/X/Threads/LinkedIn 無發佈 route；`/admin/blog` **死連結**（頁不存在）。修：標題改「發佈通路狀態」或實作各平台 OAuth publish（併 §2.3.2，需🔴 token）+ 修死連結。
 - [x] ~~7.0.3 **中** `/admin/achievements`：標「成就管理」實為**唯讀**、無 achievements CRUD route~~ ✅ 0820——補 `/api/admin/achievements`（requireAdmin：GET+解鎖數/POST/PATCH/DELETE，已解鎖者擋刪 409）+ `AchievementsClient.tsx`（新增/inline 編輯/兩段式刪除/稀有度色標），page 改渲染 client。真 CRUD、非改標題。
 - [x] ~~7.0.4 **低** `/admin/strategy`：加註「靜態分析文件」~~ ✅（實查 page 第 18 行早已有「📄 靜態分析文件」badge，0820 核對）

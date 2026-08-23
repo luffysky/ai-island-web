@@ -6,6 +6,33 @@ import { NextResponse, type NextRequest } from 'next/server';
 // 兩者都會讓密路徑對所有訪客公開（見 src/lib/admin-href.ts 的說明）。
 const ADMIN_SLUG = process.env.ADMIN_SLUG?.trim() || '';
 
+// §7.0.1 SEO 轉址：middleware 讀「啟用中」的 seo_redirects 套 301/302。
+// 為避免每個請求都打 DB：模組層快取 60 秒（Edge isolate 重用時就命中）、直接打 Supabase PostgREST（anon）、失敗保持放行。
+type RedirectRule = { to: string; code: number };
+let redirectCache: { map: Map<string, RedirectRule>; ts: number } | null = null;
+const REDIRECT_TTL_MS = 60_000;
+
+async function getRedirectMap(): Promise<Map<string, RedirectRule>> {
+  if (redirectCache && Date.now() - redirectCache.ts < REDIRECT_TTL_MS) return redirectCache.map;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anon) return redirectCache?.map ?? new Map();
+  try {
+    const res = await fetch(
+      `${url}/rest/v1/seo_redirects?enabled=eq.true&select=from_path,to_path,status_code`,
+      { headers: { apikey: anon, Authorization: `Bearer ${anon}` }, cache: "no-store" },
+    );
+    if (!res.ok) return redirectCache?.map ?? new Map();
+    const rows = (await res.json()) as { from_path: string; to_path: string; status_code: number }[];
+    const map = new Map<string, RedirectRule>();
+    for (const r of rows) map.set(r.from_path, { to: r.to_path, code: r.status_code || 301 });
+    redirectCache = { map, ts: Date.now() };
+    return map;
+  } catch {
+    return redirectCache?.map ?? new Map();   // 讀失敗就放行、不擋站
+  }
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -26,6 +53,20 @@ export async function middleware(request: NextRequest) {
   // 2. 阻擋直接訪問 /admin（任何想猜的人都會 404）
   if (pathname === '/admin' || pathname.startsWith('/admin/')) {
     return NextResponse.rewrite(new URL('/404', request.url));
+  }
+
+  // 2.5 §7.0.1 SEO 轉址：查 seo_redirects（快取），命中就 301/302。
+  //     只對 GET 的一般頁面路徑套用（跳過 /api、/_next、後台）。比對 from_path 用「去掉結尾斜線」的正規化。
+  if (request.method === 'GET' && !pathname.startsWith('/api') && !pathname.startsWith('/_next')) {
+    const map = await getRedirectMap();
+    if (map.size > 0) {
+      const key = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+      const rule = map.get(pathname) || map.get(key);
+      if (rule && rule.to !== pathname) {
+        const dest = /^https?:\/\//.test(rule.to) ? rule.to : new URL(rule.to, request.url).toString();
+        return NextResponse.redirect(dest, rule.code === 302 || rule.code === 307 || rule.code === 308 ? rule.code : 301);
+      }
+    }
   }
 
   // 3. Supabase session refresh

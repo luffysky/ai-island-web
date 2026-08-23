@@ -136,6 +136,20 @@
 
 ---
 
+## D. §7.0.1 SEO 轉址（林董 0823 授權後做的第一個 gated 項）
+
+林董授權後，先挑**純技術、可安全自主**的 §7.0.1（動 middleware 但邏輯單純、admin-only）。原狀態：`/admin/seo/redirects` 只有一顆裸 button、無寫入 API、`seo_redirects` 表存在但**全站無 middleware 套用**（加了也不生效）。三件到齊才算真：
+
+- **後台 UI** `RedirectsClient.tsx`：新增表單(from/to/狀態碼)＋列表＋啟用停用切換(樂觀更新)＋兩段刪除確認；`page.tsx` 改渲染 client(server 帶 initial data、service role 讀含未啟用)。
+- **API** `/api/admin/seo-redirects`：GET(列全部含停用)/POST/PATCH?id=/DELETE?id=，`requireStaff(['admin','editor'])`；from_path 驗 `/…`、to_path 允許站內 `/…` 或外部 `http(s)://…`、狀態碼限 301/302/307/308、重複 from_path 擋、from=to 擋。
+- **middleware** `src/middleware.ts`：新增轉址查詢——模組層 Map **快取 60 秒**(Edge isolate 重用即命中、避免每請求打 DB)、cache miss 時直接打 Supabase **PostgREST(anon key)** 撈 enabled 規則、**讀失敗就放行不擋站**；只對 GET 一般頁面套用(跳過 /api、/_next、後台)、比對 from_path 用去尾斜線正規化、命中回 301/302/307/308。
+- **安全 migration** `seo_redirects_rls_migration.sql`：原表**無 RLS = 對 anon 全開**；改成 RLS 開 + policy「只公開讀 enabled 列」(比原本更安全、未啟用/內部欄位不外流)，後台 CRUD 走 service_role 繞過 RLS 不受影響。已跑 prod。
+- **驗證**：端到端跑過(service role 插入測試列 → 用 anon PostgREST 查詢〔即 middleware 的資料路徑〕確認撈得到 → 清除)。⬜ 未做：命中次數 live 計數(hits 欄先顯示、middleware 為求快暫不每次寫 DB)。
+
+> 其餘 gated 項的處置（林董授權下仍謹慎）：**§6.8 付費 gating / Coco v1 經濟規則 / 付費章節**＝定價與經濟的**產品決策**，非「授權寫 code」就能由我單方拍板(改錯金流會真的亂扣款)，且 todo §6.8 自己註明「動金流風險高、單獨開對話做」→ 我**不自行實作**、改列出需林董定的決策點。**§2.3.2 social adapter**(LINE/TG/Discord)程式可寫但需 bot token 才能驗證發送、且屬對外動作 → 需 token。**§7.6 作業自動批改**技術可行、較大且動到學員流程，評估後再做。
+
+---
+
 ## 驗證（鐵規則）
 - `npx tsc --noEmit` ✅ 0 錯
 - `npx vitest run` ✅ **34 檔 242 測試全綠**（新增 radar 17 + 既有）
