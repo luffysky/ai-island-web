@@ -43,7 +43,9 @@
 
 ---
 
-## C. 教具 §4.1.5 — ch13 SEO + GEO 100% 覆蓋（非程式大章·領域道具首章）
+## C. 教具 §4.1.5 — 非程式大章鋪領域道具（ch13 SEO + ch59 一人公司）
+
+### ch13 SEO + GEO 100% 覆蓋（非程式大章·領域道具首章）
 
 林董「下一步候選」第三軌：**非程式大章鋪領域道具**。挑最大缺口的 SEO 章開刀（ch13 共 25 課、原 0 沙盒、僅 13.9/13.18 各 1 demo）。
 
@@ -54,7 +56,17 @@
 - `python inject_ch13.py`（冪等、依標題去重）→ added 23；node 驗證 25 課 0 GAP、所有 demo config 合法(correct 只用 ok/risk/no、quiz 有 questions+outcomes)。
 - `node scripts/import_chapters_to_db.mjs ch13` → 1 章 25 課 0 error 同步 DB。
 
-下一步（未做）：ch43 專案管理 / ch44 PdM / ch45 跨職能協作 / ch59 一人公司（各 25 課僅 2-3 demo）、ch55 AI 行銷 / ch60 創業心法。
+### ch59 一人公司 / Indie 100% 覆蓋（創業大章·領域道具第二章）
+
+同軌續攻「創業」大章（ch59 共 25 課、原 0 沙盒僅 59.2/59.18 各 1 demo）：
+
+- 補 **23 個教具** → 25 課 0 GAP，全 scenario-judge / decision-quiz 商業判斷：
+  - **19 scenario-judge**：一人公司心態、接案(冷啟動/報價合約自保/交付回頭客)、MVP、定價、build-in-public、前100用戶冷啟動、100→1000放大、solo技術棧、創作者變現、多元收入、槓桿(自動化/AI/外包)、台灣開業稅務、複製他人成功、2026-2030趨勢、Indie SaaS指標、風險永續——紅線明標（沒合約沒訂金 / 定價太低 / 單一客戶或平台依賴 / 漏報稅 / churn不管只拉新 / 外包掉核心判斷 / 爆肝犧牲健康）。
+  - **4 decision-quiz**：①接案→產品該不該跳(看財務緩衝+產品訊號)②這個 SaaS idea 值不值得做(有人痛/有人付/你能做)③Exit 賣掉 vs 繼續經營④獲客通路主攻內容/社群/垂直社群。
+- `inject_ch59.py` + 補件 `inject_ch59b.py`(59.8 MVP、59.13 MRR 首輪漏掉) → 共 added 23；node 驗 0 GAP、demo config 全合法。
+- `node scripts/import_chapters_to_db.mjs ch59` → 25 課 0 error 同步 DB。
+
+下一步（未做）：ch43 專案管理 / ch44 PdM / ch45 跨職能協作（各 25 課僅 2-3 demo）、ch55 AI 行銷 / ch60 創業心法 / ch52 AI 設計。
 
 ---
 
@@ -62,6 +74,6 @@
 - `npx tsc --noEmit` ✅ 0 錯
 - `npx vitest run` ✅ **34 檔 242 測試全綠**（新增 radar 17 + 既有）
 - `npx next build` ✅（見 commit）
-- migration 已跑 prod、辭典已 import DB、ch13 已 import DB。
+- migration 已跑 prod、辭典已 import DB、ch13 + ch59 已 import DB。
 
 > 待林董在線才好驗/授權：§7.0.1 SEO 轉址(動 middleware)、§7.6 作業自動批改、§2.3 social adapter、Coco v1、§6.8 付費 gating——本 session 未動。
