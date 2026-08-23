@@ -477,7 +477,7 @@
 - [x] ~~7.3 **GDPR `user_settings` 表**（無此表、gdpr/export 靜默略過）~~ ✅ 0721：移除死查詢、改匯出真的有的 per-user 設定表 `user_blog_settings` + `email_subscriptions`（通知/LINE 偏好本就在 profiles.* 已 dump）；DB 實測兩表 user_id OK。
 - [ ] 7.4 v1 API key **輪替/停用 admin UI**（表存在、無 UI）
 - [ ] 7.5 綠寶 **AI Code Review endpoint**（`api/creator-island/ai/` 下缺 code-review）
-- [ ] 7.6 作業**自動批改**（現 `graded_by:null` 純手動）+ 教師/助教 role admin 介面 + 作業批改介面
+- [x] ~~7.6 作業**自動批改** + 教師/助教 role admin 介面 + 作業批改介面~~ ✅ 0823 **核實已做**（授權後查證，todo 為 stale·非新寫）——三部分都在且真接：①**AI 自動批改**`/api/teacher/submissions/[id]/ai-grade`（role-gated owner/admin/teacher/assistant、rate-limit 15/分、結構化 JSON〔scoreSuggestion/strengths/issues/suggestedComment〕、prompt 明示「忠於作答不杜撰、只是初稿非最終成績」、防禦式解析+clamp）②**教師介面**`/teacher/*`（layout 依 role gate、非教職 redirect；assignments 管理/grading/stats）③**批改介面**`GradingClient`「AI 建議評分」鈕→ai-grade→填入 draft→老師檢查改分→`/grade` 送出（`graded_by=老師`）。**設計正確＝AI 建議、人確認、永不自動套用 AI 分數到學員成績**（比盲目 auto-apply 安全）。＊此為安全設計刻意保留人審一步、非缺漏。
 - [ ] 7.7 監控 LT-17：Sentry / PostHog 接上（錯誤 + 產品分析）
 - [ ] 7.8 **更新法律頁** `/privacy`、`/terms`、`/cookies`（對齊現況：AI/BYOK、分身島對外動作、連結外部帳號、LINE 推播、機會島來源、@提及、個資保存）
 - [x] ~~7.9 apple-touch-icon~~ ✅（核對發現已滿足：`src/app/apple-icon.tsx` 180×180 Next.js 慣例檔自動輸出 `<link rel="apple-touch-icon">`；192/512 maskable 也早已補齊。todo 為舊資訊）

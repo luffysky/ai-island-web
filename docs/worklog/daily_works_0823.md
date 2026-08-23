@@ -146,7 +146,17 @@
 - **安全 migration** `seo_redirects_rls_migration.sql`：原表**無 RLS = 對 anon 全開**；改成 RLS 開 + policy「只公開讀 enabled 列」(比原本更安全、未啟用/內部欄位不外流)，後台 CRUD 走 service_role 繞過 RLS 不受影響。已跑 prod。
 - **驗證**：端到端跑過(service role 插入測試列 → 用 anon PostgREST 查詢〔即 middleware 的資料路徑〕確認撈得到 → 清除)。⬜ 未做：命中次數 live 計數(hits 欄先顯示、middleware 為求快暫不每次寫 DB)。
 
-> 其餘 gated 項的處置（林董授權下仍謹慎）：**§6.8 付費 gating / Coco v1 經濟規則 / 付費章節**＝定價與經濟的**產品決策**，非「授權寫 code」就能由我單方拍板(改錯金流會真的亂扣款)，且 todo §6.8 自己註明「動金流風險高、單獨開對話做」→ 我**不自行實作**、改列出需林董定的決策點。**§2.3.2 social adapter**(LINE/TG/Discord)程式可寫但需 bot token 才能驗證發送、且屬對外動作 → 需 token。**§7.6 作業自動批改**技術可行、較大且動到學員流程，評估後再做。
+## E. §7.6 作業自動批改 — 核實「已做」（授權後查證，非新寫）
+
+授權後評估 §7.6，查證發現**三部分早已完整實作且真接**（todo 為 stale，同 0820 大掃描抓到的「marked-undone-but-actually-done」類）：
+
+- **AI 自動批改** `/api/teacher/submissions/[id]/ai-grade`：role-gated（owner/admin/teacher/assistant）、rate-limit 15/分、呼叫 `completeForUsage` 產結構化 JSON（scoreSuggestion + strengths/issues + suggestedComment），system prompt 明示「忠於作答不杜撰、這只是給老師參考的初稿、不是最終成績」，防禦式 JSON 解析 + clamp 長度。
+- **教師/助教介面** `/teacher/*`：layout 依 profiles.role gate（非教職 redirect）；含 assignments 管理、grading、stats、匯出。
+- **批改介面** `GradingClient`：「AI 建議評分」鈕 → 打 ai-grade → 把建議分數與回饋填入 draft → 老師檢查改分 → 送 `/grade`（`graded_by=老師`）。
+
+**這是正確且安全的設計＝AI 建議、人確認、永不自動把 AI 分數套到學員成績上**（客戶端註解就寫「永不自動批改」）。盲目 auto-apply AI 分數到真實成績才是該避免的——故不新寫、只把 stale todo 標為已核實。
+
+> 其餘 gated 項的處置（林董授權下仍謹慎）：**§6.8 付費 gating / Coco v1 經濟規則 / 付費章節**＝定價與經濟的**產品決策**，非「授權寫 code」就能由我單方拍板(改錯金流會真的亂扣款)，且 todo §6.8 自己註明「動金流風險高、單獨開對話做」→ 我**不自行實作**、改列出需林董定的決策點（見本日回報訊息）。**§2.3.2 social adapter**(LINE/TG/Discord)程式可寫但需 bot token 才能驗證發送、且屬對外動作 → 需 token。
 
 ---
 
