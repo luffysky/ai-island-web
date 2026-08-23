@@ -43,7 +43,7 @@
 
 ---
 
-## C. 教具 §4.1.5 — 非程式大章鋪領域道具（ch13 SEO + ch59 一人公司）
+## C. 教具 §4.1.5 — 非程式大章鋪領域道具（design/SEO/創業/行銷 四域：ch13 + ch59 + ch52 + ch55）
 
 ### ch13 SEO + GEO 100% 覆蓋（非程式大章·領域道具首章）
 
@@ -66,7 +66,16 @@
 - `inject_ch59.py` + 補件 `inject_ch59b.py`(59.8 MVP、59.13 MRR 首輪漏掉) → 共 added 23；node 驗 0 GAP、demo config 全合法。
 - `node scripts/import_chapters_to_db.mjs ch59` → 25 課 0 error 同步 DB。
 
-下一步（未做）：ch43 專案管理 / ch44 PdM / ch45 跨職能協作（各 25 課僅 2-3 demo）、ch55 AI 行銷 / ch60 創業心法 / ch52 AI 設計。
+### ch52 AI 設計 + ch55 AI 行銷 100% 覆蓋（補齊 design / 行銷 兩域）
+
+林董點名的 **design / SEO / 創業 / 行銷** 四域，SEO(ch13)、創業(ch59) 已補；本次補最後兩域的代表小章：
+
+- **ch52 AI 設計**（6 課、4 GAP→0）：v0/Figma AI 判官、v0+Cursor 開發流程、AI 設計接案（**謊稱手工/忽略生成內容授權=紅線**）+ 52.1「該用哪類工具」決策測驗（生圖 / UI 生成 / 修圖）。
+- **ch55 AI 行銷**（6 課、5 GAP→0）：AI 內容 SEO（**量產未審 AI 文=紅線**）、一稿多用工作流（**不實宣稱=紅線**）、LINE OA 分眾經營、Email 名單（**買名單=紅線**）+ 55.1「行銷任務選工具」決策測驗（內容 / 自動化 / 分析）。
+- `inject_ch52_55.py`（一支處理兩章、冪等去重）→ ch52 added 4、ch55 added 5，兩章 0 GAP、demo config 全合法。
+- `import_chapters_to_db.mjs ch52 / ch55` → 各 6 課 0 error 同步 DB。
+
+> 至此林董點名的 design/SEO/創業/行銷 四域教具都有代表章 100% 覆蓋。非程式大章續補候選：ch43 專案管理 / ch44 PdM / ch45 跨職能協作（各 25 課）、ch60 創業心法。
 
 ---
 
@@ -74,6 +83,6 @@
 - `npx tsc --noEmit` ✅ 0 錯
 - `npx vitest run` ✅ **34 檔 242 測試全綠**（新增 radar 17 + 既有）
 - `npx next build` ✅（見 commit）
-- migration 已跑 prod、辭典已 import DB、ch13 + ch59 已 import DB。
+- migration 已跑 prod、辭典已 import DB、ch13 + ch59 + ch52 + ch55 已 import DB。
 
 > 待林董在線才好驗/授權：§7.0.1 SEO 轉址(動 middleware)、§7.6 作業自動批改、§2.3 social adapter、Coco v1、§6.8 付費 gating——本 session 未動。
