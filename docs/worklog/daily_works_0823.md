@@ -160,6 +160,19 @@
 
 ---
 
+## F. ch77 機器學習入門 100% 互動覆蓋（授權後續攻 ML 大章）
+
+25 課 ML 概念章、原 0 沙盒僅 2 demo → 補 23 個 GAP 課、0 GAP。ML 充滿經典陷阱，最適合 scenario-judge：
+
+- **20 scenario-judge**：該不該用 ML、三大類型、sklearn baseline、資料清理、特徵縮放/編碼、造特徵/特徵選擇、線性迴歸、邏輯迴歸、決策樹、隨機森林、XGBoost、過擬合 vs 欠擬合、交叉驗證、分類指標、Pipeline、K-means、PCA、不平衡+部署、模型解釋性、學習心法。
+- **3 decision-quiz**：KNN vs SVM、迴歸指標 MAE/MSE/R²、GridSearch vs Randomized。
+- **ML 經典紅線全標**：資料洩漏（切分前做縮放/PCA/交叉驗證前處理＝洩漏）、accuracy 在不平衡資料會騙人、相關≠因果、目標洩漏(target leakage)特徵、只在測試集做 SMOTE＝作弊、只看訓練分數自欺。
+- `inject_ch77.py` → added 23、node 驗 0 GAP、config 全合法。`import_chapters_to_db.mjs ch77` → 25 課 0 error 同步 DB。
+
+下一步（未做）：ch78 深度學習入門、ch79 語言模型入門；附錄速查章視需要。
+
+---
+
 ## 驗證（鐵規則）
 - `npx tsc --noEmit` ✅ 0 錯
 - `npx vitest run` ✅ **34 檔 242 測試全綠**（新增 radar 17 + 既有）
