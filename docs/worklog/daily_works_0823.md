@@ -169,7 +169,13 @@
 - **ML 經典紅線全標**：資料洩漏（切分前做縮放/PCA/交叉驗證前處理＝洩漏）、accuracy 在不平衡資料會騙人、相關≠因果、目標洩漏(target leakage)特徵、只在測試集做 SMOTE＝作弊、只看訓練分數自欺。
 - `inject_ch77.py` → added 23、node 驗 0 GAP、config 全合法。`import_chapters_to_db.mjs ch77` → 25 課 0 error 同步 DB。
 
-下一步（未做）：ch78 深度學習入門、ch79 語言模型入門；附錄速查章視需要。
+### ch78 深度學習入門 + ch79 語言模型入門 100% 互動覆蓋（ML 三部曲收官）
+
+- **ch78**（25 課、補 23 GAP → 0）：20 scenario-judge（神經元/疊層/前向傳播/損失函數/PyTorch tensor-autograd/訓練迴圈/Softmax-CE/批次訓練/防過擬合/CNN/CNN實戰/RNN-LSTM/embeddings/遷移學習/HF/生成式/訓練實務/讀訓練曲線/限制風險/心法）+ 3 decision-quiz（激活函數選 ReLU/Sigmoid/Softmax、學習率與優化器 Adam/SGD、架構 CNN/RNN/Transformer）。**DL 紅線**：忘 optimizer.zero_grad()＝梯度累加、推論忘 model.eval()＝Dropout 亂跳、double-softmax(CrossEntropyLoss 內建)、loss NaN＝LR 太大、兩邊 loss 都高是欠擬合不是過擬合、生成模型會幻覺不等於理解。
+- **ch79**（9 課、補 7 GAP → 0）：6 scenario-judge（LM 本質=預測下一 token 會幻覺/tokenization token≠字/Attention Q-K-V 與 O(n²)/in-context learning 不永久記/跑第一個 LLM 選尺寸與授權/Prompt Engineering 與 prompt injection）+ 1 decision-quiz（**Prompt vs RAG vs Fine-tune 三層決策**：先便宜的 prompt、知識類用 RAG、行為類才微調 LoRA）。
+- `inject_ch78.py`(+補件 78.15)、`inject_ch79.py` → 兩章 0 GAP、config 全合法。import ch78/ch79 已同步 DB。
+
+**至此主線 ch1-60 + ML 三部曲 ch77/78/79 全數 100% 互動覆蓋。** 下一步（未做）：附錄速查章 ch61-70/68/69 視需要。
 
 ---
 

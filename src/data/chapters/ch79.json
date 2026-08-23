@@ -85,7 +85,33 @@
         "answer": "a",
         "explanation": "LLM 的核心是 next-token prediction（下一個詞預測）。把這件事做到極致、就湧現出聊天、寫程式、翻譯等能力。"
       },
-      "xp": 15
+      "xp": 15,
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "語言模型是什麼判官",
+          "note": "判斷這些對 LLM 本質的理解對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "LLM 本質是『預測下一個 token』的機率模型，規模夠大就湧現出強能力",
+                "correct": "ok",
+                "why": "自迴歸續寫是核心;規模化後展現推理/翻譯等能力,但底層仍是機率預測。"
+              },
+              {
+                "text": "以為 LLM 真的『理解』並儲存了正確事實、不會錯",
+                "correct": "no",
+                "why": "它學的是語言統計規律、會一本正經地編(幻覺);輸出要查證,別當事實庫。"
+              },
+              {
+                "text": "同樣的問題它每次可能給不同答案(有隨機性)",
+                "correct": "ok",
+                "why": "取樣有隨機性(temperature);要穩定可調低溫度或固定 seed,但別期待它像資料庫。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "79.2",
@@ -125,7 +151,33 @@
         "answer": "b",
         "explanation": "token 是 tokenization 切出來的一小塊、可能是半個英文字或一個中文字。API 照 token 計費、context window 也以 token 計。"
       },
-      "xp": 20
+      "xp": 20,
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Tokenization 判官",
+          "note": "判斷這些對斷詞/token 的理解對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "模型看的是 token 不是字;中文與罕見詞可能被切成多個 token",
+                "correct": "ok",
+                "why": "token≠字;這也是為何中文、程式碼、長文更吃 token 額度。"
+              },
+              {
+                "text": "以為 token 數等於字數、據此估成本一定準",
+                "correct": "risk",
+                "why": "token 與字數不是 1:1;估額度/成本要用實際 tokenizer 算,別直接數字數。"
+              },
+              {
+                "text": "很長的輸入超過模型的 context window 還硬塞",
+                "correct": "no",
+                "why": "超過上下文窗會被截斷/報錯、開頭資訊可能被丟掉;要控長度或用 RAG/摘要。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "79.3",
@@ -165,7 +217,33 @@
         "answer": "a",
         "explanation": "用 Query（我想找什麼）去比對每個字的 Key（我能提供什麼）算出相似度、softmax 後成為權重、再對 Value 加權加總。"
       },
-      "xp": 20
+      "xp": 20,
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Attention（Q/K/V）判官",
+          "note": "判斷這些對注意力機制的理解對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "注意力讓每個 token 依相關性『看』其他 token、動態加權彙整資訊",
+                "correct": "ok",
+                "why": "Query 找、Key 配對、Value 取值:這讓模型抓長距離關係。"
+              },
+              {
+                "text": "self-attention 的計算量隨序列長度平方成長,長序列很貴",
+                "correct": "ok",
+                "why": "O(n²) 是長上下文成本高的根源;也催生各種高效注意力變體。"
+              },
+              {
+                "text": "以為注意力權重就等於人類可信的『解釋/因果』",
+                "correct": "risk",
+                "why": "注意力權重是內部運算、不能直接當成可靠的因果解釋;別過度解讀。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "79.4",
@@ -205,7 +283,33 @@
         "answer": "c",
         "explanation": "不改參數、只靠 prompt 裡的範例讓模型現學現賣、就是 in-context learning；有給範例的版本叫 few-shot。"
       },
-      "xp": 20
+      "xp": 20,
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "In-context Learning 判官",
+          "note": "判斷這些對『給範例就會』的理解對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "在 prompt 裡給幾個示範(few-shot),模型當場照樣做、不改權重",
+                "correct": "ok",
+                "why": "in-context learning 是靠上下文臨場學,不是真的訓練;關掉對話就忘。"
+              },
+              {
+                "text": "以為 few-shot 例子會永久『教會』模型、下次自己記得",
+                "correct": "no",
+                "why": "它不記憶跨對話;要永久內化得靠微調或把知識放進系統/RAG。"
+              },
+              {
+                "text": "範例的品質與格式會大幅影響輸出,示範要挑好、格式一致",
+                "correct": "ok",
+                "why": "garbage in garbage out;示範就是模板,挑對例子與格式很關鍵。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "79.5",
@@ -245,7 +349,33 @@
         "answer": "b",
         "explanation": "pipeline 是高階工具、幫你載入別人訓練好的現成模型並直接使用（這裡是文字生成）、不是自己訓練。"
       },
-      "xp": 20
+      "xp": 20,
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "跑第一個 LLM 判官",
+          "note": "判斷這些用 Hugging Face 跑 LLM 的做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "依硬體選模型大小,小 GPU 就用小模型或量化版",
+                "correct": "ok",
+                "why": "大模型吃顯存;先量力挑尺寸/量化,別一開始就載超大跑不動。"
+              },
+              {
+                "text": "下載來路不明的模型權重直接載入,不管授權與安全",
+                "correct": "risk",
+                "why": "權重有授權與供應鏈風險;用可信來源、留意反序列化安全與商用條款。"
+              },
+              {
+                "text": "純推論時用 no_grad/eval、必要時半精度,省記憶體加速",
+                "correct": "ok",
+                "why": "推論不需梯度;關掉並用半精度/量化能明顯省資源。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "79.6",
@@ -285,7 +415,76 @@
         "answer": "b",
         "explanation": "LoRA 凍結原模型全部參數、只在旁邊加一小組可訓練的 adapter、要訓練的參數量大幅下降、因此省顯卡省時間。"
       },
-      "xp": 20
+      "xp": 20,
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "要讓 LLM 會你的東西：Prompt、RAG 還是 Fine-tune？",
+          "note": "三個層次，先用便宜的。",
+          "config": {
+            "intro": "讓 LLM『懂你的知識/照你的方式做』有三條路，成本與適用不同。",
+            "questions": [
+              {
+                "q": "你要補的是『知識』還是『行為風格』？",
+                "options": [
+                  {
+                    "label": "要它引用最新/私有的『事實知識』且要有出處",
+                    "scores": {
+                      "rag": 2
+                    }
+                  },
+                  {
+                    "label": "要它穩定照某種格式/語氣/專業行為輸出",
+                    "scores": {
+                      "finetune": 2
+                    }
+                  },
+                  {
+                    "label": "只是偶爾要它做某任務、需求簡單",
+                    "scores": {
+                      "prompt": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你的資料會常變嗎？",
+                "options": [
+                  {
+                    "label": "知識常更新(文件、庫存、法規)",
+                    "scores": {
+                      "rag": 2
+                    }
+                  },
+                  {
+                    "label": "行為固定、有一批高品質範例可訓練",
+                    "scores": {
+                      "finetune": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "prompt": {
+                "emoji": "✍️",
+                "title": "先試 Prompt / few-shot",
+                "desc": "最便宜最快:把指令、範例、要的格式寫進 prompt。多數需求這步就夠,別急著微調。"
+              },
+              "rag": {
+                "emoji": "📚",
+                "title": "知識類 → RAG(檢索增強)",
+                "desc": "要引用最新/私有事實且要出處、知識會變,就用 RAG:先檢索相關文件再讓模型據此作答,能大幅減少幻覺、免重訓。"
+              },
+              "finetune": {
+                "emoji": "🎛️",
+                "title": "行為類 → Fine-tune(LoRA/QLoRA)",
+                "desc": "要穩定的格式/語氣/專業行為、有一批高品質範例,才值得微調。LoRA/QLoRA 讓小資源也能微調。注意:微調補『行為』不補『即時知識』——知識還是靠 RAG。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "79.7",
@@ -325,7 +524,33 @@
         "answer": "a",
         "explanation": "context window 是模型一次能處理的 token 上限。超過就放不下、較舊的內容會被擠出、且 token 越多費用越高。"
       },
-      "xp": 20
+      "xp": 20,
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Prompt Engineering 判官",
+          "note": "判斷這些寫提示詞的原理對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "給清楚角色、任務、格式、範例與限制,比模糊一句話有效得多",
+                "correct": "ok",
+                "why": "上下文越明確,模型續寫越貼近你要的;具體是關鍵。"
+              },
+              {
+                "text": "要它做多步推理時,請它『一步步想』常能提升正確率",
+                "correct": "ok",
+                "why": "chain-of-thought 讓它展開中間步驟、減少跳步犯錯。"
+              },
+              {
+                "text": "把不可信的使用者輸入直接拼進 prompt、不隔離也不防注入",
+                "correct": "no",
+                "why": "prompt injection 風險:使用者輸入可能覆蓋你的指令;要隔離、標記、必要時過濾。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "79.8",

@@ -164,7 +164,33 @@
         ],
         "answer": "a",
         "explanation": "課程明確指出『訓練神經網路就是在調這些 w』，以及『訓練神經網路本質上就是不斷微調每個權重 w 和偏置 b、讓輸出越來越接近正確答案』。其他選項雖然涉及神經網路的元素，但都不是訓練的核心目的。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "神經元判官",
+          "note": "判斷這些對『人工神經元』的理解對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "一個神經元＝把輸入加權求和、加偏置、再過一個激活函數",
+                "correct": "ok",
+                "why": "這正是人工神經元的運作:線性組合 + 非線性激活。"
+              },
+              {
+                "text": "以為人工神經元跟大腦神經元運作完全一樣",
+                "correct": "risk",
+                "why": "只是鬆散的靈感借用;人工神經元是數學運算、別過度類比生物大腦。"
+              },
+              {
+                "text": "若拿掉激活函數、只留加權和,多層疊起來仍只等於一層線性",
+                "correct": "ok",
+                "why": "沒有非線性,多層線性組合可化簡成單層——這就是為何需要激活函數。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "78.3",
@@ -204,7 +230,33 @@
         ],
         "answer": "b",
         "explanation": "課程明確說明淺層學簡單特徵（邊緣、顏色），深層把它們組成複雜概念（眼睛、臉、人），層次越深能表達的東西越抽象越強。選項 a 混淆層數與神經元數量，c 與 d 都違反全連接層的概念。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "疊層成網路判官",
+          "note": "判斷這些對網路層數/寬度的認知對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "更深/更寬的網路容量更大,但也更需要資料、更易過擬合",
+                "correct": "ok",
+                "why": "容量大能學更複雜的東西,但沒足夠資料與正則就會背答案。"
+              },
+              {
+                "text": "層數越多一定越準,無腦一直加深就對了",
+                "correct": "no",
+                "why": "盲目加深會難訓練(梯度問題)、過擬合、又慢;深度要配得上資料與問題。"
+              },
+              {
+                "text": "先從小網路試,不夠再加深加寬",
+                "correct": "ok",
+                "why": "由簡到繁比一開始就上巨網好調、好診斷。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "78.4",
@@ -244,7 +296,76 @@
         ],
         "answer": "a",
         "explanation": "隱藏層一律用 ReLU（簡單有效），輸出層因為是多分類任務，所以用 Softmax 把結果變成加總=1 的機率分布。B、C、D 都用錯了激活函數的位置或類型。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "這層該用哪個激活函數？",
+          "note": "選錯激活會學不動或輸出不對。",
+          "config": {
+            "intro": "隱藏層與輸出層的激活函數選擇不同。",
+            "questions": [
+              {
+                "q": "這是哪種層？",
+                "options": [
+                  {
+                    "label": "隱藏層(中間層)",
+                    "scores": {
+                      "relu": 2
+                    }
+                  },
+                  {
+                    "label": "二分類的輸出層",
+                    "scores": {
+                      "sigmoid": 2
+                    }
+                  },
+                  {
+                    "label": "多分類的輸出層",
+                    "scores": {
+                      "softmax": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "遇到 ReLU『死神經元』或想更穩時？",
+                "options": [
+                  {
+                    "label": "想要簡單有效的預設",
+                    "scores": {
+                      "relu": 1
+                    }
+                  },
+                  {
+                    "label": "想試改良版避免死神經元",
+                    "scores": {
+                      "relu": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "relu": {
+                "emoji": "⚡",
+                "title": "隱藏層用 ReLU(或其變體)",
+                "desc": "ReLU 簡單、收斂快、緩解梯度消失,是隱藏層預設。遇到死神經元可換 LeakyReLU/GELU 等變體。別在深層隱藏層用 sigmoid(易梯度消失)。"
+              },
+              "sigmoid": {
+                "emoji": "1️⃣",
+                "title": "二分類輸出用 Sigmoid",
+                "desc": "輸出單一 0~1 機率、配 BCE 損失。注意別拿它當深層隱藏層激活(梯度消失)。"
+              },
+              "softmax": {
+                "emoji": "🎚️",
+                "title": "多分類輸出用 Softmax",
+                "desc": "把多個 logits 轉成加總為 1 的機率分佈。若用 PyTorch CrossEntropyLoss,訓練時別自己加 softmax(它內建)、只在推論顯示機率時加。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "78.5",
@@ -284,7 +405,33 @@
         ],
         "answer": "b",
         "explanation": "前向傳播只是用『目前的權重』算一次答案，剛開始權重是隨機的，預測當然很爛。要變準必須靠後續的損失函數衡量和反向傳播修正權重。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "前向傳播判官",
+          "note": "判斷這些對前向傳播的理解對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "資料一層層過『線性運算 + 激活』最後算出預測",
+                "correct": "ok",
+                "why": "前向傳播就是輸入依序穿過每層算到輸出。"
+              },
+              {
+                "text": "輸入的特徵尺度差很大也不正規化、直接餵進網路",
+                "correct": "risk",
+                "why": "尺度差異大會讓訓練不穩;輸入正規化幾乎是標配。"
+              },
+              {
+                "text": "推論(inference)時只需要前向傳播、不需要反向傳播",
+                "correct": "ok",
+                "why": "反向傳播只在訓練時算梯度用;上線推論只跑前向。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "78.6",
@@ -324,7 +471,33 @@
         ],
         "answer": "b",
         "explanation": "迴歸任務（房價）用 MSE 來量預測與實際的距離；分類任務（貓狗）用 Cross-Entropy 來量機率押得準不準。選錯損失函數模型會學得很差，而且不會報錯。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "損失函數判官",
+          "note": "判斷這些選損失函數的做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "分類任務用交叉熵、迴歸任務用 MSE 之類，任務對應損失",
+                "correct": "ok",
+                "why": "損失要對應任務;用錯損失(如分類用 MSE)會學不好。"
+              },
+              {
+                "text": "多分類的最後一層已 softmax,又用需要 logits 的 CrossEntropyLoss",
+                "correct": "no",
+                "why": "PyTorch CrossEntropyLoss 內含 softmax,你再手動 softmax=做兩次、數值錯亂。餵 logits 就好。"
+              },
+              {
+                "text": "類別不平衡時,考慮給損失加類別權重",
+                "correct": "ok",
+                "why": "加權讓模型別忽略少數類;是處理不平衡的常見手段。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "78.7",
@@ -450,7 +623,75 @@
         ],
         "answer": "a",
         "explanation": "課程明確指出『loss 變 NaN 或爆來爆去 → 先把學習率調小』，這是最划算的第一招。學習率太大會跨過頭導致不穩定，縮小它就能解決。換優化器、加資料或改模型架構都是更後續的步驟。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "學習率與優化器怎麼選？",
+          "note": "學習率是最關鍵的超參數。",
+          "config": {
+            "intro": "先把學習率調對,再選優化器。",
+            "questions": [
+              {
+                "q": "loss 的狀況？",
+                "options": [
+                  {
+                    "label": "loss 爆炸/變 NaN 或劇烈震盪",
+                    "scores": {
+                      "lower": 2
+                    }
+                  },
+                  {
+                    "label": "loss 降超慢、幾乎不動",
+                    "scores": {
+                      "higher": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你想要的起手優化器？",
+                "options": [
+                  {
+                    "label": "好用、收斂快的預設",
+                    "scores": {
+                      "adam": 2
+                    }
+                  },
+                  {
+                    "label": "要極致泛化、願意細調",
+                    "scores": {
+                      "sgd": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "lower": {
+                "emoji": "🔽",
+                "title": "先調小學習率",
+                "desc": "loss 發散/NaN/震盪多半是學習率太大——先調小(如 ÷10)。搭配 warmup 與 scheduler 更穩。學習率永遠是第一個要調的旋鈕。"
+              },
+              "higher": {
+                "emoji": "🔼",
+                "title": "學習率可能太小",
+                "desc": "loss 幾乎不動可能是學習率太小或模型/資料有問題。適度調大、或換更好的優化器與初始化。"
+              },
+              "adam": {
+                "emoji": "🚀",
+                "title": "Adam / AdamW 當預設",
+                "desc": "自適應學習率、收斂快、對超參較寬容,是多數任務的省心起手。AdamW 修正權重衰減、常見於 Transformer。"
+              },
+              "sgd": {
+                "emoji": "🐢",
+                "title": "SGD + momentum(要細調)",
+                "desc": "配好學習率排程時,SGD 常在影像等任務拿到更好的最終泛化,但較難調。追極致表現、願意調參再考慮。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "78.9",
@@ -490,7 +731,33 @@
         ],
         "answer": "a",
         "explanation": "y = x² + 2x，對 x 微分得 dy/dx = 2x + 2。當 x = 3.0 時，梯度 = 2(3) + 2 = 8.0。.backward() 會自動計算並存在 x.grad 中，不需要手算微積分或設定學習率。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "PyTorch tensor / autograd 判官",
+          "note": "判斷這些做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "需要梯度的張量設 requires_grad,autograd 自動幫你算反向",
+                "correct": "ok",
+                "why": "自動微分是框架的核心便利:你只寫前向、它算梯度。"
+              },
+              {
+                "text": "只做推論/評估時,仍不用 torch.no_grad() 包起來",
+                "correct": "risk",
+                "why": "推論不包 no_grad 會白建計算圖、吃記憶體又慢;評估時該關梯度。"
+              },
+              {
+                "text": "把資料和模型放不同裝置(一個 CPU 一個 GPU)還想運算",
+                "correct": "no",
+                "why": "device 不一致會直接報錯;張量與模型要在同一裝置。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "78.10",
@@ -530,7 +797,33 @@
         ],
         "answer": "a",
         "explanation": "PyTorch 的梯度會自動累加，如果不呼叫 zero_grad() 清空，上一輪的梯度會混進這一輪的計算，造成更新方向錯誤。這是新手最容易踩的坑。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "訓練迴圈判官",
+          "note": "判斷這些 PyTorch 訓練迴圈寫法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "每個 batch:zero_grad → forward → loss → backward → step",
+                "correct": "ok",
+                "why": "這是標準訓練迴圈五步;順序對才學得對。"
+              },
+              {
+                "text": "忘了 optimizer.zero_grad(),讓梯度一直累加",
+                "correct": "no",
+                "why": "不清梯度會把上一批的梯度累加進來、更新方向錯亂;每步要先清零。"
+              },
+              {
+                "text": "訓練時開 model.train()、驗證時切 model.eval()",
+                "correct": "ok",
+                "why": "train/eval 模式會切換 Dropout/BatchNorm 行為;不切會評估錯。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "78.11",
@@ -570,7 +863,33 @@
         ],
         "answer": "a",
         "explanation": "這課的關鍵大坑就是：CrossEntropyLoss 已經內含 Softmax 的功能，輸出層不要自己再加，否則會對分數做兩次 Softmax、導致訓練出問題。選項 b 只看到了 Softmax 的作用但忽略了內含關係；選項 c 和 d 都是誤以為可以加 Softmax。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Softmax + 交叉熵判官",
+          "note": "判斷這些多分類輸出處理對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "用 CrossEntropyLoss 時,模型最後一層直接輸出 logits(不自己加 softmax)",
+                "correct": "ok",
+                "why": "CrossEntropyLoss 內建 log-softmax;餵未過 softmax 的 logits 才對、也數值穩定。"
+              },
+              {
+                "text": "自己先 softmax 再丟給 CrossEntropyLoss",
+                "correct": "no",
+                "why": "等於 softmax 兩次、梯度與數值全錯;二選一,通常餵 logits。"
+              },
+              {
+                "text": "只想拿『機率』給人看時,推論時才對 logits 做 softmax",
+                "correct": "ok",
+                "why": "要顯示機率就在推論後 softmax;訓練損失那邊不要。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "78.12",
@@ -610,7 +929,33 @@
         ],
         "answer": "a",
         "explanation": "shuffle=True 的目的是每一輪（epoch）打亂資料順序，防止模型記住原本的資料排列而過度擬合。選項 b 錯誤（洗牌不會加快速度）、選項 c 錯誤（與記憶體無關）、選項 d 錯誤（跟批次大小齊不齊無關）。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "批次訓練判官",
+          "note": "判斷這些 Dataset/DataLoader/batch 做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "訓練時 DataLoader 開 shuffle=True,打亂每個 epoch 的順序",
+                "correct": "ok",
+                "why": "打亂避免模型學到資料排列順序、讓訓練更穩;訓練集該 shuffle。"
+              },
+              {
+                "text": "batch size 開超大塞爆顯存直接 OOM 也硬跑",
+                "correct": "risk",
+                "why": "batch 太大爆顯存;調小或用梯度累積。batch 大小也影響泛化,要權衡。"
+              },
+              {
+                "text": "驗證/測試的 DataLoader 也 shuffle 並在意順序",
+                "correct": "risk",
+                "why": "評估不需要 shuffle(不影響指標但沒必要);且評估要可重現。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "78.13",
@@ -650,7 +995,33 @@
         ],
         "answer": "a",
         "explanation": "訓練 loss 下降但驗證 loss 上升，這是過擬合的典型症狀。課程建議先用 Dropout（隨機關神經元防止依賴特定參數）和 Early Stopping（驗證 loss 變差就停止）這兩招最有感，之後才考慮加資料或資料增強。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "防過擬合判官",
+          "note": "判斷這些正則化手段用得對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "推論時切 model.eval(),讓 Dropout 關閉、BatchNorm 用統計量",
+                "correct": "ok",
+                "why": "Dropout/BN 在訓練與推論行為不同;沒切 eval 會得到隨機、錯的預測。"
+              },
+              {
+                "text": "推論時忘了 eval(),Dropout 還在隨機丟神經元",
+                "correct": "no",
+                "why": "推論還開 Dropout=每次結果隨機亂跳、變差;一定要 model.eval()。"
+              },
+              {
+                "text": "訓練資料少時,用資料增強(旋轉/裁切等)變相擴充",
+                "correct": "ok",
+                "why": "資料增強是低成本擴充資料、抗過擬合的有效手段(尤其影像)。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "78.14",
@@ -690,7 +1061,33 @@
         ],
         "answer": "a",
         "explanation": "課程重點強調卷積逐塊掃圖找局部特徵、池化縮小尺寸抓重點，相比全連接既省參數又能理解位置關係。b 只說速度、c 誇大功能、d 錯誤的技術說法。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "CNN 判官",
+          "note": "判斷這些對卷積網路的理解對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "CNN 用卷積核抓局部特徵、且權重共享,參數比全連接少很多",
+                "correct": "ok",
+                "why": "局部感受野+權重共享讓 CNN 高效且擅長影像的平移不變性。"
+              },
+              {
+                "text": "把圖片攤平成一長條丟全連接層、宣稱跟 CNN 一樣好",
+                "correct": "risk",
+                "why": "攤平丟掉了空間結構、參數爆炸又難學;影像用 CNN(或 ViT)才對味。"
+              },
+              {
+                "text": "CNN 也能用在有局部結構的非影像資料(如音訊頻譜)",
+                "correct": "ok",
+                "why": "只要資料有局部相關結構,卷積就派得上用場,不限影像。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "78.15",
@@ -730,7 +1127,33 @@
         ],
         "answer": "a",
         "explanation": "課程強調實戰標準做法是：載預訓練模型（在 ImageNet 上已看過上百萬張圖）→ 換最後一層適配你的類別數（3 類）→ fine-tune。選項 b 用 MNIST 不適合，c 混淆了資料集用途，d 沒有換輸出層會輸出 1000 類而非 3 類。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "CNN 實戰(torchvision)判官",
+          "note": "判斷這些用 torchvision 做圖像分類的做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "用預訓練模型時，輸入圖片照它訓練時的正規化(mean/std)與尺寸前處理",
+                "correct": "ok",
+                "why": "預訓練模型期待特定的輸入分佈與大小;不照做會表現變差。"
+              },
+              {
+                "text": "訓練集做隨機翻轉/裁切等資料增強，但驗證/測試集不增強",
+                "correct": "ok",
+                "why": "增強只對訓練集(擴充多樣性);驗證要用固定前處理才量得準。"
+              },
+              {
+                "text": "把驗證/測試圖片也做隨機資料增強再評估",
+                "correct": "no",
+                "why": "評估要可重現且反映真實;隨機增強會讓指標飄、失真。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "78.16",
@@ -770,7 +1193,33 @@
         ],
         "answer": "a",
         "explanation": "RNN 的核心就是能依序處理序列資料，並透過隱藏狀態把前面的記憶帶到下一步——這正是處理有順序關係（如文字）的關鍵。b 錯在說「一次看完」違反 RNN 的依序概念；c 錯在 LSTM 才能記得久；d 超出課程範圍。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "RNN / LSTM 判官",
+          "note": "判斷這些對序列模型的理解對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "RNN 處理序列時會有梯度消失/爆炸,LSTM/GRU 用閘門緩解長期依賴",
+                "correct": "ok",
+                "why": "普通 RNN 記不住長距離;LSTM 的閘門機制正是為此設計。"
+              },
+              {
+                "text": "現在做長序列/語言任務,仍一律優先用 RNN 而非 Transformer",
+                "correct": "risk",
+                "why": "多數長序列/NLP 已被 Transformer 取代(可平行、抓長依賴更好);RNN 仍有輕量場景但非預設。"
+              },
+              {
+                "text": "序列資料也隨機打亂每個時間步的順序來訓練",
+                "correct": "no",
+                "why": "打亂時間步會摧毀序列的時間結構;序列的順序本身就是資訊。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "78.17",
@@ -810,7 +1259,77 @@
         ],
         "answer": "a",
         "explanation": "課程明確講 Transformer「一次看整個序列、平行運算、又快又準」，能撐起超大模型；而 RNN 是「排隊讀、慢、長序列易忘」。選項 b 混淆了預訓練概念、c 過度誇大注意力機制的用途、d 的數字說法課內沒有依據。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "這個任務該用哪種架構？",
+          "note": "資料的結構決定架構。",
+          "config": {
+            "intro": "CNN / RNN / Transformer 各有主場。",
+            "questions": [
+              {
+                "q": "你的資料主要是？",
+                "options": [
+                  {
+                    "label": "影像、有空間局部結構",
+                    "scores": {
+                      "cnn": 2
+                    }
+                  },
+                  {
+                    "label": "文字/長序列、要抓長距離關係",
+                    "scores": {
+                      "transformer": 2
+                    }
+                  },
+                  {
+                    "label": "短序列/串流、資源受限",
+                    "scores": {
+                      "rnn": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你在意平行訓練效率嗎？",
+                "options": [
+                  {
+                    "label": "要能大規模平行、抓長依賴",
+                    "scores": {
+                      "transformer": 2
+                    }
+                  },
+                  {
+                    "label": "輕量、逐步處理即可",
+                    "scores": {
+                      "rnn": 1,
+                      "cnn": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "cnn": {
+                "emoji": "🖼️",
+                "title": "CNN(影像/局部結構)",
+                "desc": "卷積擅長抓局部與平移不變的特徵,是影像的主力(近年也有 Vision Transformer 競爭)。音訊頻譜等有局部結構的資料也適用。"
+              },
+              "transformer": {
+                "emoji": "🧠",
+                "title": "Transformer(文字/長序列)",
+                "desc": "自注意力可平行、擅長長距離依賴,是 NLP 與大模型的霸主,也擴展到影像/多模態。要抓長依賴、要規模化就是它。"
+              },
+              "rnn": {
+                "emoji": "🔁",
+                "title": "RNN/LSTM(輕量序列)",
+                "desc": "逐步處理序列、模型小、串流友善。長序列/大任務多被 Transformer 取代,但資源受限或簡單序列仍有用。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "78.18",
@@ -850,7 +1369,33 @@
         ],
         "answer": "b",
         "explanation": "Embedding 的核心就是：意思相近的詞在數字空間也靠近。「貓」和「狗」都是動物，語意接近，所以向量接近；「汽車」是交通工具，語意差異大，向量距離遠。(a) 是字形巧合、(c) 和 (d) 都不是 embedding 的作用原理。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "詞嵌入 Embeddings 判官",
+          "note": "判斷這些對 embedding 的理解對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "把詞/物件映射成向量,語意相近的向量也相近、可算相似度",
+                "correct": "ok",
+                "why": "embedding 讓離散符號有了可計算的語意空間,是 NLP/推薦的基礎。"
+              },
+              {
+                "text": "用 one-hot(每個詞一維、彼此正交)就等於 embedding、沒差",
+                "correct": "no",
+                "why": "one-hot 維度爆炸且任兩詞都『無關』;embedding 是稠密、能表達語意關係。"
+              },
+              {
+                "text": "同一個詞在不同語境意思不同,情境式 embedding(如 BERT)比靜態的更能區分",
+                "correct": "ok",
+                "why": "靜態詞向量一詞一向量;情境式依上下文給不同向量、更準。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "78.19",
@@ -890,7 +1435,33 @@
         ],
         "answer": "b",
         "explanation": "資料只有 200 張（很少），應該用 feature extraction——凍結預訓練層保留通用特徵，只訓練最後一層。選 a 會過擬合；選 c 會浪費預訓練的優勢且容易毀掉權重；選 d 等於沒有遷移學習的好處。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "遷移學習 / Fine-tune 判官",
+          "note": "判斷這些做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "資料少時,拿預訓練模型微調,比從零訓練省資料又常更準",
+                "correct": "ok",
+                "why": "站在巨人肩膀上:預訓練已學到通用特徵,小資料微調即可。"
+              },
+              {
+                "text": "微調時學習率用跟從頭訓練一樣大",
+                "correct": "risk",
+                "why": "微調通常用較小學習率,避免一下把預訓練學到的好權重沖爛。"
+              },
+              {
+                "text": "資料極少時,凍住預訓練主體、只訓練最後幾層",
+                "correct": "ok",
+                "why": "資料越少越該少動預訓練權重(凍結+只訓練頭),防過擬合。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "78.20",
@@ -930,7 +1501,33 @@
         ],
         "answer": "a",
         "explanation": "課程明確提到 pipeline 的定義就是把「載模型 + 前處理 + 推論」打包成一行，這正是它簡化使用流程的核心價值。B 選項是陷阱（課程特別提到 transformers 的 pipeline 和 sklearn 的 Pipeline 同名但不同東西），C 選項違反「先用現成再 fine-tune」的建議，D 選項的數字錯誤。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Hugging Face 判官",
+          "note": "判斷這些用 HF 預訓練模型的做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "先找 HF 上合適的預訓練模型直接用/微調,而非什麼都自己從頭訓",
+                "correct": "ok",
+                "why": "多數任務有現成強模型;站在其上省時省算力,別重造輪子。"
+              },
+              {
+                "text": "用模型前不看它的授權(license)與資料來源就商用",
+                "correct": "risk",
+                "why": "模型有各種授權(有的禁商用);商用前要確認 license 與合規。"
+              },
+              {
+                "text": "下載來路不明的模型權重直接載入執行也不查",
+                "correct": "risk",
+                "why": "不明來源的權重/程式有供應鏈風險;用可信來源、留意反序列化安全。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "78.21",
@@ -970,7 +1567,33 @@
         ],
         "answer": "a",
         "explanation": "課程開頭明確定義生成式 AI 是「能產生新內容的模型」，相對於只做分類/預測的判別式模型。其他選項都是細節差異或錯誤敘述，不是根本區別。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "生成式 AI 概覽判官",
+          "note": "判斷這些對 GAN/Diffusion/LLM 的理解對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "Diffusion 靠『逐步去噪』生成、是現在主流圖像生成路線之一",
+                "correct": "ok",
+                "why": "擴散模型從雜訊逐步還原成圖,是當前主流生圖方法。"
+              },
+              {
+                "text": "以為生成模型『理解』內容、輸出一定正確可信",
+                "correct": "no",
+                "why": "生成模型是學分佈產出似真內容、會幻覺;不等於理解或正確,要查證。"
+              },
+              {
+                "text": "LLM 本質是預測下一個 token,強但仍會編造",
+                "correct": "ok",
+                "why": "理解 LLM 的運作(機率式續寫)才知道它為何會一本正經地錯。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "78.22",
@@ -1010,7 +1633,33 @@
         ],
         "answer": "a",
         "explanation": "完整路線是：save 權重 (torch.save) → load_state_dict 載回 → model.eval() (關 Dropout/固定 BatchNorm) → torch.no_grad() (推論不算梯度)。b 忽略了 eval 和 no_grad 的必要性；c 不符合工業實務；d 遺漏了 eval 模式，推論結果會不穩定。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "訓練實務判官",
+          "note": "判斷這些 GPU/部署做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "訓練時定期存 checkpoint,斷了能續、也能挑最好的一版",
+                "correct": "ok",
+                "why": "長時間訓練必存檔;斷線/當機不用重來、還能回溯最佳權重。"
+              },
+              {
+                "text": "Colab 免費版長時間掛著跑大訓練、不存檔",
+                "correct": "no",
+                "why": "免費 Colab 會逾時斷線;不存檔就前功盡棄。務必存到雲端硬碟。"
+              },
+              {
+                "text": "部署推論時用半精度/量化換更快更省、可接受微小精度損失",
+                "correct": "ok",
+                "why": "量化/半精度是常見的推論優化,權衡速度與精度。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "78.23",
@@ -1050,7 +1699,33 @@
         ],
         "answer": "a",
         "explanation": "訓練 loss 下降但驗證 loss 上升且分岔，是過擬合的典型表現——模型在訓練資料上表現好，但在未見過的驗證資料上泛化能力差。對症下藥是 Early Stopping（及時停止）、加 Dropout（隨機丟棄神經元）或增加訓練資料。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "讀訓練曲線判官",
+          "note": "判斷這些從 loss 曲線的診斷對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "訓練 loss 一直降、驗證 loss 卻開始回升 → 過擬合,該早停/正則",
+                "correct": "ok",
+                "why": "訓練降驗證升的岔口＝開始背答案;早停就停在那。"
+              },
+              {
+                "text": "loss 一開始就爆炸變 NaN → 學習率可能太大,調小試試",
+                "correct": "ok",
+                "why": "loss 發散/NaN 常是學習率過大或數值問題;先降 LR。"
+              },
+              {
+                "text": "訓練與驗證 loss 都停在很高不動 → 判定為過擬合",
+                "correct": "no",
+                "why": "兩邊都高是欠擬合/沒學到(或 LR 太小/模型太弱),不是過擬合。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "78.24",
@@ -1090,7 +1765,33 @@
         ],
         "answer": "a",
         "explanation": "課程強調高風險決定要讓人在迴圈監督、模型只當輔助。選項 a 涵蓋了黑盒子難解釋、幻覺會編造、可能學到偏見等三大核心風險。選項 b 過度否定技術、選項 c 只講成本不是重點、選項 d 把「有偏見要檢查」扭曲成「完全無用」都是陷阱。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "深度學習限制與風險判官",
+          "note": "判斷這些認知對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "DL 吃大量資料與算力、且是黑箱,高風險決策要謹慎與可解釋",
+                "correct": "ok",
+                "why": "認清它的成本與不可解釋性;涉及人權益的決策別全交黑箱。"
+              },
+              {
+                "text": "模型會複製訓練資料裡的偏見、甚至放大",
+                "correct": "ok",
+                "why": "資料有偏,模型就學偏;要稽核與去偏,尤其敏感應用。"
+              },
+              {
+                "text": "覺得 DL 是萬能,什麼問題都該先上深度網路",
+                "correct": "no",
+                "why": "小資料/表格/規則明確的問題,簡單模型常又快又好又好解釋;別無腦上 DL。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "78.25",
@@ -1130,7 +1831,33 @@
         ],
         "answer": "b",
         "explanation": "課程第一條心法就是『先用現成/預訓練模型、別急著從零訓練』，而且資料量小（500張）更不應該從零開始。選項 c 在理論上也有道理，但在實務上用預訓練模型微調是更實用的做法；選項 a 和 d 都違反了『先用現成』的原則。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "深度學習學習心法判官",
+          "note": "判斷這些學 DL 的心態對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "先把一個小模型從資料到訓練到部署完整跑一遍,建立全貌",
+                "correct": "ok",
+                "why": "端到端跑通一次勝過只讀理論;先有完整迴路再深入各環節。"
+              },
+              {
+                "text": "訓練不順先系統性排查(資料/LR/損失/形狀),而非亂改一通",
+                "correct": "ok",
+                "why": "DL 除錯要有章法;隨機亂試很難收斂也學不到東西。"
+              },
+              {
+                "text": "只追最新論文與最大模型,不練資料與工程基本功",
+                "correct": "risk",
+                "why": "實務多半卡在資料與工程;基本功比追潮更決定成敗。"
+              }
+            ]
+          }
+        }
+      ]
     }
   ]
 }
