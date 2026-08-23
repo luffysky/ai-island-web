@@ -75,7 +75,17 @@
 - `inject_ch52_55.py`（一支處理兩章、冪等去重）→ ch52 added 4、ch55 added 5，兩章 0 GAP、demo config 全合法。
 - `import_chapters_to_db.mjs ch52 / ch55` → 各 6 課 0 error 同步 DB。
 
-> 至此林董點名的 design/SEO/創業/行銷 四域教具都有代表章 100% 覆蓋。非程式大章續補候選：ch43 專案管理 / ch44 PdM / ch45 跨職能協作（各 25 課）、ch60 創業心法。
+> 至此林董點名的 design/SEO/創業/行銷 四域教具都有代表章 100% 覆蓋。續往其他非程式大章。
+
+### ch43 專案管理 100% 互動覆蓋（非程式大章續鋪）
+
+25 課 PM 判斷章，補「既無沙盒又無 demo」的 17 課 → 0 互動 GAP：
+
+- **15 scenario-judge**：Roadmap(別綁死日期)、站會/Sprint Planning、Retro/Postmortem(無指責文化 blameless)、OKR/KPI、利害關係人(別瞞壞消息)、RFC/Design Doc(要寫 why 與 trade-off)、開會、文件化(過時文件比沒文件危險)、AI PM 工具(機敏資料別進外部 AI)、遠端跨時區(async 為預設)、趨勢、真敏捷 vs 形式化(cargo cult)、知識管理、OKR 落地(訂了要追蹤)、估時切任務(相對估點/估算≠承諾)——紅線明標。
+- **2 decision-quiz**：PM 工具選型(Linear/Jira/Notion/Asana 依團隊型態)、IC 資深技術路線 vs 管理路線(從工程師往上不只當主管一條路)。
+- `inject_ch43.py` → added 17；node 驗 0 互動 GAP、config 全合法。`import_chapters_to_db.mjs ch43` → 25 課 0 error 同步 DB。
+
+下一步（未做）：ch44 PdM / ch45 跨職能協作（各 25 課）、ch60 創業心法。
 
 ---
 
@@ -83,6 +93,6 @@
 - `npx tsc --noEmit` ✅ 0 錯
 - `npx vitest run` ✅ **34 檔 242 測試全綠**（新增 radar 17 + 既有）
 - `npx next build` ✅（見 commit）
-- migration 已跑 prod、辭典已 import DB、ch13 + ch59 + ch52 + ch55 已 import DB。
+- migration 已跑 prod、辭典已 import DB、ch13 + ch59 + ch52 + ch55 + ch43 已 import DB。
 
 > 待林董在線才好驗/授權：§7.0.1 SEO 轉址(動 middleware)、§7.6 作業自動批改、§2.3 social adapter、Coco v1、§6.8 付費 gating——本 session 未動。

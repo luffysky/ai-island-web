@@ -366,7 +366,8 @@
     - [x] ~~**ch13 SEO + GEO 100% 覆蓋（非程式大章·領域道具首章）**~~ ✅ 0823——25 課 SEO 純概念/判斷章、原 0 沙盒僅 2 demo → 補 23 個領域教具：20 個 scenario-judge「SEO 好習慣還是雷」判官(搜尋引擎運作/意圖/on-page/technical/CWV/Schema/內外連結/outreach/local/國際/GEO/內容更新/UX/AI時代/生產SOP/心法，含黑帽紅線=買連結/keyword stuffing/假評分/假據點) + 3 個 decision-quiz(關鍵字先攻長尾vs大詞、工具選型GSC/GA/付費、接案月費vs專案vs「保證第一」紅旗)。25 課 0 GAP、25demo。import ch13 已同步 DB。
     - [x] ~~**ch59 一人公司/Indie 100% 覆蓋（創業大章·領域道具）**~~ ✅ 0823——25 課創業/商業判斷章、原 0 沙盒僅 2 demo → 補 23 個領域教具、0 GAP：19 scenario-judge（一人公司心態/接案冷啟動/報價合約自保/交付回頭客/MVP/定價/build-in-public/冷啟動/放大獲客/技術棧/創作者變現/多元收入/槓桿/台灣稅務/複製案例/趨勢/SaaS指標/永續，紅線=沒合約沒訂金/定太低/單點依賴/漏報稅/churn不管只拉新/爆肝）+ 4 decision-quiz（接案→產品跳的時機、SaaS idea 值不值得做、Exit vs 續營、獲客通路內容/社群/垂直）。import ch59 已同步 DB。
     - [x] ~~**ch52 AI設計 + ch55 AI行銷 100% 覆蓋（design/行銷 領域道具）**~~ ✅ 0823——補齊林董點名的 design/SEO/創業/行銷 四域最後兩章。ch52(4 GAP→0)：v0/Figma AI 判官、v0+Cursor 流程、AI 設計接案(揭露/授權紅線)+ 52.1 工具選型 quiz(生圖/UI生成/修圖)。ch55(5 GAP→0)：AI 內容 SEO(量產未審紅線)、一稿多用工作流(不實宣稱紅線)、LINE OA 分眾、Email 名單(買名單紅線)+ 55.1 工具地圖 quiz(內容/自動化/分析)。import ch52/ch55 已同步 DB。
-    - [ ] 下一章（教具續）：非程式大章續鋪領域道具（ch43 專案管理/ch44 PdM/ch45 協作 各 25 課僅 2-3 demo；ch60 創業心法）；ch26 ML 段等視需要深化。＊ch1-11/13/16/26/7/31/32/47/48/52/55/59 已 100% 互動覆蓋。
+    - [x] ~~**ch43 專案管理 100% 互動覆蓋**~~ ✅ 0823——25 課 PM 判斷章，補 17 個 GAP 課(既無沙盒又無 demo 者)、達 0 GAP：15 scenario-judge(Roadmap/站會/Retro-Postmortem 無指責/OKR-KPI/利害關係人/RFC-DesignDoc/開會/文件化/AI PM 工具/遠端跨時區/趨勢/真敏捷vs形式化/知識管理/OKR落地/估時切任務，紅線=瞞壞消息/獵巫找戰犯/AI 直接對外承諾/機敏資料進外部AI) + 2 decision-quiz(PM 工具 Linear/Jira/Notion/Asana 選型、IC 技術路線 vs 管理路線)。import ch43 已同步 DB。
+    - [ ] 下一章（教具續）：非程式大章續鋪領域道具（ch44 PdM/ch45 協作 各 25 課；ch60 創業心法）；ch26 ML 段等視需要深化。＊ch1-11/13/16/26/7/31/32/43/47/48/52/55/59 已 100% 互動覆蓋。
     - **驗證方法定調**：Python 沙盒本地 exec 驗、JS 沙盒 node 驗、教具 schema 驗——每個都確認能跑/合法才掛。
 - [ ] 4.1.4 圖文解說圖：概念/B/D/E/F 區操作圖 110+ 張（🔴 等林董生圖；A 區 29 張 ✅）
 
