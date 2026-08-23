@@ -297,7 +297,7 @@
 - [~] 3.1 **V2 精準推薦**：recommend/問卷/profile/subscriptions ✅。待：⬜ AI 聊天追問、⬜ 能力圖譜、⬜ AI 島專屬頁、⬜ 推薦透明化
 - [~] 3.2 **V3「幫你贏」**：mock-judge/fit-analysis/缺件/generate/rules-summary ✅、AI 作品分析 ✅、長 PDF 規則 ✅。待：⬜ AI 成熟度、⬜ 缺點/對手/歷屆評審分析、🚧 生成海報/影片腳本、⬜ 排程接 Google Calendar、⬜ 練習階梯（電梯簡報→10 分）、⬜ 學習閉環/路線圖
 - [~] 3.3 **V4 智慧雷達**（安全基礎 ✅：sources/candidates 表 + admin/sources + cron/radar）。待：
-  - [ ] 3.3.1 API/sitemap/爬蟲來源；3.3.2 三層 hash 變動偵測
+  - [x] ~~3.3.1 API/sitemap/爬蟲來源；3.3.2 三層 hash 變動偵測~~ ✅ 0823——**§3.3.1**：cron 從只吃 rss/atom 擴到 **api(JSON)/sitemap**；純函式 `lib/opportunity-radar.ts`（`parseSitemap`〔含 sitemap index〕、`parseJsonApi`〔靠 source.config 欄位對應 itemsPath/titleField/urlField…〕、`parseSourceBody` 依 kind 分派、URL 追蹤參數正規化）+ 21 單元測試；後台新增來源表單解禁 api/sitemap 選項 + config JSON 欄（api 驗 titleField/urlField、sitemap 可設 recentDays）。**§3.3.2 三層變動偵測**：tier1 HTTP 條件式(存 ETag/Last-Modified→帶 If-None-Match/If-Modified-Since、來源回 304 整支跳過)、tier2 body sha256(整體沒變跳過解析)、tier3 逐項 content_hash(同 URL 內容變了→更新原文+記 `content_changed_at`、後台待審卡顯「內容變動」黃標、為 §3.3.4 版本比較鋪路)。migration `opportunity_radar_v2_migration.sql`(純加 http_etag/http_last_modified/content_hash/config/candidates.content_hash/content_changed_at)已跑 prod。
   - [x] ~~3.3.3 每欄原文證據 + 信心分（AI 幫填 ✅、證據分未做）~~ ✅ 0820——extract route 讓 AI 逐欄回傳「原文佐證」(逐字擷取、抽不到 null 不捏造)＋整體 confidence 0~1；寫回候選列既有 `parsed`/`confidence` 欄(本來留空)；候選 GET 帶回 parsed/confidence→RadarClient reload 免重抽；待審卡顯示信心分色標(≥75%綠/≥40%黃/否紅)＋可展開逐欄佐證供人工核對。
   - [ ] 3.3.4 PDF 解析 + **版本比較**（存歷次規則 diff：截止/獎金/資格變動）
   - [ ] 3.3.5 cron 分頻；3.3.6 Sentry 監控
@@ -371,7 +371,7 @@
 - [x] ~~seed 36–40：Python 模組 128 個（stdlib+外部）→ 1773 條~~ ✅ 0721
 - [x] ~~seed 41：DB查詢/Git/K8s雲原生/LLM/分散式系統 33 條 → **1806 條**~~ ✅ 0721
 - [x] ~~seed 42：網路協定/Web/資安/加密驗證 41 條 → **1847 條**（全查過無 slug 衝突）~~ ✅ 0721
-- [ ] 4.2.1 續寫到 5000（現 **2474**，從 `dictionary-seed-75.json` 接）〔0820 前端零基礎大補 +88→2436、常見錯誤訊息 +11→2447、開發者工具 +12→2459、終端機/命令列基礎 +15→2474〕
+- [ ] 4.2.1 續寫到 5000（現 **2508**，從 `dictionary-seed-77.json` 接）〔0820 前端零基礎大補 +88→2436、常見錯誤訊息 +11→2447、開發者工具 +12→2459、終端機/命令列基礎 +15→2474；0823 React Hooks 深入+TS 進階型別 seed 75 +16→2490、雲端服務 AWS/GCP seed 76 +18→2508〕
   - [x] ~~seed 64：分散式系統進階 + 硬體/底層 + 深度學習 22 條 → **2348**~~ ✅ 0723（Raft/Paxos/腦裂/向量時鐘/CRDT/分散式鎖/outbox/Saga · CPU核心執行緒/GPU運算/SIMD/快取階層/RAM-vs-storage/韌體/硬體中斷 · 神經網路/反向傳播/激活函數/梯度消失爆炸/嵌入層/遷移學習/softmax溫度）
   - [x] ~~seed 63：資料庫進階 + 測試 + API 設計 22 條 → **2326**~~ ✅ 0723（MVCC/ACID-vs-BASE/髒讀/幻讀/視窗函數/遞迴CTE/觸發器/CDC · 測試金字塔/單元整合E2E/mock-vs-stub/性質測試/快照測試/契約測試/負載vs壓力 · REST成熟度/HATEOAS/API限流/API-Key-vs-OAuth/GraphQL-N+1/webhook安全/API淘汰）
   - [x] ~~seed 62：商業/產品 + SEO + 行銷成長 21 條 → **2304**~~ ✅ 0723（TAM-SAM-SOM/GTM/JTBD/MVP-MLP/pivot/PLG/飛輪 · on-page SEO/backlink/SERP/CWV/結構化資料/canonical/sitemap · 轉換漏斗/AARRR/歸因模型/再行銷/滴灌郵件/社會證明/誘餌內容）

@@ -1,0 +1,297 @@
+[
+  {
+    "slug": "usecontext",
+    "term": "useContext",
+    "zh_name": "讀取 Context",
+    "category": "syntax",
+    "langs": [
+      "javascript",
+      "react"
+    ],
+    "difficulty": 2,
+    "plain": "React Hook：讓元件直接拿到上層 Context 提供的值(主題色、登入者、語言…)，不用一層一層把 props 傳下去(prop drilling)。什麼時候用：多個深層元件都要同一份「全域狀態」時。注意：Provider 的值一變，所有用到它的元件都會重繪，別把常變的東西全塞一個 Context。",
+    "analogy": "像公司公告欄——需要的人自己去看，不用主管一個個親口轉達。",
+    "example": "const theme = useContext(ThemeContext)",
+    "related": [
+      "usereducer",
+      "react",
+      "custom-hook"
+    ]
+  },
+  {
+    "slug": "usereducer",
+    "term": "useReducer",
+    "zh_name": "以 reducer 管理狀態",
+    "category": "syntax",
+    "langs": [
+      "javascript",
+      "react"
+    ],
+    "difficulty": 2,
+    "plain": "React Hook：把複雜狀態的更新集中到一個 reducer 函式(state, action) => newState，元件只要 dispatch({type:'...'})。什麼時候用：狀態有多個欄位、或下一步取決於上一步(如表單、購物車)時，比一堆 useState 更好維護。跟 Redux 是同一套心法的縮小版。",
+    "analogy": "像點餐櫃台——你只喊「我要加一份」(action)，廚房照固定流程算出新結果，你不用自己動鍋。",
+    "example": "const [state, dispatch] = useReducer(reducer, init)",
+    "related": [
+      "usecontext",
+      "usestate",
+      "pure-function"
+    ]
+  },
+  {
+    "slug": "uselayouteffect",
+    "term": "useLayoutEffect",
+    "zh_name": "版面繪製前的副作用",
+    "category": "syntax",
+    "langs": [
+      "javascript",
+      "react"
+    ],
+    "difficulty": 3,
+    "plain": "跟 useEffect 幾乎一樣，但它在瀏覽器「畫出畫面之前」同步執行。什麼時候用：需要量測 DOM 尺寸/位置再馬上調整、避免使用者看到閃一下(flicker)時。平常優先用 useEffect；只有會看到跳動時才換它，因為它會擋住繪製、用多了會卡。",
+    "analogy": "像上台前最後一秒喬好站位——觀眾還沒看到就定位好，不會看到你在台上移動。",
+    "example": "useLayoutEffect(() => { setW(ref.current.offsetWidth) }, [])",
+    "related": [
+      "useeffect",
+      "useref",
+      "reflow-repaint"
+    ]
+  },
+  {
+    "slug": "usetransition",
+    "term": "useTransition",
+    "zh_name": "標記非緊急更新",
+    "category": "syntax",
+    "langs": [
+      "javascript",
+      "react"
+    ],
+    "difficulty": 3,
+    "plain": "React 18 Hook：把「不急」的狀態更新包進 startTransition，React 會讓緊急的(打字、點擊)先反應、慢的(重算大清單)在背景慢慢來，還給你 isPending 顯示載入中。什麼時候用：搜尋框即時過濾一大包資料、切分頁時畫面會頓的地方。",
+    "analogy": "像餐廳先幫你點好水(急件)、大餐慢慢上(緩件)——你不會因為主餐還在做就連水都喝不到。",
+    "example": "const [isPending, startTransition] = useTransition()",
+    "related": [
+      "usedeferredvalue",
+      "react-server-component",
+      "debounce"
+    ]
+  },
+  {
+    "slug": "usedeferredvalue",
+    "term": "useDeferredValue",
+    "zh_name": "延後使用的值",
+    "category": "syntax",
+    "langs": [
+      "javascript",
+      "react"
+    ],
+    "difficulty": 3,
+    "plain": "React 18 Hook：給你某個值的「慢半拍版本」，讓昂貴的重繪用舊值先撐著、等閒下來再換新，畫面不卡。什麼時候用：輸入框連動一個很重的清單/圖表，想讓打字順、清單晚點更新。跟 useTransition 目的一樣，差別是它包「值」、後者包「更新動作」。",
+    "analogy": "像字幕比畫面慢半秒——主體(打字)先流暢，配角(清單)追上來即可。",
+    "example": "const deferredQuery = useDeferredValue(query)",
+    "related": [
+      "usetransition",
+      "debounce",
+      "memoization-react"
+    ]
+  },
+  {
+    "slug": "useimperativehandle",
+    "term": "useImperativeHandle",
+    "zh_name": "自訂 ref 對外方法",
+    "category": "syntax",
+    "langs": [
+      "javascript",
+      "react"
+    ],
+    "difficulty": 3,
+    "plain": "搭配 forwardRef 用：讓父元件透過 ref 只能呼叫你「刻意開放」的方法(如 focus()、reset())，而不是整個 DOM 節點。什麼時候用：包裝一個輸入框/播放器元件、想給父層一個乾淨的操作介面。屬進階、少用——多數狀況用 props 就夠。",
+    "analogy": "像家電只留幾顆按鈕在外面——內部電路(完整 DOM)藏起來，只給你該按的。",
+    "example": "useImperativeHandle(ref, () => ({ focus: () => inputRef.current.focus() }))",
+    "related": [
+      "useref",
+      "custom-hook",
+      "encapsulation"
+    ]
+  },
+  {
+    "slug": "usesyncexternalstore",
+    "term": "useSyncExternalStore",
+    "zh_name": "訂閱外部狀態源",
+    "category": "syntax",
+    "langs": [
+      "javascript",
+      "react"
+    ],
+    "difficulty": 3,
+    "plain": "React 18 Hook：安全地把「React 之外」的資料源(瀏覽器 API、第三方 store 如 Zustand/Redux)接進元件、並在並發渲染下不會讀到不一致的值。什麼時候用：多半是函式庫作者在用；一般人用現成的狀態庫，它底層已用它。知道有這東西即可。",
+    "analogy": "像官方唯一插座——外部電器要接 React 這套電網，走它才不會跳電。",
+    "example": "const online = useSyncExternalStore(subscribe, () => navigator.onLine)",
+    "related": [
+      "usereducer",
+      "reactivity",
+      "signal-reactivity"
+    ]
+  },
+  {
+    "slug": "record-type",
+    "term": "Record<K, V>",
+    "zh_name": "鍵值對型別",
+    "category": "syntax",
+    "langs": [
+      "typescript"
+    ],
+    "difficulty": 2,
+    "plain": "TypeScript 工具型別：描述一個物件，key 是某型別 K、每個 value 都是型別 V。什麼時候用：像字典/查表的物件，如 Record<string, number>(字串對數字)、Record<'zh'|'en', string>(限定幾個 key)。比手寫 { [k: string]: V } 好讀。",
+    "analogy": "像規定一本通訊錄「名字→電話」的格式——每一筆都得長這樣。",
+    "example": "const scores: Record<string, number> = { alice: 90 }",
+    "related": [
+      "utility-types",
+      "mapped-type",
+      "keyof"
+    ]
+  },
+  {
+    "slug": "omit-type",
+    "term": "Omit<T, K>",
+    "zh_name": "排除欄位型別",
+    "category": "syntax",
+    "langs": [
+      "typescript"
+    ],
+    "difficulty": 2,
+    "plain": "TypeScript 工具型別：從型別 T 拿掉指定的 key K，得到「少了那幾欄」的新型別。什麼時候用：有個 User 型別，但新增表單不需要 id/createdAt，就 Omit<User,'id'|'createdAt'>。跟 Pick(只留指定欄)相反。",
+    "analogy": "像影印一份表格但先把「身分證字號」那格塗掉再印。",
+    "example": "type NewUser = Omit<User, 'id' | 'createdAt'>",
+    "related": [
+      "utility-types",
+      "record-type",
+      "keyof"
+    ]
+  },
+  {
+    "slug": "readonly-type",
+    "term": "Readonly<T>",
+    "zh_name": "唯讀型別",
+    "category": "syntax",
+    "langs": [
+      "typescript"
+    ],
+    "difficulty": 2,
+    "plain": "TypeScript 工具型別：把 T 的每個屬性都變成不可再指派(唯讀)，改它編譯時就報錯。什麼時候用：設定物件、傳進函式不希望被偷改的參數。注意這只是「編譯期」保護，執行期物件本身還是可變的(要真凍結用 Object.freeze)。",
+    "analogy": "像博物館展品貼「請勿觸摸」——看得到、動它就被糾正。",
+    "example": "const cfg: Readonly<Config> = base",
+    "related": [
+      "utility-types",
+      "const-assertion",
+      "immutability"
+    ]
+  },
+  {
+    "slug": "returntype",
+    "term": "ReturnType<T>",
+    "zh_name": "取函式回傳型別",
+    "category": "syntax",
+    "langs": [
+      "typescript"
+    ],
+    "difficulty": 2,
+    "plain": "TypeScript 工具型別：自動抓出某個函式「回傳值的型別」。什麼時候用：不想手寫、或函式回傳型別會變時，用 ReturnType<typeof fn> 跟著自動更新。搭配 Parameters(取參數型別)、Awaited(拆掉 Promise)一起很常見。",
+    "analogy": "像問「這台販賣機投錢會掉出什麼」——不用自己記，看機器就知道。",
+    "example": "type User = ReturnType<typeof getUser>",
+    "related": [
+      "parameters-type",
+      "awaited-type",
+      "typeof-operator"
+    ]
+  },
+  {
+    "slug": "parameters-type",
+    "term": "Parameters<T>",
+    "zh_name": "取函式參數型別",
+    "category": "syntax",
+    "langs": [
+      "typescript"
+    ],
+    "difficulty": 2,
+    "plain": "TypeScript 工具型別：把某函式的參數列表抓成一個 tuple 型別。什麼時候用：想包裝(wrap)一個既有函式、又要它的參數型別一致時，Parameters<typeof fn>。常跟 ReturnType 成對出現。",
+    "analogy": "像照抄一張報名表的欄位規格——別人怎麼填，你的包裝也要求一樣填。",
+    "example": "type Args = Parameters<typeof send>  // [string, number]",
+    "related": [
+      "returntype",
+      "awaited-type",
+      "tuple"
+    ]
+  },
+  {
+    "slug": "awaited-type",
+    "term": "Awaited<T>",
+    "zh_name": "拆解 Promise 型別",
+    "category": "syntax",
+    "langs": [
+      "typescript"
+    ],
+    "difficulty": 2,
+    "plain": "TypeScript 工具型別：把 Promise<X> 剝一層拿到裡面的 X(巢狀 Promise 也會一路拆到底)。什麼時候用：async 函式回傳 Promise，你想要「await 之後」的實際型別，Awaited<ReturnType<typeof fetchUser>>。",
+    "analogy": "像拆掉包裹外箱只留裡面的東西——你要的是內容物，不是箱子。",
+    "example": "type User = Awaited<ReturnType<typeof fetchUser>>",
+    "related": [
+      "returntype",
+      "async-await",
+      "promise"
+    ]
+  },
+  {
+    "slug": "keyof",
+    "term": "keyof",
+    "zh_name": "取型別所有鍵",
+    "category": "syntax",
+    "langs": [
+      "typescript"
+    ],
+    "difficulty": 2,
+    "plain": "TypeScript 運算子：拿到某型別「所有 key 名稱」組成的聯集型別。什麼時候用：寫通用取值函式時，限制第二個參數只能是該物件真的有的 key(拼錯就編譯報錯)。是 mapped type、泛型約束的基石。",
+    "analogy": "像列出一張表單「所有欄位名的清單」——只准填清單上有的欄。",
+    "example": "function get<T, K extends keyof T>(o: T, k: K) { return o[k] }",
+    "related": [
+      "typeof-operator",
+      "mapped-type",
+      "generics"
+    ]
+  },
+  {
+    "slug": "typeof-operator",
+    "term": "typeof（型別層）",
+    "zh_name": "取值的型別",
+    "category": "syntax",
+    "langs": [
+      "typescript"
+    ],
+    "difficulty": 2,
+    "plain": "在 TypeScript 型別位置用 typeof someValue，可以把一個「實際的值/變數」的型別抓出來重用。什麼時候用：有一個現成常數物件、想據此推出型別，type Cfg = typeof config。注意這是「型別層的 typeof」，跟 JS 執行期判斷型別的 typeof x==='string' 是兩回事、只是同名。",
+    "analogy": "像照著一個實體樣品「反推它的規格書」——有成品就能倒回去寫規格。",
+    "example": "const cfg = { port: 3000 }; type Cfg = typeof cfg",
+    "related": [
+      "keyof",
+      "returntype",
+      "const-assertion"
+    ]
+  },
+  {
+    "slug": "infer-type",
+    "term": "infer",
+    "zh_name": "型別推斷佔位",
+    "category": "syntax",
+    "langs": [
+      "typescript"
+    ],
+    "difficulty": 3,
+    "plain": "TypeScript 條件型別裡的關鍵字：在 T extends SomeShape<infer U> ? U : never 中，讓編譯器自己「填空」抓出某個位置的型別 U。什麼時候用：寫進階工具型別(ReturnType 底層就是靠它)。屬型別體操、日常較少手寫，但看得懂它就能讀懂別人的高階型別。",
+    "analogy": "像填空題留個底線讓答案自己浮現——「這裡是什麼型別？你來告訴我」。",
+    "example": "type Unwrap<T> = T extends Promise<infer U> ? U : T",
+    "related": [
+      "conditional-type",
+      "awaited-type",
+      "returntype"
+    ]
+  }
+]

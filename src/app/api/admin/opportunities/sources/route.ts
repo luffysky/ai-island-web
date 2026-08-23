@@ -5,6 +5,17 @@ import { createSupabaseAdmin } from "@/lib/supabase-admin";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+// 來源 config（api 欄位對應 / sitemap 選項）：只收純物件、限制大小，避免塞亂七八糟。
+function sanitizeConfig(raw: unknown): Record<string, any> | null | undefined {
+  if (raw === undefined) return undefined;          // 沒帶 → 不動
+  if (raw === null) return {};                       // 明確清空
+  if (typeof raw !== "object" || Array.isArray(raw)) return undefined;
+  try {
+    if (JSON.stringify(raw).length > 4000) return undefined;
+  } catch { return undefined; }
+  return raw as Record<string, any>;
+}
+
 // GET — 來源清單 + 待審候選數
 export async function GET() {
   const gate = await requireAdmin();
@@ -26,9 +37,10 @@ export async function POST(req: NextRequest) {
   const url = String(b.url ?? "").trim().slice(0, 500);
   if (!name || !/^https?:\/\//.test(url)) return NextResponse.json({ error: "缺 name 或 url（要 http(s):// 開頭）" }, { status: 400 });
   const kind = ["rss", "atom", "api", "sitemap", "manual"].includes(b.kind) ? b.kind : "rss";
+  const config = sanitizeConfig(b.config) ?? {};
   const admin = createSupabaseAdmin();
   const { data, error } = await admin.from("opportunity_sources")
-    .insert({ name, url, kind, category_hint: String(b.category_hint ?? "").trim().slice(0, 40) || null, notes: String(b.notes ?? "").trim().slice(0, 300) || null })
+    .insert({ name, url, kind, config, category_hint: String(b.category_hint ?? "").trim().slice(0, 40) || null, notes: String(b.notes ?? "").trim().slice(0, 300) || null })
     .select("*").single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ source: data });
@@ -46,6 +58,9 @@ export async function PATCH(req: NextRequest) {
   if (typeof b.name === "string") patch.name = b.name.trim().slice(0, 120);
   if (typeof b.category_hint === "string") patch.category_hint = b.category_hint.trim().slice(0, 40) || null;
   if (typeof b.notes === "string") patch.notes = b.notes.trim().slice(0, 300) || null;
+  if (["rss", "atom", "api", "sitemap", "manual"].includes(b.kind)) patch.kind = b.kind;
+  const cfg = sanitizeConfig(b.config);
+  if (cfg !== undefined) patch.config = cfg;
   const admin = createSupabaseAdmin();
   const { data, error } = await admin.from("opportunity_sources").update(patch).eq("id", id).select("*").single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

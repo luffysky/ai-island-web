@@ -1,0 +1,326 @@
+[
+  {
+    "slug": "s3-bucket",
+    "term": "Amazon S3 / Bucket",
+    "zh_name": "物件儲存桶",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 1,
+    "plain": "AWS 最常用的雲端檔案倉庫：把檔案(圖片、影片、備份、靜態網站)丟進一個「bucket(桶)」，每個檔案有網址、幾乎無限容量、便宜。什麼時候用：存使用者上傳、放靜態資源、備份。注意：bucket 預設私有，設成公開前要很小心(公開錯 = 資料外洩經典事故)。GCP 對應是 Cloud Storage、Azure 是 Blob Storage。",
+    "analogy": "像一個無限大的雲端隨身碟，每個檔案都有自己的門牌網址。",
+    "example": "s3://my-app-uploads/avatars/u123.png",
+    "related": [
+      "object-storage",
+      "cloudfront",
+      "block-storage"
+    ]
+  },
+  {
+    "slug": "block-storage",
+    "term": "Block Storage",
+    "zh_name": "區塊儲存",
+    "category": "concept",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "像「掛給一台伺服器的硬碟」：可格式化、裝作業系統、跑資料庫，速度快、可隨機讀寫。什麼時候用：VM 需要一顆系統碟或資料庫的儲存。跟物件儲存(S3，走網址、適合整檔存取)不同——block 是給機器當硬碟用的。AWS 是 EBS、GCP 是 Persistent Disk。",
+    "analogy": "物件儲存像置物櫃(整包拿進拿出)，區塊儲存像電腦裡的硬碟(可隨意讀寫某一小塊)。",
+    "example": "AWS EBS volume 掛到 EC2 當 /data 磁碟",
+    "related": [
+      "object-storage",
+      "s3-bucket",
+      "ec2"
+    ]
+  },
+  {
+    "slug": "ec2",
+    "term": "Amazon EC2",
+    "zh_name": "雲端虛擬機",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "AWS 的租用虛擬伺服器：你挑 CPU/記憶體規格、開一台就能 SSH 進去裝東西跑服務，用多少時數算多少錢。什麼時候用：需要一台完整可控的機器(自架服務、跑背景工作)。缺點是你要自己顧作業系統、更新、擴充。GCP 對應是 Compute Engine。比它更省事的是 serverless / 容器託管。",
+    "analogy": "像租一整間空辦公室——自由度高，但水電家具全得自己張羅。",
+    "example": "啟一台 t3.micro EC2 跑 Node 服務",
+    "related": [
+      "lambda-serverless",
+      "block-storage",
+      "auto-scaling"
+    ]
+  },
+  {
+    "slug": "lambda-serverless",
+    "term": "AWS Lambda",
+    "zh_name": "無伺服器函式",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "你只上傳一個函式，有事件(HTTP 請求、上傳檔案、排程)才被叫起來跑、跑完就休眠，不用管機器、按執行次數與時間計費。什麼時候用：零星、間歇性的工作(webhook、圖片轉檔、排程任務)。注意：有冷啟動延遲、單次執行有時間上限、不適合長時間常駐。GCP 是 Cloud Functions、對等有 Cloud Run。",
+    "analogy": "像請臨時工——有活才來、按件計酬，沒事不用養一整組人。",
+    "example": "上傳圖片 → 觸發 Lambda 自動產縮圖",
+    "related": [
+      "serverless",
+      "cloud-functions",
+      "cold-start"
+    ]
+  },
+  {
+    "slug": "rds",
+    "term": "Amazon RDS",
+    "zh_name": "受管關聯式資料庫",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "AWS 幫你顧好的關聯式資料庫(PostgreSQL/MySQL…)：自動備份、更新、故障切換，你不用自己在 VM 上裝 DB、調參數。什麼時候用：正式服務要一個穩定、會自動備份的 SQL 資料庫。比自己在 EC2 上裝資料庫省心很多。GCP 對應是 Cloud SQL。要無限擴充讀寫可看 Aurora / 分散式 DB。",
+    "analogy": "像住有管理員的大樓——水電維修(備份/更新)都有人代勞，你專心過日子(寫程式)。",
+    "example": "一台 PostgreSQL RDS 給後端連線",
+    "related": [
+      "postgresql",
+      "database-index",
+      "replication"
+    ]
+  },
+  {
+    "slug": "dynamodb",
+    "term": "Amazon DynamoDB",
+    "zh_name": "受管 NoSQL 資料庫",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "AWS 的全託管 NoSQL(key-value / 文件)資料庫：超高流量下仍毫秒回應、自動擴充、免顧機器。什麼時候用：規模大、查詢型態固定(靠 key 撈)的場景(購物車、session、IoT)。代價是要「先想好怎麼查」再設計資料表(partition key/sort key)，不像 SQL 能隨意 join。GCP 類似的是 Firestore / Bigtable。",
+    "analogy": "像超大型置物櫃牆——用鑰匙(key)瞬間找到你的格子，但不擅長「把所有格子交叉比對」。",
+    "example": "以 userId 為 key 存 DynamoDB session",
+    "related": [
+      "nosql",
+      "consistent-hashing",
+      "partition-key"
+    ]
+  },
+  {
+    "slug": "cloudfront",
+    "term": "Amazon CloudFront",
+    "zh_name": "內容傳遞網路（CDN）",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "AWS 的 CDN：把你的圖片/影片/靜態檔案快取到全球各地的節點，使用者就近拿、更快更省流量。什麼時候用：網站有大量靜態資源、觀眾分布廣。常搭 S3(來源)使用。改了檔案要記得讓快取失效(invalidation)不然看到舊的。GCP 對應是 Cloud CDN、通用選項還有 Cloudflare。",
+    "analogy": "像連鎖便利商店——總倉(S3)一份，各地分店(節點)都放一份，就近取貨最快。",
+    "example": "S3 靜態站 + CloudFront 全球加速",
+    "related": [
+      "cdn",
+      "cdn-cache-invalidation",
+      "s3-bucket"
+    ]
+  },
+  {
+    "slug": "route53",
+    "term": "Amazon Route 53",
+    "zh_name": "受管 DNS 服務",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "AWS 的 DNS(網域名稱解析)服務：管理你的網域紀錄(A/CNAME/MX…)、把 example.com 指到對的伺服器，還能做健康檢查與流量分流。什麼時候用：在 AWS 上架站要設定網域指向時。名字的 53 就是 DNS 的通訊埠號。GCP 對應是 Cloud DNS。",
+    "analogy": "像全國電話簿總機——有人問「example.com 在哪」，它負責報出正確地址。",
+    "example": "在 Route 53 設 A 紀錄指向 CloudFront",
+    "related": [
+      "dns-resolution",
+      "cname",
+      "mx-record"
+    ]
+  },
+  {
+    "slug": "sqs",
+    "term": "Amazon SQS",
+    "zh_name": "受管訊息佇列",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "AWS 的訊息佇列：服務 A 把工作丟進佇列、服務 B 有空再一件件取來處理，兩邊解耦、削峰填谷、B 掛了訊息也不會掉。什麼時候用：把「發送 email、產報表」這種可以慢慢做的工作丟到背景排隊。搭 dead-letter queue 收處理失敗的訊息。GCP 對應是 Pub/Sub 或 Cloud Tasks。",
+    "analogy": "像餐廳出單機——外場貼單(送訊息)、內場照順序做(取訊息)，尖峰時單子排隊不會掉。",
+    "example": "下單成功 → 丟 SQS → 背景寄確認信",
+    "related": [
+      "message-queue",
+      "dead-letter-queue",
+      "sns"
+    ]
+  },
+  {
+    "slug": "sns",
+    "term": "Amazon SNS",
+    "zh_name": "發布／訂閱通知",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "AWS 的 pub/sub 通知服務：一則訊息「一次發、多方收」——同時推到多個佇列、Lambda、簡訊或 email。什麼時候用：一個事件要通知很多下游(訂單成立 → 同時通知出貨系統、寄信、記帳)。跟 SQS 常搭：SNS 廣播、每個訂閱者各有一條 SQS 慢慢消化(fan-out)。",
+    "analogy": "像群組廣播——喊一聲，所有訂閱這個頻道的人同時收到。",
+    "example": "SNS 主題 → 同時觸發 3 個下游服務",
+    "related": [
+      "pub-sub",
+      "sqs",
+      "message-queue"
+    ]
+  },
+  {
+    "slug": "cloudwatch",
+    "term": "Amazon CloudWatch",
+    "zh_name": "監控與告警",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "AWS 的監控中心：收集各服務的指標(CPU、錯誤數、延遲)、日誌，畫成圖表、設門檻自動告警(超標就通知你/自動擴充)。什麼時候用：想知道服務健不健康、出事時能回看日誌與圖表。是「觀測性」的基本盤。GCP 對應是 Cloud Monitoring + Cloud Logging。",
+    "analogy": "像機房的儀表牆——溫度、轉速一目了然，異常就閃紅燈叫人。",
+    "example": "CPU>80% 持續 5 分鐘 → CloudWatch 告警",
+    "related": [
+      "observability",
+      "structured-logging",
+      "slo-sli"
+    ]
+  },
+  {
+    "slug": "ecs",
+    "term": "Amazon ECS",
+    "zh_name": "容器託管服務",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "AWS 自家的容器編排服務：幫你把 Docker 容器排到機器上跑、維持指定數量、掛掉自動重啟、可自動擴充。什麼時候用：已把服務打包成 Docker、想在 AWS 上跑但不想自己養 Kubernetes 時。比 EKS(託管 K8s)簡單、但綁 AWS。搭 Fargate 可連機器都不用管。",
+    "analogy": "像貨櫃碼頭調度員——決定哪個貨櫃(容器)放哪台車、幾個副本，壞了換一個。",
+    "example": "ECS 服務維持 3 個 API 容器",
+    "related": [
+      "container-orchestration",
+      "fargate",
+      "eks"
+    ]
+  },
+  {
+    "slug": "eks",
+    "term": "Amazon EKS",
+    "zh_name": "受管 Kubernetes",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 3,
+    "plain": "AWS 幫你託管的 Kubernetes(K8s)：control plane 由 AWS 顧，你專心部署工作負載。什麼時候用：團隊已用 K8s、要標準化跨雲、有複雜編排需求時。比 ECS 通用但更複雜、學習曲線陡。GCP 對應是 GKE、Azure 是 AKS。小專案通常用不到、別為了潮而上 K8s。",
+    "analogy": "像請物流公司代管整座自動倉儲系統(K8s)——你下指令，機械怎麼跑它顧。",
+    "example": "EKS 叢集跑微服務 + HPA 自動擴縮",
+    "related": [
+      "pod-k8s",
+      "container-orchestration",
+      "ecs"
+    ]
+  },
+  {
+    "slug": "fargate",
+    "term": "AWS Fargate",
+    "zh_name": "無伺服器容器",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "跑容器但「不用管底層機器」的模式：你只說要多少 CPU/記憶體、跑哪個容器，AWS 自動幫你找機器跑、按用量計費。搭 ECS 或 EKS 用。什麼時候用：不想維護、修補一堆 VM、只想把容器跑起來。代價是單位成本較高、極致調校空間較小。",
+    "analogy": "像叫外送廚房——你只點菜(容器規格)，廚房在哪、幾個爐子全不用你操心。",
+    "example": "ECS on Fargate 跑 API，免管 EC2",
+    "related": [
+      "ecs",
+      "lambda-serverless",
+      "serverless"
+    ]
+  },
+  {
+    "slug": "secrets-manager",
+    "term": "Secrets Manager",
+    "zh_name": "機密管理服務",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "雲端保險箱：集中存放 API 金鑰、資料庫密碼、憑證，程式執行期才去取、可設定自動輪替、有存取權限與稽核紀錄。什麼時候用：正式環境不該把密鑰寫死在程式或 .env 裡進版控，改由它發放。AWS 是 Secrets Manager、GCP 是 Secret Manager、也有開源的 HashiCorp Vault。",
+    "analogy": "像銀行金庫——密碼不放抽屜(程式碼)，要用時憑權限去金庫領、還有出入紀錄。",
+    "example": "後端啟動時向 Secrets Manager 取 DB 密碼",
+    "related": [
+      "secrets-management",
+      "key-rotation",
+      "env-variable-shell"
+    ]
+  },
+  {
+    "slug": "bigquery",
+    "term": "Google BigQuery",
+    "zh_name": "雲端資料倉儲",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "GCP 的無伺服器資料倉儲：用 SQL 對「幾億~幾兆筆」資料做分析查詢，幾秒就跑完、免顧機器、按掃描的資料量計費。什麼時候用：報表、商業分析、把各系統資料集中起來大規模查詢(OLAP)。它是「分析用」不是「線上交易用」——別拿它當網站的主資料庫。AWS 對應是 Redshift/Athena。",
+    "analogy": "像巨型圖書館的超強檢索——一次翻遍上億本，但按你翻了多少頁收費。",
+    "example": "SELECT country, COUNT(*) FROM events GROUP BY country",
+    "related": [
+      "olap-oltp",
+      "data-warehouse",
+      "select-sql"
+    ]
+  },
+  {
+    "slug": "cloud-run",
+    "term": "Google Cloud Run",
+    "zh_name": "無伺服器容器平台",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "GCP 的服務：給它一個容器映像，它自動跑起來、有流量才啟動、沒流量可縮到 0、依請求量計費。什麼時候用：把任何 Docker 化的網站/API 快速上線又想省錢、免管機器。介於 Lambda(只跑函式)與 K8s(全套編排)之間的甜蜜點。跟本專案部署的 Zeabur 精神類似。",
+    "analogy": "像隨叫隨到的攤位——有客人才擺攤、人多自動加攤、沒人就收，按出攤時間算錢。",
+    "example": "gcloud run deploy 把容器一鍵上線",
+    "related": [
+      "cloud-functions",
+      "fargate",
+      "serverless"
+    ]
+  },
+  {
+    "slug": "cloud-functions",
+    "term": "Google Cloud Functions",
+    "zh_name": "GCP 無伺服器函式",
+    "category": "tool",
+    "langs": [
+      "cloud"
+    ],
+    "difficulty": 2,
+    "plain": "GCP 版的 Lambda：上傳一個函式，被事件(HTTP、檔案上傳、Pub/Sub 訊息)觸發才執行、按次計費、免管機器。什麼時候用：零星的事件處理、webhook、輕量後端。跟 Cloud Run 的差別是它以「單一函式」為單位、後者以「容器」為單位、更靈活。",
+    "analogy": "跟 Lambda 一樣是「有事才叫的臨時工」，只是換一家(GCP)派遣公司。",
+    "example": "檔案進 Cloud Storage → 觸發 Cloud Function",
+    "related": [
+      "lambda-serverless",
+      "cloud-run",
+      "serverless"
+    ]
+  }
+]

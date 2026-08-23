@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Rss, Plus, Trash2, Power, Check, X, ExternalLink, Loader2, AlertTriangle, RefreshCw, Sparkles } from "lucide-react";
 
 interface Source { id: string; name: string; url: string; kind: string; category_hint?: string | null; enabled: boolean; last_fetched_at?: string | null; last_status?: string | null; last_count?: number | null; notes?: string | null; }
-interface Candidate { id: string; source_name?: string | null; raw_title: string; raw_url?: string | null; raw_summary?: string | null; raw_published_at?: string | null; created_at: string; parsed?: Record<string, any> | null; confidence?: number | null; }
+interface Candidate { id: string; source_name?: string | null; raw_title: string; raw_url?: string | null; raw_summary?: string | null; raw_published_at?: string | null; created_at: string; parsed?: Record<string, any> | null; confidence?: number | null; content_changed_at?: string | null; }
 type FieldEvidence = { category: string | null; application_deadline: string | null; prize_text: string | null; is_free: string | null; organizer: string | null };
 
 export function RadarClient() {
@@ -17,6 +17,7 @@ export function RadarClient() {
   const [nUrl, setNUrl] = useState("");
   const [nKind, setNKind] = useState("rss");
   const [nCat, setNCat] = useState("");
+  const [nConfig, setNConfig] = useState("");   // api/sitemap 的 config JSON
   const [adding, setAdding] = useState(false);
   const [err, setErr] = useState("");
   // 每張候選卡的分類覆寫 + 忙碌狀態
@@ -57,16 +58,23 @@ export function RadarClient() {
   const addSource = async () => {
     if (adding) return;
     if (!nName.trim() || !/^https?:\/\//.test(nUrl.trim())) { setErr("填來源名稱 + http(s) 網址"); return; }
+    let config: any = undefined;
+    if ((nKind === "api" || nKind === "sitemap") && nConfig.trim()) {
+      try { config = JSON.parse(nConfig); } catch { setErr("config 不是合法 JSON"); return; }
+    }
+    if (nKind === "api" && (!config || !config.titleField || !config.urlField)) {
+      setErr("API 來源的 config 需含 titleField 與 urlField"); return;
+    }
     setAdding(true); setErr("");
     try {
       const r = await fetch("/api/admin/opportunities/sources", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: nName.trim(), url: nUrl.trim(), kind: nKind, category_hint: nCat.trim() || undefined }),
+        body: JSON.stringify({ name: nName.trim(), url: nUrl.trim(), kind: nKind, category_hint: nCat.trim() || undefined, config }),
       });
       const d = await r.json();
       if (!r.ok) { setErr(d.error ?? "新增失敗"); return; }
       setSources((cur) => [d.source, ...cur]);
-      setNName(""); setNUrl(""); setNCat("");
+      setNName(""); setNUrl(""); setNCat(""); setNConfig("");
     } catch { setErr("連線失敗"); } finally { setAdding(false); }
   };
 
@@ -129,10 +137,24 @@ export function RadarClient() {
           <input value={nUrl} onChange={(e) => setNUrl(e.target.value)} placeholder="RSS / Atom 網址 https://..." className="rounded-lg border border-border bg-bg-elevated px-3 py-2 text-sm outline-none focus:border-accent" />
           <select value={nKind} onChange={(e) => setNKind(e.target.value)} className="rounded-lg border border-border bg-bg-elevated px-3 py-2 text-sm">
             <option value="rss">RSS</option><option value="atom">Atom</option>
-            <option value="api" disabled>API（之後支援）</option><option value="sitemap" disabled>Sitemap（之後支援）</option>
+            <option value="api">API（JSON）</option><option value="sitemap">Sitemap</option>
           </select>
           <input value={nCat} onChange={(e) => setNCat(e.target.value)} placeholder="預設分類（選填，例：補助 / AI）" className="rounded-lg border border-border bg-bg-elevated px-3 py-2 text-sm outline-none focus:border-accent" />
         </div>
+        {(nKind === "api" || nKind === "sitemap") && (
+          <div className="mt-2">
+            <textarea value={nConfig} onChange={(e) => setNConfig(e.target.value)} rows={nKind === "api" ? 4 : 2}
+              placeholder={nKind === "api"
+                ? '{ "itemsPath": "data.results", "titleField": "name", "urlField": "url", "summaryField": "desc", "publishedField": "date" }'
+                : '{ "recentDays": 30 }   // 選填：只收近 N 天更新的 URL'}
+              className="w-full rounded-lg border border-border bg-bg-elevated px-3 py-2 text-xs font-mono outline-none focus:border-accent" />
+            <div className="text-[10px] text-fg-muted mt-1">
+              {nKind === "api"
+                ? "API 來源：填 JSON 回應的欄位對應（titleField/urlField 必填；itemsPath 指向資料陣列；headers 可放認證標頭）。"
+                : "Sitemap 來源：抓 <loc> 網址進待審；標題自動取自 URL slug，建議搭配上面「預設分類」與 recentDays 減少雜訊。"}
+            </div>
+          </div>
+        )}
         {err && <div className="text-[11px] text-rose-500 mt-1.5">{err}</div>}
         <div className="flex justify-end mt-2">
           <button onClick={addSource} disabled={adding} className="inline-flex items-center gap-1.5 text-sm rounded-lg bg-accent text-white px-3.5 py-1.5 disabled:opacity-50">{adding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />} 新增</button>
@@ -176,7 +198,7 @@ export function RadarClient() {
           <div className="space-y-1.5">
             {candidates.map((c) => (
               <div key={c.id} className="rounded-xl border border-border bg-bg-card p-3">
-                <div className="text-sm font-medium">{c.raw_title}</div>
+                <div className="text-sm font-medium flex items-center gap-1.5">{c.raw_title}{c.content_changed_at && <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-600 dark:text-amber-400 whitespace-nowrap" title={`來源內容於 ${new Date(c.content_changed_at).toLocaleString("zh-TW")} 變動過`}>內容變動</span>}</div>
                 {c.source_name && <div className="text-[11px] text-fg-muted mt-0.5">來源：{c.source_name}{c.raw_published_at ? ` · ${new Date(c.raw_published_at).toLocaleDateString("zh-TW")}` : ""}</div>}
                 {c.raw_summary && <div className="text-xs text-fg-muted mt-1 line-clamp-3">{c.raw_summary}</div>}
                 {c.raw_url && <a href={c.raw_url} target="_blank" rel="noreferrer" className="text-[11px] text-accent hover:underline inline-flex items-center gap-1 mt-1 break-all">看原文 <ExternalLink className="w-3 h-3 shrink-0" /></a>}
