@@ -368,7 +368,8 @@
     - [x] ~~**ch52 AI設計 + ch55 AI行銷 100% 覆蓋（design/行銷 領域道具）**~~ ✅ 0823——補齊林董點名的 design/SEO/創業/行銷 四域最後兩章。ch52(4 GAP→0)：v0/Figma AI 判官、v0+Cursor 流程、AI 設計接案(揭露/授權紅線)+ 52.1 工具選型 quiz(生圖/UI生成/修圖)。ch55(5 GAP→0)：AI 內容 SEO(量產未審紅線)、一稿多用工作流(不實宣稱紅線)、LINE OA 分眾、Email 名單(買名單紅線)+ 55.1 工具地圖 quiz(內容/自動化/分析)。import ch52/ch55 已同步 DB。
     - [x] ~~**ch43 專案管理 100% 互動覆蓋**~~ ✅ 0823——25 課 PM 判斷章，補 17 個 GAP 課(既無沙盒又無 demo 者)、達 0 GAP：15 scenario-judge(Roadmap/站會/Retro-Postmortem 無指責/OKR-KPI/利害關係人/RFC-DesignDoc/開會/文件化/AI PM 工具/遠端跨時區/趨勢/真敏捷vs形式化/知識管理/OKR落地/估時切任務，紅線=瞞壞消息/獵巫找戰犯/AI 直接對外承諾/機敏資料進外部AI) + 2 decision-quiz(PM 工具 Linear/Jira/Notion/Asana 選型、IC 技術路線 vs 管理路線)。import ch43 已同步 DB。
     - [x] ~~**ch44 產品經理 PdM 100% 互動覆蓋**~~ ✅ 0823——25 課 PdM 判斷章，補 17 個 GAP 課、0 GAP：15 scenario-judge(PMF/定價/GTM/Onboarding aha/Retention/客戶訪談問過去行為/競品分析/跨職能協作/Growth Loop/AI時代/績效評估/趨勢/JTBD/RICE信心欄/北極星指標，紅線=無PMF砸廣告/暗黑模式逼分享/跳過工程亂承諾交期/信心欄全填100%) + 2 decision-quiz(B2B vs B2C 打法、工程師轉 PdM 適不適合)。import ch44 已同步 DB。
-    - [ ] 下一章（教具續）：非程式大章續鋪領域道具（ch45 協作 25 課；ch60 創業心法）；ch26 ML 段等視需要深化。＊ch1-11/13/16/26/7/31/32/43/44/47/48/52/55/59 已 100% 互動覆蓋。
+    - [x] ~~**ch45 跨職能協作 100% 互動覆蓋**~~ ✅ 0823——25 課協作/溝通判斷章，補 18 個 GAP 課、0 GAP：16 scenario-judge(工程×客服/法務/財會/HR/Data/高層/B2B客戶、翻譯技術給非技術、跨文化、2026新型態、Figma DevMode、對PM風險揭露、Code Review 文化、Post-mortem 無指責、On-call/Incident、1-on-1 績效對話，紅線=繞法務上線/隨意存取HR個資/客戶面前內鬨/羞辱式review/獵巫/年度突襲清算) + 2 decision-quiz(跨團隊衝突對齊/降溫/上呈、同步開會 vs 非同步文件)。import ch45 已同步 DB。**PM 家族(ch43/44/45)全數 100%。**
+    - [ ] 下一章（教具續）：非程式大章續鋪領域道具（ch60 創業心法 6 課；其餘小附錄章）；ch26 ML 段等視需要深化。＊ch1-11/13/16/26/7/31/32/43/44/45/47/48/52/55/59 已 100% 互動覆蓋。
     - **驗證方法定調**：Python 沙盒本地 exec 驗、JS 沙盒 node 驗、教具 schema 驗——每個都確認能跑/合法才掛。
 - [ ] 4.1.4 圖文解說圖：概念/B/D/E/F 區操作圖 110+ 張（🔴 等林董生圖；A 區 29 張 ✅）
 
