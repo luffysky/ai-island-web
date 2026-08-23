@@ -175,7 +175,13 @@
 - **ch79**（9 課、補 7 GAP → 0）：6 scenario-judge（LM 本質=預測下一 token 會幻覺/tokenization token≠字/Attention Q-K-V 與 O(n²)/in-context learning 不永久記/跑第一個 LLM 選尺寸與授權/Prompt Engineering 與 prompt injection）+ 1 decision-quiz（**Prompt vs RAG vs Fine-tune 三層決策**：先便宜的 prompt、知識類用 RAG、行為類才微調 LoRA）。
 - `inject_ch78.py`(+補件 78.15)、`inject_ch79.py` → 兩章 0 GAP、config 全合法。import ch78/ch79 已同步 DB。
 
-**至此主線 ch1-60 + ML 三部曲 ch77/78/79 全數 100% 互動覆蓋。** 下一步（未做）：附錄速查章 ch61-70/68/69 視需要。
+**至此主線 ch1-60 + ML 三部曲 ch77/78/79 全數 100% 互動覆蓋。**
+
+### ch68 附錄 H 高階工程師修煉路徑 100% 互動覆蓋
+
+20 課資深工程「判斷力」章（非速查表）、補 17 個 GAP 課 → 0 GAP：16 scenario-judge（整合/E2E 測試金字塔、可觀測性、效能優化先量測別憑感覺、資安基礎、並發/分散式、資料工程、technical writing、code review、mentoring、跨組溝通、PM 估算、business sense、first principles、healthy skepticism、接受不確定、長期思維/技術債）+ 1 decision-quiz（持續學習：基本功 vs 工作要用 vs 潮但未定先觀望）。`import ch68` 已同步 DB。
+
+> **附錄速查章 ch61-67/69-70 刻意不補教具**：那些是 reference 速查表，往上塞選擇題正是 §4.1.5 明令避免的「塞選擇題充數」——判斷「不該做」也是遵守規格。ch68 補是因為它本質是**判斷力內容**、正好適合判官題。
 
 ---
 
