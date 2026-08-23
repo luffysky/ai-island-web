@@ -4,6 +4,7 @@
 > ＊0804-0805 進度摘要：**語音代理 Phase 1**（§2.8·STT/TTS+client-action+聊天氣泡）；**裝置控制端到端 §2.9 全 7 項**（桌面助手 ai-island-bridge：filesystem/browser/system/android + 打包 + 自適應輪詢 + 緊急停止）；**每日晨報+天氣**（§5.1-5.3·Open-Meteo）；**競品戰略**（§2.10·OpenClaw/NemoClaw + /admin/strategy）；**後台審計+入口修復+側欄獨立捲動**（§7.0）；社群誠實化；辭典前端計畫（§4.2.1.5）；CI 移除 concurrency 免 canceled 紅叉。
 > ＊0820 進度摘要（7 commit）：**全專案待辦大掃描**（5 平行 agent 對照 code 核實、找出真正未完成，見 `daily_works_0820.md §0`）；**辭典 2348→2474**（+126·§4.2.1.5 前端零基礎 88 + 錯誤訊息 11 + 開發者工具 12 + 終端機基礎 15）；**機會島雷達 §3.3.3**（AI 逐欄原文佐證+信心分、寫回 parsed/confidence）；**後台成就管理真 CRUD §7.0.3**；**教具 §4.1.5 ch31/ch32/ch47/ch48 全 100% 覆蓋**（ch31 4 沙盒+11教具、ch32 8 沙盒+6教具、ch47 17 產業判官、ch48 14 vibe 判斷）。全部 tsc/vitest/build 綠、章節 import 進 DB。
 
+> ＊0823 進度摘要（9 commit）：**辭典 2474→2508**（seed 75 React Hooks 深入/TS 進階型別、seed 76 雲端 AWS/GCP）；**機會島雷達 §3.3.1**（api/sitemap 來源，新 `lib/opportunity-radar.ts`+17 測試）**§3.3.2**（三層 hash 變動偵測 ETag→body→逐項）；**教具 §4.1.5 一次 8 章 100% 覆蓋**（非程式大章領域道具：ch13 SEO、ch59 一人公司、ch52 AI設計、ch55 AI行銷、ch43 專案管理、ch44 PdM、ch45 跨職能協作〔PM 家族收官〕、ch60 創業心法，+111 demo）。全部 tsc/vitest(242)/build 綠、migration/辭典/章節皆 import DB。詳見 `daily_works_0823.md`。
 > 本檔＝整合 `docs/todo/` 全部 10 個舊檔（MASTER_TODO / ROADMAP_2026Q3 / 0705new_todotask / todo_list_0713 / 0714 / 0715 / TODO / BACKLOG / BEGINNER_FRIENDLY_BACKLOG / REPORTS_TODO_2026-06-03）後的**唯一現行待辦**。
 > 狀態經 3 組 subagent 逐項對照「程式碼 + git 紀錄」核對過（2026-07-21）。舊檔全部降為**歷史存查**（見文末〈附錄 A：舊檔核對裁決〉），之後只更新本檔。
 > **圖例**：`[ ]` ⬜ 未做 · `[~]` 🚧 部分完成 · `[x]` ✅ 完成（劃線保留） · 🔴 需林董本人操作 · 🆕 新想法 · ＊ 原則/約束。
@@ -369,7 +370,8 @@
     - [x] ~~**ch43 專案管理 100% 互動覆蓋**~~ ✅ 0823——25 課 PM 判斷章，補 17 個 GAP 課(既無沙盒又無 demo 者)、達 0 GAP：15 scenario-judge(Roadmap/站會/Retro-Postmortem 無指責/OKR-KPI/利害關係人/RFC-DesignDoc/開會/文件化/AI PM 工具/遠端跨時區/趨勢/真敏捷vs形式化/知識管理/OKR落地/估時切任務，紅線=瞞壞消息/獵巫找戰犯/AI 直接對外承諾/機敏資料進外部AI) + 2 decision-quiz(PM 工具 Linear/Jira/Notion/Asana 選型、IC 技術路線 vs 管理路線)。import ch43 已同步 DB。
     - [x] ~~**ch44 產品經理 PdM 100% 互動覆蓋**~~ ✅ 0823——25 課 PdM 判斷章，補 17 個 GAP 課、0 GAP：15 scenario-judge(PMF/定價/GTM/Onboarding aha/Retention/客戶訪談問過去行為/競品分析/跨職能協作/Growth Loop/AI時代/績效評估/趨勢/JTBD/RICE信心欄/北極星指標，紅線=無PMF砸廣告/暗黑模式逼分享/跳過工程亂承諾交期/信心欄全填100%) + 2 decision-quiz(B2B vs B2C 打法、工程師轉 PdM 適不適合)。import ch44 已同步 DB。
     - [x] ~~**ch45 跨職能協作 100% 互動覆蓋**~~ ✅ 0823——25 課協作/溝通判斷章，補 18 個 GAP 課、0 GAP：16 scenario-judge(工程×客服/法務/財會/HR/Data/高層/B2B客戶、翻譯技術給非技術、跨文化、2026新型態、Figma DevMode、對PM風險揭露、Code Review 文化、Post-mortem 無指責、On-call/Incident、1-on-1 績效對話，紅線=繞法務上線/隨意存取HR個資/客戶面前內鬨/羞辱式review/獵巫/年度突襲清算) + 2 decision-quiz(跨團隊衝突對齊/降溫/上呈、同步開會 vs 非同步文件)。import ch45 已同步 DB。**PM 家族(ch43/44/45)全數 100%。**
-    - [ ] 下一章（教具續）：非程式大章續鋪領域道具（ch60 創業心法 6 課；其餘小附錄章）；ch26 ML 段等視需要深化。＊ch1-11/13/16/26/7/31/32/43/44/45/47/48/52/55/59 已 100% 互動覆蓋。
+    - [x] ~~**ch60 創業心法/心理 100% 互動覆蓋**~~ ✅ 0823——6 課創業心理章、補 4 個 GAP 課(60.1/60.3/60.4/60.6)、0 GAP：4 scenario-judge(選你的遊戲 Indie≠矽谷、焦慮與自我懷疑、Burnout 與健康、為什麼而做定義自由，紅線=硬套矽谷劇本燒垮小生意/嚴重心理問題硬撐不求助/爆肝換衝刺/手段吃掉目的)。import ch60 已同步 DB。
+    - [ ] 下一章（教具續）：其餘小附錄章(ch51/53/54/56/57/58 各 5-6 課、附錄 61-79)視需要補；ch26 ML 段等視需要深化。＊ch1-11/13/16/26/7/31/32/43/44/45/47/48/52/55/59/60 已 100% 互動覆蓋。
     - **驗證方法定調**：Python 沙盒本地 exec 驗、JS 沙盒 node 驗、教具 schema 驗——每個都確認能跑/合法才掛。
 - [ ] 4.1.4 圖文解說圖：概念/B/D/E/F 區操作圖 110+ 張（🔴 等林董生圖；A 區 29 張 ✅）
 

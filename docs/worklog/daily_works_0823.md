@@ -101,7 +101,13 @@
 - **2 decision-quiz**：跨團隊衝突處理(對齊共同目標 / 降溫 / 帶方案上呈)、同步開會 vs 非同步文件(依事情性質與時區)。
 - `inject_ch45.py` → added 18；node 驗 0 GAP、config 全合法。`import_chapters_to_db.mjs ch45` → 25 課 0 error 同步 DB。
 
-**至此 PM 家族 ch43/44/45 全數 100% 互動覆蓋。** 下一步（未做）：ch60 創業心法(6 課)、其餘小附錄章。
+**至此 PM 家族 ch43/44/45 全數 100% 互動覆蓋。**
+
+### ch60 創業心法 / 心理 100% 互動覆蓋
+
+6 課創業心理章，補 4 個 GAP 課(60.1/60.3/60.4/60.6) → 0 GAP：4 scenario-judge（選你的遊戲 Indie≠矽谷、焦慮與自我懷疑、Burnout 與健康、為什麼而做定義自由）——紅線明標（硬套矽谷劇本燒垮賺錢小生意 / 嚴重心理問題「創業者該硬撐」不求助 / 爆肝換短期衝刺 / 手段吃掉當初要的自由）。`import ch60` 已同步 DB。
+
+下一步（未做）：其餘小章 ch51/53/54/56/57/58（各 5-6 課）、附錄 61-79 視需要補。
 
 ---
 
@@ -109,6 +115,29 @@
 - `npx tsc --noEmit` ✅ 0 錯
 - `npx vitest run` ✅ **34 檔 242 測試全綠**（新增 radar 17 + 既有）
 - `npx next build` ✅（見 commit）
-- migration 已跑 prod、辭典已 import DB、ch13 + ch59 + ch52 + ch55 + ch43 + ch44 + ch45 已 import DB。
+- migration 已跑 prod、辭典已 import DB、ch13 + ch59 + ch52 + ch55 + ch43 + ch44 + ch45 + ch60 已 import DB。
+
+---
+
+## 📦 0823 session 總結（9 commit）
+
+| # | commit | 內容 |
+|---|--------|------|
+| 1 | `b8d6fb03` | 辭典 +34→**2508**（seed 75 React Hooks/TS 型別、seed 76 雲端 AWS/GCP）＋ 機會島雷達 **§3.3.1**(api/sitemap 來源) **§3.3.2**(三層 hash 變動偵測) |
+| 2 | `7cfb4a18` | ch13 SEO+GEO 教具 100%（+23：SEO 判官 20 + 決策 3） |
+| 3 | `673c559d` | ch59 一人公司/Indie 教具 100%（+23） |
+| 4 | `4f73800f` | ch52 AI設計 + ch55 AI行銷 教具 100%（+9） |
+| 5 | `cfb6f816` | ch43 專案管理 教具 100%（+17） |
+| 6 | `42ba45bd` | ch44 產品經理 PdM 教具 100%（+17） |
+| 7 | `39fe708b` | ch45 跨職能協作 教具 100%（+18，PM 家族收官） |
+| 8 | ch60 | 創業心法/心理 教具 100%（+4） |
+| 9 | — | 本總結 |
+
+**教具本 session 新增 8 章 100% 互動覆蓋（+111 demo）**：ch13/59/52/55/43/44/45/60。累計已覆蓋 ch1-11/13/16/26/7/31/32/43/44/45/47/48/52/55/59/60。
+**辭典** 2474→2508。**雷達** 補完 §3.3.1/§3.3.2。
+
+三軌全依鐵規則 tsc/vitest(242)/next build 綠，DB migration/dictionary/chapters 皆 import。
+
+> 仍待林董在線驗/授權（未動）：§7.0.1 SEO 轉址(動 middleware)、§7.6 作業批改、§2.3 social adapter、Coco v1、§6.8 gating。
 
 > 待林董在線才好驗/授權：§7.0.1 SEO 轉址(動 middleware)、§7.6 作業自動批改、§2.3 social adapter、Coco v1、§6.8 付費 gating——本 session 未動。
