@@ -85,7 +85,15 @@
 - **2 decision-quiz**：PM 工具選型(Linear/Jira/Notion/Asana 依團隊型態)、IC 資深技術路線 vs 管理路線(從工程師往上不只當主管一條路)。
 - `inject_ch43.py` → added 17；node 驗 0 互動 GAP、config 全合法。`import_chapters_to_db.mjs ch43` → 25 課 0 error 同步 DB。
 
-下一步（未做）：ch44 PdM / ch45 跨職能協作（各 25 課）、ch60 創業心法。
+### ch44 產品經理 PdM 100% 互動覆蓋
+
+25 課 PdM 判斷章，補 17 個 GAP 課 → 0 互動 GAP：
+
+- **15 scenario-judge**：PMF(無 fit 別砸廣告)、定價(價值錨定)、GTM、Onboarding(最快到 aha 時刻)、Retention(先堵漏再拉新)、客戶訪談(問過去實際行為非假設)、競品分析(找缺口非照抄)、跨職能協作(定 why 交 how)、Growth Loop(別用暗黑模式)、AI 時代、績效評估(看 outcome 非 output)、趨勢、JTBD(要的是牆上的洞非鑽頭)、RICE(信心欄別全填 100%)、北極星指標——紅線明標。
+- **2 decision-quiz**：B2B vs B2C 打法(決策鏈/成長引擎不同)、工程師轉 PdM 適不適合。
+- `inject_ch44.py` + 補件 `inject_ch44b.py`(44.24 RICE 首輪漏掉) → added 17；node 驗 0 GAP、config 全合法。`import_chapters_to_db.mjs ch44` → 25 課 0 error 同步 DB。
+
+下一步（未做）：ch45 跨職能協作（25 課）、ch60 創業心法。
 
 ---
 
@@ -93,6 +101,6 @@
 - `npx tsc --noEmit` ✅ 0 錯
 - `npx vitest run` ✅ **34 檔 242 測試全綠**（新增 radar 17 + 既有）
 - `npx next build` ✅（見 commit）
-- migration 已跑 prod、辭典已 import DB、ch13 + ch59 + ch52 + ch55 + ch43 已 import DB。
+- migration 已跑 prod、辭典已 import DB、ch13 + ch59 + ch52 + ch55 + ch43 + ch44 已 import DB。
 
 > 待林董在線才好驗/授權：§7.0.1 SEO 轉址(動 middleware)、§7.6 作業自動批改、§2.3 social adapter、Coco v1、§6.8 付費 gating——本 session 未動。
