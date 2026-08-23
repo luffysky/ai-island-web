@@ -43,10 +43,25 @@
 
 ---
 
+## C. 教具 §4.1.5 — ch13 SEO + GEO 100% 覆蓋（非程式大章·領域道具首章）
+
+林董「下一步候選」第三軌：**非程式大章鋪領域道具**。挑最大缺口的 SEO 章開刀（ch13 共 25 課、原 0 沙盒、僅 13.9/13.18 各 1 demo）。
+
+- SEO 是純概念/判斷章、幾乎無可跑程式 → 全用 **scenario-judge / decision-quiz** 領域教具（符合「不是塞選擇題充數、要玩了就懂該章判斷」的定調）。
+- 補 **23 個教具**（其餘 2 課本就有）→ 25 課 0 GAP：
+  - **20 個 scenario-judge「SEO 好習慣還是雷」判官**：搜尋引擎運作(robots vs noindex)、搜尋意圖、on-page、technical(canonical/重複網址)、CWV、Schema(假評分紅線)、Pillar/Cluster(內容競食)、內外部連結、outreach、Local(NAP 一致/假據點紅線)、國際(hreflang)、GEO 認知與實作、內容更新(偽造新鮮度紅線)、SEO+UX、AI 時代變化、生產 SOP(批量 AI 文紅線)、心法——每題都標好習慣(ok)/有風險(risk)/違規(no)＋原因，黑帽手法明確標紅線。
+  - **3 個 decision-quiz**：①關鍵字先攻長尾 vs 中量 vs 大詞（依站權重/目標）②工具選型 GSC→GA4→付費（免費優先）③接案月費 retainer vs 專案 vs「保證排第一」紅旗。
+- `python inject_ch13.py`（冪等、依標題去重）→ added 23；node 驗證 25 課 0 GAP、所有 demo config 合法(correct 只用 ok/risk/no、quiz 有 questions+outcomes)。
+- `node scripts/import_chapters_to_db.mjs ch13` → 1 章 25 課 0 error 同步 DB。
+
+下一步（未做）：ch43 專案管理 / ch44 PdM / ch45 跨職能協作 / ch59 一人公司（各 25 課僅 2-3 demo）、ch55 AI 行銷 / ch60 創業心法。
+
+---
+
 ## 驗證（鐵規則）
 - `npx tsc --noEmit` ✅ 0 錯
 - `npx vitest run` ✅ **34 檔 242 測試全綠**（新增 radar 17 + 既有）
 - `npx next build` ✅（見 commit）
-- migration 已跑 prod、辭典已 import DB。
+- migration 已跑 prod、辭典已 import DB、ch13 已 import DB。
 
 > 待林董在線才好驗/授權：§7.0.1 SEO 轉址(動 middleware)、§7.6 作業自動批改、§2.3 social adapter、Coco v1、§6.8 付費 gating——本 session 未動。

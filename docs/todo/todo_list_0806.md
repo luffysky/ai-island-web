@@ -363,7 +363,8 @@
     - [x] ~~**ch32 Go 100% 覆蓋**~~ ✅ 0820——原 10PG+1demo、14 課無互動 → 補 8 個 Go 沙盒(struct/method·指標·interface·goroutine+WaitGroup·channel·select+context·標準庫 strings/time/json·手刻測試) + 6 個概念教具(package/module·net/http·Gin/Fiber/Chi 選型·GORM/sqlx/sqlc·JWT+middleware·部署跨平台編譯)。25 課 0 GAP、18PG+7demo。⚠️ 環境無 go、Go 沙盒為手寫 canonical(未本地 compile 驗、靠 server sandbox 跑)。import ch32 已同步 DB。
     - [x] ~~**ch47 AI應用 100% 覆蓋**~~ ✅ 0820——17 課 GAP 全是「產業 AI 應用目錄」概念課、0 可跑沙盒 → 每課補 scenario-judge「該產業 AI 應用判官」(判斷點子 可行/有風險/別做，含醫療/法律/金融/長照/政府紅線判斷) + 47.22 indie 決策測驗。25 課 0 GAP。
     - [x] ~~**ch48 Vibe Coding 100% 覆蓋**~~ ✅ 0820——14 課 GAP 全是工作流/心態課、0 可跑沙盒 → 補 scenario-judge 判斷課(任務粒度/該不該信 AI 測試/該不該讓 AI 改/用 AI vs 自己寫/AI 輸出紅旗/大重構/心態…) + 48.21 工具選型決策測驗。29 課 0 GAP。
-    - [ ] 下一章（教具續）：非程式大章鋪領域道具；ch26 ML 段等視需要深化。＊ch1-11/16/26/7/31/32/47/48 已 100% 互動覆蓋。
+    - [x] ~~**ch13 SEO + GEO 100% 覆蓋（非程式大章·領域道具首章）**~~ ✅ 0823——25 課 SEO 純概念/判斷章、原 0 沙盒僅 2 demo → 補 23 個領域教具：20 個 scenario-judge「SEO 好習慣還是雷」判官(搜尋引擎運作/意圖/on-page/technical/CWV/Schema/內外連結/outreach/local/國際/GEO/內容更新/UX/AI時代/生產SOP/心法，含黑帽紅線=買連結/keyword stuffing/假評分/假據點) + 3 個 decision-quiz(關鍵字先攻長尾vs大詞、工具選型GSC/GA/付費、接案月費vs專案vs「保證第一」紅旗)。25 課 0 GAP、25demo。import ch13 已同步 DB。
+    - [ ] 下一章（教具續）：非程式大章續鋪領域道具（ch43 專案管理/ch44 PdM/ch45 協作/ch59 一人公司 各 25 課僅 2-3 demo；ch55 AI行銷/ch60 創業心法）；ch26 ML 段等視需要深化。＊ch1-11/13/16/26/7/31/32/47/48 已 100% 互動覆蓋。
     - **驗證方法定調**：Python 沙盒本地 exec 驗、JS 沙盒 node 驗、教具 schema 驗——每個都確認能跑/合法才掛。
 - [ ] 4.1.4 圖文解說圖：概念/B/D/E/F 區操作圖 110+ 張（🔴 等林董生圖；A 區 29 張 ✅）
 
