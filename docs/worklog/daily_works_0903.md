@@ -84,3 +84,22 @@ Nami 明說「最不熟的就是 class」。原內容第一個 code block 直接
 - RWD／桌面：新增的只有一個 `flex items-start` 全寬勾選列（文字自動換行、無固定寬），窄寬螢幕都不溢出
 - PWA：未動
 
+---
+
+## C. 修 CI：GHCR image build 掛在 Playwright 安裝那步（擋住 B 的上線）
+
+B 推上去後 `docker.yml` 的 buildx 失敗：
+```
+process "/bin/sh -c if [ -n \"$INSTALL_SERVER_BROWSER\" ]; then ... npm i playwright@1.58.2 --no-save ..." did not complete successfully: exit code: 1
+```
+
+**根因**：那步在 **`/app`** 裡跑 `npm i`。runner 階段的 `/app/package.json` 是 Next standalone 抄過去的**整包專案** package.json（上百個 deps + devDeps），但 `/app/node_modules` 只有 trace 過的 ~38 個套件 → npm 會想把整棵樹重裝；而 runner 階段**沒有 `.npmrc`**（`legacy-peer-deps` 只在 deps 階段 COPY），tiptap 的 peer 衝突就會 ERESOLVE → exit 1 → 整個 image build 紅掉、Zeabur 拿不到新 image。
+
+**修法**（`Dockerfile`）：
+- 其實 `playwright` / `playwright-core` 的 JS 套件**本來就被 trace 進 image**（`.next/standalone/node_modules/` 裡有），runtime 的 `import("playwright")` 直接可用 —— 缺的只有「瀏覽器二進位 + apt 系統相依」。
+- 改成在 **`/opt/pw`** 開一個獨立的小 package.json 裝 playwright（純粹為了跑它的下載器），**完全不碰 `/app`**；版本用 `node -p require('/app/node_modules/playwright-core/package.json').version` 自動對齊（免得 browsers revision 跟 image 內的 core 對不上）。裝完 `rm -rf /opt/pw /var/lib/apt/lists/* /root/.npm`，只留 `/ms-playwright`。
+- **整段包成 `( … ) || echo`、永不擋部署**：`browser.render`（`src/lib/agent/tools.ts:284`）本來就 graceful（沒瀏覽器就回「請改用 web.research / web.fetch」），選配功能不該讓 image build 變紅。
+- ⚠️ 串接用 **`&&` 而不是 `set -e`**：`set -e` 在 `( … ) || …` 的左側子 shell 內是**無效**的（POSIX：狀態被測試的指令不套用 -e）——本機實測舊寫法失敗後還會繼續往下跑、最後印「安裝完成」假成功。
+
+**驗證**：把該 RUN 的 shell 抽出來（照 Docker 的 `\`+換行併行規則）跑 `sh -n` ✅ 語法過；實跑「未設 ARG」→ 印 skip、exit 0；「設 ARG 但故意失敗」→ 印 WARN、exit 0（不會擋 build）。下次 build 看 log 的 `[server-browser]` 那幾行就知道 Chromium 有沒有真的裝起來。
+
