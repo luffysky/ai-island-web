@@ -48,11 +48,16 @@ export function BackgroundPicker({ initial }: { initial: BackgroundSpec }) {
     return "天氣";
   });
   const [saving, setSaving] = useState(false);
+  // 「只要粒子」：不鋪場景自帶的深色底，只把粒子疊在主題底色上（預設開，見 BackgroundSpec）。
+  const [particlesOnly, setParticlesOnly] = useState(initial?.particlesOnly !== false);
 
   const previewScene = useMemo(
     () => (selected?.type === "procedural" ? sceneById(selected.proceduralId) : null),
     [selected]
   );
+  // 靜態場景只有底色、沒粒子 → 這個開關對它無效（一律鋪底色）。
+  const particlesOnlyApplies = previewScene?.kind === "dynamic";
+  const showBase = !(particlesOnlyApplies && particlesOnly);
 
   async function apply() {
     if (saving) return;
@@ -62,7 +67,9 @@ export function BackgroundPicker({ initial }: { initial: BackgroundSpec }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(selected ?? { spec: null }),
+        body: JSON.stringify(
+          selected?.type === "procedural" ? { ...selected, particlesOnly } : (selected ?? { spec: null })
+        ),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -89,9 +96,17 @@ export function BackgroundPicker({ initial }: { initial: BackgroundSpec }) {
       </header>
 
       {/* 目前選取的大預覽 */}
-      <div className="relative w-full h-48 sm:h-60 rounded-card overflow-hidden border border-border mb-6 bg-bg-elevated">
+      <div
+        className={`relative w-full h-48 sm:h-60 rounded-card overflow-hidden border border-border mb-6 ${
+          showBase ? "bg-bg-elevated" : "bg-bg"
+        }`}
+      >
         {selected?.type === "procedural" && previewScene ? (
-          <ProceduralScene scene={previewScene} density={selected.density ?? 1} />
+          <ProceduralScene
+            scene={previewScene}
+            density={selected.density ?? 1}
+            showBase={showBase}
+          />
         ) : selected?.type === "gradient" && selected.gradientCss ? (
           <div className="absolute inset-0" style={{ background: selected.gradientCss }} />
         ) : (
@@ -130,6 +145,24 @@ export function BackgroundPicker({ initial }: { initial: BackgroundSpec }) {
           無背景
         </button>
       </div>
+
+      {/* 只要粒子 開關（只對動態場景有效） */}
+      {previewScene?.kind === "dynamic" && (
+        <label className="flex items-start gap-3 mb-6 p-3 rounded-card border border-border bg-bg-card cursor-pointer">
+          <input
+            type="checkbox"
+            checked={particlesOnly}
+            onChange={(e) => setParticlesOnly(e.target.checked)}
+            className="mt-0.5 size-4 accent-accent shrink-0"
+          />
+          <span className="text-sm">
+            <span className="font-semibold">只要粒子（保留平台底色）</span>
+            <span className="block text-xs text-fg-muted mt-0.5">
+              只留飄動的粒子，底色沿用你的主題色，不會整站變深色。取消勾選才會鋪上場景自帶的深色底。
+            </span>
+          </span>
+        </label>
+      )}
 
       {/* 分類頁籤 */}
       <div className="flex flex-wrap gap-2 mb-4">
@@ -184,6 +217,7 @@ export function BackgroundPicker({ initial }: { initial: BackgroundSpec }) {
                   active ? "border-accent ring-2 ring-accent/40" : "border-border hover:border-border-hover"
                 }`}
               >
+                {/* 縮圖固定用場景底色當「識別色」（只要粒子模式下實際不會鋪這個底） */}
                 <div className="h-20 w-full" style={{ background: sc.base }} />
                 <div className="px-2 py-1.5 text-xs bg-bg-card text-fg flex items-center justify-between gap-1">
                   <span className="truncate">{sc.label}</span>

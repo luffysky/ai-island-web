@@ -58,3 +58,29 @@ Nami 明說「最不熟的就是 class」。原內容第一個 code block 直接
 - `npx next build` ✅
 - RWD：純內容改動；新增的表格都是 2~3 欄，`LessonCard.tsx:187` 的 `table` 已包 `overflow-x-auto`，code block 走既有 `CodeBlock`；表格管線數逐行核對一致（無破格）
 - API/DB 欄位、PWA：未動
+
+---
+
+## B. 動態背景「只要粒子」模式（Nami 回饋 `bug/bugpic/257.jpg`）
+
+回饋：**「設定動態背景平台會變成黑色」「幫我把動態粒子元素單獨提出來、背景變不透明」**。
+
+**原因**：每個場景（`SCENES`）自帶一個 `base` 深色漸層（`DARK`/`NIGHT`/`CITY_*`…），`ProceduralScene` 把它鋪在整個固定背景層上；套用時 `html[data-bg-active] body { background-color: transparent }` 讓 body 透明 → **全站看到的底色變成場景的深色漸層**，主題色被蓋掉（亮色主題也整站變黑）。
+
+**做法**：把「粒子」和「場景底色」拆開，只留粒子疊在 `<html>` 原本的不透明主題底色（`--color-bg`）上。
+- `BackgroundSpec` 新增 `particlesOnly?: boolean`（`scenes.ts`）——**預設 true**（省略即「只要粒子」，舊 cookie/DB 也直接受惠、不用重新套用）；設 `false` 才回到舊行為（鋪場景深色底）。
+- `ProceduralScene` 新增 `showBase` prop（預設 true）；`false` 時容器 `background: transparent`、只畫 canvas 粒子。
+- **亮色模式粒子可見度**：沒有深色底時白雪/白星在淺色底上等於看不見 → 新增 `adaptColor()`，只要粒子 + `html[data-mode="light"]` 時把亮度 > 0.6 的粒子壓到約 0.34 亮度（**保留色相**，深色粒子與暗色模式原樣）。用 `Map` 快取、並掛 `MutationObserver` 監聽 `data-mode` 切換即時重算。`drawShape()` 改吃現成的 `col` 字串。
+- `BackgroundLayer`：`particlesOnly = scene.kind === 'dynamic' && spec.particlesOnly !== false`（**靜態場景只有底色沒粒子 → 一律照鋪**）；只要粒子時也跳過 `overlayColor` 遮罩（否則會染整頁）。
+- `/background` 選擇器：加「**只要粒子（保留平台底色）**」勾選框（只在選到動態場景時出現、預設勾），大預覽框跟著切 `bg-bg`／`bg-bg-elevated` 即時看效果；套用時把旗標一起送出。場景縮圖仍用 `sc.base` 當識別色。
+- `/api/background/apply`：白名單加 `particlesOnly`（存 `profiles.active_background` + `ai_bg` cookie）。
+
+## 驗證（鐵規則）
+- `npx tsc --noEmit` ✅ 0 錯
+- `npx vitest run` ✅ 34 檔 242 測試全綠
+- `npx next build` ✅
+- API/DB：**無 migration**（`particlesOnly` 存在既有 `profiles.active_background` jsonb 內）；API ↔ 前端欄位名一致
+- UI 有接對：勾選框 → `apply()` body → API 白名單 → cookie/DB → `BackgroundLayer` 的 `showBase`（全鏈路通）
+- RWD／桌面：新增的只有一個 `flex items-start` 全寬勾選列（文字自動換行、無固定寬），窄寬螢幕都不溢出
+- PWA：未動
+

@@ -7,7 +7,8 @@ import type { SceneDef, SceneShape } from "@/lib/background/scenes";
  * 內建動態場景（雪/雨/櫻花…）。canvas 粒子系統，資料驅動（見 lib/background/scenes）。
  * 從 SnowRealmSpace 的 ProceduralScene 逐字移植，改為接 `scene` 物件（而非 sceneId）。
  *
- * base 漸層當底色，粒子疊在上面。
+ * base 漸層當底色，粒子疊在上面；`showBase=false`（「只要粒子」模式）則不畫底色，
+ * 讓粒子直接疊在頁面既有的不透明底色上（亮色模式會自動把太亮的粒子壓暗才看得見）。
  * 無障礙/效能：reduced-motion 或省流量 → 只顯示靜態底、不跑動畫；
  * 分頁不可見 → 暫停 rAF 內的繪製。
  */
@@ -27,8 +28,7 @@ type Particle = {
 
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
-function drawShape(c: CanvasRenderingContext2D, shape: SceneShape, p: Particle) {
-  const col = `rgba(${p.color},${p.a})`;
+function drawShape(c: CanvasRenderingContext2D, shape: SceneShape, p: Particle, col: string) {
   if (shape === "streak") {
     c.strokeStyle = col;
     c.lineWidth = 1;
@@ -107,18 +107,38 @@ function drawShape(c: CanvasRenderingContext2D, shape: SceneShape, p: Particle) 
   c.fill();
 }
 
+/**
+ * 「只要粒子」+ 亮色模式時，把接近白色的粒子壓暗（保留色相）——不然白雪/白星
+ * 疊在淺色底上等於看不見。深色粒子與暗色模式一律原樣。
+ */
+function adaptColor(rgb: string, darken: boolean): string {
+  if (!darken) return rgb;
+  const parts = rgb.split(",").map((n) => Number(n.trim()));
+  if (parts.length !== 3 || parts.some((n) => !Number.isFinite(n))) return rgb;
+  const [r, g, b] = parts as [number, number, number];
+  const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+  if (lum <= 0.6) return rgb;
+  const k = 0.34 / lum; // 壓到約 0.34 亮度
+  return [r, g, b].map((n) => Math.round(Math.max(0, Math.min(255, n * k)))).join(",");
+}
+
 export function ProceduralScene({
   scene,
   density = 1,
   className,
+  showBase = true,
 }: {
   scene: SceneDef | null;
   density?: number;
   className?: string;
+  /** false = 只要粒子（不畫 scene.base 底色）。靜態場景請維持 true。 */
+  showBase?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const densityRef = useRef(density);
   densityRef.current = density;
+  const showBaseRef = useRef(showBase);
+  showBaseRef.current = showBase;
 
   useEffect(() => {
     if (!scene || scene.kind !== "dynamic") return;
@@ -237,6 +257,32 @@ export function ProceduralScene({
       if (p.x > w + 14) p.x = -10;
     }
 
+    // 沒有底色時，粒子要看得見 → 亮色模式壓暗（快取避免每格重算字串）。
+    let colorCache = new Map<string, string>();
+    let darken = false;
+    function syncDarken() {
+      const light = document.documentElement.getAttribute("data-mode") === "light";
+      const next = light && !showBaseRef.current;
+      if (next !== darken) {
+        darken = next;
+        colorCache = new Map();
+      }
+    }
+    function colorOf(p: Particle) {
+      let base = colorCache.get(p.color);
+      if (base === undefined) {
+        base = adaptColor(p.color, darken);
+        colorCache.set(p.color, base);
+      }
+      return `rgba(${base},${p.a})`;
+    }
+    syncDarken();
+    const modeObserver = new MutationObserver(syncDarken);
+    modeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-mode"],
+    });
+
     let raf = 0;
     let last = performance.now();
     function frame(now: number) {
@@ -246,7 +292,7 @@ export function ProceduralScene({
         ctx!.clearRect(0, 0, w, h);
         for (const p of particles) {
           step(p, k);
-          drawShape(ctx!, shape, p);
+          drawShape(ctx!, shape, p, colorOf(p));
         }
       }
       raf = requestAnimationFrame(frame);
@@ -257,15 +303,21 @@ export function ProceduralScene({
     window.addEventListener("resize", resize);
     return () => {
       cancelAnimationFrame(raf);
+      modeObserver.disconnect();
       window.removeEventListener("resize", resize);
     };
-  }, [scene]);
+  }, [scene, showBase]);
 
   if (!scene) return null;
   return (
     <div
       className={className}
-      style={{ position: "absolute", inset: 0, background: scene.base, pointerEvents: "none" }}
+      style={{
+        position: "absolute",
+        inset: 0,
+        background: showBase ? scene.base : "transparent",
+        pointerEvents: "none",
+      }}
       aria-hidden="true"
     >
       {scene.kind === "dynamic" && (

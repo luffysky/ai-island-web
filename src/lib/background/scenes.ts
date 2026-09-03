@@ -55,9 +55,16 @@ export type BackgroundSpec = {
   proceduralId?: string; // → SCENES id
   gradientCss?: string; // type:'gradient' 的完整 CSS background 值
   density?: number; // 粒子密度倍率（預設 1）
-  overlayColor?: string; // 背景上方可選的遮罩色
+  overlayColor?: string; // 背景上方可選的遮罩色（只在畫場景底色時才套）
   overlayOpacity?: number; // 0..1
   tone?: "light" | "dark"; // 提示（v1 可選）
+  /**
+   * 「只要粒子」模式（預設 true）：不畫場景自帶的深色底漸層，只把粒子疊在
+   * 平台主題原本的不透明底色（--color-bg）上 → 套背景不會整站變黑。
+   * 設 false 才會回到舊行為（場景底色鋪滿全站）。
+   * 靜態場景（kind='static'，本身只有底色沒粒子）不受此旗標影響。
+   */
+  particlesOnly?: boolean;
 } | null;
 
 // 幾組常用底色（動態背景用）

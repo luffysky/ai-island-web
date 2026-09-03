@@ -9,6 +9,10 @@ import { sceneById, type BackgroundSpec } from "@/lib/background/scenes";
  * 墊在所有頁面內容的最底層。卡片自帶不透明 bg-bg-card → 內容照樣可讀；只有頁面
  * 間隙 / 卡片之間會透出背景（需要 globals.css 的 html[data-bg-active] body 透明規則）。
  *
+ * 動態場景預設是「只要粒子」（spec.particlesOnly !== false）：不畫場景自帶的深色底，
+ * 只留粒子疊在 <html> 的主題底色（--color-bg）上 → 套背景不會整站變黑。
+ * 靜態場景（kind='static'，只有底色沒粒子）一律照畫底色。
+ *
  * 即時更新：監聽 window 的 "ai-bg-change"（detail = BackgroundSpec），選擇器套用時
  * 不用 reload 即可換背景。掛載時也重讀一次 ai_bg cookie（可能比 SSR 傳來的 initial 新）。
  */
@@ -61,6 +65,10 @@ export function BackgroundLayer({ initial }: { initial: BackgroundSpec }) {
 
   if (!spec) return null;
 
+  const scene = spec.type === "procedural" ? sceneById(spec.proceduralId) : null;
+  // 只要粒子：動態場景 + 沒明確關掉旗標。靜態場景沒有粒子、底色就是全部。
+  const particlesOnly = scene?.kind === "dynamic" && spec.particlesOnly !== false;
+
   return (
     <div
       aria-hidden="true"
@@ -73,12 +81,13 @@ export function BackgroundLayer({ initial }: { initial: BackgroundSpec }) {
       }}
     >
       {spec.type === "procedural" ? (
-        <ProceduralScene scene={sceneById(spec.proceduralId)} density={spec.density ?? 1} />
+        <ProceduralScene scene={scene} density={spec.density ?? 1} showBase={!particlesOnly} />
       ) : spec.type === "gradient" && spec.gradientCss ? (
         <div style={{ position: "absolute", inset: 0, background: spec.gradientCss }} />
       ) : null}
 
-      {spec.overlayColor && (
+      {/* 遮罩只在有畫底色時才有意義；只要粒子模式會把整個頁面染色 → 跳過。 */}
+      {spec.overlayColor && !particlesOnly && (
         <div
           style={{
             position: "absolute",

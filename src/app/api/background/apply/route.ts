@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
       ...(raw.overlayColor ? { overlayColor: raw.overlayColor } : {}),
       ...(typeof raw.overlayOpacity === "number" ? { overlayOpacity: raw.overlayOpacity } : {}),
       ...(raw.tone ? { tone: raw.tone } : {}),
+      ...(typeof raw.particlesOnly === "boolean" ? { particlesOnly: raw.particlesOnly } : {}),
     };
   }
 
