@@ -103,3 +103,7 @@ process "/bin/sh -c if [ -n \"$INSTALL_SERVER_BROWSER\" ]; then ... npm i playwr
 
 **驗證**：把該 RUN 的 shell 抽出來（照 Docker 的 `\`+換行併行規則）跑 `sh -n` ✅ 語法過；實跑「未設 ARG」→ 印 skip、exit 0；「設 ARG 但故意失敗」→ 印 WARN、exit 0（不會擋 build）。下次 build 看 log 的 `[server-browser]` 那幾行就知道 Chromium 有沒有真的裝起來。
 
+**追加**：「只要粒子」勾選框原本只在「已選到動態場景」時才 render → 開頁面是「無背景」的人（＝一般情況）根本看不到它、也就不知道有這個開關。改成**一律顯示**，沒選到動態場景時 `disabled` + `opacity-60` 並換成引導文案（「先挑一個標『動態』的場景」）。
+
+**注意**：線上 `/api/version` 顯示 commit `d435439`、`builtAt 2026-08-23` → **8/23 之後所有 commit 都沒真的部署過**（Playwright 那步每次都讓 image build 掛掉）。C 修好之前的東西全部積在 git 沒上線。
+

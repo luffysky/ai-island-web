@@ -146,23 +146,28 @@ export function BackgroundPicker({ initial }: { initial: BackgroundSpec }) {
         </button>
       </div>
 
-      {/* 只要粒子 開關（只對動態場景有效） */}
-      {previewScene?.kind === "dynamic" && (
-        <label className="flex items-start gap-3 mb-6 p-3 rounded-card border border-border bg-bg-card cursor-pointer">
-          <input
-            type="checkbox"
-            checked={particlesOnly}
-            onChange={(e) => setParticlesOnly(e.target.checked)}
-            className="mt-0.5 size-4 accent-accent shrink-0"
-          />
-          <span className="text-sm">
-            <span className="font-semibold">只要粒子（保留平台底色）</span>
-            <span className="block text-xs text-fg-muted mt-0.5">
-              只留飄動的粒子，底色沿用你的主題色，不會整站變深色。取消勾選才會鋪上場景自帶的深色底。
-            </span>
+      {/* 只要粒子 開關：一律顯示（沒選到動態場景時變灰），不然使用者根本找不到它。 */}
+      <label
+        className={`flex items-start gap-3 mb-6 p-3 rounded-card border border-border bg-bg-card ${
+          particlesOnlyApplies ? "cursor-pointer" : "opacity-60 cursor-not-allowed"
+        }`}
+      >
+        <input
+          type="checkbox"
+          checked={particlesOnly}
+          disabled={!particlesOnlyApplies}
+          onChange={(e) => setParticlesOnly(e.target.checked)}
+          className="mt-0.5 size-4 accent-accent shrink-0"
+        />
+        <span className="text-sm">
+          <span className="font-semibold">只要粒子（保留平台底色）</span>
+          <span className="block text-xs text-fg-muted mt-0.5">
+            {particlesOnlyApplies
+              ? "只留飄動的粒子，底色沿用你的主題色，不會整站變深色。取消勾選才會鋪上場景自帶的深色底。"
+              : "先在下面挑一個標「動態」的場景，這個選項才會生效（漸層 / 靜態場景本身就只有底色、沒有粒子）。"}
           </span>
-        </label>
-      )}
+        </span>
+      </label>
 
       {/* 分類頁籤 */}
       <div className="flex flex-wrap gap-2 mb-4">
