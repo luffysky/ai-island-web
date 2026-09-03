@@ -2,14 +2,14 @@
 
 import { useEffect, useRef } from "react";
 import type { SceneDef, SceneShape } from "@/lib/background/scenes";
-import { adaptColor, luminanceOf } from "@/lib/background/particle-color";
+import { luminanceOf, particleInk, type ParticleInk } from "@/lib/background/particle-color";
 
 /**
  * 內建動態場景（雪/雨/櫻花…）。canvas 粒子系統，資料驅動（見 lib/background/scenes）。
  * 從 SnowRealmSpace 的 ProceduralScene 逐字移植，改為接 `scene` 物件（而非 sceneId）。
  *
  * base 漸層當底色，粒子疊在上面；`showBase=false`（「只要粒子」模式）則不畫底色，
- * 讓粒子直接疊在頁面既有的不透明底色上（亮色模式會自動把太亮的粒子壓暗才看得見）。
+ * 讓粒子直接疊在頁面既有的不透明底色上（粒子原色不變，跟底色太接近時自動加一層暈）。
  * 無障礙/效能：reduced-motion 或省流量 → 只顯示靜態底、不跑動畫；
  * 分頁不可見 → 暫停 rAF 內的繪製。
  */
@@ -29,21 +29,32 @@ type Particle = {
 
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
-function drawShape(c: CanvasRenderingContext2D, shape: SceneShape, p: Particle, col: string) {
+/**
+ * 畫一顆粒子。`r`/`lw` 分開帶進來是為了「暈」——同一個形狀先用放大/加粗的低透明度
+ * 對比色畫一次墊底，再用原色畫本體（見 inkOf）。粒子原色永遠不改。
+ */
+function drawShape(
+  c: CanvasRenderingContext2D,
+  shape: SceneShape,
+  p: Particle,
+  col: string,
+  r: number,
+  lw: number,
+) {
   if (shape === "streak") {
     c.strokeStyle = col;
-    c.lineWidth = 1;
+    c.lineWidth = lw;
     c.beginPath();
     c.moveTo(p.x, p.y);
-    c.lineTo(p.x - 1.5, p.y + p.r);
+    c.lineTo(p.x - 1.5, p.y + r);
     c.stroke();
     return;
   }
   if (shape === "ring") {
     c.strokeStyle = col;
-    c.lineWidth = 1;
+    c.lineWidth = lw;
     c.beginPath();
-    c.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    c.arc(p.x, p.y, r, 0, Math.PI * 2);
     c.stroke();
     return;
   }
@@ -53,7 +64,7 @@ function drawShape(c: CanvasRenderingContext2D, shape: SceneShape, p: Particle, 
     c.rotate(p.rot);
     c.fillStyle = col;
     c.beginPath();
-    c.ellipse(0, 0, p.r, p.r * 0.52, 0, 0, Math.PI * 2);
+    c.ellipse(0, 0, r, r * 0.52, 0, 0, Math.PI * 2);
     c.fill();
     c.restore();
     return;
@@ -63,7 +74,7 @@ function drawShape(c: CanvasRenderingContext2D, shape: SceneShape, p: Particle, 
     c.translate(p.x, p.y);
     c.rotate(p.rot);
     c.fillStyle = col;
-    c.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * 1.4);
+    c.fillRect(-r / 2, -r / 2, r, r * 1.4);
     c.restore();
     return;
   }
@@ -71,7 +82,7 @@ function drawShape(c: CanvasRenderingContext2D, shape: SceneShape, p: Particle, 
     c.save();
     c.translate(p.x, p.y);
     c.rotate(p.rot * 0.3);
-    c.scale(p.r / 10, p.r / 10);
+    c.scale(r / 10, r / 10);
     c.fillStyle = col;
     c.beginPath();
     c.moveTo(0, 3);
@@ -90,11 +101,11 @@ function drawShape(c: CanvasRenderingContext2D, shape: SceneShape, p: Particle, 
     c.beginPath();
     for (let i = 0; i < 5; i++) {
       const ang = (Math.PI / 2) * -1 + (i * 2 * Math.PI) / 5;
-      const ox = Math.cos(ang) * p.r;
-      const oy = Math.sin(ang) * p.r;
+      const ox = Math.cos(ang) * r;
+      const oy = Math.sin(ang) * r;
       i === 0 ? c.moveTo(ox, oy) : c.lineTo(ox, oy);
       const ia = ang + Math.PI / 5;
-      c.lineTo(Math.cos(ia) * p.r * 0.45, Math.sin(ia) * p.r * 0.45);
+      c.lineTo(Math.cos(ia) * r * 0.45, Math.sin(ia) * r * 0.45);
     }
     c.closePath();
     c.fill();
@@ -104,9 +115,23 @@ function drawShape(c: CanvasRenderingContext2D, shape: SceneShape, p: Particle, 
   // circle
   c.fillStyle = col;
   c.beginPath();
-  c.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+  c.arc(p.x, p.y, r, 0, Math.PI * 2);
   c.fill();
 }
+
+/** 描邊型的形狀（雨絲/氣泡）：暈是「加粗」、不是「放大」。 */
+const STROKED: ReadonlySet<SceneShape> = new Set<SceneShape>(["streak", "ring"]);
+
+/**
+ * 暈＝三層由外而內、越來越濃的同形狀描摹 [額外半徑倍率, alpha 倍率]。
+ * 用三層淡的疊出柔邊（單層濃的會變成一圈難看的「甜甜圈」），
+ * 而且比 canvas shadowBlur 便宜很多、也不會把冰晶/花瓣糊成一團。
+ */
+const HALO_RINGS: readonly (readonly [number, number])[] = [
+  [1, 0.1],
+  [0.62, 0.13],
+  [0.3, 0.17],
+];
 
 /**
  * 往上找第一個「真的有畫底色」的祖先，回傳它的亮度。
@@ -262,24 +287,24 @@ export function ProceduralScene({
       if (p.x > w + 14) p.x = -10;
     }
 
-    // 沒有底色時，粒子要跟「實際底色」有對比（快取避免每格重算字串）。
-    // 底色會被主題（/theme-studio）換掉 → 監聽 <html> 與父層的 style/data-* 重算。
-    let colorCache = new Map<string, string>();
+    // 沒有底色時，粒子要跟「實際底色」有對比 —— 但**不改粒子本身的顏色**（雪還是白的），
+    // 對比不夠就在後面墊一層暈。底色會被主題（/theme-studio）換掉 → 監聽 <html> 與父層重算。
+    let inkCache = new Map<string, ParticleInk>();
     let bgLum: number | null = null;
     function syncBgLum() {
       const next = showBaseRef.current ? null : ancestorBgLuminance(parent ?? null);
       if (next !== bgLum) {
         bgLum = next;
-        colorCache = new Map();
+        inkCache = new Map();
       }
     }
-    function colorOf(p: Particle) {
-      let base = colorCache.get(p.color);
-      if (base === undefined) {
-        base = adaptColor(p.color, bgLum);
-        colorCache.set(p.color, base);
+    function inkOf(p: Particle) {
+      let ink = inkCache.get(p.color);
+      if (ink === undefined) {
+        ink = particleInk(p.color, bgLum);
+        inkCache.set(p.color, ink);
       }
-      return `rgba(${base},${p.a})`;
+      return ink;
     }
     syncBgLum();
     const themeAttrs = ["style", "class", "data-mode", "data-palette", "data-theme"];
@@ -300,9 +325,20 @@ export function ProceduralScene({
       last = now;
       if (document.visibilityState === "visible") {
         ctx!.clearRect(0, 0, w, h);
+        const stroked = STROKED.has(shape);
+        // 粒子多的時候少畫一層暈（省 canvas 呼叫，外圈本來就最淡、拿掉幾乎看不出來）。
+        const rings = particles.length > 350 ? HALO_RINGS.slice(1) : HALO_RINGS;
         for (const p of particles) {
           step(p, k);
-          drawShape(ctx!, shape, p, colorOf(p));
+          const ink = inkOf(p);
+          if (ink.halo) {
+            for (const [grow, ha] of rings) {
+              const col = `rgba(${ink.halo},${p.a * ha})`;
+              if (stroked) drawShape(ctx!, shape, p, col, p.r, 1 + grow * 2.4);
+              else drawShape(ctx!, shape, p, col, p.r + Math.max(0.8, p.r * grow), 1);
+            }
+          }
+          drawShape(ctx!, shape, p, `rgba(${ink.fill},${p.a})`, p.r, 1);
         }
       }
       raf = requestAnimationFrame(frame);

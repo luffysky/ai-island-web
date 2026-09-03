@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { adaptColor, luminanceOf } from "@/lib/background/particle-color";
+import { particleInk, luminanceOf } from "@/lib/background/particle-color";
 import { isParticlesOnly, sceneById, SCENES } from "@/lib/background/scenes";
 
 const lum = (rgb: string) => luminanceOf(rgb)!;
@@ -18,39 +18,43 @@ describe("luminanceOf", () => {
   });
 });
 
-describe("adaptColor — 粒子要跟主題底色有對比", () => {
-  it("底色亮度不明（null）→ 原樣不動", () => {
-    expect(adaptColor("255,255,255", null)).toBe("255,255,255");
+describe("particleInk — 粒子原色不動，看不清楚才加暈", () => {
+  it("底色亮度不明（null）→ 原色、不加暈", () => {
+    expect(particleInk("255,255,255", null)).toEqual({ fill: "255,255,255", halo: null });
   });
 
-  it("深色主題 + 亮粒子 → 原樣（本來就看得見）", () => {
-    expect(adaptColor("255,255,255", 0.08)).toBe("255,255,255");
+  it("深色主題 + 白雪 → 原色、不用加暈（本來就看得見）", () => {
+    expect(particleInk("255,255,255", 0.08)).toEqual({ fill: "255,255,255", halo: null });
   });
 
-  it("淺色主題 + 白粒子 → 壓暗到看得見", () => {
-    const out = adaptColor("255,255,255", 0.92);
-    expect(out).not.toBe("255,255,255");
-    expect(lum(out)).toBeLessThan(0.45);
+  it("淺色主題 + 白雪 → 雪還是白的（不再被壓成灰點），改用深色暈托出來", () => {
+    const ink = particleInk("255,255,255", 0.92);
+    expect(ink.fill).toBe("255,255,255");
+    expect(ink.halo).not.toBeNull();
+    expect(lum(ink.halo!)).toBeLessThan(0.2);
   });
 
-  it("壓暗會保留色相（櫻花粉還是粉的，不會變灰）", () => {
-    const [r, g, b] = adaptColor("255,183,197", 0.92).split(",").map(Number);
+  it("淺色主題 + 櫻花粉 → 粉色不動，暈保留色相（不會變灰）", () => {
+    const ink = particleInk("255,183,197", 0.92);
+    expect(ink.fill).toBe("255,183,197");
+    const [r, g, b] = ink.halo!.split(",").map(Number);
     expect(r).toBeGreaterThan(g!);
     expect(b!).toBeGreaterThan(g!);
   });
 
-  it("深色主題 + 幾乎全黑的粒子 → 提亮", () => {
-    const out = adaptColor("10,10,12", 0.05);
-    expect(lum(out)).toBeGreaterThan(0.4);
+  it("深色主題 + 幾乎全黑的粒子 → 加亮色暈", () => {
+    const ink = particleInk("10,10,12", 0.05);
+    expect(ink.fill).toBe("10,10,12");
+    expect(lum(ink.halo!)).toBeGreaterThan(0.8);
   });
 
-  it("已經有對比的組合不亂動（淺底 + 深粒子）", () => {
-    expect(adaptColor("30,30,30", 0.9)).toBe("30,30,30");
+  it("已經有對比的組合不加暈（淺底 + 深粒子）", () => {
+    expect(particleInk("30,30,30", 0.9).halo).toBeNull();
   });
 
   it("壞掉的顏色字串原樣回傳、不會炸", () => {
-    expect(adaptColor("nope", 0.9)).toBe("nope");
-    expect(adaptColor("1,2", 0.9)).toBe("1,2");
+    expect(particleInk("nope", 0.9)).toEqual({ fill: "nope", halo: null });
+    expect(particleInk("1,2", 0.9)).toEqual({ fill: "1,2", halo: null });
   });
 });
 
