@@ -21,6 +21,28 @@ export function currentMode(): "light" | "dark" {
     : "dark";
 }
 
+/** ThemeToggle 存亮/暗/跟系統的 localStorage key（模式的真相來源之一）。 */
+export const SITE_MODE_STORAGE_KEY = "ai_island_theme";
+
+/**
+ * 切換整個站台的亮/暗模式。三個地方都要寫、少一個就會被別人蓋回去：
+ *   1. `<html data-mode>` —— CSS 立刻生效
+ *   2. `ai_mode` cookie  —— SSR 首屏不閃（layout 讀它）
+ *   3. localStorage      —— ThemeToggle 掛載時會照這個重套一次
+ */
+export function setSiteMode(mode: "light" | "dark", opts?: { store?: boolean }): void {
+  if (typeof document === "undefined") return;
+  document.documentElement.setAttribute("data-mode", mode);
+  document.cookie = `ai_mode=${mode}; path=/; max-age=31536000; samesite=lax`;
+  // ThemeToggle 的 localStorage 是三段（dark/light/system）、由它自己寫 → store:false。
+  if (opts?.store === false) return;
+  try {
+    localStorage.setItem(SITE_MODE_STORAGE_KEY, mode);
+  } catch {
+    /* 隱私模式 / 關 storage：cookie + data-mode 就夠了 */
+  }
+}
+
 /** 把 CSS 變數 map 串成 cssText（保留既有 style.cssText 以外的值不需要——這裡是整批覆寫）。 */
 function varsToCssText(vars: Record<string, string>): string {
   return Object.entries(vars)

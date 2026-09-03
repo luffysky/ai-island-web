@@ -126,3 +126,19 @@ process "/bin/sh -c if [ -n \"$INSTALL_SERVER_BROWSER\" ]; then ... npm i playwr
 - API/DB：未動（`particlesOnly` 仍走既有 `profiles.active_background` jsonb）
 - RWD／桌面：新增的都是全寬 `<p>` 說明列與預覽框內的 canvas（`overflow-hidden` 不外溢）
 
+---
+
+## E. 修：Theme Studio 的「淺色/深色」預覽跟套用結果對不上（Nami 回饋）
+
+**現象**：在右側預覽切成深色、按套用之後，站台還是原本的亮暗。
+
+**原因**：預覽的亮暗（`previewMode`）只餵給 `applyThemeToPreview()`，而三個套用路徑（`saveAndApply` / `applySaved` / `previewOnSite`）全都用 `currentMode()`＝**站台當下的 `data-mode`**，等於直接無視你剛剛切的預覽。只有掛載時同步過一次（`setPreviewMode(currentMode())`），之後就各走各的。
+
+**修法**：
+- `src/lib/theme/apply.ts` 新增 **`setSiteMode(mode, { store })`** —— 亮暗要同時寫三個地方才不會被彼此蓋回去：`<html data-mode>`（CSS 立刻生效）、`ai_mode` cookie（SSR 首屏不閃）、localStorage（ThemeToggle 掛載會照這個重套）。也 export `SITE_MODE_STORAGE_KEY`。
+- `ThemeToggle` 改用同一個 `setSiteMode(effective, { store: false })`（它的 localStorage 是三段 dark/light/**system**、要自己寫，所以 `store:false`）→ 兩邊共用一份邏輯、不會再漂移。
+- Theme Studio 三個套用路徑一律改吃 `previewMode`：`setSiteMode(previewMode)` + `applyThemeToDom(def, previewMode)`，訊息也標明「（深色）」。
+- UI 講清楚：亮暗切換鈕加 `title`、預覽下方加一行「上面的『深色』就是套用後站台會切成的模式」。
+
+**驗證**：`npx tsc --noEmit` ✅、`npx vitest run` ✅ 256 測試、`npx next build` ✅。
+

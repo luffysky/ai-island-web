@@ -20,6 +20,7 @@ import {
 import {
   applyThemeToDom,
   applyThemeToPreview,
+  setSiteMode,
   currentMode,
 } from "@/lib/theme/apply";
 import { loadThemeFonts, type FontCatalog, type FontCatalogEntry } from "@/lib/theme/font-loader";
@@ -188,9 +189,10 @@ export function ThemeStudioClient({ initialThemes, initialActiveDefinition }: Pr
     }
   }
 
-  // 只在本頁面套用到全站（不存 DB）
+  // 只在本頁面套用到全站（不存 DB）；亮暗一樣照右側預覽的那個
   function previewOnSite() {
-    applyThemeToDom(draft, currentMode());
+    setSiteMode(previewMode);
+    applyThemeToDom(draft, previewMode);
     setMsg("已套用到全站（未儲存）。重新整理即回原本主題。");
   }
 
@@ -219,8 +221,11 @@ export function ThemeStudioClient({ initialThemes, initialActiveDefinition }: Pr
         return;
       }
 
-      applyThemeToDom(def, currentMode());
-      setMsg(`已儲存並套用「${name}」。`);
+      // 你在右邊預覽的是哪個亮暗，套用後站台就切成哪個 —— 不然「預覽深色→套用後還是淺色」
+      // （舊行為是 currentMode()＝站台當下的模式，直接無視你剛剛切的預覽）。
+      setSiteMode(previewMode);
+      applyThemeToDom(def, previewMode);
+      setMsg(`已儲存並套用「${name}」（${previewMode === "light" ? "淺色" : "深色"}）。`);
       await refreshThemes();
       router.refresh();
     } catch (e) {
@@ -235,8 +240,9 @@ export function ThemeStudioClient({ initialThemes, initialActiveDefinition }: Pr
     try {
       const res = await fetch(`/api/themes/${t.id}/apply`, { method: "POST" });
       if (res.ok) {
-        applyThemeToDom(t.definition, currentMode());
-        setMsg(`已套用「${t.name}」。`);
+        setSiteMode(previewMode);
+        applyThemeToDom(t.definition, previewMode);
+        setMsg(`已套用「${t.name}」（${previewMode === "light" ? "淺色" : "深色"}）。`);
         router.refresh();
       } else {
         setMsg("套用失敗。");
@@ -537,7 +543,10 @@ export function ThemeStudioClient({ initialThemes, initialActiveDefinition }: Pr
           <section className="rounded-xl border border-border bg-bg-card p-4">
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-sm font-semibold text-fg">即時預覽</h2>
-              <div className="flex gap-1 rounded-lg border border-border p-0.5 text-xs">
+              <div
+                className="flex gap-1 rounded-lg border border-border p-0.5 text-xs"
+                title="切換預覽的亮/暗；按下方「套用」時，站台也會切成這個模式"
+              >
                 {(["light", "dark"] as const).map((m) => (
                   <button
                     key={m}
@@ -637,6 +646,9 @@ export function ThemeStudioClient({ initialThemes, initialActiveDefinition }: Pr
                     : "無（只有主題底色）"}
               </span>
               {bgParticlesOnly && "　粒子的顏色會自動配合這個主題的底色深淺。"}
+              <span className="block mt-1">
+                上面的「{previewMode === "light" ? "淺色" : "深色"}」就是套用後站台會切成的模式。
+              </span>
               {bgScene && !bgParticlesOnly && "　場景底色會蓋掉主題底色 —— 想看到主題色請到背景頁勾「只要粒子」。"}
               <Link href="/background" className="ml-2 text-accent hover:underline">
                 去換背景 →

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Sun, Moon, Monitor, ChevronDown, Check } from "lucide-react";
+import { SITE_MODE_STORAGE_KEY, setSiteMode } from "@/lib/theme/apply";
 
 /**
  * 暗黑 / 明亮 / 跟系統 三段切換 + 主題色盤（accent 換色）。
@@ -11,7 +12,7 @@ import { Sun, Moon, Monitor, ChevronDown, Check } from "lucide-react";
 
 type Theme = "dark" | "light" | "system";
 
-const STORAGE_KEY = "ai_island_theme";
+const STORAGE_KEY = SITE_MODE_STORAGE_KEY; // 與 Theme Studio 共用同一個 key
 const PALETTE_KEY = "ai_island_palette";
 const MENU_OPACITY_KEY = "ai_menu_opacity"; // 選單/下拉/側欄表面不透明度（0.5 全玻璃 → 1 實色）
 const MENU_OPACITY_DEFAULT = 0.82;
@@ -28,13 +29,13 @@ const PALETTES: { key: string | null; label: string; dot: string }[] = [
 
 function applyTheme(t: Theme) {
   if (typeof window === "undefined") return;
-  const html = document.documentElement;
   const effective = t === "system"
     ? (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark")
     : t;
-  html.setAttribute("data-mode", effective);
-  // 同步 cookie，供 SSR 首屏就知道亮暗（layout 讀 ai_mode）→ 消除亮暗 FOUC
-  document.cookie = `ai_mode=${effective}; path=/; max-age=31536000; samesite=lax`;
+  // data-mode + ai_mode cookie（SSR 首屏不閃）+ localStorage —— 共用 setSiteMode，
+  // 免得 Theme Studio 那邊各寫各的、兩邊對不起來。
+  // store:false —— 這裡的 localStorage 是三段（dark/light/system），由下面的 set() 自己寫。
+  setSiteMode(effective, { store: false });
 }
 
 function effectiveTheme(t: Theme): "dark" | "light" {
