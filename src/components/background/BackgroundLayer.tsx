@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { ProceduralScene } from "./ProceduralScene";
-import { sceneById, type BackgroundSpec } from "@/lib/background/scenes";
+import {
+  isParticlesOnly,
+  readBackgroundCookie,
+  sceneById,
+  type BackgroundSpec,
+} from "@/lib/background/scenes";
 
 /**
  * 全站唯一的固定背景層：position:fixed、inset:0、z-index:-10、pointer-events:none，
@@ -17,20 +22,6 @@ import { sceneById, type BackgroundSpec } from "@/lib/background/scenes";
  * 不用 reload 即可換背景。掛載時也重讀一次 ai_bg cookie（可能比 SSR 傳來的 initial 新）。
  */
 
-function readCookieSpec(): BackgroundSpec | undefined {
-  if (typeof document === "undefined") return undefined;
-  const m = document.cookie.match(/(?:^|;\s*)ai_bg=([^;]*)/);
-  if (!m) return undefined;
-  try {
-    const raw = decodeURIComponent(m[1]);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as BackgroundSpec;
-    return parsed;
-  } catch {
-    return undefined;
-  }
-}
-
 function syncBgActiveAttr(spec: BackgroundSpec) {
   if (typeof document === "undefined") return;
   const root = document.documentElement;
@@ -44,7 +35,7 @@ export function BackgroundLayer({ initial }: { initial: BackgroundSpec }) {
   // 掛載：套 data-bg-active（依 initial）+ 重讀 cookie（可能更新）。
   useEffect(() => {
     syncBgActiveAttr(initial);
-    const fromCookie = readCookieSpec();
+    const fromCookie = readBackgroundCookie();
     if (fromCookie !== undefined) {
       setSpec(fromCookie);
       syncBgActiveAttr(fromCookie);
@@ -67,7 +58,7 @@ export function BackgroundLayer({ initial }: { initial: BackgroundSpec }) {
 
   const scene = spec.type === "procedural" ? sceneById(spec.proceduralId) : null;
   // 只要粒子：動態場景 + 沒明確關掉旗標。靜態場景沒有粒子、底色就是全部。
-  const particlesOnly = scene?.kind === "dynamic" && spec.particlesOnly !== false;
+  const particlesOnly = isParticlesOnly(spec);
 
   return (
     <div

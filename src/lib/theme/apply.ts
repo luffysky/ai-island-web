@@ -61,7 +61,12 @@ export function applyThemeToPreview(
   if (!el) return;
   const eff = effectiveTheme(def, mode);
   const vars = compileThemeToCssVars(eff);
-  el.style.cssText = varsToCssText(vars);
+  // ⚠️ cssText 是整條覆蓋 → 會把 React 寫在 style prop 上的 background/color/border 洗掉，
+  // 之後 React 因為 props 沒變也不會補回來（預覽框就會變成「站台的卡片底色」而不是
+  // 「預覽中這個主題的底色」）。→ 這裡自己把這三個帶上，預覽框才真的長得像該主題。
+  el.style.cssText =
+    varsToCssText(vars) +
+    " background: var(--color-bg); color: var(--color-fg); border-color: var(--color-border);";
 
   const attrs = themeDataAttributes(eff);
   for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);

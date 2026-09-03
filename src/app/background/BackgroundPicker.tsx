@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { useToast } from "@/components/ui/Toast";
 import { ProceduralScene } from "@/components/background/ProceduralScene";
 import {
@@ -92,6 +93,13 @@ export function BackgroundPicker({ initial }: { initial: BackgroundSpec }) {
         <h1 className="text-2xl font-bold">背景</h1>
         <p className="text-sm text-fg-muted mt-1">
           挑一個動態粒子場景或漸層，套用成你的全站背景。會即時預覽，也會跨裝置同步。
+        </p>
+        {/* 背景的底色其實來自主題 → 直接把兩頁互相接起來，別讓人以為背景會自己變色。 */}
+        <p className="text-xs text-fg-muted mt-2">
+          「只要粒子」模式的底色來自你的主題（粒子顏色會自動配合主題深淺）。
+          <Link href="/theme-studio" className="ml-1 text-accent hover:underline">
+            去主題工作室調底色 →
+          </Link>
         </p>
       </header>
 

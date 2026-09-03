@@ -23,6 +23,14 @@ import {
   currentMode,
 } from "@/lib/theme/apply";
 import { loadThemeFonts, type FontCatalog, type FontCatalogEntry } from "@/lib/theme/font-loader";
+import Link from "next/link";
+import { ProceduralScene } from "@/components/background/ProceduralScene";
+import {
+  isParticlesOnly,
+  readBackgroundCookie,
+  sceneById,
+  type BackgroundSpec,
+} from "@/lib/background/scenes";
 
 export type SavedTheme = {
   id: string;
@@ -79,6 +87,15 @@ export function ThemeStudioClient({ initialThemes, initialActiveDefinition }: Pr
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [fontCatalog, setFontCatalog] = useState<FontCatalog>({ fonts: [], pairs: [] });
+  // 主題跟背景是疊在一起看的（背景的粒子就飄在主題的 --color-bg 上）→
+  // 預覽框也要把使用者目前的背景畫進去，不然調完主題套上去才發現不搭。
+  const [bgSpec, setBgSpec] = useState<BackgroundSpec>(null);
+
+  // 掛載後讀使用者目前套用的背景（ai_bg cookie，client-only）
+  useEffect(() => {
+    const fromCookie = readBackgroundCookie();
+    if (fromCookie !== undefined) setBgSpec(fromCookie);
+  }, []);
 
   // 掛載後讀真正的站台模式
   useEffect(() => {
@@ -115,6 +132,13 @@ export function ThemeStudioClient({ initialThemes, initialActiveDefinition }: Pr
   }, [draft, fontCatalog, previewMode]);
 
   const report = useMemo(() => analyzeTheme(draft), [draft]);
+
+  // 目前背景：只有「動態場景」在預覽框裡才畫得出東西（靜態/漸層＝純底色）。
+  const bgScene = useMemo(
+    () => (bgSpec?.type === "procedural" ? sceneById(bgSpec.proceduralId) : null),
+    [bgSpec],
+  );
+  const bgParticlesOnly = isParticlesOnly(bgSpec);
 
   // ── draft 更新工具 ──────────────────────────────
   function setColor(key: keyof ThemeColors, val: string) {
@@ -530,71 +554,94 @@ export function ThemeStudioClient({ initialThemes, initialActiveDefinition }: Pr
             <div
               ref={previewRef}
               data-mode={previewMode}
-              className="rounded-xl border p-5"
+              className="relative overflow-hidden rounded-xl border p-5"
               style={{
                 background: "var(--color-bg)",
                 borderColor: "var(--color-border)",
                 color: "var(--color-fg)",
               }}
             >
-              <h3
-                style={{
-                  color: "var(--color-fg)",
-                  fontSize: "calc(1.5rem * var(--scale-heading, 1))",
-                  fontWeight: "var(--weight-heading, 700)" as unknown as number,
-                  lineHeight: "var(--line-height, 1.5)" as unknown as number,
-                }}
-              >
-                標題預覽 Heading
-              </h3>
-              <p className="mt-2" style={{ color: "var(--color-fg-muted)" }}>
-                這是一段內文，用來檢查你選的文字色跟背景色好不好讀。The quick brown fox。
-              </p>
-              <div className="mt-4 flex flex-wrap items-center gap-3">
-                <button
-                  className="px-4 py-2 text-sm font-medium"
+              {/* 目前套用的背景（動態場景才畫得出來）：粒子就飄在這個主題的底色上，
+                  主題跟背景本來就是疊在一起看的 → 預覽也要一起看。 */}
+              {bgScene?.kind === "dynamic" && (
+                <ProceduralScene scene={bgScene} showBase={!bgParticlesOnly} />
+              )}
+              <div className="relative">
+                <h3
                   style={{
-                    background: "var(--color-accent)",
-                    color: "var(--color-accent-contrast)",
+                    color: "var(--color-fg)",
+                    fontSize: "calc(1.5rem * var(--scale-heading, 1))",
+                    fontWeight: "var(--weight-heading, 700)" as unknown as number,
+                    lineHeight: "var(--line-height, 1.5)" as unknown as number,
+                  }}
+                >
+                  標題預覽 Heading
+                </h3>
+                <p className="mt-2" style={{ color: "var(--color-fg-muted)" }}>
+                  這是一段內文，用來檢查你選的文字色跟背景色好不好讀。The quick brown fox。
+                </p>
+                <div className="mt-4 flex flex-wrap items-center gap-3">
+                  <button
+                    className="px-4 py-2 text-sm font-medium"
+                    style={{
+                      background: "var(--color-accent)",
+                      color: "var(--color-accent-contrast)",
+                      borderRadius: "var(--radius-card, 12px)",
+                      boxShadow: "var(--shadow-md, none)",
+                    }}
+                  >
+                    主要按鈕
+                  </button>
+                  <span
+                    className="px-3 py-1 text-xs font-medium"
+                    style={{
+                      background: "var(--color-accent-2)",
+                      color: "var(--color-accent-2-contrast)",
+                      borderRadius: "999px",
+                    }}
+                  >
+                    Accent Chip
+                  </span>
+                </div>
+                <div
+                  className="mt-4 p-4"
+                  style={{
+                    background: "var(--color-bg-card)",
                     borderRadius: "var(--radius-card, 12px)",
-                    boxShadow: "var(--shadow-md, none)",
+                    border: "var(--border-width, 1px) solid var(--color-border)",
+                    boxShadow: "var(--shadow-sm, none)",
                   }}
                 >
-                  主要按鈕
-                </button>
-                <span
-                  className="px-3 py-1 text-xs font-medium"
-                  style={{
-                    background: "var(--color-accent-2)",
-                    color: "var(--color-accent-2-contrast)",
-                    borderRadius: "999px",
-                  }}
-                >
-                  Accent Chip
-                </span>
-              </div>
-              <div
-                className="mt-4 p-4"
-                style={{
-                  background: "var(--color-bg-card)",
-                  borderRadius: "var(--radius-card, 12px)",
-                  border: "var(--border-width, 1px) solid var(--color-border)",
-                  boxShadow: "var(--shadow-sm, none)",
-                }}
-              >
-                <div style={{ color: "var(--color-fg)" }} className="text-sm font-medium">
-                  卡片 Card
-                </div>
-                <div style={{ color: "var(--color-fg-muted)" }} className="mt-1 text-xs">
-                  卡片內文，套用 surface / radius / shadow。
-                </div>
-                <div className="mt-3 flex gap-2 text-xs">
-                  <span style={{ color: "var(--color-success)" }}>● 成功</span>
-                  <span style={{ color: "var(--color-warning)" }}>● 警告</span>
-                  <span style={{ color: "var(--color-danger)" }}>● 危險</span>
+                  <div style={{ color: "var(--color-fg)" }} className="text-sm font-medium">
+                    卡片 Card
+                  </div>
+                  <div style={{ color: "var(--color-fg-muted)" }} className="mt-1 text-xs">
+                    卡片內文，套用 surface / radius / shadow。
+                  </div>
+                  <div className="mt-3 flex gap-2 text-xs">
+                    <span style={{ color: "var(--color-success)" }}>● 成功</span>
+                    <span style={{ color: "var(--color-warning)" }}>● 警告</span>
+                    <span style={{ color: "var(--color-danger)" }}>● 危險</span>
+                  </div>
                 </div>
               </div>
             </div>
+            {/* 主題 × 背景要一起看：這裡說清楚目前疊的是哪個背景、怎麼換。 */}
+            <p className="mt-2 text-xs text-fg-muted">
+              目前背景：
+              <span className="text-fg">
+                {bgScene
+                  ? `${bgScene.label}${bgParticlesOnly ? "（只要粒子）" : "（含場景底色）"}`
+                  : bgSpec?.type === "gradient"
+                    ? "自訂漸層"
+                    : "無（只有主題底色）"}
+              </span>
+              {bgParticlesOnly && "　粒子的顏色會自動配合這個主題的底色深淺。"}
+              {bgScene && !bgParticlesOnly && "　場景底色會蓋掉主題底色 —— 想看到主題色請到背景頁勾「只要粒子」。"}
+              <Link href="/background" className="ml-2 text-accent hover:underline">
+                去換背景 →
+              </Link>
+            </p>
           </section>
 
           {/* a11y */}

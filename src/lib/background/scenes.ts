@@ -470,3 +470,31 @@ export function sceneById(id: string | null | undefined): SceneDef | null {
 export function scenesByCategory(category: SceneCategory): SceneDef[] {
   return SCENES.filter((sc) => sc.category === category);
 }
+
+/**
+ * 讀 `ai_bg` cookie 裡的 BackgroundSpec（client-only）。
+ * 回傳 undefined ＝ 沒有這個 cookie（不確定）、null ＝ 明確「無背景」。
+ * 全站背景層與 Theme Studio 預覽共用同一個來源，免得兩邊各讀各的、對不起來。
+ */
+export function readBackgroundCookie(): BackgroundSpec | undefined {
+  if (typeof document === "undefined") return undefined;
+  const m = document.cookie.match(/(?:^|;\s*)ai_bg=([^;]*)/);
+  if (!m) return undefined;
+  try {
+    const raw = decodeURIComponent(m[1]!);
+    if (!raw) return null;
+    return JSON.parse(raw) as BackgroundSpec;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * 這個 spec 實際上會不會「只畫粒子、不鋪底色」。
+ * 動態場景 + 沒明確關掉旗標才算；靜態場景/漸層本身就只有底色。
+ */
+export function isParticlesOnly(spec: BackgroundSpec): boolean {
+  if (!spec || spec.type !== "procedural") return false;
+  return sceneById(spec.proceduralId)?.kind === "dynamic" && spec.particlesOnly !== false;
+}
+

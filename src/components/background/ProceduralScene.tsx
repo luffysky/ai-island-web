@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { SceneDef, SceneShape } from "@/lib/background/scenes";
+import { adaptColor, luminanceOf } from "@/lib/background/particle-color";
 
 /**
  * 內建動態場景（雪/雨/櫻花…）。canvas 粒子系統，資料驅動（見 lib/background/scenes）。
@@ -108,18 +109,22 @@ function drawShape(c: CanvasRenderingContext2D, shape: SceneShape, p: Particle, 
 }
 
 /**
- * 「只要粒子」+ 亮色模式時，把接近白色的粒子壓暗（保留色相）——不然白雪/白星
- * 疊在淺色底上等於看不見。深色粒子與暗色模式一律原樣。
+ * 往上找第一個「真的有畫底色」的祖先，回傳它的亮度。
+ * 全站背景層：層本身/body 都是透明 → 一路找到 <html>（＝主題的 --color-bg）。
+ * Theme Studio 預覽框：框自己有 background → 拿到的是「預覽中的那個主題」的底色。
  */
-function adaptColor(rgb: string, darken: boolean): string {
-  if (!darken) return rgb;
-  const parts = rgb.split(",").map((n) => Number(n.trim()));
-  if (parts.length !== 3 || parts.some((n) => !Number.isFinite(n))) return rgb;
-  const [r, g, b] = parts as [number, number, number];
-  const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-  if (lum <= 0.6) return rgb;
-  const k = 0.34 / lum; // 壓到約 0.34 亮度
-  return [r, g, b].map((n) => Math.round(Math.max(0, Math.min(255, n * k)))).join(",");
+function ancestorBgLuminance(el: Element | null): number | null {
+  let node: Element | null = el;
+  while (node) {
+    const c = getComputedStyle(node).backgroundColor;
+    const alpha = c.startsWith("rgba(") ? Number(c.match(/-?[\d.]+/g)?.[3] ?? 1) : 1;
+    if (c && c !== "transparent" && alpha > 0.5) {
+      const lum = luminanceOf(c);
+      if (lum !== null) return lum;
+    }
+    node = node.parentElement;
+  }
+  return null;
 }
 
 export function ProceduralScene({
@@ -257,31 +262,36 @@ export function ProceduralScene({
       if (p.x > w + 14) p.x = -10;
     }
 
-    // 沒有底色時，粒子要看得見 → 亮色模式壓暗（快取避免每格重算字串）。
+    // 沒有底色時，粒子要跟「實際底色」有對比（快取避免每格重算字串）。
+    // 底色會被主題（/theme-studio）換掉 → 監聽 <html> 與父層的 style/data-* 重算。
     let colorCache = new Map<string, string>();
-    let darken = false;
-    function syncDarken() {
-      const light = document.documentElement.getAttribute("data-mode") === "light";
-      const next = light && !showBaseRef.current;
-      if (next !== darken) {
-        darken = next;
+    let bgLum: number | null = null;
+    function syncBgLum() {
+      const next = showBaseRef.current ? null : ancestorBgLuminance(parent ?? null);
+      if (next !== bgLum) {
+        bgLum = next;
         colorCache = new Map();
       }
     }
     function colorOf(p: Particle) {
       let base = colorCache.get(p.color);
       if (base === undefined) {
-        base = adaptColor(p.color, darken);
+        base = adaptColor(p.color, bgLum);
         colorCache.set(p.color, base);
       }
       return `rgba(${base},${p.a})`;
     }
-    syncDarken();
-    const modeObserver = new MutationObserver(syncDarken);
-    modeObserver.observe(document.documentElement, {
+    syncBgLum();
+    const themeAttrs = ["style", "class", "data-mode", "data-palette", "data-theme"];
+    const themeObserver = new MutationObserver(syncBgLum);
+    themeObserver.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ["data-mode"],
+      attributeFilter: themeAttrs,
     });
+    // 預覽框（Theme Studio）是把主題變數寫在自己的 style 上、不是 <html> → 也要盯著。
+    if (parent !== document.documentElement) {
+      themeObserver.observe(parent!, { attributes: true, attributeFilter: themeAttrs });
+    }
 
     let raf = 0;
     let last = performance.now();
@@ -303,7 +313,7 @@ export function ProceduralScene({
     window.addEventListener("resize", resize);
     return () => {
       cancelAnimationFrame(raf);
-      modeObserver.disconnect();
+      themeObserver.disconnect();
       window.removeEventListener("resize", resize);
     };
   }, [scene, showBase]);

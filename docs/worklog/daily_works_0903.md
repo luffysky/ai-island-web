@@ -107,3 +107,22 @@ process "/bin/sh -c if [ -n \"$INSTALL_SERVER_BROWSER\" ]; then ... npm i playwr
 
 **注意**：線上 `/api/version` 顯示 commit `d435439`、`builtAt 2026-08-23` → **8/23 之後所有 commit 都沒真的部署過**（Playwright 那步每次都讓 image build 掛掉）。C 修好之前的東西全部積在 git 沒上線。
 
+---
+
+## D. 主題 × 背景要一起考量（Nami 回饋）
+
+「只要粒子」模式下、粒子的底色其實**就是主題的 `--color-bg`** → 這兩個系統不能各做各的。
+
+- **粒子顏色改看「實際底色亮度」、不再看 `data-mode`**：主題是使用者在 `/theme-studio` 自己調的，`--color-bg` 什麼顏色都可能、亮暗也**不保證跟 `data-mode` 一致**（自訂主題可以在暗模式用淺底）。新的 `src/lib/background/particle-color.ts`（純函式）：`ancestorBgLuminance()` 往上找第一個真的有畫底色的祖先量亮度 → 淺底(>0.55)+亮粒子 → 壓暗；深底(<0.45)+暗粒子 → 提亮；都等比縮放 RGB **保留色相**。
+- **監聽主題變動即時重算**：`MutationObserver` 盯 `<html>` 與父層的 `style` / `class` / `data-mode` / `data-palette` / `data-theme`（Theme Studio 是把變數寫在預覽框自己的 `style` 上、不是 `<html>`）。
+- **Theme Studio 即時預覽把背景畫進去**：讀 `ai_bg` cookie → 預覽框內直接跑 `ProceduralScene`（`showBase={!particlesOnly}`），旁邊一行寫「目前背景：X（只要粒子）」+ 連到 `/background`。調主題時粒子就飄在預覽的底色上、當場看得出搭不搭。
+- **修 `applyThemeToPreview` 的既有 bug**：它用 `el.style.cssText = …` 整條覆蓋 → 把 React 寫在 style prop 上的 `background/color/border-color` **洗掉**，而且 props 沒變 React 不會補回來 → 預覽框其實一直是「站台的卡片底色」而不是「預覽中那個主題的底色」。現在 cssText 尾巴自己帶上這三個。
+- **兩頁互相接起來**：`/background` 加「底色來自主題 → 去主題工作室調底色」、Theme Studio 加「去換背景」。
+- **共用工具**：`readBackgroundCookie()` / `isParticlesOnly()` 移到 `lib/background/scenes.ts`，`BackgroundLayer` 與 Theme Studio 共用同一份判斷（免得兩邊各判各的、對不起來）。
+
+## 驗證（鐵規則）
+- 新增 `tests/background-particles.test.ts`：14 個 case（亮度解析 / 壓暗提亮 / 保留色相 / 壞字串不炸 / `isParticlesOnly` 各種 spec 與靜態場景例外）
+- `npx tsc --noEmit` ✅、`npx vitest run` ✅ **34 檔 256 測試**、`npx next build` ✅
+- API/DB：未動（`particlesOnly` 仍走既有 `profiles.active_background` jsonb）
+- RWD／桌面：新增的都是全寬 `<p>` 說明列與預覽框內的 canvas（`overflow-hidden` 不外溢）
+
