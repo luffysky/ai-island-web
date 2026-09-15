@@ -13,6 +13,22 @@ const BlogEditor = dynamic(
 
 type LessonRef = { id: string; title: string; number?: string };
 
+// 觸發鈕基準是 `fixed bottom-24 left-4`（bottom-24=96px），可自由拖曳、位置存 localStorage。
+// clamp：把拖曳 offset 限回可視範圍，且**上緣不得進入頂部導覽列**（TopNav 是 sticky top-0 h-14=56px、
+// 同為 z-40 又有 backdrop-blur 自成堆疊脈絡 → 拖到頂會被導覽列蓋住、點不到也拖不出來，見 bug 258）。
+const NOTE_BTN_W = 180;   // 觸發鈕約略寬度（留右邊界）
+const NOTE_BTN_H = 44;    // 觸發鈕約略高度（含 padding）
+const NAV_SAFE_TOP = 72;  // 導覽列 56 + 16 間距：觸發鈕上緣不得高於此
+function clampNoteBtnPos(pos: { x: number; y: number }) {
+  const maxX = Math.max(0, window.innerWidth - NOTE_BTN_W);
+  // 上緣 = anchorTop(innerHeight-96-BTN_H) + y，要求 >= NAV_SAFE_TOP → y >= NAV_SAFE_TOP - anchorTop
+  const minY = Math.min(0, NAV_SAFE_TOP - (window.innerHeight - 96 - NOTE_BTN_H));
+  return {
+    x: Math.min(Math.max(pos.x, 0), maxX),
+    y: Math.min(Math.max(pos.y, minY), 0),   // 往下不超過基準(bottom-24)、往上不進導覽列
+  };
+}
+
 export function FloatingNoteButton({
   chapterId,
   lessons,
@@ -35,15 +51,9 @@ export function FloatingNoteButton({
       const saved = localStorage.getItem("lessonNoteBtnPos");
       if (!saved) return;
       const pos = JSON.parse(saved) as { x: number; y: number };
-      // 觸發鈕基準是「左下」(left-4 bottom-24)。舊版曾用「右下」基準拖曳、存下的 offset
-      // 套到左下基準會把鈕推到畫面外（= 使用者看到的「懸浮筆記不見了」）。
-      // 這裡把 offset clamp 回可視範圍，越界就歸零並清掉舊值，確保鈕永遠看得到。
-      const maxX = Math.max(0, window.innerWidth - 180);   // 右邊界（留按鈕寬度）
-      const minY = -(window.innerHeight - 160);            // 往上最多到頂
-      const clamped = {
-        x: Math.min(Math.max(pos.x, 0), maxX),
-        y: Math.min(Math.max(pos.y, minY), 0),             // 往下不超過基準（bottom-24）
-      };
+      // clamp 回可視範圍（且上緣不進導覽列）；越界就修正並回寫，確保鈕永遠看得到、拿得回。
+      // 舊版把鈕拖到頂被導覽列蓋住的壞位置，會在這裡自動被拉回安全區（見 bug 258）。
+      const clamped = clampNoteBtnPos(pos);
       setBtnPos(clamped);
       if (clamped.x !== pos.x || clamped.y !== pos.y) {
         try { localStorage.setItem("lessonNoteBtnPos", JSON.stringify(clamped)); } catch { /* ignore */ }
@@ -131,20 +141,16 @@ export function FloatingNoteButton({
     const move = (ev: PointerEvent) => {
       const dx = ev.clientX - sx, dy = ev.clientY - sy;
       if (Math.abs(dx) > 5 || Math.abs(dy) > 5) moved = true;
-      cur = { x: base.x + dx, y: base.y + dy };
+      // 拖曳時就 clamp：讓鈕停在導覽列下緣、不會滑到頂被蓋住（見 bug 258）
+      cur = clampNoteBtnPos({ x: base.x + dx, y: base.y + dy });
       setBtnPos(cur);
     };
     const up = () => {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
       if (moved) {
-        // clamp 回可視範圍再存（跟載入時同一套邊界），避免拖到畫面外存下後下次看不到
-        const maxX = Math.max(0, window.innerWidth - 180);
-        const minY = -(window.innerHeight - 160);
-        const safe = {
-          x: Math.min(Math.max(cur.x, 0), maxX),
-          y: Math.min(Math.max(cur.y, minY), 0),
-        };
+        // clamp 回可視範圍再存（跟載入時同一套邊界），避免拖到畫面外或頂部導覽列後下次看不到/拿不回
+        const safe = clampNoteBtnPos(cur);
         setBtnPos(safe);
         try { localStorage.setItem("lessonNoteBtnPos", JSON.stringify(safe)); } catch { /* ignore */ }
       } else {

@@ -25,6 +25,8 @@ const HIDDEN_KEY = "admin-toolbar-hidden";
 const DRAG_THRESHOLD = 5;
 const PILL_W = 110, PILL_H = 38;
 const PANEL_W = 240, PANEL_H = 260;
+// 上緣安全區：不讓工具列拖到頂被 TopNav(sticky top-0 h-14=56px)蓋住、點不到也拖不出來（同 bug 258）。
+const NAV_SAFE_TOP = 64;
 
 type Pos = { x: number; y: number };
 
@@ -308,6 +310,7 @@ function clampToViewport(p: Pos, w = PILL_W, h = PILL_H): Pos {
   const pad = 8;
   return {
     x: Math.min(Math.max(pad, p.x), Math.max(pad, window.innerWidth - w - pad)),
-    y: Math.min(Math.max(pad, p.y), Math.max(pad, window.innerHeight - h - pad)),
+    // 上緣至少留 NAV_SAFE_TOP、避開頂部導覽列
+    y: Math.min(Math.max(NAV_SAFE_TOP, p.y), Math.max(NAV_SAFE_TOP, window.innerHeight - h - pad)),
   };
 }
