@@ -14,8 +14,11 @@ type Pos = { x: number; y: number };
  *
  * 注意：按鈕要是 `position: fixed`（inline left/top 才有效）。若某斷點是 static，
  * 拖曳會被瀏覽器忽略（不會亂跑），可接受。
+ *
+ * `minTop`（預設 64）：上緣不得低於此 y（＝不進頂部導覽列 TopNav sticky top-0 h-14=56px）。
+ * 否則拖到頂會鑽進導覽列底下被蓋住、點不到也拖不回來（見 bug 258）。
  */
-export function useDraggableFab(storageKey: string, onTap: () => void) {
+export function useDraggableFab(storageKey: string, onTap: () => void, minTop = 64) {
   const [pos, setPos] = useState<Pos | null>(null);
   const drag = useRef<{
     startX: number; startY: number; baseX: number; baseY: number; moved: boolean; id: number;
@@ -23,12 +26,29 @@ export function useDraggableFab(storageKey: string, onTap: () => void) {
   const suppressClick = useRef(false);
   const size = useRef(44);
 
+  const clampPos = useCallback((p: Pos): Pos => {
+    if (typeof window === "undefined") return p;
+    const s = size.current;
+    return {
+      x: Math.min(Math.max(4, p.x), Math.max(4, window.innerWidth - s - 4)),
+      y: Math.min(Math.max(minTop, p.y), Math.max(minTop, window.innerHeight - s - 4)),
+    };
+  }, [minTop]);
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem(storageKey);
-      if (raw) { const p = JSON.parse(raw); if (typeof p?.x === "number" && typeof p?.y === "number") setPos(p); }
+      if (raw) {
+        const p = JSON.parse(raw);
+        if (typeof p?.x === "number" && typeof p?.y === "number") {
+          // clamp 回可視範圍（含上緣不進導覽列）→ 舊的壞位置(卡在導覽列底下)會在下次載入自動歸位、重整即自癒
+          const c = clampPos(p);
+          setPos(c);
+          if (c.x !== p.x || c.y !== p.y) { try { localStorage.setItem(storageKey, JSON.stringify(c)); } catch { /* ignore */ } }
+        }
+      }
     } catch { /* ignore */ }
-  }, [storageKey]);
+  }, [storageKey, clampPos]);
 
   const onPointerDown = useCallback((e: React.PointerEvent<HTMLElement>) => {
     const el = e.currentTarget;
@@ -45,11 +65,9 @@ export function useDraggableFab(storageKey: string, onTap: () => void) {
     const dy = e.clientY - d.startY;
     if (!d.moved && Math.hypot(dx, dy) < 6) return; // 沒超過門檻＝還是點擊
     d.moved = true;
-    const s = size.current;
-    const nx = Math.min(Math.max(4, d.baseX + dx), window.innerWidth - s - 4);
-    const ny = Math.min(Math.max(4, d.baseY + dy), window.innerHeight - s - 4);
-    setPos({ x: nx, y: ny });
-  }, []);
+    // 拖曳時就 clamp（含上緣不進導覽列）→ 鈕停在導覽列下緣、不會滑進去被蓋住
+    setPos(clampPos({ x: d.baseX + dx, y: d.baseY + dy }));
+  }, [clampPos]);
 
   const onPointerUp = useCallback((e: React.PointerEvent<HTMLElement>) => {
     const d = drag.current;

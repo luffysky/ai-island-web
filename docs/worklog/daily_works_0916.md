@@ -19,6 +19,17 @@
 
 > 章節浮動標籤 = `FloatingNoteButton`（顯示當前 lesson、可拖曳做筆記）。
 
+### 🔁 補正：真正被蓋住的是「章節大綱 FAB」不是筆記鈕
+
+Nami 回報「章節那個選單拖到 header 還是被蓋住」→ 重查發現**第一版修錯元件**。截圖紅框那顆在**左上角**、是 `SideNav` 的「**章節**」浮動鈕（開章節大綱抽屜、`useDraggableFab("chapter-nav-fab-pos")`）——底部的「筆記 · LESSON」是另一顆(FloatingNoteButton、在預設位置沒被拖)。這顆章節 FAB 原本 `fixed left-3 top-[4.5rem] **z-30**`，比 TopNav(z-40) **還低** → 拖到頂被導覽列蓋住（正是 Nami 說的「調整圖層順序」）。
+
+**真正修法**：
+- `SideNav.tsx`：章節 FAB `z-30 → z-50`（蓋在導覽列之上）。
+- `use-draggable-fab.ts`（共用 hook、章節 FAB + admin aside FAB 都用）：加 `minTop=64` 參數，拖曳與載入都 clamp 上緣不進導覽列；**載入時 re-clamp → 已卡住的舊位置自動歸位（重整即自癒）**。一次修好兩顆 FAB。
+- 前一版對 `FloatingNoteButton` 的 z-50+clamp 保留（它本來也是 z-40-under-nav、順手更穩，只是不是這次回報的那顆）。
+
+tsc/next build 綠。（提醒：元件改動要等 GHCR image 重建 + Zeabur 重部署才生效、非 DB 即時。）
+
 ---
 
 ## 📚 Nami 反饋：ch26/ch27 程式碼註解太精簡、初學者看不懂 → 改寫成「一行一行白話」教學

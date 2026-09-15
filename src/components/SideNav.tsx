@@ -253,7 +253,8 @@ export function SideNav() {
           style={navFab.style}
           aria-label="開啟章節大綱（可拖曳移動）"
           title="章節大綱（可拖曳移動）"
-          className="fixed left-3 top-[4.5rem] z-30 inline-flex items-center gap-1.5 py-2 pl-2 pr-3 rounded-full bg-bg-card/90 backdrop-blur border border-border hover:border-accent/50 hover:bg-bg-elevated transition shadow-lg cursor-grab active:cursor-grabbing"
+          // z-50：蓋在 TopNav(z-40) 之上，拖到頂也不會被導覽列蓋住、點不到（bug 258）；搭配 useDraggableFab 的 minTop clamp 不讓它進導覽列區。
+          className="fixed left-3 top-[4.5rem] z-50 inline-flex items-center gap-1.5 py-2 pl-2 pr-3 rounded-full bg-bg-card/90 backdrop-blur border border-border hover:border-accent/50 hover:bg-bg-elevated transition shadow-lg cursor-grab active:cursor-grabbing"
         >
           <PanelLeft size={18} className="text-accent" />
           <span className="hidden sm:inline text-xs font-semibold">章節</span>
