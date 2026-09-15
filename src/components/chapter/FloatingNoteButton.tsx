@@ -14,8 +14,10 @@ const BlogEditor = dynamic(
 type LessonRef = { id: string; title: string; number?: string };
 
 // 觸發鈕基準是 `fixed bottom-24 left-4`（bottom-24=96px），可自由拖曳、位置存 localStorage。
-// clamp：把拖曳 offset 限回可視範圍，且**上緣不得進入頂部導覽列**（TopNav 是 sticky top-0 h-14=56px、
-// 同為 z-40 又有 backdrop-blur 自成堆疊脈絡 → 拖到頂會被導覽列蓋住、點不到也拖不出來，見 bug 258）。
+// bug 258：鈕原本 z-40 = 跟 TopNav(sticky top-0 z-40 + backdrop-blur 自成堆疊脈絡)同層，拖到頂會被導覽列
+// 蓋住、點不到也拖不出來。雙管齊下修：
+//  ① 圖層順序（Nami 建議）：鈕提到 z-50、蓋在導覽列之上 → 就算重疊也點得到、不會被遮。
+//  ② clamp（下方 clampNoteBtnPos）：上緣仍留在導覽列下方 → 不會反過來擋住導覽列的按鈕，且已卡住的舊位置自癒。
 const NOTE_BTN_W = 180;   // 觸發鈕約略寬度（留右邊界）
 const NOTE_BTN_H = 44;    // 觸發鈕約略高度（含 padding）
 const NAV_SAFE_TOP = 72;  // 導覽列 56 + 16 間距：觸發鈕上緣不得高於此
@@ -168,7 +170,7 @@ export function FloatingNoteButton({
         <button
           onPointerDown={onBtnPointerDown}
           style={{ transform: `translate(${btnPos.x}px, ${btnPos.y}px)` }}
-          className="fixed bottom-24 left-4 z-40 flex items-center gap-2 px-3 py-2 bg-accent text-black rounded-full shadow-lg hover:scale-105 active:scale-95 transition touch-none cursor-grab active:cursor-grabbing"
+          className="fixed bottom-24 left-4 z-50 flex items-center gap-2 px-3 py-2 bg-accent text-black rounded-full shadow-lg hover:scale-105 active:scale-95 transition touch-none cursor-grab active:cursor-grabbing"
           title={`對 LESSON ${activeLesson.number ?? activeLesson.id} 做筆記（可拖曳移動）`}
           aria-label="新增筆記"
         >
