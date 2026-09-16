@@ -20,8 +20,10 @@
 - 遵循 `docs/content/ch26_beginner_friendly_spec_v0.md`（術語英中對照 + 四種區塊標籤 📄🖥️⌨️💬 + 預設讀者零基礎 + ☕用人話講）。不對學員掛保證。
 
 ### 進度
-- [x] ~~**ch27 L3「NumPy」立標竿**~~ ✅ 0916（commit `eb7c17ca`）——8 個 code block 全改 `python` + 逐行白話，6002→7121 字，import DB。＝Nami 直接截圖那課。**待她確認風格**再滾動套用其餘。
-- [ ] **ch27 其餘 24 課**（L1、L2、L4~L25）逐課改寫 code block 註解。
+- [x] ~~**ch27 L3「NumPy」立標竿**~~ ✅ 0916（commit `eb7c17ca`）——8 個 code block 全改 `python` + 逐行白話，6002→7121 字，import DB。＝Nami 直接截圖那課。
+- [x] ~~**風格確認**~~ ✅ 0917——Nami 再給 bug 260/262（pandas Series 建立、選取資料 .loc/.iloc）「要像這樣清楚」＝**風格已鎖定**（跟 27.3/27.4 逐行白話一致）。
+- [x] ~~**ch27 L4「Pandas 瑞士刀」**~~ ✅ 0917——Nami 正在讀、且 bug 260/262 內容就在這課。9 個 code block 全改 `python`+逐行白話（DataFrame/Series 建立、選取 df[]/loc/iloc 含含尾差異、缺值、groupby/pivot、merge、pd.cut/apply、to_csv…），4886→6482 字，import DB。
+- [ ] **ch27 其餘 23 課**（L1、L2、L5~L25）逐課改寫 code block 註解。
 - [ ] **ch26 全 38 課**逐課改寫 code block 註解。
 
 ### 執行方式（每批）

@@ -44,3 +44,7 @@ tsc/next build 綠。（提醒：元件改動要等 GHCR image 重建 + Zeabur �
 - 6002 → 7121 字。import ch27 已同步 DB。
 
 > **待 Nami 確認風格** 再滾動式套到 ch26(38 課)+ch27(其餘 24 課) 全部 code block——先立一課標竿、避免整批改完才發現風格要調。此為大型內容工程、分批進行。
+
+**Phase 1.5（0917·風格確認 + ch27 L4）**：
+- Nami 再給 bug 260/262（pandas Series 建立、選取資料 df[]/.loc/.iloc）「**要像這樣清楚**」→ 跟 27.3/27.4 逐行白話完全一致＝**風格鎖定**，可放心滾動。
+- 改寫 **ch27 L4「Pandas 瑞士刀」**（Nami 正在讀、bug 260/262 內容就在這課）：9 個 code block 全 `text→python`+逐行白話——DataFrame/Series 建立(含排出來長怎樣)、選取 df[單欄]回Series/df[[多欄]]回DataFrame/.loc標籤vs.iloc位置(切片含尾差異)、缺值 NaN、groupby/pivot_table、merge on/how、pd.cut/apply、to_csv 各參數。4886→6482 字，import DB。commit 見下。
