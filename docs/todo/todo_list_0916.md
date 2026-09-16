@@ -25,7 +25,8 @@
 - [x] ~~**ch27 L4「Pandas 瑞士刀」**~~ ✅ 0917——Nami 正在讀、且 bug 260/262 內容就在這課。9 個 code block 全改 `python`+逐行白話（DataFrame/Series 建立、選取 df[]/loc/iloc 含含尾差異、缺值、groupby/pivot、merge、pd.cut/apply、to_csv…），4886→6482 字，import DB。
 - [x] ~~**ch27 L1/L2/L5/L6/L7/L8 批次改寫**~~ ✅ 0917（平行子代理·我逐檔驗過黃金標竿）——L1(全shell/示意圖無 Python 可改)、L2 Jupyter(Colab/magic 白話)、L5 matplotlib/seaborn(12 python·中文字型/heatmap/subplots 卡點)、L6 時序(resample/rolling/回測不偷看未來)、L7 EDA 完整實戰(5步驟)、L8 pandas 5大操作(11 python·& vs and/np.select 順序/shape 非方法)。import ch27 同步 DB。
 - [x] ~~**ch27 L9~L25 批次改寫**~~ ✅ 0917（4 平行子代理·逐檔驗過 fence 平衡/prose 未動）——NumPy向量/matplotlib進階/Plotly/Streamlit/SQLAlchemy/Jupyter進階/Prophet/A-B Test/PySpark/Polars/DuckDB/資料清理/特徵工程/sklearn/Geo/NLP/職涯。非 Python 的 shell/示意圖/magic 保持 text。import ch27 同步 DB。**→ ch27 全 25 課完成 ✅**
-- [ ] **ch26 全 38 課**（進行中）：26.0~26.9 子代理已產出（26.0~26.5 完成、26.6~26.9 待最後一支代理收尾）；26.10~26.32 待下一批。
+- [x] ~~**ch26 26.0~26.9 批次改寫**~~ ✅ 0917（3 平行子代理·py_compile 驗過、prose byte-identical）——0/0.05(終端機PowerShell·全 shell 保 text)/1(uv專案)/1.5(工具)/2(HelloWorld/變數)/3(型態)/3.5(字串)/4(容器)/4.5(拆包)/5(流程控制)/6(函式*args**kwargs)/6.5(作用域)/7(模組import)/8(檔案IO with)/9(例外)。import ch26 同步 DB。
+- [ ] **ch26 26.10~26.32**（進行中·5 平行子代理跑中）：NumPy/Pandas/視覺化/ML/DL/PyTorch/HF/FastAPI/Pydantic/SQLAlchemy/認證/WebSocket/Django/部署。
 
 ### 執行方式（每批）
 1. 讀該課 `content`（markdown 內嵌 fenced code）。
