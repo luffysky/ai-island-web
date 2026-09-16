@@ -45,6 +45,13 @@ tsc/next build 綠。（提醒：元件改動要等 GHCR image 重建 + Zeabur �
 
 > **待 Nami 確認風格** 再滾動式套到 ch26(38 課)+ch27(其餘 24 課) 全部 code block——先立一課標竿、避免整批改完才發現風格要調。此為大型內容工程、分批進行。
 
+### ✅✅ 0917 全案完成：ch26(38) + ch27(25) 程式碼註解全數逐行白話化
+- **風格鎖定**：Nami 給 bug 260/262「要像這樣清楚」＝跟 27.3/27.4 標竿一致。
+- **做法**：我親自寫 27.3(NumPy)/27.4(Pandas) 立黃金標竿；其餘 61 課用**平行子代理**（每支領一批不重疊的課、照標竿+簡報改、只產 per-lesson .md、不碰 JSON）→ 我用 `apply_rewrites.py`（顯式 lesson id、只套已完成批次）逐批回灌 → import + tsc/vitest/build gate → commit。
+- **品質關卡**：每批都機器驗過①fence 平衡②prose 與原 JSON byte-identical③程式碼去註解後與原碼逐字相同（未改壞邏輯/縮排/符號）④py_compile 通過⑤無殘留精簡右側註解⑥真 Python 才 text→python，shell/示意圖/公式/JS/TOML/Dockerfile/yaml 一律保 text。
+- **commit 索引**：27.3 `eb7c17ca`、27.4 `33698459`、27 L1-8 `bc8a8535`、27 L9-25 `bdb3cb8f`、26 L0-9 `fec296cd`、26 L10-32（本批）。
+- **紅線把關**：對症 Nami 原本看不懂的精簡註解（全1/全7、mean=0 std=1、seed、axis…）＋各課初學者卡點陷阱（= vs ==、縮排、.loc 含尾 vs .iloc、& 非 and、data leakage、zero_grad、SECRET_KEY 外洩…）都用白話點出。不對學員掛保證。
+
 **Phase 1.5（0917·風格確認 + ch27 L4）**：
 - Nami 再給 bug 260/262（pandas Series 建立、選取資料 df[]/.loc/.iloc）「**要像這樣清楚**」→ 跟 27.3/27.4 逐行白話完全一致＝**風格鎖定**，可放心滾動。
 - 改寫 **ch27 L4「Pandas 瑞士刀」**（Nami 正在讀、bug 260/262 內容就在這課）：9 個 code block 全 `text→python`+逐行白話——DataFrame/Series 建立(含排出來長怎樣)、選取 df[單欄]回Series/df[[多欄]]回DataFrame/.loc標籤vs.iloc位置(切片含尾差異)、缺值 NaN、groupby/pivot_table、merge on/how、pd.cut/apply、to_csv 各參數。4886→6482 字，import DB。commit 見下。
