@@ -23,7 +23,8 @@
 - [x] ~~**ch27 L3「NumPy」立標竿**~~ ✅ 0916（commit `eb7c17ca`）——8 個 code block 全改 `python` + 逐行白話，6002→7121 字，import DB。＝Nami 直接截圖那課。
 - [x] ~~**風格確認**~~ ✅ 0917——Nami 再給 bug 260/262（pandas Series 建立、選取資料 .loc/.iloc）「要像這樣清楚」＝**風格已鎖定**（跟 27.3/27.4 逐行白話一致）。
 - [x] ~~**ch27 L4「Pandas 瑞士刀」**~~ ✅ 0917——Nami 正在讀、且 bug 260/262 內容就在這課。9 個 code block 全改 `python`+逐行白話（DataFrame/Series 建立、選取 df[]/loc/iloc 含含尾差異、缺值、groupby/pivot、merge、pd.cut/apply、to_csv…），4886→6482 字，import DB。
-- [ ] **ch27 其餘 23 課**（L1、L2、L5~L25）逐課改寫 code block 註解。
+- [x] ~~**ch27 L1/L2/L5/L6/L7/L8 批次改寫**~~ ✅ 0917（平行子代理·我逐檔驗過黃金標竿）——L1(全shell/示意圖無 Python 可改)、L2 Jupyter(Colab/magic 白話)、L5 matplotlib/seaborn(12 python·中文字型/heatmap/subplots 卡點)、L6 時序(resample/rolling/回測不偷看未來)、L7 EDA 完整實戰(5步驟)、L8 pandas 5大操作(11 python·& vs and/np.select 順序/shape 非方法)。import ch27 同步 DB。
+- [ ] **ch27 其餘 17 課**（L9~L25）逐課改寫 code block 註解。
 - [ ] **ch26 全 38 課**逐課改寫 code block 註解。
 
 ### 執行方式（每批）
