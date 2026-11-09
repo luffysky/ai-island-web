@@ -9,8 +9,12 @@ const bundleAnalyzer = withBundleAnalyzer({ enabled: process.env.ANALYZE === 'tr
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // 產出精簡的 standalone server（.next/standalone）、大幅縮小 Docker image
-  output: 'standalone',
+  // Docker image 才需要 standalone；Vercel 走自己的建置產物
+  output: process.env.VERCEL ? undefined : 'standalone',
+  // content.ts / quiz-submit 在 runtime 用 fs 讀章節 JSON（DB 失敗時的 fallback），路徑是動態組的、要明確帶進函式
+  outputFileTracingIncludes: {
+    '/**': ['./src/data/**/*.json'],
+  },
   reactStrictMode: true,
   poweredByHeader: false, // 不洩漏框架版本
   // barrel 套件改成 per-export tree-shake（lucide / framer-motion 尤其有感、瘦 client bundle）

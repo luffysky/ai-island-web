@@ -1,31 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-guard";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
+import {
+  FONT_BUCKET as BUCKET,
+  FONT_MAX_MB,
+  FONT_MAX_SIZE,
+  FONT_SLUG_RE as SLUG_RE,
+  fontExtOf,
+  fontObjectPath,
+  normalizeFontWeight,
+} from "@/lib/font-upload";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const BUCKET = "fonts";
-const SLUG_RE = /^[a-z0-9-]+$/;
-const MB = 1024 * 1024;
-const MAX_SIZE = 15 * MB; // 整檔字型，壓上限防 OOM
-
-const EXT_CONTENT_TYPE: Record<string, string> = {
-  ttf: "font/ttf",
-  otf: "font/otf",
-  woff: "font/woff",
-  woff2: "font/woff2",
-};
-
-function extOf(name: string): string | null {
-  const m = /\.([a-z0-9]+)$/i.exec(name.trim());
-  const ext = m?.[1]?.toLowerCase();
-  return ext && ext in EXT_CONTENT_TYPE ? ext : null;
-}
-
 /**
- * POST /api/admin/fonts  (multipart/form-data)
- *   file:         字型檔 (.ttf/.otf/.woff/.woff2)
+ * POST /api/admin/fonts  (JSON；字型檔已先由瀏覽器經 /api/admin/fonts/upload-url 直傳 Storage)
+ *   filename:     原始檔名（判斷副檔名）
  *   family:       顯示名稱（CSS font-family）
  *   slug:         唯一代號 ^[a-z0-9-]+$
  *   category:     分類（sans/serif/mono/display/handwriting…）
@@ -33,61 +24,60 @@ function extOf(name: string): string | null {
  *   languages:    支援語言 csv（例：zh-Hant,en）
  *   license_name / license_url:  授權（建議 OFL）
  *
- * 上傳到 bucket `fonts` 的 `${slug}/${weight}.${ext}`（upsert）、
+ * 檔案位於 bucket `fonts` 的 `${slug}/${weight}.${ext}`，
  * 依 slug upsert `fonts` 一列（同 slug → 合併 weights + file_manifest）。
  */
 export async function POST(req: NextRequest) {
   const gate = await requireAdmin();
   if (!gate.ok) return gate.response;
 
-  let form: FormData;
-  try {
-    form = await req.formData();
-  } catch {
-    return NextResponse.json({ error: "invalid_form_data" }, { status: 400 });
+  const body = await req.json().catch(() => null);
+  if (!body) {
+    return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
 
-  const file = form.get("file");
-  const family = String(form.get("family") ?? "").trim();
-  const displayName = String(form.get("display_name") ?? "").trim() || null;
-  const slug = String(form.get("slug") ?? "").trim().toLowerCase();
-  const category = String(form.get("category") ?? "sans").trim() || "sans";
-  const weightRaw = Number(form.get("weight") ?? 400);
-  const weight = Number.isFinite(weightRaw) && weightRaw > 0 ? Math.round(weightRaw) : 400;
-  const languages = String(form.get("languages") ?? "")
+  const family = String(body.family ?? "").trim();
+  const displayName = String(body.display_name ?? "").trim() || null;
+  const slug = String(body.slug ?? "").trim().toLowerCase();
+  const category = String(body.category ?? "sans").trim() || "sans";
+  const weight = normalizeFontWeight(body.weight);
+  const languages = String(body.languages ?? "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
-  const licenseName = String(form.get("license_name") ?? "").trim() || null;
-  const licenseUrl = String(form.get("license_url") ?? "").trim() || null;
+  const licenseName = String(body.license_name ?? "").trim() || null;
+  const licenseUrl = String(body.license_url ?? "").trim() || null;
 
-  if (!(file instanceof File)) {
-    return NextResponse.json({ error: "file_required" }, { status: 400 });
-  }
   if (!family) {
     return NextResponse.json({ error: "family_required" }, { status: 400 });
   }
   if (!SLUG_RE.test(slug)) {
     return NextResponse.json({ error: "invalid_slug", message: "slug 只能小寫英數與連字號" }, { status: 400 });
   }
-  const ext = extOf(file.name);
+  const ext = fontExtOf(String(body.filename ?? ""));
   if (!ext) {
     return NextResponse.json({ error: "invalid_file_type", message: "只接受 .ttf/.otf/.woff/.woff2" }, { status: 400 });
   }
-  if (file.size > MAX_SIZE) {
-    return NextResponse.json({ error: "too_large", message: `字型檔不可超過 ${MAX_SIZE / MB} MB` }, { status: 400 });
-  }
 
   const admin = createSupabaseAdmin();
-  const path = `${slug}/${weight}.${ext}`;
+  const path = fontObjectPath(slug, weight, ext);
 
   try {
-    const buf = Buffer.from(await file.arrayBuffer());
-    const { error: upErr } = await admin.storage
+    // 檔案是瀏覽器直傳的 → 這裡確認真的傳上去了，並在 server 端複查大小
+    const objectName = path.slice(slug.length + 1);
+    const { data: listed, error: listErr } = await admin.storage
       .from(BUCKET)
-      .upload(path, buf, { contentType: EXT_CONTENT_TYPE[ext], upsert: true });
-    if (upErr) {
-      return NextResponse.json({ error: "upload_failed", message: upErr.message }, { status: 500 });
+      .list(slug, { search: objectName, limit: 10 });
+    if (listErr) {
+      return NextResponse.json({ error: "upload_check_failed", message: listErr.message }, { status: 500 });
+    }
+    const uploaded = (listed ?? []).find((o) => o.name === objectName);
+    if (!uploaded) {
+      return NextResponse.json({ error: "file_required", message: "找不到已上傳的字型檔，請重新上傳" }, { status: 400 });
+    }
+    if (Number(uploaded.metadata?.size ?? 0) > FONT_MAX_SIZE) {
+      await admin.storage.from(BUCKET).remove([path]).catch(() => {});
+      return NextResponse.json({ error: "too_large", message: `字型檔不可超過 ${FONT_MAX_MB} MB` }, { status: 400 });
     }
 
     // 讀既有列（同 slug → 合併）

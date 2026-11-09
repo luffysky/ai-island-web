@@ -11,6 +11,13 @@ import { X, ZoomIn } from "lucide-react";
  * 深色模式顯示 dark 版、淺色模式顯示 light 版。縮圖用 CSS 切換（無閃爍），
  * 燈箱用當前主題挑圖。例：foo_dark.png ↔ foo_light.png。
  */
+// 課程圖放 R2（WebP）；章節內容維持 /lesson-img/xxx.png 的相對路徑，顯示時才換成 R2 網址。
+const LESSON_IMG_BASE = "https://pub-9216b1aca8cd47a08e50eff656429d96.r2.dev";
+function resolveLessonImg(src: string): string {
+  if (!src.startsWith("/lesson-img/")) return src;
+  return LESSON_IMG_BASE + src.replace(/\.(png|jpe?g)$/i, ".webp");
+}
+
 const VARIANT_RE = /(^|[_\-./])(dark|light)(?=[_\-.]|$)/i;
 function toVariant(src: string, to: "light" | "dark"): string {
   const from = to === "light" ? "dark" : "light";
@@ -29,7 +36,7 @@ function useIsLight() {
   return light;
 }
 
-export function LessonImage({ src, alt }: { src?: string; alt?: string }) {
+export function LessonImage({ src: rawSrc, alt }: { src?: string; alt?: string }) {
   const [open, setOpen] = useState(false);
   const [darkFb, setDarkFb] = useState(false);   // dark 變體載入失敗 → 退回 light
   const [lightFb, setLightFb] = useState(false); // light 變體載入失敗 → 退回 dark
@@ -98,8 +105,9 @@ export function LessonImage({ src, alt }: { src?: string; alt?: string }) {
   // 開關時重置縮放
   useEffect(() => { if (!open) resetZoom(); }, [open]);
 
-  if (!src) return null;
+  if (!rawSrc) return null;
 
+  const src = resolveLessonImg(rawSrc);
   const hasVariant = VARIANT_RE.test(src);
   const isDarkSrc = /(^|[_\-./])dark(?=[_\-.]|$)/i.test(src);
   const darkSrc = isDarkSrc ? src : toVariant(src, "dark");

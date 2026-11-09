@@ -5,7 +5,7 @@ import { launchAgentTask } from "@/lib/agent/launch";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-export const maxDuration = 300;
+export const maxDuration = 800; // 任務在 after() 內跑，受此上限（見 lib/agent/launch.ts）
 
 // GET /api/agent/tasks — 我的任務清單（最近 30 筆）；?threadId=xxx 則回該對話串的回合（時間正序）
 export async function GET(req: Request) {

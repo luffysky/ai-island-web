@@ -1,5 +1,6 @@
 "use client";
 
+import { postUpload } from "@/lib/upload-client";
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { Upload, Loader2, X, ImagePlus } from "lucide-react";
@@ -45,8 +46,7 @@ export function ImageUploader({
       const fd = new FormData();
       fd.append("file", file);
       fd.append("folder", folder);
-      const res = await fetch("/api/upload", {
-      credentials: "include", method: "POST", body: fd });
+      const res = await postUpload(fd);
       const j = await res.json();
       if (!res.ok) throw new Error(j.message || j.error || "上傳失敗");
       onUploaded(j.url);

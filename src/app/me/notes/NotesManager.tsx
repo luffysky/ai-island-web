@@ -1,5 +1,6 @@
 "use client";
 
+import { postUpload } from "@/lib/upload-client";
 import { useEffect, useMemo, useState, useRef, type CSSProperties } from "react";
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
@@ -1228,7 +1229,7 @@ function NoteBackgroundEditor({ value, onChange }: { value: NoteBg | null; onCha
       const fd = new FormData();
       fd.append("file", file);
       fd.append("folder", "notes");
-      const res = await fetch("/api/upload", { credentials: "include", method: "POST", body: fd });
+      const res = await postUpload(fd);
       const j = await res.json();
       if (!res.ok) throw new Error(j.message || j.error || t("uploadFailed"));
       onChange({ ...DEFAULT_NOTE_BG, ...(value ?? {}), image: j.url });

@@ -1,5 +1,6 @@
 "use client";
 
+import { postUpload } from "@/lib/upload-client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -209,7 +210,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
     setErr(null); setBusy("photo");
     try {
       const fd = new FormData(); fd.append("file", file);
-      const up = await fetch("/api/upload", { method: "POST", body: fd }).then((r) => r.json());
+      const up = await postUpload(fd).then((r) => r.json());
       if (!up.url) throw new Error(up.message || t("hubUploadFailed"));
       const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title: file.name.slice(0, 60) || "圖片碎片", content: `![](${up.url})`, tags: ["圖片"] });
       setFragments((p) => [fragment, ...p]);
@@ -219,7 +220,7 @@ export function CreatorIslandClient({ workspaceId, initialFragments, initialColl
     setErr(null); setBusy("photo");
     try {
       const fd = new FormData(); fd.append("file", file);
-      const up = await fetch("/api/upload", { method: "POST", body: fd }).then((r) => r.json());
+      const up = await postUpload(fd).then((r) => r.json());
       if (!up.url) throw new Error(up.message || t("hubUploadVideoFailed"));
       const { fragment } = await api("/api/creator-island/fragments", { workspaceId, title: file.name.slice(0, 60) || "影片碎片", content: `!video(${up.url})`, tags: ["影片"] });
       setFragments((p) => [fragment, ...p]);

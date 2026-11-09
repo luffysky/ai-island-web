@@ -6,7 +6,7 @@ import { computeNextRun, type Frequency } from "@/lib/agent/schedule";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-export const maxDuration = 120;
+export const maxDuration = 800; // 任務在 after() 內跑，受此上限（見 lib/agent/launch.ts）
 
 /**
  * AI 員工排程自動跑 —— 撈「已啟用且到期」的排程，每條發起一個 agent 任務（背景跑）。

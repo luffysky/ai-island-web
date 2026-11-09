@@ -466,24 +466,40 @@ async function notifyApprovalToLine(userId: string, taskId: string, approvalId: 
 
 export type CostMode = "saver" | "balanced" | "quality";
 
-export function runAgentTaskDetached(taskId: string, userId: string, goal: string, maxSteps = 40, skill?: SkillCtx, extraTools?: AgentTool[], priorContext = "", costMode: CostMode = "balanced"): void {
+// Vercel 上任務跑在路由的 after() 內、受該路由 maxDuration（800 秒）限制，時間到函式會被直接終止。
+// 提前 20 秒把任務標成 failed，否則 awaiting_approval 的任務會永遠卡住（agent-reaper 只收 planning/running）。
+const VERCEL_RUN_BUDGET_MS = 780_000;
+
+async function failTaskOverBudget(taskId: string) {
+  try {
+    await createSupabaseAdmin().from("agent_tasks")
+      .update({ status: "failed", error: "超過單次執行時間上限（約 13 分鐘），請把任務拆小後再試", finished_at: new Date().toISOString() })
+      .eq("id", taskId)
+      .in("status", ["planning", "running", "awaiting_approval"]);
+  } catch { /* 寫不進去就交給 agent-reaper 收尾 */ }
+}
+
+/** 呼叫端必須把回傳的 Promise 交給 next/server 的 after()，否則在 serverless 上回應送出後就會被凍結。 */
+export async function runAgentTaskDetached(taskId: string, userId: string, goal: string, maxSteps = 40, skill?: SkillCtx, extraTools?: AgentTool[], priorContext = "", costMode: CostMode = "balanced"): Promise<void> {
   if (RUNNING.has(taskId)) return;
   RUNNING.add(taskId);
-  (async () => {
-    // 動態工具：沒帶就自動載入使用者啟用的 MCP server 工具 + OpenAPI 來源工具（背景進行、不擋 POST 回應）
-    const dyn = extraTools ?? [
-      ...await loadUserMcpTools(userId).catch(() => []),
-      ...await loadUserOpenApiTools(userId).catch(() => []),
-    ];
-    // 事件在 runAgentTask 內就已落 DB + 推播；這裡只需把 generator 跑到底、不需消費事件。
-    try { for await (const _ev of runAgentTask(taskId, userId, goal, maxSteps, skill, dyn, priorContext, costMode)) { void _ev; } }
-    catch { /* runAgentTask 自身的 try/catch 已把任務標成 failed */ }
-    finally { RUNNING.delete(taskId); }
-    // 若此任務來自 LINE（thread 標題前綴「📱 LINE」）→ 完成後把結果推回使用者的 LINE。
-    await notifyLineIfFromLine(taskId, userId).catch(() => {});
-    // 2.1.3 執行中自動建 skill：任務成功且夠有重複價值 → 自動蒸餾一份技能建議存起來、前端一鍵採用（自我把關、fire-and-forget）。
-    await maybeSuggestSkill(createSupabaseAdmin(), taskId).catch(() => {});
-  })();
+  const budgetTimer = process.env.VERCEL ? setTimeout(() => { void failTaskOverBudget(taskId); }, VERCEL_RUN_BUDGET_MS) : null;
+  // 動態工具：沒帶就自動載入使用者啟用的 MCP server 工具 + OpenAPI 來源工具（背景進行、不擋 POST 回應）
+  const dyn = extraTools ?? [
+    ...await loadUserMcpTools(userId).catch(() => []),
+    ...await loadUserOpenApiTools(userId).catch(() => []),
+  ];
+  // 事件在 runAgentTask 內就已落 DB + 推播；這裡只需把 generator 跑到底、不需消費事件。
+  try { for await (const _ev of runAgentTask(taskId, userId, goal, maxSteps, skill, dyn, priorContext, costMode)) { void _ev; } }
+  catch { /* runAgentTask 自身的 try/catch 已把任務標成 failed */ }
+  finally {
+    RUNNING.delete(taskId);
+    if (budgetTimer) clearTimeout(budgetTimer);
+  }
+  // 若此任務來自 LINE（thread 標題前綴「📱 LINE」）→ 完成後把結果推回使用者的 LINE。
+  await notifyLineIfFromLine(taskId, userId).catch(() => {});
+  // 2.1.3 執行中自動建 skill：任務成功且夠有重複價值 → 自動蒸餾一份技能建議存起來、前端一鍵採用（自我把關）。
+  await maybeSuggestSkill(createSupabaseAdmin(), taskId).catch(() => {});
 }
 
 /** 跑一個任務，吐事件流。extraTools = 動態工具（如 MCP）；priorContext = 本串先前對話（Phase A 對話延續）。 */

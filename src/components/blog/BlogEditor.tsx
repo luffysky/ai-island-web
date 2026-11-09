@@ -1,5 +1,6 @@
 "use client";
 
+import { postUpload } from "@/lib/upload-client";
 import { useEditor, EditorContent, type Editor } from "@tiptap/react";
 import { FloatingMenu } from "@tiptap/react/menus";
 import { Node as TiptapNode } from "@tiptap/core";
@@ -96,7 +97,7 @@ async function uploadExternalImage(src: string): Promise<string | null> {
     const fd = new FormData();
     fd.append("file", file);
     fd.append("folder", "blog");
-    const up = await fetch("/api/upload", { credentials: "include", method: "POST", body: fd });
+    const up = await postUpload(fd);
     const j = await up.json().catch(() => ({}));
     if (!up.ok) return null;
     return j.url ?? null;
@@ -310,7 +311,7 @@ function Toolbar({ editor }: { editor: Editor }) {
         const fd = new FormData();
         fd.append("file", file);
         fd.append("folder", "blog");
-        const res = await fetch("/api/upload", { credentials: "include", method: "POST", body: fd });
+        const res = await postUpload(fd);
         const j = await res.json();
         if (!res.ok) throw new Error(j.message || j.error || "上傳失敗");
         url = j.url;
@@ -349,7 +350,7 @@ function Toolbar({ editor }: { editor: Editor }) {
       const fd = new FormData();
       fd.append("file", file);
       fd.append("folder", "blog");
-      const res = await fetch("/api/upload", { credentials: "include", method: "POST", body: fd });
+      const res = await postUpload(fd);
       const j = await res.json();
       if (!res.ok) throw new Error(j.message || j.error || "上傳失敗");
       const kb = file.size < 1024 * 1024 ? `${Math.max(1, Math.round(file.size / 1024))} KB` : `${(file.size / 1024 / 1024).toFixed(1)} MB`;

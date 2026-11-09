@@ -1,5 +1,6 @@
 "use client";
 
+import { postUpload } from "@/lib/upload-client";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
@@ -39,7 +40,7 @@ export function NotesBackgroundPicker({
       const fd = new FormData();
       fd.append("file", file);
       fd.append("folder", "notes-bg");
-      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const res = await postUpload(fd);
       const j = await res.json();
       if (j.url) onChange({ ...cfg, preset: "image", imageUrl: j.url });
     } catch {

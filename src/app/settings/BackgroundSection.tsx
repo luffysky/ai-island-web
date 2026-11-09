@@ -1,5 +1,6 @@
 "use client";
 
+import { postUpload } from "@/lib/upload-client";
 import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Loader2, Check, Upload, X } from "lucide-react";
@@ -38,7 +39,7 @@ export function BackgroundSection({ initial }: { initial: string | null }) {
     try {
       const fd = new FormData();
       fd.append("file", f);
-      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const res = await postUpload(fd);
       const j = await res.json().catch(() => ({}));
       if (j.url) await apply(j.url);
     } finally {

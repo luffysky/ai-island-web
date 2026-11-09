@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createSupabaseBrowser } from "@/lib/supabase-browser";
 
 export type FontRow = {
   id: string;
@@ -66,18 +67,40 @@ export function FontsAdminClient({ initialFonts }: { initialFonts: FontRow[] }) 
     setBusy(true);
     setMsg(null);
     try {
-      const fd = new FormData();
-      fd.set("file", file);
-      fd.set("family", family);
-      fd.set("display_name", displayName);
-      fd.set("slug", slug);
-      fd.set("category", category);
-      fd.set("weight", weight);
-      fd.set("languages", languages);
-      fd.set("license_name", licenseName);
-      fd.set("license_url", licenseUrl);
+      // 字型檔可達 15 MB、超過 Vercel 4.5 MB 請求上限 → 先拿簽名、瀏覽器直傳 Storage，再寫 DB
+      const signRes = await fetch("/api/admin/fonts/upload-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug, weight, filename: file.name, size: file.size }),
+      });
+      const sign = await signRes.json().catch(() => ({}));
+      if (!signRes.ok) {
+        setMsg(`上傳失敗：${sign.message ?? sign.error ?? signRes.status}`);
+        return;
+      }
+      const { error: uploadError } = await createSupabaseBrowser()
+        .storage.from("fonts")
+        .uploadToSignedUrl(sign.path, sign.token, file, { contentType: sign.contentType, upsert: true });
+      if (uploadError) {
+        setMsg(`上傳失敗：${uploadError.message}`);
+        return;
+      }
 
-      const res = await fetch("/api/admin/fonts", { method: "POST", body: fd });
+      const res = await fetch("/api/admin/fonts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          filename: file.name,
+          family,
+          display_name: displayName,
+          slug,
+          category,
+          weight,
+          languages,
+          license_name: licenseName,
+          license_url: licenseUrl,
+        }),
+      });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) {
         setMsg(`上傳失敗：${json.message ?? json.error ?? res.status}`);

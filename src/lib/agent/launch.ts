@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase-admin";
 import { runAgentTaskDetached, type CostMode } from "@/lib/agent/orchestrator";
 
@@ -140,6 +141,7 @@ export async function launchAgentTask(opts: {
     .select("id").single();
   if (error || !task) return { error: error?.message ?? "建任務失敗" };
 
-  runAgentTaskDetached(task.id, userId, goal, maxSteps, skill, undefined, priorContext, costMode);
+  // after()：回應送出後繼續跑，直到呼叫路由的 maxDuration（三個入口都設 800 秒）。
+  after(() => runAgentTaskDetached(task.id, userId, goal, maxSteps, skill, undefined, priorContext, costMode));
   return { taskId: task.id, threadId };
 }

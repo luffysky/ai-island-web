@@ -371,7 +371,8 @@ async function askUserAIInner(text: string, profile: UserProfileLite | null, lin
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 // AI call 偶爾 5-15 秒、預設 10s 會被 kill 導致 silent fail
-export const maxDuration = 60;
+// 800：LINE 下令的 Agent 任務在 after() 內跑，受此上限（見 lib/agent/launch.ts）
+export const maxDuration = 800;
 
 const ENDPOINT = "https://api.line.me/v2/bot";
 // 去尾斜線：避免 env 設成 "...pet/" 時組出 "...pet//opportunities"（雙斜線在 LINE 不會自動變連結）
