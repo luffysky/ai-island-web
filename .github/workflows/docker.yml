@@ -11,16 +11,9 @@ name: Build & push image to GHCR
 #    run 排進同組，就會「取消被取代的 run」（true 取消進行中、false 取消還在排隊的 pending）→
 #    兩種都會冒出「Error: The operation was canceled」紅叉。要「完全不出現取消」唯一辦法＝不設 concurrency。
 #    代價：連續推多 commit 會各自 build（平行、較耗分鐘、最後完成的 redeploy 勝出；image 累加式故最終正確）。
+#
+# 🚚 2026-11-09 起正式站部署在 Vercel（push main 自動上線），這支只保留手動觸發。
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - 'docs/**'
-      - '**/*.md'
-      - 'supabase/**'
-      - 'scripts/**'
-      - '.gitignore'
-      - 'bug/**'
   workflow_dispatch: {}
 
 env:

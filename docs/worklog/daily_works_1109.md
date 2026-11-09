@@ -16,3 +16,7 @@
 **待辦**：預覽站驗證 → 切 DNS → 停用 `docker.yml` → 更新 `CLAUDE.md` 部署章節 → 輪替所有金鑰（Zeabur 資安事件）。
 
 **驗證**：`tsc --noEmit` ✅、`vitest run` ✅ 256、`next build` ✅。無 DB 變動。
+
+**補充（同日）**：Vercel 建置 OOM → 在 Vercel 上略過 tsc/eslint（CI + 本機把關）；`/api/og`、`/api/og/cert`、`/api/og/dict` 超過 Edge 4 MB → 改 Node runtime。預覽站驗證：主要頁面/API/OG/PWA 檔 200、ch26 的 56 張課程圖全從 R2 載入、runtime error 0、R2 CORS 允許正式網域 PUT。`docker.yml` 改只能手動觸發，`CLAUDE.md` 部署章節改寫。
+
+**尚未完成**：網域綁定 + Cloudflare DNS 切換、切換後實測 Google/LINE 登入與 webhook、輪替金鑰。

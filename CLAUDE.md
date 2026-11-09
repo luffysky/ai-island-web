@@ -1,6 +1,6 @@
 # AI 島（ai-island-web）— Claude 工作須知
 
-繁體中文專案。Next.js 15 App Router + Supabase + Zeabur。站點：ai-island-web.snowrealm.pet
+繁體中文專案。Next.js 15 App Router + Supabase + Vercel。站點：ai-island-web.snowrealm.pet
 
 ---
 
@@ -49,14 +49,18 @@ PostgREST 預設一次最多回 **1000 筆**。`lessons` 表已 1258 筆、任�
 
 ---
 
-## 部署：Zeabur + GHCR（prebuilt image）
+## 部署：Vercel（2026-11-09 從 Zeabur 遷移，Zeabur 2026-12-31 停運）
 
-- 部署在 **Zeabur**。Zeabur 自家 buildpack（zbpack）**偶爾會把 Next 誤建成「只跑 Caddy 靜態、不起 node server」→ 全站 `/api` 被 Caddy 回 404**（啟動 log 只有 Caddy/GOMAXPROCS、沒有 `▲ Next.js`）。這不是程式問題。
-- **解法 = 用 GHCR 預建 image**（繞開 zbpack）：
-  - `.github/workflows/docker.yml`：push `main` → 用 repo 的 `Dockerfile` build → 推 `ghcr.io/luffysky/ai-island-web:latest`（+ `sha-<short>`）。`Dockerfile` 是 standalone、`CMD node server.js`。
-  - Zeabur 服務設 **Prebuilt Image** = `ghcr.io/luffysky/ai-island-web:latest`。GHCR 私有 → 設 package 為 **Public**、或給 GitHub PAT（scope `read:packages`、user `luffysky`）。Port 3000。runtime env 貼 `.env.local`。
-  - **Prebuilt Image 不會自動拉新 `:latest`** → `docker.yml` 尾巴用 Zeabur GraphQL **`restartService(serviceID, environmentID)`** 自動重部署（image 服務用 `restartService`、**不是** `redeployService`——後者只給綁 git 的服務、會回 `Cannot redeploy in-place`）。token 在 GitHub secret `ZEABUR_API_TOKEN`。
-- 也見記憶 `deploy-zeabur-ghcr-fallback`。
+- Vercel 專案 `ai-island-web`（Pro、Next.js、Node 22、Functions 區域 `sin1`、Fluid）。**push `main` = 自動上線**；其他分支是預覽。環境變數在 Vercel 專案設定，改完要 redeploy。
+- **建置**：Build Command 帶 `--max-old-space-size=4096`。8 GB 建置機跑型別檢查會 OOM，`next.config.mjs` 在 Vercel 上略過 tsc/eslint → **push 前本機 tsc 一定要綠**，CI 也會跑。
+- **Vercel 限制（寫新功能要記得）**：
+  - 請求 body 上限 **4.5 MB**：前端上傳用 `postUpload()`（`lib/upload-client.ts`，大檔自動 presign 直傳 R2），別直接 POST `/api/upload`。
+  - 函式回應後會被凍結：背景工作一定要包 `after()`。Agent 任務上限 800 秒（`lib/agent/launch.ts`、orchestrator 780 秒自動標 failed）。
+  - 沒有常駐 process：記憶體內狀態（`rate-limit.ts` 的計數等）各實例獨立。沒有伺服器 Chromium（不要設 `ENABLE_SERVER_BROWSER`）。
+  - Edge 函式上限 4 MB。
+- **課程圖在 R2**（WebP，`lesson-img/` 前綴）：章節內容維持 `/lesson-img/xxx.png`，`LessonImage` 顯示時換成 R2 網址。新圖要轉 WebP 傳 R2，不要放 `public/`。
+- 排程走 cron-job.org + GitHub Actions（打 `SITE_URL`），不用 Vercel Cron。
+- 舊 Docker 路徑（`Dockerfile`、手動觸發的 `docker.yml`）保留備用。
 
 ---
 
