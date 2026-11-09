@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { NextRequest, NextResponse } from "next/server";
 
 // edge runtime — Satori 在 edge 上更快（跟 /api/og 一致）
-export const runtime = "edge";
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /** 證書 OG 卡：金色慶祝風，跟品牌章節卡明顯不同。?title=&name=&code= */

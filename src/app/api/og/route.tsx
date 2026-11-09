@@ -2,8 +2,8 @@ import { ImageResponse } from "next/og";
 import { NextRequest, NextResponse } from "next/server";
 import { SITE_STATS } from "@/lib/site-stats";
 
-// edge runtime — Satori 在 edge 跑遠快過 nodejs (修 Zeabur 上 502 timeout)
-export const runtime = "edge";
+// nodejs：含 SITE_STATS 後超過 Edge 函式 4 MB 上限
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {

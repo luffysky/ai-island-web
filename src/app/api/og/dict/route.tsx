@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { NextRequest, NextResponse } from "next/server";
 
 // edge runtime — Satori 在 edge 上更快（跟其他 /api/og 一致）
-export const runtime = "edge";
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const CAT: Record<string, { label: string; color: string }> = {
