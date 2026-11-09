@@ -11,6 +11,9 @@ const bundleAnalyzer = withBundleAnalyzer({ enabled: process.env.ANALYZE === 'tr
 const nextConfig = {
   // Docker image 才需要 standalone；Vercel 走自己的建置產物
   output: process.env.VERCEL ? undefined : 'standalone',
+  // 專案太大，Vercel 8 GB 建置機跑型別檢查會 OOM（SIGKILL）；型別與 lint 由 CI（ci.yml）和 push 前的本機檢查把關
+  typescript: { ignoreBuildErrors: !!process.env.VERCEL },
+  eslint: { ignoreDuringBuilds: !!process.env.VERCEL },
   // content.ts / quiz-submit 在 runtime 用 fs 讀章節 JSON（DB 失敗時的 fallback），路徑是動態組的、要明確帶進函式
   outputFileTracingIncludes: {
     '/**': ['./src/data/**/*.json'],
