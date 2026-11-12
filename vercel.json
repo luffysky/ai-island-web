@@ -1,19 +1,19 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "crons": [
-    { "path": "/api/cron/agent-reaper?minutes=20", "schedule": "*/15 * * * *" },
-    { "path": "/api/cron/anomaly-check", "schedule": "*/30 * * * *" },
-    { "path": "/api/cron/ops-alerts", "schedule": "*/30 * * * *" },
-    { "path": "/api/cron/forum-ai-residents?limit=3", "schedule": "15 * * * *" },
-    { "path": "/api/cron/translate-content?limit=12", "schedule": "0 */3 * * *" },
-    { "path": "/api/cron/line-daily?period=daily", "schedule": "0 1 * * *" },
-    { "path": "/api/cron/line-daily?period=weekly", "schedule": "0 14 * * *" },
-    { "path": "/api/cron/kpi-email?period=daily", "schedule": "5 1 * * *" },
-    { "path": "/api/cron/kpi-email?period=weekly", "schedule": "10 1 * * 1" },
-    { "path": "/api/cron/creator-daily-pairing", "schedule": "0 2 * * *" },
-    { "path": "/api/cron/idea-weekly-connection", "schedule": "0 1 * * 1" },
-    { "path": "/api/cron/learning-coach", "schedule": "0 1 * * 1" },
-    { "path": "/api/cron/model-health", "schedule": "17 3 * * *" },
-    { "path": "/api/cron/streak-reminder", "schedule": "0 12 * * *" }
-  ]
+  "schedules": {
+    "agent-reaper": { "schedule": "*/15 * * * *", "path": "/api/cron/agent-reaper?minutes=20", "requestMethod": "GET" },
+    "anomaly-check": { "schedule": "*/30 * * * *", "path": "/api/cron/anomaly-check", "requestMethod": "GET" },
+    "ops-alerts": { "schedule": "*/30 * * * *", "path": "/api/cron/ops-alerts", "requestMethod": "GET" },
+    "forum-ai-residents": { "schedule": "15 * * * *", "path": "/api/cron/forum-ai-residents?limit=3", "requestMethod": "GET" },
+    "translate-content": { "schedule": "0 */3 * * *", "path": "/api/cron/translate-content?limit=12", "requestMethod": "GET" },
+    "line-daily": { "schedule": "0 1 * * *", "path": "/api/cron/line-daily?period=daily", "requestMethod": "GET" },
+    "line-weekly": { "schedule": "0 14 * * *", "path": "/api/cron/line-daily?period=weekly", "requestMethod": "GET" },
+    "kpi-email-daily": { "schedule": "5 1 * * *", "path": "/api/cron/kpi-email?period=daily", "requestMethod": "GET" },
+    "kpi-email-weekly": { "schedule": "10 1 * * 1", "path": "/api/cron/kpi-email?period=weekly", "requestMethod": "GET" },
+    "creator-daily-pairing": { "schedule": "0 2 * * *", "path": "/api/cron/creator-daily-pairing", "requestMethod": "GET" },
+    "idea-weekly-connection": { "schedule": "0 1 * * 1", "path": "/api/cron/idea-weekly-connection", "requestMethod": "GET" },
+    "learning-coach": { "schedule": "0 1 * * 1", "path": "/api/cron/learning-coach", "requestMethod": "GET" },
+    "model-health": { "schedule": "17 3 * * *", "path": "/api/cron/model-health", "requestMethod": "GET" },
+    "streak-reminder": { "schedule": "0 12 * * *", "path": "/api/cron/streak-reminder", "requestMethod": "GET" }
+  }
 }

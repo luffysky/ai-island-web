@@ -43,3 +43,5 @@
 ## ⏰ GitHub Actions 排程搬 Vercel Cron（第四批）
 
 新增 `vercel.json` crons（時間/參數照原 workflow、UTC）：agent-reaper(*/15)、anomaly-check(*/30)、ops-alerts(*/30)、forum-ai-residents(每小時:15)、translate-content(每 3 小時)、line-daily(01:00 daily / 14:00 weekly)、kpi-email(01:05 daily / 週一 01:10 weekly)、creator-daily-pairing(02:00)、idea-weekly-connection / learning-coach(週一 01:00)、model-health(03:17)、streak-reminder(12:00)。12 個 workflow 拿掉 `schedule:`、保留 `workflow_dispatch` 手動觸發；e2e/smoke/wandbox-update（CI 用）不動。路由全走 `verifyCronAuth`，Vercel Cron 自動帶 Bearer CRON_SECRET，免改程式。CLAUDE.md 部署章節同步改寫。
+
+**同日續：Cron Jobs → Vercel Schedules**：Vercel 後台把 Cron Jobs 標為 Legacy。照官方遷移文件把 `vercel.json` 的 `crons` 換成 `schedules`（14 條、具名、path 目標 + `requestMethod: "GET"`、UTC 不變），同一次改動移除 `crons` 避免重複執行。路由不用改（仍驗 Bearer CRON_SECRET）。之後可用 `vercel schedules executions` 看執行紀錄（Cron Jobs 沒有）。
