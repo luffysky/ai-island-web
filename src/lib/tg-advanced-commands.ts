@@ -368,7 +368,7 @@ export async function cmdBroadcast(args: string[], audience: "all" | "premium" =
   // 沒設才 fallback admin token。之前錯用 LINE_CHANNEL_ACCESS_TOKEN（全站沒這個 env）→ 永遠送 0 人。
   const lineToken = process.env.USER_LINE_CHANNEL_TOKEN || process.env.ADMIN_LINE_CHANNEL_TOKEN;
   if (!lineToken) {
-    return "❌ <b>沒設 LINE token</b>\n<i>去 Zeabur 設 USER_LINE_CHANNEL_TOKEN（或 ADMIN_LINE_CHANNEL_TOKEN）才能群發</i>";
+    return "❌ <b>沒設 LINE token</b>\n<i>去 Vercel 設 USER_LINE_CHANNEL_TOKEN（或 ADMIN_LINE_CHANNEL_TOKEN）才能群發</i>";
   }
   const targetCount = (targets as any[])?.length ?? 0;
   if (targetCount === 0) return "📭 <b>沒有可推播的 LINE 綁定用戶</b>";

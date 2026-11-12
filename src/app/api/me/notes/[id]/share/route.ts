@@ -83,7 +83,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       error: "not_found",
       message: noteErr
         ? `找不到筆記（DB: ${noteErr}）`
-        : "找不到這則筆記，或伺服器讀不到（請確認 SUPABASE_SERVICE_ROLE_KEY 已在 Zeabur 設好）",
+        : "找不到這則筆記，或伺服器讀不到（請確認 SUPABASE_SERVICE_ROLE_KEY 已在 Vercel 設好）",
       noteId: id,
     }, { status: 404 });
   }

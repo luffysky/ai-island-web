@@ -41,7 +41,7 @@ export default function AdminTelegramPage() {
       <section className="rounded-xl bg-bg-card border border-border p-4">
         <h2 className="font-bold text-sm mb-1">設定 Webhook</h2>
         <p className="text-xs text-fg-muted mb-4">
-          按下後會呼叫 Telegram 的 setWebhook + setMyCommands。<b>順序提醒</b>：要先設好上面兩個 env（線上記得在 Zeabur 設、不只 .env.local）並重新部署，再按這顆，secret 才會一起註冊上去。
+          按下後會呼叫 Telegram 的 setWebhook + setMyCommands。<b>順序提醒</b>：要先設好上面兩個 env（線上記得在 Vercel 設、不只 .env.local）並重新部署，再按這顆，secret 才會一起註冊上去。
         </p>
         <TelegramSetupButton />
       </section>

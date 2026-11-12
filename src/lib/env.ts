@@ -11,7 +11,7 @@ export function requireEnv(name: string): string {
   const v = process.env[name];
   if (!v) {
     const msg = `[env] required env var "${name}" is missing.\n` +
-      `Please set it in .env.local (dev) or in your hosting provider (Zeabur / Vercel).`;
+      `Please set it in .env.local (dev) or in your hosting provider (Vercel).`;
     // 在 server 啟動時直接拋；client side 不會跑到（NEXT_PUBLIC_* 是 inline 進 bundle）
     if (typeof window === "undefined") {
       console.error(msg);

@@ -121,7 +121,7 @@ export default async function OpsAdminPage() {
           })}
         </div>
         <p className="text-[11px] text-fg-muted mt-3">
-          非 PUBLIC 的 env 都會 mask（前 4 + 中 8 點 + 後 4）。修改請到 Zeabur dashboard。
+          非 PUBLIC 的 env 都會 mask（前 4 + 中 8 點 + 後 4）。修改請到 Vercel å°æ¡è¨­å®。
         </p>
       </section>
     </div>

@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
         { label: "Key", value: parsed.data.key_name },
       ],
       buttons: [
-        { label: "打開 Zeabur", uri: "https://zeabur.com/dashboard", primary: true },
+        { label: "打開 Vercel", uri: "https://vercel.com/dashboard", primary: true },
         { label: "後台檢視", uri: `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}${ADMIN_BASE}/env` },
       ],
     }),

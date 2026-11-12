@@ -283,7 +283,7 @@ async function processTelegramUpdate(token: string, body: any) {
         `<code>user_id: ${tgUserId}</code>`,
         `<code>username: ${escapeHTML(tgUsername ?? "(none)")}</code>`,
         "",
-        "<i>要授權自己：Zeabur env 加</i>",
+        "<i>要授權自己：Vercel env 加</i>",
         `<code>TELEGRAM_OWNER_USER_IDS=${tgUserId}</code>`,
         `<i>或</i> <code>TELEGRAM_OWNER_USERNAMES=${escapeHTML(tgUsername ?? "your_handle")}</code>`,
       ].join("\n"),

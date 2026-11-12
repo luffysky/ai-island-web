@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 /**
  * 統一 cron endpoint 認證、三種 input 都吃：
- *   - Authorization: Bearer <CRON_SECRET>     ← Zeabur Cron / GitHub Actions / 付費版 cron-job.org
+ *   - Authorization: Bearer <CRON_SECRET>     ← GitHub Actions / 付費版 cron-job.org
  *   - x-cron-secret: <CRON_SECRET>            ← 舊風格
  *   - ?secret=<CRON_SECRET>                   ← cron-job.org 免費版只能加 query
  *
@@ -15,7 +15,7 @@ export function verifyCronAuth(req: NextRequest): NextResponse | null {
   const expected = process.env.CRON_SECRET;
   if (!expected || expected.length < 16) {
     return NextResponse.json(
-      { error: "cron_secret_not_set", hint: "Zeabur env 設 CRON_SECRET（≥16 字元）" },
+      { error: "cron_secret_not_set", hint: "Vercel env 設 CRON_SECRET（≥16 字元）" },
       { status: 500 },
     );
   }

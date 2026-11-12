@@ -59,7 +59,7 @@ export function maskKey(key: string): string {
 // 林董：「所有用到那 4 個變數的地方都要這樣操作 是 db 去確認 env 的值」
 //   - 4 個 provider 的 plain key 都存 ai_api_keys.api_key_encrypted、不放 env
 //   - env 只放 AI_KEY_SECRET（用來解 DB 內的 encrypted）
-//   - 換 secret = admin UI rekey（待做）+ 同步 Zeabur env
+//   - 換 secret = admin UI rekey（待做）+ 同步 Vercel env
 //
 // 1 分鐘 in-memory cache（跟 ai-embeddings.ts 同 pattern、減少 DB hit）
 const providerKeyCache = new Map<string, { key: string | null; ts: number }>();

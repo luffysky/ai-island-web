@@ -2,7 +2,7 @@
  * Simple in-memory rate limiter
  *
  * 注意：Memory store 只在單一 server 內有效。
- * 如果 Zeabur 有多個 instance、不同 instance 的計數獨立。
+ * Vercel 會同時跑多個 instance、不同 instance 的計數獨立。
  * 想要分散式 rate limit 要用 Redis / Upstash。
  * 但對個人 project 來說 memory 已經夠用。
  */

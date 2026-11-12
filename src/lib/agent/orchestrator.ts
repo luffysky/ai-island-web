@@ -416,7 +416,7 @@ async function waitForApproval(approvalId: string, taskId: string, timeoutMs = 3
 }
 
 // Phase 2b：背景執行——任務不綁 HTTP 連線，關掉頁面也照跑。
-// Zeabur 是長駐 node server，detached promise 會續跑；步驟寫進 DB、關鍵時刻推播、前端靠輪詢觀看。
+// Vercel 上靠 after() 讓背景任務在回應後續跑（上限 800 秒）；步驟寫進 DB、關鍵時刻推播、前端靠輪詢觀看。
 const RUNNING = new Set<string>();
 // LINE 回報：LINE 發起的任務（thread 標題前綴「📱 LINE」）完成後把結果推回使用者 LINE。
 async function notifyLineIfFromLine(taskId: string, userId: string): Promise<void> {

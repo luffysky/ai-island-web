@@ -161,7 +161,7 @@ export default async function GA4Page() {
         <div className="px-4 pb-4 text-sm space-y-3">
           <p className="text-xs text-fg-muted">
             站內第一方分析已涵蓋主要指標。GA4 是補充、非必要。
-            若仍想接、需在 Zeabur 設 <code>GA4_PROPERTY_ID</code>、<code>GA4_SA_CREDENTIALS</code>、<code>CRON_SECRET</code>。
+            若仍想接、需在 Vercel 設 <code>GA4_PROPERTY_ID</code>、<code>GA4_SA_CREDENTIALS</code>、<code>CRON_SECRET</code>。
             注意：Google 對 service account email 採嚴格驗證、加入 GA4 可能被擋。
           </p>
           <div className="flex flex-wrap gap-2">

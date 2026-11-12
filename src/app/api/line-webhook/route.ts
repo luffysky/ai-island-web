@@ -50,7 +50,7 @@ function adminFollowCard(userId: string, isAdmin: boolean): FlexMessage {
       emoji: "🏝️",
       title: "AI 島 admin bot 已啟動",
       accentColor: ADMIN_ACCENT,
-      body: "把你的 userId 貼進 Zeabur env ADMIN_LINE_USER_ID（或 ADMIN_LINE_USERS JSON）、之後就會收到通知 + 可直接跟我聊。",
+      body: "把你的 userId 貼進 Vercel env ADMIN_LINE_USER_ID（或 ADMIN_LINE_USERS JSON）、之後就會收到通知 + 可直接跟我聊。",
       meta: [{ label: "🆔 userId", value: userId.slice(0, 12) + "..." }],
       buttons: [
         { label: "後台", uri: `${SITE_URL}/${ADMIN_SLUG}/admin`, primary: true },
@@ -380,7 +380,7 @@ export async function POST(req: NextRequest) {
       expected_sig_prefix: expected.slice(0, 16),
       body_len: raw.length,
       secret_length: secret.length,
-      hint: "去 LINE Developer Console → admin channel → Basic settings → Channel secret、整段複製對 Zeabur env、一字不差",
+      hint: "去 LINE Developer Console → admin channel → Basic settings → Channel secret、整段複製對 Vercel env、一字不差",
     });
     return NextResponse.json({ error: "invalid_signature" }, { status: 401 });
   }
@@ -521,7 +521,7 @@ export async function POST(req: NextRequest) {
           : undefined;
         const hint = isAuthErr ? "去後台貼新 API key（Anthropic Console 重發一支）"
           : isModelErr ? "去後台 AI 模型管理啟用 / 換 model"
-          : isDecryptErr ? "Zeabur env AI_KEY_SECRET 跟當時加密的不一樣、用同一把"
+          : isDecryptErr ? "Vercel env AI_KEY_SECRET 跟當時加密的不一樣、用同一把"
           : /限流|429/i.test(errMsg) ? "等 1 分鐘再問、或升 API tier"
           : /超時|太慢|timeout/i.test(errMsg) ? "再傳一次（可能網路抖動）"
           : "看 /admin/errors 抓 stack trace";

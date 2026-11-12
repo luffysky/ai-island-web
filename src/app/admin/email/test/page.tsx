@@ -21,7 +21,7 @@ export default async function AdminEmailTestPage() {
       <PageHero
         icon={FlaskConical}
         title="Email 發送測試"
-        desc="確認 Resend API key、EMAIL_FROM、DKIM 設定是否都接得通。本機 dev / Zeabur prod 都該過。"
+        desc="確認 Resend API key、EMAIL_FROM、DKIM 設定是否都接得通。本機 dev / Vercel prod 都該過。"
         gradient="from-yellow-500/10 via-amber-500/10 to-orange-500/10"
         borderColor="border-yellow-500/30"
       />
@@ -45,7 +45,7 @@ export default async function AdminEmailTestPage() {
             <li>Resend 會給你 3 條 DNS（SPF / DKIM / DMARC）、複製貼到你 domain 的 DNS provider</li>
             <li>等 ~10 分鐘 → Resend 驗證綠燈</li>
             <li>API Keys → Create API Key → 複製</li>
-            <li>Zeabur dashboard 加：<code className="bg-bg px-1 rounded text-xs">RESEND_API_KEY</code> + <code className="bg-bg px-1 rounded text-xs">{`EMAIL_FROM="AI 島 <noreply@snowrealm.pet>"`}</code></li>
+            <li>Vercel å°æ¡è¨­å® 加：<code className="bg-bg px-1 rounded text-xs">RESEND_API_KEY</code> + <code className="bg-bg px-1 rounded text-xs">{`EMAIL_FROM="AI 島 <noreply@snowrealm.pet>"`}</code></li>
             <li>redeploy 後回這頁送測試</li>
           </ol>
         </section>

@@ -36,7 +36,7 @@ export default async function MarketingHubPage() {
   const modules = [
     { href: "/admin/marketing/copy", icon: FileText, title: "AI 文案產生器", desc: "同一主題 → FB / IG / X / Threads / LINE / Email / Blog 7 平台不同 copy" },
     { href: "/admin/marketing/schedule", icon: Calendar, title: "內容日曆 / 排程", desc: `${draftDraft} 草稿、${draftSched} 排程中、${draftPub} 已發佈` },
-    { href: "/admin/marketing/publish", icon: Send, title: "多平台一鍵發佈", desc: "FB / IG / X / Threads / LINE OA / Blog / Email (OAuth 後啟用)" },
+    { href: "/admin/marketing/publish", icon: Send, title: "發佈通路狀態", desc: "LINE OA / Blog / Email 可用；FB / IG / X / Threads 待串接" },
     { href: "/admin/marketing/ads", icon: Target, title: "廣告 Copy 產生", desc: `Meta / Google / TikTok 廣告 copy、${adRunning} 個 running` },
     { href: "/admin/marketing/utm", icon: Link2, title: "UTM Builder", desc: `${utmRows.length} 條短連結、累積 ${utmClicks.toLocaleString()} 次點擊、轉換 ${utmConv} 筆、NT$ ${utmRev.toLocaleString()}` },
     { href: "/admin/marketing/brand", icon: Palette, title: "品牌風格庫", desc: "Brand voice / Tagline / Hashtag pool / 文案守則" },

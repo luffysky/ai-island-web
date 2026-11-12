@@ -776,7 +776,7 @@ export async function POST(req: NextRequest) {
           expected_sig_prefix: expected.slice(0, 16),
           body_len: raw.length,
           secret_length: secret.length,
-          hint: "LINE Console → user channel → Channel secret 整段對 Zeabur env USER_LINE_CHANNEL_SECRET",
+          hint: "LINE Console → user channel → Channel secret 整段對 Vercel env USER_LINE_CHANNEL_SECRET",
         },
       });
     } catch {}

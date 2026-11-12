@@ -80,7 +80,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { href: "/admin/marketing", label: "🚀 行銷主控台" },
       { href: "/admin/marketing/copy", label: "📝 AI 文案產生器" },
       { href: "/admin/marketing/schedule", label: "📅 內容日曆 / 排程" },
-      { href: "/admin/marketing/publish", label: "📤 多平台一鍵發佈" },
+      { href: "/admin/marketing/publish", label: "📤 發佈通路狀態" },
       { href: "/admin/marketing/ads", label: "🎯 廣告 Copy 產生" },
       { href: "/admin/marketing/utm", label: "🔗 UTM Builder" },
       { href: "/admin/marketing/brand", label: "🎨 品牌風格庫" },

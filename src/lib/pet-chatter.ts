@@ -665,7 +665,7 @@ const vipLuffyAmbient: Entry[] = [
   { text: "林董、我是您獨家的寵物喔。", vip: ["luffy"] },
   { text: "董事長您一個人撐起這麼大、辛苦。", vip: ["luffy"] },
   { text: "luffy 今天有沒有想我？", vip: ["luffy"] },
-  { text: "老闆、Zeabur 部署順利嗎？", vip: ["luffy"] },
+  { text: "老闆、Vercel 部署順利嗎？", vip: ["luffy"] },
   { text: "董事長最近熬夜太多、我看在眼裡。", vip: ["luffy"] },
 ];
 

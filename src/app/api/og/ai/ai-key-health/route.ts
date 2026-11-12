@@ -6,7 +6,7 @@ import { requireOwner } from "@/lib/admin-guard";
 /**
  * AI key 真實解密健檢 (public、不洩漏 key 內容、只 mask)
  *
- * AI_KEY_SECRET 改過 / Zeabur env 換新版本後、舊的 encrypted key 解不回來、
+ * AI_KEY_SECRET 改過 / Vercel env 換新版本後、舊的 encrypted key 解不回來、
  * 但前台 UI 不會察覺 (顯示 "已啟用")、askAI 會 silent return null、bot 完全不回。
  *
  * 這個 endpoint 直接撈 ai_api_keys 跟 ai_models、實際呼叫 decryptKey 看真實狀況。

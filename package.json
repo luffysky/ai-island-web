@@ -42,6 +42,7 @@
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
     "@react-three/postprocessing": "^3.0.4",
+    "@sentry/nextjs": "11.10.0",
     "@supabase/ssr": "0.5.2",
     "@supabase/supabase-js": "2.90.1",
     "@tanstack/react-virtual": "^3.13.26",
@@ -131,5 +132,8 @@
   },
   "engines": {
     "node": "22.x"
+  },
+  "overrides": {
+    "rollup": "4.61.1"
   }
 }

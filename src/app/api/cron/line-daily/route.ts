@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 /**
  * 每日 LINE push 報表
  *
- * 用外部 cron 觸發（GitHub Actions / Zeabur cron / cron-job.org / EasyCron）：
+ * 用外部 cron 觸發（GitHub Actions / cron-job.org / EasyCron）：
  *   GET https://你的網站/api/cron/line-daily?period=daily
  *   Header: x-cron-secret: ${CRON_SECRET}
  *

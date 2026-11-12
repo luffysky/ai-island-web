@@ -83,7 +83,7 @@ export default async function DiscordConsole() {
           ))}
         </ul>
         <p className="text-[11px] text-fg-muted mt-3">
-          在 Zeabur project Variables 填齊、redeploy 後生效。沒設的 endpoint 會無感降級、不會炸。
+          在 Vercel å°æ¡ Environment Variables 填齊、redeploy 後生效。沒設的 endpoint 會無感降級、不會炸。
         </p>
       </section>
 

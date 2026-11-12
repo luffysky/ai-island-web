@@ -11,7 +11,7 @@ export default function PublishPage() {
     { key: "threads", name: "Threads", emoji: "🧵", env: "THREADS_ACCESS_TOKEN", doc: "https://developers.facebook.com/docs/threads", note: "Meta Threads API、跟 IG 共用" },
     { key: "linkedin", name: "LinkedIn", emoji: "💼", env: "LINKEDIN_ACCESS_TOKEN", doc: "https://learn.microsoft.com/en-us/linkedin/marketing/", note: "公司頁 / 個人發文" },
     { key: "line", name: "LINE Official Account", emoji: "💚", env: "ADMIN_LINE_CHANNEL_TOKEN ✅", doc: "/admin/line/broadcast", note: "已配好、直接用群發" },
-    { key: "blog", name: "站內部落格", emoji: "📰", env: "✅ 內建", doc: "/admin/blog (待建)", note: "AI 寫 + 一鍵發到 /blogs" },
+    { key: "blog", name: "站內部落格", emoji: "📰", env: "✅ 內建", doc: "/admin/blog-seed", note: "AI 起草 → 審核 → 發佈到 /blogs" },
     { key: "email", name: "Email Newsletter", emoji: "📧", env: "RESEND_API_KEY ✅", doc: "/admin/email/campaigns", note: "已配好、用 Email Campaigns" },
   ];
 
@@ -19,8 +19,8 @@ export default function PublishPage() {
     <div className="space-y-4">
       <PageHero
         icon={Send}
-        title="多平台一鍵發佈"
-        desc="排程到期或手動觸發、把同一草稿推到多平台。各平台需先設 OAuth / API token、已配好可立即用。"
+        title="發佈通路狀態"
+        desc="各發佈通路目前能不能用、要設什麼。可用的通路點「內部入口」直接去發；外部社群尚未串接自動發文。"
         gradient="from-emerald-500/10 via-green-500/10 to-lime-500/10"
         borderColor="border-emerald-500/30"
       />
@@ -45,9 +45,15 @@ export default function PublishPage() {
             </div>
             <div className="text-[11px] text-fg-muted">{p.note}</div>
             <div className="text-[10px] text-fg-muted/70 mt-1 font-mono break-all">env: {p.env}</div>
-            <a href={p.doc} target="_blank" rel="noopener noreferrer" className="text-[10px] text-accent hover:underline mt-1 inline-block">
-              {p.doc.startsWith("http") ? "→ 開發文件" : "→ 內部入口"}
-            </a>
+            {p.doc.startsWith("http") ? (
+              <a href={p.doc} target="_blank" rel="noopener noreferrer" className="text-[10px] text-accent hover:underline mt-1 inline-block">
+                → 開發文件
+              </a>
+            ) : (
+              <Link href={adminHref(p.doc) as any} className="text-[10px] text-accent hover:underline mt-1 inline-block">
+                → 內部入口
+              </Link>
+            )}
           </div>
         ))}
       </div>

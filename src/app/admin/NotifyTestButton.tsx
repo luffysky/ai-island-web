@@ -18,7 +18,7 @@ export function NotifyTestButton() {
       });
       const ct = res.headers.get("content-type") ?? "";
       if (!ct.includes("application/json")) {
-        setResult(`❌ API 沒回 JSON（${res.status}）、可能 Zeabur 還在 build`);
+        setResult(`❌ API 沒回 JSON（${res.status}）、可能 Vercel 還在部署`);
         return;
       }
       const data = await res.json();

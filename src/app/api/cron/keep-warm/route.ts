@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
     if (!headerOk && !queryOk) {
       return NextResponse.json({
         error: "unauthorized",
-        hint: "URL 加 ?secret=YOUR_CRON_SECRET、或 header Authorization: Bearer YOUR_CRON_SECRET、或 Zeabur env 刪掉 CRON_SECRET（公開模式、推薦給 warm-up）",
+        hint: "URL 加 ?secret=YOUR_CRON_SECRET、或 header Authorization: Bearer YOUR_CRON_SECRET、或 Vercel env 刪掉 CRON_SECRET（公開模式、推薦給 warm-up）",
       }, { status: 401 });
     }
   }

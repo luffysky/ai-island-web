@@ -161,7 +161,7 @@ export async function GET(req: NextRequest) {
       ok: false,
       reason: "decrypt_failed",
       error: e?.message,
-      hint: "AI_KEY_SECRET env 跟當時加密的不一樣、Zeabur env 對齊；或刪掉這 row 重貼一次",
+      hint: "AI_KEY_SECRET env 跟當時加密的不一樣、Vercel env 對齊；或刪掉這 row 重貼一次",
     });
   }
 

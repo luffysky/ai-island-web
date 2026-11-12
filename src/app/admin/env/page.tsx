@@ -183,7 +183,7 @@ export default async function AdminEnvPage() {
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <Key className="w-6 h-6" /> 環境變數面板
           <Hint title="環境變數（Environment Variable / ENV）">
-            程式跑的時候、需要從外面塞給它的設定值。例如資料庫網址、第三方 API 金鑰、寄信地址等。我們把這些設在 Zeabur dashboard、網站才能讀到。
+            程式跑的時候、需要從外面塞給它的設定值。例如資料庫網址、第三方 API 金鑰、寄信地址等。我們把這些設在 Vercel å°æ¡è¨­å®、網站才能讀到。
           </Hint>
         </h1>
         <p className="text-sm text-fg-muted mt-1 leading-relaxed">
@@ -334,9 +334,9 @@ export default async function AdminEnvPage() {
           / 瀏覽器 DevTools。
         </div>
         <div>
-          ⚠️ <b>線上要生效一定要去 Zeabur dashboard 設</b>：本地 <code className="font-mono text-fg">.env.local</code> 只影響
-          <code className="font-mono text-fg"> npm run dev</code>、不會被 deploy。線上正式環境的 ENV 是 Zeabur 進程環境變數、要在
-          <a href="https://zeabur.com/dashboard" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline mx-1">Zeabur dashboard → Service → Variables</a>
+          ⚠️ <b>線上要生效一定要去 Vercel å°æ¡è¨­å® 設</b>：本地 <code className="font-mono text-fg">.env.local</code> 只影響
+          <code className="font-mono text-fg"> npm run dev</code>、不會被 deploy。線上正式環境的 ENV 是 Vercel 專案環境變數、要在
+          <a href="https://vercel.com/dashboard" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline mx-1">Vercel å°æ¡è¨­å® → Service → Variables</a>
           手動加、儲存後自動 redeploy 才生效。
         </div>
         <div>

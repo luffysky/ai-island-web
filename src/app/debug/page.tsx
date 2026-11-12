@@ -40,7 +40,7 @@ export default async function DebugMiddlewarePage() {
       <p style={{ color: "#888", marginTop: 20 }}>
         如果 x-mw-pass 顯示 (none)、表示 middleware 沒跑、deploy 沒含到新 middleware
         <br />
-        如果 ADMIN_SLUG 顯示 (not set)、Zeabur env 沒設好
+        如果 ADMIN_SLUG 顯示 (not set)、Vercel env 沒設好
       </p>
     </div>
   );

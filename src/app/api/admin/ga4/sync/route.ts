@@ -2,7 +2,7 @@
  * GA4 Data API → analytics_snapshots 同步
  *
  * 觸發方式：
- * 1. Zeabur Cron Job：每天午夜 call GET /api/admin/ga4/sync
+ * 1. cron-job.org / GitHub Actions：每天午夜 call GET /api/admin/ga4/sync
  *    需要 header: x-cron-secret = process.env.CRON_SECRET
  * 2. 手動：admin 後台按按鈕 POST
  *
@@ -11,7 +11,7 @@
  * 【推薦】OAuth2 Refresh Token（繞過 GA4 後台加 service account 卡死的 bug）
  *   1. Google Cloud Console 開啟 Google Analytics Data API
  *   2. 建「OAuth 用戶端 ID（網頁應用程式）」、在 OAuth Playground 用管理員帳號授權榨出 refresh token
- *   3. Zeabur env：
+ *   3. Vercel env：
  *      - GA4_PROPERTY_ID (9 位數純數字、例：123456789)
  *      - GA4_CLIENT_ID / GA4_CLIENT_SECRET / GA4_REFRESH_TOKEN
  *      - CRON_SECRET = 隨機字串(≥16)

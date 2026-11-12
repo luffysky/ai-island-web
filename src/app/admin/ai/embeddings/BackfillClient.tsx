@@ -39,7 +39,7 @@ export function BackfillClient({ lessonNeedBackfill, forumNeedBackfill }: {
         const body = await res.text().catch(() => "");
         const looksLike404 = body.includes("<!DOCTYPE") && res.status === 404;
         setLog(`❌ API 沒回 JSON（status ${res.status}）${looksLike404
-          ? "\n💡 Zeabur 可能還在 build 部署、等 1-2 分鐘重試"
+          ? "\n💡 Vercel 可能還在部署、等 1-2 分鐘重試"
           : "\n💡 看 console 詳細：" + body.slice(0, 200)
         }`);
         return;

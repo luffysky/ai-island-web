@@ -13,7 +13,7 @@
  *   }
  *
  * ⚠️ in-memory 只在單一 instance 有效（見 rate-limit.ts 註解）。
- *    Zeabur scale 到多 instance 時，把 rateLimit() 換成 Upstash Redis 版即可，
+ *    Vercel 多個 instance 時，把 rateLimit() 換成 Upstash Redis 版即可，
  *    這個 wrapper 介面不用動。
  */
 
@@ -30,7 +30,7 @@ export interface EnforceOptions {
 }
 
 /**
- * 取 client IP — 依 Zeabur / Cloudflare / 標準 proxy header 順序。
+ * 取 client IP — 依 Vercel / Cloudflare / 標準 proxy header 順序。
  * 注意：header 可被偽造，僅用於 rate-limit 粗分流，不可當身份依據。
  */
 export function clientIp(req: NextRequest): string {

@@ -96,7 +96,8 @@ export default function PrivacyPage() {
         <li><strong>Supabase</strong>（資料庫、認證、Storage）— <a href="https://supabase.com/privacy" target="_blank" rel="noopener">隱私政策</a></li>
         <li><strong>Anthropic Claude / OpenAI GPT / Google Gemini / Groq</strong>（AI 服務、企業 API、不訓練模型）</li>
         <li><strong>Google OAuth / LINE Login</strong>（第三方登入）</li>
-        <li><strong>Zeabur</strong>（網站託管）</li>
+        <li><strong>Vercel</strong>（網站託管）、<strong>Cloudflare R2</strong>（檔案與圖片儲存）</li>
+        <li><strong>Google 翻譯</strong>（選英日韓介面時，畫面上尚未翻譯的中文文字會送去機器翻譯並快取，可能包含頁面上顯示的貼文內容；輸入框內容不會送出）</li>
         <li><strong>Google Analytics 4</strong>（流量分析、IP 匿名化）</li>
         <li><strong>IPInfo / OpenStreetMap Nominatim</strong>（IP → 大致地理位置反查）</li>
         <li><strong>Resend</strong>（系統 email 寄送）</li>

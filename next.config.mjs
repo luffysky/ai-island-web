@@ -1,5 +1,6 @@
 import withBundleAnalyzer from '@next/bundle-analyzer';
 import createNextIntlPlugin from 'next-intl/plugin';
+import { withSentryConfig } from '@sentry/nextjs/config';
 
 // i18n（cookie 選語言、無 [locale] 路由）→ 讀 src/i18n/request.ts
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
@@ -79,4 +80,13 @@ const nextConfig = {
   },
 };
 
-export default withNextIntl(bundleAnalyzer(nextConfig));
+// Sentry：只在有 SENTRY_AUTH_TOKEN 時上傳 source map（Vercel env 設好才會），沒有就只是包一層、不影響建置。
+export default withSentryConfig(withNextIntl(bundleAnalyzer(nextConfig)), {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: !process.env.CI,
+  telemetry: false,
+  widenClientFileUpload: true,
+  sourcemaps: { disable: !process.env.SENTRY_AUTH_TOKEN, deleteSourcemapsAfterUpload: true },
+});

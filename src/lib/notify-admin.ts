@@ -361,7 +361,7 @@ async function sendTelegram(botToken: string, chatId: string, text: string, kind
         chat_id_prefix: chatId.slice(0, 6) + "...",
         kind: kind ?? "(no-kind)",
         hint: causeMsg.includes("TIMEOUT") || causeMsg.includes("timeout") ? "Telegram 慢回 > 10s、可能臨時負載"
-            : causeMsg.includes("ENOTFOUND") || causeMsg.includes("EAI_AGAIN") ? "DNS 解析 telegram.org 失敗、Zeabur 網路問題"
+            : causeMsg.includes("ENOTFOUND") || causeMsg.includes("EAI_AGAIN") ? "DNS 解析 telegram.org 失敗、伺服器網路問題"
             : causeMsg.includes("ECONNRESET") || causeMsg.includes("UND_ERR") ? "TCP 連線斷、過會再試"
             : "看 cause 細節",
       }, "warn"); // 網路暫時抖動 → warn，不算「錯誤激增」
@@ -482,7 +482,7 @@ async function sendDiscord(url: string, text: string) {
         cause: causeMsg,
         cause_code: lastErr?.cause?.code,
         hint: causeMsg.includes("TIMEOUT") || causeMsg.includes("timeout") ? "Discord 慢回 > 10s"
-            : causeMsg.includes("ENOTFOUND") ? "DNS 解析 discord.com 失敗、Zeabur 網路問題"
+            : causeMsg.includes("ENOTFOUND") ? "DNS 解析 discord.com 失敗、伺服器網路問題"
             : causeMsg.includes("ECONNRESET") ? "TCP 連線斷、過會再試"
             : "看 cause",
       }, "warn"); // 網路暫時抖動 → warn，不算「錯誤激增」

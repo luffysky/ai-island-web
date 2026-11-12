@@ -36,7 +36,7 @@ const GEO_TTL = 24 * 3600 * 1000;
 const GEO_CACHE_MAX = 5000;
 
 function getClientIp(req: NextRequest): string | null {
-  // Zeabur / Cloudflare 都用 X-Forwarded-For 傳 client IP
+  // Vercel / Cloudflare 都用 X-Forwarded-For 傳 client IP
   const xff = req.headers.get("x-forwarded-for");
   if (xff) return xff.split(",")[0].trim();
   return req.headers.get("cf-connecting-ip") || req.headers.get("x-real-ip");

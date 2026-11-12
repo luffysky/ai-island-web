@@ -48,7 +48,7 @@ export function EnvRequestsPanel() {
     const ok = await confirm({
       title: status === "done" ? "標記為已完成？" : "拒絕這條申請？",
       description: status === "done"
-        ? "確認你已經到 Zeabur 把這個 ENV 設好了。"
+        ? "確認你已經到 Vercel 把這個 ENV 設好了。"
         : "拒絕後申請人會看到狀態變紅色。",
       confirmLabel: status === "done" ? "✓ 標完成" : "✕ 拒絕",
       destructive: status === "rejected",
@@ -99,7 +99,7 @@ export function EnvRequestsPanel() {
         <EmptyState
           icon={Sprout}
           title="還沒有任何申請"
-          desc="需要新增 / 修改 Zeabur 環境變數時、點上面按鈕提交申請、林董會收到 LINE 通知"
+          desc="需要新增 / 修改 Vercel 環境變數時、點上面按鈕提交申請、林董會收到 LINE 通知"
         />
       ) : (
         <ul className="divide-y divide-border">
@@ -157,12 +157,12 @@ function RequestRow({
       {isPending && onResolve && (
         <div className="flex items-center gap-2 flex-shrink-0">
           <a
-            href="https://zeabur.com/dashboard"
+            href="https://vercel.com/dashboard"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[10px] px-2 py-1 rounded-full border border-border hover:border-accent inline-flex items-center gap-1 text-fg-muted hover:text-accent transition"
           >
-            <ExternalLink size={10} /> Zeabur
+            <ExternalLink size={10} /> Vercel
           </a>
           <button
             onClick={() => onResolve(req.id, "done")}
@@ -259,7 +259,7 @@ function RequestModal({
           </div>
           <div className="text-[10px] text-fg-muted leading-relaxed bg-bg-elevated rounded-lg p-2">
             <Shield size={12} className="inline-block align-[-2px] mr-1" /><b>提醒</b>：這只送出「申請單」、變數的 <b>值不要寫在用途欄</b>。
-            林董收到 LINE 通知後會私下跟你確認、再到 Zeabur dashboard 加。
+            林董收到 LINE 通知後會私下跟你確認、再到 Vercel å°æ¡è¨­å® 加。
           </div>
         </div>
         <footer className="px-5 py-3 border-t border-border flex gap-2">

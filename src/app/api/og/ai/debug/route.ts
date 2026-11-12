@@ -120,7 +120,7 @@ function diagnoseAll(r: any): string[] {
     if (info.set) {
       out.push(`✅ ${k} 已設、長度 ${info.length}、${info.prefix}...${info.suffix}`);
     } else {
-      out.push(`❌ ${k} 沒設、Zeabur 環境變數要加`);
+      out.push(`❌ ${k} 沒設、Vercel 環境變數要加`);
     }
   }
 
