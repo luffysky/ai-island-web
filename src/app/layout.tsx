@@ -40,6 +40,8 @@ import { OnboardingTour } from "@/components/onboarding/OnboardingTour";
 import { OnboardingWizard } from "@/components/onboarding/OnboardingWizard";
 import { SITE_STATS } from "@/lib/site-stats";
 import { organizationSchema, websiteSchema, jsonLdScript } from "@/lib/seo-jsonld";
+import { AutoTranslate } from "@/components/i18n/AutoTranslate";
+import { htmlLang } from "@/i18n/locales";
 
 const TITLE = `AI 島：${SITE_STATS.chapterCount} 章全端養成班`;
 const DESCRIPTION = `用最簡單的方式學會最難的技術—HTML 到 AI Agent ${SITE_STATS.chapterCount} 章全端 + 遊戲化學習。`;
@@ -136,7 +138,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html
-      lang={locale === "en" ? "en" : locale === "ja" ? "ja" : locale === "ko" ? "ko" : "zh-Hant-TW"}
+      lang={htmlLang(locale)}
       data-mode={mode}
       style={themeStyle}
       className={`${inter.variable} ${outfit.variable} ${jbMono.variable}`}
@@ -146,6 +148,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+        {/* 簡體字形用 SC，繁體的 TC 仍保留給沒轉到的字 */}
+        {locale === "zh-CN" && (
+          <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+        )}
         {/* JSON-LD 全站結構化資料：Organization + WebSite */}
         <script
           type="application/ld+json"
@@ -215,6 +221,7 @@ gtag('config', '${gaId}');`}
               <WebVitalsReporter />
               <ThemeFontLoader />
               <BackgroundLayer initial={bgSpec} />
+              <AutoTranslate locale={locale} />
               <PWAInstall />
               <OfflineBanner />
               <LineBindBanner />

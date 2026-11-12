@@ -36,7 +36,8 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const q = String(body.q ?? "").slice(0, MAX_CHARS);
   const source = String(body.source ?? "auto");
-  const target = String(body.target ?? "en");
+  // Google 的 "zh" 是簡體；站上的 zh 是繁體
+  const target = String(body.target ?? "en") === "zh" ? "zh-TW" : String(body.target ?? "en");
   if (!q.trim()) return NextResponse.json({ translated: "", detected: source });
   if (source === target && source !== "auto") return NextResponse.json({ translated: q, detected: source });
 

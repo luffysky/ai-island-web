@@ -2510,6 +2510,16 @@
       "shareLucky": "Lucky color {color}｜Lucky number {number}",
       "shareFrom": "— From AI Island Daily Fortune ai-island-web.snowrealm.pet"
     },
+    "share": {
+      "title": "Share today's fortune",
+      "shareTo": "Share to another app",
+      "copyLink": "Copy link",
+      "linkCopied": "Link copied",
+      "download": "Download card",
+      "previewAlt": "Today's fortune share card",
+      "note": "Share your personal fortune card with friends (for fun only)",
+      "close": "Close"
+    },
     "form": {
       "title": "daily fortune",
       "subtitle": "Fill in your birthday once and we will predict your fortune every day.",
@@ -2617,6 +2627,8 @@
       "upper": "Shang Gua",
       "lower": "Xia Gua",
       "moving": "move",
+      "lockedTitle": "You've used today's free AI reading",
+      "lockedDesc": "The hexagram and its short meaning are always free. Upgrade your membership for unlimited in-depth AI readings. You'll also get 1 free reading again tomorrow.",
       "disclaimer": "The I Ching is a tool to help you think from a different perspective. It is for reference only and does not predict good or bad luck."
     },
     "history": {

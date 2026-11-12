@@ -10,6 +10,7 @@ import { callAI } from "@/lib/ai-providers";
 import { decryptKey } from "@/lib/ai-crypto";
 import { pickModelForUsage } from "@/lib/ai-usage-models";
 import { guessLocale } from "@/lib/gtranslate";
+import { toSimplifiedDeep } from "@/lib/zh-convert";
 
 export type ContentSourceType = "lesson" | "chapter" | "blog" | "forum" | "dictionary";
 
@@ -48,6 +49,7 @@ async function fetchTranslationRows(
 export async function getCachedTranslation(
   sourceType: ContentSourceType, sourceId: string | number, field: string, locale: string, zhText: string,
 ): Promise<string | null> {
+  if (locale === "zh-CN") return toSimplifiedDeep(await getCachedTranslation(sourceType, sourceId, field, "zh", zhText)) ?? toSimplifiedDeep(zhText || null);
   // 原文為空、或「原文語言＝檢視語言」→ 直接用原文（不查 DB、支援任意語言原文）。
   if (!zhText || !zhText.trim() || guessLocale(zhText) === locale) return null;
   try {
@@ -62,6 +64,7 @@ export async function getCachedTranslation(
 export async function getCachedTranslations(
   sourceType: ContentSourceType, sourceId: string | number, locale: string, fields: Record<string, string>,
 ): Promise<Record<string, string>> {
+  if (locale === "zh-CN") return toSimplifiedDeep(await getCachedTranslations(sourceType, sourceId, "zh", fields).then((tr) => ({ ...fields, ...tr })));
   const out: Record<string, string> = {};
   // 同一筆內容語言一致：取最長欄位判斷原文語言，若＝檢視語言則全用原文（不查 DB）。
   const sample = Object.values(fields).map(String).sort((a, b) => b.length - a.length)[0] ?? "";
@@ -106,6 +109,7 @@ async function fetchChapterBundle(
 export async function localizeChapter<T extends { id: any; title?: string; subtitle?: string; lessons?: any[] }>(
   chapter: T, locale: string,
 ): Promise<T> {
+  if (locale === "zh-CN") return toSimplifiedDeep(await localizeChapter(chapter, "zh"));
   if (!chapter) return chapter;
   // 章內容語言一致：以標題判斷原文語言，＝檢視語言就用原文（不查 DB）。
   if (guessLocale(String(chapter.title ?? "")) === locale) return chapter;
@@ -138,6 +142,7 @@ export async function localizeChapter<T extends { id: any; title?: string; subti
 export async function localizeChapterMetas<T extends { id: any; title?: string; subtitle?: string }>(
   metas: T[], locale: string,
 ): Promise<T[]> {
+  if (locale === "zh-CN") return toSimplifiedDeep(await localizeChapterMetas(metas, "zh"));
   if (!Array.isArray(metas) || metas.length === 0) return metas;
   // 全部項目原文語言都＝檢視語言 → 用原文（不查 DB）；只要有一項是別的語言就照常撈譯文（支援混語清單）。
   if (metas.every((m) => guessLocale(String(m.title ?? "")) === locale)) return metas;
@@ -175,6 +180,7 @@ export async function localizeChapterMetas<T extends { id: any; title?: string; 
 export async function localizeList<T extends Record<string, any>>(
   sourceType: ContentSourceType, items: T[], locale: string, fields: string[], idKey: keyof T = "id" as keyof T,
 ): Promise<T[]> {
+  if (locale === "zh-CN") return toSimplifiedDeep(await localizeList(sourceType, items, "zh", fields, idKey));
   if (!Array.isArray(items) || items.length === 0) return items;
   // 全部項目原文語言都＝檢視語言 → 用原文（不查 DB）；混語清單則照常撈譯文。
   if (items.every((it) => guessLocale(String(it[fields[0]] ?? "")) === locale)) return items;

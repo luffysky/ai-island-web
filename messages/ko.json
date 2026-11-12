@@ -2510,6 +2510,16 @@
       "shareLucky": "행운의 색 {color}｜행운의 숫자 {number}",
       "shareFrom": "— AI Island Daily Fortune에서 ai-island-web.snowrealm.pet"
     },
+    "share": {
+      "title": "오늘의 운세 공유",
+      "shareTo": "다른 앱으로 공유",
+      "copyLink": "링크 복사",
+      "linkCopied": "링크를 복사했어요",
+      "download": "카드 다운로드",
+      "previewAlt": "오늘의 운세 공유 카드",
+      "note": "나만의 운세 카드를 친구에게 공유해 보세요 (참고·재미용)",
+      "close": "닫기"
+    },
     "form": {
       "title": "매일의 운세",
       "subtitle": "생일을 한 번만 입력하시면 매일 당신의 운세를 예측해 드립니다.",
@@ -2617,6 +2627,8 @@
       "upper": "샹 구아",
       "lower": "시아 구아",
       "moving": "이동하다",
+      "lockedTitle": "오늘의 무료 AI 풀이를 사용했어요",
+      "lockedDesc": "괘상과 간단한 풀이는 언제나 무료예요. AI 심층 풀이를 무제한으로 쓰려면 멤버십을 업그레이드하세요. 내일 다시 1회 무료로 쓸 수 있어요.",
       "disclaimer": "I Ching은 다른 관점에서 생각하는 데 도움이 되는 도구입니다. 이는 단지 참고용일 뿐이며 행운이나 불운을 예측하지 않습니다."
     },
     "history": {

@@ -8,7 +8,8 @@ import { Languages, Loader2, Check } from "lucide-react";
 // 用法：<TranslateButton text={comment.content} /> —— 丟哪都行（留言、貼文、AI 回覆…）。
 
 const LANGS = [
-  { c: "zh", l: "中文" },
+  { c: "zh", l: "繁體中文" },
+  { c: "zh-CN", l: "简体中文" },
   { c: "en", l: "English" },
   { c: "ja", l: "日本語" },
   { c: "ko", l: "한국어" },

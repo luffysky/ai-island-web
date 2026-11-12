@@ -61,6 +61,11 @@
   --elev-3: 0 10px 30px rgba(0,0,0,0.38);
   --elev-4: 0 18px 44px rgba(0,0,0,0.45);
 }
+/* 簡體版：字形改用 SC */
+:root:lang(zh-Hans-CN) {
+  --font-cjk: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Noto Sans TC", sans-serif;
+}
+
 
 * { box-sizing: border-box; }
 

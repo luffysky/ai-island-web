@@ -6,10 +6,10 @@ import { Languages, Check, ChevronDown } from "lucide-react";
 import { LOCALES, LOCALE_NAMES, LOCALE_COOKIE } from "@/i18n/locales";
 
 /** 手機用短碼、桌面用全名。 */
-const LOCALE_SHORT: Record<string, string> = { zh: "繁", en: "EN", ja: "日", ko: "한" };
+const LOCALE_SHORT: Record<string, string> = { zh: "繁", "zh-CN": "简", en: "EN", ja: "日", ko: "한" };
 
 /**
- * 語言切換（中/英/日/韓）。自訂下拉選單（不用原生 <select>，才能好好美化 + 對比清楚）。
+ * 語言切換（繁/簡/英/日/韓）。自訂下拉選單（不用原生 <select>，才能好好美化 + 對比清楚）。
  * 選了寫 LOCALE cookie 後整頁 reload → 下次請求 server 讀新語言。cookie-based、不改路由。
  */
 export function LanguageSwitcher({ className = "" }: { className?: string }) {
@@ -33,7 +33,7 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
   };
 
   return (
-    <div ref={ref} className={`relative shrink-0 ${className}`}>
+    <div ref={ref} translate="no" className={`relative shrink-0 ${className}`}>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}

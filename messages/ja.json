@@ -2510,6 +2510,16 @@
       "shareLucky": "ラッキーカラー{color}｜ラッキーナンバー{number}",
       "shareFrom": "— AI Island Daily Fortuneより ai-island-web.snowrealm.pet"
     },
+    "share": {
+      "title": "今日の運勢をシェア",
+      "shareTo": "ほかのアプリでシェア",
+      "copyLink": "リンクをコピー",
+      "linkCopied": "リンクをコピーしました",
+      "download": "カードをダウンロード",
+      "previewAlt": "今日の運勢シェアカード",
+      "note": "あなただけの運勢カードを友だちにシェアしよう（参考・娯楽用です）",
+      "close": "閉じる"
+    },
     "form": {
       "title": "毎日の運勢",
       "subtitle": "生年月日を一度入力していただくと、毎日の運勢を占います。",
@@ -2617,6 +2627,8 @@
       "upper": "上卦",
       "lower": "夏果",
       "moving": "動く",
+      "lockedTitle": "今日の無料 AI 解説は使用済みです",
+      "lockedDesc": "卦象と簡単な意味はいつでも無料で見られます。AI による詳しい解説を無制限に使うには会員にアップグレードしてください。明日また 1 回無料で使えます。",
       "disclaimer": "易経は、別の視点から考えるのに役立つツールです。あくまで参考であり、運の良し悪しを予測するものではありません。"
     },
     "history": {
