@@ -4,8 +4,7 @@ name: Creator Daily Pairing
 # 每日 10:00 台灣（02:00 UTC）。
 
 on:
-  schedule:
-    - cron: '0 2 * * *'   # 每日 02:00 UTC = 10:00 台灣
+  # 排程已搬到 Vercel Cron（vercel.json）；這裡只留手動觸發。
   workflow_dispatch:
 
 jobs:

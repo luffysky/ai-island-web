@@ -6,8 +6,7 @@ name: Translate Content
 # total>0 代表本次有翻；沒新內容時幾乎不做事。
 
 on:
-  schedule:
-    - cron: '0 */3 * * *'   # 每 3 小時（UTC）自動翻新增/改動內容
+  # 排程已搬到 Vercel Cron（vercel.json）；這裡只留手動觸發。
   workflow_dispatch:
     inputs:
       limit:

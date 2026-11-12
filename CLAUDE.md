@@ -59,7 +59,7 @@ PostgREST 預設一次最多回 **1000 筆**。`lessons` 表已 1258 筆、任�
   - 沒有常駐 process：記憶體內狀態（`rate-limit.ts` 的計數等）各實例獨立。沒有伺服器 Chromium（不要設 `ENABLE_SERVER_BROWSER`）。
   - Edge 函式上限 4 MB。
 - **課程圖在 R2**（WebP，`lesson-img/` 前綴）：章節內容維持 `/lesson-img/xxx.png`，`LessonImage` 顯示時換成 R2 網址。新圖要轉 WebP 傳 R2，不要放 `public/`。
-- 排程走 cron-job.org + GitHub Actions（打 `SITE_URL`），不用 Vercel Cron。
+- **排程（2026-11-13 起）**：原本 GitHub Actions 的 12 個排程已搬到 **Vercel Cron**（`vercel.json`，UTC；Vercel 自動帶 `Authorization: Bearer CRON_SECRET`，`verifyCronAuth` 已支援）——GitHub Actions 排程實測延遲好幾小時。workflow 只留手動觸發。**cron-job.org** 仍負責：`fortune-daily`、`daily-brief`、`agent-schedules`、`opportunity-deadlines`、`opportunity-radar`、`keep-warm`、`ga4-sync`。新增排程放 `vercel.json` 即可（Pro 每分鐘精度）。
 - 舊 Docker 路徑（`Dockerfile`、手動觸發的 `docker.yml`）保留備用。
 
 ---

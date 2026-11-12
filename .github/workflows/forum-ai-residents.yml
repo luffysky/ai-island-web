@@ -4,8 +4,7 @@ name: Forum AI Residents
 # 每小時跑一次、每次最多處理 3 篇（route 預設 limit=3）。
 
 on:
-  schedule:
-    - cron: '15 * * * *'   # 每小時的第 15 分
+  # 排程已搬到 Vercel Cron（vercel.json）；這裡只留手動觸發。
   workflow_dispatch:
 
 jobs:

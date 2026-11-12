@@ -10,7 +10,7 @@
 ## 🅰 需林董本人操作 🔴
 
 - [ ] 🔴 **金鑰輪替**（Zeabur 10/14 資安事件）：Supabase service key、CRON_SECRET、LINE/Discord/Telegram token、AI 金鑰、R2 金鑰… 輪替後改 Vercel env + GitHub secrets，再 redeploy。
-- [ ] 🔴 **確認 cron-job.org 排程**：11/13 從 DB 看，運勢推播（`fortune-daily`）與機會島雷達（`opportunity-radar`）在搬家後**仍每天在跑**。但下列沒有 GitHub Actions、也沒有執行紀錄可查，請到 cron-job.org 確認都在：`daily-brief`（每日晨報 08:30，舊檔要你新增的 #10）、`agent-schedules`（15 分）、`opportunity-deadlines`（09:00）、`keep-warm`、`ga4-sync`。（不想靠 cron-job.org 的話，我可以全部改成 GitHub Actions。）
+- [ ] 🔴 **確認 cron-job.org 排程**（1113：GitHub Actions 的 12 個排程已搬 Vercel Cron，見 `vercel.json`；以下仍在 cron-job.org）：11/13 從 DB 看，運勢推播（`fortune-daily`）與機會島雷達（`opportunity-radar`）在搬家後**仍每天在跑**。但下列沒有 GitHub Actions、也沒有執行紀錄可查，請到 cron-job.org 確認都在：`daily-brief`（每日晨報 08:30，舊檔要你新增的 #10）、`agent-schedules`（15 分）、`opportunity-deadlines`（09:00）、`keep-warm`、`ga4-sync`。（不想靠 cron-job.org 的話，我可以全部改成 GitHub Actions。）
 - [ ] 🔴 **金流**：Stripe／綠界／藍新正式金鑰、Stripe bootstrap 3 產品 + price_ids、webhook signing secret → 貼 **Vercel env** → redeploy → 4242 測試。
 - [ ] 🔴 **LINE 登入**：`LINE_CHANNEL_SECRET` 確認 **Vercel env** 有、且對應同一個 Login channel；LINE Console Callback URL 要完全等於 `https://ai-island-web.snowrealm.pet/auth/line/callback`。（Vercel 建置時自己 inline `NEXT_PUBLIC_*`，GitHub secret 只影響 CI。）
 - [ ] 🔴 **VAPID / EMAIL_FROM / Google 同意畫面**：Web Push VAPID 貼 Vercel env；確認寄件 `EMAIL_FROM`；OAuth 同意畫面去掉 supabase.co 字樣。

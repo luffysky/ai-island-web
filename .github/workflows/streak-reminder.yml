@@ -3,8 +3,7 @@ name: Streak Reminder
 # 每日 20:00 台灣（12:00 UTC）：連勝快斷（昨天有簽到、今天還沒）的人 → Web Push 提醒。
 
 on:
-  schedule:
-    - cron: '0 12 * * *'   # 每日 12:00 UTC = 20:00 台灣
+  # 排程已搬到 Vercel Cron（vercel.json）；這裡只留手動觸發。
   workflow_dispatch:
 
 jobs:

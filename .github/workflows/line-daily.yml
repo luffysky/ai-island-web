@@ -4,9 +4,7 @@ name: LINE Daily Report
 # UTC = 台灣 - 8 → 01:00 / 14:00 UTC
 
 on:
-  schedule:
-    - cron: '0 1 * * *'    # 台灣 09:00 — 開工早報
-    - cron: '0 14 * * *'   # 台灣 22:00 — 收工夜報
+  # 排程已搬到 Vercel Cron（vercel.json）；這裡只留手動觸發。
   workflow_dispatch:
 
 jobs:

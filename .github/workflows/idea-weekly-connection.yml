@@ -4,8 +4,7 @@ name: Idea Weekly Connection
 # UTC = 台灣 - 8 → 週一 01:00 UTC
 
 on:
-  schedule:
-    - cron: '0 1 * * 1'   # 週一 台灣 09:00
+  # 排程已搬到 Vercel Cron（vercel.json）；這裡只留手動觸發。
   workflow_dispatch:
 
 jobs:

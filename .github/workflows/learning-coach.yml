@@ -3,8 +3,7 @@ name: Learning Coach
 # 每週一 09:00 台灣（01:00 UTC）：為近期活躍學員產「每週學習教練報告」。
 
 on:
-  schedule:
-    - cron: '0 1 * * 1'   # 每週一 01:00 UTC = 週一 09:00 台灣
+  # 排程已搬到 Vercel Cron（vercel.json）；這裡只留手動觸發。
   workflow_dispatch:
 
 jobs:

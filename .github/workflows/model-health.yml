@@ -2,8 +2,7 @@ name: AI Model Health Check
 
 # 每天測一次所有 active AI 模型，被 provider 下架的自動停用（避免像 gemini-2.5-flash 404 一直炸）。
 on:
-  schedule:
-    - cron: '17 3 * * *'   # 每天 03:17 UTC（台灣 11:17）
+  # 排程已搬到 Vercel Cron（vercel.json）；這裡只留手動觸發。
   workflow_dispatch:
 
 jobs:

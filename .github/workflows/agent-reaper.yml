@@ -2,8 +2,7 @@ name: Agent Stale-Task Reaper
 
 # 收屍卡住的 Agent 背景任務（process 重啟會孤兒化進行中任務）。每 15 分鐘跑一次。
 on:
-  schedule:
-    - cron: '*/15 * * * *'   # 每 15 分鐘（UTC）
+  # 排程已搬到 Vercel Cron（vercel.json）；這裡只留手動觸發。
   workflow_dispatch:
 
 jobs:

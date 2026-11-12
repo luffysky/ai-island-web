@@ -39,3 +39,7 @@
 **排程觀察（重要）**：GitHub Actions 排程延遲嚴重——`agent-reaper` 設每 15 分實際一天只跑 3 次、`line-daily` 設台灣 09:00 實際 05:04 / 16:08 才跑；cron-job.org 準到秒（fortune-daily 每天 08:00:35）。→ 晨報等**不搬到 GitHub Actions**（會更糟）。可靠方案＝Vercel Cron（Pro、自動帶 `Authorization: Bearer CRON_SECRET`，`verifyCronAuth` 已支援）——待林董決定。
 
 **驗證**：`tsc` ✅、`vitest` ✅ 256、`next build` ✅。
+
+## ⏰ GitHub Actions 排程搬 Vercel Cron（第四批）
+
+新增 `vercel.json` crons（時間/參數照原 workflow、UTC）：agent-reaper(*/15)、anomaly-check(*/30)、ops-alerts(*/30)、forum-ai-residents(每小時:15)、translate-content(每 3 小時)、line-daily(01:00 daily / 14:00 weekly)、kpi-email(01:05 daily / 週一 01:10 weekly)、creator-daily-pairing(02:00)、idea-weekly-connection / learning-coach(週一 01:00)、model-health(03:17)、streak-reminder(12:00)。12 個 workflow 拿掉 `schedule:`、保留 `workflow_dispatch` 手動觸發；e2e/smoke/wandbox-update（CI 用）不動。路由全走 `verifyCronAuth`，Vercel Cron 自動帶 Bearer CRON_SECRET，免改程式。CLAUDE.md 部署章節同步改寫。
