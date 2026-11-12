@@ -39,7 +39,7 @@
 - [x] ~~A1.1 **Zeabur 殘留文字**：src 約 60 個檔（多在後台 env/ops/discord/ga4/email 測試頁）仍寫「去 Zeabur 設定」→ 改 Vercel；`docs/setup/cron-setup.md` 改寫。~~ ✅ 1113（後台/API 提示全改 Vercel、隱私頁託管改 Vercel+R2+Google 翻譯；剩歷史註解不動）。⬜ `docs/setup/cron-setup.md` 仍待改寫。
 - [x] ~~A1.2 **清 5 支沒人呼叫的 API**（已確認 src 內無呼叫端、git 可還原）：`api/me/checkout`（等 🧭金流收斂再刪）、`api/store/inventory`、`api/review/list`、`api/me/learning-plan`（base，`/generate` 保留）、`api/creator-island/assets/[id]/lineage`、`api/me/recommended-chapters`（/me 直接走 server）。~~ ✅ 1113 刪 5 支；`api/me/checkout` 保留等金流收斂。
 - [x] ~~A1.3 **後台空殼**：`/admin/marketing/publish` 全是靜態卡、blog 卡連到字串 `"/admin/blog (待建)"`（死連結）→ 改名「發佈通路狀態」+ 移除死連結或補 `/admin/blog`。~~ ✅ 1113（改名、blog 指向 `/admin/blog-seed`、內部入口改走 adminHref）
-- [~] A1.4 **監控**：✅ 1113 Sentry 程式已接（`@sentry/nextjs`、`src/instrumentation*.ts`、error.tsx 回報；沒設 DSN 就不啟用、不送 IP）。🔴 待林董：Sentry 建專案 → Vercel env 加 `NEXT_PUBLIC_SENTRY_DSN`（+ 可選 `SENTRY_AUTH_TOKEN/ORG/PROJECT` 上傳 source map）。PostHog 可選。
+- [x] ~~A1.4 **監控**：Sentry 上線~~ ✅ 1113（org `snowrealm`、專案 `javascript-nextjs`（歐洲區）；Vercel env `NEXT_PUBLIC_SENTRY_DSN` 已設 production+preview、redeploy 後實測正式站 bundle 帶 DSN、測試事件已進 Sentry）。⬜ 可選：Sentry auth token 設 `SENTRY_AUTH_TOKEN/SENTRY_ORG=snowrealm/SENTRY_PROJECT=javascript-nextjs` → 上傳 source map 看得到原始碼行號；PostHog。
 - [ ] A1.5 **CSP 從 Report-Only 轉正式**（`next.config.mjs:65`，先看回報有沒有誤擋）。
 - [ ] A1.6 **Turnstile + 蜜罐**：註冊/登入/留言/表單（目前 0 實作；Turnstile site key 需 🔴 Cloudflare 申請）。
 - [ ] A1.7 **效能**：`select("*")` 還有 393 處 → 熱門路徑先改明確欄位；RLS 用的 `is_admin()` 改 SECURITY DEFINER + index（目前找不到定義）；平台附件上傳 OOM 檢查。

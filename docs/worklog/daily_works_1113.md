@@ -27,3 +27,5 @@
 - 新發現：還有 28 課提到月入/年收，列入待辦 B2b 逐課判斷。
 
 **驗證**：`tsc` ✅、`vitest` ✅ 256、`next build` ✅；章節驗證腳本：無重複教具、教具型別全在 LessonDemos 支援清單內。
+
+**Sentry 上線**：林董登入後，用 org `snowrealm` 的空專案 `javascript-nextjs`；`NEXT_PUBLIC_SENTRY_DSN` 以 config 型別加進 Vercel（production+preview）→ redeploy → 正式站 main-app chunk 已含 DSN、送測試事件 200 並出現在 Sentry Issues。source map 上傳需 auth token（可選）。
