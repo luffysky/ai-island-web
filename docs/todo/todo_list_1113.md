@@ -1,4 +1,4 @@
-# AI 島待辦總表 2026-11-13（**現行主檔**）
+# AI 島待辦總表 2026-11-13（**現行主檔**·11/13 凌晨更新）
 
 > 由 `todo_list_0806.md`（586 行）＋ `todo_list_0916.md` 重新整理。2026-11-13 用 4 組子代理逐項對照「程式碼 + DB + git log」核對，**只留真的還沒做的**；核對時發現「做了但沒劃掉」的列在文末〈附錄 A〉。舊檔降為歷史存查、之後只更新本檔。
 > **背景變動**：2026-11-09 已從 Zeabur 遷到 Vercel（Zeabur 2026-12-31 停運）。舊檔裡「Zeabur env / GHCR image / ENABLE_SERVER_BROWSER」相關項目全部作廢或改寫。
@@ -10,7 +10,8 @@
 ## 🅰 需林董本人操作 🔴
 
 - [ ] 🔴 **金鑰輪替**（Zeabur 10/14 資安事件）：Supabase service key、CRON_SECRET、LINE/Discord/Telegram token、AI 金鑰、R2 金鑰… 輪替後改 Vercel env + GitHub secrets，再 redeploy。
-- [ ] 🔴 **確認 cron-job.org 排程**（1113：GitHub Actions 的 12 個排程已搬 Vercel Cron，見 `vercel.json`；以下仍在 cron-job.org）：11/13 從 DB 看，運勢推播（`fortune-daily`）與機會島雷達（`opportunity-radar`）在搬家後**仍每天在跑**。但下列沒有 GitHub Actions、也沒有執行紀錄可查，請到 cron-job.org 確認都在：`daily-brief`（每日晨報 08:30，舊檔要你新增的 #10）、`agent-schedules`（15 分）、`opportunity-deadlines`（09:00）、`keep-warm`、`ga4-sync`。（不想靠 cron-job.org 的話，我可以全部改成 GitHub Actions。）
+- [ ] 🔴 **確認 cron-job.org 排程**：運勢推播（`fortune-daily`）與機會島雷達（`opportunity-radar`）從 DB 看搬家後**仍每天準時在跑**。下列沒有執行紀錄可查，請到 cron-job.org 確認都在：`daily-brief`（每日晨報 08:30，舊檔要你新增的 #10；已加同日防重送，重複觸發也只送一次）、`agent-schedules`（15 分）、`opportunity-deadlines`（09:00）、`keep-warm`、`ga4-sync`。（想搬進 Vercel Schedules 一句話就能做，見 A1.15。）
+  - ~~GitHub Actions 的 12 個排程~~ ✅ 1113 已搬到 **Vercel Schedules**（`vercel.json` 14 條、已驗證執行成功），GitHub workflow 只留手動觸發。
 - [ ] 🔴 **金流**：Stripe／綠界／藍新正式金鑰、Stripe bootstrap 3 產品 + price_ids、webhook signing secret → 貼 **Vercel env** → redeploy → 4242 測試。
 - [ ] 🔴 **LINE 登入**：`LINE_CHANNEL_SECRET` 確認 **Vercel env** 有、且對應同一個 Login channel；LINE Console Callback URL 要完全等於 `https://ai-island-web.snowrealm.pet/auth/line/callback`。（Vercel 建置時自己 inline `NEXT_PUBLIC_*`，GitHub secret 只影響 CI。）
 - [ ] 🔴 **VAPID / EMAIL_FROM / Google 同意畫面**：Web Push VAPID 貼 Vercel env；確認寄件 `EMAIL_FROM`；OAuth 同意畫面去掉 supabase.co 字樣。
@@ -43,11 +44,16 @@
 - [ ] A1.5 **CSP 從 Report-Only 轉正式**（`next.config.mjs:65`，先看回報有沒有誤擋）。
 - [ ] A1.6 **Turnstile + 蜜罐**：註冊/登入/留言/表單（目前 0 實作；Turnstile site key 需 🔴 Cloudflare 申請）。
 - [ ] A1.7 **效能**：`select("*")` 還有 393 處 → 熱門路徑先改明確欄位；RLS 用的 `is_admin()` 改 SECURITY DEFINER + index（目前找不到定義）；平台附件上傳 OOM 檢查。
-- [ ] A1.8 **法律頁更新**：`/privacy`（5/25）、`/terms`（5/19）、`/cookies` 補：Agent 對外動作、連結外部帳號、機會島來源、@提及、個資保存期限、自動翻譯送 Google、Vercel/R2 資料位置。
+- [~] A1.8 **法律頁更新**（1113 ✅ 隱私頁第三方服務已改 Vercel + R2、揭露自動翻譯；其餘待補）：`/privacy`（5/25）、`/terms`（5/19）、`/cookies` 補：Agent 對外動作、連結外部帳號、機會島來源、@提及、個資保存期限、自動翻譯送 Google、Vercel/R2 資料位置。
 - [ ] A1.9 v1 API key **後台**停用/輪替 UI（使用者自助頁 `/me/api-keys` 已有）。
 - [ ] A1.10 DB schema 逐表核對 migration（`audit-db-columns.mjs` 已跑、無新破綻，剩人工逐表）。
 - [ ] A1.11 AI 成本記帳 P2–P4（語意快取推廣、路由統一、RAG/vision；embeddings/Whisper/og 殘留記帳）。
 - [ ] A1.12 測試：E2E + Smoke 擴充；Creator Island M5（tests/a11y/perf/security-review）；3D 島嶼降耗。
+- [x] ~~A1.13 **排程可靠性**：GitHub Actions 排程實測延遲數小時（agent-reaper 設 15 分一天只跑 3 次、09:00 的 line-daily 05:04/16:08 才跑）~~ ✅ 1113 12 個 workflow 排程 → Vercel Cron → 再改 **Vercel Schedules**（`vercel.json` `schedules`、path 目標 GET、UTC 不變）；`vercel schedules executions list agent-reaper` 實測 2/2 succeeded。
+- [x] ~~A1.14 **晨報防重送**：`/api/cron/daily-brief` 沒有 dedupe，重複觸發會送兩次~~ ✅ 1113 台北當日已送過就跳過（notifications 標記，同 fortune-daily）。
+- [ ] A1.15（可選）cron-job.org 剩下的 7 個排程也搬進 Vercel Schedules（要先在 cron-job.org 停掉對應 job，避免兩邊各打一次）。
+- [ ] A1.16 依賴：`package.json` `overrides.rollup = 4.61.1`（rollup 4.66.0 平台二進位不存在）——之後升級 Sentry / rollup 時移除並重驗建置。
+- [ ] A1.17 `docs/setup/cron-setup.md` 改寫成「Vercel Schedules + cron-job.org」現況（仍寫 Zeabur）。
 
 ### A2. 每日情報 / 晨報 / Widget
 - [~] A2.1 **Widget 首頁 2d**：✅ 引擎 + 8 個 widget（datetime/dice/countdown/anniversary/mini_calendar/world_clock/todo_list/breathing）+ `/home` 拖拉存 DB。缺：
@@ -67,6 +73,7 @@
 - [ ] A3.3 後台「一鍵健檢」聚合頁（health/site-audit/db-check/errors/ga4 收成首屏卡）。
 - [ ] A3.4 `/admin/strategy` 半動態：接 `competitor_snapshots` 自動追競品。
 - [ ] A3.5 後台整體視覺美化（持續）。
+- [x] ~~A3.0 **簡體中文 + 補翻所有語言**~~ ✅ 1112（zh-CN 用 OpenCC 從繁體轉、AutoTranslate 補翻寫死中文、`ui_translations` 快取表、en/ja/ko 補 10 個缺 key）
 - [ ] A3.6 i18n 正式化：首頁、/me、/agent、/opportunities、/creator-island 的寫死中文抽成 i18n key（現在靠 AutoTranslate 機器補翻）。
 
 ### A4. 分身島 Agent
