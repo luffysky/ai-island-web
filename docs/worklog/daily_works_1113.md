@@ -29,3 +29,13 @@
 **驗證**：`tsc` ✅、`vitest` ✅ 256、`next build` ✅；章節驗證腳本：無重複教具、教具型別全在 LessonDemos 支援清單內。
 
 **Sentry 上線**：林董登入後，用 org `snowrealm` 的空專案 `javascript-nextjs`；`NEXT_PUBLIC_SENTRY_DSN` 以 config 型別加進 Vercel（production+preview）→ redeploy → 正式站 main-app chunk 已含 DSN、送測試事件 200 並出現在 Sentry Issues。source map 上傳需 auth token（可選）。
+
+## 💸 收入保證清理 + 晨報防重送（第三批）
+
+**內容**：28 課「月入/年收」逐課判斷——免責聲明與事實數據保留；保證式（「學會 = 月入 X」「X 個客戶 = 月入 Y 被動」「躺著收錢」「累積 5 年 = 半退休」）全改寫，含 tip、miniQuiz 選項與解析（正解不變）；示意試算標「不是保證」、個案加「少數成功者、不代表一般結果」。順手在 29.5 Apify 範例加註 LinkedIn/IG 禁止爬取。ch27/28/29/30/37/39/42/47/50 已 import DB。
+
+**晨報 dedupe**：`/api/cron/daily-brief` 原本沒有防重送 → 加「台北今天已送過就跳過」（批次查 notifications 標記、送出後寫一筆「今日晨報已送出」站內通知當標記，同 fortune-daily 做法）。
+
+**排程觀察（重要）**：GitHub Actions 排程延遲嚴重——`agent-reaper` 設每 15 分實際一天只跑 3 次、`line-daily` 設台灣 09:00 實際 05:04 / 16:08 才跑；cron-job.org 準到秒（fortune-daily 每天 08:00:35）。→ 晨報等**不搬到 GitHub Actions**（會更糟）。可靠方案＝Vercel Cron（Pro、自動帶 `Authorization: Bearer CRON_SECRET`，`verifyCronAuth` 已支援）——待林董決定。
+
+**驗證**：`tsc` ✅、`vitest` ✅ 256、`next build` ✅。
