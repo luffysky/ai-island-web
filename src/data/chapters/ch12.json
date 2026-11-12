@@ -590,7 +590,48 @@
         ],
         "answer": "a",
         "explanation": "課程明確指出 Cloudflare 是最簡單的選項，只需改 nameserver + 設定 SSL/TLS，就能自動、免費、全球 CDN。選項 b 的 EV 憑證過時且收費，c 需要手動更新，d 則是行動 App 才需要的進階做法。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "HTTPS 設定判官",
+          "note": "看幾個真實的 HTTPS 設定，判斷是做對、有風險、還是根本不安全",
+          "config": {
+            "scenarios": [
+              {
+                "text": "網域接 Cloudflare 後，SSL/TLS 模式選「Full (strict)」，origin 也裝了有效憑證",
+                "correct": "ok",
+                "why": "Full (strict) 代表 Cloudflare 到你主機那一段也加密、而且會驗證憑證是真的，整條路都是密封信封。這是課文推薦的設定。"
+              },
+              {
+                "text": "Cloudflare 選「Flexible」：使用者到 Cloudflare 是 HTTPS，Cloudflare 到你主機走 HTTP",
+                "correct": "risk",
+                "why": "瀏覽器看到小鎖頭，但後半段其實是明信片，中間的人還是看得到。看起來安全 ≠ 真的安全，能改 Full (strict) 就改。"
+              },
+              {
+                "text": "網站已經是 HTTPS，但文章裡的圖片網址還是 http://",
+                "correct": "risk",
+                "why": "這叫 Mixed Content（混合內容）：HTTPS 頁面載入 HTTP 資源，那些資源可能被竄改，瀏覽器也會警告或直接擋掉。全部改成 https:// 才乾淨。"
+              },
+              {
+                "text": "加上 HSTS 標頭：Strict-Transport-Security: max-age=31536000; includeSubDomains",
+                "correct": "ok",
+                "why": "HSTS 告訴瀏覽器「這個網站以後一律走 HTTPS」，防止被降級回 HTTP。開之前先確認所有子網域都支援 HTTPS，不然會連不上。"
+              },
+              {
+                "text": "Let's Encrypt 憑證手動申請一次，之後沒設自動更新",
+                "correct": "no",
+                "why": "Let's Encrypt 憑證只有 90 天，到期網站會直接跳出大紅色警告、使用者全被嚇跑。certbot 要設自動 renew，這是基本功。"
+              },
+              {
+                "text": "伺服器只開 TLS 1.2 和 1.3，舊的 TLS 1.0/1.1 關掉",
+                "correct": "ok",
+                "why": "1.0/1.1 已有已知弱點，主流瀏覽器也不支援了。保留 1.2（相容）+ 1.3（更快更安全）是現在的標準做法。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Rate Limiting：防 DDoS / 暴力破解",
@@ -841,7 +882,48 @@
         ],
         "answer": "b",
         "explanation": "課程明確指出 Mobile + API 場景推薦 JWT（Stateless、跨服務、Mobile 友善），而「整合 Google / FB 登入」要用 OAuth + OIDC。選項 c 錯在 OAuth 只是授權不是認證；選項 a 和 d 都不適合 Mobile 場景（Session 跨域難、每 request 查 DB）。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "登入機制觀念判官",
+          "note": "Session / JWT / OAuth 常被搞混，判斷每句說法或做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "「OAuth 2.0 就是一種登入（認證）方式」",
+                "correct": "no",
+                "why": "OAuth 本身是「授權」：讓 App A 拿到權限用你在 B 的資料。真正用來「確認你是誰」的是建在 OAuth 上的 OpenID Connect（OIDC），Sign in with Google 就是 OIDC。"
+              },
+              {
+                "text": "把使用者的手機號碼和地址直接放進 JWT 的 payload 裡，方便前端讀",
+                "correct": "no",
+                "why": "JWT 的 payload 只是 Base64 編碼、不是加密，任何拿到 token 的人都能解開看。個資和敏感資料不要放進去。"
+              },
+              {
+                "text": "簡單的會員網站用 Session + cookie，登出時伺服器直接刪掉 session",
+                "correct": "ok",
+                "why": "Session 存在伺服器，想讓某人登出、封鎖帳號，刪掉那筆就立刻失效。小網站用這招最簡單也好管理。"
+              },
+              {
+                "text": "JWT 設成 30 天才過期，而且沒有任何撤銷機制",
+                "correct": "risk",
+                "why": "JWT 是自己帶著的證件、簽出去伺服器就收不回來。如果 token 被偷，壞人能用 30 天。常見做法是短效 access token（幾分鐘到一小時）+ refresh token。"
+              },
+              {
+                "text": "手機 App / 單頁網站做 OAuth，用 Authorization Code + PKCE",
+                "correct": "ok",
+                "why": "手機和 SPA 沒辦法安全保存 client secret，PKCE 用一次性的驗證碼防止授權碼被攔截後冒用，是目前推薦做法。"
+              },
+              {
+                "text": "Indie 開發者決定自己從零刻一套登入系統（含忘記密碼、2FA）",
+                "correct": "risk",
+                "why": "不是不能，但密碼雜湊、重設流程、暴力破解防護…每個都是坑。課文建議用 Supabase Auth、Clerk、Auth0 這類成熟服務，把時間花在產品本身。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Authentication vs Authorization",
@@ -1116,7 +1198,48 @@
         ],
         "answer": "b",
         "explanation": "鎖死版本 + lock file 能確保所有人裝到的套件版本完全一樣，就算原作者偷偷發布惡意新版本也不會自動更新到你的專案。audit 只能檢測已知漏洞、Docker 只是隔離環境、stars 多也無法防止 maintainer 帳號被駭。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "依賴套件安全判官",
+          "note": "你的專案靠上千個套件撐著，判斷這些做法安不安全",
+          "config": {
+            "scenarios": [
+              {
+                "text": "把 package-lock.json 一起 commit 進 git",
+                "correct": "ok",
+                "why": "lock file 記下每個套件的確切版本，大家和 CI 裝到的都一樣，不會某天突然裝到被動過手腳的新版。永遠要 commit。"
+              },
+              {
+                "text": "要裝 react-dom，打成 react_dom 也能裝到東西，就直接用了",
+                "correct": "no",
+                "why": "這是 Typosquatting（打錯字攻擊）：壞人註冊長得很像的名字放惡意程式。裝之前確認套件名稱、下載量和官方 repo。"
+              },
+              {
+                "text": "GitHub 開 Dependabot，每週自動發 PR 更新有漏洞的套件",
+                "correct": "ok",
+                "why": "自動掃描 + 自動提更新，你只要看 CI 有沒有過再合併。Indie 最省力的防護。"
+              },
+              {
+                "text": "看到一個 3 年沒更新、只有 5 顆星的小套件，功能剛好要用就裝了",
+                "correct": "risk",
+                "why": "沒人維護的套件出漏洞也不會有人修，作者帳號被盜也沒人發現。能自己寫幾行就自己寫，或找維護活躍的替代品。"
+              },
+              {
+                "text": "CI 裡加上 npm audit --audit-level=moderate，有中級以上漏洞就讓 build 失敗",
+                "correct": "ok",
+                "why": "把檢查放進流程，有問題就擋下，不靠人記得手動跑。"
+              },
+              {
+                "text": "用公司主帳號、有所有權限的電腦，隨手試裝網路上看到的陌生 npm 套件",
+                "correct": "risk",
+                "why": "npm 套件安裝時可以執行腳本，惡意套件可能偷走你電腦上的金鑰。陌生套件先在 Docker 或 VM 裡試。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Logging + Monitoring",
@@ -1465,7 +1588,48 @@
         ],
         "answer": "a",
         "explanation": "課程強調『人才是最弱的一環』，駭客利用欺騙、假冒身份等心理手法，讓員工自願交出密碼或資訊，而非攻擊技術層面。其他選項都過度絕對化或沒抓到社交工程的核心特點。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "釣魚訊息識破練習",
+          "note": "站在防守方：判斷每個情境該照做、要小心、還是絕對不能做",
+          "config": {
+            "scenarios": [
+              {
+                "text": "收到「銀行」簡訊：帳戶異常、30 分鐘內不驗證就凍結，附一個短網址",
+                "correct": "no",
+                "why": "「緊急 + 限時」是詐騙最常見的套路，就是要你沒時間想。不要點連結，自己打開銀行 App 或打官方客服確認。"
+              },
+              {
+                "text": "Email 顯示名稱寫「IT 部門」，寄件地址卻是 it-support@c0mpany-help.com",
+                "correct": "no",
+                "why": "顯示名稱誰都能亂填，要看真正的寄件地址。c0mpany（零不是 o）+ 奇怪網域是典型的冒充。回報給公司資安窗口。"
+              },
+              {
+                "text": "老闆 email 說急著要你匯一筆款給新廠商，你先用電話打老闆本人確認",
+                "correct": "ok",
+                "why": "這是 BEC（商業郵件詐騙）的標準防法：用「另一個管道」確認。就算 email 真的是老闆帳號寄的，帳號也可能已被入侵。"
+              },
+              {
+                "text": "滑鼠移到信裡的連結上（先不點），看左下角顯示的真實網址",
+                "correct": "ok",
+                "why": "連結文字可以寫 bank.com.tw，實際卻連去別的地方。hover 看真網址是最基本的檢查，還是有疑慮就自己打網址。"
+              },
+              {
+                "text": "有人打電話自稱技術支援，請你念出手機收到的驗證碼「幫你修帳號」",
+                "correct": "no",
+                "why": "驗證碼就是你的鑰匙，正牌客服永遠不會跟你要。這是 Vishing（電話詐騙），直接掛斷。"
+              },
+              {
+                "text": "公司每季寄模擬釣魚信，點了的人要上一堂短課",
+                "correct": "ok",
+                "why": "人是最弱的一環，但可以訓練。模擬演練讓大家在不會真的出事的情況下學會辨認。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Zero Trust 架構",
@@ -1560,7 +1724,48 @@
         ],
         "answer": "b",
         "explanation": "Zero Trust 的核心概念就是「沒有信任的網路」——即使在公司內部也不預設信任，而是每個 request 都要驗證。傳統則是以防火牆為界，進來就視為安全。其他選項都扭曲了兩者的差異。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "零信任還是老派城牆？",
+          "note": "判斷每個做法符不符合 Zero Trust「永遠驗證、最小權限、假設已被入侵」",
+          "config": {
+            "scenarios": [
+              {
+                "text": "連進公司 VPN 之後，內網所有系統都能直接存取、不用再登入",
+                "correct": "no",
+                "why": "這就是傳統城牆思維：進了門就全信任。只要一台電腦被入侵，壞人就能在內網橫著走。Zero Trust 要每個系統各自驗證。"
+              },
+              {
+                "text": "新進的行銷同事預設只開行銷工具的權限，需要其他的再申請",
+                "correct": "ok",
+                "why": "Least privilege（最小權限）：只給工作需要的。萬一帳號被盜，損害範圍也小。"
+              },
+              {
+                "text": "員工從沒見過的國家、新裝置登入時，系統要求再做一次 MFA",
+                "correct": "ok",
+                "why": "風險評分：異常地點或裝置就加強驗證。這是「每次都驗證」的具體做法。"
+              },
+              {
+                "text": "內部微服務彼此呼叫都不驗證，因為「反正都在同一個內網」",
+                "correct": "risk",
+                "why": "Assume breach（假設已被入侵）：攻擊者一旦進到內網就能冒充任何服務。服務之間應該用 mTLS 或 token 互相驗證。"
+              },
+              {
+                "text": "Indie 團隊用 Tailscale 取代傳統 VPN，加上 1Password + 強制 MFA",
+                "correct": "ok",
+                "why": "課文推薦的 Indie 版零信任：每台裝置有身分、存取可控、免費額度就夠小團隊用。"
+              },
+              {
+                "text": "為了方便，所有工程師都給 production 資料庫的完整管理員權限",
+                "correct": "no",
+                "why": "權限越大、出事越慘。正式資料庫應該只有少數人能改，其他人用唯讀或透過受控工具存取。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "WAF + DDoS 防護",
@@ -1651,7 +1856,48 @@
         ],
         "answer": "b",
         "explanation": "課程明確指出 Indie 配置推薦用 Cloudflare 免費 plan（含基礎 DDoS、CDN、Bot Fight Mode），5 分鐘快速啟動。選項 a 過於昂貴不適合 Indie，c 忽略 managed rules 優勢，d 忽視應用層攻擊威脅。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "網站外圈防護判官",
+          "note": "WAF 擋惡意請求、DDoS 防護擋洪水流量，判斷這些設定對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "網站已經套 Cloudflare，但 DNS 上還留著一筆直接指向主機真實 IP 的紀錄",
+                "correct": "no",
+                "why": "Origin IP 外洩，攻擊者可以繞過 Cloudflare 直接打你的主機，外圈防護等於白做。所有紀錄都要走代理，並限制主機只接受 Cloudflare 的流量。"
+              },
+              {
+                "text": "對 /api/login 設定 rate limit：同一個 IP 每分鐘最多 5 次",
+                "correct": "ok",
+                "why": "登入 API 是暴力猜密碼的熱門目標，限制頻率能大幅降低風險，正常使用者幾乎不會受影響。"
+              },
+              {
+                "text": "「我已經有 WAF 了，程式裡的 SQL 就直接拼接使用者輸入」",
+                "correct": "no",
+                "why": "WAF 是外圈保全，不是萬能。它只認得已知的攻擊樣式，會被繞過。程式本身一定還是要用參數化查詢，這叫縱深防禦（多層保護）。"
+              },
+              {
+                "text": "註冊表單加 Cloudflare Turnstile 驗證，擋自動化機器人",
+                "correct": "ok",
+                "why": "Turnstile 對真人幾乎無感、對 bot 有效，搭配 rate limit 能擋掉大部分垃圾註冊。"
+              },
+              {
+                "text": "為了擋爬蟲，把所有 bot 都封鎖，包括 Googlebot",
+                "correct": "risk",
+                "why": "要區分 good bot 和 bad bot。把 Google 擋掉，你的網站就從搜尋結果消失了。用 Bot Management 分辨，而不是一刀切。"
+              },
+              {
+                "text": "Day 1 上線就先把網域接上 Cloudflare 免費方案",
+                "correct": "ok",
+                "why": "5 分鐘就能拿到基礎 DDoS 防護、自動 SSL 和 CDN，成本為零，課文最推薦的起手式。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "滲透測試 vs 紅隊",
@@ -1994,7 +2240,48 @@
         ],
         "answer": "a",
         "explanation": "GDPR 的『資料最小化』要求只收集必要的資料，多收電話號碼但不使用，就違反了這個原則。其他選項雖然也是 GDPR 要求，但不是這個案例的核心問題。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "個資合規判官",
+          "note": "依 GDPR / 台灣個資法的原則，判斷這些做法能不能做",
+          "config": {
+            "scenarios": [
+              {
+                "text": "一個記帳 App 註冊時要求填身分證字號、血型、婚姻狀況「以備不時之需」",
+                "correct": "no",
+                "why": "違反資料最小化：只收提供服務真正需要的。多收的資料沒用處，外洩時卻是你的責任。"
+              },
+              {
+                "text": "歐盟使用者進站時，必要 cookie 預設開，分析 / 行銷 cookie 要使用者主動勾選才開",
+                "correct": "ok",
+                "why": "這正是 GDPR 的 Cookie Consent 做法：非必要的追蹤要 opt-in（主動同意），不能預設打勾。"
+              },
+              {
+                "text": "帳號設定頁提供「下載我的資料」和「刪除帳號」按鈕",
+                "correct": "ok",
+                "why": "對應用戶的資料攜帶權和刪除權（被遺忘權）。課文的 Indie 簡易版也把它列為必做。"
+              },
+              {
+                "text": "用戶當初同意 email 是「用來登入」，後來拿去賣給合作廠商發廣告",
+                "correct": "no",
+                "why": "違反目的限制：資料只能用在告知過、同意過的用途。改用途要重新取得同意，賣資料更是紅線。"
+              },
+              {
+                "text": "發現資料外洩後，先內部慢慢調查兩個月再決定要不要公告",
+                "correct": "no",
+                "why": "GDPR 要求 72 小時內通報主管機關，台灣個資法也要求立即通報。拖延只會讓罰款和信任損失更重（Equifax 就是例子）。"
+              },
+              {
+                "text": "網站在台灣註冊，但有不少歐洲使用者，所以「GDPR 跟我無關」",
+                "correct": "risk",
+                "why": "GDPR 看的是使用者在哪、不是公司在哪。有歐盟使用者就可能適用，不確定時請教律師。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Container 安全",
@@ -2573,7 +2860,65 @@
         ],
         "answer": "c",
         "explanation": "止血（Contain）的核心目標是「先停止損害擴大」，比修復更重要。選項 a 和 b 都是調查和修復的工作（應在後續步驟），選項 d 是通報（最後的環節）。只有選項 c 是立即隔離受影響的流量，把傷害控制住，這就是止血的正確做法。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "資安事件 6 步 SOP 演練",
+          "note": "模擬一次 token 外洩事件，一步一步看 Detect → Postmortem 每步在做什麼",
+          "config": {
+            "trigger": {
+              "kind": "webhook",
+              "label": "凌晨 2 點 Sentry 告警：大量異常登入",
+              "data": "alert: auth.anomaly\n同一個 token 從 40 個國家登入\n時間：02:13"
+            },
+            "nodes": [
+              {
+                "kind": "if",
+                "label": "1. Detect 偵測",
+                "desc": "先確認是真的事件、不是誤報：看 log、看儀表板",
+                "data": "確認：真的有異常存取，不是監控誤報"
+              },
+              {
+                "kind": "set",
+                "label": "2. Triage 分級",
+                "desc": "多嚴重？影響多少人？誰負責？",
+                "data": "嚴重度：P1（個別資料外洩風險）\n影響：約 300 個帳號\n負責人：on-call 工程師"
+              },
+              {
+                "kind": "action",
+                "label": "3. Contain 止血（比修復重要）",
+                "desc": "先讓損害停止擴大",
+                "data": "• 撤銷（revoke）所有受影響 token\n• 暫時關閉相關 API\n• 封鎖攻擊來源 IP"
+              },
+              {
+                "kind": "db",
+                "label": "4. Investigate 調查",
+                "desc": "找根本原因，並保留證據、不要急著亂刪",
+                "data": "root cause：舊版 API 沒檢查 token 過期\n證據：log 已另存備份"
+              },
+              {
+                "kind": "code",
+                "label": "5. Remediate 修復",
+                "desc": "Patch → 部署 → 驗證真的修好",
+                "data": "修正 token 驗證邏輯 → deploy → 測試確認舊 token 失效"
+              },
+              {
+                "kind": "action",
+                "label": "通報 + 通知用戶",
+                "desc": "依法通報主管機關，誠實告訴用戶發生什麼、該做什麼",
+                "data": "GDPR：72 小時內通報\n用戶信：影響範圍 + 已採取措施 + 請改密碼"
+              },
+              {
+                "kind": "set",
+                "label": "6. Postmortem 事後檢討",
+                "desc": "Blameless（不怪罪個人）：寫時間線、根因、預防措施",
+                "data": "Action items：\n- CI 加 token 過期測試\n- 舊版 API 下線排程"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "boss": {

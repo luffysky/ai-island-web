@@ -1782,7 +1782,48 @@
         ],
         "answer": "b",
         "explanation": "課程明確指出選擇命名慣例的準則：React/Next.js 專案應該用 Tailwind（業界主流）。BEM 適合純 CSS 專案、SMACSS 適合大型專案、OOCSS 是 Bootstrap 哲學，都不是 React/Next.js 的首選。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "這樣寫 CSS 算業界做法嗎？",
+          "note": "判斷每個寫法是好習慣、有風險、還是該避免——對照本課的命名、工具與新手 vs 老手差別",
+          "config": {
+            "scenarios": [
+              {
+                "text": "卡片裡的標題取名 .card__title、精選版卡片寫 class=\"card card--featured\"",
+                "correct": "ok",
+                "why": "標準 BEM：Block 是 card、Element 用兩個底線（__）、Modifier 用兩個連字號（--）、看 HTML 就知道結構。"
+              },
+              {
+                "text": "同一個專案、一半元件用 BEM、一半用 Tailwind、另外再混一套自創命名",
+                "correct": "no",
+                "why": "課堂明說「選一個堅持用、不要混」。混用之後沒人知道新元件該照哪套寫、越改越亂。"
+              },
+              {
+                "text": "每做一個新元件、就把舊元件的樣式整段複製貼上再改顏色",
+                "correct": "risk",
+                "why": "能動、但這是新手寫法。老手會抽成 token（例如顏色變數）、改一處全站跟著變。"
+              },
+              {
+                "text": "React / Next.js 新專案、樣式方案選 Tailwind",
+                "correct": "ok",
+                "why": "這是課堂給的選法：React / Next.js → Tailwind（業界主流）、檔案組織也會簡單很多。"
+              },
+              {
+                "text": "加了很多彈跳動畫、但沒處理 prefers-reduced-motion",
+                "correct": "risk",
+                "why": "有人對動畫會頭暈。老手會讓每個動畫都有目的、並尊重使用者「減少動態」的系統設定。"
+              },
+              {
+                "text": "RWD 只靠寫死 5 個 media query 斷點、每個斷點各寫一套尺寸",
+                "correct": "risk",
+                "why": "能用、但維護很累。現代寫法用 clamp()、container query、auto-fit 讓版面自己流動。"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "boss": {

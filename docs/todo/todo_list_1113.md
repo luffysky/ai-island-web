@@ -36,10 +36,10 @@
 ## A. 可以直接做的工程（不需外部帳號）
 
 ### A1. 穩定 / 技術債（建議先做）
-- [ ] A1.1 **Zeabur 殘留文字**：src 約 60 個檔（多在後台 env/ops/discord/ga4/email 測試頁）仍寫「去 Zeabur 設定」→ 改 Vercel；`docs/setup/cron-setup.md` 改寫。
-- [ ] A1.2 **清 5 支沒人呼叫的 API**（已確認 src 內無呼叫端、git 可還原）：`api/me/checkout`（等 🧭金流收斂再刪）、`api/store/inventory`、`api/review/list`、`api/me/learning-plan`（base，`/generate` 保留）、`api/creator-island/assets/[id]/lineage`、`api/me/recommended-chapters`（/me 直接走 server）。
-- [ ] A1.3 **後台空殼**：`/admin/marketing/publish` 全是靜態卡、blog 卡連到字串 `"/admin/blog (待建)"`（死連結）→ 改名「發佈通路狀態」+ 移除死連結或補 `/admin/blog`。
-- [ ] A1.4 **監控**：接 Sentry（錯誤 + source map）；PostHog（產品分析）可選。順帶 §3.3.6 機會島雷達監控。
+- [x] ~~A1.1 **Zeabur 殘留文字**：src 約 60 個檔（多在後台 env/ops/discord/ga4/email 測試頁）仍寫「去 Zeabur 設定」→ 改 Vercel；`docs/setup/cron-setup.md` 改寫。~~ ✅ 1113（後台/API 提示全改 Vercel、隱私頁託管改 Vercel+R2+Google 翻譯；剩歷史註解不動）。⬜ `docs/setup/cron-setup.md` 仍待改寫。
+- [x] ~~A1.2 **清 5 支沒人呼叫的 API**（已確認 src 內無呼叫端、git 可還原）：`api/me/checkout`（等 🧭金流收斂再刪）、`api/store/inventory`、`api/review/list`、`api/me/learning-plan`（base，`/generate` 保留）、`api/creator-island/assets/[id]/lineage`、`api/me/recommended-chapters`（/me 直接走 server）。~~ ✅ 1113 刪 5 支；`api/me/checkout` 保留等金流收斂。
+- [x] ~~A1.3 **後台空殼**：`/admin/marketing/publish` 全是靜態卡、blog 卡連到字串 `"/admin/blog (待建)"`（死連結）→ 改名「發佈通路狀態」+ 移除死連結或補 `/admin/blog`。~~ ✅ 1113（改名、blog 指向 `/admin/blog-seed`、內部入口改走 adminHref）
+- [~] A1.4 **監控**：✅ 1113 Sentry 程式已接（`@sentry/nextjs`、`src/instrumentation*.ts`、error.tsx 回報；沒設 DSN 就不啟用、不送 IP）。🔴 待林董：Sentry 建專案 → Vercel env 加 `NEXT_PUBLIC_SENTRY_DSN`（+ 可選 `SENTRY_AUTH_TOKEN/ORG/PROJECT` 上傳 source map）。PostHog 可選。
 - [ ] A1.5 **CSP 從 Report-Only 轉正式**（`next.config.mjs:65`，先看回報有沒有誤擋）。
 - [ ] A1.6 **Turnstile + 蜜罐**：註冊/登入/留言/表單（目前 0 實作；Turnstile site key 需 🔴 Cloudflare 申請）。
 - [ ] A1.7 **效能**：`select("*")` 還有 393 處 → 熱門路徑先改明確欄位；RLS 用的 `is_admin()` 改 SECURITY DEFINER + index（目前找不到定義）；平台附件上傳 OOM 檢查。
@@ -110,10 +110,12 @@
 ## B. 內容（持續性）
 
 - [ ] B1 **辭典續寫到 5000**（現 **2583**，從 `dictionary-seed-82.json` 接；author → `import-dictionary.mjs` → `translate-sync-all.mjs` → commit）。
-- [ ] B2 **殘留罐頭練習題**（舊檔寫「全站 0」不正確）：ch38（38.2/3/5/6）、ch39（39.9/39.10）、ch50（50.21/50.22）還是同一句「安裝工具跑 hello world」→ 換量身題，Python 編輯 JSON + `import_chapters_to_db.mjs`。
-- [~] B3 **互動教具補缺口**（舊檔說 ch1–11 100% 不正確）。0 缺口：ch01/07/13/16/17/19–22/26/31–41/43–45/47/48/51–60/68/71/76–79。還有缺口（沒沙盒也沒教具的課數）：
+- [x] ~~B2 **殘留罐頭練習題**（舊檔寫「全站 0」不正確）：ch38（38.2/3/5/6）、ch39（39.9/39.10）、ch50（50.21/50.22）還是同一句「安裝工具跑 hello world」→ 換量身題，Python 編輯 JSON + `import_chapters_to_db.mjs`。~~ ✅ 1113 8 課換量身題、已 import DB
+- [x] ~~B3 **互動教具補缺口**（舊檔說 ch1–11 100% 不正確）。0 缺口：ch01/07/13/16/17/19–22/26/31–41/43–45/47/48/51–60/68/71/76–79。還有缺口（沒沙盒也沒教具的課數）：
   - ch00(3)、ch02/04/05/06/08/09/11/24/27/29/42(各 1)、ch10/23/25/28(各 2)、ch03(5)、ch30(3)、ch12(8)、ch14(4)、ch15(6)、ch18(4)、ch46(6)、ch49(5)、ch50(10)
-  - ch72–75 進階（3–4 課）視需要；ch61–67/69–70 速查附錄**刻意不塞**。
+  - ch72–75 進階（3–4 課）視需要；ch61–67/69–70 速查附錄**刻意不塞**。~~
+  - ✅ 1113：74 課補互動教具（scenario-judge/decision-quiz/workflow-flow/agent-loop/prompt-lab/color-contrast），**主線 ch00–60 + 76–79 全部 0 缺口**，27 章已 import DB。剩 ch61–75 附錄/進階（刻意不塞 / 視需要）。
+- [ ] B2b **還有 28 課提到月入/年收**，要逐課判斷是市場薪資資訊還是收入保證（違反「不掛保證」）：18.15、27.1、28.24、28.25、29.5、29.6、29.17、35.6、37.4、41.3、41.6、42.3、42.6、43.24、47.22、50.17、50.25、51.5、51.6、53.6、56.1、56.6、59.21、60.5、66.5、68.15、77.7、77.21。（1113 已修 14.9/14.20/39.11，並移除 28.25/30.24/30.25 教規避反爬的段落）
 - [ ] B4 新互動元件：Tokenizer、SortingViz、SqlPlayground、NeuralForward/GradientDescent、HttpInspector、GitGraph、DataFrameExplorer、BigOGrapher、CronBuilder、SerpPreview、UnitEconomicsCalc、PersonaBuilder。
 - [ ] B5 deep-rewrite（視需要）：ch15、24、32、34、35、36、41、附錄。
 - [ ] B6 語言島（英/日辭典，`dictionary_terms.domain` 已預留）。

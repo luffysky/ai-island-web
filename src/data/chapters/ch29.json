@@ -2024,7 +2024,48 @@
         ],
         "answer": "b",
         "explanation": "第 3 個月重點是「規模」——學並發、代理、資料庫，目標是爬 1 萬筆資料並寫入 DB；第 2 個月才是動態爬蟲 + 監控（a、c 混淆），第 4 個月才是 production 部署（d 是第 4 月目標）。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Node 爬蟲工具選擇判官",
+          "note": "依照 6 個月地圖學到的工具，判斷這些情境用得對不對。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "目標是純靜態 HTML 頁面 → 用 fetch 抓回來、cheerio 解析。",
+                "correct": "ok",
+                "why": "靜態頁的內容就在 HTML 裡，fetch + cheerio 又快又省資源，是 Month 1 的基本功。"
+              },
+              {
+                "text": "一樣是純靜態頁面，卻每一頁都開 Playwright 啟動整個瀏覽器去抓。",
+                "correct": "risk",
+                "why": "殺雞用牛刀：瀏覽器很吃記憶體又慢。Playwright 留給內容由 JavaScript 動態產生的 SPA。"
+              },
+              {
+                "text": "內容是 JavaScript 載入後才出現的 SPA，cheerio 抓不到 → 改用 Playwright。",
+                "correct": "ok",
+                "why": "cheerio 只看得到原始 HTML；SPA 要等瀏覽器把 JS 跑完，才有內容可以抓。"
+              },
+              {
+                "text": "用 Promise.all 一次對同一個網站發 5000 個 request，越快越好。",
+                "correct": "no",
+                "why": "這等於對別人的伺服器灌流量，可能害對方當機，也違反多數 ToS。用 p-limit 限制同時數量、加間隔，對網站要有禮貌。"
+              },
+              {
+                "text": "每天抓一次公開資料，排程放在 GitHub Actions cron，失敗就發 Discord 通知。",
+                "correct": "ok",
+                "why": "低頻率排程 + 失敗通知，就是 Month 4 production 化的標準做法。"
+              },
+              {
+                "text": "網站回 403 擋下來，就去找 stealth 外掛偽裝成真人繼續抓。",
+                "correct": "no",
+                "why": "403、驗證是網站明確拒絕自動化存取的停止訊號。停下來，改找官方 API 或取得授權。"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "boss": {

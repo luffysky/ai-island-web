@@ -2212,7 +2212,146 @@
         ],
         "answer": "a",
         "explanation": "企業後台系統需要完整的表單 + 資料管理，Element Plus 是課程明確推薦的「企業 + 後台最強」選擇；Pinia 是現代官方狀態管理（取代 Vuex）；VeeValidate 是表單驗證標配。選項 b 混搭不當（Vuex 已過時、shadcn 偏個人、Quasar 用於跨平台）；c 用了過時 Webpack；d 的 Motion One 適合一般 App 而非後台重交互場景。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "Vue UI 元件庫該選哪套？",
+          "note": "照你的專案狀況回答、對照本課的「選擇建議」看哪套最合適",
+          "config": {
+            "intro": "UI 元件庫沒有最好、只有最適合。回答 3 題、看這次專案該挑哪套。",
+            "questions": [
+              {
+                "q": "這次要做的是？",
+                "options": [
+                  {
+                    "label": "個人作品 / 新創產品、想要自己的風格",
+                    "scores": {
+                      "shadcn": 2
+                    }
+                  },
+                  {
+                    "label": "後台管理系統、很多表格和表單",
+                    "scores": {
+                      "admin": 2
+                    }
+                  },
+                  {
+                    "label": "大型企業專案、需要超多種元件",
+                    "scores": {
+                      "prime": 2
+                    }
+                  },
+                  {
+                    "label": "一套 code 要同時出網頁 + 手機 App + 桌面版",
+                    "scores": {
+                      "quasar": 3
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你想要多大的自訂彈性？",
+                "options": [
+                  {
+                    "label": "元件程式碼要歸我、想改就改",
+                    "scores": {
+                      "shadcn": 2
+                    }
+                  },
+                  {
+                    "label": "直接用現成的就好、越完整越好",
+                    "scores": {
+                      "admin": 1,
+                      "prime": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "專案有用 Tailwind 嗎？",
+                "options": [
+                  {
+                    "label": "有",
+                    "scores": {
+                      "shadcn": 1
+                    }
+                  },
+                  {
+                    "label": "沒有 / 不想用",
+                    "scores": {
+                      "admin": 1,
+                      "prime": 1,
+                      "quasar": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "shadcn": {
+                "emoji": "🟢",
+                "title": "shadcn-vue",
+                "desc": "copy-paste 元件、程式碼放在你的專案裡、以 Tailwind 為底、彈性最大。適合個人 / 新創、想學最新做法。"
+              },
+              "admin": {
+                "emoji": "📋",
+                "title": "Element Plus 或 Naive UI",
+                "desc": "後台、表單的強項。Element Plus 老牌、企業常用；Naive UI 完全 TypeScript、設計比較現代、新專案可優先看。"
+              },
+              "prime": {
+                "emoji": "🏢",
+                "title": "PrimeVue",
+                "desc": "80+ 元件、最完整、適合超大型企業專案。代價是體積大、要花時間熟悉。"
+              },
+              "quasar": {
+                "emoji": "📱",
+                "title": "Quasar",
+                "desc": "一套 code 出 Web + Android + iOS + Electron、跨平台需求選它最省事。"
+              }
+            }
+          }
+        },
+        {
+          "type": "scenario-judge",
+          "title": "Vue 學習常犯錯判官",
+          "note": "判斷每種做法會讓你進步、有風險、還是會原地打轉",
+          "config": {
+            "scenarios": [
+              {
+                "text": "看 20 分鐘教學就關掉、自己從頭打一遍",
+                "correct": "ok",
+                "why": "看 100 小時不如寫 10 小時。自己打過一遍、哪裡不懂馬上就知道。"
+              },
+              {
+                "text": "決定把 Vue 所有生態（Pinia、Nuxt、測試、動畫）都學完才開始做專案",
+                "correct": "no",
+                "why": "永遠學不完、永遠不敢開始。基礎走完就動手做 Todo App、邊做邊查。"
+              },
+              {
+                "text": "專案已經做了半年、一直「再改一點點」還沒上線",
+                "correct": "no",
+                "why": "永遠 99% 等於沒做完。課堂建議設 2 個月期限、再陽春都先發佈。"
+              },
+              {
+                "text": "GitHub README 只寫一行「我的 Vue 專案」",
+                "correct": "risk",
+                "why": "別人看不懂專案在做什麼。README 寫：截圖 + 功能 + 技術 stack + Demo 連結。"
+              },
+              {
+                "text": "新專案狀態管理選 Pinia、路由用 Vue Router 4",
+                "correct": "ok",
+                "why": "這兩個是官方推薦的核心生態、Pinia 已取代 Vuex。"
+              },
+              {
+                "text": "卡同一個 bug 三天、都不好意思問人",
+                "correct": "risk",
+                "why": "一個人悶著很浪費時間。加入社群、卡關一陣子就整理好問題去問。"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "boss": {

@@ -1206,7 +1206,43 @@
         ],
         "answer": "d",
         "explanation": "課程強調 Day 1 必須開啟 auto-renewal、lock 和 2FA 是保護 domain 安全的重點；而選 .com 或 .io 是個人品牌策略選擇，不是安全面的必做事項。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Domain 管理判官",
+          "note": "買 domain 不只看第一年價格——判斷這些做法安不安全。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "在 Cloudflare Registrar 買 .com，Day 1 就開 auto-renewal、transfer lock、帳號 2FA，WHOIS privacy 也開著。",
+                "correct": "ok",
+                "why": "這就是本課的 Day 1 清單：自動續約防被搶、lock 防惡意轉出、2FA 防帳號被駭、privacy 保護個資。"
+              },
+              {
+                "text": "某註冊商第一年只要 $1，沒看續約價就下單。",
+                "correct": "risk",
+                "why": "有些註冊商第一年超便宜、之後每年 $40 以上。下單前一定要看「續約價」，不是首年價。"
+              },
+              {
+                "text": "domain 買好之後沒開自動續約，打算「到時候再手動續」。",
+                "correct": "no",
+                "why": "忘記續約，domain 過期就可能被別人搶註，網站和 email 一起消失。auto-renewal Day 1 就要開。"
+              },
+              {
+                "text": "品牌網址取成 my-shop-2-go.info。",
+                "correct": "risk",
+                "why": "連字號、數字容易拼錯，.info 給人廉價感。好的 domain：短、好記、好拼，首選 .com。"
+              },
+              {
+                "text": "用知名品牌的商標當自己網站的 domain 名稱，想沾一下流量。",
+                "correct": "no",
+                "why": "這可能侵害商標，會被要求轉移甚至被告。選名要避開別人的品牌和商標。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Email DNS 完整設定",
@@ -1345,7 +1381,87 @@
         ],
         "answer": "a",
         "explanation": "SPF + DKIM + DMARC 是寄信的「三劍客」——SPF 告訴收件方誰能用你的 domain 寄信、DKIM 簽名驗證信沒被改、DMARC 統合檢查並決定怎麼處理。其他選項混了不相關或進階的紀錄。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "一封信進收件匣前的驗證流程",
+          "note": "一步一步看收件伺服器怎麼用 SPF / DKIM / DMARC 判斷「這封信可不可信」。",
+          "config": {
+            "trigger": {
+              "kind": "webhook",
+              "label": "Gmail 收到一封 From: hi@example.com 的信",
+              "data": "寄件 IP：198.51.100.7\nFrom：hi@example.com\nDKIM-Signature：d=example.com; s=resend"
+            },
+            "nodes": [
+              {
+                "kind": "http",
+                "label": "查 DNS：example.com 的 SPF 紀錄",
+                "desc": "SPF = 公告「哪些寄件服務可以用我的 domain 寄信」",
+                "data": "example.com TXT \"v=spf1 include:_spf.google.com include:resend.com ~all\""
+              },
+              {
+                "kind": "if",
+                "label": "SPF：寄件 IP 在名單內嗎？",
+                "desc": "198.51.100.7 屬於 resend.com → 通過；不在名單 → ~all 軟失敗",
+                "data": "spf = pass"
+              },
+              {
+                "kind": "code",
+                "label": "DKIM：用 DNS 上的公鑰驗簽章",
+                "desc": "查 resend._domainkey.example.com 的公鑰，確認信件內容沒被竄改",
+                "data": "dkim = pass (d=example.com)"
+              },
+              {
+                "kind": "if",
+                "label": "DMARC：通過的驗證跟 From 網域對得上嗎？",
+                "desc": "查 _dmarc.example.com，對不上就照 p= 處理（none 只回報 / quarantine 丟垃圾信 / reject 拒收）",
+                "data": "_dmarc.example.com TXT \"v=DMARC1; p=quarantine; rua=mailto:dmarc@example.com\"\n→ dmarc = pass"
+              },
+              {
+                "kind": "action",
+                "label": "送進收件匣",
+                "desc": "三關都過，伺服器才相信這封信真的是 example.com 寄的",
+                "data": "結果：Inbox ✅（任何一關沒設，很可能直接進 Spam）"
+              }
+            ]
+          }
+        },
+        {
+          "type": "scenario-judge",
+          "title": "Email DNS 設定判官",
+          "note": "看懂上面的流程後，判斷這些設定做法對不對。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "新 domain 第一天就把 DMARC 設成 p=reject 上線。",
+                "correct": "risk",
+                "why": "設定有漏的話，正常的信也會被直接拒收。漸進式最安全：先 p=none 看一個月 report，再 quarantine，最後才 reject。"
+              },
+              {
+                "text": "SPF 裡 include 了 12 個不同的寄信服務。",
+                "correct": "risk",
+                "why": "SPF 最多只能有 10 次 DNS lookup，超過會直接驗證失敗。只留真的在用的服務。"
+              },
+              {
+                "text": "同時用 Google Workspace 和 Resend 寄信，兩邊各自設好自己的 DKIM selector（google._domainkey、resend._domainkey）。",
+                "correct": "ok",
+                "why": "DKIM 可以多組並存，每個寄信服務用自己的 selector 和金鑰，互不干擾。"
+              },
+              {
+                "text": "從自己的 VPS 直接架 mail server 寄電子報。",
+                "correct": "risk",
+                "why": "自架主機的 IP reputation 通常很低，很容易被當成垃圾信。用 Resend / Postmark 這類專門的寄信服務比較穩。"
+              },
+              {
+                "text": "只設了 MX，SPF / DKIM / DMARC 都沒設，就開始寄會員通知信。",
+                "correct": "no",
+                "why": "MX 只管「收信」；收件方沒辦法驗證你的身分，信多半會進 Spam。三劍客都要設，再用 mail-tester 測到高分。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "CDN + DNS 進階整合",

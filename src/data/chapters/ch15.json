@@ -1251,7 +1251,101 @@
         ],
         "answer": "a",
         "explanation": "GitHub Flow 最適合小型團隊與頻繁部署的場景。Git Flow 太複雜、適合大型多版本軟體；Trunk-Based 需要成熟 feature flag 系統；Long-lived branches 違反 branching 心法，會拖延上線時間。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "你的團隊該用哪種分支策略？",
+          "note": "依團隊規模、發版方式，選 GitHub Flow / Git Flow / Trunk-Based",
+          "config": {
+            "intro": "分支策略沒有標準答案，要看你們怎麼發版。回答 3 題，看哪種最適合。",
+            "questions": [
+              {
+                "q": "你們怎麼發版？",
+                "options": [
+                  {
+                    "label": "網站 / SaaS，合併後就直接部署",
+                    "scores": {
+                      "ghflow": 2,
+                      "trunk": 1
+                    }
+                  },
+                  {
+                    "label": "有版本號的軟體（v1.2、v2.0），要同時維護舊版",
+                    "scores": {
+                      "gitflow": 3
+                    }
+                  },
+                  {
+                    "label": "一天部署好幾次，功能用開關控制要不要給使用者看",
+                    "scores": {
+                      "trunk": 3
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "團隊規模？",
+                "options": [
+                  {
+                    "label": "1-5 人的小團隊或一人開發",
+                    "scores": {
+                      "ghflow": 2
+                    }
+                  },
+                  {
+                    "label": "大型團隊、有專門的發版流程",
+                    "scores": {
+                      "gitflow": 2
+                    }
+                  },
+                  {
+                    "label": "團隊成熟、CI 測試很完整",
+                    "scores": {
+                      "trunk": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "有沒有 feature flag（功能開關）系統？",
+                "options": [
+                  {
+                    "label": "沒有，也暫時不想弄",
+                    "scores": {
+                      "ghflow": 2,
+                      "gitflow": 1
+                    }
+                  },
+                  {
+                    "label": "有，而且大家都會用",
+                    "scores": {
+                      "trunk": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "ghflow": {
+                "emoji": "🌿",
+                "title": "GitHub Flow",
+                "desc": "main 永遠可上線，從 main 開短命 branch → PR → review + CI → 合回 main → 部署。簡單、適合持續部署，是課文推薦給 Indie 和中型團隊的選擇。"
+              },
+              "gitflow": {
+                "emoji": "🌳",
+                "title": "Git Flow",
+                "desc": "main + develop + feature/release/hotfix 分支。規則嚴謹、適合要同時維護多個版本的軟體，但對 SaaS 來說太複雜。"
+              },
+              "trunk": {
+                "emoji": "🚀",
+                "title": "Trunk-Based",
+                "desc": "所有人頻繁合進 main，沒做完的功能用 feature flag 關起來。最快、幾乎沒有 merge conflict，但需要完整的測試和功能開關系統。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "title": "Code Review 文化",
@@ -1358,7 +1452,48 @@
         ],
         "answer": "b",
         "explanation": "好的 review 要用 sandwich pattern：先讚美、再指出具體問題和改進方向、最後鼓勵。這樣才是「教學 + 建立共識」而不是單純批評，也符合「什麼錯、為什麼錯、怎麼改」的三要素。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Code Review 留言判官",
+          "note": "判斷每則 review 留言或行為是好的、可以更好，還是會傷害團隊",
+          "config": {
+            "scenarios": [
+              {
+                "text": "留言：「這寫錯了。」",
+                "correct": "no",
+                "why": "沒說什麼錯、為什麼錯、怎麼改，對方只能猜，還會覺得被攻擊。好留言三者缺一不可。"
+              },
+              {
+                "text": "留言：「line 42 的 try/catch 好像把所有錯誤都吞了？網路錯誤可能該重試、驗證錯誤該回給使用者，這裡可以分開處理嗎？」",
+                "correct": "ok",
+                "why": "具體指出位置、說明原因、提出方向，而且用提問的語氣。這就是課文說的 be specific、對事不對人。"
+              },
+              {
+                "text": "為了「變數該用單引號還是雙引號」在 PR 吵了 20 則留言",
+                "correct": "no",
+                "why": "個人風格交給 Prettier 這類格式化工具自動處理，人的注意力應該放在邏輯、edge case 和安全。"
+              },
+              {
+                "text": "收到一個改了 1200 行的 PR，請作者拆成幾個小 PR",
+                "correct": "ok",
+                "why": "太大的 PR 沒人能認真看完，最後只會隨便 approve。課文建議超過 500 行就要求拆開。"
+              },
+              {
+                "text": "對不熟的領域（例如金流），掃一眼就按 approve",
+                "correct": "risk",
+                "why": "approve 代表你替這段 code 背書。不熟就說不熟，請懂的人一起看，尤其金流、權限這種出錯代價高的地方。"
+              },
+              {
+                "text": "用 AI review 工具先抓常見問題，人專心看商業邏輯",
+                "correct": "ok",
+                "why": "工具處理機械性的檢查，人把時間花在工具看不懂的地方：需求對不對、設計合不合理。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Semantic Versioning + Changelog",
@@ -1809,7 +1944,48 @@
         ],
         "answer": "b",
         "explanation": "課程強調『程式碼是給機器看的、文件是給人看的』，README 就像家電說明書，目的是讓別人或半年後的自己能快速上手和維護專案。選項 a 是程式碼的工作、c 和 d 都超出 README 的主要責任範圍。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "文件好習慣判官",
+          "note": "判斷這些文件做法是幫到人、有問題，還是在誤導人",
+          "config": {
+            "scenarios": [
+              {
+                "text": "README 有 Quick Start：clone → 複製 .env.example → npm install → npm run dev",
+                "correct": "ok",
+                "why": "新人（或半年後的你）照著做就能跑起來，這是 README 最重要的一段。"
+              },
+              {
+                "text": "README 的「必填 env」區塊直接貼上真正的 API 金鑰值，方便新人複製",
+                "correct": "no",
+                "why": "README 會跟著 repo 公開或被很多人看到，金鑰等於外洩。只列變數名稱，真實值放 .env.local 且不 commit。"
+              },
+              {
+                "text": "專案從 Zeabur 搬到 Vercel 了，但 README 還寫「Deployed on Zeabur」沒改",
+                "correct": "risk",
+                "why": "過時的文件會誤導人，有時比沒有文件更糟。改架構時順手更新文件，讓文件和 code 一起改。"
+              },
+              {
+                "text": "決定「用 Supabase 不用 Firebase」時，寫一份 ADR 記下背景、決定和後果",
+                "correct": "ok",
+                "why": "ADR（架構決策紀錄）讓之後的人知道「當初為什麼這樣選」，不會重複討論或誤刪重要設計。"
+              },
+              {
+                "text": "複雜的系統架構只用一大段文字描述，沒有任何圖",
+                "correct": "risk",
+                "why": "課文心法：複雜架構用圖或影片比文字清楚。一張流程圖常常勝過三頁說明。"
+              },
+              {
+                "text": "在 repo 根目錄放 LICENSE 和 CHANGELOG.md",
+                "correct": "ok",
+                "why": "LICENSE 說明別人能怎麼用你的 code，CHANGELOG 讓使用者知道每版改了什麼，都是專業專案的標配。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Testing 完整策略",
@@ -2252,7 +2428,90 @@
         ],
         "answer": "a",
         "explanation": "課程核心是「用模板省時間」——特別強調認真做 SaaS 的人應該買模板，第一個月內衝上線找使用者，重點不在學完整細節。選項 b 錯在第 2 個 SaaS 後自己有模板、不買新的；c、d 都誇大不實。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "買 Boilerplate 還是自己組？",
+          "note": "依你的目標、經驗和時間，判斷該買模板、看開源範例自己組，還是重用自己的舊 code",
+          "config": {
+            "intro": "Boilerplate（現成的專案骨架）能省很多時間，但不是每個情況都該買。回答 3 題看看。",
+            "questions": [
+              {
+                "q": "這是你的第幾個 SaaS？",
+                "options": [
+                  {
+                    "label": "第一個",
+                    "scores": {
+                      "buy": 2,
+                      "diy": 1
+                    }
+                  },
+                  {
+                    "label": "第二個以後，之前的專案還留著",
+                    "scores": {
+                      "reuse": 3
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你現在最想要的是什麼？",
+                "options": [
+                  {
+                    "label": "盡快上線，驗證有沒有人要用",
+                    "scores": {
+                      "buy": 2,
+                      "reuse": 1
+                    }
+                  },
+                  {
+                    "label": "搞懂登入、金流、Email 每一塊怎麼運作",
+                    "scores": {
+                      "diy": 3
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你對模板用的技術（例如 Next.js + Supabase）熟嗎？",
+                "options": [
+                  {
+                    "label": "還算熟，看得懂也改得動",
+                    "scores": {
+                      "buy": 2,
+                      "reuse": 1
+                    }
+                  },
+                  {
+                    "label": "不太熟，怕改不動卡住",
+                    "scores": {
+                      "diy": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "buy": {
+                "emoji": "🧰",
+                "title": "買模板 + 自己改",
+                "desc": "Auth、DB、金流、Email 都配好，專心做核心功能。記得確認 License 能不能商用，也不要過度客製化。"
+              },
+              "diy": {
+                "emoji": "🔧",
+                "title": "看開源範例自己組",
+                "desc": "參考 Vercel 官方範本或開源 starter kit，大概要多花幾週，但每一塊都會懂，之後改得動。課文提醒：太依賴模板又看不懂 code，改不動就會卡住。"
+              },
+              "reuse": {
+                "emoji": "♻️",
+                "title": "重用自己的模板",
+                "desc": "把上一個專案的登入、金流整理成自己的 starter，不用再買新的。你最熟悉，也最容易維護。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "title": "Open Source 文化 + License",
@@ -2375,7 +2634,48 @@
         ],
         "answer": "c",
         "explanation": "AGPL 要求如果你用它做 SaaS，你的整個 SaaS 也必須開源。對商業 SaaS 來說這不可行。MIT、Apache 2.0、BSD 都可以放心用在商業產品，只要保留版權聲明即可。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "開源授權判官",
+          "note": "你要在「閉源的商業 SaaS」裡用這些套件或這樣做，判斷可不可以",
+          "config": {
+            "scenarios": [
+              {
+                "text": "使用 MIT 授權的套件，保留它的版權聲明",
+                "correct": "ok",
+                "why": "MIT 最寬鬆，唯一要求是保留版權和授權聲明。React、Next.js 都是 MIT，商業使用沒問題。"
+              },
+              {
+                "text": "使用 Apache 2.0 的套件，並在 About 頁列出使用的開源專案",
+                "correct": "ok",
+                "why": "Apache 2.0 和 MIT 類似，另外有專利保護。保留聲明、標註來源，商業使用沒問題。"
+              },
+              {
+                "text": "把一個 AGPL 授權的函式庫改過後，放在你閉源的 SaaS 後端裡",
+                "correct": "no",
+                "why": "AGPL 連「透過網路提供服務」也算散布，你的 SaaS 原始碼可能被要求公開。除非你準備開源，否則商業閉源專案通常避開。"
+              },
+              {
+                "text": "在要賣給客戶安裝的閉源軟體裡，直接包進 GPL 的程式碼",
+                "correct": "risk",
+                "why": "GPL 有「傳染性」：散布含 GPL code 的軟體，通常要用 GPL 開放原始碼。要不要用、怎麼用需要仔細研究，不確定就問律師。"
+              },
+              {
+                "text": "把 MIT 套件 fork 下來，刪掉 LICENSE 檔、改成自己的名字發布",
+                "correct": "no",
+                "why": "MIT 雖寬鬆，但保留版權聲明是唯一條件，刪掉就違反授權，也是不誠實的行為。"
+              },
+              {
+                "text": "上線前跑 npx license-checker 看所有依賴的授權",
+                "correct": "ok",
+                "why": "你的專案可能有上千個間接依賴，自動檢查能找出藏在裡面的 GPL / AGPL，避免之後才發現踩雷。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "上線後維運：On-call + Postmortem",
@@ -2498,7 +2798,98 @@
         ],
         "answer": "b",
         "explanation": "Blameless 文化的核心是「對事不對人」、把焦點放在「系統流程哪裡可以改進」，而不是追究「誰的責任」。選項 b 問的是怎麼改進測試流程和系統設計，這才是預防未來事件的正確方向；其他選項都是在究責個人，會讓團隊害怕分享問題。"
-      }
+      },
+      "demos": [
+        {
+          "type": "workflow-flow",
+          "title": "Incident 處理 SOP：登入服務掛掉",
+          "note": "照著課文的 Postmortem 範例，一步步看出事時該做什麼",
+          "config": {
+            "trigger": {
+              "kind": "webhook",
+              "label": "14:02 Sentry 告警：登入錯誤率 80%",
+              "data": "alert: login.error_rate = 80%\n剛剛 14:00 部署了 v1.5"
+            },
+            "nodes": [
+              {
+                "kind": "if",
+                "label": "1. 確認（5 分鐘內）",
+                "desc": "是真的掛了嗎？影響多大？",
+                "data": "自己試登入 → 失敗\n影響：所有使用者都無法登入"
+              },
+              {
+                "kind": "action",
+                "label": "2. 公告（10 分鐘內）",
+                "desc": "更新 Status page，讓使用者知道你已經知道了",
+                "data": "Status: Investigating\n「登入服務異常，我們正在處理」"
+              },
+              {
+                "kind": "code",
+                "label": "3. 止血（30 分鐘內）",
+                "desc": "Rollback 比當場修 bug 快：先恢復服務",
+                "data": "rollback v1.5 → v1.4\n14:25 登入恢復正常"
+              },
+              {
+                "kind": "db",
+                "label": "4. 修復",
+                "desc": "服務恢復後，再慢慢找 root cause",
+                "data": "root cause：v1.5 讀錯 JWT secret 的環境變數\n→ 所有 token 都驗不過"
+              },
+              {
+                "kind": "action",
+                "label": "5. 公告解決",
+                "desc": "Status page 改成 resolved，簡短說明發生什麼",
+                "data": "Status: Resolved\n「14:00-14:25 登入異常，已修復」"
+              },
+              {
+                "kind": "set",
+                "label": "6. Postmortem（48 小時內）",
+                "desc": "Blameless：問「系統怎麼改能預防」，不問「誰寫的」",
+                "data": "Action items：\n- CI 加 JWT 驗證測試\n- staging 環境變數和 prod 對齊\n- 加 canary deploy（5% → 50% → 100%）"
+              }
+            ]
+          }
+        },
+        {
+          "type": "scenario-judge",
+          "title": "該不該叫醒 on-call？",
+          "note": "Alert 設太多會讓人麻痺、真出事反而沒人理。判斷這些情況值不值得半夜發告警",
+          "config": {
+            "scenarios": [
+              {
+                "text": "網站 uptime 掉到 95%、首頁打不開",
+                "correct": "ok",
+                "why": "服務掛了直接影響所有使用者，這是最該立刻通知的情況。"
+              },
+              {
+                "text": "金流付款連續失敗",
+                "correct": "ok",
+                "why": "金流壞掉代表使用者付不了錢、你也收不到錢，屬於高優先告警。"
+              },
+              {
+                "text": "某一位使用者打錯密碼，回了 401",
+                "correct": "no",
+                "why": "預期內的 4xx 是正常現象，每次都發告警只會製造噪音，讓真正重要的告警被忽略。"
+              },
+              {
+                "text": "Log 出現一筆 warning 等級的訊息",
+                "correct": "no",
+                "why": "警告級 log 放在 Slack 或隔天看就好，不需要半夜叫醒人。"
+              },
+              {
+                "text": "錯誤率從平常的 0.5% 突然升到 8%",
+                "correct": "ok",
+                "why": "Error rate spike（課文門檻 > 5%）通常代表剛部署的版本有問題，越早發現、影響越小。"
+              },
+              {
+                "text": "一人開發的 Side project，所有 error 都推播到手機",
+                "correct": "risk",
+                "why": "一人開發更要設好門檻：只有重要 metric 推手機，其他隔天看。不然很快就會習慣性忽略通知，或被弄到睡不好。"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "boss": {

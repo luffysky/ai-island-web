@@ -1908,7 +1908,113 @@
         ],
         "answer": "b",
         "explanation": "課程明確指出階段 2（2-6 個月）的目標就是「能讀 open source TS code」，而該階段的重點內容正是 Advanced generics、Conditional types、Mapped types 等。選項 a 是階段 1、選項 c 是階段 3、選項 d 則太膚淺。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "你的 TypeScript 在第幾階段？",
+          "note": "誠實回答幾題、看你現在在三階段的哪一段、下一步該練什麼",
+          "config": {
+            "intro": "本課把 TS 分成「能寫 → 能精準 → 能設計」三階段。照你現在真實的狀況選、不用硬選高的。",
+            "questions": [
+              {
+                "q": "寫 interface / type、union（像 'active' | 'done'）這些基本型別？",
+                "options": [
+                  {
+                    "label": "還常常要查、寫不太順",
+                    "scores": {
+                      "s1": 2
+                    }
+                  },
+                  {
+                    "label": "很順、閉著眼都會",
+                    "scores": {
+                      "s2": 1,
+                      "s3": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "看到 T extends ...、infer、conditional types 的程式碼？",
+                "options": [
+                  {
+                    "label": "看不懂、直接跳過",
+                    "scores": {
+                      "s1": 2
+                    }
+                  },
+                  {
+                    "label": "慢慢看得懂、但自己寫不太出來",
+                    "scores": {
+                      "s2": 2
+                    }
+                  },
+                  {
+                    "label": "看得懂、也自己寫過",
+                    "scores": {
+                      "s3": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你在專案裡還會寫 any 嗎？",
+                "options": [
+                  {
+                    "label": "型別報錯就先寫 any 過關",
+                    "scores": {
+                      "s1": 2
+                    }
+                  },
+                  {
+                    "label": "很少、會用 unknown + type guard 收窄",
+                    "scores": {
+                      "s2": 1,
+                      "s3": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你自己寫過 utility type、或替 library 設計過型別 API 嗎？",
+                "options": [
+                  {
+                    "label": "沒有",
+                    "scores": {
+                      "s1": 1,
+                      "s2": 1
+                    }
+                  },
+                  {
+                    "label": "有、而且給別人用過",
+                    "scores": {
+                      "s3": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "s1": {
+                "emoji": "🌱",
+                "title": "階段 1：能寫",
+                "desc": "先把基本功練到不用查：interface / type、union、基本 generics、8 個常用 Utility Type、React + TS。目標是能寫出能上線的 code。最有效的方法是每天用、新 code 開 strict、不寫 any。"
+              },
+              "s2": {
+                "emoji": "🎯",
+                "title": "階段 2：能精準",
+                "desc": "下一步練 advanced generics（extends、infer）、conditional / mapped types、type guards、discriminated union。可以開始玩 type-challenges、讀開源專案的 TS 型別寫法。"
+              },
+              "s3": {
+                "emoji": "🏗️",
+                "title": "階段 3：能設計",
+                "desc": "你已經在設計型別了。繼續練 library API 設計、branded types、自寫 utility type、貢獻開源 TS 專案、把會的教給別人——教得出來才是真的懂。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "title": "Generic 泛型完全攻略",

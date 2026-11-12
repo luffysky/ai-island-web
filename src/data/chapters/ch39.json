@@ -1124,9 +1124,9 @@
         }
       ],
       "exercise": {
-        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
-        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
-        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+        "question": "照本課的架構，你的 LINE Bot 要「記得使用者、用 AI 回覆」。請回答：①使用者加好友（follow）時要存哪些欄位？為什麼用 upsert 而不是 create？②每次呼叫 AI 時，要把多少歷史訊息帶進 prompt？帶全部會有什麼問題？",
+        "hint": "同一個人可能封鎖再加回來。AI 的 context 有長度上限、也是按 token 收費。",
+        "answer": "①存 LINE userId（主鍵）、displayName、pictureUrl、加入時間；用 upsert 是因為使用者可能封鎖後又加回來，create 會撞主鍵報錯，upsert 則是有就更新、沒有就新增。②只帶最近 N 則（例如 10 則），或「最近幾則 + 一段舊對話摘要」。帶全部會：超過模型 context 上限、每次呼叫成本一直變高、回覆變慢；而且舊對話不一定相關，反而干擾回答。另外別把其他使用者的訊息混進來（查詢一定要用 userId 過濾）。"
       },
       "outline": [
         {
@@ -1216,9 +1216,9 @@
         }
       ],
       "exercise": {
-        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
-        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
-        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+        "question": "LINE Pay 付款有三步：Request → 跳轉付款 → Confirm。請說明：①使用者付完錢跳回你的 confirmUrl 時，訂單為什麼還不能直接標成已付款？②Confirm API 要帶哪個參數、金額要跟什麼比對？③在沙箱測試和正式上線之間，你要換掉哪些東西？",
+        "hint": "跳回 confirmUrl 只代表「使用者授權了」，錢還沒真的扣。注意 sandbox-api-pay 的網址。",
+        "answer": "①跳回 confirmUrl 只代表使用者在 LINE Pay 按了同意，你必須呼叫 Confirm API，LINE Pay 回成功（returnCode 0000）才算真的扣款完成；只看跳轉就出貨，可能被偽造網址騙。②Confirm 要帶 transactionId，body 帶 amount 與 currency；金額要跟「你資料庫裡這張訂單的金額」比對，不能用網址上傳來的值。③API 網址從 sandbox-api-pay.line.me 換成 api-pay.line.me、ChannelId/ChannelSecret 換成正式值（放伺服器環境變數），confirmUrl/cancelUrl 改成正式網域，再用小額真實付款測一次。"
       },
       "outline": [
         {
@@ -1324,9 +1324,9 @@
     },
     {
       "title": "LINE 接案 + 變現實戰",
-      "oneLineSummary": "會 LINE 開發 = 月入 NT$ 30-200k",
+      "oneLineSummary": "LINE 接案：報價、簽約與找客戶",
       "analogy": "台灣最大 SaaS 機會、市場大、做的人少。",
-      "content": "## 接案類型\n\n### 1. LINE OA 設定（小型）\n- 註冊 + 後台設定 + 圖文選單\n- NT$ 3-15k 一次\n- 2-5 天\n\n### 2. LINE Bot 開發\n- 自動回覆 + DB + 後台\n- NT$ 30-100k\n- 1-3 週\n\n### 3. LIFF App\n- 預約 / 訂單 / 會員\n- NT$ 50-300k\n- 1-2 月\n\n### 4. 完整整合\n- Bot + LIFF + DB + 金流\n- NT$ 100-500k\n- 2-4 月\n\n### 5. 月費維護\n- NT$ 5-30k/月\n- 客服、內容、報表\n\n## 賣什麼最賺\n\n### 1. 餐廳訂位 Bot\n- 痛點：電話打爆、人工漏訂\n- 解：LINE 訂位 + 提醒\n- 報價：NT$ 50-150k\n\n### 2. 美容預約\n- 痛點：手帳記不完\n- 解：LIFF 預約 + 推播提醒\n- 報價：NT$ 80-200k\n\n### 3. 電商\n- LINE OA + LIFF 商品頁 + LINE Pay\n- 報價：NT$ 150-500k\n\n### 4. 教育 / 課程\n- 課程提醒 + 作業\n- 報價：NT$ 100-300k\n\n### 5. 房仲\n- 推薦物件 + 看屋預約\n- 報價：NT$ 200-500k\n\n### 6. 醫療診所\n- 預約 + 提醒（GDPR 注意）\n- 報價：NT$ 200-500k\n\n## 案例：早餐店 Bot\n\n**客戶**：連鎖早餐 5 家店\n**痛點**：尖峰排隊、漏單\n\n**功能**：\n- LIFF 點餐（菜單 + 加入購物車）\n- LINE Pay 付款\n- Bot 推播「3 分鐘後好」\n- 集點卡（送一杯飲料）\n\n**報價**：\n- Setup：NT$ 150k\n- 月費：NT$ 8k（5 家共用）\n\n**ROI**：\n- 客戶月節省人力 NT$ 30k\n- 翻桌率 +20%\n- 6 個月回本\n\n## 報價策略\n\n### Value-based\n不報「Bot 設定 NT$ 30k」、報「省 1 個人月、ROI 半年」。\n\n### 套餐式\n- 基礎：NT$ 30k（Bot + 自動回覆）\n- 進階：NT$ 80k（+ LIFF）\n- 旗艦：NT$ 200k（+ 金流 + 報表）\n\n## 簽約\n\n### 必有\n- Scope 明確\n- 訊息費用客戶付\n- 維護期 30 天\n- 月費續約\n\n### 不該包\n- LINE OA 月費（客戶自己付）\n- LINE Pay 申請（客戶申請）\n- 訊息超量（客戶承擔）\n\n## 找客戶\n\n### 1. 在地店家\n直接拜訪、提案\n\n### 2. FB 社團\n台灣中小企業老闆社團\n\n### 3. Threads / IG\n分享案例\n\n### 4. Google Ads\n「LINE 訂位系統」「LINE 客服 Bot」\n\n### 5. 行銷公司轉介\n跟在地行銷公司合作、抽案\n\n## 學習資源\n- LINE Developers 官方文件（必看）\n- LINE Bot Designer\n- LINE Flex Simulator\n- Awesome LINE Bot（GitHub）\n\n## 工具棧\n- **Backend**：Node + Express / Next.js\n- **DB**：Supabase\n- **AI**：Claude / OpenAI\n- **Host**：Vercel / Railway\n- **Monitor**：Sentry\n\n## Indie 接案 SOP\n1. 學基礎（1-2 月）\n2. 做 demo（餐廳訂位 Bot）\n3. 找 5 個中小企業免費試用\n4. 拿 case study\n5. 開始收費\n6. 月費維護累積被動收入\n\n## 心法\n- 餐飲 / 服務業最大市場\n- 案例 > 履歷\n- 月費 > 一次性\n- LINE 訊息費客戶付（不要自己吃）\n- 永遠先做 MVP、不要追完美\n\n## 升級\n- Level 1：自由接案（月 NT$ 30-100k）\n- Level 2：開公司 Agency（月 NT$ 100-500k）\n- Level 3：SaaS 化（如 SleekFlow、Sasa Cloud、月費 NT$ 1000-10000/客戶）\n\n## 終極建議\n台灣 2300 萬人都用 LINE、會的開發者少。\n這是「藍海中的紅海」—需求大、competition 不到夠。\n1 年深耕、月入 NT$ 50k+ 副業沒問題。\n\n**☕ 用人話講**\n\nLINE 接案 + 變現實戰——**會 LINE 開發 = 月入 NT$ 3～20 萬**。**一句話記住**：像掌握了台灣商家最想要的技能——LINE 行銷 / Bot 的需求超大，會做就有穩定又高價的案子。\n",
+      "content": "## 接案類型\n\n### 1. LINE OA 設定（小型）\n- 註冊 + 後台設定 + 圖文選單\n- NT$ 3-15k 一次\n- 2-5 天\n\n### 2. LINE Bot 開發\n- 自動回覆 + DB + 後台\n- NT$ 30-100k\n- 1-3 週\n\n### 3. LIFF App\n- 預約 / 訂單 / 會員\n- NT$ 50-300k\n- 1-2 月\n\n### 4. 完整整合\n- Bot + LIFF + DB + 金流\n- NT$ 100-500k\n- 2-4 月\n\n### 5. 月費維護\n- NT$ 5-30k/月\n- 客服、內容、報表\n\n## 哪些題目需求最明確\n\n### 1. 餐廳訂位 Bot\n- 痛點：電話打爆、人工漏訂\n- 解：LINE 訂位 + 提醒\n- 報價：NT$ 50-150k\n\n### 2. 美容預約\n- 痛點：手帳記不完\n- 解：LIFF 預約 + 推播提醒\n- 報價：NT$ 80-200k\n\n### 3. 電商\n- LINE OA + LIFF 商品頁 + LINE Pay\n- 報價：NT$ 150-500k\n\n### 4. 教育 / 課程\n- 課程提醒 + 作業\n- 報價：NT$ 100-300k\n\n### 5. 房仲\n- 推薦物件 + 看屋預約\n- 報價：NT$ 200-500k\n\n### 6. 醫療診所\n- 預約 + 提醒（病歷/健康資料屬特種個資，依個資法嚴格處理）\n- 報價：NT$ 200-500k\n\n## 案例：早餐店 Bot\n\n**客戶**：連鎖早餐 5 家店\n**痛點**：尖峰排隊、漏單\n\n**功能**：\n- LIFF 點餐（菜單 + 加入購物車）\n- LINE Pay 付款\n- Bot 推播「3 分鐘後好」\n- 集點卡（送一杯飲料）\n\n**報價**：\n- Setup：NT$ 150k\n- 月費：NT$ 8k（5 家共用）\n\n**ROI**：\n- 客戶月節省人力 NT$ 30k\n- 翻桌率 +20%\n- 6 個月回本\n\n## 報價策略\n\n### Value-based\n不報「Bot 設定 NT$ 30k」、報「省 1 個人月、ROI 半年」。\n\n### 套餐式\n- 基礎：NT$ 30k（Bot + 自動回覆）\n- 進階：NT$ 80k（+ LIFF）\n- 旗艦：NT$ 200k（+ 金流 + 報表）\n\n## 簽約\n\n### 必有\n- Scope 明確\n- 訊息費用客戶付\n- 維護期 30 天\n- 月費續約\n\n### 不該包\n- LINE OA 月費（客戶自己付）\n- LINE Pay 申請（客戶申請）\n- 訊息超量（客戶承擔）\n\n## 找客戶\n\n### 1. 在地店家\n直接拜訪、提案\n\n### 2. FB 社團\n台灣中小企業老闆社團\n\n### 3. Threads / IG\n分享案例\n\n### 4. Google Ads\n「LINE 訂位系統」「LINE 客服 Bot」\n\n### 5. 行銷公司轉介\n跟在地行銷公司合作、抽案\n\n## 學習資源\n- LINE Developers 官方文件（必看）\n- LINE Bot Designer\n- LINE Flex Simulator\n- Awesome LINE Bot（GitHub）\n\n## 工具棧\n- **Backend**：Node + Express / Next.js\n- **DB**：Supabase\n- **AI**：Claude / OpenAI\n- **Host**：Vercel / Railway\n- **Monitor**：Sentry\n\n## Indie 接案 SOP\n1. 學基礎（1-2 月）\n2. 做 demo（餐廳訂位 Bot）\n3. 找 5 個中小企業免費試用\n4. 拿 case study\n5. 開始收費\n6. 月費維護累積被動收入\n\n## 心法\n- 餐飲 / 服務業最大市場\n- 案例 > 履歷\n- 月費 > 一次性\n- LINE 訊息費客戶付（不要自己吃）\n- 永遠先做 MVP、不要追完美\n\n## 升級\n- Level 1：自由接案\n- Level 2：開公司 Agency\n- Level 3：SaaS 化（如 SleekFlow、Sasa Cloud、月費 NT$ 1000-10000/客戶）\n\n## 終極建議\n台灣 2300 萬人都用 LINE、會的開發者少。\n這是「藍海中的紅海」—需求大、competition 不到夠。\n需求真實存在，但收入取決於你的作品、客戶與服務品質，沒有保證。\n\n**☕ 用人話講**\n\nLINE 接案 + 變現實戰——**會 LINE 開發，就多一項商家真的需要的服務**（收入因人而異、不保證）。**一句話記住**：像掌握了台灣商家最想要的技能——LINE 行銷 / Bot 的需求超大，做得好、案例清楚，就比較容易接到案子。\n",
       "tip": {
         "type": "practical",
         "text": "做 LINE 服務先把 webhook 的簽章驗證做好，不然任何人都能偽造請求打你的 bot。"
@@ -1491,7 +1491,48 @@
         ],
         "answer": "b",
         "explanation": "課程強調用 value-based 報價策略，核心是「解決痛點 → 展示 ROI」而非報功能。餐廳的痛點是人工漏訂、美容的痛點是手帳記不完，LINE Bot 正好能用訂位 + 提醒解決這些問題，讓客戶看到節省成本或翻桌率提升的直接效益。其他選項都偏離了課程核心的「找到有痛點的產業」這個邏輯。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "LINE 接案判官",
+          "note": "報價、簽約、成本歸屬：這樣做 OK 嗎？",
+          "config": {
+            "scenarios": [
+              {
+                "text": "報價寫「Bot 設定 NT$ 30k」，客戶問值不值，你改用「幫你省下尖峰 1 個人力、預估多久回本」來說明",
+                "correct": "ok",
+                "why": "Value-based 報價：老闆買的是省人力、少漏單，不是買技術名詞。回本時間要用客戶自己的數字算，不要誇大。"
+              },
+              {
+                "text": "合約沒寫 LINE 訊息費誰付，上線後推播量暴增，你只好自己吞",
+                "correct": "no",
+                "why": "LINE OA 月費、訊息超量費都該寫明由客戶付。合約沒寫清楚，成本就會悄悄變成你的。"
+              },
+              {
+                "text": "幫診所做預約提醒，把病患姓名、病症直接寫在推播訊息裡比較方便",
+                "correct": "no",
+                "why": "健康資料屬特種個資。推播只寫「您明天 10:00 有預約」，細節要登入後才看得到；資料存取也要有權限控管。"
+              },
+              {
+                "text": "先找幾家店免費試用，換到真實的 case study 再開始收費",
+                "correct": "ok",
+                "why": "沒有作品時，案例比履歷有說服力。但試用範圍與期限要先講好，避免被當成無限免費維護。"
+              },
+              {
+                "text": "LINE Pay 商戶直接用你自己的帳號申請，幫客戶代收款再轉給他",
+                "correct": "no",
+                "why": "金流商戶應該由客戶自己申請（公司戶），錢直接進客戶帳戶。代收代付有法規與稅務風險，也讓你背上糾紛責任。"
+              },
+              {
+                "text": "合約寫明維護期 30 天，之後月費續約，範圍外的新功能另外報價",
+                "correct": "ok",
+                "why": "Scope、維護期、月費、加價條件都寫清楚，是保護雙方最有效的方法。"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "boss": {

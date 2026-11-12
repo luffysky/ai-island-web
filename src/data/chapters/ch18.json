@@ -689,7 +689,43 @@
         ],
         "answer": "a",
         "explanation": "課程明確指出 schema-less 短期讓開發快速（改資料不用 migration），但長期會導致資料品質失控（沒防護誰都能塞奇怪資料、同個表內格式混亂）。b 強調速度但課程重點不在此；c 說一定會丟資料過於絕對；d 說「完全不能用」太嚴格，課程只說 JOIN 痛苦但 4.0+ 有 $lookup。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "NoSQL 選型判官",
+          "note": "看情境判斷：這樣用 SQL / NoSQL 合不合理？重點是「什麼資料配什麼 DB」。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "登入後的 session、熱門頁面的快取，存在 Redis（Key-Value）。",
+                "correct": "ok",
+                "why": "Key-Value 就是一本超大字典、用 key 秒查 value——session、cache、排行榜正是 Redis 的主場。"
+              },
+              {
+                "text": "銀行轉帳的主帳本（A 扣 100、B 加 100）放在一個沒開 transaction 的 schema-less NoSQL。",
+                "correct": "no",
+                "why": "轉帳中途掛掉、錢就可能憑空消失。這種「一定不能錯」的資料要 ACID transaction 保證，SQL（PostgreSQL）才是底線。"
+              },
+              {
+                "text": "新手第一個專案，user / order / product 結構很固定，但因為「聽說 NoSQL 比較快」就直接用 MongoDB。",
+                "correct": "risk",
+                "why": "結構固定的資料正是 SQL 的強項；為了短期彈性換來沒 JOIN、資料品質難管的長期成本。很多公司幾年後又搬回 PostgreSQL。不知道選什麼 → 先選 SQL。"
+              },
+              {
+                "text": "MongoDB collection 讓每個人隨意塞欄位、完全不做驗證，一年後同一個 age 欄位有 number、string、null 三種樣子。",
+                "correct": "risk",
+                "why": "Schema-less 的自由沒有規範就會變失控：查詢要處理一堆型別例外、bug 藏在裡面。用 NoSQL 也要在程式端做 schema 驗證。"
+              },
+              {
+                "text": "做 AI 語意搜尋（RAG），把文章轉成 embedding 向量存進 pgvector。",
+                "correct": "ok",
+                "why": "embedding 是一串代表「意思」的數字，要找「意思最接近」的資料，就交給 Vector DB；pgvector 還能跟原本的 PostgreSQL 放在一起。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "MongoDB 完整 CRUD",
@@ -1568,7 +1604,43 @@
         ],
         "answer": "b",
         "explanation": "這個場景符合選 SQL 的訊號：結構固定（user/order/payment）、需要複雜查詢 JOIN、需要 ACID transaction（金流敏感）。MongoDB 和 Cassandra 是在資料量超大或 schema 變動快時才用，Redis 是快取而不是主資料庫。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "SQL vs NoSQL 反 pattern 抓漏",
+          "note": "下面是真實常見的做法——判斷哪些是好選擇、哪些踩了這課講的反 pattern。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "只有 50 萬筆會員資料、PostgreSQL 跑得好好的，因為「聽說 NoSQL 快」就整套搬去 MongoDB。",
+                "correct": "no",
+                "why": "反 pattern 1「為 NoSQL 而 NoSQL」：規模沒大到那個程度，SQL 反而簡單很多倍。百萬筆以內 PG 都很夠，不要提前「進化」。"
+              },
+              {
+                "text": "所有東西都塞 PostgreSQL，首頁熱門商品每次有人進來都直接查 DB、完全不加快取。",
+                "correct": "risk",
+                "why": "反 pattern 2「全用 SQL」：流量一大，重複的 query 會把 DB 打爆。熱門、常讀的資料放 Redis 快取，DB 就輕鬆了。"
+              },
+              {
+                "text": "在 MongoDB 裡寫了一大堆 $lookup，硬是模仿 SQL 的多表 JOIN。",
+                "correct": "risk",
+                "why": "反 pattern 3「Mongo 模仿 SQL」：跑得慢又難維護。資料天生需要大量 JOIN，就代表它比較適合 SQL。"
+              },
+              {
+                "text": "老闆要一份臨時的交叉分析報表，直接在 Firestore 上一個個 collection 硬撈。",
+                "correct": "no",
+                "why": "反 pattern 4：Firestore 不是分析用的。正確做法是把資料 ETL 到 BigQuery / Snowflake 這類 OLAP 倉儲再分析。"
+              },
+              {
+                "text": "小型 SaaS：業務資料放 PostgreSQL、session 和快取放 Redis、AI 功能用 pgvector。",
+                "correct": "ok",
+                "why": "這就是 polyglot persistence 的入門版：每種資料用最適合的 DB，但數量控制在一兩個人顧得來。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "DynamoDB：AWS Serverless 標配",
@@ -2175,7 +2247,43 @@
         ],
         "answer": "a",
         "explanation": "1 萬用戶屬於「階段 2：Indie SaaS（1k-100k 用戶）」，推薦 stack 就是 PG + Redis + Meilisearch。PostgreSQL 存結構化資料（用戶帳號），Redis 做快取，Meilisearch 則專門處理搜尋功能。B 是大型應用用法、C 是超大規模、D 則低估了搜尋的需求。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "DB 決策樹實戰",
+          "note": "照著這課的決策樹走：輸入場景、判斷這個選型對不對。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "IoT 感測器每秒寫入溫度資料，團隊又想繼續用 SQL 查詢 → 選 TimescaleDB。",
+                "correct": "ok",
+                "why": "時序資料 + 要 SQL，決策樹的答案就是 TimescaleDB（它是 PostgreSQL 的時序擴充）。"
+              },
+              {
+                "text": "個人部落格才 200 篇文章，為了全文搜尋，直接架一整套 Elasticsearch 叢集。",
+                "correct": "risk",
+                "why": "小規模全文搜尋，PostgreSQL 加 GIN index 就夠了；中規模再上 Meilisearch。Elasticsearch 適合大規模 + log，太早上只會多一套要顧的系統。"
+              },
+              {
+                "text": "學生 MVP、使用者不到 1000 人，一開始就自架 PG 主從 + read replica + Redis cluster。",
+                "correct": "risk",
+                "why": "這是階段 3（10 萬以上使用者）的配置。MVP 用 Supabase 全套就好，先把產品做出來，規模到了再升級。"
+              },
+              {
+                "text": "完全不確定資料長怎樣、需求還在變 → 先用 PostgreSQL，不穩定的欄位放 JSONB。",
+                "correct": "ok",
+                "why": "決策樹最下面那條：不知道用什麼就選 PostgreSQL；JSONB 讓「偶爾變動的結構」也有地方放，兼顧彈性。"
+              },
+              {
+                "text": "社交 App 要做「朋友的朋友可能認識」推薦，關係查詢一層又一層 → 考慮 Graph DB（Neo4j）。",
+                "correct": "ok",
+                "why": "節點 + 關係的多層追蹤，用 SQL 要 JOIN 很多次；Graph DB 天生就是存「誰跟誰有關係」。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "DB 心法 + 學習路徑",
@@ -2250,7 +2358,43 @@
         ],
         "answer": "a",
         "explanation": "Year 1 的目標是『能寫業務 query』（掌握基礎），Year 2 的目標是『能調效能、不出問題』（從寫能跑進化到寫得好）。這是從能力上「從無到有」到「從有到優」的轉變。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "DB 學習路徑判官",
+          "note": "這些學習 / 實務做法，哪些走在正確的路上？",
+          "config": {
+            "scenarios": [
+              {
+                "text": "Year 1 先把 SELECT / WHERE / JOIN / GROUP BY 練熟、會用一個 ORM、會看 EXPLAIN。",
+                "correct": "ok",
+                "why": "這就是 Year 1 必修：先能寫業務 query、知道 index 有沒有用到，再往效能和分散式走。"
+              },
+              {
+                "text": "每天用 pg_dump + cron 自動備份到雲端，但從來沒試過還原。",
+                "correct": "risk",
+                "why": "沒演練過 restore 的備份等於沒備份——真出事才發現檔案壞了或步驟不會。Year 1 就要親手還原一次。"
+              },
+              {
+                "text": "連 JOIN 都還不熟，就先去啃 Raft / Paxos 共識演算法和 Spanner 內部原理。",
+                "correct": "risk",
+                "why": "那是 Year 4+ 的內容。基礎不穩就跳級，學了也用不到、容易放棄。照順序一層一層疊。"
+              },
+              {
+                "text": "某個 API 突然變慢，先用 EXPLAIN ANALYZE 看是不是 Seq Scan（全表掃描）。",
+                "correct": "ok",
+                "why": "先量測再優化：EXPLAIN ANALYZE 會告訴你實際花了多少時間、有沒有用到 index，找到兇手再對症下藥。"
+              },
+              {
+                "text": "尖峰時段直接在 production 對千萬筆的大表下 ALTER TABLE，沒有任何零停機規劃。",
+                "correct": "no",
+                "why": "大表改 schema 可能鎖表、整站卡死。要用 zero-downtime 手法（分批 backfill、double write、gh-ost 這類工具），而且挑離峰時間。"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "boss": {

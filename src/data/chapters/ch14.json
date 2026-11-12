@@ -802,9 +802,9 @@
     },
     {
       "title": "PWA 接案 + 學習路徑",
-      "oneLineSummary": "PWA 接案 = 月入 NT$ 30-100k",
+      "oneLineSummary": "PWA 接案：學習路徑與接案方向",
       "analogy": "結合 Web + Mobile 技能、市場大。",
-      "content": "## 接案類型\n\n### 1. PWA 改造\nNT$ 20-80k、1-3 週。\n\n### 2. PWA + 上 Store\nPWA + Capacitor：NT$ 50-200k、1-2 月。\n\n### 3. PWA + 客製\n含後端、Auth、即時：NT$ 100-500k。\n\n### 4. 維護\n月費 NT$ 5-30k。\n\n## 賣什麼\n\n### 1. 在地服務\n- 餐廳訂位 PWA\n- 報修 PWA\n- NT$ 30-100k\n\n### 2. 工具 SaaS\n- 計算器、轉換器\n- 月費 NT$ 100-500\n\n### 3. 內部企業 App\n- 員工打卡 / 巡檢\n- NT$ 100-500k\n\n### 4. 教育類\n- 課程 PWA\n- 線上練習\n\n## PWA vs RN / Flutter\n\n| 面向 | PWA | RN / Flutter |\n|---|---|---|\n| 開發 | 快 | 中 |\n| 跨平台 | 全 | iOS/Android |\n| Store | 要 Capacitor | 原生 |\n| Push | 限制 | 完整 |\n| 接案費 | 低 | 高 |\n\nPWA + Capacitor 是甜蜜點。\n\n## 學習路徑\n\n### Month 1：基礎\n- HTML / CSS / JS\n- React / Vue\n- 第一個 web App\n\n### Month 2：PWA\n- Service Worker\n- Manifest\n- 離線 / Push\n\n### Month 3：進階\n- IndexedDB\n- Background Sync\n- Lighthouse 90+\n\n### Month 4：原生\n- Capacitor\n- 上架 Store\n- 原生 API\n\n### Month 5：接案\n- 第一個付費客戶\n\n### Month 6+：規模化\n- 多客戶 / SaaS\n\n## 工具\n- next-pwa / vite-plugin-pwa\n- Workbox\n- Capacitor / Tauri\n- Lighthouse\n\n## 案例\n- Squoosh（Google、圖片壓縮）\n- Replit（線上 IDE）\n- Excalidraw（白板）\n- Notion\n\n## 心法\n- PWA 是 Indie 跨平台甜蜜點\n- 學會 + 1 個成功 case = 月入 NT$ 30k+\n- 不要追完美、追實用\n- 不要跟 RN 死磕、各有市場\n\n**☕ 用人話講**\n\n會 PWA 可以接案、月入 NT$ 3～10 萬——這課給學習路徑與接案方向。**一句話記住**：像多一張接案的牌——很多中小企業想要「能安裝的網站」又不想花大錢開發 App，PWA 剛好補這個缺口，需求不少。\n",
+      "content": "## 接案類型\n\n### 1. PWA 改造\nNT$ 20-80k、1-3 週。\n\n### 2. PWA + 上 Store\nPWA + Capacitor：NT$ 50-200k、1-2 月。\n\n### 3. PWA + 客製\n含後端、Auth、即時：NT$ 100-500k。\n\n### 4. 維護\n月費 NT$ 5-30k。\n\n## 賣什麼\n\n### 1. 在地服務\n- 餐廳訂位 PWA\n- 報修 PWA\n- NT$ 30-100k\n\n### 2. 工具 SaaS\n- 計算器、轉換器\n- 月費 NT$ 100-500\n\n### 3. 內部企業 App\n- 員工打卡 / 巡檢\n- NT$ 100-500k\n\n### 4. 教育類\n- 課程 PWA\n- 線上練習\n\n## PWA vs RN / Flutter\n\n| 面向 | PWA | RN / Flutter |\n|---|---|---|\n| 開發 | 快 | 中 |\n| 跨平台 | 全 | iOS/Android |\n| Store | 要 Capacitor | 原生 |\n| Push | 限制 | 完整 |\n| 接案費 | 低 | 高 |\n\nPWA + Capacitor 是甜蜜點。\n\n## 學習路徑\n\n### Month 1：基礎\n- HTML / CSS / JS\n- React / Vue\n- 第一個 web App\n\n### Month 2：PWA\n- Service Worker\n- Manifest\n- 離線 / Push\n\n### Month 3：進階\n- IndexedDB\n- Background Sync\n- Lighthouse 90+\n\n### Month 4：原生\n- Capacitor\n- 上架 Store\n- 原生 API\n\n### Month 5：接案\n- 第一個付費客戶\n\n### Month 6+：規模化\n- 多客戶 / SaaS\n\n## 工具\n- next-pwa / vite-plugin-pwa\n- Workbox\n- Capacitor / Tauri\n- Lighthouse\n\n## 案例\n- Squoosh（Google、圖片壓縮）\n- Replit（線上 IDE）\n- Excalidraw（白板）\n- Notion\n\n## 心法\n- PWA 是 Indie 跨平台甜蜜點\n- 先做出 1 個成功案例當作品集，比任何證照都有說服力\n- 不要追完美、追實用\n- 不要跟 RN 死磕、各有市場\n\n**☕ 用人話講**\n\n會 PWA 可以多一項接案服務（收入因人而異、不保證）——這課給學習路徑與接案方向。**一句話記住**：像多一張接案的牌——很多中小企業想要「能安裝的網站」又不想花大錢開發 App，PWA 剛好補這個缺口，需求不少。\n",
       "tip": {
         "type": "milestone",
         "text": "PWA 是 Web 工程師擴展到 Mobile 最快路線。"
@@ -925,7 +925,108 @@
         ],
         "answer": "a",
         "explanation": "課程強調 PWA 改造是 1-3 週的短週期案件（NT$ 20-80k），最適合新手快速累積實戰經驗和建立作品集，為後續更大型案件打基礎。雖然單價不是最高，但週期短、易成交，更符合『快速進入接案市場』的目標。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "這個案子用 PWA 還是 RN / Flutter？",
+          "note": "依需求、平台和預算，判斷該走純 PWA、PWA + Capacitor，還是原生跨平台",
+          "config": {
+            "intro": "課文說「PWA + Capacitor 是甜蜜點」，但不是每個案子都適合。回答幾題，看看這個案子比較適合哪條路。",
+            "questions": [
+              {
+                "q": "使用者主要怎麼找到這個 App？",
+                "options": [
+                  {
+                    "label": "從網址、LINE 分享、Google 搜尋進來",
+                    "scores": {
+                      "pwa": 2
+                    }
+                  },
+                  {
+                    "label": "一定要在 App Store / Google Play 搜得到",
+                    "scores": {
+                      "cap": 2,
+                      "native": 1
+                    }
+                  },
+                  {
+                    "label": "公司內部員工用，發連結就好",
+                    "scores": {
+                      "pwa": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "需要什麼裝置功能？",
+                "options": [
+                  {
+                    "label": "表單、列表、拍照上傳這種一般功能",
+                    "scores": {
+                      "pwa": 2,
+                      "cap": 1
+                    }
+                  },
+                  {
+                    "label": "需要穩定推播、iOS 也要",
+                    "scores": {
+                      "cap": 2,
+                      "native": 1
+                    }
+                  },
+                  {
+                    "label": "藍牙、NFC、大量背景運算、3D",
+                    "scores": {
+                      "native": 3
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "開發時程與預算？",
+                "options": [
+                  {
+                    "label": "越快越好、預算有限",
+                    "scores": {
+                      "pwa": 2
+                    }
+                  },
+                  {
+                    "label": "中等，可以多花一點時間處理上架",
+                    "scores": {
+                      "cap": 2
+                    }
+                  },
+                  {
+                    "label": "充足，追求最好的原生體驗",
+                    "scores": {
+                      "native": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "pwa": {
+                "emoji": "🌐",
+                "title": "純 PWA",
+                "desc": "開發最快、一份 code 所有裝置都能用、更新不用等審核。適合工具、內容、內部系統。缺點是 iOS 推播較弱、Store 搜不到。"
+              },
+              "cap": {
+                "emoji": "📦",
+                "title": "PWA + Capacitor",
+                "desc": "用同一份網頁 code 包成 App 上架，補上 Store 曝光和原生 API。適合要上架但功能不算重的案子。"
+              },
+              "native": {
+                "emoji": "📱",
+                "title": "React Native / Flutter",
+                "desc": "需要重度原生功能（藍牙、NFC、高效能）時更穩。開發成本較高，但體驗最接近原生 App。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "title": "PWA 適合什麼？不適合什麼？",
@@ -1028,7 +1129,48 @@
         ],
         "answer": "a",
         "explanation": "課程明確提到「內容導向」（部落格、文件、wiki）與簡單社群功能（訊息、評論、分享）都非常適合 PWA。線上筆記應用正符合這兩個特徵，加上不需原生 API，是 PWA 的最佳使用場景。選項 b、c、d 都誤解了 PWA 的適用時機。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "這個點子適合做 PWA 嗎？",
+          "note": "依課文的「適合 / 不適合」清單，判斷每個產品點子用 PWA 合不合適",
+          "config": {
+            "scenarios": [
+              {
+                "text": "公司內部的文件 wiki，員工要能快速查、偶爾離線看",
+                "correct": "ok",
+                "why": "內容導向 + 不需要重原生功能，正是 PWA 的強項：可安裝、可快取離線、更新即時。"
+              },
+              {
+                "text": "單位換算計算機工具",
+                "correct": "ok",
+                "why": "工具類是 PWA 的甜蜜點：小、快、打開就能用，不需要上架也能讓人加到主畫面。"
+              },
+              {
+                "text": "3D 多人連線射擊遊戲",
+                "correct": "no",
+                "why": "重度 3D 吃 GPU、WebGL 跨平台效能差，課文的選擇矩陣只給 PWA 一顆星，這種要用原生或遊戲引擎。"
+              },
+              {
+                "text": "需要用藍牙連接血壓計、而且 iPhone 用戶是主力",
+                "correct": "no",
+                "why": "iOS 對 Web Bluetooth 等原生 API 限制很多，這種重原生需求直接選 React Native / Flutter 比較實際。"
+              },
+              {
+                "text": "網路商店：商品瀏覽、購物車、結帳",
+                "correct": "ok",
+                "why": "電商用 PWA 和原生都能做得很好（矩陣兩邊都 4 顆星），PWA 載入快、不用下載，對轉換率有幫助。"
+              },
+              {
+                "text": "網路銀行 App，需要高強度安全和在 Store 被信任",
+                "correct": "risk",
+                "why": "做得到但不理想：金融類常需要 Certificate Pinning 等原生安全機制，用戶也習慣從 Store 下載官方 App。課文矩陣 PWA 只有 2 顆星。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Web Manifest 進階",
@@ -1864,9 +2006,9 @@
     },
     {
       "title": "PWA 接案：報價 + 流程",
-      "oneLineSummary": "會 PWA = 月入 NT$ 30-100k",
+      "oneLineSummary": "PWA 接案的報價與流程",
       "analogy": "結合前後端 + UX 設計、客戶愛。",
-      "content": "## 接案類型 + 報價\n\n### 1. PWA 改造（現有 web 升級）\n- NT$ 20-80k\n- 1-3 週\n- 加 manifest、SW、安裝提示\n\n### 2. PWA 全新建（含後端）\n- NT$ 100-500k\n- 1-3 月\n- 含 Auth、DB、API\n\n### 3. PWA + Capacitor（上 App Store）\n- NT$ 150-800k\n- 2-4 月\n- 加上架 Apple / Google\n\n### 4. 月費維護\n- NT$ 5-30k/月\n- Bug fix + 內容更新 + 監控\n\n## 接案流程\n\n### Phase 1：諮詢（30 分鐘 free）\n- 業務需求\n- TA 是誰\n- 預算範圍\n- 期望時程\n\n### Phase 2：報價單\n- Scope 清楚\n- 時程 + milestone\n- 投資 + 付款條件\n- 不包含項目\n\n### Phase 3：合約 + 訂金\n- 50% 訂金\n- 50% 完成\n- 不收訂金不開工\n\n### Phase 4：設計 → 開發 → 測試 → 上線\n\n### Phase 5：交付 + 教育訓練\n- 後台教學\n- 短影片\n- 30 天保固\n\n### Phase 6：月費維護\n\n## 賣什麼比較好賺\n\n### 1. 在地服務 PWA\n- 餐廳訂位\n- 美容預約\n- 維修報修\n\n### 2. 工具 SaaS\n- 計算器 / 轉換器\n- 月費 NT$ 100-500\n\n### 3. 內部企業 App\n- 員工打卡 / 巡檢\n- NT$ 100-500k\n\n### 4. 教育 / 課程\n- 課程播放 + 進度\n- LIFF 整合\n\n## 不要碰\n- 重原生功能（藍牙 / 重 AR）\n- 大型企業（合約超久）\n- 客戶不確定要什麼（永遠改）\n- 個人 freelancer 級客戶（殺價）\n\n## 心法\n- 報價含「不包含」清單（保護自己）\n- 月費 > 一次性\n- 不要 fixed price 太緊\n- 給 buffer（時程 ×1.5）\n\n**☕ 用人話講**\n\nPWA 接案的報價 + 流程：會 PWA 月入 NT$ 3～10 萬——怎麼接洽、報價、交付。**一句話記住**：像一份接案菜單——把「幫你把網站升級成可安裝的 App」當成一個服務來賣，怎麼報價、怎麼交付都有套路可循。\n",
+      "content": "## 接案類型 + 報價\n\n### 1. PWA 改造（現有 web 升級）\n- NT$ 20-80k\n- 1-3 週\n- 加 manifest、SW、安裝提示\n\n### 2. PWA 全新建（含後端）\n- NT$ 100-500k\n- 1-3 月\n- 含 Auth、DB、API\n\n### 3. PWA + Capacitor（上 App Store）\n- NT$ 150-800k\n- 2-4 月\n- 加上架 Apple / Google\n\n### 4. 月費維護\n- NT$ 5-30k/月\n- Bug fix + 內容更新 + 監控\n\n## 接案流程\n\n### Phase 1：諮詢（30 分鐘 free）\n- 業務需求\n- TA 是誰\n- 預算範圍\n- 期望時程\n\n### Phase 2：報價單\n- Scope 清楚\n- 時程 + milestone\n- 投資 + 付款條件\n- 不包含項目\n\n### Phase 3：合約 + 訂金\n- 50% 訂金\n- 50% 完成\n- 不收訂金不開工\n\n### Phase 4：設計 → 開發 → 測試 → 上線\n\n### Phase 5：交付 + 教育訓練\n- 後台教學\n- 短影片\n- 30 天保固\n\n### Phase 6：月費維護\n\n## 哪些題目比較適合 PWA\n\n### 1. 在地服務 PWA\n- 餐廳訂位\n- 美容預約\n- 維修報修\n\n### 2. 工具 SaaS\n- 計算器 / 轉換器\n- 月費 NT$ 100-500\n\n### 3. 內部企業 App\n- 員工打卡 / 巡檢\n- NT$ 100-500k\n\n### 4. 教育 / 課程\n- 課程播放 + 進度\n- LIFF 整合\n\n## 不要碰\n- 重原生功能（藍牙 / 重 AR）\n- 大型企業（合約超久）\n- 客戶不確定要什麼（永遠改）\n- 個人 freelancer 級客戶（殺價）\n\n## 心法\n- 報價含「不包含」清單（保護自己）\n- 月費 > 一次性\n- 不要 fixed price 太緊\n- 給 buffer（時程 ×1.5）\n\n**☕ 用人話講**\n\nPWA 接案的報價 + 流程：（收入因人而異、不保證）——怎麼接洽、報價、交付。**一句話記住**：像一份接案菜單——把「幫你把網站升級成可安裝的 App」當成一個服務來賣，怎麼報價、怎麼交付都有套路可循。\n",
       "tip": {
         "type": "practical",
         "text": "PWA 上線前用 Lighthouse 跑一次，可安裝性、離線、效能它會逐項給分並指出缺什麼。"
@@ -1979,7 +2121,48 @@
         ],
         "answer": "b",
         "explanation": "課程明確列出「PWA + Capacitor（上 App Store）」是用來升級現有網站並需要上架的類型。如果只用改造方案（a），無法上架 App Store；全新建（c）是針對沒有既有網站的情況；月費維護（d）只是後續服務，不是初期接案方式。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "接案流程判官",
+          "note": "依課文的接案流程和心法，判斷這些做法是保護雙方、有風險，還是會出事",
+          "config": {
+            "scenarios": [
+              {
+                "text": "報價單上除了做什麼，也清楚列出「不包含項目」（例如不含上架費、不含內容撰寫）",
+                "correct": "ok",
+                "why": "範圍寫清楚，之後客戶說「這個不是本來就要做嗎？」時才有依據。課文心法第一條。"
+              },
+              {
+                "text": "客戶很急，還沒簽約也沒收訂金，就先開工做",
+                "correct": "no",
+                "why": "課文原則：不收訂金不開工。沒合約沒訂金，做完被砍價或消失都沒保障。"
+              },
+              {
+                "text": "自己估要 4 週，報給客戶 6 週",
+                "correct": "ok",
+                "why": "時程乘 1.5 留 buffer：需求變動、測試、上架審核都會花時間。準時甚至提早交付，比一再延期好得多。"
+              },
+              {
+                "text": "客戶也說不清楚想要什麼，只說「做個像 App 的東西，做了再改」",
+                "correct": "risk",
+                "why": "需求不明的客戶容易永遠在改，課文把它列在「不要碰」。先用付費的諮詢或規格階段把需求釐清，再報價。"
+              },
+              {
+                "text": "客戶要求用 PWA 做藍牙連接 + AR 功能",
+                "correct": "no",
+                "why": "這是 PWA 的弱項（課文「不要碰」清單），硬接只會做不好。誠實建議改用原生，或只接 PWA 做得好的部分。"
+              },
+              {
+                "text": "交付時附上後台操作的短影片，並提供 30 天保固",
+                "correct": "ok",
+                "why": "教育訓練讓客戶會用，保固處理上線初期的小問題，也是之後談月費維護的基礎。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "PWA 部署 + CI/CD",
@@ -2242,7 +2425,48 @@
         ],
         "answer": "b",
         "explanation": "課程強調 PWA 不是所有 web 都該做（部落格可以但不必、簡單 landing 不需要），終極心法是「PWA 是手段、不是目的」。選項 a 過度絕對、c 不符合「別 over-engineer」、d 違反「Push 用克制、每天≤1」的原則。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "PWA 心法判官",
+          "note": "用這課的 5 個真理和 7 個建議，判斷每個做法對不對",
+          "config": {
+            "scenarios": [
+              {
+                "text": "一頁式活動 landing page，花兩週加上 Service Worker、推播和安裝提示",
+                "correct": "risk",
+                "why": "「不是所有 web 都該 PWA」：簡單的 landing 頁使用者看一次就走，不需要安裝。把時間花在內容和載入速度上更值得。"
+              },
+              {
+                "text": "第一個 PWA 只做 1 個核心功能就上線，之後依使用者回饋迭代",
+                "correct": "ok",
+                "why": "建議 1：先做 MVP、不追完美。上線後才知道使用者真正在乎什麼。"
+              },
+              {
+                "text": "不用框架，自己從零手寫 Service Worker 的快取邏輯",
+                "correct": "risk",
+                "why": "SW 快取寫錯，使用者可能一直看到舊版、甚至卡住。課文建議用 Workbox / next-pwa 這類工具，專心在產品邏輯上。"
+              },
+              {
+                "text": "為了提高回訪，每天推播 5 次",
+                "correct": "no",
+                "why": "推播要克制：每天最多 1 次、由使用者行為觸發、讓使用者能控制。推太多只會讓人關通知或直接刪掉。"
+              },
+              {
+                "text": "iOS 推播支援較弱，所以改用 App 內通知 + email 作為 fallback",
+                "correct": "ok",
+                "why": "「iOS 是現實」：接受限制、做好替代方案，而不是放棄 iOS 使用者。"
+              },
+              {
+                "text": "離線時顯示一條「目前離線，資料會在連線後同步」的提示",
+                "correct": "ok",
+                "why": "建議 5：離線體驗要用心。讓使用者知道發生什麼事，比畫面突然壞掉好太多。"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "boss": {

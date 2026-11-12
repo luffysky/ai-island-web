@@ -1866,13 +1866,54 @@
         ],
         "answer": "b",
         "explanation": "課程核心強調「持續監控是最划算的模式」——做一次爬蟲、每月收費就能持續賺被動收入，5-10個客戶月入就能達NT$10,000-50,000。相比一次性接案（只賺一次）和需要高用戶數的SaaS，月費模式最快達到穩定被動收入。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "爬蟲案子能不能接？",
+          "note": "技術做得到 ≠ 可以做。合規優先：先看 robots.txt、服務條款（ToS）、個資、著作權。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "抓 data.gov.tw 的空氣品質開放資料，做成視覺化 dashboard。",
+                "correct": "ok",
+                "why": "政府開放資料本來就歡迎取用（記得看授權條款、標示出處），是最安全的接案題材。"
+              },
+              {
+                "text": "客戶想每天看競品網站的公開商品價格：你先確認 robots.txt 和 ToS 允許、一天低頻率抓一次、只存價格。",
+                "correct": "risk",
+                "why": "做法方向對，但仍要逐站確認條款，有官方 API 或資料授權就優先用。有寫禁止自動化存取，就不要做。"
+              },
+              {
+                "text": "客戶要你把租屋網上屋主的姓名、電話整理成名單，拿去打電話推銷。",
+                "correct": "no",
+                "why": "這是蒐集、利用個人資料，違反個資法，也違反網站條款。不管價錢多高都要拒絕。"
+              },
+              {
+                "text": "目標網站有 Cloudflare 驗證和 CAPTCHA，客戶要求你「想辦法繞過去」。",
+                "correct": "no",
+                "why": "驗證碼、反爬機制就是對方明確說「不歡迎自動化存取」的停止訊號。正確做法是停下來、找官方 API 或洽談資料授權。"
+              },
+              {
+                "text": "把新聞網站的整篇文章全文爬下來，原封不動貼到自己網站賺廣告。",
+                "correct": "no",
+                "why": "這是重製和散布別人的著作，侵害著作權。可以做的是只存標題 + 連結，或取得授權。"
+              },
+              {
+                "text": "報價時說明「幫你省下每天 1 小時手動查價」，並把網站改版修復、失敗通知寫進月費維護。",
+                "correct": "ok",
+                "why": "客戶在乎的是省了多少時間；爬蟲會因網站改版壞掉，維護範圍先講清楚，雙方都安心。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "學習路徑 + 進階方向",
       "oneLineSummary": "從新手到爬蟲專家、6 個月",
       "analogy": "想像學爬蟲不是終點、而是「數據工程師」職涯的起點。會爬蟲只是入場券、更值錢的是後面的：資料清理 → 資料庫設計 → 自動化 pipeline → AI 訓練資料準備。這課給你後續 3-5 年的學習地圖、別只滿足在「會爬一個網站」。",
-      "content": "**ch28 終曲**——學完 L1-L24、知道接下來怎麼學 / 找工作 / 變現。這課給你「**6 個月完整學習路徑 + 進階方向 + 資源**」。\n\n> 💡 **重點**：學完這章不等於能上工、要**做 portfolio + 接第一個 case** 才會變錢。\n\n  \n### 6 個月學習路徑（從新手到接案）\n\n**Month 1：基礎**\n\n```text\n[ ] Python 基本（ch26）\n[ ] requests + BeautifulSoup（L2 / L8 / L12）\n[ ] 完整爬 1 個簡單網站（PTT / Wikipedia / 政府公開資料）\n[ ] 存 CSV + Pandas 簡單分析\n[ ] 第 1 個 Portfolio 專案放 GitHub\n\n里程碑：能爬 PTT 八卦版前 10 篇標題 + 推文數\n```\n\n  \n**Month 2：進階**\n\n```text\n[ ] Scrapy（L4 / L9）\n[ ] Playwright 動態網站（L3 / L10）\n[ ] 反爬技巧（L5 / L11）\n[ ] 第 2 個 Portfolio：爬蝦皮 / Momo\n\n里程碑：能爬 SPA + 反爬中等的網站（蝦皮商品）\n```\n\n  \n**Month 3：規模化**\n\n```text\n[ ] Async（httpx / asyncio、L14）\n[ ] 代理輪換（L6 / L20）\n[ ] Database 儲存（SQLite / PostgreSQL、L13）\n[ ] 第 3 個 Portfolio：定時爬 + 寫 DB + 簡單 dashboard\n\n里程碑：能 24/7 跑、處理 10 萬+ 資料\n```\n\n  \n**Month 4：Production**\n\n```text\n[ ] 排程（cron / Airflow / Prefect、L16）\n[ ] 監控（Sentry / Healthchecks、L21）\n[ ] 錯誤處理（tenacity / 通知、L21）\n[ ] 部署（Docker / Railway / Fly.io）\n\n里程碑：能交付 production 級爬蟲、24/7 跑 1 個月不壞\n```\n\n  \n**Month 5：接案**\n\n```text\n[ ] 寫履歷 + LinkedIn\n[ ] 整理 3 個 Portfolio\n[ ] 寫部落格分享技術（SEO）\n[ ] 投 10-20 個接案平台 case\n[ ] 第 1 個付費客戶（即使是朋友 NT$ 1000 也算）\n\n里程碑：拿到第 1 個付費 case\n```\n\n  \n**Month 6：規模化**\n\n```text\n[ ] 接 3-5 個客戶\n[ ] 包成「**月費維護**」訂閱\n[ ] 試做小型 SaaS 產品（用爬蟲 + Streamlit）\n[ ] 月被動收入 NT$ 10,000-50,000\n\n里程碑：能靠爬蟲補貼正職 / 全職 indie\n```\n\n  \n### 進階方向（學完爬蟲之後）\n\n**1. Data Engineer（資料工程師、最賺）**\n\n```text\n- 學：Spark / Airflow / Snowflake / BigQuery / dbt\n- 工作：建公司資料 pipeline、不只爬還要清洗 / 加值\n- 月薪：NT$ 100-180k\n- ch26 L28-32 教 SQLAlchemy / Airflow 等\n```\n\n  \n**2. Web 反爬蟲工程師**\n\n```text\n- 學：Cloudflare / Imperva / Akamai / DataDome\n- 工作：設計反爬機制保護公司網站\n- 月薪：NT$ 100-200k（市場小但缺人）\n```\n\n  \n**3. SaaS 創業（最高上限）**\n\n```text\n- 學：FastAPI + 前端 + 收費系統 + 行銷\n- 範例：\n  - Diffbot（API 化爬蟲、年收 $10M+）\n  - Bright Data（代理服務、年收 $50M+）\n  - PriceSpy（比價、千萬月活）\n- indie 起手：Streamlit + 爬蟲、做特定領域比價\n```\n\n  \n**4. AI 訓練資料供應商（熱門）**\n\n```text\n- 學：爬蟲 + NLP + 資料清洗 + 倫理\n- 工作：爬書 / 論文 / code / 社群文字、賣給 OpenAI / Anthropic\n- 案例：Common Crawl / Refined Web / The Pile\n- ⚠️ 法律風險高、要小心著作權 + 個資\n```\n\n  \n**5. 量化交易（金融）**\n\n```text\n- 學：爬蟲 + Pandas + 金融模型 + 程式交易\n- 工作：抓金融資料 + 建立交易策略\n- 收入：自己用 / 賣訊號 / 加入量化基金\n- ch27 L15 教過 Prophet 時序預測\n```\n\n  \n### 學習資源（精選）\n\n**英文：**\n\n| 資源 | 特色 |\n|---|---|\n| **Scrapy 官方文件** | 最權威、寫得很清楚 |\n| **Playwright 官方文件** | 含 Codegen + Trace Viewer 教學 |\n| **John Watson Rooney（YouTube）** | 爬蟲頻道 #1、實戰超多 |\n| **Python Crash Course Sprint：Web Scraping** | 入門書 |\n| **books.toscrape.com** | Scrapy 官方練習網站、合法爬 |\n| **quotes.toscrape.com** | 同上、有 JS 版 + 登入版 |\n\n  \n**中文：**\n\n| 資源 | 特色 |\n|---|---|\n| **《Python 網路爬蟲開發實戰》** | 中文書 |\n| **PTT Python 板** | 台灣社群、可問問題 |\n| **Hahow / 線上學習** | 中文影音課 |\n| **AI 島**（你正在用！） | 完整全端養成 |\n\n  \n**練習資料集 / API：**\n\n| 資源 | 特色 |\n|---|---|\n| **data.gov.tw** | 台灣政府開放資料 |\n| **NASA Open APIs** | 太空資料 |\n| **OpenWeather** | 天氣 |\n| **Hacker News API** | 科技新聞 |\n| **JSONPlaceholder** | 假資料測試 |\n\n  \n### 求職市場（台灣 2026）\n\n```text\n=== 職位名稱 ===\n- 爬蟲工程師（少、但有）\n- 資料工程師 ⭐（最多、含爬蟲技能）\n- Backend Engineer（爬蟲是加分項）\n- Quant / 量化分析師（金融）\n\n=== 月薪 ===\n- 初階（1-2 年）：NT$ 50-90k\n- 中階（3-5 年）：NT$ 80-130k\n- 資深（5+ 年）：NT$ 130-200k\n\n=== 主要雇主 ===\n- 電商：蝦皮、Yahoo、Momo、PChome\n- 金融：玉山、富邦、券商量化部\n- 新創：求職網、比價網、加密貨幣交易所\n- SaaS：KKBOX、Hahow、Pinkoi\n```\n\n  \n### 5 大心法（資深 vs 新手差別）\n\n```text\n1. ✅ 爬蟲是工具、不是終點\n   學爬蟲是為了解決問題、不是收集 GitHub stars\n\n2. ✅ 結合領域知識（金融 / 電商 / 房地產）才值錢\n   只會技術 = 工具人、懂業務 + 技術 = 顧問\n\n3. ✅ 法律風險評估 > 技術\n   爬錯網站、賺 1 萬賠 100 萬、CP 值不對\n\n4. ✅ 永遠先試官方 API\n   API 慢、貴、限制多、但 100% 合法 + 穩定\n\n5. ✅ 持續輸出（blog / GitHub）\n   每月 1 篇技術文 + 1 個 GitHub 專案 = 12 個月後客戶自己上門\n```\n\n  \n### ch28 完結語\n\n```text\n恭喜你看完 ch28 Python 爬蟲全 25 課！\n\n學完這章你已經有：\n✓ 爬靜態 HTML（requests + BS4）\n✓ 爬 JS 渲染（Playwright）\n✓ 爬大規模（Scrapy）\n✓ 處理反爬（7 大技術 + 武器庫）\n✓ 排程 / 監控 / 通知（production 級）\n✓ 非 HTML（PDF / Excel / 圖片 / 音訊）\n✓ 接案商業化（4 種模式 + 6 個熱門領域）\n\n下一步建議：\n1. 挑你關心的網站（自己常逛的）做完整爬蟲\n2. 放 GitHub + 寫部落格\n3. 接第 1 個 case（朋友 NT$ 1000 都算）\n4. 6 個月後變成被動收入 NT$ 10-50k/月\n\n下一章 ch29 JavaScript 爬蟲 —— 看 JS 生態怎麼做爬蟲。\n```\n\n  \n    **☕ 用人話講**\n    \nch28 終曲 3 件事：(1) **6 個月學習路徑** —— Month 1-6 從新手到接案 (2) **5 大進階方向** —— Data Engineer / 反爬 / SaaS / AI 訓練資料 / 量化 (3) **5 大心法** —— 爬蟲是工具不是終點、結合領域才值錢、法律重要、永遠先試 API、持續輸出。**怎麼開始**：今天就動手爬一個網站、6 個月後賺被動收入。\n\n  \n\n  \n    \n      🚀\n      最後一段話\n    \n    **學爬蟲最快的方法 = 解決自己的真實問題。** 你最常逛什麼網站？想自動化什麼？把 ch28 學的東西套上去、3 天做出第一個爬蟲、放 GitHub 寫 README、就是你的 portfolio。**接案 / 找工作 / 創業都從這個 portfolio 開始**。**別等學完才動手、邊學邊做最快**。\n",
+      "content": "**ch28 終曲**——學完 L1-L24、知道接下來怎麼學 / 找工作 / 變現。這課給你「**6 個月完整學習路徑 + 進階方向 + 資源**」。\n\n> 💡 **重點**：學完這章不等於能上工、要**做 portfolio + 接第一個 case** 才會變錢。\n\n  \n### 6 個月學習路徑（從新手到接案）\n\n**Month 1：基礎**\n\n```text\n[ ] Python 基本（ch26）\n[ ] requests + BeautifulSoup（L2 / L8 / L12）\n[ ] 完整爬 1 個簡單網站（PTT / Wikipedia / 政府公開資料）\n[ ] 存 CSV + Pandas 簡單分析\n[ ] 第 1 個 Portfolio 專案放 GitHub\n\n里程碑：能爬 PTT 八卦版前 10 篇標題 + 推文數\n```\n\n  \n**Month 2：進階**\n\n```text\n[ ] Scrapy（L4 / L9）\n[ ] Playwright 動態網站（L3 / L10）\n[ ] 認識反爬訊號、知道何時該停（L5 / L11）\n[ ] 第 2 個 Portfolio：爬蝦皮 / Momo\n\n里程碑：能爬 SPA 網站（先確認 robots.txt / ToS 允許，否則改走官方 API）\n```\n\n  \n**Month 3：規模化**\n\n```text\n[ ] Async（httpx / asyncio、L14）\n[ ] 代理的正當用途與界線（L6 / L20）\n[ ] Database 儲存（SQLite / PostgreSQL、L13）\n[ ] 第 3 個 Portfolio：定時爬 + 寫 DB + 簡單 dashboard\n\n里程碑：能 24/7 跑、處理 10 萬+ 資料\n```\n\n  \n**Month 4：Production**\n\n```text\n[ ] 排程（cron / Airflow / Prefect、L16）\n[ ] 監控（Sentry / Healthchecks、L21）\n[ ] 錯誤處理（tenacity / 通知、L21）\n[ ] 部署（Docker / Railway / Fly.io）\n\n里程碑：能交付 production 級爬蟲、24/7 跑 1 個月不壞\n```\n\n  \n**Month 5：接案**\n\n```text\n[ ] 寫履歷 + LinkedIn\n[ ] 整理 3 個 Portfolio\n[ ] 寫部落格分享技術（SEO）\n[ ] 投 10-20 個接案平台 case\n[ ] 第 1 個付費客戶（即使是朋友 NT$ 1000 也算）\n\n里程碑：拿到第 1 個付費 case\n```\n\n  \n**Month 6：規模化**\n\n```text\n[ ] 接 3-5 個客戶\n[ ] 包成「**月費維護**」訂閱\n[ ] 試做小型 SaaS 產品（用爬蟲 + Streamlit）\n[ ] 月被動收入 NT$ 10,000-50,000\n\n里程碑：能靠爬蟲補貼正職 / 全職 indie\n```\n\n  \n### 進階方向（學完爬蟲之後）\n\n**1. Data Engineer（資料工程師、最賺）**\n\n```text\n- 學：Spark / Airflow / Snowflake / BigQuery / dbt\n- 工作：建公司資料 pipeline、不只爬還要清洗 / 加值\n- 月薪：NT$ 100-180k\n- ch26 L28-32 教 SQLAlchemy / Airflow 等\n```\n\n  \n**2. Web 反爬蟲工程師**\n\n```text\n- 學：Cloudflare / Imperva / Akamai / DataDome\n- 工作：設計反爬機制保護公司網站\n- 月薪：NT$ 100-200k（市場小但缺人）\n```\n\n  \n**3. SaaS 創業（最高上限）**\n\n```text\n- 學：FastAPI + 前端 + 收費系統 + 行銷\n- 範例：\n  - Diffbot（API 化爬蟲、年收 $10M+）\n  - Bright Data（代理服務、年收 $50M+）\n  - PriceSpy（比價、千萬月活）\n- indie 起手：Streamlit + 爬蟲、做特定領域比價\n```\n\n  \n**4. AI 訓練資料供應商（熱門）**\n\n```text\n- 學：爬蟲 + NLP + 資料清洗 + 倫理\n- 工作：爬書 / 論文 / code / 社群文字、賣給 OpenAI / Anthropic\n- 案例：Common Crawl / Refined Web / The Pile\n- ⚠️ 法律風險高、要小心著作權 + 個資\n```\n\n  \n**5. 量化交易（金融）**\n\n```text\n- 學：爬蟲 + Pandas + 金融模型 + 程式交易\n- 工作：抓金融資料 + 建立交易策略\n- 收入：自己用 / 賣訊號 / 加入量化基金\n- ch27 L15 教過 Prophet 時序預測\n```\n\n  \n### 學習資源（精選）\n\n**英文：**\n\n| 資源 | 特色 |\n|---|---|\n| **Scrapy 官方文件** | 最權威、寫得很清楚 |\n| **Playwright 官方文件** | 含 Codegen + Trace Viewer 教學 |\n| **John Watson Rooney（YouTube）** | 爬蟲頻道 #1、實戰超多 |\n| **Python Crash Course Sprint：Web Scraping** | 入門書 |\n| **books.toscrape.com** | Scrapy 官方練習網站、合法爬 |\n| **quotes.toscrape.com** | 同上、有 JS 版 + 登入版 |\n\n  \n**中文：**\n\n| 資源 | 特色 |\n|---|---|\n| **《Python 網路爬蟲開發實戰》** | 中文書 |\n| **PTT Python 板** | 台灣社群、可問問題 |\n| **Hahow / 線上學習** | 中文影音課 |\n| **AI 島**（你正在用！） | 完整全端養成 |\n\n  \n**練習資料集 / API：**\n\n| 資源 | 特色 |\n|---|---|\n| **data.gov.tw** | 台灣政府開放資料 |\n| **NASA Open APIs** | 太空資料 |\n| **OpenWeather** | 天氣 |\n| **Hacker News API** | 科技新聞 |\n| **JSONPlaceholder** | 假資料測試 |\n\n  \n### 求職市場（台灣 2026）\n\n```text\n=== 職位名稱 ===\n- 爬蟲工程師（少、但有）\n- 資料工程師 ⭐（最多、含爬蟲技能）\n- Backend Engineer（爬蟲是加分項）\n- Quant / 量化分析師（金融）\n\n=== 月薪 ===\n- 初階（1-2 年）：NT$ 50-90k\n- 中階（3-5 年）：NT$ 80-130k\n- 資深（5+ 年）：NT$ 130-200k\n\n=== 主要雇主 ===\n- 電商：蝦皮、Yahoo、Momo、PChome\n- 金融：玉山、富邦、券商量化部\n- 新創：求職網、比價網、加密貨幣交易所\n- SaaS：KKBOX、Hahow、Pinkoi\n```\n\n  \n### 5 大心法（資深 vs 新手差別）\n\n```text\n1. ✅ 爬蟲是工具、不是終點\n   學爬蟲是為了解決問題、不是收集 GitHub stars\n\n2. ✅ 結合領域知識（金融 / 電商 / 房地產）才值錢\n   只會技術 = 工具人、懂業務 + 技術 = 顧問\n\n3. ✅ 法律風險評估 > 技術\n   爬錯網站、賺 1 萬賠 100 萬、CP 值不對\n\n4. ✅ 永遠先試官方 API\n   API 慢、貴、限制多、但 100% 合法 + 穩定\n\n5. ✅ 持續輸出（blog / GitHub）\n   每月 1 篇技術文 + 1 個 GitHub 專案 = 12 個月後客戶自己上門\n```\n\n  \n### ch28 完結語\n\n```text\n恭喜你看完 ch28 Python 爬蟲全 25 課！\n\n學完這章你已經有：\n✓ 爬靜態 HTML（requests + BS4）\n✓ 爬 JS 渲染（Playwright）\n✓ 爬大規模（Scrapy）\n✓ 判讀反爬訊號（知道何時該停、改走授權）\n✓ 排程 / 監控 / 通知（production 級）\n✓ 非 HTML（PDF / Excel / 圖片 / 音訊）\n✓ 接案商業化（4 種模式 + 6 個熱門領域）\n\n下一步建議：\n1. 挑你關心的網站（自己常逛的）做完整爬蟲\n2. 放 GitHub + 寫部落格\n3. 接第 1 個 case（朋友 NT$ 1000 都算）\n4. 6 個月後變成被動收入 NT$ 10-50k/月\n\n下一章 ch29 JavaScript 爬蟲 —— 看 JS 生態怎麼做爬蟲。\n```\n\n  \n    **☕ 用人話講**\n    \nch28 終曲 3 件事：(1) **6 個月學習路徑** —— Month 1-6 從新手到接案 (2) **5 大進階方向** —— Data Engineer / 反爬 / SaaS / AI 訓練資料 / 量化 (3) **5 大心法** —— 爬蟲是工具不是終點、結合領域才值錢、法律重要、永遠先試 API、持續輸出。**怎麼開始**：今天就動手爬一個網站、6 個月後賺被動收入。\n\n  \n\n  \n    \n      🚀\n      最後一段話\n    \n    **學爬蟲最快的方法 = 解決自己的真實問題。** 你最常逛什麼網站？想自動化什麼？把 ch28 學的東西套上去、3 天做出第一個爬蟲、放 GitHub 寫 README、就是你的 portfolio。**接案 / 找工作 / 創業都從這個 portfolio 開始**。**別等學完才動手、邊學邊做最快**。\n",
       "tip": {
         "type": "milestone",
         "text": "爬蟲是「進入資料工程的最快路線」。"
@@ -1969,7 +2010,43 @@
         ],
         "answer": "b",
         "explanation": "課程明確強調「學完這章不等於能上工、要做 portfolio + 接第一個 case 才會變錢」。學知識只是基礎，真正的轉折點是第 5 個月拿到第一個付費客戶——這是從學習者變成接案者的關鍵分界線。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "爬蟲學習路線判官",
+          "note": "一邊練技術一邊守規矩——這些學習做法對不對？",
+          "config": {
+            "scenarios": [
+              {
+                "text": "練習先用 books.toscrape.com、quotes.toscrape.com 這類專門給人練爬蟲的網站。",
+                "correct": "ok",
+                "why": "這些網站就是設計來讓你合法練習的，結構、分頁、登入版都有，不會打擾到真的服務。"
+              },
+              {
+                "text": "要抓資料前，先查對方有沒有官方 API 或開放資料。",
+                "correct": "ok",
+                "why": "API 穩定、合法、格式乾淨，改版也會公告。沒有 API 再考慮爬蟲，並看 robots.txt 和 ToS。"
+              },
+              {
+                "text": "網站開始回 429（Too Many Requests）或跳出驗證碼，就去研究代理輪換、換 IP 硬上。",
+                "correct": "no",
+                "why": "429、驗證碼是對方在說「太多了 / 不歡迎」。要做的是降速、停止，或改用 API / 洽談授權，而不是想辦法躲過偵測。"
+              },
+              {
+                "text": "未經授權，把付費電子書和論文全文大量爬下來，打包賣給 AI 公司當訓練資料。",
+                "correct": "no",
+                "why": "侵害著作權，還可能夾帶個資。AI 訓練資料這個方向法律風險很高，一定要有授權來源。"
+              },
+              {
+                "text": "爬蟲上線前接好 Sentry / Healthchecks，網站改版造成失敗會自動通知。",
+                "correct": "ok",
+                "why": "爬蟲一定會因網站改版而壞；有監控才能第一時間發現，不會默默交出錯誤資料。"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "boss": {

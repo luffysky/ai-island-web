@@ -900,7 +900,48 @@
         ],
         "answer": "b",
         "explanation": "Side nav 就是為了處理「多層級、dashboard 型態」而生；雖然 Hybrid 也行，但 4 個主選項用 Side nav 已足夠，不需要過度設計。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "這個導覽列設計 OK 嗎？",
+          "note": "判斷每個 navigation 設計是對的、有風險、還是常見錯誤",
+          "config": {
+            "scenarios": [
+              {
+                "text": "頂部主選單塞了 11 個項目、桌機勉強擠得下",
+                "correct": "no",
+                "why": "超過 7 個就塞不下、使用者也難決定。把次要項目收進分群或「更多」。"
+              },
+              {
+                "text": "目前頁面的選單項目加背景色＋粗體、並加上 aria-current=\"page\"",
+                "correct": "ok",
+                "why": "使用者一定要知道「我在哪頁」；aria-current 讓螢幕閱讀器也知道。"
+              },
+              {
+                "text": "子選單只有滑鼠 hover 才會出現",
+                "correct": "no",
+                "why": "手機平板沒有 hover、觸控使用者根本打不開。要改成點擊展開。"
+              },
+              {
+                "text": "左上角 logo 點了不會回首頁",
+                "correct": "no",
+                "why": "「logo 回首頁」是大家的共同習慣、做不到會讓人困惑。"
+              },
+              {
+                "text": "手機版 App 用底部 tab bar 放 4 個主要功能",
+                "correct": "ok",
+                "why": "mobile 用漢堡選單或 bottom tab、不要把桌機導覽硬塞進小螢幕。"
+              },
+              {
+                "text": "下拉選單設計成 3 層以上、一層套一層",
+                "correct": "risk",
+                "why": "超過 2 層東西就很難找、手一滑還會關掉。考慮改成 mega menu 或拆頁。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "3.12",
@@ -1139,7 +1180,53 @@
         ],
         "answer": "a",
         "explanation": "ARIA label 就是為了補充只有圖示或視覺資訊的無障礙說明，讓螢幕閱讀器讀出正確的按鈕功能。b 是控制 tab 順序不是解決標籤問題、c 用 div 反而失去語義性、d 移除 outline 會讓鍵盤用戶看不到焦點位置。"
-      }
+      },
+      "demos": [
+        {
+          "type": "color-contrast",
+          "title": "對比度檢查：灰字到底看不看得清？",
+          "note": "調前景色跟背景色、看能不能過 WCAG AA（一般文字 4.5:1）——淺灰字配白底常常不及格"
+        },
+        {
+          "type": "scenario-judge",
+          "title": "這樣做有顧到無障礙嗎？",
+          "note": "判斷每個做法是友善、有風險、還是會把人擋在外面",
+          "config": {
+            "scenarios": [
+              {
+                "text": "覺得 focus 外框很醜、全站加 outline: none",
+                "correct": "no",
+                "why": "鍵盤使用者靠那個框知道自己在哪。可以改樣式、但不能拿掉。"
+              },
+              {
+                "text": "只有一個 ✕ 圖示的關閉按鈕、加上 aria-label=\"關閉視窗\"",
+                "correct": "ok",
+                "why": "沒有文字的圖示按鈕、螢幕閱讀器只會念「按鈕」、加 aria-label 才知道它是做什麼的。"
+              },
+              {
+                "text": "用 <div onclick> 做按鈕、外觀跟按鈕一模一樣",
+                "correct": "no",
+                "why": "div 預設不能被 Tab 到、按 Enter 也沒反應。直接用 <button>、鍵盤支援自動就有。"
+              },
+              {
+                "text": "想自己控制順序、給元素設 tabindex=\"5\"、tabindex=\"3\"",
+                "correct": "risk",
+                "why": "正數 tabindex 會打亂自然順序、很難維護、課堂不推薦。用 0 或 -1、順序靠 HTML 結構排。"
+              },
+              {
+                "text": "彈出視窗（modal）打開時、Tab 只在 modal 裡循環、按 Esc 能關閉",
+                "correct": "ok",
+                "why": "這就是 focus trap、避免鍵盤使用者跑到看不見的背景裡迷路。"
+              },
+              {
+                "text": "頁面最上面放一個「Skip to content」連結",
+                "correct": "ok",
+                "why": "讓鍵盤與螢幕閱讀器使用者跳過整排導覽、直接到主內容。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "3.15",
@@ -1481,7 +1568,48 @@
         ],
         "answer": "a",
         "explanation": "shadcn/ui 是 2026 業界主流、設計師已幫你配好元件和 a11y，你只需 copy code 進 project（擁有元件所有權）再客製化 tokens 和樣式，這是 indie SaaS 1 週內最快完成的方法。b 太耗時、c 改動反而多、d 不完整。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "設計系統這樣搭對嗎？",
+          "note": "判斷每個 Design System 決策是好做法、有風險、還是常見錯誤",
+          "config": {
+            "scenarios": [
+              {
+                "text": "新專案才 2 個頁面、先花一個月把完整設計系統做好再開始",
+                "correct": "risk",
+                "why": "過早建設計系統是常見錯誤。先做頁面、重複出現的東西再抽成元件。"
+              },
+              {
+                "text": "個人 SaaS 直接用 shadcn/ui、改成自己的品牌色",
+                "correct": "ok",
+                "why": "課堂心法第一條：從 shadcn/ui 開始、元件程式碼歸你、想改就改、不用自己造輪子。"
+              },
+              {
+                "text": "先定好顏色、間距、字級 token、再開始做元件",
+                "correct": "ok",
+                "why": "token-first：基礎規則先定、元件才會長得一致。"
+              },
+              {
+                "text": "一個 Button 元件做了 100 個 prop、什麼情況都想包",
+                "correct": "no",
+                "why": "過度抽象、沒人記得住怎麼用。用 variants（例如 variant × size）收斂成幾種就好。"
+              },
+              {
+                "text": "設計師改了 Figma 的主色、程式碼裡的顏色沒跟著改",
+                "correct": "risk",
+                "why": "Figma 跟 code 不同步、設計系統就失去「整站一致」的意義。要用 token 讓兩邊對齊。"
+              },
+              {
+                "text": "一口氣做 50 個元件、實際只用到 10 個",
+                "correct": "risk",
+                "why": "10～20 個元件就夠。多出來的沒人用、卻要一直維護。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "3.19",
@@ -1636,7 +1764,48 @@
         ],
         "answer": "a",
         "explanation": "課程明確指出 Figma 是「業界標配」、Next.js + TypeScript + Tailwind 佔「90% indie」、shadcn/ui 是「2026 主流」。這三個組合最符合工業標準且生態最成熟，也最容易參考其他成功案例（如 Stripe、Vercel）。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "Indie 做 UI 這樣想對嗎？",
+          "note": "判斷每個想法是好建議、有風險、還是會卡住你",
+          "config": {
+            "scenarios": [
+              {
+                "text": "UI 還沒到 99 分、先不上線、繼續修",
+                "correct": "no",
+                "why": "ship 80 分 UI 勝過永遠不 ship。真用戶回饋比你自己再修一個月有用。"
+              },
+              {
+                "text": "參考 Stripe checkout 的結構與流程、放進自己的產品內容",
+                "correct": "ok",
+                "why": "這是「抄思路、不是抄圖」：學別人的 pattern、內容跟視覺素材用自己的。"
+              },
+              {
+                "text": "直接下載別人網站的插圖跟 logo 拿來用",
+                "correct": "no",
+                "why": "紅線：這是侵權、不是參考。學的是結構跟想法、素材要自己做或用有授權的。"
+              },
+              {
+                "text": "首頁做到完美、其他頁面風格各不相同",
+                "correct": "risk",
+                "why": "一致 > 漂亮：整站一致的 80 分、勝過一頁 99 分其他頁很亂。"
+              },
+              {
+                "text": "同時學 Figma、Sketch、Penpot、XD 四套設計工具",
+                "correct": "risk",
+                "why": "學一個工具就好、Figma 一個就夠、時間花在練設計本身。"
+              },
+              {
+                "text": "做完改版、找 5 個真實使用者試用、看他們卡在哪",
+                "correct": "ok",
+                "why": "你覺得好不重要、5 個人試用就能找出大部分卡關點。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "5 大設計原則：Hick / Fitts / Miller / Jakob / Aesthetic-Usability",
@@ -1707,7 +1876,53 @@
         ],
         "answer": "b",
         "explanation": "選項 b 同時應用了 Miller 法則（每步 5-7 欄不超載）、Fitts 法則（按鈕夠大且放易按位置）、Jakob 法則（用綠色=確認、紅色=取消的既有認知）。a 違反 Miller 法則會造成認知過載，c 只追美忽視可用性，d 違反 Jakob 法則不跟主流一致。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "五大法則判官：這個設計合格嗎？",
+          "note": "每題判斷設計好不好、看解析時想一想它對應哪一條法則（Hick / Fitts / Miller / Jakob / 美感可用性）",
+          "config": {
+            "scenarios": [
+              {
+                "text": "手機 App 的主要按鈕只有 24×24 px、還夾在兩個按鈕中間",
+                "correct": "no",
+                "why": "Fitts 法則：目標越小越難點。觸控按鈕至少 44×44 px、重要按鈕要大、位置要好按。"
+              },
+              {
+                "text": "主選單放了 15 個同樣顯眼的選項",
+                "correct": "no",
+                "why": "Hick 法則：選項越多、決策越慢。主選單最多 7 項、其他分群收起來。"
+              },
+              {
+                "text": "信用卡號顯示成 1234-5678-9012-3456（每 4 碼一組）",
+                "correct": "ok",
+                "why": "Miller 法則：短期記憶有限、分組後好讀好核對、不容易看錯。"
+              },
+              {
+                "text": "想要有創意、把「刪除」按鈕做成綠色、把設定圖示換成 ⭐",
+                "correct": "no",
+                "why": "Jakob 法則：使用者帶著別的網站的習慣來。紅色＝刪除、⚙️＝設定、亂改只會讓人按錯。"
+              },
+              {
+                "text": "結帳頁只有一個醒目的「付款」主按鈕、「返回」做成低調文字連結",
+                "correct": "ok",
+                "why": "Hick 法則：只給 1 個主要 CTA、使用者一眼就知道下一步。"
+              },
+              {
+                "text": "介面很漂亮、真人測試時 3 個人都找不到按鈕、但大家都說「很好用」所以不改",
+                "correct": "risk",
+                "why": "美感可用性效應：好看會讓人「覺得」好用、但實際找不到按鈕就是問題。好看＋好用兩個都要。"
+              },
+              {
+                "text": "註冊表單 20 個欄位全擠在同一頁",
+                "correct": "no",
+                "why": "Miller 法則：表單要分步驟、每步 5～7 欄、一次塞太多使用者會放棄。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "顏色理論：色票系統 + 對比度",

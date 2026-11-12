@@ -849,7 +849,53 @@
         ],
         "answer": "b",
         "explanation": "iterator 有 next() 方法會回傳 { value, done }，而 iterable 有 [Symbol.iterator] 方法。選項 a 搞反了，選項 c 和 d 都誤解了 generator 和 yield 的特性——generator 能暫停、yield 只是暫停不是結束。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "這段迭代程式會怎樣？",
+          "note": "判斷每段 code 能正常跑、有坑、還是會壞掉（當掉或報錯）",
+          "config": {
+            "scenarios": [
+              {
+                "text": "for (const v of [10, 20, 30]) console.log(v);",
+                "correct": "ok",
+                "why": "陣列是 iterable、for...of 走的是「值」、印出 10、20、30。"
+              },
+              {
+                "text": "function* naturals(){ let n = 1; while (true) yield n++; }  const all = [...naturals()];",
+                "correct": "no",
+                "why": "naturals 是無限序列、spread 會想把「全部」拿出來、永遠拿不完 → 程式卡死。改用 .take(n) 或手動 next()。"
+              },
+              {
+                "text": "const obj = { a: 1, b: 2 };  for (const x of obj) console.log(x);",
+                "correct": "no",
+                "why": "一般物件不是 iterable、會報 TypeError。要用 for (const [k, v] of Object.entries(obj))。"
+              },
+              {
+                "text": "const arr = [10, 20];  for (const i in arr) console.log(i + 1);",
+                "correct": "risk",
+                "why": "for...in 拿到的是 key 字串 \"0\"、\"1\"、所以印出 \"01\"、\"11\"、還可能踩到 prototype 屬性。陣列一律用 for...of。"
+              },
+              {
+                "text": "naturals().filter(n => n % 2 === 0).take(3).toArray();",
+                "correct": "ok",
+                "why": "ES2025 iterator helpers 是 lazy（懶執行）：邊算邊篩、拿到 3 個就停、無限序列也安全 → [2, 4, 6]。（舊瀏覽器要確認支援）"
+              },
+              {
+                "text": "async function* pages(){ /* yield 每頁資料 */ }  for (const p of pages()) console.log(p);",
+                "correct": "no",
+                "why": "async generator 要用 for await...of、普通 for...of 會報錯（它不是同步 iterable）。"
+              },
+              {
+                "text": "const it = [1][Symbol.iterator]();  it.next(); it.next();",
+                "correct": "ok",
+                "why": "第一次拿到 { value: 1, done: false }、第二次 { value: undefined, done: true }——done: true 就是「走完了」、不會報錯。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "4.13",

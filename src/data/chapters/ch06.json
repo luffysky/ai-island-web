@@ -822,7 +822,48 @@
         ],
         "answer": "a",
         "explanation": "課程明確說「JSON 撐到 100k QPS 不是問題」、「99% 場景用 JSON 就好」。5,000 QPS 的中等流量場景完全在 JSON 的舒適區，不需要為了效能過早優化。其他三個選項都是課程提到的「應該換」的場景（高 QPS、需要 schema 演進、流量寶貴）。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "這個場景該用哪種格式？",
+          "note": "判斷每個格式選擇是合理、有風險、還是過度設計——記住：99% 場景 JSON 就好",
+          "config": {
+            "scenarios": [
+              {
+                "text": "新創做 MVP、前後端 REST API 用 JSON",
+                "correct": "ok",
+                "why": "人看得懂、工具多、好除錯。JSON 撐到很高流量都不是問題、到了再換。"
+              },
+              {
+                "text": "一天才幾百個請求、因為「Google 都這樣做」就全面改用 Protobuf",
+                "correct": "no",
+                "why": "過早優化：要維護 schema、除錯變難、成本遠大於省下的那幾毫秒。"
+              },
+              {
+                "text": "內部微服務走 gRPC、每秒上萬次呼叫、用 Protobuf",
+                "correct": "ok",
+                "why": "QPS 上萬、每毫秒都重要的場景、Protobuf 又小又快、還有 schema 幫忙檢查型別。"
+              },
+              {
+                "text": "IoT 感測器網路流量很貴、改用 CBOR 或 MessagePack",
+                "correct": "ok",
+                "why": "二進位格式比 JSON 小 30～50%、流量寶貴的裝置很適合。"
+              },
+              {
+                "text": "專案設定檔（config）改存成 Protobuf 二進位",
+                "correct": "no",
+                "why": "設定檔要給人打開來讀、改。二進位人看不懂、還要工具解碼、這裡用 JSON 才對。"
+              },
+              {
+                "text": "Kafka 事件流、欄位常常要新增、需要 schema 演進、用 Avro",
+                "correct": "ok",
+                "why": "Avro 本來就常用在 Kafka / 大數據、對「schema 慢慢改版」支援很好。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "6.13",

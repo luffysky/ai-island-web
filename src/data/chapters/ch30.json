@@ -675,7 +675,43 @@
         ],
         "answer": "b",
         "explanation": "Python 是個人開發者的首選：Scrapy 最強框架、Playwright 可外接處理動態網站、pandas 則完美支援後續資料分析一條龍。Go 和 Rust 對個人開發者而言過度設計；Node 雖然動態網站原生但資料分析弱於 Python。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "爬蟲語言選擇判官",
+          "note": "沒有最好的語言，只有適合場景的語言。判斷這個選擇合不合理。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "完全沒寫過程式，想抓政府開放資料再用 pandas 分析 → 選 Python。",
+                "correct": "ok",
+                "why": "Python 學習曲線最平緩，requests + BeautifulSoup 抓完直接接 pandas 分析，一條龍。"
+              },
+              {
+                "text": "第一個 indie 比價小工具，每天只抓幾百頁，為了「最快」選 Rust。",
+                "correct": "risk",
+                "why": "過度工程：Rust 學習曲線很陡、開發慢，幾百頁的規模根本用不到它的速度。先用你會的 Python / Node 做出來。"
+              },
+              {
+                "text": "已經在做 Next.js 全端專案，爬蟲想放在 Cloudflare Workers 上 → 用 Node / TypeScript。",
+                "correct": "ok",
+                "why": "跟前端同一個語言、部署平台原生支援，維護成本最低。"
+              },
+              {
+                "text": "抓完資料要接 ML 模型訓練和大量分析，卻選 Go 只因為「Go 比較快」。",
+                "correct": "risk",
+                "why": "Go 的資料分析和 ML 生態很弱，後半段會很痛苦。要接 ML，Python 是首選；速度通常不是瓶頸。"
+              },
+              {
+                "text": "團隊本來就寫 Go，要處理的是已取得授權、每天上百萬頁的大規模抓取 → 用 Go colly。",
+                "correct": "ok",
+                "why": "規模真的大、團隊也熟 Go，goroutine 的高並發和單一執行檔部署就派上用場了（前提一樣是合法、有授權的資料來源）。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Go + Colly：高效能",
@@ -2089,7 +2125,7 @@
       "title": "跨語言爬蟲總結 + 學習路徑",
       "oneLineSummary": "從新手到全方位爬蟲工程師",
       "analogy": "想像會 1 種語言的廚師 vs 會 5 種菜系的廚師—後者能接的單明顯多。跨語言爬蟲工程師 = 看到 case 就知道「這要用 Python / 這要用 Go」、不被工具綁住。這課給你後續 6-12 個月的學習地圖、從「會一個語言」進化到「會選對工具」。",
-      "content": "**跨語言爬蟲總結 + 1 年學習路徑**——ch28-30 學完、你需要的**完整 roadmap**：技能樹 + 1 年時程 + 接案 / 全職 / Indie 3 條路線。\n\n> 💡 **這課的價值**：給你**清晰的目標 + 時程**——別亂學、別漏學、別過度工程。\n\n  \n### 完整技能樹（4 層）\n\n  \n### 第 1 層：基礎（必備、Month 1-2）\n\n```text\n✅ HTTP 基本（GET / POST / headers / cookies）\n✅ HTML / CSS Selector / XPath\n✅ 至少 1 個語言（Python or Node）\n✅ requests / fetch\n✅ 解析（BS4 / cheerio）\n✅ 基本 JSON / CSV 處理\n\n→ 能爬：個人部落格、政府公開資料、靜態網站\n```\n\n  \n### 第 2 層：中階（Month 3-4）\n\n```text\n✅ 動態網站（Playwright）\n✅ 反爬蟲（UA / 代理 / Cookie）\n✅ Async / 並發（asyncio / Promise.all）\n✅ Database（PostgreSQL）\n✅ ORM（Drizzle / SQLAlchemy）\n✅ 排程（cron / GitHub Actions）\n✅ 監控（Sentry / Healthchecks）\n\n→ 能爬：蝦皮 / momo / 新聞網站、可商業化\n```\n\n  \n### 第 3 層：進階（Month 5-8）\n\n```text\n✅ 反偵測（stealth / Canvas / WebGL）\n✅ TLS impersonate（curl-impersonate / got-scraping）\n✅ Distributed（Celery / BullMQ）\n✅ Browser Cluster（puppeteer-cluster）\n✅ AI 爬蟲（browser-use / Claude Vision）\n✅ OCR / CV（PaddleOCR / YOLO）\n✅ ETL Pipeline\n✅ Data Lake 架構（Bronze / Silver / Gold）\n\n→ 能爬：Cloudflare 保護網站、大規模專案、跨網站整合\n```\n\n  \n### 第 4 層：商業（Month 9-12）\n\n```text\n✅ 接案 / 報價（NT$ 5K-500K 範圍）\n✅ 法律 / 道德（ToS / GDPR / 個資法）\n✅ Dashboard / 交付（Streamlit / Next.js）\n✅ SaaS 化（Stripe / 訂閱制）\n✅ 客戶經營 / 續約\n✅ 行銷（Indie Hackers / 社群）\n\n→ 能營收：MRR NT$ 5K-50K、客戶 3-30 個\n```\n\n  \n### 跨語言能力（主 + 副）\n\n**主語言精通（必須）：**\n\n```text\n🐍 Python（推薦新手）\n  → 生態最大、學習最易、80% 場景\n  → 主學 Scrapy + Playwright + Crawlee\n\n🟨 Node / TypeScript\n  → Next.js 全端友善、Cloudflare 部署便宜\n  → 主學 Crawlee + Playwright\n```\n\n  \n**副語言略懂（加值）：**\n\n```text\n🟢 Go（colly）\n  → 規模 100 萬+/天時用\n  → 知道大概就好\n\n🟥 Rust（reqwest）\n  → 規模 1000 萬+/天才用\n  → 知道存在就好\n\n☕ Java（jsoup）\n  → 在 Java / Spring 公司用\n  → Android 內爬蟲也用\n\n🐘 PHP（Guzzle）/ 💎 Ruby（Nokogiri）\n  → WordPress / Laravel / Rails 整合\n  → 用到才學\n\n⌨️ cURL + bash + jq\n  → DevOps 必學\n  → 80% sysadmin 場景解決\n```\n\n  \n### 1 年學習路徑（按季度）\n\n  \n### Q1（Month 1-3）：基礎\n\n```text\n🎯 目標：能爬簡單網站、寫第一個爬蟲\n\n📚 學習：\n- Python（ch26-27）\n- requests + BS4 + Scrapy\n- 第一個爬蟲案\n\n🛠️ 實作：\n- 爬 3 個靜態網站（書、政府開放資料）\n- 寫部落格 1 篇（教 別人）\n- GitHub 開 repo\n\n💰 變現：0（學習階段）\n```\n\n  \n### Q2（Month 4-6）：動態 + Production\n\n```text\n🎯 目標：能接付費案、上 Production\n\n📚 學習：\n- Playwright（動態網站）\n- 反爬蟲基本（UA / Cookie / 代理）\n- Async / 並發\n- DB（PostgreSQL + Drizzle / SQLAlchemy）\n- 排程 + 監控\n\n🛠️ 實作：\n- 爬 3 個動態網站（蝦皮 / momo）\n- 接第 1 個付費客戶\n- 上線第 1 個自動跑的爬蟲\n\n💰 變現：NT$ 10K-50K（第 1-3 個案）\n```\n\n  \n### Q3（Month 7-9）：規模化 + 進階\n\n```text\n🎯 目標：能接大案、做 SaaS MVP\n\n📚 學習：\n- 反偵測（fingerprint / TLS）\n- 代理 / Browser Cluster\n- AI 爬蟲試水（browser-use）\n- 分散式（Celery / BullMQ）\n\n🛠️ 實作：\n- 接 3-5 個中型案（NT$ 30K-100K）\n- 上線第 1 個 SaaS MVP\n\n💰 變現：NT$ 50K-150K / 月\n```\n\n  \n### Q4（Month 10-12）：商業 + Indie\n\n```text\n🎯 目標：MRR 穩定、自由度高\n\n📚 學習：\n- 客戶經營 / 續約\n- 行銷（Indie Hackers / X / LinkedIn）\n- 訂閱制商業模式\n- 顧問 / 教學\n\n🛠️ 實作：\n- 自己刻 SaaS（如蝦皮比價）\n- 賣 Apify Actor 被動收入\n- 教課 / 顧問\n\n💰 變現：MRR NT$ 30K-100K + 接案收入\n```\n\n  \n### 真實接案範圍（2026 台灣）\n\n| 案件複雜度 | 報價 | 工期 | 工作內容 |\n|---|---|---|---|\n| **簡單** | NT$ 5-30K | 1-3 天 | 1 個網站、靜態、< 1000 頁 |\n| **中等** | NT$ 30-100K | 1-2 週 | 多網站、動態、反爬基本、DB |\n| **複雜** | NT$ 100-500K | 1-2 月 | 規模化、反偵測、Dashboard |\n| **企業案** | NT$ 500K-2M | 3-6 月 | 完整 SaaS、API、規模化 |\n| **維護費** | NT$ 1-10K/月 | 持續 | 監控、修壞、更新 |\n\n  \n### 工作市場（2026 台灣）\n\n```text\n=== 全職 ===\n- 爬蟲工程師：NT$ 60-120K / 月\n- Data Engineer：NT$ 90-180K / 月\n- Senior / Staff：NT$ 150-300K / 月\n\n=== 接案 ===\n- 全職接案：年收 NT$ 100-500K\n- 含 SaaS：年收 NT$ 300K-2M\n- 大型企業客戶：年收 NT$ 1M-5M\n\n=== 國際 remote ===\n- Upwork / Toptal：$30-100 USD/hr\n- 英文好可全球接、薪資 1.5-3x 台灣\n```\n\n  \n### 5 大心法（過來人建議）\n\n```text\n1. ⭐ 領域知識 > 技術深度\n   → 懂金融的爬蟲 > 純技術爬蟲\n   → 找你熟悉的領域深耕\n\n2. ⭐ 法律意識\n   → 商業案必諮詢律師\n   → 不確定 → 不做\n   → 別碰個資 / 詐騙\n\n3. ⭐ 永遠先 API\n   → 官方 API > 爬蟲\n   → 80% 場景 API 滿足\n\n4. ⭐ 客戶導向\n   → Dashboard > Raw data\n   → 自動更新 > 手動寄\n   → 月費 > 一次性\n\n5. ⭐ 持續學新\n   → AI 爬蟲在進化（browser-use 等）\n   → 反偵測在進化（fingerprint）\n   → 每月學 1 個新技術\n```\n\n  \n### 給新手最佳路徑\n\n```text\n=== 6 個月起步 ===\n\nMonth 1：學 Python（ch26）\nMonth 2：學爬蟲（requests + BS4）\nMonth 3：學 Scrapy + Playwright（ch28）\nMonth 4：接第 1 個免費案（朋友介紹）\nMonth 5：累積 3 個 case、開始收費\nMonth 6：接第 1 個 NT$ 30K+ 付費案\n\n=== 接下來 6 個月 ===\n\nMonth 7-9：進階反爬 + 規模化\nMonth 10-12：SaaS / Indie 試水\n\n→ 1 年後：你是專業爬蟲工程師\n```\n\n  \n### Indie 路線（最推薦給已會前端的人）\n\n```text\n=== 為什麼 Indie 推薦 ===\n- 收入無上限（MRR 模式）\n- 自由（無老闆 / 無 deadline）\n- 同 stack 全端發展\n- 學習 + 賺錢同時做\n\n=== Indie 黃金 12 個月 ===\n1. 找 1 個利基市場（如台灣房價 / 餐廳 / 競品）\n2. 開發爬蟲 + Dashboard（Month 1-3）\n3. 免費版上線、累積使用者（Month 4-6）\n4. 付費版上線（NT$ 200-1000/月）\n5. 行銷（Indie Hackers / 社群、Month 7-9）\n6. 達 MRR NT$ 30K（Month 10-12）\n\n→ 12 個月達 MRR USD $1000 可能\n```\n\n  \n    **☕ 用人話講**\n    \n跨語言爬蟲 1 年路徑：(1) **4 層技能樹**：基礎 / 中階 / 進階 / 商業 (2) **主語言** Python or Node、**副語言** Go / Rust / Java 略懂 (3) **Q1-Q4** 學習 + 變現時程 (4) **接案範圍** NT$ 5K-500K、**全職** NT$ 60-180K (5) **5 大心法**：領域 > 技術、法律意識、先 API、客戶導向、持續學。**Indie 路線**：1 年達 MRR USD $1000 可能。\n",
+      "content": "**跨語言爬蟲總結 + 1 年學習路徑**——ch28-30 學完、你需要的**完整 roadmap**：技能樹 + 1 年時程 + 接案 / 全職 / Indie 3 條路線。\n\n> 💡 **這課的價值**：給你**清晰的目標 + 時程**——別亂學、別漏學、別過度工程。\n\n  \n### 完整技能樹（4 層）\n\n  \n### 第 1 層：基礎（必備、Month 1-2）\n\n```text\n✅ HTTP 基本（GET / POST / headers / cookies）\n✅ HTML / CSS Selector / XPath\n✅ 至少 1 個語言（Python or Node）\n✅ requests / fetch\n✅ 解析（BS4 / cheerio）\n✅ 基本 JSON / CSV 處理\n\n→ 能爬：個人部落格、政府公開資料、靜態網站\n```\n\n  \n### 第 2 層：中階（Month 3-4）\n\n```text\n✅ 動態網站（Playwright）\n✅ 反爬訊號判讀（429 / 403 / CAPTCHA＝該停、改走 API 或授權）\n✅ Async / 並發（asyncio / Promise.all）\n✅ Database（PostgreSQL）\n✅ ORM（Drizzle / SQLAlchemy）\n✅ 排程（cron / GitHub Actions）\n✅ 監控（Sentry / Healthchecks）\n\n→ 能爬：蝦皮 / momo / 新聞網站、可商業化\n```\n\n  \n### 第 3 層：進階（Month 5-8）\n\n```text\n✅ 知道 fingerprint / stealth 是什麼，以及為什麼遇到就該停、不去規避\n✅ 合法替代路線（官方 API / RSS / 資料授權 / 合作）\n✅ Distributed（Celery / BullMQ）\n✅ Browser Cluster（puppeteer-cluster）\n✅ AI 爬蟲（browser-use / Claude Vision）\n✅ OCR / CV（PaddleOCR / YOLO）\n✅ ETL Pipeline\n✅ Data Lake 架構（Bronze / Silver / Gold）\n\n→ 能爬：Cloudflare 保護網站、大規模專案、跨網站整合\n```\n\n  \n### 第 4 層：商業（Month 9-12）\n\n```text\n✅ 接案 / 報價（NT$ 5K-500K 範圍）\n✅ 法律 / 道德（ToS / GDPR / 個資法）\n✅ Dashboard / 交付（Streamlit / Next.js）\n✅ SaaS 化（Stripe / 訂閱制）\n✅ 客戶經營 / 續約\n✅ 行銷（Indie Hackers / 社群）\n\n→ 能營收：MRR NT$ 5K-50K、客戶 3-30 個\n```\n\n  \n### 跨語言能力（主 + 副）\n\n**主語言精通（必須）：**\n\n```text\n🐍 Python（推薦新手）\n  → 生態最大、學習最易、80% 場景\n  → 主學 Scrapy + Playwright + Crawlee\n\n🟨 Node / TypeScript\n  → Next.js 全端友善、Cloudflare 部署便宜\n  → 主學 Crawlee + Playwright\n```\n\n  \n**副語言略懂（加值）：**\n\n```text\n🟢 Go（colly）\n  → 規模 100 萬+/天時用\n  → 知道大概就好\n\n🟥 Rust（reqwest）\n  → 規模 1000 萬+/天才用\n  → 知道存在就好\n\n☕ Java（jsoup）\n  → 在 Java / Spring 公司用\n  → Android 內爬蟲也用\n\n🐘 PHP（Guzzle）/ 💎 Ruby（Nokogiri）\n  → WordPress / Laravel / Rails 整合\n  → 用到才學\n\n⌨️ cURL + bash + jq\n  → DevOps 必學\n  → 80% sysadmin 場景解決\n```\n\n  \n### 1 年學習路徑（按季度）\n\n  \n### Q1（Month 1-3）：基礎\n\n```text\n🎯 目標：能爬簡單網站、寫第一個爬蟲\n\n📚 學習：\n- Python（ch26-27）\n- requests + BS4 + Scrapy\n- 第一個爬蟲案\n\n🛠️ 實作：\n- 爬 3 個靜態網站（書、政府開放資料）\n- 寫部落格 1 篇（教 別人）\n- GitHub 開 repo\n\n💰 變現：0（學習階段）\n```\n\n  \n### Q2（Month 4-6）：動態 + Production\n\n```text\n🎯 目標：能接付費案、上 Production\n\n📚 學習：\n- Playwright（動態網站）\n- 禮貌爬取（誠實 UA、限速、遵守 robots.txt）\n- Async / 並發\n- DB（PostgreSQL + Drizzle / SQLAlchemy）\n- 排程 + 監控\n\n🛠️ 實作：\n- 爬 3 個動態網站（蝦皮 / momo）\n- 接第 1 個付費客戶\n- 上線第 1 個自動跑的爬蟲\n\n💰 變現：NT$ 10K-50K（第 1-3 個案）\n```\n\n  \n### Q3（Month 7-9）：規模化 + 進階\n\n```text\n🎯 目標：能接大案、做 SaaS MVP\n\n📚 學習：\n- 遇到反爬訊號就停、改談授權\n- 排程 / 佇列 / 增量抓取\n- AI 爬蟲試水（browser-use）\n- 分散式（Celery / BullMQ）\n\n🛠️ 實作：\n- 接 3-5 個中型案（NT$ 30K-100K）\n- 上線第 1 個 SaaS MVP\n\n💰 變現：NT$ 50K-150K / 月\n```\n\n  \n### Q4（Month 10-12）：商業 + Indie\n\n```text\n🎯 目標：MRR 穩定、自由度高\n\n📚 學習：\n- 客戶經營 / 續約\n- 行銷（Indie Hackers / X / LinkedIn）\n- 訂閱制商業模式\n- 顧問 / 教學\n\n🛠️ 實作：\n- 自己刻 SaaS（如蝦皮比價）\n- 賣 Apify Actor 被動收入\n- 教課 / 顧問\n\n💰 變現：MRR NT$ 30K-100K + 接案收入\n```\n\n  \n### 真實接案範圍（2026 台灣）\n\n| 案件複雜度 | 報價 | 工期 | 工作內容 |\n|---|---|---|---|\n| **簡單** | NT$ 5-30K | 1-3 天 | 1 個網站、靜態、< 1000 頁 |\n| **中等** | NT$ 30-100K | 1-2 週 | 多網站、動態、限速與錯誤處理、DB |\n| **複雜** | NT$ 100-500K | 1-2 月 | 規模化、反偵測、Dashboard |\n| **企業案** | NT$ 500K-2M | 3-6 月 | 完整 SaaS、API、規模化 |\n| **維護費** | NT$ 1-10K/月 | 持續 | 監控、修壞、更新 |\n\n  \n### 工作市場（2026 台灣）\n\n```text\n=== 全職 ===\n- 爬蟲工程師：NT$ 60-120K / 月\n- Data Engineer：NT$ 90-180K / 月\n- Senior / Staff：NT$ 150-300K / 月\n\n=== 接案 ===\n- 全職接案 / 含 SaaS / 企業客戶：收入差異很大，取決於領域、客戶與合規能力，本課不做任何保證\n\n=== 國際 remote ===\n- Upwork / Toptal：$30-100 USD/hr\n- 英文好可全球接、薪資 1.5-3x 台灣\n```\n\n  \n### 5 大心法（過來人建議）\n\n```text\n1. ⭐ 領域知識 > 技術深度\n   → 懂金融的爬蟲 > 純技術爬蟲\n   → 找你熟悉的領域深耕\n\n2. ⭐ 法律意識\n   → 商業案必諮詢律師\n   → 不確定 → 不做\n   → 別碰個資 / 詐騙\n\n3. ⭐ 永遠先 API\n   → 官方 API > 爬蟲\n   → 80% 場景 API 滿足\n\n4. ⭐ 客戶導向\n   → Dashboard > Raw data\n   → 自動更新 > 手動寄\n   → 月費 > 一次性\n\n5. ⭐ 持續學新\n   → AI 爬蟲在進化（browser-use 等）\n   → 網站防護持續升級（這是網站在說「不歡迎」，該改走授權）\n   → 每月學 1 個新技術\n```\n\n  \n### 給新手最佳路徑\n\n```text\n=== 6 個月起步 ===\n\nMonth 1：學 Python（ch26）\nMonth 2：學爬蟲（requests + BS4）\nMonth 3：學 Scrapy + Playwright（ch28）\nMonth 4：接第 1 個免費案（朋友介紹）\nMonth 5：累積 3 個 case、開始收費\nMonth 6：接第 1 個 NT$ 30K+ 付費案\n\n=== 接下來 6 個月 ===\n\nMonth 7-9：合規規模化（增量、佇列、監控）\nMonth 10-12：SaaS / Indie 試水\n\n→ 1 年後：你是專業爬蟲工程師\n```\n\n  \n### Indie 路線（最推薦給已會前端的人）\n\n```text\n=== 為什麼 Indie 推薦 ===\n- 收入無上限（MRR 模式）\n- 自由（無老闆 / 無 deadline）\n- 同 stack 全端發展\n- 學習 + 賺錢同時做\n\n=== Indie 黃金 12 個月 ===\n1. 找 1 個利基市場（如台灣房價 / 餐廳 / 競品）\n2. 開發爬蟲 + Dashboard（Month 1-3）\n3. 免費版上線、累積使用者（Month 4-6）\n4. 付費版上線（NT$ 200-1000/月）\n5. 行銷（Indie Hackers / 社群、Month 7-9）\n6. 達 MRR NT$ 30K（Month 10-12）\n\n→ 12 個月達 MRR USD $1000 可能\n```\n\n  \n    **☕ 用人話講**\n    \n跨語言爬蟲 1 年路徑：(1) **4 層技能樹**：基礎 / 中階 / 進階 / 商業 (2) **主語言** Python or Node、**副語言** Go / Rust / Java 略懂 (3) **Q1-Q4** 學習 + 變現時程 (4) **接案範圍** NT$ 5K-500K、**全職** NT$ 60-180K (5) **5 大心法**：領域 > 技術、法律意識、先 API、客戶導向、持續學。**Indie 路線**：1 年達 MRR USD $1000 可能。\n",
       "tip": {
         "type": "milestone",
         "text": "跨語言爬蟲 = 不是會多種語言、是「選對工具解對的問題」。"
@@ -2190,13 +2226,49 @@
         ],
         "answer": "b",
         "explanation": "根據 Q2（Month 4-6）的內容，接付費案的門檻是『動態網站 + 反爬蟲基本 + 資料庫 + 排程』，這些第 2 層技能是商業化的必要條件；而 Go/Rust 是副語言（規模大才用）、反偵測和 AI 爬蟲是進階工具（Q3 以後），過度工程反而浪費時間。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "1 年學習路徑判官",
+          "note": "照技能樹由下往上疊——判斷這些安排對不對。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "Q1 先把 HTTP 基本、CSS Selector、一個主語言（Python 或 Node）打穩。",
+                "correct": "ok",
+                "why": "第 1 層是所有爬蟲的地基；地基不穩，後面每一層都會卡。"
+              },
+              {
+                "text": "第一個月就同時學 Python、Go、Rust 三種語言的爬蟲。",
+                "correct": "risk",
+                "why": "這課的建議是「一個主語言精通 + 副語言略懂」。同時學三個只會每個都半生不熟。"
+              },
+              {
+                "text": "法律、ToS、個資法放到最後一季再看，先接案再說。",
+                "correct": "no",
+                "why": "合規不是最後才補的進階技能，而是每個案子開始前的第一關。一碰到個資或違反條款，後果可能比技術失敗嚴重很多。"
+              },
+              {
+                "text": "學一點 cURL + jq，用來快速測 API、看回傳的 JSON。",
+                "correct": "ok",
+                "why": "副語言裡最實用的一項：不寫程式也能在終端機驗證一個 API 回什麼，debug 很省時間。"
+              },
+              {
+                "text": "看到網站有 Cloudflare 保護，就開始研究偽裝瀏覽器指紋硬闖。",
+                "correct": "no",
+                "why": "防護機制就是網站說「不歡迎爬蟲」的停止訊號。正確方向是找官方 API、開放資料，或直接洽談資料授權。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "跨語言爬蟲：總結 + 心法",
       "oneLineSummary": "不是「會多種語言」、是「選對工具」",
       "analogy": "想像爬蟲學習像跑 6 個月馬拉松：1-2 月 Python 基本（80% 場景）→ 3-4 月 JS 動態網站 + 反爬 → 5 月 Go / Rust 大規模 → 6 月接案 / 變現 / 法律。走完這 6 個月、你就是合格的「爬蟲工程師」、能接案能進職場。心法：每個月做 1 個能 demo 的小專案、比看 100 小時教學有用 10 倍。",
-      "content": "**ch30 完結：爬蟲事業心法 + 給未來自己的話**——技術之上、是**長期可持續的商業 + 法律 + 心態**。\n\n> 💡 **這課的價值**：不是教技術、是教**怎麼把爬蟲變成事業**——做 1 年 vs 做 10 年的差別。\n\n  \n### 終極心法：爬蟲不是「能爬」\n\n```text\n爬蟲新手：能爬 = 成功\n爬蟲老手：能爬 ≠ 成功\n\n真正的成功要 4 件事：\n1. ⭐ 法律安全\n2. ⭐ 客戶滿意\n3. ⭐ 長期維護\n4. ⭐ 商業可行\n```\n\n  \n### 5 大事業心法\n\n  \n### 心法 1：領域知識 > 技術深度\n\n```text\n❌ 純技術爬蟲工程師\n   → 每個案件從 0 開始\n   → 客戶想找便宜的人\n   → 報價被壓低\n\n✅ 「金融 + 爬蟲」混合型\n   → 知道客戶在乎什麼（哪些股價、哪些指標）\n   → 客戶找你不是因為「會爬」、是「懂他的領域」\n   → 報價權在你\n\n✅ 「電商 + 爬蟲」混合型\n   → 知道蝦皮 / momo / PChome 怎麼運作\n   → 知道哪些資料商業價值最高\n   → 直接提供「**商業洞察**」、不只「資料」\n\n→ 找你熟悉的領域（電商 / 金融 / 房地產 / 醫療）深耕\n```\n\n  \n### 心法 2：法律意識（保命）\n\n```text\n=== 台灣法律重點 ===\n\n⚠️ 妨害電腦使用罪（刑法 358-360 條）\n   → 未經授權存取電腦\n   → 大量爬蟲可能觸法\n\n⚠️ 著作權法\n   → 爬內容 ≠ 重製\n   → 用於商業要授權\n\n⚠️ 個資法\n   → 個人資料嚴禁\n   → 含姓名 / 電話 / Email / IP\n\n⚠️ GDPR（歐盟 / 全球）\n   → 爬歐盟使用者資料要遵守\n   → 違反罰金 4% 全球營收\n\n⚠️ 公平交易法\n   → 不正當競爭\n   → 攻擊 / 摧毀競爭對手系統\n\n=== 心法 ===\n✅ 商業爬蟲先諮詢律師\n✅ 不確定 → 不做\n✅ 個資相關 → 別碰\n✅ 詐騙相關 → 拒接\n✅ ToS 明文禁止 → 評估\n```\n\n  \n### 心法 3：永遠先 API\n\n```text\n=== 為什麼 API > 爬蟲 ===\n\n✅ 穩定\n   → API 改版有公告\n   → 爬蟲改版直接壞\n\n✅ 合法\n   → 官方授權使用\n   → 不會被告\n\n✅ 快\n   → 結構化 JSON\n   → 不用解 HTML\n\n✅ 不會被擋\n   → API 是邀請你用\n   → 爬蟲是反邀請\n\n✅ 維護成本低\n   → 一勞永逸\n   → 爬蟲要持續修\n\n=== 心法 ===\n先查官方 API → 沒有再考慮爬蟲\n80% 場景 API 滿足\n別跳過 API 直接爬\n```\n\n  \n### 心法 4：客戶導向（賺錢核心）\n\n```text\n=== 客戶要的不是「資料」、是「解決方案」 ===\n\n❌ 給 CSV\n   → 客戶要自己開、自己分析\n   → 體驗差、續約率低\n\n✅ 給 Dashboard\n   → 客戶一目了然\n   → 主動洞察、不用思考\n   → 續約率高 5-10x\n\n❌ 一次性交付\n   → 賣完就結束\n   → 不能複利\n\n✅ 月費維護\n   → 自動更新、自動報表\n   → 客戶愛、續約 1-3 年\n   → 收入可預測\n\n=== 心法 ===\nDashboard > Raw data\n自動更新 > 手動寄\n月費合約 > 一次性\n主動洞察 > 被動查詢\n```\n\n  \n### 心法 5：持續學新\n\n```text\n=== 爬蟲技術 2026 在變 ===\n\n🆕 AI 爬蟲\n   → browser-use / Magnitude / Claude Computer Use\n   → 改版頻繁的網站新解法\n\n🆕 反偵測升級\n   → ML 偵測（行為模式）\n   → 對策：模擬真人行為\n\n🆕 TLS impersonate\n   → curl-impersonate / got-scraping\n   → 過 Cloudflare 主流\n\n🆕 Bun runtime\n   → 比 Node 快 3x\n   → 2026 新標配\n\n🆕 Cloudflare Workers Browser Rendering\n   → Serverless 動態爬蟲\n   → 邊緣節點超快\n\n=== 心法 ===\n每月學 1 個新技術\n追隨 Indie Hackers / Hacker News / X\n別停在「以前學的就夠」\n3-5 年後落伍 = 工作沒了\n```\n\n  \n### 工具選擇終極表\n\n| 場景 | 推薦 |\n|---|---|\n| **入門** | Python + requests + BS4 |\n| **大規模** | Scrapy / Crawlee |\n| **動態** | Playwright |\n| **反爬** | curl-impersonate / stealth plugin |\n| **商業反爬** | Bright Data / Scrapfly |\n| **AI 時代** | browser-use / Claude Vision |\n| **Serverless** | Cloudflare Workers / Vercel |\n| **規模化** | Go colly / Rust reqwest |\n| **資料分析** | DuckDB / pandas |\n| **儲存** | Parquet + PostgreSQL |\n| **排程** | GitHub Actions / Inngest |\n| **監控** | Sentry + Healthchecks |\n| **交付** | Streamlit / Next.js Dashboard |\n\n  \n### 6 個月學習路徑（再次強調）\n\n```text\nM1：Python 基礎（ch26）+ requests + BS4\nM2：Scrapy + Playwright（ch28）\nM3：反爬 + 代理 + Async（ch28-29）\nM4：Production（監控 / 排程 / DB）\nM5：接第一個付費客戶\nM6：規模化、SaaS 試水\n\n→ 6 個月後：能接案、能 indie\n```\n\n  \n### 變現路徑（按收入級別）\n\n```text\n=== 簡單接案（年 NT$ 0-30 萬）===\n- 小爬蟲、單次交付\n- 適合：副業、學生\n\n=== 中等接案（年 NT$ 30-100 萬）===\n- 中型爬蟲 + 維護費\n- 適合：全職接案\n\n=== 高級接案（年 NT$ 100-500 萬）===\n- 大型企業案、複雜需求\n- 適合：經驗豐富、有口碑\n\n=== SaaS 訂閱制（月 NT$ 5K-100K MRR）===\n- 自己刻 + 行銷\n- 適合：Indie hacker\n\n=== 全職（年 NT$ 80-200 萬）===\n- 大公司爬蟲 / Data Engineer\n- 適合：穩定派\n\n=== 教學 / 顧問（時薪 NT$ 3K-10K）===\n- 開課、寫書、企業內訓\n- 適合：有經驗、想分享\n```\n\n  \n### 給新手最佳建議（精華版）\n\n```text\n1. ⭐ 學 Python（最大生態、最易上手）\n2. ⭐ 跑通第 1 個爬蟲（任何網站、不求大）\n3. ⭐ 學 Scrapy + Playwright（解鎖 80% 場景）\n4. ⭐ 接第 1 個付費案（哪怕 NT$ 5000）\n5. ⭐ 累積 5 個 case（建口碑）\n6. ⭐ SaaS / 顧問（複利路線）\n\n→ 別跳步驟、別過度工程\n→ 別碰違法、別硬幹大網站\n→ 找領域、深耕、輸出\n```\n\n  \n### 給未來自己的話\n\n```text\n✅ 你會遇到的挑戰：\n- 被網站擋（反爬不斷升級）\n- 客戶嫌貴（覺得「爬蟲簡單」）\n- 接到爛案（要爬個資 / 詐騙）\n- 維護壞掉（網站改版）\n- 競爭多（會爬蟲的人越來越多）\n\n✅ 你的對策：\n- 持續學新技術（保持領先）\n- 領域深耕（不只是「會爬」）\n- 法律意識（保命）\n- 客戶經營（續約 > 新客戶）\n- 商業思維（賣解決方案、不賣 CSV）\n\n✅ 你的優勢：\n- 跨語言能力（Python + Node + Go）\n- 完整 stack（爬蟲 + 後端 + Dashboard）\n- 商業頭腦（SaaS / 訂閱 / 月費）\n- 領域知識（電商 / 金融 / ...）\n```\n\n  \n### 最後一句話\n\n```text\n爬蟲是工具、不是目的。\n\n目的是：\n✅ 解決客戶問題\n✅ 創造商業價值\n✅ 賺到能養家的錢\n✅ 保持學習熱情\n✅ 享受工作自由\n\n技術不是炫耀、是手段。\n工具不是目的、是橋樑。\n客戶不是傻子、要尊重。\n\n1 年後、你會是專業爬蟲工程師。\n3 年後、你會是事業有成的 indie hacker。\n5 年後、你會是業界值得尊敬的前輩。\n\n→ 加油、未來見。\n```\n\n  \n    **☕ 用人話講**\n    \nch30 完結 5 大心法：(1) **領域知識 > 技術深度** —— 別只會技術、要懂客戶 (2) **法律意識** —— 商業案諮詢律師、別碰個資 (3) **永遠先 API** —— 80% 場景 API 滿足、別跳步驟 (4) **客戶導向** —— Dashboard > CSV、月費 > 一次性 (5) **持續學新** —— AI 爬蟲 / 反偵測在進化、別停留。**6 個月路徑**：Python → Scrapy → Playwright → 接案 → 規模化 → SaaS。**心法**：爬蟲是工具、商業價值才是目的。\n",
+      "content": "**ch30 完結：爬蟲事業心法 + 給未來自己的話**——技術之上、是**長期可持續的商業 + 法律 + 心態**。\n\n> 💡 **這課的價值**：不是教技術、是教**怎麼把爬蟲變成事業**——做 1 年 vs 做 10 年的差別。\n\n  \n### 終極心法：爬蟲不是「能爬」\n\n```text\n爬蟲新手：能爬 = 成功\n爬蟲老手：能爬 ≠ 成功\n\n真正的成功要 4 件事：\n1. ⭐ 法律安全\n2. ⭐ 客戶滿意\n3. ⭐ 長期維護\n4. ⭐ 商業可行\n```\n\n  \n### 5 大事業心法\n\n  \n### 心法 1：領域知識 > 技術深度\n\n```text\n❌ 純技術爬蟲工程師\n   → 每個案件從 0 開始\n   → 客戶想找便宜的人\n   → 報價被壓低\n\n✅ 「金融 + 爬蟲」混合型\n   → 知道客戶在乎什麼（哪些股價、哪些指標）\n   → 客戶找你不是因為「會爬」、是「懂他的領域」\n   → 報價權在你\n\n✅ 「電商 + 爬蟲」混合型\n   → 知道蝦皮 / momo / PChome 怎麼運作\n   → 知道哪些資料商業價值最高\n   → 直接提供「**商業洞察**」、不只「資料」\n\n→ 找你熟悉的領域（電商 / 金融 / 房地產 / 醫療）深耕\n```\n\n  \n### 心法 2：法律意識（保命）\n\n```text\n=== 台灣法律重點 ===\n\n⚠️ 妨害電腦使用罪（刑法 358-360 條）\n   → 未經授權存取電腦\n   → 大量爬蟲可能觸法\n\n⚠️ 著作權法\n   → 爬內容 ≠ 重製\n   → 用於商業要授權\n\n⚠️ 個資法\n   → 個人資料嚴禁\n   → 含姓名 / 電話 / Email / IP\n\n⚠️ GDPR（歐盟 / 全球）\n   → 爬歐盟使用者資料要遵守\n   → 違反罰金 4% 全球營收\n\n⚠️ 公平交易法\n   → 不正當競爭\n   → 攻擊 / 摧毀競爭對手系統\n\n=== 心法 ===\n✅ 商業爬蟲先諮詢律師\n✅ 不確定 → 不做\n✅ 個資相關 → 別碰\n✅ 詐騙相關 → 拒接\n✅ ToS 明文禁止 → 評估\n```\n\n  \n### 心法 3：永遠先 API\n\n```text\n=== 為什麼 API > 爬蟲 ===\n\n✅ 穩定\n   → API 改版有公告\n   → 爬蟲改版直接壞\n\n✅ 合法\n   → 官方授權使用\n   → 不會被告\n\n✅ 快\n   → 結構化 JSON\n   → 不用解 HTML\n\n✅ 不會被擋\n   → API 是邀請你用\n   → 爬蟲是反邀請\n\n✅ 維護成本低\n   → 一勞永逸\n   → 爬蟲要持續修\n\n=== 心法 ===\n先查官方 API → 沒有再考慮爬蟲\n80% 場景 API 滿足\n別跳過 API 直接爬\n```\n\n  \n### 心法 4：客戶導向（賺錢核心）\n\n```text\n=== 客戶要的不是「資料」、是「解決方案」 ===\n\n❌ 給 CSV\n   → 客戶要自己開、自己分析\n   → 體驗差、續約率低\n\n✅ 給 Dashboard\n   → 客戶一目了然\n   → 主動洞察、不用思考\n   → 續約率高 5-10x\n\n❌ 一次性交付\n   → 賣完就結束\n   → 不能複利\n\n✅ 月費維護\n   → 自動更新、自動報表\n   → 客戶愛、續約 1-3 年\n   → 收入可預測\n\n=== 心法 ===\nDashboard > Raw data\n自動更新 > 手動寄\n月費合約 > 一次性\n主動洞察 > 被動查詢\n```\n\n  \n### 心法 5：持續學新\n\n```text\n=== 爬蟲技術 2026 在變 ===\n\n🆕 AI 爬蟲\n   → browser-use / Magnitude / Claude Computer Use\n   → 改版頻繁的網站新解法\n\n🆕 反偵測升級\n   → ML 偵測（行為模式）\n   → 對策：模擬真人行為\n\n🆕 官方資料 API / 資料授權\n   → curl-impersonate / got-scraping\n   → 過 Cloudflare 主流\n\n🆕 Bun runtime\n   → 比 Node 快 3x\n   → 2026 新標配\n\n🆕 Cloudflare Workers Browser Rendering\n   → Serverless 動態爬蟲\n   → 邊緣節點超快\n\n=== 心法 ===\n每月學 1 個新技術\n追隨 Indie Hackers / Hacker News / X\n別停在「以前學的就夠」\n3-5 年後落伍 = 工作沒了\n```\n\n  \n### 工具選擇終極表\n\n| 場景 | 推薦 |\n|---|---|\n| **入門** | Python + requests + BS4 |\n| **大規模** | Scrapy / Crawlee |\n| **動態** | Playwright |\n| **合規** | robots.txt 解析 / 限速（Scrapy AutoThrottle、p-limit） |\n| **資料授權** | 官方 API / 授權資料供應商 |\n| **AI 時代** | browser-use / Claude Vision |\n| **Serverless** | Cloudflare Workers / Vercel |\n| **規模化** | Go colly / Rust reqwest |\n| **資料分析** | DuckDB / pandas |\n| **儲存** | Parquet + PostgreSQL |\n| **排程** | GitHub Actions / Inngest |\n| **監控** | Sentry + Healthchecks |\n| **交付** | Streamlit / Next.js Dashboard |\n\n  \n### 6 個月學習路徑（再次強調）\n\n```text\nM1：Python 基礎（ch26）+ requests + BS4\nM2：Scrapy + Playwright（ch28）\nM3：限速 + 排程 + Async（ch28-29）\nM4：Production（監控 / 排程 / DB）\nM5：接第一個付費客戶\nM6：規模化、SaaS 試水\n\n→ 6 個月後：能接案、能 indie\n```\n\n  \n### 變現路徑（按收入級別）\n\n```text\n=== 簡單接案（年 NT$ 0-30 萬）===\n- 小爬蟲、單次交付\n- 適合：副業、學生\n\n=== 中等接案（年 NT$ 30-100 萬）===\n- 中型爬蟲 + 維護費\n- 適合：全職接案\n\n=== 高級接案（年 NT$ 100-500 萬）===\n- 大型企業案、複雜需求\n- 適合：經驗豐富、有口碑\n\n=== SaaS 訂閱制（月 NT$ 5K-100K MRR）===\n- 自己刻 + 行銷\n- 適合：Indie hacker\n\n=== 全職（年 NT$ 80-200 萬）===\n- 大公司爬蟲 / Data Engineer\n- 適合：穩定派\n\n=== 教學 / 顧問（時薪 NT$ 3K-10K）===\n- 開課、寫書、企業內訓\n- 適合：有經驗、想分享\n```\n\n  \n### 給新手最佳建議（精華版）\n\n```text\n1. ⭐ 學 Python（最大生態、最易上手）\n2. ⭐ 跑通第 1 個爬蟲（任何網站、不求大）\n3. ⭐ 學 Scrapy + Playwright（解鎖 80% 場景）\n4. ⭐ 接第 1 個付費案（哪怕 NT$ 5000）\n5. ⭐ 累積 5 個 case（建口碑）\n6. ⭐ SaaS / 顧問（複利路線）\n\n→ 別跳步驟、別過度工程\n→ 別碰違法、別硬幹大網站\n→ 找領域、深耕、輸出\n```\n\n  \n### 給未來自己的話\n\n```text\n✅ 你會遇到的挑戰：\n- 被網站擋（反爬不斷升級）\n- 客戶嫌貴（覺得「爬蟲簡單」）\n- 接到爛案（要爬個資 / 詐騙）\n- 維護壞掉（網站改版）\n- 競爭多（會爬蟲的人越來越多）\n\n✅ 你的對策：\n- 持續學新技術（保持領先）\n- 領域深耕（不只是「會爬」）\n- 法律意識（保命）\n- 客戶經營（續約 > 新客戶）\n- 商業思維（賣解決方案、不賣 CSV）\n\n✅ 你的優勢：\n- 跨語言能力（Python + Node + Go）\n- 完整 stack（爬蟲 + 後端 + Dashboard）\n- 商業頭腦（SaaS / 訂閱 / 月費）\n- 領域知識（電商 / 金融 / ...）\n```\n\n  \n### 最後一句話\n\n```text\n爬蟲是工具、不是目的。\n\n目的是：\n✅ 解決客戶問題\n✅ 創造商業價值\n✅ 賺到能養家的錢\n✅ 保持學習熱情\n✅ 享受工作自由\n\n技術不是炫耀、是手段。\n工具不是目的、是橋樑。\n客戶不是傻子、要尊重。\n\n1 年後、你會是專業爬蟲工程師。\n3 年後、你會是事業有成的 indie hacker。\n5 年後、你會是業界值得尊敬的前輩。\n\n→ 加油、未來見。\n```\n\n  \n    **☕ 用人話講**\n    \nch30 完結 5 大心法：(1) **領域知識 > 技術深度** —— 別只會技術、要懂客戶 (2) **法律意識** —— 商業案諮詢律師、別碰個資 (3) **永遠先 API** —— 80% 場景 API 滿足、別跳步驟 (4) **客戶導向** —— Dashboard > CSV、月費 > 一次性 (5) **持續學新** —— AI 爬蟲 / 反偵測在進化、別停留。**6 個月路徑**：Python → Scrapy → Playwright → 接案 → 規模化 → SaaS。**心法**：爬蟲是工具、商業價值才是目的。\n",
       "tip": {
         "type": "milestone",
         "text": "6 個月、改變職涯軌跡。"
@@ -2281,7 +2353,43 @@
         ],
         "answer": "b",
         "explanation": "課程強調『能爬 ≠ 成功』，真正的成功需要法律安全、客戶滿意、長期維護、商業可行四個要素。相比之下，純技術深度、案件經驗、原始資料都不是核心，客戶要的是完整的商業解決方案。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "爬蟲事業心法判官",
+          "note": "技術之上是法律、客戶和長期維護——判斷這些做法。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "客戶要某平台的資料，你第一步先查有沒有官方 API。",
+                "correct": "ok",
+                "why": "心法 3「永遠先 API」：穩定、合法、不會被擋、維護成本低，大部分需求 API 就能滿足。"
+              },
+              {
+                "text": "不確定這個案子合不合法，心想「先做再說，出事再處理」。",
+                "correct": "no",
+                "why": "心法 2：不確定就不做。商業爬蟲先諮詢律師，個資相關的別碰。"
+              },
+              {
+                "text": "交付時只丟一份 CSV 給客戶，讓他自己開 Excel 分析。",
+                "correct": "risk",
+                "why": "心法 4：客戶要的是答案，不是原始資料。整理成 dashboard、主動標出重點，客戶才真的用得上。"
+              },
+              {
+                "text": "深耕自己熟悉的電商領域，交付時附上價格變化的商業洞察。",
+                "correct": "ok",
+                "why": "心法 1：領域知識 > 技術深度。懂客戶在乎什麼，你提供的就不只是「會爬」。"
+              },
+              {
+                "text": "蒐集某論壇會員的 email 名單，拿去寄行銷信。",
+                "correct": "no",
+                "why": "email 是個人資料，未經同意蒐集、利用違反個資法（歐盟還有 GDPR）。這種案子直接拒接。"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "boss": {

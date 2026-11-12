@@ -155,9 +155,9 @@
         }
       ],
       "exercise": {
-        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
-        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
-        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+        "question": "你幫一家手作飾品小店（月營收約 5 萬、客人多在台灣、常用 LINE）選金流。請從本課的藍新/綠界/TapPay/LINE Pay/Stripe 挑一家當主力、一家當備案，各用一句話說明理由；再把自架流程的 7 個步驟裡「哪一步才能把訂單改成 paid」標出來。",
+        "hint": "先看客群在哪、金額多大、要不要跨境。訂單狀態要看「誰通知你付款成功」——是使用者瀏覽器跳回來（returnUrl），還是金流伺服器直接打你（NotifyURL）？",
+        "answer": "主力：藍新（中小電商申請快、信用卡+ATM+LINE Pay 一次到位）；備案：LINE Pay（客人常用 LINE、轉換率高，但要公司戶、費率較高）。不急著接 Stripe/PayPal（沒有跨境需求、費率較高）。訂單改 paid 要以金流伺服器打來的 NotifyURL（背景通知）並驗證簽章後為準，不能只看使用者跳回 returnUrl——使用者可能關掉分頁、也可能偽造網址參數。"
       },
       "outline": [
         {
@@ -315,9 +315,9 @@
         }
       ],
       "exercise": {
-        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
-        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
-        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+        "question": "照本課的「下單時扣庫存」範例，想像兩個客人同時買最後 1 件商品。請說明：①為什麼扣庫存要包在 transaction 裡？②如果客人選超商取貨付款、最後沒去取貨，訂單狀態和庫存該怎麼處理？",
+        "hint": "transaction 保證「檢查庫存 + 扣庫存 + 建訂單」要嘛全成功、要嘛全失敗。沒取貨＝貨會被退回倉庫，想想 cancelOrder 在做什麼。",
+        "answer": "①不包 transaction 的話，兩個請求可能同時讀到 stock=1、都通過檢查、各扣一次 → 庫存變 -1、超賣。包在 transaction（再搭配資料列鎖或 stock >= 數量 的條件更新）才能保證只有一個人買到。②超商未取件：物流狀態回報「退回」後把訂單改成 cancelled（或 returned），並用 cancelOrder 的邏輯把庫存加回去；取貨付款沒收到錢，不用退款，但要記錄這位客人的棄單紀錄。"
       },
       "outline": [
         {
@@ -722,9 +722,9 @@
         "text": "金流 callback 必驗、不信前端、必 idempotent。"
       },
       "exercise": {
-        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
-        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
-        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+        "question": "本課提醒「MerchantID / HashKey / HashIV 千萬不要貼進 GitHub」。請寫出：①這三個值在專案裡應該放哪裡、前端拿得到嗎？②綠界付款完成通知打到你的 API 時，你要先做哪一個檢查才能相信它？③為什麼不能自己直接收信用卡卡號？（寫一個理由就好）",
+        "hint": "Next.js 裡以 NEXT_PUBLIC_ 開頭的環境變數會被打包進瀏覽器。通知的可信度靠 CheckMacValue。",
+        "answer": "①放在伺服器端環境變數（.env.local／部署平台的環境變數），名稱不能用 NEXT_PUBLIC_ 開頭，前端拿不到、只在後端 API 用。②用 HashKey/HashIV 依綠界規則重算 CheckMacValue，跟通知裡帶的值比對；一致才把訂單改成已付款，並檢查金額與訂單相符，最後回應 1|OK。③自己收卡號要通過 PCI-DSS 合規，成本極高；而且一旦外洩，法律責任在你。交給已持證的金流商最安全。"
       },
       "id": "38.5",
       "number": "LESSON 38.5",
@@ -902,9 +902,9 @@
         "text": "電商成敗 = 商品 × 物流 × 客服。"
       },
       "exercise": {
-        "question": "安裝 lesson 內介紹的工具、用官方的 quick start 跑一次 hello world。記錄安裝過程踩了哪些坑。",
-        "hint": "工具的學習曲線通常卡在「環境設定」這關。Node 版本、Python 版本、權限、PATH 變數、port 衝突——遇到一個解一個。",
-        "answer": "踩坑筆記範本：『遇到：[錯誤訊息] → 原因：[根本原因] → 解：[具體指令]』。整理在自己的 GitHub gist 或 Notion、下次遇到同樣坑直接複製貼上 = 把痛苦變資產。"
+        "question": "你的店同時提供「黑貓宅配」和「7-11 取貨」。請設計一張訂單狀態流程（至少 5 個狀態），並回答：超商取貨的運費如果你寫「免運」，每件實際要吃掉多少？結帳頁該怎麼寫才不會吵架？",
+        "hint": "狀態可參考 pending → paid → … → completed，別忘了退貨。費用看本課的「費用陷阱」那段。",
+        "answer": "狀態流程：pending（待付款）→ paid（已付款）→ preparing（備貨中）→ shipped（已出貨，存追蹤號）→ delivered/picked_up（已送達/已取貨）→ completed；分支：cancelled（取消、回補庫存）、returned（退貨/未取件退回）。超商取貨每件約 NT$40–65 是你吃掉的成本，可能比黑貓還貴。結帳頁要明寫：「滿 NT$XXX 免運，未滿酌收超商運費 NT$60」，並在選物流時就顯示金額，不要結帳最後一步才冒出來。"
       },
       "id": "38.6",
       "number": "LESSON 38.6",

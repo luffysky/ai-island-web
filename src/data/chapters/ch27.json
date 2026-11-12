@@ -2489,7 +2489,159 @@
         ],
         "answer": "b",
         "explanation": "課程強調『學完不等於能上工』，必須做 portfolio + 找對工作 + 持續輸出才能變現。3 個經典 project（EDA、預測、Dashboard）是找工作的必備基礎，放在 GitHub 和個人網站才有說服力，比單純投履歷或只有證書更重要。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "資料職涯方向測驗",
+          "note": "依你的興趣和習慣，看哪個方向最值得先深入（只是起點參考、之後隨時能轉）。",
+          "config": {
+            "intro": "憑直覺選最像你的答案，沒有對錯。",
+            "questions": [
+              {
+                "q": "做專案時，你最享受哪個時刻？",
+                "options": [
+                  {
+                    "label": "把數字整理成一張圖，讓大家一看就懂",
+                    "scores": {
+                      "da": 2
+                    }
+                  },
+                  {
+                    "label": "模型預測準確率又往上提升一點",
+                    "scores": {
+                      "ds": 2
+                    }
+                  },
+                  {
+                    "label": "整條資料流程自動跑、一整個月都沒出錯",
+                    "scores": {
+                      "de": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你比較喜歡跟誰一起工作？",
+                "options": [
+                  {
+                    "label": "行銷、業務、PM，幫他們回答商業問題",
+                    "scores": {
+                      "da": 2
+                    }
+                  },
+                  {
+                    "label": "研究型夥伴，一起討論假設和實驗",
+                    "scores": {
+                      "ds": 2
+                    }
+                  },
+                  {
+                    "label": "工程師，一起設計系統架構",
+                    "scores": {
+                      "de": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "看到統計學、機率公式，你的反應是？",
+                "options": [
+                  {
+                    "label": "會用平均、中位數、A/B test 就好",
+                    "scores": {
+                      "da": 1,
+                      "de": 1
+                    }
+                  },
+                  {
+                    "label": "想深入搞懂背後原理",
+                    "scores": {
+                      "ds": 2
+                    }
+                  },
+                  {
+                    "label": "我比較想研究 SQL 跑得快不快",
+                    "scores": {
+                      "de": 2
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "哪種工作你最願意花時間做？",
+                "options": [
+                  {
+                    "label": "寫 SQL 撈資料、做 dashboard 報表",
+                    "scores": {
+                      "da": 2,
+                      "de": 1
+                    }
+                  },
+                  {
+                    "label": "清資料、選特徵、比較好幾個模型",
+                    "scores": {
+                      "ds": 2
+                    }
+                  },
+                  {
+                    "label": "寫排程、處理資料品質、顧雲端服務",
+                    "scores": {
+                      "de": 2
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "da": {
+                "emoji": "📊",
+                "title": "Data Analyst（資料分析師）",
+                "desc": "核心是 SQL + 報表工具 + 溝通能力。先做一個「原始資料 → 結論報告」的 EDA 專案和一個互動 dashboard 放進作品集。"
+              },
+              "ds": {
+                "emoji": "🧪",
+                "title": "Data Scientist（資料科學家）",
+                "desc": "統計一定要紮實、不能只會呼叫 sklearn。先做一個預測專案，比較多個模型、寫清楚評估指標和商業意義。"
+              },
+              "de": {
+                "emoji": "🛠️",
+                "title": "Data Engineer（資料工程師）",
+                "desc": "SQL 要深、Python 要寫得像正式產品程式碼，再學 Airflow / dbt / 雲端。先做一個每天自動跑、有錯誤通知的 ETL pipeline。"
+              }
+            }
+          }
+        },
+        {
+          "type": "scenario-judge",
+          "title": "作品集健檢",
+          "note": "履歷上的 portfolio 會不會加分？判斷看看。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "GitHub 專案 README 寫清楚問題、資料來源、做法，並寫出量化成果（分析 10 萬筆資料、找出 X 趨勢）。",
+                "correct": "ok",
+                "why": "面試官沒時間跑你的程式；清楚的 README + 量化成果能讓人 30 秒看懂你的能力。"
+              },
+              {
+                "text": "作品集只有照著教學一步步做的 Titanic notebook，沒有自己的結論。",
+                "correct": "risk",
+                "why": "跟著做是練習、不是作品。換一個你自己感興趣的開放資料集（如 data.gov.tw），寫出你自己的發現。"
+              },
+              {
+                "text": "Dashboard 部署到 Streamlit Cloud，把網址直接放在履歷上。",
+                "correct": "ok",
+                "why": "能點開就能玩的成品，比截圖有說服力得多。"
+              },
+              {
+                "text": "想走 Data Scientist，但統計只會呼叫 API、說不出 p-value 是什麼。",
+                "correct": "risk",
+                "why": "DS 面試一定會問統計觀念；只會調 API 很容易被看穿。先把平均、分布、假設檢定這些基礎補起來。"
+              }
+            ]
+          }
+        }
+      ]
     }
   ],
   "boss": {

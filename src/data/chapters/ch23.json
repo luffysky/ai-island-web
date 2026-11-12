@@ -905,7 +905,43 @@
         ],
         "answer": "b",
         "explanation": "課程明確指出「90% Indie 不直接用 AWS」，而是用 Cloudflare 或 Vercel 等更簡單的方案。AWS 雖然強大，但對 Indie 來說「複雜度高、不實用」；Cloudflare 才是「履歷外、實用優先」的正確選擇。A 選項搞反了 Indie 的優先順序，C 和 D 則不是在給定選擇中的最佳答案。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "雲端選擇判官",
+          "note": "三大雲 + 現代平台，這個情境選得對嗎？",
+          "config": {
+            "scenarios": [
+              {
+                "text": "個人 Next.js 小專案、每天幾十個訪客，直接在 AWS 開 EKS（Kubernetes）叢集來跑。",
+                "correct": "risk",
+                "why": "太早上重型武器：設定複雜、固定費用不低。90% 的 indie 用 Vercel / Railway 這類 PaaS 就夠，等規模大了再考慮 AWS。"
+              },
+              {
+                "text": "團隊要做大量資料分析、想用 BigQuery → 選 GCP。",
+                "correct": "ok",
+                "why": "GCP 的強項就是資料與 AI：BigQuery、Vertex AI 業界數一數二。"
+              },
+              {
+                "text": "公司全面用 Office 365、員工帳號在 Active Directory → 雲端選 Azure。",
+                "correct": "ok",
+                "why": "Azure 最大的優勢是跟微軟企業生態整合，帳號、權限能直接串起來。"
+              },
+              {
+                "text": "網站有大量圖片下載流量，擔心流出費（egress fee）→ 圖片放 Cloudflare R2。",
+                "correct": "ok",
+                "why": "R2 跟 S3 相容、而且沒有 egress fee，流量大的檔案放這裡最省。"
+              },
+              {
+                "text": "「AWS free tier 是永久免費的」，所以開了 EC2 之後就放著不管。",
+                "correct": "no",
+                "why": "AWS 的 free tier 多數只有 12 個月，到期就開始收錢；長期免費的 VM 是 GCP 的 e2-micro。用任何雲都要看清楚 free tier 期限。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Serverless 完整心法",
@@ -1320,7 +1356,43 @@
         ],
         "answer": "a",
         "explanation": "課程明確指出AWS/GCP預設無上限、一個無限loop就能產生嚇人帳單，所以Day 1必須設alert來預警。其他選項都是錯誤的——alert本身不能降低費用、不是使用某些服務的前提條件。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "雲端帳單防爆判官",
+          "note": "判斷這些做法是在省錢，還是在埋地雷？",
+          "config": {
+            "scenarios": [
+              {
+                "text": "新開 AWS 帳號，先不設 budget alert，等月底帳單來再看。",
+                "correct": "no",
+                "why": "雲端預設沒有上限，一個寫錯的無限迴圈就能燒出驚人帳單。Day 1 就設 budget alert。"
+              },
+              {
+                "text": "每晚跑的批次轉檔工作，可以中斷重來 → 用 Spot Instance。",
+                "correct": "ok",
+                "why": "Spot / Preemptible 便宜很多，代價是隨時可能被收回；可中斷的批次任務正適合。"
+              },
+              {
+                "text": "線上付款 API 這個主服務，全部放在 Spot Instance 上省錢。",
+                "correct": "risk",
+                "why": "Spot 機器可能被雲端隨時收回，主服務一斷就是付款失敗。關鍵服務要用一般或 Reserved 機器。"
+              },
+              {
+                "text": "測試用的 VM 和 DB 做完實驗就放著繼續跑，反正「之後可能會用到」。",
+                "correct": "no",
+                "why": "Idle 資源是常見的爆帳原因：沒用也在計費。不用就立刻關，要用再開。"
+              },
+              {
+                "text": "已經穩定跑好幾年、用量可預測的資料庫，改買 1 年 Reserved Instance。",
+                "correct": "ok",
+                "why": "長期穩定的負載，用預付換折扣（約 30–50%）很划算；不確定會不會用的就別預付。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "災難復原（DR）+ 高可用（HA）",

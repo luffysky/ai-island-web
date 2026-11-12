@@ -1537,7 +1537,123 @@
         ],
         "answer": "c",
         "explanation": "課程決策樹明確指出「會 Vue 就選 Nuxt 3」；Next.js 適合已會 React 或目標北美求職的人。選項 c 的人應該選 Nuxt 3，不是 Next.js。"
-      }
+      },
+      "demos": [
+        {
+          "type": "decision-quiz",
+          "title": "這次該學 Next.js 還是 Nuxt？",
+          "note": "依你的背景、目標市場、部署需求回答——選一個專精、另一個之後很快能轉",
+          "config": {
+            "intro": "兩者心智模型大約 80% 相同、選哪個都不會白學。關鍵是根據「你會的技術 + 目標」選一個學透。",
+            "questions": [
+              {
+                "q": "你現在比較熟哪個前端框架？",
+                "options": [
+                  {
+                    "label": "React",
+                    "scores": {
+                      "next": 3
+                    }
+                  },
+                  {
+                    "label": "Vue",
+                    "scores": {
+                      "nuxt": 3
+                    }
+                  },
+                  {
+                    "label": "都還不熟",
+                    "scores": {
+                      "next": 1,
+                      "nuxt": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "你想投入的市場 / 團隊？",
+                "options": [
+                  {
+                    "label": "美國 / 全球新創、英文團隊",
+                    "scores": {
+                      "next": 2
+                    }
+                  },
+                  {
+                    "label": "台灣、日本等亞洲團隊",
+                    "scores": {
+                      "nuxt": 1,
+                      "next": 1
+                    }
+                  },
+                  {
+                    "label": "還不確定、先做個人專案",
+                    "scores": {
+                      "nuxt": 1
+                    }
+                  }
+                ]
+              },
+              {
+                "q": "部署環境偏好？",
+                "options": [
+                  {
+                    "label": "Vercel、想要 0 設定",
+                    "scores": {
+                      "next": 2
+                    }
+                  },
+                  {
+                    "label": "Cloudflare Workers 或多家平台",
+                    "scores": {
+                      "nuxt": 2
+                    }
+                  },
+                  {
+                    "label": "沒想法",
+                    "scores": {}
+                  }
+                ]
+              },
+              {
+                "q": "你最在意什麼？",
+                "options": [
+                  {
+                    "label": "最新的 RSC / Server Actions 體驗",
+                    "scores": {
+                      "next": 2
+                    }
+                  },
+                  {
+                    "label": "上手快、自動 import、少寫設定",
+                    "scores": {
+                      "nuxt": 2
+                    }
+                  },
+                  {
+                    "label": "快速做部落格 / 文件站",
+                    "scores": {
+                      "nuxt": 1
+                    }
+                  }
+                ]
+              }
+            ],
+            "outcomes": {
+              "next": {
+                "emoji": "▲",
+                "title": "先專精 Next.js",
+                "desc": "React 生態、全球資源最多、RSC / Server Actions 走最前面、Vercel 部署最順。代價是心智模型比較複雜（Server / Client 邊界）、上手比較慢。"
+              },
+              "nuxt": {
+                "emoji": "💚",
+                "title": "先專精 Nuxt",
+                "desc": "Vue 生態、自動 import、routeRules 直覺、Nitro 內建多平台部署（Cloudflare 很強）、中文資源豐富、上手快。全球職缺比 Next 少、要考量你的目標市場。"
+              }
+            }
+          }
+        }
+      ]
     },
     {
       "id": "10.22",
@@ -1664,7 +1780,53 @@
         ],
         "answer": "b",
         "explanation": "INP 就是測「點按鈕到看到反應」有多快（< 200ms 達標），卡頓代表互動延遲太長。LCP 是首屏顯示速度、CLS 是內容跳動、TTFB 是伺服器速度，都不是這個問題。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "這樣做網站會變快還是變慢？",
+          "note": "判斷每個做法對 Core Web Vitals（LCP / INP / CLS）是加分、有風險、還是扣分",
+          "config": {
+            "scenarios": [
+              {
+                "text": "<img src=\"hero.jpg\"> 沒寫 width / height",
+                "correct": "no",
+                "why": "圖片載入前不知道多大、載入後把下面內容往下推 → CLS（版面跳動）變差。永遠給尺寸、或用 next/image。"
+              },
+              {
+                "text": "loading 時顯示跟真內容一樣大小的 skeleton",
+                "correct": "ok",
+                "why": "先把位置佔好、內容出現時版面不會跳、CLS 穩定。"
+              },
+              {
+                "text": "新通知插到頁面最上方、把整頁內容往下推",
+                "correct": "no",
+                "why": "這是典型的 CLS 扣分。通知 / Toast 用 fixed position 浮在上面、不要擠開既有內容。"
+              },
+              {
+                "text": "只為了格式化日期、import 整包 moment.js",
+                "correct": "risk",
+                "why": "bundle 多 60KB 以上、拖慢載入。改用 date-fns / dayjs 按需載入。"
+              },
+              {
+                "text": "內容幾乎不變的部落格、整站每次請求都用 SSR 即時算",
+                "correct": "risk",
+                "why": "多花伺服器時間、帳單也會變高。能 SSG 就 SSG、需要更新再用 ISR。"
+              },
+              {
+                "text": "很大的圖表套件改成 dynamic import、用到時才載入",
+                "correct": "ok",
+                "why": "Code Splitting：首頁不用一次下載全部、首屏更快。"
+              },
+              {
+                "text": "console.log 留在 production 沒清",
+                "correct": "risk",
+                "why": "會拖一點效能、還可能把內部資料印給任何人看。build 時自動清掉。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Next.js 15 App Router 完整指南",

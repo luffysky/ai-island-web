@@ -1955,7 +1955,53 @@
         ],
         "answer": "b",
         "explanation": "階段 2（第 2-6 個月）的重點就是學 Custom Hooks、效能、測試、Server Components，並完成 1000+ 使用者的產品目標。選項 a 超前（那是階段 3），選項 c 和 d 都跳過了中階的系統性學習。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "React 學習這樣做會變強嗎？",
+          "note": "判斷每種學習方式是有效、有風險、還是會讓你原地打轉",
+          "config": {
+            "scenarios": [
+              {
+                "text": "把 3 套完整教學影片都看完、再開始自己寫第一個專案",
+                "correct": "no",
+                "why": "純看教學效果很差、看完常常還是寫不出來。修法：每週 ship 一個小專案、不求大。"
+              },
+              {
+                "text": "每週做一個小東西（計時器、待辦清單、天氣卡）並放上 GitHub",
+                "correct": "ok",
+                "why": "這是課堂解法：小而持續地動手、比一次挑戰大專案更容易累積。"
+              },
+              {
+                "text": "花一個月比較 Next.js、Remix、Astro 哪個最好、還沒開始寫",
+                "correct": "no",
+                "why": "選擇障礙會一直卡住你。課堂建議：先選 Next.js + Tailwind 開始做、別再比。"
+              },
+              {
+                "text": "TypeScript 泛型看不懂、先用 JS 寫、慢慢補上型別",
+                "correct": "ok",
+                "why": "不必一次到位。先能跑、再一點一點加 type、壓力小很多。"
+              },
+              {
+                "text": "官方文件太長、遇到具體問題時搜尋、用 Ctrl+F 跳到重點",
+                "correct": "ok",
+                "why": "官方文件不用從頭讀到尾、帶著問題查最有效率。"
+              },
+              {
+                "text": "英文文件看不懂、決定等中文教學出來再學新功能",
+                "correct": "risk",
+                "why": "可能要等很久、而且常常過時。可以用 AI 邊看邊翻、慢慢習慣讀英文原文。"
+              },
+              {
+                "text": "clone 一個開源專案、跑起來、試著改一個小地方",
+                "correct": "ok",
+                "why": "看開源碼比看書快、能學到真實專案是怎麼組織的。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "React 19 新特性：Actions + use() + Server Components",

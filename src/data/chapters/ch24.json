@@ -723,7 +723,43 @@
         ],
         "answer": "c",
         "explanation": "Traces 就是設計來看「一個 request 跑了什麼」、找出瓶頸在哪裡服務。Logs 是找錯誤內容、Metrics 是看整體數字，都看不出單筆請求的各環節耗時。"
-      }
+      },
+      "demos": [
+        {
+          "type": "scenario-judge",
+          "title": "三柱用對了嗎？",
+          "note": "Logs 回答「發生了什麼」、Metrics 回答「多少次」、Traces 回答「一個 request 跑了哪些步驟」。判斷這樣查對不對。",
+          "config": {
+            "scenarios": [
+              {
+                "text": "/api/order 變慢了，想知道是 DB 查詢還是第三方金流拖住 → 看 Traces。",
+                "correct": "ok",
+                "why": "Trace 會把一個 request 拆成每一段的耗時（auth 5ms、db 45ms、stripe 320ms…），瓶頸一眼看出來。"
+              },
+              {
+                "text": "想在錯誤率超過 1% 時自動通知 → 靠人工一行一行翻 Logs 去數。",
+                "correct": "risk",
+                "why": "「多少次、比例多少」是 Metrics 的工作：數字可聚合、可畫 dashboard、可設 alert。翻 Logs 數又慢又會漏。"
+              },
+              {
+                "text": "使用者 u123 說登入一直失敗，想看他那次請求的錯誤訊息 → 用 user_id 搜 Logs。",
+                "correct": "ok",
+                "why": "Logs 保留每一筆事件的時間、訊息、上下文，查「某個人某次發生了什麼」就靠它。"
+              },
+              {
+                "text": "dashboard 上看到 error_rate = 0.5%，就想直接從這個數字看出是哪一行程式出錯。",
+                "correct": "risk",
+                "why": "Metrics 是聚合後的數字，只告訴你「有問題、多嚴重」，細節要回頭查 Logs / Sentry 的錯誤堆疊。三柱要搭配看。"
+              },
+              {
+                "text": "產品上線後只靠 console.log，沒有任何錯誤追蹤工具。",
+                "correct": "risk",
+                "why": "console.log 只適合暫時用：沒有集中收集、沒有通知，使用者壞掉你也不知道。至少先接 Sentry free tier（errors 最痛、最先做）。"
+              }
+            ]
+          }
+        }
+      ]
     },
     {
       "title": "Sentry 完整實作",
